@@ -123,7 +123,7 @@ export const CreateAvatar = () => {
                   </Card>
 
                    {/* Advanced Customization & Features Grid */}
-                   <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">
                      {/* Advanced Customization */}
                      <Card className="p-6 bg-gradient-card border-border/50">
                        <div className="flex items-center justify-between mb-6">
