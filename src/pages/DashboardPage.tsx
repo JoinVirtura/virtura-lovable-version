@@ -29,9 +29,12 @@ import {
 import { CreateAvatar } from "@/components/CreateAvatar"
 import { AvatarStudio } from "@/components/AvatarStudio"
 import { AvatarCard } from "@/components/AvatarCard"
+import { AvatarEditModal } from "@/components/AvatarEditModal"
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("overview")
+  const [selectedAvatar, setSelectedAvatar] = useState<any>(null)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const navigate = useNavigate()
 
   const handleLogout = () => {
@@ -41,35 +44,35 @@ export default function DashboardPage() {
   const recentAvatars = [
     { 
       id: 1, 
-      name: "Aria", 
+      name: "Isabella", 
       style: "Realistic", 
       status: "completed", 
-      image: "/src/assets/model-aria.jpg",
-      description: "Stunning professional headshot with natural lighting and perfect composition"
+      image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=600&fit=crop&crop=face",
+      description: "Elegant business professional with sophisticated styling and warm lighting"
     },
     { 
       id: 2, 
-      name: "Luna", 
+      name: "Santiago", 
       style: "Realistic", 
       status: "completed", 
-      image: "/src/assets/model-luna.jpg",
-      description: "Elegant portrait with soft features and captivating eyes"
+      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=600&fit=crop&crop=face",
+      description: "Charismatic gentleman with confident expression and modern aesthetic"
     },
     { 
       id: 3, 
-      name: "Maya", 
+      name: "Zara", 
       style: "Realistic", 
       status: "completed", 
-      image: "/src/assets/model-maya.jpg",
-      description: "Bold and confident look with striking facial features"
+      image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&h=600&fit=crop&crop=face",
+      description: "Creative artist with striking features and artistic composition"
     },
     { 
       id: 4, 
-      name: "Nova", 
+      name: "Marcus", 
       style: "Realistic", 
       status: "completed", 
-      image: "/src/assets/model-nova.jpg",
-      description: "Sophisticated and mysterious with intense gaze"
+      image: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=400&h=600&fit=crop&crop=face",
+      description: "Tech entrepreneur with modern style and confident demeanor"
     },
   ]
 
@@ -78,9 +81,12 @@ export default function DashboardPage() {
     // Navigate to chat or open chat modal
   }
 
-  const handleAvatarCreate = (avatarId: number) => {
-    console.log("Create similar avatar:", avatarId)
-    setActiveTab("create")
+  const handleAvatarEdit = (avatarId: number) => {
+    const avatar = recentAvatars.find(a => a.id === avatarId)
+    if (avatar) {
+      setSelectedAvatar(avatar)
+      setIsEditModalOpen(true)
+    }
   }
 
   const stats = [
@@ -248,7 +254,7 @@ export default function DashboardPage() {
                           description={avatar.description}
                           image={avatar.image}
                           onChat={() => handleAvatarChat(avatar.id)}
-                          onCreate={() => handleAvatarCreate(avatar.id)}
+                          onCreate={() => handleAvatarEdit(avatar.id)}
                         />
                       ))}
                     </div>
@@ -322,6 +328,18 @@ export default function DashboardPage() {
           </main>
         </div>
       </div>
+
+      {/* Avatar Edit Modal */}
+      {selectedAvatar && (
+        <AvatarEditModal
+          avatar={selectedAvatar}
+          isOpen={isEditModalOpen}
+          onClose={() => {
+            setIsEditModalOpen(false)
+            setSelectedAvatar(null)
+          }}
+        />
+      )}
     </div>
   )
 }
