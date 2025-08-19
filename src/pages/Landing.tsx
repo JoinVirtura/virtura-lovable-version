@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button"
 import { AvatarCard } from "@/components/AvatarCard"
-import { Zap } from "lucide-react"
+import { Zap, Heart } from "lucide-react"
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { AppSidebar } from "@/components/AppSidebar"
 
 // Import avatar images
 import avatar1 from "@/assets/avatar-1.jpg"
@@ -69,45 +71,62 @@ export default function Landing() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="flex items-center justify-between p-4 border-b border-border">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 text-foreground">
-            <span className="text-2xl font-bold">{`{B}`}</span>
-            <span className="text-sm">2 Characters</span>
-          </div>
-        </div>
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full bg-background">
+        <AppSidebar />
         
-        <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
-          <Zap className="w-4 h-4 mr-2" />
-          Join Premium
-        </Button>
-      </header>
+        <div className="flex-1 flex flex-col">
+          {/* Header */}
+          <header className="h-14 flex items-center justify-between px-6 border-b border-border">
+            <div className="flex items-center gap-4">
+              <SidebarTrigger />
+              <div className="flex items-center gap-2 text-foreground">
+                <span className="text-2xl font-bold">{`{B}`}</span>
+                <span className="text-sm">2 Characters</span>
+              </div>
+            </div>
+            
+            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+              <Zap className="w-4 h-4 mr-2" />
+              Join Premium
+            </Button>
+          </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-6 py-8">
-        {/* Hero Section */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-            Explore the Best XXX AI Porn Maker Free
-          </h1>
-        </div>
+          {/* Main Content */}
+          <main className="flex-1 p-6">
+            {/* Hero Section */}
+            <div className="mb-12">
+              <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+                AI Porn Generator
+              </h1>
+              <p className="text-lg text-muted-foreground mb-8 max-w-2xl">
+                Take control of your XXX sex fantasies and create uncensored free AI porn with best AI porn generator. 
+                Ready to create your own interactive AI porn, hentai, furry, anime nudes and more on Sugarlab AI. Use our 
+                free AI porn generator for AI porn pics, AI porn videos, and AI porn chat. Just type a prompt and get 
+                sexy results.
+              </p>
+              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 text-lg">
+                <Heart className="w-5 h-5 mr-2" />
+                Try For Free
+              </Button>
+            </div>
 
-        {/* Avatar Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {avatars.map((avatar) => (
-            <AvatarCard
-              key={avatar.id}
-              name={avatar.name}
-              description={avatar.description}
-              image={avatar.image}
-              onChat={() => handleChat(avatar.name)}
-              onCreate={() => handleCreate(avatar.name)}
-            />
-          ))}
+            {/* Avatar Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {avatars.map((avatar) => (
+                <AvatarCard
+                  key={avatar.id}
+                  name={avatar.name}
+                  description={avatar.description}
+                  image={avatar.image}
+                  onChat={() => handleChat(avatar.name)}
+                  onCreate={() => handleCreate(avatar.name)}
+                />
+              ))}
+            </div>
+          </main>
         </div>
-      </main>
-    </div>
+      </div>
+    </SidebarProvider>
   )
 }
