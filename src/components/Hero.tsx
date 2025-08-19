@@ -26,8 +26,10 @@ export const Hero = () => {
 
             <div>
               <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white leading-tight mb-6 drop-shadow-2xl">
-                Turn selfies into
-                <span className="block bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent drop-shadow-lg">studio-quality AI avatars</span>
+                <span className="block">Turn selfies</span>
+                <span className="block">into</span>
+                <span className="block bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent drop-shadow-lg">studio-quality AI</span>
+                <span className="block bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent drop-shadow-lg">avatars</span>
                 <span className="block text-4xl md:text-5xl lg:text-6xl">— instantly.</span>
               </h1>
               
