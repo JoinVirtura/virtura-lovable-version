@@ -1,60 +1,60 @@
 import { Hero } from "@/components/Hero";
 import { AvatarCard } from "@/components/AvatarCard";
 
-// Import avatar images
-import avatar1 from "@/assets/avatar-1.jpg"
-import avatar2 from "@/assets/avatar-2.jpg"
-import avatar3 from "@/assets/avatar-3.jpg"
-import avatar4 from "@/assets/avatar-4.jpg"
+// Import model images
+import modelJenna from "@/assets/model-jenna.jpg"
+import modelHaley from "@/assets/model-haley.jpg"
+import modelLena from "@/assets/model-lena.jpg"
+import modelRaven from "@/assets/model-raven.jpg"
 
-const avatars = [
+const models = [
   {
     id: 1,
     name: "Jenna",
     description: "Hey guys Jenna here, I love gaming, anime and having deep conversations 💕",
-    image: avatar1
+    image: modelJenna
   },
   {
     id: 2,
     name: "Haley", 
     description: "Small-town gym rat with big energy 💪 Ready for fun adventures and good vibes",
-    image: avatar2
+    image: modelHaley
   },
   {
     id: 3,
     name: "Lena",
     description: "Bavarian soul 🏔️ Sweet, relaxed, and always up for meaningful connections",
-    image: avatar3
+    image: modelLena
   },
   {
     id: 4,
     name: "Raven",
     description: "Goth soul 🖤 Artist 🎨 | Dark humor and creative conversations are my thing",
-    image: avatar4
+    image: modelRaven
   },
   {
     id: 5,
     name: "Sofia",
     description: "Professional photographer 📸 Love capturing beauty in everyday moments",
-    image: avatar1
+    image: modelJenna
   },
   {
     id: 6,
     name: "Maya",
     description: "Yoga instructor and wellness coach 🧘‍♀️ Finding balance in everything",
-    image: avatar2
+    image: modelHaley
   },
   {
     id: 7,
     name: "Luna",
     description: "Night owl and stargazer ⭐ Philosophy and deep thoughts under moonlight",
-    image: avatar3
+    image: modelLena
   },
   {
     id: 8,
     name: "Aria",
     description: "Music producer and DJ 🎵 Creating beats that move souls and hearts",
-    image: avatar4
+    image: modelRaven
   }
 ]
 
@@ -75,16 +75,21 @@ export default function Landing() {
       {/* Avatar Grid Section */}
       <section className="container mx-auto px-6 py-16">
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {avatars.map((avatar) => (
-            <AvatarCard
-              key={avatar.id}
-              name={avatar.name}
-              description={avatar.description}
-              image={avatar.image}
-              onChat={() => handleChat(avatar.name)}
-              onCreate={() => handleCreate(avatar.name)}
-            />
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fade-in">
+          {models.map((model, index) => (
+            <div 
+              key={model.id}
+              className="animate-flirty flirty-hover"
+              style={{animationDelay: `${index * 0.2}s`}}
+            >
+              <AvatarCard
+                name={model.name}
+                description={model.description}
+                image={model.image}
+                onChat={() => handleChat(model.name)}
+                onCreate={() => handleCreate(model.name)}
+              />
+            </div>
           ))}
         </div>
       </section>
