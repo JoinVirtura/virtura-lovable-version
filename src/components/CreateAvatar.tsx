@@ -39,9 +39,9 @@ export const CreateAvatar = () => {
       <div className="container mx-auto px-6 py-8">
         <div className="max-w-7xl mx-auto">
 
-          <div className="grid grid-cols-1 xl:grid-cols-5 gap-8">
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
             {/* Left Panel - Creation Tools */}
-            <div className="xl:col-span-3 space-y-6">
+            <div className="xl:col-span-2 space-y-6">
               <Tabs defaultValue="generate" className="w-full">
                 <TabsList className="grid w-full grid-cols-3 bg-card/50 backdrop-blur-sm">
                   <TabsTrigger value="generate" className="data-[state=active]:bg-primary/20">
@@ -429,7 +429,7 @@ export const CreateAvatar = () => {
             </div>
 
              {/* Right Panel - Preview */}
-             <div className="xl:col-span-2 space-y-6">
+             <div className="xl:col-span-1 space-y-6">
                <Card className="p-8 bg-gradient-card border-border/50 h-fit">
                  <h3 className="font-semibold text-xl mb-6 text-foreground">Preview</h3>
                  <div className="w-full bg-background/30 rounded-xl border-2 border-dashed border-border/30 flex items-center justify-center" style={{ aspectRatio: '3/4', minHeight: '400px', maxHeight: '600px' }}>
@@ -445,20 +445,10 @@ export const CreateAvatar = () => {
                  </div>
                </Card>
 
-               {/* Generation History */}
-               <Card className="p-6 bg-gradient-card border-border/50">
-                 <h3 className="font-semibold text-lg mb-4 text-foreground">Recent Generations</h3>
-                 <div className="space-y-3">
-                   <div className="text-center text-muted-foreground">
-                     <p className="text-sm">Your recent avatars will appear here</p>
-                   </div>
-                 </div>
-               </Card>
-
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
-  );
-};
+      </section>
+    );
+  };
