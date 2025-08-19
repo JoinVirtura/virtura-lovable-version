@@ -6,6 +6,14 @@ import modelJenna from "@/assets/model-jenna.jpg"
 import modelHaley from "@/assets/model-haley.jpg"
 import modelLena from "@/assets/model-lena.jpg"
 import modelRaven from "@/assets/model-raven.jpg"
+import modelSofia from "@/assets/model-sofia.jpg"
+import modelMaya from "@/assets/model-maya.jpg"
+import modelLuna from "@/assets/model-luna.jpg"
+import modelAria from "@/assets/model-aria.jpg"
+import modelNova from "@/assets/model-nova.jpg"
+import modelZara from "@/assets/model-zara.jpg"
+import modelIris from "@/assets/model-iris.jpg"
+import modelSage from "@/assets/model-sage.jpg"
 
 const models = [
   {
@@ -36,25 +44,49 @@ const models = [
     id: 5,
     name: "Sofia",
     description: "Professional photographer 📸 Love capturing beauty in everyday moments",
-    image: modelJenna
+    image: modelSofia
   },
   {
     id: 6,
     name: "Maya",
     description: "Yoga instructor and wellness coach 🧘‍♀️ Finding balance in everything",
-    image: modelHaley
+    image: modelMaya
   },
   {
     id: 7,
     name: "Luna",
     description: "Night owl and stargazer ⭐ Philosophy and deep thoughts under moonlight",
-    image: modelLena
+    image: modelLuna
   },
   {
     id: 8,
     name: "Aria",
     description: "Music producer and DJ 🎵 Creating beats that move souls and hearts",
-    image: modelRaven
+    image: modelAria
+  },
+  {
+    id: 9,
+    name: "Nova",
+    description: "Tech entrepreneur and innovator 💡 Building the future one idea at a time",
+    image: modelNova
+  },
+  {
+    id: 10,
+    name: "Zara",
+    description: "Fashion designer and trendsetter ✨ Creating styles that inspire confidence",
+    image: modelZara
+  },
+  {
+    id: 11,
+    name: "Iris",
+    description: "Travel blogger and adventurer 🌎 Discovering hidden gems around the world",
+    image: modelIris
+  },
+  {
+    id: 12,
+    name: "Sage",
+    description: "Mindfulness coach and writer 📚 Helping others find peace in chaos",
+    image: modelSage
   }
 ]
 

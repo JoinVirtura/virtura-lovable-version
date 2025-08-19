@@ -26,12 +26,13 @@ export const Hero = () => {
 
             <div>
               <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white leading-tight mb-6 drop-shadow-2xl">
-                Virtura
-                <span className="block bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent drop-shadow-lg">AI Avatars</span>
+                Turn selfies into
+                <span className="block bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent drop-shadow-lg">studio-quality AI avatars</span>
+                <span className="block text-4xl md:text-5xl lg:text-6xl">— instantly.</span>
               </h1>
               
               <p className="text-xl md:text-2xl text-white/90 leading-relaxed max-w-2xl drop-shadow-lg font-medium">
-                Turn ordinary selfies or portraits into hyper-realistic, brand-ready avatars using advanced AI — instantly, beautifully, and securely. Virtura empowers professionals, creators, and brands to create studio-quality, high-performance digital avatars — no design or editing skills required.
+                Virtura empowers professionals, creators, and brands with hyper-realistic, brand-ready digital avatars — no design skills required.
               </p>
             </div>
 
@@ -41,7 +42,7 @@ export const Hero = () => {
                 className="px-8 py-6 text-lg font-bold bg-white text-black hover:bg-white/90 shadow-2xl transition-all duration-300 hover:scale-105"
               >
                 <Sparkles className="mr-3 h-6 w-6" />
-                Create Avatar
+                Create Your Avatar Now
               </Button>
               
               <Button 
