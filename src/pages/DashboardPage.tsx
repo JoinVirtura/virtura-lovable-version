@@ -29,9 +29,12 @@ import {
 import { CreateAvatar } from "@/components/CreateAvatar"
 import { AvatarStudio } from "@/components/AvatarStudio"
 import { AvatarCard } from "@/components/AvatarCard"
+import { AvatarEditModal } from "@/components/AvatarEditModal"
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("overview")
+  const [selectedAvatar, setSelectedAvatar] = useState<any>(null)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const navigate = useNavigate()
 
   const handleLogout = () => {
@@ -41,46 +44,49 @@ export default function DashboardPage() {
   const recentAvatars = [
     { 
       id: 1, 
-      name: "Aria", 
+      name: "Sage", 
       style: "Realistic", 
       status: "completed", 
-      image: "/src/assets/model-aria.jpg",
-      description: "Stunning professional headshot with natural lighting and perfect composition"
+      image: "/src/assets/model-sage.jpg",
+      description: "Wise and serene expression with natural beauty and gentle features"
     },
     { 
       id: 2, 
-      name: "Luna", 
+      name: "Raven", 
       style: "Realistic", 
       status: "completed", 
-      image: "/src/assets/model-luna.jpg",
-      description: "Elegant portrait with soft features and captivating eyes"
+      image: "/src/assets/model-raven.jpg",
+      description: "Dark and alluring with piercing eyes and dramatic styling"
     },
     { 
       id: 3, 
-      name: "Maya", 
+      name: "Zara", 
       style: "Realistic", 
       status: "completed", 
-      image: "/src/assets/model-maya.jpg",
-      description: "Bold and confident look with striking facial features"
+      image: "/src/assets/model-zara.jpg",
+      description: "Exotic beauty with warm tones and captivating smile"
     },
     { 
       id: 4, 
-      name: "Nova", 
+      name: "Sofia", 
       style: "Realistic", 
       status: "completed", 
-      image: "/src/assets/model-nova.jpg",
-      description: "Sophisticated and mysterious with intense gaze"
+      image: "/src/assets/model-sofia.jpg",
+      description: "Elegant and sophisticated with classic beauty and refined features"
     },
   ]
 
-  const handleAvatarChat = (avatarId: number) => {
-    console.log("Chat with avatar:", avatarId)
-    // Navigate to chat or open chat modal
+  const handleAvatarEdit = (avatarId: number) => {
+    const avatar = recentAvatars.find(a => a.id === avatarId)
+    if (avatar) {
+      setSelectedAvatar(avatar)
+      setIsEditModalOpen(true)
+    }
   }
 
-  const handleAvatarCreate = (avatarId: number) => {
-    console.log("Create similar avatar:", avatarId)
-    setActiveTab("create")
+  const handleAvatarShare = (avatarId: number) => {
+    console.log("Share avatar:", avatarId)
+    // Implement share functionality
   }
 
   const stats = [
@@ -240,18 +246,18 @@ export default function DashboardPage() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-                      {recentAvatars.filter(avatar => avatar.style === "Realistic").map((avatar) => (
-                        <AvatarCard
-                          key={avatar.id}
-                          name={avatar.name}
-                          description={avatar.description}
-                          image={avatar.image}
-                          onChat={() => handleAvatarChat(avatar.id)}
-                          onCreate={() => handleAvatarCreate(avatar.id)}
-                        />
-                      ))}
-                    </div>
+                     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                       {recentAvatars.filter(avatar => avatar.style === "Realistic").map((avatar) => (
+                         <AvatarCard
+                           key={avatar.id}
+                           name={avatar.name}
+                           description={avatar.description}
+                           image={avatar.image}
+                           onEdit={() => handleAvatarEdit(avatar.id)}
+                           onShare={() => handleAvatarShare(avatar.id)}
+                         />
+                       ))}
+                     </div>
                   </CardContent>
                 </Card>
 
@@ -322,6 +328,15 @@ export default function DashboardPage() {
           </main>
         </div>
       </div>
+
+      {/* Edit Modal */}
+      {selectedAvatar && (
+        <AvatarEditModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          avatar={selectedAvatar}
+        />
+      )}
     </div>
   )
 }

@@ -118,8 +118,8 @@ export default function Landing() {
                 name={model.name}
                 description={model.description}
                 image={model.image}
-                onChat={() => handleChat(model.name)}
-                onCreate={() => handleCreate(model.name)}
+                onEdit={() => handleChat(model.name)}
+                onShare={() => handleCreate(model.name)}
               />
             </div>
           ))}

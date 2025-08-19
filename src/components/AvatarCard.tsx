@@ -7,11 +7,11 @@ interface AvatarCardProps {
   name: string
   description: string
   image: string
-  onChat: () => void
-  onCreate: () => void
+  onEdit: () => void
+  onShare: () => void
 }
 
-export function AvatarCard({ name, description, image, onChat, onCreate }: AvatarCardProps) {
+export function AvatarCard({ name, description, image, onEdit, onShare }: AvatarCardProps) {
   return (
     <Card className="group relative overflow-hidden bg-card border-border hover:shadow-warm transition-all duration-500 hover:-translate-y-2 hover:scale-105 animate-flirty cursor-pointer">
       <div className="aspect-[3/4] relative overflow-hidden">
@@ -50,19 +50,19 @@ export function AvatarCard({ name, description, image, onChat, onCreate }: Avata
               size="sm" 
               variant="destructive"
               className="bg-destructive hover:bg-destructive/90 text-destructive-foreground flex-1 animate-glow-pulse group-hover:scale-105 transition-transform duration-200"
-              onClick={onChat}
+              onClick={onEdit}
             >
               <MessageCircle className="w-4 h-4 mr-1" />
-              Chat
+              Edit
             </Button>
             <Button 
               size="sm" 
               variant="outline"
               className="border-white/20 text-white hover:bg-white/10 flex-1 group-hover:border-primary/50 group-hover:bg-primary/10 group-hover:scale-105 transition-all duration-200"
-              onClick={onCreate}
+              onClick={onShare}
             >
               <Heart className="w-4 h-4 mr-1 group-hover:text-primary transition-colors duration-200" />
-              Create
+              Share
             </Button>
           </div>
         </div>
