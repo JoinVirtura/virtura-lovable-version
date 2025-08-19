@@ -26,23 +26,22 @@ export const Hero = () => {
 
             <div>
               <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-foreground leading-tight mb-6">
-                AI Porn
-                <span className="block bg-gradient-warm bg-clip-text text-transparent">Generator</span>
+                Virtura
+                <span className="block bg-gradient-warm bg-clip-text text-transparent">AI Avatars</span>
               </h1>
               
               <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-2xl">
-                Take control of your XXX sex fantasies and create uncensored free AI porn with best AI porn generator. 
-                Ready to create your own interactive AI porn, hentai, furry, anime nudes and more.
+                Turn ordinary selfies or portraits into hyper-realistic, brand-ready avatars using advanced AI — instantly, beautifully, and securely. Virtura empowers professionals, creators, and brands to create studio-quality, high-performance digital avatars — no design or editing skills required.
               </p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
                 size="lg" 
-                className="px-8 py-6 text-lg font-bold bg-destructive hover:bg-destructive/90 text-destructive-foreground shadow-neon transition-all duration-300 hover:scale-105"
+                className="px-8 py-6 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-neon transition-all duration-300 hover:scale-105"
               >
-                <Heart className="mr-3 h-6 w-6" />
-                Try For Free
+                <Sparkles className="mr-3 h-6 w-6" />
+                Create Avatar
               </Button>
               
               <Button 
@@ -64,10 +63,10 @@ export const Hero = () => {
                 <Zap className="w-4 h-4 mr-2" />
                 Instant Generation
               </Badge>
-              <Badge variant="secondary" className="px-4 py-2 bg-card/60 border-border/30">
-                <Camera className="w-4 h-4 mr-2" />
-                4K Quality
-              </Badge>
+                <Badge variant="secondary" className="px-4 py-2 bg-card/60 border-border/30">
+                  <Camera className="w-4 h-4 mr-2" />
+                  Studio Quality
+                </Badge>
             </div>
           </div>
 
@@ -83,10 +82,10 @@ export const Hero = () => {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                 <div className="absolute bottom-8 left-8 right-8">
-                  <Badge className="bg-destructive/90 text-destructive-foreground border-0 mb-3 animate-glow-pulse">
-                    Realistic Style
+                  <Badge className="bg-primary/90 text-primary-foreground border-0 mb-3 animate-glow-pulse">
+                    Professional Style
                   </Badge>
-                  <p className="text-white/90 text-sm font-medium">Premium AI Models</p>
+                  <p className="text-white/90 text-sm font-medium">Studio Quality Avatars</p>
                 </div>
                 <div className="absolute top-6 right-6 w-3 h-3 bg-destructive rounded-full animate-pulse" />
               </div>
@@ -100,8 +99,8 @@ export const Hero = () => {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                 <div className="absolute bottom-6 left-6 right-6">
-                  <Badge className="bg-primary/90 text-primary-foreground border-0 text-sm animate-glow-pulse">
-                    Brunette Style
+                  <Badge className="bg-secondary/90 text-secondary-foreground border-0 text-sm animate-glow-pulse">
+                    Creative Style
                   </Badge>
                 </div>
                 <div className="absolute top-4 right-4 w-2 h-2 bg-primary rounded-full animate-pulse" />
@@ -116,8 +115,8 @@ export const Hero = () => {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                 <div className="absolute bottom-6 left-6 right-6">
-                  <Badge className="bg-secondary/90 text-secondary-foreground border-0 text-sm animate-glow-pulse">
-                    Artistic Style
+                  <Badge className="bg-accent/90 text-accent-foreground border-0 text-sm animate-glow-pulse">
+                    Brand Ready
                   </Badge>
                 </div>
                 <div className="absolute top-4 right-4 w-2 h-2 bg-secondary rounded-full animate-pulse" />
