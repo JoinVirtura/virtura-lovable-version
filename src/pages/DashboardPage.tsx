@@ -28,6 +28,7 @@ import {
 } from "lucide-react"
 import { CreateAvatar } from "@/components/CreateAvatar"
 import { AvatarStudio } from "@/components/AvatarStudio"
+import { AvatarCard } from "@/components/AvatarCard"
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("overview")
@@ -38,11 +39,49 @@ export default function DashboardPage() {
   }
 
   const recentAvatars = [
-    { id: 1, name: "Aria", style: "Realistic", status: "completed", image: "/src/assets/model-aria.jpg" },
-    { id: 2, name: "Luna", style: "Anime", status: "processing", image: "/src/assets/model-luna.jpg" },
-    { id: 3, name: "Maya", style: "Realistic", status: "completed", image: "/src/assets/model-maya.jpg" },
-    { id: 4, name: "Nova", style: "Fantasy", status: "completed", image: "/src/assets/model-nova.jpg" },
+    { 
+      id: 1, 
+      name: "Aria", 
+      style: "Realistic", 
+      status: "completed", 
+      image: "/src/assets/model-aria.jpg",
+      description: "Stunning professional headshot with natural lighting and perfect composition"
+    },
+    { 
+      id: 2, 
+      name: "Luna", 
+      style: "Realistic", 
+      status: "completed", 
+      image: "/src/assets/model-luna.jpg",
+      description: "Elegant portrait with soft features and captivating eyes"
+    },
+    { 
+      id: 3, 
+      name: "Maya", 
+      style: "Realistic", 
+      status: "completed", 
+      image: "/src/assets/model-maya.jpg",
+      description: "Bold and confident look with striking facial features"
+    },
+    { 
+      id: 4, 
+      name: "Nova", 
+      style: "Realistic", 
+      status: "completed", 
+      image: "/src/assets/model-nova.jpg",
+      description: "Sophisticated and mysterious with intense gaze"
+    },
   ]
+
+  const handleAvatarChat = (avatarId: number) => {
+    console.log("Chat with avatar:", avatarId)
+    // Navigate to chat or open chat modal
+  }
+
+  const handleAvatarCreate = (avatarId: number) => {
+    console.log("Create similar avatar:", avatarId)
+    setActiveTab("create")
+  }
 
   const stats = [
     { label: "Total Avatars", value: "24", change: "+12%", icon: User },
@@ -201,37 +240,16 @@ export default function DashboardPage() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                      {recentAvatars.map((avatar) => (
-                        <div key={avatar.id} className="group relative overflow-hidden rounded-lg border bg-card transition-all hover:shadow-lg">
-                          <div className="aspect-[3/4] overflow-hidden">
-                            <img
-                              src={avatar.image}
-                              alt={avatar.name}
-                              className="h-full w-full object-cover transition-transform group-hover:scale-105"
-                            />
-                          </div>
-                          <div className="p-3">
-                            <div className="flex items-center justify-between mb-2">
-                              <h4 className="font-semibold">{avatar.name}</h4>
-                              <Badge variant={avatar.status === 'completed' ? 'default' : 'secondary'}>
-                                {avatar.status}
-                              </Badge>
-                            </div>
-                            <p className="text-sm text-muted-foreground mb-3">{avatar.style}</p>
-                            <div className="flex gap-1">
-                              <Button size="icon" variant="ghost" className="h-8 w-8">
-                                <Heart className="h-3 w-3" />
-                              </Button>
-                              <Button size="icon" variant="ghost" className="h-8 w-8">
-                                <Download className="h-3 w-3" />
-                              </Button>
-                              <Button size="icon" variant="ghost" className="h-8 w-8">
-                                <Share2 className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
+                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                      {recentAvatars.filter(avatar => avatar.style === "Realistic").map((avatar) => (
+                        <AvatarCard
+                          key={avatar.id}
+                          name={avatar.name}
+                          description={avatar.description}
+                          image={avatar.image}
+                          onChat={() => handleAvatarChat(avatar.id)}
+                          onCreate={() => handleAvatarCreate(avatar.id)}
+                        />
                       ))}
                     </div>
                   </CardContent>
