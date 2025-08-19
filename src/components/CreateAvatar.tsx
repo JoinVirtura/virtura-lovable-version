@@ -171,20 +171,6 @@ export const CreateAvatar = () => {
                 </TabsContent>
               </Tabs>
 
-              {/* Generate Button */}
-              <Card className="p-6 bg-gradient-card border-border/50">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-semibold text-foreground">Ready to Generate</h4>
-                    <p className="text-sm text-muted-foreground">Cost: 1 credit</p>
-                  </div>
-                  <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-glow px-8">
-                    <Sparkles className="w-5 h-5 mr-2" />
-                    Generate Avatar
-                  </Button>
-                </div>
-              </Card>
-
               {/* Advanced Customization */}
               <Card className="p-6 bg-gradient-card border-border/50">
                 <div className="flex items-center justify-between mb-6">
@@ -408,22 +394,32 @@ export const CreateAvatar = () => {
                   </div>
                 </div>
               </Card>
+
+              {/* Generate Button */}
+              <Card className="p-6 bg-gradient-card border-border/50">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-semibold text-foreground">Ready to Generate</h4>
+                    <p className="text-sm text-muted-foreground">Cost: 1 credit</p>
+                  </div>
+                  <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-glow px-8">
+                    <Sparkles className="w-5 h-5 mr-2" />
+                    Generate Avatar
+                  </Button>
+                </div>
+              </Card>
             </div>
 
              {/* Right Panel - Preview */}
              <div className="xl:col-span-2 space-y-6">
                 <Card className="p-8 bg-gradient-card border-border/50 h-fit">
                   <h3 className="font-semibold text-xl mb-6 text-foreground">Preview</h3>
-                  <div className="w-full bg-background/30 rounded-xl border-2 border-dashed border-border/30 flex items-center justify-center" style={{ aspectRatio: '3/4', minHeight: '400px', maxHeight: '600px' }}>
-                    <div className="text-center">
-                      <Sparkles className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                      <p className="text-lg text-muted-foreground mb-2">
-                        Your avatar will appear here
-                      </p>
-                      <p className="text-sm text-muted-foreground/70">
-                        Configure your settings and click Generate
-                      </p>
-                    </div>
+                  <div className="w-full bg-background/30 rounded-xl border-2 border-dashed border-border/30 flex items-center justify-center overflow-hidden" style={{ aspectRatio: '3/4', minHeight: '400px', maxHeight: '600px' }}>
+                    <img 
+                      src="/src/assets/preview-avatar.jpg" 
+                      alt="Preview Avatar"
+                      className="w-full h-full object-cover rounded-xl"
+                    />
                   </div>
                 </Card>
 
