@@ -245,8 +245,75 @@ export const CreateAvatar = () => {
                                   <SelectItem key={light} value={light}>{light}</SelectItem>
                                 ))}
                               </SelectContent>
-                            </Select>
-                          </div>
+                             </Select>
+                           </div>
+                         </div>
+                       </div>
+                     </div>
+
+                    <Separator className="my-6 bg-border/50" />
+
+                    {/* Additional Advanced Features */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Pose & Expression */}
+                      <div className="space-y-4">
+                        <h4 className="font-medium text-foreground">Pose & Expression</h4>
+                        <div>
+                          <label className="text-sm font-medium text-foreground mb-2 block">Facial Expression</label>
+                          <Select>
+                            <SelectTrigger className="bg-background/50 border-border/50">
+                              <SelectValue placeholder="Select expression" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {["Neutral", "Smiling", "Serious", "Confident", "Mysterious", "Playful"].map((expr) => (
+                                <SelectItem key={expr} value={expr}>{expr}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-foreground mb-2 block">Body Pose</label>
+                          <Select>
+                            <SelectTrigger className="bg-background/50 border-border/50">
+                              <SelectValue placeholder="Select pose" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {["Portrait", "Full Body", "Three Quarter", "Profile", "Action", "Seated"].map((pose) => (
+                                <SelectItem key={pose} value={pose}>{pose}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      {/* Clothing & Style */}
+                      <div className="space-y-4">
+                        <h4 className="font-medium text-foreground">Clothing & Style</h4>
+                        <div>
+                          <label className="text-sm font-medium text-foreground mb-2 block">Outfit Style</label>
+                          <Select>
+                            <SelectTrigger className="bg-background/50 border-border/50">
+                              <SelectValue placeholder="Select outfit" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {["Casual", "Business", "Elegant", "Sporty", "Bohemian", "Gothic", "Futuristic"].map((outfit) => (
+                                <SelectItem key={outfit} value={outfit}>{outfit}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-foreground mb-2 block">Accessories</label>
+                          <Select>
+                            <SelectTrigger className="bg-background/50 border-border/50">
+                              <SelectValue placeholder="Select accessories" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {["None", "Jewelry", "Glasses", "Hat", "Watch", "Earrings", "Necklace"].map((acc) => (
+                                <SelectItem key={acc} value={acc}>{acc}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </div>
                       </div>
                     </div>
@@ -352,22 +419,32 @@ export const CreateAvatar = () => {
               </Card>
             </div>
 
-            {/* Right Panel - Preview */}
-            <div className="xl:col-span-2 space-y-6">
-              <Card className="p-8 bg-gradient-card border-border/50">
-                <h3 className="font-semibold text-xl mb-6 text-foreground">Preview</h3>
-                <div className="aspect-[3/4] bg-background/30 rounded-xl border-2 border-dashed border-border/30 flex items-center justify-center min-h-[500px]">
-                  <div className="text-center">
-                    <Sparkles className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-lg text-muted-foreground mb-2">
-                      Your avatar will appear here
-                    </p>
-                    <p className="text-sm text-muted-foreground/70">
-                      Configure your settings and click Generate
-                    </p>
-                  </div>
-                </div>
-              </Card>
+             {/* Right Panel - Preview */}
+             <div className="xl:col-span-2 space-y-6">
+               <Card className="p-8 bg-gradient-card border-border/50 h-fit">
+                 <h3 className="font-semibold text-xl mb-6 text-foreground">Preview</h3>
+                 <div className="w-full bg-background/30 rounded-xl border-2 border-dashed border-border/30 flex items-center justify-center" style={{ aspectRatio: '3/4', minHeight: '400px', maxHeight: '600px' }}>
+                   <div className="text-center">
+                     <Sparkles className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                     <p className="text-lg text-muted-foreground mb-2">
+                       Your avatar will appear here
+                     </p>
+                     <p className="text-sm text-muted-foreground/70">
+                       Configure your settings and click Generate
+                     </p>
+                   </div>
+                 </div>
+               </Card>
+
+               {/* Generation History */}
+               <Card className="p-6 bg-gradient-card border-border/50">
+                 <h3 className="font-semibold text-lg mb-4 text-foreground">Recent Generations</h3>
+                 <div className="space-y-3">
+                   <div className="text-center text-muted-foreground">
+                     <p className="text-sm">Your recent avatars will appear here</p>
+                   </div>
+                 </div>
+               </Card>
 
             </div>
           </div>
