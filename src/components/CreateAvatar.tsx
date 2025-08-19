@@ -39,9 +39,9 @@ export const CreateAvatar = () => {
       <div className="container mx-auto px-6 py-8">
         <div className="max-w-7xl mx-auto">
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 xl:grid-cols-5 gap-8">
             {/* Left Panel - Creation Tools */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="xl:col-span-3 space-y-6">
               <Tabs defaultValue="generate" className="w-full">
                 <TabsList className="grid w-full grid-cols-3 bg-card/50 backdrop-blur-sm">
                   <TabsTrigger value="generate" className="data-[state=active]:bg-primary/20">
@@ -74,6 +74,30 @@ export const CreateAvatar = () => {
                           onClick={() => setSelectedStyle(style.id)}
                         >
                           {style.name}
+                        </Button>
+                      ))}
+                    </div>
+                  </Card>
+
+                  {/* Quick Presets */}
+                  <Card className="p-6 bg-gradient-card border-border/50">
+                    <h3 className="font-semibold text-lg mb-4 text-foreground">Quick Presets</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {[
+                        { name: "Elegant Model", style: "Professional photoshoot style" },
+                        { name: "Beach Goddess", style: "Tropical paradise vibes" },
+                        { name: "Business Executive", style: "Corporate professional" },
+                        { name: "Fantasy Warrior", style: "Epic fantasy character" }
+                      ].map((preset) => (
+                        <Button
+                          key={preset.name}
+                          variant="outline"
+                          className="h-16 justify-start border-border/50 hover:border-primary/30 hover:bg-primary/5"
+                        >
+                          <div className="text-left">
+                            <p className="font-medium">{preset.name}</p>
+                            <p className="text-xs text-muted-foreground">{preset.style}</p>
+                          </div>
                         </Button>
                       ))}
                     </div>
@@ -329,42 +353,22 @@ export const CreateAvatar = () => {
             </div>
 
             {/* Right Panel - Preview */}
-            <div className="space-y-6">
-              <Card className="p-6 bg-gradient-card border-border/50">
-                <h3 className="font-semibold text-lg mb-4 text-foreground">Preview</h3>
-                <div className="aspect-square bg-background/30 rounded-lg border-2 border-dashed border-border/30 flex items-center justify-center">
+            <div className="xl:col-span-2 space-y-6">
+              <Card className="p-8 bg-gradient-card border-border/50">
+                <h3 className="font-semibold text-xl mb-6 text-foreground">Preview</h3>
+                <div className="aspect-[3/4] bg-background/30 rounded-xl border-2 border-dashed border-border/30 flex items-center justify-center min-h-[500px]">
                   <div className="text-center">
-                    <Sparkles className="w-12 h-12 text-muted-foreground mx-auto mb-2" />
-                    <p className="text-sm text-muted-foreground">
+                    <Sparkles className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-lg text-muted-foreground mb-2">
                       Your avatar will appear here
+                    </p>
+                    <p className="text-sm text-muted-foreground/70">
+                      Configure your settings and click Generate
                     </p>
                   </div>
                 </div>
               </Card>
 
-              {/* Quick Presets */}
-              <Card className="p-6 bg-gradient-card border-border/50">
-                <h3 className="font-semibold text-lg mb-4 text-foreground">Quick Presets</h3>
-                <div className="space-y-3">
-                  {[
-                    { name: "Elegant Model", style: "Professional photoshoot style" },
-                    { name: "Beach Goddess", style: "Tropical paradise vibes" },
-                    { name: "Business Executive", style: "Corporate professional" },
-                    { name: "Fantasy Warrior", style: "Epic fantasy character" }
-                  ].map((preset) => (
-                    <Button
-                      key={preset.name}
-                      variant="outline"
-                      className="w-full justify-start border-border/50 hover:border-primary/30 hover:bg-primary/5"
-                    >
-                      <div className="text-left">
-                        <p className="font-medium">{preset.name}</p>
-                        <p className="text-xs text-muted-foreground">{preset.style}</p>
-                      </div>
-                    </Button>
-                  ))}
-                </div>
-              </Card>
             </div>
           </div>
         </div>
