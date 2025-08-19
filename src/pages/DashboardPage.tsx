@@ -104,8 +104,11 @@ export default function DashboardPage() {
           <div className="flex h-full flex-col">
             <div className="flex h-14 items-center border-b px-6">
               <div className="flex items-center gap-2 font-semibold">
-                <Sparkles className="h-6 w-6 text-primary" />
-                <span className="text-lg">AI Studio</span>
+                <svg className="h-6 w-6 text-primary" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2L13.09 8.26L17 4L15.74 9.74L22 12L15.74 14.26L17 20L13.09 15.74L12 22L10.91 15.74L7 20L8.26 14.26L2 12L8.26 9.74L7 4L10.91 8.26L12 2Z" fill="currentColor"/>
+                  <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" strokeWidth="1.5"/>
+                </svg>
+                <span className="text-lg">Virtura</span>
               </div>
             </div>
             

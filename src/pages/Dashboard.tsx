@@ -16,7 +16,7 @@ export default function Dashboard() {
           <header className="h-14 flex items-center justify-between px-6 border-b border-border bg-card">
             <div className="flex items-center gap-4">
               <SidebarTrigger />
-              <h1 className="text-xl font-bold text-foreground">AI Avatar Studio</h1>
+              <h1 className="text-xl font-bold text-foreground">Virtura</h1>
             </div>
           </header>
 
