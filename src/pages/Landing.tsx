@@ -1,6 +1,5 @@
-import { Button } from "@/components/ui/button"
-import { AvatarCard } from "@/components/AvatarCard"
-import { Zap } from "lucide-react"
+import { Hero } from "@/components/Hero";
+import { AvatarCard } from "@/components/AvatarCard";
 
 // Import avatar images
 import avatar1 from "@/assets/avatar-1.jpg"
@@ -70,31 +69,12 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="flex items-center justify-between p-4 border-b border-border">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 text-foreground">
-            <span className="text-2xl font-bold">{`{B}`}</span>
-            <span className="text-sm">2 Characters</span>
-          </div>
-        </div>
-        
-        <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
-          <Zap className="w-4 h-4 mr-2" />
-          Join Premium
-        </Button>
-      </header>
+      {/* Hero Section */}
+      <Hero />
 
-      {/* Main Content */}
-      <main className="container mx-auto px-6 py-8">
-        {/* Hero Section */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-            Explore the Best XXX AI Porn Maker Free
-          </h1>
-        </div>
+      {/* Avatar Grid Section */}
+      <section className="container mx-auto px-6 py-16">
 
-        {/* Avatar Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {avatars.map((avatar) => (
             <AvatarCard
@@ -107,7 +87,7 @@ export default function Landing() {
             />
           ))}
         </div>
-      </main>
+      </section>
     </div>
   )
 }
