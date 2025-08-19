@@ -39,9 +39,9 @@ export const CreateAvatar = () => {
       <div className="container mx-auto px-6 py-8">
         <div className="max-w-7xl mx-auto">
 
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 xl:grid-cols-5 gap-8">
             {/* Left Panel - Creation Tools */}
-            <div className="xl:col-span-2 space-y-6">
+            <div className="xl:col-span-3 space-y-6">
               <Tabs defaultValue="generate" className="w-full">
                 <TabsList className="grid w-full grid-cols-3 bg-card/50 backdrop-blur-sm">
                   <TabsTrigger value="generate" className="data-[state=active]:bg-primary/20">
@@ -122,18 +122,18 @@ export const CreateAvatar = () => {
                     </div>
                   </Card>
 
-                  {/* Advanced Customization and Advanced Features */}
-                  <div className="grid lg:grid-cols-2 gap-8 w-full">
-                    {/* Advanced Customization */}
-                    <Card className="p-6 bg-gradient-card border-border/50 w-full">
-                      <div className="flex items-center justify-between mb-6">
-                        <h3 className="font-semibold text-lg text-foreground">Advanced Customization</h3>
-                        <Settings className="w-5 h-5 text-muted-foreground" />
-                      </div>
-                      
-                      <div className="space-y-6">
+                  {/* Advanced Customization */}
+                  <Card className="p-6 bg-gradient-card border-border/50">
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="font-semibold text-lg text-foreground">Advanced Customization</h3>
+                      <Settings className="w-5 h-5 text-muted-foreground" />
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Basic Attributes */}
+                      <div className="space-y-4">
                         <div>
-                          <label className="text-sm font-medium text-foreground mb-3 block">Gender</label>
+                          <label className="text-sm font-medium text-foreground mb-2 block">Gender</label>
                           <div className="flex space-x-2">
                             {genders.map((gender) => (
                               <Button
@@ -153,7 +153,7 @@ export const CreateAvatar = () => {
                         </div>
 
                         <div>
-                          <label className="text-sm font-medium text-foreground mb-3 block">Age Range</label>
+                          <label className="text-sm font-medium text-foreground mb-2 block">Age Range</label>
                           <Select value={selectedAge} onValueChange={setSelectedAge}>
                             <SelectTrigger className="bg-background/50 border-border/50">
                               <SelectValue />
@@ -167,7 +167,7 @@ export const CreateAvatar = () => {
                         </div>
 
                         <div>
-                          <label className="text-sm font-medium text-foreground mb-3 block">Body Type</label>
+                          <label className="text-sm font-medium text-foreground mb-2 block">Body Type</label>
                           <Select>
                             <SelectTrigger className="bg-background/50 border-border/50">
                               <SelectValue placeholder="Select body type" />
@@ -179,9 +179,12 @@ export const CreateAvatar = () => {
                             </SelectContent>
                           </Select>
                         </div>
+                      </div>
 
+                      {/* Appearance Details */}
+                      <div className="space-y-4">
                         <div>
-                          <label className="text-sm font-medium text-foreground mb-3 block">Hair</label>
+                          <label className="text-sm font-medium text-foreground mb-2 block">Hair</label>
                           <div className="grid grid-cols-2 gap-2">
                             <Select>
                               <SelectTrigger className="bg-background/50 border-border/50">
@@ -207,7 +210,7 @@ export const CreateAvatar = () => {
                         </div>
 
                         <div>
-                          <label className="text-sm font-medium text-foreground mb-3 block">Eyes</label>
+                          <label className="text-sm font-medium text-foreground mb-2 block">Eyes</label>
                           <Select>
                             <SelectTrigger className="bg-background/50 border-border/50">
                               <SelectValue placeholder="Eye color" />
@@ -221,7 +224,7 @@ export const CreateAvatar = () => {
                         </div>
 
                         <div>
-                          <label className="text-sm font-medium text-foreground mb-3 block">Setting</label>
+                          <label className="text-sm font-medium text-foreground mb-2 block">Setting</label>
                           <div className="grid grid-cols-2 gap-2">
                             <Select>
                               <SelectTrigger className="bg-background/50 border-border/50">
@@ -242,266 +245,119 @@ export const CreateAvatar = () => {
                                   <SelectItem key={light} value={light}>{light}</SelectItem>
                                 ))}
                               </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
+                             </Select>
+                           </div>
+                         </div>
+                       </div>
+                     </div>
 
-                        <div>
-                          <h4 className="font-medium text-foreground mb-3">Pose & Expression</h4>
-                          <div className="space-y-3">
-                            <div>
-                              <label className="text-sm font-medium text-foreground mb-2 block">Facial Expression</label>
-                              <Select>
-                                <SelectTrigger className="bg-background/50 border-border/50">
-                                  <SelectValue placeholder="Select expression" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {["Neutral", "Smiling", "Serious", "Confident", "Mysterious", "Playful"].map((expr) => (
-                                    <SelectItem key={expr} value={expr}>{expr}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            <div>
-                              <label className="text-sm font-medium text-foreground mb-2 block">Body Pose</label>
-                              <Select>
-                                <SelectTrigger className="bg-background/50 border-border/50">
-                                  <SelectValue placeholder="Select pose" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {["Portrait", "Full Body", "Three Quarter", "Profile", "Action", "Seated"].map((pose) => (
-                                    <SelectItem key={pose} value={pose}>{pose}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </div>
-                        </div>
+                    <Separator className="my-6 bg-border/50" />
 
+                    {/* Additional Advanced Features */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Pose & Expression */}
+                      <div className="space-y-4">
+                        <h4 className="font-medium text-foreground">Pose & Expression</h4>
                         <div>
-                          <h4 className="font-medium text-foreground mb-3">Clothing & Style</h4>
-                          <div className="space-y-3">
-                            <div>
-                              <label className="text-sm font-medium text-foreground mb-2 block">Outfit Style</label>
-                              <Select>
-                                <SelectTrigger className="bg-background/50 border-border/50">
-                                  <SelectValue placeholder="Select outfit" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {["Casual", "Business", "Elegant", "Sporty", "Bohemian", "Gothic", "Futuristic"].map((outfit) => (
-                                    <SelectItem key={outfit} value={outfit}>{outfit}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            <div>
-                              <label className="text-sm font-medium text-foreground mb-2 block">Accessories</label>
-                              <Select>
-                                <SelectTrigger className="bg-background/50 border-border/50">
-                                  <SelectValue placeholder="Select accessories" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {["None", "Jewelry", "Glasses", "Hat", "Watch", "Earrings", "Necklace"].map((acc) => (
-                                    <SelectItem key={acc} value={acc}>{acc}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className="text-sm font-medium text-foreground mb-3 block">
-                            Creativity Level: {Math.round(creativity[0] * 100)}%
-                          </label>
-                          <Slider
-                            value={creativity}
-                            onValueChange={setCreativity}
-                            max={1}
-                            min={0}
-                            step={0.1}
-                            className="w-full"
-                          />
-                          <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                            <span>Conservative</span>
-                            <span>Experimental</span>
-                          </div>
-                        </div>
-                      </div>
-                    </Card>
-
-                    {/* Advanced Features */}
-                    <Card className="p-6 bg-gradient-card border-border/50 w-full">
-                      <div className="flex items-center justify-between mb-6">
-                        <h3 className="font-semibold text-lg text-foreground">Advanced Features</h3>
-                        <Sparkles className="w-5 h-5 text-muted-foreground" />
-                      </div>
-                      
-                      <div className="space-y-6">
-                        <div>
-                          <h4 className="font-medium text-foreground mb-3">Pose & Expression</h4>
-                          <div className="space-y-3">
-                            <div>
-                              <label className="text-sm font-medium text-foreground mb-2 block">Facial Expression</label>
-                              <Select>
-                                <SelectTrigger className="bg-background/50 border-border/50">
-                                  <SelectValue placeholder="Select expression" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {["Neutral", "Smiling", "Serious", "Confident", "Mysterious", "Playful"].map((expr) => (
-                                    <SelectItem key={expr} value={expr}>{expr}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            <div>
-                              <label className="text-sm font-medium text-foreground mb-2 block">Body Pose</label>
-                              <Select>
-                                <SelectTrigger className="bg-background/50 border-border/50">
-                                  <SelectValue placeholder="Select pose" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {["Portrait", "Full Body", "Three Quarter", "Profile", "Action", "Seated"].map((pose) => (
-                                    <SelectItem key={pose} value={pose}>{pose}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div>
-                          <h4 className="font-medium text-foreground mb-3">Clothing & Style</h4>
-                          <div className="space-y-3">
-                            <div>
-                              <label className="text-sm font-medium text-foreground mb-2 block">Outfit Style</label>
-                              <Select>
-                                <SelectTrigger className="bg-background/50 border-border/50">
-                                  <SelectValue placeholder="Select outfit" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {["Casual", "Business", "Elegant", "Sporty", "Bohemian", "Gothic", "Futuristic"].map((outfit) => (
-                                    <SelectItem key={outfit} value={outfit}>{outfit}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            <div>
-                              <label className="text-sm font-medium text-foreground mb-2 block">Accessories</label>
-                              <Select>
-                                <SelectTrigger className="bg-background/50 border-border/50">
-                                  <SelectValue placeholder="Select accessories" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {["None", "Jewelry", "Glasses", "Hat", "Watch", "Earrings", "Necklace"].map((acc) => (
-                                    <SelectItem key={acc} value={acc}>{acc}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div>
-                          <h4 className="font-medium text-foreground mb-3">AI Generation Settings</h4>
-                          <div className="space-y-3">
-                            <label className="text-sm font-medium text-foreground mb-3 block">
-                              Creativity Level: {Math.round(creativity[0] * 100)}%
-                            </label>
-                            <Slider
-                              value={creativity}
-                              onValueChange={setCreativity}
-                              max={1}
-                              min={0}
-                              step={0.1}
-                              className="w-full"
-                            />
-                            <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                              <span>Conservative</span>
-                              <span>Experimental</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className="text-sm font-medium text-foreground mb-3 block">AI Enhancement</label>
-                          <div className="space-y-2">
-                            <Button variant="outline" className="w-full justify-start border-border/50">
-                              <Sparkles className="w-4 h-4 mr-2" />
-                              Auto Enhance
-                            </Button>
-                            <Button variant="outline" className="w-full justify-start border-border/50">
-                              <Wand2 className="w-4 h-4 mr-2" />
-                              Style Transfer
-                            </Button>
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className="text-sm font-medium text-foreground mb-3 block">Quality Settings</label>
-                          <div className="space-y-3">
-                            <div className="flex items-center justify-between">
-                              <span className="text-sm">HD Quality</span>
-                              <Button variant="outline" size="sm">Enable</Button>
-                            </div>
-                            <div className="flex items-center justify-between">
-                              <span className="text-sm">4K Resolution</span>
-                              <Button variant="outline" size="sm">Pro</Button>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className="text-sm font-medium text-foreground mb-3 block">Batch Generation</label>
+                          <label className="text-sm font-medium text-foreground mb-2 block">Facial Expression</label>
                           <Select>
                             <SelectTrigger className="bg-background/50 border-border/50">
-                              <SelectValue placeholder="Number of variations" />
+                              <SelectValue placeholder="Select expression" />
                             </SelectTrigger>
                             <SelectContent>
-                              {["1", "2", "4", "6", "8"].map((num) => (
-                                <SelectItem key={num} value={num}>{num} variations</SelectItem>
+                              {["Neutral", "Smiling", "Serious", "Confident", "Mysterious", "Playful"].map((expr) => (
+                                <SelectItem key={expr} value={expr}>{expr}</SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
                         </div>
-
                         <div>
-                          <label className="text-sm font-medium text-foreground mb-3 block">Export Options</label>
+                          <label className="text-sm font-medium text-foreground mb-2 block">Body Pose</label>
                           <Select>
                             <SelectTrigger className="bg-background/50 border-border/50">
-                              <SelectValue placeholder="File format" />
+                              <SelectValue placeholder="Select pose" />
                             </SelectTrigger>
                             <SelectContent>
-                              {["PNG", "JPG", "WEBP", "PSD"].map((format) => (
-                                <SelectItem key={format} value={format}>{format}</SelectItem>
+                              {["Portrait", "Full Body", "Three Quarter", "Profile", "Action", "Seated"].map((pose) => (
+                                <SelectItem key={pose} value={pose}>{pose}</SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
                         </div>
                       </div>
-                    </Card>
-                  </div>
 
-                  {/* Resolution Settings */}
-                  <Card className="p-6 bg-gradient-card border-border/50">
-                    <h3 className="font-semibold text-lg mb-4 text-foreground">Generation Settings</h3>
-                    <div>
-                      <label className="text-sm font-medium text-foreground mb-2 block">Resolution</label>
-                      <div className="grid grid-cols-3 gap-2">
-                        {["512x512", "1024x1024", "1536x1536"].map((res) => (
-                          <Button
-                            key={res}
-                            variant={resolution === res ? "default" : "outline"}
-                            size="sm"
-                            className={resolution === res 
-                              ? 'bg-primary hover:bg-primary/90' 
-                              : 'border-border/50 hover:border-primary/30'
-                            }
-                            onClick={() => setResolution(res)}
-                          >
-                            {res}
-                          </Button>
-                        ))}
+                      {/* Clothing & Style */}
+                      <div className="space-y-4">
+                        <h4 className="font-medium text-foreground">Clothing & Style</h4>
+                        <div>
+                          <label className="text-sm font-medium text-foreground mb-2 block">Outfit Style</label>
+                          <Select>
+                            <SelectTrigger className="bg-background/50 border-border/50">
+                              <SelectValue placeholder="Select outfit" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {["Casual", "Business", "Elegant", "Sporty", "Bohemian", "Gothic", "Futuristic"].map((outfit) => (
+                                <SelectItem key={outfit} value={outfit}>{outfit}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-foreground mb-2 block">Accessories</label>
+                          <Select>
+                            <SelectTrigger className="bg-background/50 border-border/50">
+                              <SelectValue placeholder="Select accessories" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {["None", "Jewelry", "Glasses", "Hat", "Watch", "Earrings", "Necklace"].map((acc) => (
+                                <SelectItem key={acc} value={acc}>{acc}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Separator className="my-6 bg-border/50" />
+
+                    {/* AI Settings */}
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-sm font-medium text-foreground mb-2 block">
+                          Creativity Level: {Math.round(creativity[0] * 100)}%
+                        </label>
+                        <Slider
+                          value={creativity}
+                          onValueChange={setCreativity}
+                          max={1}
+                          min={0}
+                          step={0.1}
+                          className="w-full"
+                        />
+                        <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                          <span>Conservative</span>
+                          <span>Experimental</span>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="text-sm font-medium text-foreground mb-2 block">Resolution</label>
+                        <div className="grid grid-cols-3 gap-2">
+                          {["512x512", "1024x1024", "1536x1536"].map((res) => (
+                            <Button
+                              key={res}
+                              variant={resolution === res ? "default" : "outline"}
+                              size="sm"
+                              className={resolution === res 
+                                ? 'bg-primary hover:bg-primary/90' 
+                                : 'border-border/50 hover:border-primary/30'
+                              }
+                              onClick={() => setResolution(res)}
+                            >
+                              {res}
+                            </Button>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </Card>
@@ -564,7 +420,7 @@ export const CreateAvatar = () => {
             </div>
 
              {/* Right Panel - Preview */}
-             <div className="xl:col-span-1 space-y-6">
+             <div className="xl:col-span-2 space-y-6">
                <Card className="p-8 bg-gradient-card border-border/50 h-fit">
                  <h3 className="font-semibold text-xl mb-6 text-foreground">Preview</h3>
                  <div className="w-full bg-background/30 rounded-xl border-2 border-dashed border-border/30 flex items-center justify-center" style={{ aspectRatio: '3/4', minHeight: '400px', maxHeight: '600px' }}>
@@ -580,10 +436,20 @@ export const CreateAvatar = () => {
                  </div>
                </Card>
 
-              </div>
+               {/* Generation History */}
+               <Card className="p-6 bg-gradient-card border-border/50">
+                 <h3 className="font-semibold text-lg mb-4 text-foreground">Recent Generations</h3>
+                 <div className="space-y-3">
+                   <div className="text-center text-muted-foreground">
+                     <p className="text-sm">Your recent avatars will appear here</p>
+                   </div>
+                 </div>
+               </Card>
+
             </div>
           </div>
         </div>
-      </section>
-    );
-  };
+      </div>
+    </section>
+  );
+};
