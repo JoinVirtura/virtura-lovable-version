@@ -19,18 +19,18 @@ export const Hero = () => {
         <div className="grid lg:grid-cols-2 gap-16 items-center min-h-screen">
           {/* Left Content */}
           <div className="space-y-8">
-            <Badge className="bg-primary/20 text-primary border-primary/50 px-6 py-3 text-base font-semibold">
+            <Badge className="bg-white/10 text-white border-white/30 px-6 py-3 text-base font-semibold backdrop-blur-sm">
               <Crown className="w-5 h-5 mr-3" />
               Revolutionary AI Technology
             </Badge>
 
             <div>
-              <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-foreground leading-tight mb-6">
+              <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white leading-tight mb-6 drop-shadow-2xl">
                 Virtura
-                <span className="block bg-gradient-warm bg-clip-text text-transparent">AI Avatars</span>
+                <span className="block bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent drop-shadow-lg">AI Avatars</span>
               </h1>
               
-              <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-2xl">
+              <p className="text-xl md:text-2xl text-white/90 leading-relaxed max-w-2xl drop-shadow-lg font-medium">
                 Turn ordinary selfies or portraits into hyper-realistic, brand-ready avatars using advanced AI — instantly, beautifully, and securely. Virtura empowers professionals, creators, and brands to create studio-quality, high-performance digital avatars — no design or editing skills required.
               </p>
             </div>
@@ -38,7 +38,7 @@ export const Hero = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
                 size="lg" 
-                className="px-8 py-6 text-lg font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-neon transition-all duration-300 hover:scale-105"
+                className="px-8 py-6 text-lg font-bold bg-white text-black hover:bg-white/90 shadow-2xl transition-all duration-300 hover:scale-105"
               >
                 <Sparkles className="mr-3 h-6 w-6" />
                 Create Avatar
@@ -47,7 +47,7 @@ export const Hero = () => {
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="px-8 py-6 text-lg font-semibold border-border/50 text-foreground hover:bg-muted/20 transition-all duration-300 group"
+                className="px-8 py-6 text-lg font-semibold border-white/30 text-white hover:bg-white/10 backdrop-blur-sm transition-all duration-300 group"
               >
                 Discover
                 <ChevronDown className="ml-3 h-5 w-5 group-hover:translate-y-1 transition-transform" />
@@ -55,18 +55,18 @@ export const Hero = () => {
             </div>
 
             <div className="flex flex-wrap gap-4 pt-4">
-              <Badge variant="secondary" className="px-4 py-2 bg-card/60 border-border/30">
+              <Badge variant="secondary" className="px-4 py-2 bg-white/10 border-white/20 text-white backdrop-blur-sm">
                 <Lock className="w-4 h-4 mr-2" />
                 Private & Secure
               </Badge>
-              <Badge variant="secondary" className="px-4 py-2 bg-card/60 border-border/30">
+              <Badge variant="secondary" className="px-4 py-2 bg-white/10 border-white/20 text-white backdrop-blur-sm">
                 <Zap className="w-4 h-4 mr-2" />
                 Instant Generation
               </Badge>
-                <Badge variant="secondary" className="px-4 py-2 bg-card/60 border-border/30">
-                  <Camera className="w-4 h-4 mr-2" />
-                  Studio Quality
-                </Badge>
+              <Badge variant="secondary" className="px-4 py-2 bg-white/10 border-white/20 text-white backdrop-blur-sm">
+                <Camera className="w-4 h-4 mr-2" />
+                Studio Quality
+              </Badge>
             </div>
           </div>
 
