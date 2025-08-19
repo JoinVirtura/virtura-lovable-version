@@ -44,35 +44,35 @@ export default function DashboardPage() {
   const recentAvatars = [
     { 
       id: 1, 
-      name: "Haley", 
+      name: "Aurora", 
       style: "Realistic", 
       status: "completed", 
-      image: "/src/assets/model-haley.jpg",
-      description: "Radiant and cheerful with bright eyes and warm personality"
+      image: "/src/assets/model-aurora.jpg",
+      description: "Sophisticated redhead with emerald eyes and elegant charm"
     },
     { 
       id: 2, 
-      name: "Iris", 
+      name: "Bella", 
       style: "Realistic", 
       status: "completed", 
-      image: "/src/assets/model-iris.jpg",
-      description: "Artistic and creative with unique features and expressive gaze"
+      image: "/src/assets/model-bella.jpg",
+      description: "Confident beauty with natural curls and warm golden glow"
     },
     { 
       id: 3, 
-      name: "Jenna", 
+      name: "Chloe", 
       style: "Realistic", 
       status: "completed", 
-      image: "/src/assets/model-jenna.jpg",
-      description: "Bold and striking with confident posture and magnetic presence"
+      image: "/src/assets/model-chloe.jpg",
+      description: "Mysterious platinum blonde with captivating blue eyes"
     },
     { 
       id: 4, 
-      name: "Lena", 
+      name: "Diana", 
       style: "Realistic", 
       status: "completed", 
-      image: "/src/assets/model-lena.jpg",
-      description: "Graceful and elegant with timeless beauty and sophisticated charm"
+      image: "/src/assets/model-diana.jpg",
+      description: "Serene and graceful with gentle smile and natural beauty"
     },
   ]
 
