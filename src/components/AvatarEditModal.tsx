@@ -53,134 +53,152 @@ export function AvatarEditModal({ isOpen, onClose, avatar }: AvatarEditModalProp
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl h-[80vh] overflow-auto">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold">Edit {avatar.name}</DialogTitle>
+      <DialogContent className="max-w-7xl h-[90vh] overflow-hidden">
+        <DialogHeader className="pb-6">
+          <DialogTitle className="text-3xl font-bold gradient-text">Edit {avatar.name}</DialogTitle>
         </DialogHeader>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Preview Section */}
-          <div className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Eye className="w-5 h-5" />
+        <div className="grid grid-cols-1 xl:grid-cols-5 gap-8 h-full overflow-hidden">
+          {/* Preview Section - Larger */}
+          <div className="xl:col-span-3 space-y-6">
+            <Card className="h-full">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-3 text-xl">
+                  <Eye className="w-6 h-6" />
                   Preview
+                  <Badge variant="secondary" className="ml-auto">High Quality</Badge>
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="aspect-[3/4] relative overflow-hidden rounded-lg bg-gradient-to-br from-primary/10 to-secondary/10">
+              <CardContent className="h-full pb-6">
+                <div className="relative w-full h-[600px] overflow-hidden rounded-xl bg-gradient-to-br from-primary/5 to-secondary/5 border border-border/50">
                   <img 
                     src={avatar.image} 
                     alt={avatar.name}
-                    className="w-full h-full object-cover transition-all duration-300"
+                    className="w-full h-full object-cover transition-all duration-500 hover:scale-105"
                     style={{
-                      filter: `brightness(${brightness[0]}%) contrast(${contrast[0]}%) saturate(${saturation[0]}%)`
+                      filter: `brightness(${brightness[0]}%) contrast(${contrast[0]}%) saturate(${saturation[0]}%)`,
+                      imageRendering: 'crisp-edges'
                     }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <div className="bg-black/70 backdrop-blur-sm rounded-lg p-3">
+                      <p className="text-white text-sm font-medium">
+                        Photorealistic Quality • {brightness[0]}% Brightness • {contrast[0]}% Contrast • {saturation[0]}% Saturation
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Controls Section */}
-          <div className="space-y-4">
+          {/* Controls Section - Better organized */}
+          <div className="xl:col-span-2 space-y-6 overflow-y-auto">
             <Tabs defaultValue="appearance" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="appearance">Appearance</TabsTrigger>
-                <TabsTrigger value="mood">Mood</TabsTrigger>
-                <TabsTrigger value="effects">Effects</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-3 mb-6">
+                <TabsTrigger value="appearance" className="text-sm">Appearance</TabsTrigger>
+                <TabsTrigger value="mood" className="text-sm">Mood</TabsTrigger>
+                <TabsTrigger value="effects" className="text-sm">Effects</TabsTrigger>
               </TabsList>
 
-              <TabsContent value="appearance" className="space-y-4">
+              <TabsContent value="appearance" className="space-y-6">
                 <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
+                  <CardHeader className="pb-4">
+                    <CardTitle className="flex items-center gap-2 text-lg">
                       <Palette className="w-5 h-5" />
                       Appearance Settings
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Brightness</label>
+                  <CardContent className="space-y-8">
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <label className="text-sm font-semibold">Brightness</label>
+                        <span className="text-sm font-mono bg-muted px-2 py-1 rounded">{brightness[0]}%</span>
+                      </div>
                       <Slider
                         value={brightness}
                         onValueChange={setBrightness}
-                        max={200}
-                        min={50}
+                        max={150}
+                        min={70}
                         step={1}
                         className="w-full"
                       />
-                      <span className="text-xs text-muted-foreground">{brightness[0]}%</span>
                     </div>
 
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Contrast</label>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <label className="text-sm font-semibold">Contrast</label>
+                        <span className="text-sm font-mono bg-muted px-2 py-1 rounded">{contrast[0]}%</span>
+                      </div>
                       <Slider
                         value={contrast}
                         onValueChange={setContrast}
-                        max={200}
-                        min={50}
+                        max={150}
+                        min={70}
                         step={1}
                         className="w-full"
                       />
-                      <span className="text-xs text-muted-foreground">{contrast[0]}%</span>
                     </div>
 
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Saturation</label>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <label className="text-sm font-semibold">Saturation</label>
+                        <span className="text-sm font-mono bg-muted px-2 py-1 rounded">{saturation[0]}%</span>
+                      </div>
                       <Slider
                         value={saturation}
                         onValueChange={setSaturation}
-                        max={200}
-                        min={0}
+                        max={130}
+                        min={80}
                         step={1}
                         className="w-full"
                       />
-                      <span className="text-xs text-muted-foreground">{saturation[0]}%</span>
                     </div>
 
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Style</label>
-                      <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-4">
+                      <label className="text-sm font-semibold">Style Preset</label>
+                      <div className="grid grid-cols-2 gap-3">
                         {styles.map((styleOption) => (
                           <Button
                             key={styleOption.id}
                             variant={style === styleOption.id ? "default" : "outline"}
-                            size="sm"
+                            size="lg"
                             onClick={() => setStyle(styleOption.id)}
-                            className="justify-center"
+                            className="h-12 text-sm font-medium"
                           >
                             {styleOption.label}
                           </Button>
                         ))}
                       </div>
+                      <p className="text-xs text-muted-foreground text-center">
+                        Realistic maintains photorealistic quality
+                      </p>
                     </div>
                   </CardContent>
                 </Card>
               </TabsContent>
 
-              <TabsContent value="mood" className="space-y-4">
+              <TabsContent value="mood" className="space-y-6">
                 <Card>
-                  <CardHeader>
-                    <CardTitle>Mood & Expression</CardTitle>
+                  <CardHeader className="pb-4">
+                    <CardTitle className="text-lg">Mood & Expression</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 gap-4">
                       {moods.map((moodOption) => {
                         const Icon = moodOption.icon
                         return (
                           <Button
                             key={moodOption.id}
                             variant={mood === moodOption.id ? "default" : "outline"}
-                            className="h-16 flex-col gap-2"
+                            className="h-20 flex-col gap-3 text-sm"
                             onClick={() => setMood(moodOption.id)}
                           >
-                            <div className={`w-6 h-6 rounded-full ${moodOption.color} flex items-center justify-center`}>
-                              <Icon className="w-4 h-4 text-white" />
+                            <div className={`w-8 h-8 rounded-full ${moodOption.color} flex items-center justify-center shadow-lg`}>
+                              <Icon className="w-5 h-5 text-white" />
                             </div>
-                            <span className="text-xs">{moodOption.label}</span>
+                            <span className="font-medium">{moodOption.label}</span>
                           </Button>
                         )
                       })}
@@ -189,49 +207,54 @@ export function AvatarEditModal({ isOpen, onClose, avatar }: AvatarEditModalProp
                 </Card>
               </TabsContent>
 
-              <TabsContent value="effects" className="space-y-4">
+              <TabsContent value="effects" className="space-y-6">
                 <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
+                  <CardHeader className="pb-4">
+                    <CardTitle className="flex items-center gap-2 text-lg">
                       <Zap className="w-5 h-5" />
-                      Special Effects
+                      Enhancement Effects
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-3">
-                    <Button variant="outline" className="w-full justify-start">
-                      <Sparkles className="w-4 h-4 mr-2" />
-                      Add Glow Effect
+                  <CardContent className="space-y-4">
+                    <Button variant="outline" className="w-full justify-start h-12 text-sm">
+                      <Sparkles className="w-5 h-5 mr-3" />
+                      Professional Glow Effect
                     </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <Sun className="w-4 h-4 mr-2" />
-                      Enhance Lighting
+                    <Button variant="outline" className="w-full justify-start h-12 text-sm">
+                      <Sun className="w-5 h-5 mr-3" />
+                      Studio Lighting Enhancement
                     </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <Eye className="w-4 h-4 mr-2" />
-                      Sharpen Details
+                    <Button variant="outline" className="w-full justify-start h-12 text-sm">
+                      <Eye className="w-5 h-5 mr-3" />
+                      Ultra HD Detail Sharpening
                     </Button>
+                    <div className="mt-6 p-4 bg-muted/50 rounded-lg border">
+                      <p className="text-xs text-muted-foreground text-center">
+                        All effects preserve photorealistic quality and maintain high resolution output
+                      </p>
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>
             </Tabs>
 
-            {/* Action Buttons */}
-            <div className="flex gap-2 pt-4">
-              <Button variant="outline" className="flex-1">
+            {/* Action Buttons - Better spacing */}
+            <div className="grid grid-cols-2 gap-3 pt-6 border-t">
+              <Button variant="outline" className="h-12">
                 <Undo className="w-4 h-4 mr-2" />
                 Reset
               </Button>
-              <Button variant="outline" className="flex-1">
+              <Button variant="outline" className="h-12">
                 <Download className="w-4 h-4 mr-2" />
-                Download
+                Export HD
               </Button>
-              <Button variant="outline" className="flex-1">
+              <Button variant="outline" className="h-12">
                 <Share2 className="w-4 h-4 mr-2" />
                 Share
               </Button>
-              <Button className="flex-1">
+              <Button className="h-12 bg-gradient-to-r from-primary to-primary/80">
                 <Save className="w-4 h-4 mr-2" />
-                Save
+                Save Changes
               </Button>
             </div>
           </div>
