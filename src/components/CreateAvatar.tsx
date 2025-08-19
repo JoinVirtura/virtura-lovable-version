@@ -35,19 +35,9 @@ export const CreateAvatar = () => {
   const lighting = ["Natural", "Studio", "Dramatic", "Cinematic", "Neon"];
 
   return (
-    <section className="min-h-screen bg-gradient-hero pt-20">
-      <div className="container mx-auto px-6 py-12">
+    <section className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/5 pt-8">
+      <div className="container mx-auto px-6 py-8">
         <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="font-display text-4xl md:text-6xl font-bold text-foreground mb-6">
-              Create Your
-              <span className="block text-primary">Perfect Avatar</span>
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Design hyper-realistic avatars with advanced AI customization. Every detail under your control.
-            </p>
-          </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left Panel - Creation Tools */}
