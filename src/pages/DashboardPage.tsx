@@ -1,4 +1,3 @@
-
 import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -9,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
+import { useNavigate } from "react-router-dom"
 import { 
   Search, 
   Plus, 
@@ -23,13 +23,19 @@ import {
   MoreHorizontal,
   Bell,
   Calendar,
-  Activity
+  Activity,
+  LogOut
 } from "lucide-react"
 import { CreateAvatar } from "@/components/CreateAvatar"
 import { AvatarStudio } from "@/components/AvatarStudio"
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("overview")
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    navigate('/')
+  }
 
   const recentAvatars = [
     { id: 1, name: "Aria", style: "Realistic", status: "completed", image: "/src/assets/model-aria.jpg" },
@@ -102,7 +108,7 @@ export default function DashboardPage() {
             </div>
             
             <div className="border-t p-4">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 mb-3">
                 <Avatar className="h-8 w-8">
                   <AvatarImage src="/src/assets/avatar-1.jpg" />
                   <AvatarFallback>U</AvatarFallback>
@@ -111,10 +117,16 @@ export default function DashboardPage() {
                   <p className="font-medium">User</p>
                   <p className="text-muted-foreground">Pro Plan</p>
                 </div>
-                <Button size="icon" variant="ghost" className="h-6 w-6">
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
               </div>
+              <Button
+                size="sm"
+                variant="outline"
+                className="w-full justify-start text-destructive hover:text-destructive"
+                onClick={handleLogout}
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </Button>
             </div>
           </div>
         </div>

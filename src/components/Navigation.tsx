@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, Sparkles, User, Settings, LogOut } from "lucide-react";
 import { 
   DropdownMenu,
@@ -17,6 +17,7 @@ const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -34,10 +35,7 @@ const Navigation = () => {
 
   const navItems = [
     { name: "Home", href: "/" },
-    { name: "Create", href: "/create" },
     { name: "Dashboard", href: "/dashboard" },
-    { name: "Gallery", href: "/gallery" },
-    { name: "Pricing", href: "#pricing" },
   ];
 
   return (
@@ -78,44 +76,20 @@ const Navigation = () => {
             ))}
           </div>
 
-          {/* User Menu */}
+          {/* Desktop Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src="/src/assets/avatar-1.jpg" alt="User" />
-                    <AvatarFallback>U</AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">User</p>
-                    <p className="text-xs leading-none text-muted-foreground">
-                      user@example.com
-                    </p>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link to="/dashboard" className="cursor-pointer">
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Dashboard</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Button 
+              variant="outline"
+              onClick={() => navigate('/dashboard')}
+            >
+              Demo
+            </Button>
+            <Button variant="outline">
+              Login
+            </Button>
+            <Button>
+              Sign Up
+            </Button>
           </div>
 
           {/* Mobile menu button */}
@@ -149,15 +123,23 @@ const Navigation = () => {
                   {item.name}
                 </Link>
               ))}
-              <div className="border-t border-border/50 pt-3 mt-3">
-                <Link
-                  to="/dashboard"
-                  className="flex items-center px-3 py-2 rounded-md font-medium text-muted-foreground hover:text-primary hover:bg-primary/5"
-                  onClick={() => setIsOpen(false)}
+              <div className="border-t border-border/50 pt-3 mt-3 space-y-2">
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => {
+                    navigate('/dashboard');
+                    setIsOpen(false);
+                  }}
                 >
-                  <User className="mr-2 h-4 w-4" />
-                  Dashboard
-                </Link>
+                  Demo
+                </Button>
+                <Button variant="outline" className="w-full">
+                  Login
+                </Button>
+                <Button className="w-full">
+                  Sign Up
+                </Button>
               </div>
             </div>
           </div>
