@@ -12,7 +12,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 
-const items = [
+const navigationItems = [
   { title: "Create", url: "/create", icon: Heart },
   { title: "Explore", url: "/", icon: Search },
   { title: "Chat", url: "/chat", icon: MessageCircle },
@@ -52,7 +52,7 @@ export function AppSidebar() {
         <SidebarGroup className="px-0">
           <SidebarGroupContent>
             <SidebarMenu className="space-y-2">
-              {items.map((item) => (
+              {navigationItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild className="h-14 justify-center">
                     <NavLink 
