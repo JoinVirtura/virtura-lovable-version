@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles, Users, Zap, Crown, Lock, Camera, Video, Heart, ChevronDown } from "lucide-react";
@@ -26,12 +27,10 @@ export const Hero = () => {
 
             <div>
               <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight mb-6 drop-shadow-2xl">
-                <span className="block text-white">Turn selfies</span>
-                <span className="block text-white">into</span>
-                <span className="block bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent drop-shadow-lg">studio-</span>
-                <span className="block bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent drop-shadow-lg">quality AI</span>
-                <span className="block bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent drop-shadow-lg">avatars</span>
-                <span className="block text-white text-4xl md:text-5xl lg:text-6xl">— instantly.</span>
+                <span className="block text-white">Create</span>
+                <span className="block bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent drop-shadow-lg">stunning</span>
+                <span className="block bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent drop-shadow-lg">AI avatars</span>
+                <span className="block text-white text-4xl md:text-5xl lg:text-6xl">instantly.</span>
               </h1>
               
               <p className="text-xl md:text-2xl text-white/90 leading-relaxed max-w-2xl drop-shadow-lg font-medium">
