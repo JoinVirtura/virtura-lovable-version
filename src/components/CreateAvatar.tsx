@@ -38,7 +38,9 @@ export const CreateAvatar = () => {
     { name: "Aurora", image: "/src/assets/model-aurora.jpg", description: "Sophisticated redhead with emerald eyes" },
     { name: "Bella", image: "/src/assets/model-bella.jpg", description: "Confident beauty with natural curls" },
     { name: "Chloe", image: "/src/assets/model-chloe.jpg", description: "Mysterious platinum blonde" },
-    { name: "Diana", image: "/src/assets/model-diana.jpg", description: "Serene and graceful" }
+    { name: "Diana", image: "/src/assets/model-diana.jpg", description: "Serene and graceful" },
+    { name: "Jade", image: "/src/assets/model-jade.jpg", description: "Elegant Asian beauty in red silk" },
+    { name: "Valentina", image: "/src/assets/model-valentina.jpg", description: "Radiant Latina with bronze curls" }
   ];
 
   return (
@@ -427,7 +429,7 @@ export const CreateAvatar = () => {
                 <Card className="p-6 bg-gradient-card border-border/50">
                   <h3 className="font-semibold text-lg mb-4 text-foreground">Recent Avatars</h3>
                   <div className="grid grid-cols-2 gap-3">
-                    {recentAvatars.map((avatar, index) => (
+                    {recentAvatars.slice(0, 6).map((avatar, index) => (
                       <div key={index} className="group cursor-pointer">
                         <div className="aspect-[3/4] rounded-lg overflow-hidden bg-background/30 mb-2">
                           <img 
