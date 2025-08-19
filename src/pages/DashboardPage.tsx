@@ -47,7 +47,7 @@ export default function DashboardPage() {
       name: "Aurora", 
       style: "Realistic", 
       status: "completed", 
-      image: "/src/assets/model-aurora.jpg",
+      image: "src/assets/model-aurora.jpg",
       description: "Sophisticated redhead with emerald eyes and elegant charm"
     },
     { 
@@ -55,7 +55,7 @@ export default function DashboardPage() {
       name: "Bella", 
       style: "Realistic", 
       status: "completed", 
-      image: "/src/assets/model-bella.jpg",
+      image: "src/assets/model-bella.jpg",
       description: "Confident beauty with natural curls and warm golden glow"
     },
     { 
@@ -63,7 +63,7 @@ export default function DashboardPage() {
       name: "Chloe", 
       style: "Realistic", 
       status: "completed", 
-      image: "/src/assets/model-chloe.jpg",
+      image: "src/assets/model-chloe.jpg",
       description: "Mysterious platinum blonde with captivating blue eyes"
     },
     { 
@@ -71,7 +71,7 @@ export default function DashboardPage() {
       name: "Diana", 
       style: "Realistic", 
       status: "completed", 
-      image: "/src/assets/model-diana.jpg",
+      image: "src/assets/model-diana.jpg",
       description: "Serene and graceful with gentle smile and natural beauty"
     },
   ]
