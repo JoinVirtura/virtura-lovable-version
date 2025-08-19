@@ -4,6 +4,8 @@ import { Navigation } from "@/components/Navigation";
 import { Hero } from "@/components/Hero";
 import { Features } from "@/components/Features";
 import { Gallery } from "@/components/Gallery";
+import { CreateAvatar } from "@/components/CreateAvatar";
+import { AvatarStudio } from "@/components/AvatarStudio";
 
 const Index = () => {
   return (
@@ -11,7 +13,9 @@ const Index = () => {
       <Navigation />
       <Hero />
       <Features />
+      <CreateAvatar />
       <Gallery />
+      <AvatarStudio />
     </div>
   );
 };
