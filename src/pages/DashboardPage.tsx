@@ -31,6 +31,13 @@ import { AvatarStudio } from "@/components/AvatarStudio"
 import { AvatarCard } from "@/components/AvatarCard"
 import { AvatarEditModal } from "@/components/AvatarEditModal"
 
+// Import avatar images
+import auroraImg from "@/assets/model-aurora.jpg"
+import bellaImg from "@/assets/model-bella.jpg"
+import chloeImg from "@/assets/model-chloe.jpg"
+import dianaImg from "@/assets/model-diana.jpg"
+import userAvatarImg from "@/assets/avatar-1.jpg"
+
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("overview")
   const [selectedAvatar, setSelectedAvatar] = useState<any>(null)
@@ -47,7 +54,7 @@ export default function DashboardPage() {
       name: "Aurora", 
       style: "Realistic", 
       status: "completed", 
-      image: "src/assets/model-aurora.jpg",
+      image: auroraImg,
       description: "Sophisticated redhead with emerald eyes and elegant charm"
     },
     { 
@@ -55,7 +62,7 @@ export default function DashboardPage() {
       name: "Bella", 
       style: "Realistic", 
       status: "completed", 
-      image: "src/assets/model-bella.jpg",
+      image: bellaImg,
       description: "Confident beauty with natural curls and warm golden glow"
     },
     { 
@@ -63,7 +70,7 @@ export default function DashboardPage() {
       name: "Chloe", 
       style: "Realistic", 
       status: "completed", 
-      image: "src/assets/model-chloe.jpg",
+      image: chloeImg,
       description: "Mysterious platinum blonde with captivating blue eyes"
     },
     { 
@@ -71,7 +78,7 @@ export default function DashboardPage() {
       name: "Diana", 
       style: "Realistic", 
       status: "completed", 
-      image: "src/assets/model-diana.jpg",
+      image: dianaImg,
       description: "Serene and graceful with gentle smile and natural beauty"
     },
   ]
@@ -158,7 +165,7 @@ export default function DashboardPage() {
             <div className="border-t p-4">
               <div className="flex items-center gap-3 mb-3">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src="/src/assets/avatar-1.jpg" />
+                  <AvatarImage src={userAvatarImg} />
                   <AvatarFallback>U</AvatarFallback>
                 </Avatar>
                 <div className="flex-1 text-sm">
