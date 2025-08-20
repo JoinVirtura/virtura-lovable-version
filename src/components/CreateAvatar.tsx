@@ -9,6 +9,15 @@ import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
 import { Upload, Sparkles, Wand2, Camera, Video, Settings, Play } from "lucide-react";
 
+// Import avatar images
+import auroraImg from "@/assets/model-aurora.jpg";
+import bellaImg from "@/assets/model-bella.jpg";
+import chloeImg from "@/assets/model-chloe.jpg";
+import dianaImg from "@/assets/model-diana.jpg";
+import jadeImg from "@/assets/model-jade.jpg";
+import valentinaImg from "@/assets/model-valentina.jpg";
+import previewAvatarImg from "@/assets/preview-avatar.jpg";
+
 export const CreateAvatar = () => {
   const [selectedStyle, setSelectedStyle] = useState("realistic");
   const [selectedGender, setSelectedGender] = useState("woman");
@@ -35,12 +44,12 @@ export const CreateAvatar = () => {
   const lighting = ["Natural", "Studio", "Dramatic", "Cinematic", "Neon"];
 
   const recentAvatars = [
-    { name: "Aurora", image: "/src/assets/model-aurora.jpg", description: "Sophisticated redhead with emerald eyes" },
-    { name: "Bella", image: "/src/assets/model-bella.jpg", description: "Confident beauty with natural curls" },
-    { name: "Chloe", image: "/src/assets/model-chloe.jpg", description: "Mysterious platinum blonde" },
-    { name: "Diana", image: "/src/assets/model-diana.jpg", description: "Serene and graceful" },
-    { name: "Jade", image: "/src/assets/model-jade.jpg", description: "Elegant Asian beauty in red silk" },
-    { name: "Valentina", image: "/src/assets/model-valentina.jpg", description: "Radiant Latina with bronze curls" }
+    { name: "Aurora", image: auroraImg, description: "Sophisticated redhead with emerald eyes" },
+    { name: "Bella", image: bellaImg, description: "Confident beauty with natural curls" },
+    { name: "Chloe", image: chloeImg, description: "Mysterious platinum blonde" },
+    { name: "Diana", image: dianaImg, description: "Serene and graceful" },
+    { name: "Jade", image: jadeImg, description: "Elegant Asian beauty in red silk" },
+    { name: "Valentina", image: valentinaImg, description: "Radiant Latina with bronze curls" }
   ];
 
   return (
@@ -418,7 +427,7 @@ export const CreateAvatar = () => {
                   <h3 className="font-semibold text-xl mb-6 text-foreground">Preview</h3>
                   <div className="w-full bg-background/30 rounded-xl border-2 border-dashed border-border/30 flex items-center justify-center overflow-hidden" style={{ aspectRatio: '3/4', minHeight: '400px', maxHeight: '600px' }}>
                     <img 
-                      src="/src/assets/preview-avatar.jpg" 
+                      src={previewAvatarImg} 
                       alt="Preview Avatar"
                       className="w-full h-full object-cover rounded-xl"
                     />
