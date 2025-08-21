@@ -93,7 +93,7 @@ function buildEnhancedPrompt(params: GenerateAvatarRequest): string {
   if (params.style) {
     switch (params.style.toLowerCase()) {
       case 'photorealistic':
-        prompt = "award-winning professional portrait photography, hyperrealistic, Canon 5D Mark IV, 85mm f/1.4 lens, studio lighting setup, three-point lighting, key light, fill light, hair light, perfect skin texture with visible pores and natural imperfections, subsurface scattering, micro-details, professional color grading, shot on Kodak Portra 400, shallow depth of field, bokeh background, crystal clear eyes with catchlights, natural makeup, flawless composition";
+        prompt = "award-winning professional headshot photography, hyperrealistic portrait, Canon 5D Mark IV with 85mm f/1.4 lens, Profoto studio lighting, three-point lighting setup with softbox key light and rim lighting, perfect skin texture showing natural pores and micro-details, subsurface scattering, film grain texture, shot on Kodak Portra 400 film stock, shallow depth of field f/1.4, creamy bokeh background, crystal clear eyes with perfect catchlights, natural but flawless makeup, professional retouching, commercial photography quality, ultra-sharp focus on eyes, professional color grading with lifted shadows and warm highlights";
         break;
       case 'realistic':
         prompt += ", photorealistic portrait, professional photo, 50mm lens, natural skin texture, subtle film grain";
