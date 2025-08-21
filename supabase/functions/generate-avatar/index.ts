@@ -1,3 +1,4 @@
+
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
@@ -41,8 +42,9 @@ serve(async (req) => {
     const enhancedPrompt = buildEnhancedPrompt(body);
     console.log('Enhanced prompt:', enhancedPrompt);
 
-    // Map resolution to size
+    // Map resolution to size - use standard DALL-E sizes
     const size = mapResolutionToSize(body.resolution || 'HD');
+    console.log('Using size:', size);
 
     const response = await fetch('https://api.openai.com/v1/images/generations', {
       method: 'POST',
@@ -51,15 +53,16 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-image-1',
+        model: 'dall-e-3',
         prompt: enhancedPrompt,
         n: 1,
         size: size,
-        quality: 'high',
-        output_format: 'png',
-        background: 'auto'
+        quality: 'hd',
+        style: 'vivid'
       }),
     });
+
+    console.log('OpenAI response status:', response.status);
 
     if (!response.ok) {
       let errorPayload: any = null;
@@ -81,14 +84,14 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    console.log('OpenAI response received');
+    console.log('OpenAI response received successfully');
 
-    // Extract base64 image data (gpt-image-1 returns base64)
-    const base64Image = data.data[0].b64_json;
+    // DALL-E 3 returns URL, not base64
+    const imageUrl = data.data[0].url;
     
     return new Response(JSON.stringify({ 
       success: true,
-      image: `data:image/png;base64,${base64Image}`,
+      image: imageUrl,
       prompt: enhancedPrompt
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -174,11 +177,14 @@ function buildEnhancedPrompt(params: GenerateAvatarRequest): string {
 function mapResolutionToSize(resolution: string): string {
   switch (resolution.toLowerCase()) {
     case 'sd':
+    case '512x512':
       return '1024x1024';
     case 'hd':
-      return '1536x1024';
+    case '1024x1024':
+      return '1024x1024';
     case '4k':
-      return '1536x1024'; // gpt-image-1 max size
+    case '1536x1536':
+      return '1024x1792'; // DALL-E 3 supported size
     default:
       return '1024x1024';
   }
