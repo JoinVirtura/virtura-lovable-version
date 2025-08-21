@@ -35,6 +35,7 @@ serve(async (req) => {
 
     const body: GenerateAvatarRequest = await req.json();
     console.log('Generate avatar request:', body);
+    console.log('OpenAI key length:', openAIApiKey.length);
 
     // Build enhanced prompt from user selections
     const enhancedPrompt = buildEnhancedPrompt(body);
@@ -61,9 +62,22 @@ serve(async (req) => {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      console.error('OpenAI API error:', error);
-      throw new Error(`OpenAI API error: ${error.error?.message || 'Unknown error'}`);
+      let errorPayload: any = null;
+      try {
+        errorPayload = await response.json();
+      } catch (_) {
+        // No JSON body available
+      }
+      const message = errorPayload?.error?.message || `OpenAI API error (${response.status})`;
+      console.error('OpenAI API error:', errorPayload || response.statusText);
+      // Return structured error so client can show real reason instead of generic 500
+      return new Response(JSON.stringify({
+        success: false,
+        error: message
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      });
     }
 
     const data = await response.json();
