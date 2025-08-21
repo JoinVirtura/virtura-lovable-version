@@ -30,7 +30,13 @@ serve(async (req) => {
 
   try {
     const env = Deno.env.toObject();
-    const openAIApiKey = env.OPENAI_API_KEY || env.OPENAI_KEY || env.OPENAI_SECRET || env.OPENAI;
+    console.log('All environment variables:', Object.keys(env));
+    console.log('Looking for OpenAI key...');
+    
+    const openAIApiKey = env.OPENAI_API_KEY;
+    console.log('OPENAI_API_KEY found:', !!openAIApiKey);
+    console.log('OPENAI_API_KEY length:', openAIApiKey?.length || 0);
+    
     if (!openAIApiKey) {
       console.error('Missing OpenAI API key. Available env keys:', Object.keys(env));
       return new Response(JSON.stringify({
@@ -44,7 +50,6 @@ serve(async (req) => {
 
     const body: GenerateAvatarRequest = await req.json();
     console.log('Generate avatar request:', body);
-    console.log('OpenAI key length:', openAIApiKey.length);
 
     // Build enhanced prompt from user selections
     const enhancedPrompt = buildEnhancedPrompt(body);
