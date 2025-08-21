@@ -92,8 +92,11 @@ function buildEnhancedPrompt(params: GenerateAvatarRequest): string {
   // Add style context
   if (params.style) {
     switch (params.style.toLowerCase()) {
+      case 'photorealistic':
+        prompt += ", ultra-photorealistic, DSLR photo, 85mm lens, shallow depth of field, natural skin texture with pores, subsurface scattering, film grain, RAW photo, color graded, crisp details, catchlights in eyes";
+        break;
       case 'realistic':
-        prompt += ", photorealistic, high quality portrait photography";
+        prompt += ", photorealistic portrait, professional photo, 50mm lens, natural skin texture, subtle film grain";
         break;
       case 'artistic':
         prompt += ", artistic portrait, painterly style, creative interpretation";
@@ -145,8 +148,11 @@ function buildEnhancedPrompt(params: GenerateAvatarRequest): string {
     prompt += `, ${params.setting} background`;
   }
 
-  // Add quality enhancers
-  prompt += ", professional lighting, detailed, high resolution, stunning composition";
+  // Add quality enhancers and strong negative cues to ensure realism
+  prompt += ", professional studio lighting, detailed skin texture, pores, subsurface scattering, sharp focus, shallow depth of field, 85mm lens, DSLR, RAW photo, color graded, bokeh, stunning composition";
+
+  // Negative prompts to avoid non-realistic artifacts
+  prompt += ", no cartoon, no CGI, no illustration, no painting, no over-smooth skin, no plastic texture, no blurry, no text, no watermark, no extra fingers, no deformed";
 
   return prompt;
 }

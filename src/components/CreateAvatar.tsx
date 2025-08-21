@@ -21,7 +21,7 @@ import valentinaImg from "@/assets/model-valentina.jpg";
 import previewAvatarImg from "@/assets/preview-avatar.jpg";
 
 export const CreateAvatar = () => {
-  const [selectedStyle, setSelectedStyle] = useState("realistic");
+  const [selectedStyle, setSelectedStyle] = useState("photorealistic");
   const [selectedGender, setSelectedGender] = useState("woman");
   const [selectedAge, setSelectedAge] = useState("20s");
   const [creativity, setCreativity] = useState([0.7]);
@@ -79,6 +79,7 @@ export const CreateAvatar = () => {
   };
 
   const styles = [
+    { id: "photorealistic", name: "Photorealism Pro", gradient: "from-primary/90 to-primary/70" },
     { id: "realistic", name: "Realistic V2.1", gradient: "from-primary/80 to-primary/60" },
     { id: "anime", name: "Anime V2", gradient: "from-purple-500/80 to-pink-500/60" },
     { id: "furry", name: "Furry V2", gradient: "from-orange-500/80 to-yellow-500/60" },
