@@ -29,9 +29,17 @@ serve(async (req) => {
   }
 
   try {
-    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+    const env = Deno.env.toObject();
+    const openAIApiKey = env.OPENAI_API_KEY || env.OPENAI_KEY || env.OPENAI_SECRET || env.OPENAI;
     if (!openAIApiKey) {
-      throw new Error('OpenAI API key not configured');
+      console.error('Missing OpenAI API key. Available env keys:', Object.keys(env));
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'OpenAI API key not configured. Please set OPENAI_API_KEY in Supabase Edge Function secrets.'
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      });
     }
 
     const body: GenerateAvatarRequest = await req.json();
