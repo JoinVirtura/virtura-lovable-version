@@ -87,13 +87,13 @@ serve(async (req) => {
 });
 
 function buildEnhancedPrompt(params: GenerateAvatarRequest): string {
-  let prompt = params.prompt || "Beautiful avatar portrait";
+  let prompt = "hyperrealistic portrait photograph";
   
-  // Add style context
+  // Add style context with ultra-realistic focus
   if (params.style) {
     switch (params.style.toLowerCase()) {
       case 'photorealistic':
-        prompt += ", ultra-photorealistic, DSLR photo, 85mm lens, shallow depth of field, natural skin texture with pores, subsurface scattering, film grain, RAW photo, color graded, crisp details, catchlights in eyes";
+        prompt = "award-winning professional portrait photography, hyperrealistic, Canon 5D Mark IV, 85mm f/1.4 lens, studio lighting setup, three-point lighting, key light, fill light, hair light, perfect skin texture with visible pores and natural imperfections, subsurface scattering, micro-details, professional color grading, shot on Kodak Portra 400, shallow depth of field, bokeh background, crystal clear eyes with catchlights, natural makeup, flawless composition";
         break;
       case 'realistic':
         prompt += ", photorealistic portrait, professional photo, 50mm lens, natural skin texture, subtle film grain";
