@@ -1,1 +1,4 @@
 project_id = "ujaoziqnxhjqlmnvlxav"
+
+[functions.generate-avatar]
+verify_jwt = false
