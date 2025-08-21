@@ -7,7 +7,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
-import { Upload, Sparkles, Wand2, Camera, Video, Settings, Play } from "lucide-react";
+import { Upload, Sparkles, Wand2, Camera, Video, Settings, Play, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { AvatarService } from "@/services/avatarService";
 
 // Import avatar images
 import auroraImg from "@/assets/model-aurora.jpg";
@@ -21,9 +23,60 @@ import previewAvatarImg from "@/assets/preview-avatar.jpg";
 export const CreateAvatar = () => {
   const [selectedStyle, setSelectedStyle] = useState("realistic");
   const [selectedGender, setSelectedGender] = useState("woman");
-  const [selectedAge, setSelectedAge] = useState("25");
+  const [selectedAge, setSelectedAge] = useState("20s");
   const [creativity, setCreativity] = useState([0.7]);
   const [resolution, setResolution] = useState("1024x1024");
+  const [prompt, setPrompt] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const [selectedHairColor, setSelectedHairColor] = useState("");
+  const [selectedHairStyle, setSelectedHairStyle] = useState("");
+  const [selectedEyeColor, setSelectedEyeColor] = useState("");
+  const [selectedBodyType, setSelectedBodyType] = useState("");
+  const [selectedExpression, setSelectedExpression] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("");
+  const [selectedLighting, setSelectedLighting] = useState("");
+  const [selectedPose, setSelectedPose] = useState("");
+  const [selectedClothing, setSelectedClothing] = useState("");
+  const [selectedAccessories, setSelectedAccessories] = useState("");
+
+  const handleGenerate = async () => {
+    if (!prompt.trim()) {
+      toast.error("Please add a description for your avatar");
+      return;
+    }
+
+    setIsGenerating(true);
+    
+    try {
+      const result = await AvatarService.generateAvatar({
+        prompt,
+        style: selectedStyle,
+        gender: selectedGender,
+        age: selectedAge,
+        hairColor: selectedHairColor,
+        eyeColor: selectedEyeColor,
+        setting: selectedLocation,
+        pose: selectedPose,
+        clothing: selectedClothing,
+        accessories: selectedAccessories,
+        creativity: creativity[0],
+        resolution
+      });
+
+      if (result.success && result.image) {
+        setGeneratedImage(result.image);
+        toast.success("Avatar generated successfully!");
+      } else {
+        toast.error(result.error || "Failed to generate avatar");
+      }
+    } catch (error) {
+      console.error('Generation error:', error);
+      toast.error("An error occurred while generating your avatar");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   const styles = [
     { id: "realistic", name: "Realistic V2.1", gradient: "from-primary/80 to-primary/60" },
@@ -125,6 +178,8 @@ export const CreateAvatar = () => {
                   <Card className="p-6 bg-gradient-card border-border/50">
                     <h3 className="font-semibold text-lg mb-4 text-foreground">Description</h3>
                     <Textarea
+                      value={prompt}
+                      onChange={(e) => setPrompt(e.target.value)}
                       placeholder="Describe your avatar in detail... (e.g., A confident woman with flowing hair, wearing elegant evening wear, in a luxurious setting)"
                       className="min-h-[100px] bg-background/50 border-border/50 focus:border-primary/50 resize-none"
                     />
@@ -228,7 +283,7 @@ export const CreateAvatar = () => {
 
                     <div>
                       <label className="text-sm font-medium text-foreground mb-2 block">Body Type</label>
-                      <Select>
+                      <Select value={selectedBodyType} onValueChange={setSelectedBodyType}>
                         <SelectTrigger className="bg-background/50 border-border/50">
                           <SelectValue placeholder="Select body type" />
                         </SelectTrigger>
@@ -298,7 +353,7 @@ export const CreateAvatar = () => {
                     <div>
                       <label className="text-sm font-medium text-foreground mb-2 block">Hair</label>
                       <div className="space-y-2">
-                        <Select>
+                        <Select value={selectedHairColor} onValueChange={setSelectedHairColor}>
                           <SelectTrigger className="bg-background/50 border-border/50">
                             <SelectValue placeholder="Color" />
                           </SelectTrigger>
@@ -308,7 +363,7 @@ export const CreateAvatar = () => {
                             ))}
                           </SelectContent>
                         </Select>
-                        <Select>
+                        <Select value={selectedHairStyle} onValueChange={setSelectedHairStyle}>
                           <SelectTrigger className="bg-background/50 border-border/50">
                             <SelectValue placeholder="Style" />
                           </SelectTrigger>
@@ -323,7 +378,7 @@ export const CreateAvatar = () => {
 
                     <div>
                       <label className="text-sm font-medium text-foreground mb-2 block">Eyes</label>
-                      <Select>
+                      <Select value={selectedEyeColor} onValueChange={setSelectedEyeColor}>
                         <SelectTrigger className="bg-background/50 border-border/50">
                           <SelectValue placeholder="Eye color" />
                         </SelectTrigger>
@@ -338,7 +393,7 @@ export const CreateAvatar = () => {
                     <div>
                       <label className="text-sm font-medium text-foreground mb-2 block">Setting</label>
                       <div className="space-y-2">
-                        <Select>
+                        <Select value={selectedLocation} onValueChange={setSelectedLocation}>
                           <SelectTrigger className="bg-background/50 border-border/50">
                             <SelectValue placeholder="Location" />
                           </SelectTrigger>
@@ -348,7 +403,7 @@ export const CreateAvatar = () => {
                             ))}
                           </SelectContent>
                         </Select>
-                        <Select>
+                        <Select value={selectedLighting} onValueChange={setSelectedLighting}>
                           <SelectTrigger className="bg-background/50 border-border/50">
                             <SelectValue placeholder="Lighting" />
                           </SelectTrigger>
@@ -363,7 +418,7 @@ export const CreateAvatar = () => {
 
                     <div>
                       <label className="text-sm font-medium text-foreground mb-2 block">Body Pose</label>
-                      <Select>
+                      <Select value={selectedPose} onValueChange={setSelectedPose}>
                         <SelectTrigger className="bg-background/50 border-border/50">
                           <SelectValue placeholder="Select pose" />
                         </SelectTrigger>
@@ -377,7 +432,7 @@ export const CreateAvatar = () => {
 
                     <div>
                       <label className="text-sm font-medium text-foreground mb-2 block">Clothing Style</label>
-                      <Select>
+                      <Select value={selectedClothing} onValueChange={setSelectedClothing}>
                         <SelectTrigger className="bg-background/50 border-border/50">
                           <SelectValue placeholder="Select outfit" />
                         </SelectTrigger>
@@ -391,7 +446,7 @@ export const CreateAvatar = () => {
 
                     <div>
                       <label className="text-sm font-medium text-foreground mb-2 block">Accessories</label>
-                      <Select>
+                      <Select value={selectedAccessories} onValueChange={setSelectedAccessories}>
                         <SelectTrigger className="bg-background/50 border-border/50">
                           <SelectValue placeholder="Select accessories" />
                         </SelectTrigger>
@@ -413,9 +468,23 @@ export const CreateAvatar = () => {
                     <h4 className="font-semibold text-foreground">Ready to Generate</h4>
                     <p className="text-sm text-muted-foreground">Cost: 1 credit</p>
                   </div>
-                  <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-glow px-8">
-                    <Sparkles className="w-5 h-5 mr-2" />
-                    Generate Avatar
+                  <Button 
+                    size="lg" 
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-glow px-8"
+                    onClick={handleGenerate}
+                    disabled={isGenerating}
+                  >
+                    {isGenerating ? (
+                      <>
+                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-5 h-5 mr-2" />
+                        Generate Avatar
+                      </>
+                    )}
                   </Button>
                 </div>
               </Card>
@@ -425,12 +494,25 @@ export const CreateAvatar = () => {
              <div className="xl:col-span-2 space-y-6">
                 <Card className="p-8 bg-gradient-card border-border/50 h-fit">
                   <h3 className="font-semibold text-xl mb-6 text-foreground">Preview</h3>
-                  <div className="w-full bg-background/30 rounded-xl border-2 border-dashed border-border/30 flex items-center justify-center overflow-hidden" style={{ aspectRatio: '3/4', minHeight: '400px', maxHeight: '600px' }}>
-                    <img 
-                      src={previewAvatarImg} 
-                      alt="Preview Avatar"
-                      className="w-full h-full object-cover rounded-xl"
-                    />
+                  <div className="w-full bg-background/30 rounded-xl border-2 border-dashed border-border/30 flex items-center justify-center overflow-hidden relative" style={{ aspectRatio: '3/4', minHeight: '400px', maxHeight: '600px' }}>
+                    {isGenerating ? (
+                      <div className="flex flex-col items-center justify-center space-y-4">
+                        <Loader2 className="w-12 h-12 text-primary animate-spin" />
+                        <p className="text-muted-foreground text-center">Generating your avatar...</p>
+                      </div>
+                    ) : generatedImage ? (
+                      <img 
+                        src={generatedImage} 
+                        alt="Generated Avatar"
+                        className="w-full h-full object-cover rounded-xl"
+                      />
+                    ) : (
+                      <img 
+                        src={previewAvatarImg} 
+                        alt="Preview Avatar"
+                        className="w-full h-full object-cover rounded-xl opacity-60"
+                      />
+                    )}
                   </div>
                 </Card>
 
