@@ -29,8 +29,16 @@ serve(async (req) => {
   }
 
   try {
+    console.log('Checking for Hugging Face token...');
+    const env = Deno.env.toObject();
+    console.log('Available env keys:', Object.keys(env).filter(key => key.includes('HUGGING') || key.includes('HF')));
+    
     const huggingFaceToken = Deno.env.get('HUGGING_FACE_ACCESS_TOKEN');
+    console.log('HUGGING_FACE_ACCESS_TOKEN found:', !!huggingFaceToken);
+    console.log('Token length:', huggingFaceToken?.length || 0);
+    
     if (!huggingFaceToken) {
+      console.error('Missing Hugging Face token');
       return new Response(JSON.stringify({
         success: false,
         error: 'Hugging Face access token not configured'
