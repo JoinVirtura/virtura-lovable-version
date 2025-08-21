@@ -25,9 +25,9 @@ export interface GeneratedAvatar {
 export class AvatarService {
   static async generateAvatar(params: AvatarGenerationParams): Promise<GeneratedAvatar> {
     try {
-      console.log('Calling generate-avatar function with params:', params);
+      console.log('Calling generate-avatar-hf function with params:', params);
       
-      const { data, error } = await supabase.functions.invoke('generate-avatar', {
+      const { data, error } = await supabase.functions.invoke('generate-avatar-hf', {
         body: params
       });
 
