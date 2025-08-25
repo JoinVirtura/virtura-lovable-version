@@ -74,73 +74,65 @@ serve(async (req) => {
       const msg = (e as Error)?.message || String(e);
       console.error('HF generation error (primary):', msg);
 
-      if (msg.toLowerCase().includes('out of memory') || msg.toLowerCase().includes('cuda') || msg.toLowerCase().includes('timeout')) {
+      // Try progressive fallbacks for any HF error
+      try {
+        console.log('Falling back to stabilityai/sdxl-turbo at', Math.min(512, width) + 'x' + Math.min(512, height), '...');
+        image = await hf.textToImage({
+          inputs: enhancedPrompt,
+          model: 'stabilityai/sdxl-turbo',
+          parameters: { width: Math.min(512, width), height: Math.min(512, height) },
+        });
+      } catch (e2) {
+        const msg2 = (e2 as Error)?.message || String(e2);
+        console.error('HF generation error (fallback 1):', msg2);
         try {
-          console.log('Falling back to stabilityai/sdxl-turbo at', width + 'x' + height, '...');
+          console.log('Falling back to stabilityai/stable-diffusion-2-1 at 512x512...');
           image = await hf.textToImage({
             inputs: enhancedPrompt,
-            model: 'stabilityai/sdxl-turbo',
-            parameters: { width: Math.min(512, width), height: Math.min(512, height) },
+            model: 'stabilityai/stable-diffusion-2-1',
+            parameters: { width: 512, height: 512 },
           });
-        } catch (e2) {
-          const msg2 = (e2 as Error)?.message || String(e2);
-          console.error('HF generation error (fallback 1):', msg2);
-          try {
-            console.log('Falling back to stabilityai/stable-diffusion-2-1 at 512x512...');
-            image = await hf.textToImage({
-              inputs: enhancedPrompt,
-              model: 'stabilityai/stable-diffusion-2-1',
-              parameters: { width: 512, height: 512 },
-            });
-          } catch (e3) {
-            const msg3 = (e3 as Error)?.message || String(e3);
-            console.error('HF generation error (fallback 2):', msg3);
+        } catch (e3) {
+          const msg3 = (e3 as Error)?.message || String(e3);
+          console.error('HF generation error (fallback 2):', msg3);
 
-            // Final fallback: OpenAI gpt-image-1 if available
-            const openaiKey = Deno.env.get('OPENAI_API_KEY');
-            if (!openaiKey) throw e3;
-            console.log('Falling back to OpenAI gpt-image-1...');
-            const openaiSize = mapToOpenAISize(width, height);
-            const oaRes = await fetch('https://api.openai.com/v1/images/generations', {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${openaiKey}`,
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                model: 'gpt-image-1',
-                prompt: enhancedPrompt,
-                size: openaiSize,
-                n: 1,
-              }),
-            });
-            if (!oaRes.ok) {
-              const errTxt = await oaRes.text();
-              throw new Error(`OpenAI images error ${oaRes.status}: ${errTxt}`);
-            }
-            const oaJson = await oaRes.json();
-            const datum = oaJson?.data?.[0];
-            let base64: string | undefined = datum?.b64_json;
-            if (!base64 && datum?.url) {
-              const urlRes = await fetch(datum.url);
-              const buf = await urlRes.arrayBuffer();
-              base64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
-            }
-            if (!base64) throw new Error('OpenAI returned no image data');
-
-            return new Response(JSON.stringify({
-              success: true,
-              image: `data:image/png;base64,${base64}`,
+          // Final fallback: OpenAI gpt-image-1 if available
+          const openaiKey = Deno.env.get('OPENAI_API_KEY');
+          if (!openaiKey) throw e3;
+          console.log('Falling back to OpenAI gpt-image-1...');
+          const openaiSize = mapToOpenAISize(width, height);
+          const oaRes = await fetch('https://api.openai.com/v1/images/generations', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${openaiKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model: 'gpt-image-1',
               prompt: enhancedPrompt,
-              provider: 'openai',
-            }), {
-              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-              status: 200,
-            });
+              size: openaiSize,
+              n: 1,
+            }),
+          });
+          if (!oaRes.ok) {
+            const errTxt = await oaRes.text();
+            throw new Error(`OpenAI images error ${oaRes.status}: ${errTxt}`);
           }
+          const oaJson = await oaRes.json();
+          const datum = oaJson?.data?.[0];
+          const base64 = datum?.b64_json;
+          if (!base64) throw new Error('OpenAI returned no image data');
+
+          return new Response(JSON.stringify({
+            success: true,
+            image: `data:image/png;base64,${base64}`,
+            prompt: enhancedPrompt,
+            provider: 'openai',
+          }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 200,
+          });
         }
-      } else {
-        throw e;
       }
     }
 
