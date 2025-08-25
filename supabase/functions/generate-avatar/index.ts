@@ -72,7 +72,6 @@ serve(async (req) => {
         n: 1,
         size: size,
         quality: body.photoMode ? 'high' : 'auto',
-        style: body.photoMode ? 'natural' : 'auto',
         moderation: 'low'
       }),
     });
