@@ -57,35 +57,87 @@ serve(async (req) => {
 
     const hf = new HfInference(huggingFaceToken);
 
+    // Compute safe dimensions
+    const { width, height } = mapResolutionToSize(body.resolution);
+    console.log('Requested resolution:', body.resolution, '-> Using size:', width + 'x' + height);
+
     let image: Blob;
     try {
-      // Primary: high quality FLUX
+      // Primary: FLUX at requested safe size
       console.log('Generating with FLUX.1-schnell...');
       image = await hf.textToImage({
         inputs: enhancedPrompt,
         model: 'black-forest-labs/FLUX.1-schnell',
+        parameters: { width, height },
       });
     } catch (e) {
       const msg = (e as Error)?.message || String(e);
       console.error('HF generation error (primary):', msg);
 
-      // Known infra limits: CUDA OOM / timeouts → fallback to lighter model
       if (msg.toLowerCase().includes('out of memory') || msg.toLowerCase().includes('cuda') || msg.toLowerCase().includes('timeout')) {
         try {
-          console.log('Falling back to stabilityai/sdxl-turbo at default 512...');
+          console.log('Falling back to stabilityai/sdxl-turbo at', width + 'x' + height, '...');
           image = await hf.textToImage({
             inputs: enhancedPrompt,
             model: 'stabilityai/sdxl-turbo',
+            parameters: { width: Math.min(512, width), height: Math.min(512, height) },
           });
         } catch (e2) {
           const msg2 = (e2 as Error)?.message || String(e2);
-          console.error('HF generation error (fallback):', msg2);
-          // Final fallback to SD 2.1 (very lightweight)
-          console.log('Falling back to stabilityai/stable-diffusion-2-1...');
-          image = await hf.textToImage({
-            inputs: enhancedPrompt,
-            model: 'stabilityai/stable-diffusion-2-1',
-          });
+          console.error('HF generation error (fallback 1):', msg2);
+          try {
+            console.log('Falling back to stabilityai/stable-diffusion-2-1 at 512x512...');
+            image = await hf.textToImage({
+              inputs: enhancedPrompt,
+              model: 'stabilityai/stable-diffusion-2-1',
+              parameters: { width: 512, height: 512 },
+            });
+          } catch (e3) {
+            const msg3 = (e3 as Error)?.message || String(e3);
+            console.error('HF generation error (fallback 2):', msg3);
+
+            // Final fallback: OpenAI gpt-image-1 if available
+            const openaiKey = Deno.env.get('OPENAI_API_KEY');
+            if (!openaiKey) throw e3;
+            console.log('Falling back to OpenAI gpt-image-1...');
+            const openaiSize = mapToOpenAISize(width, height);
+            const oaRes = await fetch('https://api.openai.com/v1/images/generations', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${openaiKey}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                model: 'gpt-image-1',
+                prompt: enhancedPrompt,
+                size: openaiSize,
+                n: 1,
+              }),
+            });
+            if (!oaRes.ok) {
+              const errTxt = await oaRes.text();
+              throw new Error(`OpenAI images error ${oaRes.status}: ${errTxt}`);
+            }
+            const oaJson = await oaRes.json();
+            const datum = oaJson?.data?.[0];
+            let base64: string | undefined = datum?.b64_json;
+            if (!base64 && datum?.url) {
+              const urlRes = await fetch(datum.url);
+              const buf = await urlRes.arrayBuffer();
+              base64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
+            }
+            if (!base64) throw new Error('OpenAI returned no image data');
+
+            return new Response(JSON.stringify({
+              success: true,
+              image: `data:image/png;base64,${base64}`,
+              prompt: enhancedPrompt,
+              provider: 'openai',
+            }), {
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+              status: 200,
+            });
+          }
         }
       } else {
         throw e;
@@ -106,11 +158,12 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error in generate-avatar function:', error);
+    const message = (error as Error)?.message || String(error);
     return new Response(JSON.stringify({ 
       success: false,
-      error: error.message 
+      error: message
     }), {
-      status: 500,
+      status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
@@ -216,4 +269,9 @@ function mapResolutionToSize(resolution?: string): { width: number; height: numb
   height = Math.max(256, Math.floor(height / 8) * 8);
 
   return { width, height };
+}
+
+function mapToOpenAISize(width: number, height: number): string {
+  if (width === height) return '1024x1024';
+  return width > height ? '1536x1024' : '1024x1536';
 }
