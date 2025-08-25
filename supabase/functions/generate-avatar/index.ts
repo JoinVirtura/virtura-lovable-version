@@ -60,53 +60,91 @@ serve(async (req) => {
     const size = mapResolutionToSize(body.resolution || 'HD');
     console.log('Using size:', size);
 
-    const response = await fetch('https://api.openai.com/v1/images/generations', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-image-1',
-        prompt: enhancedPrompt,
-        n: 1,
-        size: size,
-        quality: body.photoMode ? 'high' : 'auto',
-        moderation: 'low'
-      }),
-    });
+    // Helper to call OpenAI Images API
+    const callOpenAI = async (payload: any) => {
+      const res = await fetch('https://api.openai.com/v1/images/generations', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${openAIApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+      let json: any = null;
+      try { json = await res.json(); } catch (_) {}
+      return { res, json };
+    };
 
+    // 1) Try gpt-image-1 (best quality, may require org verification)
+    const size = mapResolutionToSize(body.resolution || 'HD');
+    console.log('Using size:', size);
+
+    const primaryPayload: any = {
+      model: 'gpt-image-1',
+      prompt: enhancedPrompt,
+      n: 1,
+      size,
+      quality: body.photoMode ? 'high' : 'auto',
+      moderation: 'low',
+    };
+
+    let { res: response, json: data } = await callOpenAI(primaryPayload);
     console.log('OpenAI response status:', response.status);
 
     if (!response.ok) {
-      let errorPayload: any = null;
-      try {
-        errorPayload = await response.json();
-      } catch (_) {
-        // No JSON body available
+      const message = data?.error?.message || `OpenAI API error (${response.status})`;
+      console.error('OpenAI API error:', data || response.statusText);
+
+      // 2) Automatic fallback to DALL·E 3 when org not verified / access denied
+      if (response.status === 403 || /must be verified|not allowed|access/i.test(message)) {
+        console.log('Falling back to model dall-e-3 due to permission error...');
+        const dallePayload: any = {
+          model: 'dall-e-3',
+          prompt: enhancedPrompt,
+          n: 1,
+          size,
+          quality: body.photoMode ? 'hd' : 'standard', // valid for dall-e-3
+          style: body.photoMode ? 'natural' : 'vivid', // valid for dall-e-3
+        };
+        const fb = await callOpenAI(dallePayload);
+        response = fb.res;
+        data = fb.json;
+        console.log('DALL·E 3 response status:', response.status);
+        if (!response.ok) {
+          const fbMsg = data?.error?.message || `OpenAI API error (${response.status})`;
+          return new Response(JSON.stringify({ success: false, error: fbMsg }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 200,
+          });
+        }
+      } else {
+        // Other errors: return to client
+        return new Response(JSON.stringify({ success: false, error: message }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200,
+        });
       }
-      const message = errorPayload?.error?.message || `OpenAI API error (${response.status})`;
-      console.error('OpenAI API error:', errorPayload || response.statusText);
-      // Return structured error so client can show real reason instead of generic 500
-      return new Response(JSON.stringify({
-        success: false,
-        error: message
-      }), {
+    }
+
+    // Normalize output across models
+    let image: string | null = null;
+    if (data?.data?.[0]?.b64_json) {
+      image = `data:image/png;base64,${data.data[0].b64_json}`;
+    } else if (data?.data?.[0]?.url) {
+      image = data.data[0].url;
+    }
+
+    if (!image) {
+      return new Response(JSON.stringify({ success: false, error: 'Image generation returned no data' }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
       });
     }
 
-    const data = await response.json();
-    console.log('OpenAI response received successfully');
-
-    // DALL-E 3 returns URL, not base64
-    const imageUrl = data.data[0].url;
-    
-    return new Response(JSON.stringify({ 
+    return new Response(JSON.stringify({
       success: true,
-      image: imageUrl,
-      prompt: enhancedPrompt
+      image,
+      prompt: enhancedPrompt,
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
