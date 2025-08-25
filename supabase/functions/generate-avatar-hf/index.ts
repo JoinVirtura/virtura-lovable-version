@@ -57,10 +57,31 @@ serve(async (req) => {
 
     const hf = new HfInference(huggingFaceToken);
 
-    const image = await hf.textToImage({
-      inputs: enhancedPrompt,
-      model: 'black-forest-labs/FLUX.1-schnell',
-    });
+    // Map resolution to safe size and log
+    const { width, height } = mapResolutionToSize(body.resolution);
+    console.log('Requested resolution:', body.resolution, '-> Using size:', width + 'x' + height);
+
+    let image: Blob;
+    try {
+      image = await hf.textToImage({
+        inputs: enhancedPrompt,
+        model: 'black-forest-labs/FLUX.1-schnell',
+        parameters: { width, height }
+      });
+    } catch (e) {
+      const msg = (e as Error)?.message || String(e);
+      console.error('HF generation error:', msg);
+      if (msg.toLowerCase().includes('out of memory') || msg.toLowerCase().includes('cuda')) {
+        console.log('Retrying generation at 512x512 due to OOM...');
+        image = await hf.textToImage({
+          inputs: enhancedPrompt,
+          model: 'black-forest-labs/FLUX.1-schnell',
+          parameters: { width: 512, height: 512 }
+        });
+      } else {
+        throw e;
+      }
+    }
 
     // Convert the blob to a base64 string
     const arrayBuffer = await image.arrayBuffer();
@@ -157,4 +178,33 @@ function buildEnhancedPrompt(params: GenerateAvatarRequest): string {
   prompt += ", no cartoon, no CGI, no illustration, no painting, no over-smooth skin, no plastic texture, no blurry, no text, no watermark, no extra fingers, no deformed";
 
   return prompt;
+}
+
+function mapResolutionToSize(resolution?: string): { width: number; height: number } {
+  // Default safe size to reduce OOM risk while keeping good quality
+  const DEFAULT = { width: 512, height: 512 };
+  if (!resolution) return DEFAULT;
+  const match = (resolution || '').match(/^(\d+)x(\d+)$/i);
+  if (!match) return DEFAULT;
+  let width = parseInt(match[1], 10);
+  let height = parseInt(match[2], 10);
+
+  // Cap to avoid GPU OOM in shared/free environments
+  const cap = 768; // prefer <= 768; retry logic will drop to 512 if needed
+  if (width > cap || height > cap) {
+    const aspect = width / height;
+    if (aspect >= 1) {
+      width = Math.min(cap, width);
+      height = Math.round(width / aspect);
+    } else {
+      height = Math.min(cap, height);
+      width = Math.round(height * aspect);
+    }
+  }
+
+  // Ensure multiples of 8 for diffusion models
+  width = Math.max(256, Math.floor(width / 8) * 8);
+  height = Math.max(256, Math.floor(height / 8) * 8);
+
+  return { width, height };
 }
