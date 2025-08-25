@@ -26,27 +26,45 @@ export class AvatarService {
   static async generateAvatar(params: AvatarGenerationParams): Promise<GeneratedAvatar> {
     try {
       console.log('Calling generate-avatar-hf function with params:', params);
-      
-      const { data, error } = await supabase.functions.invoke('generate-avatar-hf', {
-        body: params
+
+      // Primary: Hugging Face (FLUX)
+      const hfResp = await supabase.functions.invoke('generate-avatar-hf', {
+        body: params,
       });
 
-      if (error) {
-        console.error('Supabase function error:', error);
-        throw new Error(error.message);
+      if (!hfResp.error && hfResp.data?.success) {
+        console.log('Avatar generated via HF successfully');
+        return hfResp.data as GeneratedAvatar;
       }
 
-      if (!data.success) {
-        throw new Error(data.error || 'Generation failed');
+      // If HF failed, log and try OpenAI (DALL·E / gpt-image-1) function
+      if (hfResp.error) {
+        console.warn('HF function error, falling back to OpenAI function:', hfResp.error?.message || hfResp.error);
+      } else if (!hfResp.data?.success) {
+        console.warn('HF function returned unsuccessful response, falling back:', hfResp.data?.error);
       }
 
-      console.log('Avatar generated successfully');
-      return data;
+      console.log('Calling generate-avatar (OpenAI) fallback with params:', params);
+      const oaResp = await supabase.functions.invoke('generate-avatar', {
+        body: params,
+      });
+
+      if (oaResp.error) {
+        console.error('OpenAI fallback function error:', oaResp.error);
+        throw new Error(oaResp.error.message);
+      }
+
+      if (!oaResp.data?.success) {
+        throw new Error(oaResp.data?.error || 'Generation failed (OpenAI fallback)');
+      }
+
+      console.log('Avatar generated via OpenAI fallback successfully');
+      return oaResp.data as GeneratedAvatar;
     } catch (error) {
       console.error('Avatar generation error:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error occurred'
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
       };
     }
   }
