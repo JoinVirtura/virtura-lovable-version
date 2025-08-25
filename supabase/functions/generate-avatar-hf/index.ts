@@ -64,11 +64,12 @@ serve(async (req) => {
 
     let image: Blob;
     try {
-      // Primary: FLUX at requested safe size
-      console.log('Generating with FLUX.1-schnell...');
+      // Use FLUX.1-dev for Photo Mode (higher quality), schnell for speed otherwise
+      const model = body.photoMode ? 'black-forest-labs/FLUX.1-dev' : 'black-forest-labs/FLUX.1-schnell';
+      console.log(`Generating with ${model}...`);
       image = await hf.textToImage({
         inputs: enhancedPrompt,
-        model: 'black-forest-labs/FLUX.1-schnell',
+        model,
         parameters: { width, height },
       });
     } catch (e) {
@@ -163,86 +164,67 @@ serve(async (req) => {
 });
 
 function buildEnhancedPrompt(params: GenerateAvatarRequest): string {
+  // Start with clean, focused prompt - avoid lists and alternatives
   let prompt = (params.prompt && params.prompt.trim().length > 0)
-    ? params.prompt.trim()
-    : "Beautiful avatar portrait";
-  
-  // Add style context with ultra-realistic focus
-  if (params.style) {
-    switch (params.style.toLowerCase()) {
-      case 'photorealistic':
-        prompt += ", award-winning professional headshot photography, hyperrealistic portrait, Canon 5D Mark IV with 85mm f/1.4 lens, Profoto studio lighting, three-point lighting setup with softbox key light and rim lighting, perfect skin texture showing natural pores and micro-details, subsurface scattering, film grain texture, shot on Kodak Portra 400 film stock, shallow depth of field f/1.4, creamy bokeh background, crystal clear eyes with perfect catchlights, natural but flawless makeup, professional retouching, commercial photography quality, ultra-sharp focus on eyes, professional color grading with lifted shadows and warm highlights";
-        break;
-      case 'realistic':
-        prompt += ", photorealistic portrait, professional photo, 50mm lens, natural skin texture, subtle film grain";
-        break;
-      case 'artistic':
-        prompt += ", artistic portrait, painterly style, creative interpretation";
-        break;
-      case 'anime':
-        prompt += ", anime style, manga art, stylized illustration";
-        break;
-      case 'fantasy':
-        prompt += ", fantasy art style, magical, ethereal";
-        break;
-      default:
-        prompt += `, ${params.style} style`;
-    }
-  }
+    ? params.prompt.trim().replace(/,?\s*(or|and|either|with|including)[^,]*/g, '').split(',')[0].trim()
+    : "Professional headshot portrait";
 
-  // Add demographic details
-  if (params.gender) {
-    prompt += `, ${params.gender}`;
-  }
-  
-  if (params.age) {
-    prompt += `, ${params.age}`;
-  }
-
-  // Add appearance details
-  if (params.hairColor) {
-    prompt += `, ${params.hairColor} hair`;
-  }
-  
-  if (params.eyeColor) {
-    prompt += `, ${params.eyeColor} eyes`;
-  }
-
-  // Add clothing and accessories
-  if (params.clothing) {
-    prompt += `, wearing ${params.clothing}`;
-  }
-  
-  if (params.accessories) {
-    prompt += `, with ${params.accessories}`;
-  }
-
-  // Add pose and setting
-  if (params.pose) {
-    prompt += `, ${params.pose} pose`;
-  }
-  
-  if (params.setting) {
-    prompt += `, ${params.setting} background`;
-  }
-
-  // Photo Mode: enforce strict single-shot photorealism
+  // Photo Mode gets priority treatment for maximum realism
   if (params.photoMode) {
-    // Ensure consistent headshot and neutral background, ignore enumerations
-    prompt += ", single-subject head-and-shoulders portrait, neutral studio background, one consistent hairstyle and outfit, ignore lists or alternatives, not a collage, not multiple images, not split-screen, editorial quality";
-    // Add strong photographic cues regardless of style selection
-    if (!params.style || params.style.toLowerCase() !== 'photorealistic') {
-      prompt += ", hyperrealistic professional headshot, 85mm lens, RAW photo, studio lighting";
+    // Replace with studio photography setup
+    prompt = `Professional studio headshot of ${prompt.toLowerCase().replace('professional headshot of ', '').replace('professional headshot portrait', 'person')}`;
+    
+    // Add essential demographics cleanly
+    if (params.gender) prompt += `, ${params.gender}`;
+    if (params.age) prompt += `, ${params.age}`;
+    
+    // Single appearance details (no alternatives)
+    if (params.hairColor) prompt += `, ${params.hairColor} hair`;
+    if (params.eyeColor) prompt += `, ${params.eyeColor} eyes`;
+    if (params.clothing) prompt += `, wearing ${params.clothing.split(',')[0].trim()}`;
+    
+    // Professional photography technical details
+    prompt += ", shot with Canon 5D Mark IV, 85mm f/1.4 lens, professional studio lighting, three-point lighting setup, softbox key light, rim lighting, natural skin texture with visible pores and micro-details, subsurface scattering, professional color grading, shallow depth of field, creamy bokeh background, crystal clear sharp focus on eyes, natural makeup, commercial photography quality";
+    
+    // Strong constraints for consistency
+    prompt += ", single person headshot, neutral grey studio background, consistent lighting, one haircut, one outfit, professional portrait photography, editorial quality";
+    
+    // Powerful negative prompts for realism
+    prompt += ", no cartoon, no anime, no illustration, no CGI, no painting, no 3D render, no artificial skin smoothing, no plastic texture, no multiple people, no collage, no split screen, no text overlay, no watermarks, no borders, no frames, no extra limbs, no deformities, no face distortion, no blurry details";
+    
+  } else {
+    // Non-photo mode: more creative freedom
+    if (params.style) {
+      switch (params.style.toLowerCase()) {
+        case 'photorealistic':
+          prompt += ", photorealistic portrait, professional photography";
+          break;
+        case 'artistic':
+          prompt += ", artistic portrait, painterly style";
+          break;
+        case 'anime':
+          prompt += ", anime style, manga art";
+          break;
+        case 'fantasy':
+          prompt += ", fantasy art style, magical";
+          break;
+        default:
+          prompt += `, ${params.style} style`;
+      }
     }
-    // Strengthen negative prompts
-    prompt += ", no illustration, no cartoon, no CGI, no painting, no 3d, no over-smooth plastic skin, no watermark, no text, no borders, no frames, no extra fingers, no deformed, no multi-scene";
+    
+    // Add other parameters for creative mode
+    if (params.gender) prompt += `, ${params.gender}`;
+    if (params.age) prompt += `, ${params.age}`;
+    if (params.hairColor) prompt += `, ${params.hairColor} hair`;
+    if (params.eyeColor) prompt += `, ${params.eyeColor} eyes`;
+    if (params.clothing) prompt += `, wearing ${params.clothing}`;
+    if (params.accessories) prompt += `, with ${params.accessories}`;
+    if (params.pose) prompt += `, ${params.pose} pose`;
+    if (params.setting) prompt += `, ${params.setting} background`;
+    
+    prompt += ", high quality, detailed, professional lighting";
   }
-
-  // Add quality enhancers and strong negative cues to ensure realism
-  prompt += ", professional studio lighting, detailed skin texture, pores, subsurface scattering, sharp focus, shallow depth of field, 85mm lens, DSLR, RAW photo, color graded, bokeh, stunning composition";
-
-  // Negative prompts to avoid non-realistic artifacts
-  prompt += ", no cartoon, no CGI, no illustration, no painting, no over-smooth skin, no plastic texture, no blurry, no text, no watermark, no extra fingers, no deformed";
 
   return prompt;
 }

@@ -62,7 +62,7 @@ export const CreateAvatar = () => {
         pose: selectedPose,
         clothing: selectedClothing,
         accessories: selectedAccessories,
-        creativity: photoMode ? Math.min(creativity[0], 0.3) : creativity[0],
+        creativity: photoMode ? Math.min(creativity[0], 0.2) : creativity[0],
         resolution,
         photoMode,
       });
@@ -184,7 +184,10 @@ export const CreateAvatar = () => {
                     <Textarea
                       value={prompt}
                       onChange={(e) => setPrompt(e.target.value)}
-                      placeholder="Describe your avatar in detail... (e.g., A confident woman with flowing hair, wearing elegant evening wear, in a luxurious setting)"
+                      placeholder={photoMode 
+                        ? "Describe a single person for a professional headshot... (e.g., A confident woman with brown hair wearing a professional blazer)"
+                        : "Describe your avatar in detail... (e.g., A confident woman with flowing hair, wearing elegant evening wear, in a luxurious setting)"
+                      }
                       className="min-h-[100px] bg-background/50 border-border/50 focus:border-primary/50 resize-none"
                     />
                     <div className="flex items-center justify-between mt-4">
@@ -471,13 +474,20 @@ export const CreateAvatar = () => {
                   <div>
                     <h4 className="font-semibold text-foreground">Ready to Generate</h4>
                     <p className="text-sm text-muted-foreground">Cost: 1 credit</p>
-                    <div className="mt-2 flex items-center gap-3">
-                      <Switch checked={photoMode} onCheckedChange={setPhotoMode} />
-                      <div>
-                        <p className="text-sm font-medium text-foreground">Photo Mode</p>
-                        <p className="text-xs text-muted-foreground">Consistent headshot realism</p>
-                      </div>
-                    </div>
+                     <div className="mt-2 flex items-center gap-3">
+                       <Switch checked={photoMode} onCheckedChange={setPhotoMode} />
+                       <div>
+                         <p className="text-sm font-medium text-foreground">
+                           Photo Mode {photoMode && <Badge className="ml-2 bg-primary/20 text-primary border-primary/30">ON</Badge>}
+                         </p>
+                         <p className="text-xs text-muted-foreground">
+                           {photoMode 
+                             ? "Studio-quality professional headshots with FLUX.1-dev" 
+                             : "Creative freedom with faster generation"
+                           }
+                         </p>
+                       </div>
+                     </div>
                   </div>
                   <Button 
                     size="lg" 
