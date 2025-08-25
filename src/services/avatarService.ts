@@ -13,7 +13,9 @@ export interface AvatarGenerationParams {
   accessories?: string;
   creativity?: number;
   resolution?: string;
+  photoMode?: boolean;
 }
+
 
 export interface GeneratedAvatar {
   success: boolean;

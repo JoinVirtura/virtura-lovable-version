@@ -20,6 +20,7 @@ interface GenerateAvatarRequest {
   accessories?: string;
   creativity?: number;
   resolution?: string;
+  photoMode?: boolean;
 }
 
 serve(async (req) => {
@@ -125,9 +126,10 @@ serve(async (req) => {
 function buildEnhancedPrompt(params: GenerateAvatarRequest): string {
   let prompt = params.prompt || "Beautiful avatar portrait";
   
-  // Add style context
+  // Add style context (will be overridden by photoMode if enabled)
   if (params.style) {
     switch (params.style.toLowerCase()) {
+      case 'photorealistic':
       case 'realistic':
         prompt += ", photorealistic, high quality portrait photography";
         break;
@@ -179,6 +181,14 @@ function buildEnhancedPrompt(params: GenerateAvatarRequest): string {
   
   if (params.setting) {
     prompt += `, ${params.setting} background`;
+  }
+
+  // Photo Mode: enforce strict photorealism
+  if (params.photoMode) {
+    // Ensure single shot, neutral background, and consistent look
+    prompt += ", award-winning professional headshot photography, hyperrealistic portrait, 85mm lens, RAW photo, studio lighting, single-subject head-and-shoulders portrait, neutral background, one consistent hairstyle and outfit, ignore lists or alternatives, not a collage, not multiple images";
+    // Strong negatives
+    prompt += ", no illustration, no cartoon, no CGI, no painting, no 3d, no over-smooth plastic skin, no watermark, no text, no borders, no frames, no extra fingers, no deformed, no multi-scene";
   }
 
   // Add quality enhancers

@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { Upload, Sparkles, Wand2, Camera, Video, Settings, Play, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { AvatarService } from "@/services/avatarService";
+import { Switch } from "@/components/ui/switch";
 
 // Import avatar images
 import auroraImg from "@/assets/model-aurora.jpg";
@@ -39,6 +40,7 @@ export const CreateAvatar = () => {
   const [selectedPose, setSelectedPose] = useState("");
   const [selectedClothing, setSelectedClothing] = useState("");
   const [selectedAccessories, setSelectedAccessories] = useState("");
+  const [photoMode, setPhotoMode] = useState(true);
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
@@ -60,8 +62,9 @@ export const CreateAvatar = () => {
         pose: selectedPose,
         clothing: selectedClothing,
         accessories: selectedAccessories,
-        creativity: creativity[0],
-        resolution
+        creativity: photoMode ? Math.min(creativity[0], 0.3) : creativity[0],
+        resolution,
+        photoMode,
       });
 
       if (result.success && result.image) {
@@ -468,6 +471,13 @@ export const CreateAvatar = () => {
                   <div>
                     <h4 className="font-semibold text-foreground">Ready to Generate</h4>
                     <p className="text-sm text-muted-foreground">Cost: 1 credit</p>
+                    <div className="mt-2 flex items-center gap-3">
+                      <Switch checked={photoMode} onCheckedChange={setPhotoMode} />
+                      <div>
+                        <p className="text-sm font-medium text-foreground">Photo Mode</p>
+                        <p className="text-xs text-muted-foreground">Consistent headshot realism</p>
+                      </div>
+                    </div>
                   </div>
                   <Button 
                     size="lg" 
