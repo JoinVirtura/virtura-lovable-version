@@ -26,7 +26,9 @@ import {
   Building2,
   Library,
   BookOpen,
-  Settings
+  Settings,
+  Upload,
+  Download
 } from "lucide-react";
 
 interface VirturaSidebarProps {
@@ -44,6 +46,8 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
   const navigationTabs = [
     { id: "individuals", label: "Individuals", icon: User },
     { id: "brands", label: "Brands", icon: Building2 },
+    { id: "upload", label: "Upload", icon: Upload },
+    { id: "export", label: "Export", icon: Download },
     { id: "library", label: "My Library", icon: Library },
     { id: "guide", label: "To-Do Guide", icon: BookOpen },
     { id: "settings", label: "Settings", icon: Settings },

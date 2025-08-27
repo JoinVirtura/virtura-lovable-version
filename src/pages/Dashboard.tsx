@@ -4,6 +4,8 @@ import { VirturaSidebar } from "@/components/VirturaSidebar";
 import { OverviewPage } from "@/components/OverviewPage";
 import { CreateAvatar } from "@/components/CreateAvatar";
 import { AvatarStudio } from "@/components/AvatarStudio";
+import { UploadSection } from "@/components/UploadSection";
+import { ExportSection } from "@/components/ExportSection";
 import { ChatInterface } from "@/components/ChatInterface";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -742,6 +744,10 @@ export default function Dashboard() {
             </Card>
           </div>
         );
+      case "upload":
+        return <UploadSection />;
+      case "export":
+        return <ExportSection />;
       default:
         return <OverviewPage />;
     }
