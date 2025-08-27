@@ -883,17 +883,17 @@ export default function Dashboard() {
                         <div
                           key={index}
                           onClick={() => setCurrentPrompt(item.prompt)}
-                          className="p-3 rounded-lg hover:bg-accent/50 cursor-pointer transition-colors group border border-border/30 hover:border-primary/50"
+                          className="p-4 rounded-lg hover:bg-accent/50 cursor-pointer transition-colors group border border-border/30 hover:border-primary/50"
                         >
-                          <div className="flex items-start justify-between mb-1">
-                            <p className="font-medium text-sm group-hover:text-primary transition-colors">
+                          <div className="flex items-start justify-between mb-2 gap-2">
+                            <p className="font-medium text-sm group-hover:text-primary transition-colors flex-1 min-w-0">
                               {item.title}
                             </p>
-                            <Badge variant="secondary" className="text-xs ml-2 flex-shrink-0">
+                            <Badge variant="secondary" className="text-xs flex-shrink-0 whitespace-nowrap">
                               {item.category}
                             </Badge>
                           </div>
-                          <p className="text-xs text-muted-foreground leading-relaxed break-words">
+                          <p className="text-xs text-muted-foreground leading-relaxed break-words min-h-[2.5rem] overflow-hidden">
                             "{item.prompt}"
                           </p>
                         </div>
