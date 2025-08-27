@@ -55,25 +55,17 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
   return (
     <Sidebar className="border-r border-border">
       <SidebarHeader className="p-4">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-black rounded-xl flex items-center justify-center p-2 shadow-lg">
-            <img 
-              src={virturaLogo} 
-              alt="Virtura Logo" 
-              className="w-full h-full object-contain filter brightness-110"
-            />
-          </div>
-          <div>
-            <h1 className="text-xl font-display font-bold text-foreground leading-tight">
-              Virtura
-            </h1>
-            <p className="text-xs text-muted-foreground">Where Identity Evolves</p>
-          </div>
+        <div>
+          <h1 className="text-xl font-display font-bold text-foreground leading-tight">
+            Virtura
+          </h1>
+          <p className="text-xs text-muted-foreground">Where Identity Evolves</p>
         </div>
       </SidebarHeader>
 
       <SidebarContent>
         <SidebarGroup>
+          <SidebarGroupLabel className="text-muted-foreground">Quick Actions</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {mainItems.map((item) => (
@@ -121,66 +113,55 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-
-        <SidebarSeparator />
-
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-muted-foreground">Quick Actions</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton className="w-full justify-start gap-3 text-primary hover:bg-primary/10">
-                  <Zap className="w-5 h-5" />
-                  <span className="font-medium">Generate Random</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton className="w-full justify-start gap-3 hover:bg-accent">
-                  <Crown className="w-5 h-5" />
-                  <span className="font-medium">Upgrade Plan</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton 
-                  onClick={() => onViewChange("export")}
-                  isActive={activeView === "export"}
-                  className={`w-full justify-start gap-3 ${
-                    activeView === "export" 
-                      ? "bg-primary text-primary-foreground shadow-gold" 
-                      : "hover:bg-accent"
-                  }`}
-                >
-                  <Download className="w-5 h-5" />
-                  <span className="font-medium">Export</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton 
-                  onClick={() => onViewChange("settings")}
-                  isActive={activeView === "settings"}
-                  className={`w-full justify-start gap-3 ${
-                    activeView === "settings" 
-                      ? "bg-primary text-primary-foreground shadow-gold" 
-                      : "hover:bg-accent"
-                  }`}
-                >
-                  <Settings className="w-5 h-5" />
-                  <span className="font-medium">Settings</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-4">
-        <div className="flex items-center gap-3 mb-4">
+      <SidebarFooter className="p-4 space-y-2">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton className="w-full justify-start gap-3 hover:bg-accent">
+              <Crown className="w-5 h-5" />
+              <span className="font-medium">Upgrade Plan</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton 
+              onClick={() => onViewChange("export")}
+              isActive={activeView === "export"}
+              className={`w-full justify-start gap-3 ${
+                activeView === "export" 
+                  ? "bg-primary text-primary-foreground shadow-gold" 
+                  : "hover:bg-accent"
+              }`}
+            >
+              <Download className="w-5 h-5" />
+              <span className="font-medium">Export</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton 
+              onClick={() => onViewChange("settings")}
+              isActive={activeView === "settings"}
+              className={`w-full justify-start gap-3 ${
+                activeView === "settings" 
+                  ? "bg-primary text-primary-foreground shadow-gold" 
+                  : "hover:bg-accent"
+              }`}
+            >
+              <Settings className="w-5 h-5" />
+              <span className="font-medium">Settings</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+        
+        <SidebarSeparator />
+        
+        <div className="flex items-center gap-3 py-2">
           <Avatar className="w-10 h-10">
-            <AvatarImage src="/api/placeholder/40/40" />
-            <AvatarFallback>U</AvatarFallback>
+            <AvatarImage src="/src/assets/preview-avatar.jpg" />
+            <AvatarFallback>J</AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="font-medium text-sm">User</p>
+            <p className="font-medium text-sm">Jeff</p>
             <p className="text-xs text-muted-foreground">Pro Plan</p>
           </div>
         </div>
