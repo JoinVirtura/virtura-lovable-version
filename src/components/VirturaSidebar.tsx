@@ -157,7 +157,7 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
         
         <div className="flex items-center gap-3 py-2">
           <Avatar className="w-10 h-10">
-            <AvatarImage src="/src/assets/preview-avatar.jpg" />
+            <AvatarImage src="/lovable-uploads/517f5d9c-c223-4625-9aa5-5f2ef255f576.png" />
             <AvatarFallback>J</AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
