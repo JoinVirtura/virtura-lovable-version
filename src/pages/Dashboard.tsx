@@ -1405,7 +1405,7 @@ export default function Dashboard() {
                                   }`}>
                                     {key}
                                   </span>
-                                  <span className="text-xs text-muted-foreground uppercase text-center block">{color}</span>
+                                  <span className="text-xs text-muted-foreground uppercase text-center block w-full">{color}</span>
                                 </div>
                               </div>
                             ))}
@@ -1600,14 +1600,11 @@ export default function Dashboard() {
                                       />
                                     ))}
                                   </div>
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
-                                      {harmony.name}
-                                    </span>
-                                    <span className="text-xs text-muted-foreground bg-muted/50 px-2 py-0.5 rounded">
-                                      {harmony.type}
-                                    </span>
-                                  </div>
+                                   <div className="flex items-center">
+                                     <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
+                                       {harmony.name}
+                                     </span>
+                                   </div>
                                 </div>
                               ))}
                             </div>
