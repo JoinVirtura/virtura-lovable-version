@@ -1419,8 +1419,8 @@ export default function Dashboard() {
                              <span className="text-sm font-medium text-foreground">Quick Colors</span>
                            </div>
                           
-                           <div className="overflow-x-auto">
-                             <div className="flex gap-2 pb-2 min-w-max">
+                           <div className="overflow-x-auto h-14">
+                             <div className="flex gap-2 pb-2 min-w-max h-full items-center">
                                {[
                                  "#FF6B35", "#FF8E53", "#FF6B6B", "#C44569", "#F8B500", "#FFD93D", 
                                  "#6BCF7F", "#4BCFFA", "#74B9FF", "#0984E3", "#A29BFE", "#6C5CE7",
@@ -1445,7 +1445,7 @@ export default function Dashboard() {
                                    }}
                                  >
                                    <div 
-                                     className="w-8 h-8 rounded-lg border-2 border-background shadow-sm group-hover:scale-110 group-hover:shadow-md transition-all duration-200 group-hover:border-primary/30"
+                                     className="w-10 h-10 rounded-lg border-2 border-background shadow-sm group-hover:scale-110 group-hover:shadow-md transition-all duration-200 group-hover:border-primary/30"
                                      style={{ backgroundColor: color }}
                                    />
                                  </div>
