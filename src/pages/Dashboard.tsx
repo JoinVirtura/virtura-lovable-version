@@ -47,7 +47,8 @@ import {
   Clock,
   AlertCircle,
   Lightbulb,
-  Video
+  Video,
+  Volume2
 } from "lucide-react";
 
 export default function Dashboard() {
@@ -448,6 +449,47 @@ export default function Dashboard() {
   const handleChatRefine = (message: string) => {
     setChatMessages(prev => [...prev, { role: 'user', content: message }]);
     // Implement chat refinement
+  };
+
+  const playVoicePreview = (voiceType: string) => {
+    // Sample text for voice preview
+    const sampleTexts = {
+      "professional-authoritative": "We deliver excellence through innovation and expertise.",
+      "friendly-approachable": "Hi there! We're excited to work with you on your next project.",
+      "innovative-forward": "Revolutionizing the future with cutting-edge technology.",
+      "luxury-premium": "Experience unparalleled quality and sophistication.",
+      "casual-relatable": "Hey! Let's create something amazing together."
+    };
+
+    const text = sampleTexts[voiceType as keyof typeof sampleTexts] || "This is a sample of your brand voice.";
+    
+    // Use browser's speech synthesis for preview
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.9;
+      utterance.pitch = 1;
+      utterance.volume = 0.8;
+      
+      // Try to select an appropriate voice based on brand voice type
+      const voices = speechSynthesis.getVoices();
+      if (voices.length > 0) {
+        // You could map different voice types to different voices here
+        utterance.voice = voices[0];
+      }
+      
+      speechSynthesis.speak(utterance);
+      
+      toast({
+        title: "Voice Preview",
+        description: `Playing "${voiceType}" brand voice sample`,
+      });
+    } else {
+      toast({
+        title: "Voice Preview",
+        description: "Speech synthesis not supported in this browser",
+        variant: "destructive"
+      });
+    }
   };
 
   const renderContent = () => {
@@ -1629,39 +1671,39 @@ export default function Dashboard() {
                           <SelectTrigger>
                             <SelectValue placeholder="Primary Font" />
                           </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="playfair">Playfair Display</SelectItem>
-                            <SelectItem value="roboto">Roboto</SelectItem>
-                            <SelectItem value="inter">Inter</SelectItem>
-                            <SelectItem value="montserrat">Montserrat</SelectItem>
-                            <SelectItem value="lato">Lato</SelectItem>
-                            <SelectItem value="opensans">Open Sans</SelectItem>
-                            <SelectItem value="poppins">Poppins</SelectItem>
-                            <SelectItem value="nunito">Nunito</SelectItem>
-                            <SelectItem value="sourcesans">Source Sans Pro</SelectItem>
-                            <SelectItem value="raleway">Raleway</SelectItem>
-                            <SelectItem value="oswald">Oswald</SelectItem>
-                            <SelectItem value="merriweather">Merriweather</SelectItem>
-                          </SelectContent>
+                           <SelectContent>
+                             <SelectItem value="playfair" style={{ fontFamily: 'Playfair Display, serif' }}>Playfair Display</SelectItem>
+                             <SelectItem value="roboto" style={{ fontFamily: 'Roboto, sans-serif' }}>Roboto</SelectItem>
+                             <SelectItem value="inter" style={{ fontFamily: 'Inter, sans-serif' }}>Inter</SelectItem>
+                             <SelectItem value="montserrat" style={{ fontFamily: 'Montserrat, sans-serif' }}>Montserrat</SelectItem>
+                             <SelectItem value="lato" style={{ fontFamily: 'Lato, sans-serif' }}>Lato</SelectItem>
+                             <SelectItem value="opensans" style={{ fontFamily: 'Open Sans, sans-serif' }}>Open Sans</SelectItem>
+                             <SelectItem value="poppins" style={{ fontFamily: 'Poppins, sans-serif' }}>Poppins</SelectItem>
+                             <SelectItem value="nunito" style={{ fontFamily: 'Nunito, sans-serif' }}>Nunito</SelectItem>
+                             <SelectItem value="sourcesans" style={{ fontFamily: 'Source Sans Pro, sans-serif' }}>Source Sans Pro</SelectItem>
+                             <SelectItem value="raleway" style={{ fontFamily: 'Raleway, sans-serif' }}>Raleway</SelectItem>
+                             <SelectItem value="oswald" style={{ fontFamily: 'Oswald, sans-serif' }}>Oswald</SelectItem>
+                             <SelectItem value="merriweather" style={{ fontFamily: 'Merriweather, serif' }}>Merriweather</SelectItem>
+                           </SelectContent>
                         </Select>
                         <Select value={secondaryFont} onValueChange={setSecondaryFont}>
                           <SelectTrigger>
                             <SelectValue placeholder="Secondary Font" />
                           </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="lato">Lato</SelectItem>
-                            <SelectItem value="opensans">Open Sans</SelectItem>
-                            <SelectItem value="poppins">Poppins</SelectItem>
-                            <SelectItem value="roboto">Roboto</SelectItem>
-                            <SelectItem value="inter">Inter</SelectItem>
-                            <SelectItem value="nunito">Nunito</SelectItem>
-                            <SelectItem value="sourcesans">Source Sans Pro</SelectItem>
-                            <SelectItem value="raleway">Raleway</SelectItem>
-                            <SelectItem value="ubuntu">Ubuntu</SelectItem>
-                            <SelectItem value="worksans">Work Sans</SelectItem>
-                            <SelectItem value="dmsans">DM Sans</SelectItem>
-                            <SelectItem value="firasans">Fira Sans</SelectItem>
-                          </SelectContent>
+                           <SelectContent>
+                             <SelectItem value="lato" style={{ fontFamily: 'Lato, sans-serif' }}>Lato</SelectItem>
+                             <SelectItem value="opensans" style={{ fontFamily: 'Open Sans, sans-serif' }}>Open Sans</SelectItem>
+                             <SelectItem value="poppins" style={{ fontFamily: 'Poppins, sans-serif' }}>Poppins</SelectItem>
+                             <SelectItem value="roboto" style={{ fontFamily: 'Roboto, sans-serif' }}>Roboto</SelectItem>
+                             <SelectItem value="inter" style={{ fontFamily: 'Inter, sans-serif' }}>Inter</SelectItem>
+                             <SelectItem value="nunito" style={{ fontFamily: 'Nunito, sans-serif' }}>Nunito</SelectItem>
+                             <SelectItem value="sourcesans" style={{ fontFamily: 'Source Sans Pro, sans-serif' }}>Source Sans Pro</SelectItem>
+                             <SelectItem value="raleway" style={{ fontFamily: 'Raleway, sans-serif' }}>Raleway</SelectItem>
+                             <SelectItem value="ubuntu" style={{ fontFamily: 'Ubuntu, sans-serif' }}>Ubuntu</SelectItem>
+                             <SelectItem value="worksans" style={{ fontFamily: 'Work Sans, sans-serif' }}>Work Sans</SelectItem>
+                             <SelectItem value="dmsans" style={{ fontFamily: 'DM Sans, sans-serif' }}>DM Sans</SelectItem>
+                             <SelectItem value="firasans" style={{ fontFamily: 'Fira Sans, sans-serif' }}>Fira Sans</SelectItem>
+                           </SelectContent>
                         </Select>
                       </div>
                     </div>
@@ -1671,24 +1713,84 @@ export default function Dashboard() {
                       <Label className="text-sm font-medium mb-3 block">Brand Guidelines</Label>
                       <div className="space-y-3">
                         <div>
-                          <Label className="text-xs text-muted-foreground mb-1 block">Brand Voice</Label>
-                          <Select value={brandVoice} onValueChange={setBrandVoice}>
-                            <SelectTrigger className="h-9">
-                              <SelectValue placeholder="Select brand voice" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="professional-authoritative">Professional & Authoritative</SelectItem>
-                              <SelectItem value="friendly-approachable">Friendly & Approachable</SelectItem>
-                              <SelectItem value="innovative-forward">Innovative & Forward-thinking</SelectItem>
-                              <SelectItem value="luxury-premium">Luxury & Premium</SelectItem>
-                              <SelectItem value="casual-relatable">Casual & Relatable</SelectItem>
-                              <SelectItem value="expert-trustworthy">Expert & Trustworthy</SelectItem>
-                              <SelectItem value="creative-inspiring">Creative & Inspiring</SelectItem>
-                              <SelectItem value="playful-energetic">Playful & Energetic</SelectItem>
-                              <SelectItem value="minimalist-clean">Minimalist & Clean</SelectItem>
-                              <SelectItem value="bold-confident">Bold & Confident</SelectItem>
-                            </SelectContent>
-                          </Select>
+                           <Label className="text-xs text-muted-foreground mb-1 block">Brand Voice</Label>
+                           <Select value={brandVoice} onValueChange={setBrandVoice}>
+                             <SelectTrigger className="h-9">
+                               <SelectValue placeholder="Select brand voice" />
+                             </SelectTrigger>
+                             <SelectContent>
+                               <SelectItem value="professional-authoritative" className="flex items-center justify-between">
+                                 <span>Professional & Authoritative</span>
+                                 <Button 
+                                   size="sm" 
+                                   variant="ghost" 
+                                   className="h-6 w-6 p-0 ml-2 hover:bg-primary/10"
+                                   onClick={(e) => {
+                                     e.stopPropagation();
+                                     playVoicePreview("professional-authoritative");
+                                   }}
+                                 >
+                                   <Volume2 className="h-3 w-3" />
+                                 </Button>
+                               </SelectItem>
+                               <SelectItem value="friendly-approachable" className="flex items-center justify-between">
+                                 <span>Friendly & Approachable</span>
+                                 <Button 
+                                   size="sm" 
+                                   variant="ghost" 
+                                   className="h-6 w-6 p-0 ml-2 hover:bg-primary/10"
+                                   onClick={(e) => {
+                                     e.stopPropagation();
+                                     playVoicePreview("friendly-approachable");
+                                   }}
+                                 >
+                                   <Volume2 className="h-3 w-3" />
+                                 </Button>
+                               </SelectItem>
+                               <SelectItem value="innovative-forward" className="flex items-center justify-between">
+                                 <span>Innovative & Forward-thinking</span>
+                                 <Button 
+                                   size="sm" 
+                                   variant="ghost" 
+                                   className="h-6 w-6 p-0 ml-2 hover:bg-primary/10"
+                                   onClick={(e) => {
+                                     e.stopPropagation();
+                                     playVoicePreview("innovative-forward");
+                                   }}
+                                 >
+                                   <Volume2 className="h-3 w-3" />
+                                 </Button>
+                               </SelectItem>
+                               <SelectItem value="luxury-premium" className="flex items-center justify-between">
+                                 <span>Luxury & Premium</span>
+                                 <Button 
+                                   size="sm" 
+                                   variant="ghost" 
+                                   className="h-6 w-6 p-0 ml-2 hover:bg-primary/10"
+                                   onClick={(e) => {
+                                     e.stopPropagation();
+                                     playVoicePreview("luxury-premium");
+                                   }}
+                                 >
+                                   <Volume2 className="h-3 w-3" />
+                                 </Button>
+                               </SelectItem>
+                               <SelectItem value="casual-relatable" className="flex items-center justify-between">
+                                 <span>Casual & Relatable</span>
+                                 <Button 
+                                   size="sm" 
+                                   variant="ghost" 
+                                   className="h-6 w-6 p-0 ml-2 hover:bg-primary/10"
+                                   onClick={(e) => {
+                                     e.stopPropagation();
+                                     playVoicePreview("casual-relatable");
+                                   }}
+                                 >
+                                   <Volume2 className="h-3 w-3" />
+                                 </Button>
+                               </SelectItem>
+                             </SelectContent>
+                           </Select>
                         </div>
                         <div>
                           <Label className="text-xs text-muted-foreground mb-1 block">Target Audience</Label>
