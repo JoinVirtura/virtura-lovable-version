@@ -32,11 +32,13 @@ import { AvatarCard } from "@/components/AvatarCard"
 import { AvatarEditModal } from "@/components/AvatarEditModal"
 
 // Import avatar images
-import auroraImg from "@/assets/model-aurora.jpg"
-import bellaImg from "@/assets/model-bella.jpg"
-import chloeImg from "@/assets/model-chloe.jpg"
-import dianaImg from "@/assets/model-diana.jpg"
-import userAvatarImg from "@/assets/avatar-1.jpg"
+import jennaImg from "@/assets/model-jenna.jpg";
+import haleyImg from "@/assets/model-haley.jpg";
+import lenaImg from "@/assets/model-lena.jpg";
+import ravenImg from "@/assets/model-raven.jpg";
+import sofiaImg from "@/assets/model-sofia.jpg";
+import mayaImg from "@/assets/model-maya.jpg";
+import userAvatarImg from "@/assets/avatar-1.jpg";
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState("overview")
@@ -51,35 +53,51 @@ export default function DashboardPage() {
   const recentAvatars = [
     { 
       id: 1, 
-      name: "Aurora", 
+      name: "Jenna", 
       style: "Realistic", 
       status: "completed", 
-      image: auroraImg,
-      description: "Sophisticated redhead with emerald eyes and elegant charm"
+      image: jennaImg,
+      description: "Hey guys Jenna here, I love gaming, anime and having deep conversations 💖"
     },
     { 
       id: 2, 
-      name: "Bella", 
+      name: "Haley", 
       style: "Realistic", 
       status: "completed", 
-      image: bellaImg,
-      description: "Confident beauty with natural curls and warm golden glow"
+      image: haleyImg,
+      description: "Small-town gym rat with big energy 💪 Ready for fun adventures and good vibes"
     },
     { 
       id: 3, 
-      name: "Chloe", 
+      name: "Lena", 
       style: "Realistic", 
       status: "completed", 
-      image: chloeImg,
-      description: "Mysterious platinum blonde with captivating blue eyes"
+      image: lenaImg,
+      description: "Bavarian soul ✨ Sweet, relaxed, and always up for meaningful connections"
     },
     { 
       id: 4, 
-      name: "Diana", 
+      name: "Raven", 
       style: "Realistic", 
       status: "completed", 
-      image: dianaImg,
-      description: "Serene and graceful with gentle smile and natural beauty"
+      image: ravenImg,
+      description: "Goth soul 🖤 Artist 🎨 Dark humor and creative conversations are my thing"
+    },
+    { 
+      id: 5, 
+      name: "Sofia", 
+      style: "Realistic", 
+      status: "completed", 
+      image: sofiaImg,
+      description: "Creative and passionate with artistic flair and vibrant energy"
+    },
+    { 
+      id: 6, 
+      name: "Maya", 
+      style: "Realistic", 
+      status: "completed", 
+      image: mayaImg,
+      description: "Free spirit with wanderlust and love for adventure and new experiences"
     },
   ]
 
