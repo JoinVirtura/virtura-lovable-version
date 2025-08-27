@@ -173,36 +173,172 @@ export default function Dashboard() {
               {/* Sidebar */}
               <div className="space-y-6">
                 {/* AI Suggestions */}
-                <Card className="p-6">
+                <Card className="p-6 h-[600px] flex flex-col">
                   <h3 className="text-lg font-display font-bold mb-4 flex items-center gap-2">
                     <Sparkles className="w-5 h-5 text-primary" />
                     AI Suggestions
                   </h3>
-                  <div className="space-y-3">
+                  <div className="flex-1 overflow-y-auto space-y-3 pr-2">
                     {[
                       {
-                        title: "Try different lighting",
+                        title: "Professional Headshots",
                         suggestion: "Professional headshot with golden hour lighting"
                       },
                       {
-                        title: "Add expressions", 
+                        title: "Business Portrait", 
                         suggestion: "Confident smile in business attire"
                       },
                       {
-                        title: "Change background",
+                        title: "Office Background",
                         suggestion: "Modern office environment backdrop"
                       },
                       {
-                        title: "Vary the pose",
+                        title: "Professional Pose",
                         suggestion: "Three-quarter view with arms crossed professionally"
                       },
                       {
-                        title: "Different styling",
+                        title: "Casual Entrepreneur",
                         suggestion: "Casual entrepreneur in creative workspace"
                       },
                       {
-                        title: "Add personality",
+                        title: "Approachable Teacher",
                         suggestion: "Warm approachable teacher with natural smile"
+                      },
+                      {
+                        title: "Corporate Executive",
+                        suggestion: "Executive in navy suit with confident expression"
+                      },
+                      {
+                        title: "Creative Professional",
+                        suggestion: "Creative professional in artistic studio setting"
+                      },
+                      {
+                        title: "Medical Professional",
+                        suggestion: "Doctor in white coat with stethoscope, hospital background"
+                      },
+                      {
+                        title: "Tech Startup Founder",
+                        suggestion: "Young tech entrepreneur in modern coworking space"
+                      },
+                      {
+                        title: "Marketing Manager",
+                        suggestion: "Marketing professional with laptop in bright office"
+                      },
+                      {
+                        title: "Outdoor Portrait",
+                        suggestion: "Natural outdoor portrait with soft natural lighting"
+                      },
+                      {
+                        title: "Home Office Setup",
+                        suggestion: "Professional working from home office with plants"
+                      },
+                      {
+                        title: "Conference Speaker",
+                        suggestion: "Confident speaker presenting at business conference"
+                      },
+                      {
+                        title: "Team Leader",
+                        suggestion: "Team leader in collaborative meeting room"
+                      },
+                      {
+                        title: "Consultant",
+                        suggestion: "Business consultant with strategic documents"
+                      },
+                      {
+                        title: "Designer Portrait",
+                        suggestion: "Graphic designer with creative tools and artwork"
+                      },
+                      {
+                        title: "Lawyer Professional",
+                        suggestion: "Professional lawyer in traditional law office"
+                      },
+                      {
+                        title: "Real Estate Agent",
+                        suggestion: "Real estate professional with property listings"
+                      },
+                      {
+                        title: "Financial Advisor",
+                        suggestion: "Financial advisor with charts and professional demeanor"
+                      },
+                      {
+                        title: "Chef Portrait",
+                        suggestion: "Professional chef in modern kitchen environment"
+                      },
+                      {
+                        title: "Fitness Trainer",
+                        suggestion: "Personal trainer in modern gym setting"
+                      },
+                      {
+                        title: "Architect",
+                        suggestion: "Architect with blueprints in modern design studio"
+                      },
+                      {
+                        title: "Social Media Manager",
+                        suggestion: "Social media expert with multiple screens and content"
+                      },
+                      {
+                        title: "Sales Professional",
+                        suggestion: "Sales representative with confident handshake pose"
+                      },
+                      {
+                        title: "HR Manager",
+                        suggestion: "Human resources professional in welcoming office"
+                      },
+                      {
+                        title: "Event Planner",
+                        suggestion: "Event coordinator with elegant venue background"
+                      },
+                      {
+                        title: "Photographer",
+                        suggestion: "Professional photographer with camera equipment"
+                      },
+                      {
+                        title: "Writer/Author",
+                        suggestion: "Author with books and cozy writing environment"
+                      },
+                      {
+                        title: "Music Producer",
+                        suggestion: "Music producer in professional recording studio"
+                      },
+                      {
+                        title: "Fashion Designer",
+                        suggestion: "Fashion designer with sketches and fabric samples"
+                      },
+                      {
+                        title: "Travel Blogger",
+                        suggestion: "Travel influencer with world map and luggage"
+                      },
+                      {
+                        title: "Life Coach",
+                        suggestion: "Life coach in inspiring motivational setting"
+                      },
+                      {
+                        title: "Yoga Instructor",
+                        suggestion: "Yoga teacher in peaceful studio with natural light"
+                      },
+                      {
+                        title: "Environmental Scientist",
+                        suggestion: "Scientist in laboratory with research equipment"
+                      },
+                      {
+                        title: "App Developer",
+                        suggestion: "Software developer with multiple coding screens"
+                      },
+                      {
+                        title: "Podcast Host",
+                        suggestion: "Podcast host with professional microphone setup"
+                      },
+                      {
+                        title: "Interior Designer",
+                        suggestion: "Interior designer with mood boards and samples"
+                      },
+                      {
+                        title: "Therapist",
+                        suggestion: "Mental health professional in calming office"
+                      },
+                      {
+                        title: "Veterinarian",
+                        suggestion: "Veterinarian with friendly animals in clinic"
                       }
                     ].map((item, index) => (
                       <div
@@ -217,7 +353,7 @@ export default function Dashboard() {
                             textarea.focus();
                           }
                         }}
-                        className="p-3 rounded-lg hover:bg-accent/50 cursor-pointer transition-colors group"
+                        className="p-3 rounded-lg hover:bg-accent/50 cursor-pointer transition-colors group border border-border/50 hover:border-primary/30"
                       >
                         <p className="font-medium text-sm mb-1 group-hover:text-primary transition-colors">
                           {item.title}
@@ -227,27 +363,6 @@ export default function Dashboard() {
                         </p>
                       </div>
                     ))}
-                  </div>
-                </Card>
-
-                {/* Recent Avatars */}
-                <Card className="p-6">
-                  <h3 className="text-lg font-display font-bold mb-4">Recent Avatars</h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-muted rounded-lg"></div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">Professional headshot</p>
-                        <p className="text-xs text-muted-foreground">2 hours ago</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-muted rounded-lg"></div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">Casual portrait</p>
-                        <p className="text-xs text-muted-foreground">1 day ago</p>
-                      </div>
-                    </div>
                   </div>
                 </Card>
               </div>
