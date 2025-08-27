@@ -63,9 +63,9 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
         </div>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="px-3">
         <SidebarGroup>
-          <SidebarGroupLabel className="text-muted-foreground">Quick Actions</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-muted-foreground px-0">Quick Actions</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {mainItems.map((item) => (
@@ -91,7 +91,7 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
         <SidebarSeparator />
 
         <SidebarGroup>
-          <SidebarGroupLabel className="text-muted-foreground">Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-muted-foreground px-0">Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navigationTabs.map((item) => (
@@ -112,11 +112,11 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
-        </SidebarGroup>
+         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-0">
-        <SidebarMenu className="px-4 py-2">
+      <SidebarFooter className="p-0 mt-0">
+        <SidebarMenu className="px-3 py-0 space-y-0">
           <SidebarMenuItem>
             <SidebarMenuButton 
               onClick={() => onViewChange("export")}
@@ -161,9 +161,9 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
           </SidebarMenuItem>
         </SidebarMenu>
         
-        <SidebarSeparator className="mx-4" />
+        <SidebarSeparator className="mx-3" />
         
-        <div className="flex items-center gap-3 px-4 py-2">
+        <div className="flex items-center gap-3 px-3 py-2">
           <Avatar className="w-8 h-8">
             <AvatarImage src="/lovable-uploads/517f5d9c-c223-4625-9aa5-5f2ef255f576.png" />
             <AvatarFallback>J</AvatarFallback>
@@ -174,7 +174,7 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
           </div>
         </div>
         
-        <div className="px-4 pb-4">
+        <div className="px-3 pb-3">
           <Button 
             variant="ghost" 
             className="w-full justify-start gap-3 text-destructive hover:bg-destructive/10 h-auto px-3 py-2"
