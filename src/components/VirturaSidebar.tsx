@@ -114,50 +114,54 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarMenu className="py-0 space-y-0">
-          <SidebarMenuItem>
-            <SidebarMenuButton 
-              onClick={() => onViewChange("export")}
-              isActive={activeView === "export"}
-              className={`w-full justify-start gap-3 ${
-                activeView === "export" 
-                  ? "bg-primary text-primary-foreground shadow-gold" 
-                  : "hover:bg-accent"
-              }`}
-            >
-              <Download className="w-4 h-4" />
-              <span className="font-medium">Export</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton 
-              onClick={() => onViewChange("settings")}
-              isActive={activeView === "settings"}
-              className={`w-full justify-start gap-3 ${
-                activeView === "settings" 
-                  ? "bg-primary text-primary-foreground shadow-gold" 
-                  : "hover:bg-accent"
-              }`}
-            >
-              <Settings className="w-4 h-4" />
-              <span className="font-medium">Settings</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton 
-              onClick={() => onViewChange("upgrade")}
-              isActive={activeView === "upgrade"}
-              className={`w-full justify-start gap-3 ${
-                activeView === "upgrade" 
-                  ? "bg-primary text-primary-foreground shadow-gold" 
-                  : "hover:bg-accent"
-              }`}
-            >
-              <Crown className="w-4 h-4" />
-              <span className="font-medium">Upgrade Plan</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <SidebarGroup className="pb-0">
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton 
+                  onClick={() => onViewChange("export")}
+                  isActive={activeView === "export"}
+                  className={`w-full justify-start gap-3 ${
+                    activeView === "export" 
+                      ? "bg-primary text-primary-foreground shadow-gold" 
+                      : "hover:bg-accent"
+                  }`}
+                >
+                  <Download className="w-4 h-4" />
+                  <span className="font-medium">Export</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton 
+                  onClick={() => onViewChange("settings")}
+                  isActive={activeView === "settings"}
+                  className={`w-full justify-start gap-3 ${
+                    activeView === "settings" 
+                      ? "bg-primary text-primary-foreground shadow-gold" 
+                      : "hover:bg-accent"
+                  }`}
+                >
+                  <Settings className="w-4 h-4" />
+                  <span className="font-medium">Settings</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton 
+                  onClick={() => onViewChange("upgrade")}
+                  isActive={activeView === "upgrade"}
+                  className={`w-full justify-start gap-3 ${
+                    activeView === "upgrade" 
+                      ? "bg-primary text-primary-foreground shadow-gold" 
+                      : "hover:bg-accent"
+                  }`}
+                >
+                  <Crown className="w-4 h-4" />
+                  <span className="font-medium">Upgrade Plan</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
 
       <SidebarFooter className="p-0 mt-0">
