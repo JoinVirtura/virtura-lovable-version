@@ -2,9 +2,7 @@ import { useState } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { VirturaSidebar } from "@/components/VirturaSidebar";
 import { OverviewPage } from "@/components/OverviewPage";
-import virturaThumb1 from "@/assets/virtura-video-thumb-1.jpg";
-import virturaThumb2 from "@/assets/virtura-video-thumb-2.jpg";
-import virturaThumb3 from "@/assets/virtura-video-thumb-3.jpg";
+import virturaLogo from "/lovable-uploads/f264298f-2877-485b-affc-d705994fc848.png";
 import { CreateAvatar } from "@/components/CreateAvatar";
 import { AvatarStudio } from "@/components/AvatarStudio";
 import { UploadSection } from "@/components/UploadSection";
@@ -707,7 +705,7 @@ export default function Dashboard() {
                 <Card className="overflow-hidden">
                   <div className="aspect-video relative group cursor-pointer">
                     <img 
-                      src={virturaThumb1} 
+                      src={virturaLogo}
                       alt="Virtura Complete Tutorial"
                       className="w-full h-full object-cover"
                     />
@@ -731,7 +729,7 @@ export default function Dashboard() {
                 <Card className="overflow-hidden">
                   <div className="aspect-video relative group cursor-pointer">
                     <img 
-                      src={virturaThumb2} 
+                      src={virturaLogo} 
                       alt="Avatar Creation Tutorial"
                       className="w-full h-full object-cover"
                     />
@@ -755,7 +753,7 @@ export default function Dashboard() {
                 <Card className="overflow-hidden">
                   <div className="aspect-video relative group cursor-pointer">
                     <img 
-                      src={virturaThumb3} 
+                      src={virturaLogo} 
                       alt="Content Enhancement Tutorial"
                       className="w-full h-full object-cover"
                     />
@@ -941,7 +939,7 @@ export default function Dashboard() {
                               </h4>
                               <div className="aspect-video bg-muted rounded-lg overflow-hidden relative group cursor-pointer">
                                 <img 
-                                  src={virturaThumb1} 
+                                  src={virturaLogo} 
                                   alt={`${todo.title} Tutorial`}
                                   className="w-full h-full object-cover"
                                 />
