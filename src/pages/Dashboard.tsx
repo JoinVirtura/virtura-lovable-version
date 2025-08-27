@@ -41,7 +41,6 @@ import {
 
 export default function Dashboard() {
   const [activeView, setActiveView] = useState("overview");
-  const [verifying, setVerifying] = useState(false);
   
   // Library page state
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -75,38 +74,6 @@ export default function Dashboard() {
     }
   ]);
   const [showConfetti, setShowConfetti] = useState(false);
-
-  const handleVerify = async () => {
-    try {
-      setVerifying(true);
-      const [openai, hf] = await Promise.all([
-        supabase.functions.invoke('test-openai'),
-        supabase.functions.invoke('generate-avatar-hf', {
-          body: {
-            prompt: 'sanity check portrait, plain background',
-            style: 'photorealistic',
-            resolution: '512x512',
-            creativity: 0.2,
-          },
-        }),
-      ]);
-
-      const openaiOk = !openai.error && (openai.data?.success ?? openai.data?.ok ?? true);
-      const hfOk = !hf.error && Boolean(hf.data?.success);
-
-      if (openaiOk && hfOk) {
-        toast.success('OpenAI and Hugging Face are configured correctly.');
-      } else {
-        if (!openaiOk) toast.error(`OpenAI test failed: ${openai.error?.message || openai.data?.error || 'unknown error'}`);
-        if (!hfOk) toast.error(`Hugging Face test failed: ${hf.error?.message || hf.data?.error || 'unknown error'}`);
-      }
-    } catch (e) {
-      console.error('Verification error:', e);
-      toast.error(e instanceof Error ? e.message : 'Verification failed');
-    } finally {
-      setVerifying(false);
-    }
-  };
 
   // Mock data for library
   const assets = [
@@ -213,7 +180,7 @@ export default function Dashboard() {
                   </h3>
                   <div className="space-y-3">
                     <Button variant="ghost" className="w-full justify-start text-left h-auto p-3">
-                      <div>
+                      <div className="text-left">
                         <p className="font-medium">Try different lighting</p>
                         <p className="text-sm text-muted-foreground">
                           "Professional headshot with golden hour lighting"
@@ -221,10 +188,18 @@ export default function Dashboard() {
                       </div>
                     </Button>
                     <Button variant="ghost" className="w-full justify-start text-left h-auto p-3">
-                      <div>
+                      <div className="text-left">
                         <p className="font-medium">Add expressions</p>
                         <p className="text-sm text-muted-foreground">
                           "Confident smile in business attire"
+                        </p>
+                      </div>
+                    </Button>
+                    <Button variant="ghost" className="w-full justify-start text-left h-auto p-3">
+                      <div className="text-left">
+                        <p className="font-medium">Change background</p>
+                        <p className="text-sm text-muted-foreground">
+                          "Modern office environment backdrop"
                         </p>
                       </div>
                     </Button>
@@ -623,19 +598,6 @@ export default function Dashboard() {
         <VirturaSidebar activeView={activeView} onViewChange={setActiveView} />
         
         <div className="flex-1 flex flex-col">
-          {/* Optional header for additional actions */}
-          <header className="h-14 flex items-center justify-end px-6 border-b border-border bg-card/50">
-            <Button 
-              size="sm" 
-              variant="outline" 
-              onClick={handleVerify} 
-              disabled={verifying} 
-              className="border-border/50"
-            >
-              {verifying ? 'Verifying...' : 'Verify AI Setup'}
-            </Button>
-          </header>
-
           {/* Main Content */}
           <main className="flex-1 p-6">
             {renderContent()}
