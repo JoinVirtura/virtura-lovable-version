@@ -51,6 +51,13 @@ import {
 export default function Dashboard() {
   const [activeView, setActiveView] = useState("overview");
   
+  // Copilot Flow state
+  const [currentPrompt, setCurrentPrompt] = useState("");
+  const [generatedPreviews, setGeneratedPreviews] = useState<any[]>([]);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [chatMessages, setChatMessages] = useState<any[]>([]);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  
   // Library page state
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
@@ -368,8 +375,45 @@ export default function Dashboard() {
     }
   };
 
-  const handleGenerate = (prompt: string) => {
-    console.log("Generating with prompt:", prompt);
+  const handleGenerate = async (prompt: string) => {
+    setIsGenerating(true);
+    setCurrentPrompt(prompt);
+    
+    // Simulate AI generation with mock data
+    setTimeout(() => {
+      const mockPreviews = [
+        {
+          id: 1,
+          imageUrl: virturaLogo,
+          title: "Professional Look",
+          description: "Clean, professional headshot with modern lighting"
+        },
+        {
+          id: 2,
+          imageUrl: virturaLogo,
+          title: "Creative Style",
+          description: "Artistic portrait with dynamic composition"
+        },
+        {
+          id: 3,
+          imageUrl: virturaLogo,
+          title: "Casual Vibe",
+          description: "Relaxed, approachable style with warm tones"
+        }
+      ];
+      setGeneratedPreviews(mockPreviews);
+      setIsGenerating(false);
+    }, 2000);
+  };
+
+  const handleQuickEdit = (previewId: number, editType: string) => {
+    console.log("Quick edit:", previewId, editType);
+    // Implement quick edit functionality
+  };
+
+  const handleChatRefine = (message: string) => {
+    setChatMessages(prev => [...prev, { role: 'user', content: message }]);
+    // Implement chat refinement
   };
 
   const renderContent = () => {
@@ -402,14 +446,144 @@ export default function Dashboard() {
             </Card>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Main Chat Interface */}
-              <div className="lg:col-span-2">
-                <ChatInterface type="individuals" onGenerate={handleGenerate} />
+              {/* Main Content */}
+              <div className="lg:col-span-2 space-y-6">
+                {/* Copilot Input */}
+                <Card className="p-6">
+                  <div className="space-y-4">
+                    <div className="relative">
+                      <Input
+                        value={currentPrompt}
+                        onChange={(e) => setCurrentPrompt(e.target.value)}
+                        placeholder="Describe what you want: 'Make a smiling teacher in a bright classroom'..."
+                        className="pr-12 h-12 text-base"
+                        onKeyPress={(e) => e.key === 'Enter' && handleGenerate(currentPrompt)}
+                      />
+                      <Button 
+                        onClick={() => handleGenerate(currentPrompt)}
+                        className="absolute right-2 top-2 h-8 w-8 p-0"
+                        disabled={isGenerating || !currentPrompt.trim()}
+                      >
+                        <Sparkles className="w-4 h-4" />
+                      </Button>
+                    </div>
+
+                    {/* Quick Presets */}
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium text-muted-foreground">Quick Presets</p>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        {[
+                          { icon: User, label: "Headshot" },
+                          { icon: User, label: "Family Portrait" },
+                          { icon: Share2, label: "Social Post" },
+                          { icon: Star, label: "Commercial" }
+                        ].map((preset) => (
+                          <Button
+                            key={preset.label}
+                            variant="outline"
+                            className="h-16 flex-col gap-2"
+                            onClick={() => setCurrentPrompt(`Create a ${preset.label.toLowerCase()}`)}
+                          >
+                            <preset.icon className="w-5 h-5" />
+                            <span className="text-xs">{preset.label}</span>
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Advanced Options */}
+                    <Button
+                      variant="ghost"
+                      onClick={() => setShowAdvanced(!showAdvanced)}
+                      className="flex items-center gap-2 text-muted-foreground"
+                    >
+                      <SettingsIcon className="w-4 h-4" />
+                      Advanced Options ({showAdvanced ? 'Hide' : 'Show'})
+                    </Button>
+
+                    {showAdvanced && (
+                      <div className="space-y-4 p-4 bg-muted/30 rounded-lg">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor="style">Style</Label>
+                            <Input id="style" placeholder="Photorealistic" />
+                          </div>
+                          <div>
+                            <Label htmlFor="lighting">Lighting</Label>
+                            <Input id="lighting" placeholder="Natural light" />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </Card>
+
+                {/* Generated Previews */}
+                {isGenerating && (
+                  <Card className="p-6">
+                    <div className="flex items-center justify-center py-8">
+                      <div className="flex items-center gap-3">
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                        <span className="text-muted-foreground">Generating your avatars...</span>
+                      </div>
+                    </div>
+                  </Card>
+                )}
+
+                {generatedPreviews.length > 0 && !isGenerating && (
+                  <Card className="p-6">
+                    <h3 className="text-lg font-semibold mb-4">Generated Previews</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {generatedPreviews.map((preview) => (
+                        <Card key={preview.id} className="overflow-hidden">
+                          <div className="aspect-square bg-muted relative">
+                            <img
+                              src={preview.imageUrl}
+                              alt={preview.title}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div className="p-3 space-y-2">
+                            <h4 className="font-medium text-sm">{preview.title}</h4>
+                            <p className="text-xs text-muted-foreground">{preview.description}</p>
+                            <div className="flex gap-1">
+                              <Button size="sm" variant="outline" className="text-xs">
+                                <Edit className="w-3 h-3 mr-1" />
+                                Quick Edit
+                              </Button>
+                              <Button size="sm" className="text-xs">
+                                <Download className="w-3 h-3 mr-1" />
+                                Save
+                              </Button>
+                            </div>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+
+                    {/* Chat Refinement */}
+                    <div className="mt-6 pt-4 border-t">
+                      <p className="text-sm font-medium mb-2">Refine with chat</p>
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Make hair curly, change background to blue..."
+                          className="flex-1"
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                              handleChatRefine((e.target as HTMLInputElement).value);
+                              (e.target as HTMLInputElement).value = '';
+                            }
+                          }}
+                        />
+                        <Button size="sm">Send</Button>
+                      </div>
+                    </div>
+                  </Card>
+                )}
               </div>
 
-              {/* Sidebar */}
+              {/* Sidebar - AI Prompt Library */}
               <div className="space-y-6">
-                {/* AI Suggestions Library */}
                 <Card className="p-6 h-[600px] flex flex-col">
                   <h3 className="text-lg font-display font-bold mb-4 flex items-center gap-2">
                     <Sparkles className="w-5 h-5 text-primary" />
@@ -457,15 +631,7 @@ export default function Dashboard() {
                       filteredPrompts.map((item, index) => (
                         <div
                           key={index}
-                          onClick={() => {
-                            const textarea = document.getElementById('main-prompt-textarea') as HTMLTextAreaElement;
-                            if (textarea) {
-                              const event = new Event('input', { bubbles: true });
-                              textarea.value = item.prompt;
-                              textarea.dispatchEvent(event);
-                              textarea.focus();
-                            }
-                          }}
+                          onClick={() => setCurrentPrompt(item.prompt)}
                           className="p-3 rounded-lg hover:bg-accent/50 cursor-pointer transition-colors group border border-border/30 hover:border-primary/50"
                         >
                           <div className="flex items-start justify-between mb-1">
@@ -483,10 +649,9 @@ export default function Dashboard() {
                       ))
                     ) : (
                       <div className="flex items-center justify-center h-32 text-center">
-                        <div>
-                          <Search className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                        <div className="space-y-2">
                           <p className="text-sm text-muted-foreground">No prompts found</p>
-                          <p className="text-xs text-muted-foreground">Try a different search term or category</p>
+                          <p className="text-xs text-muted-foreground">Try adjusting your search or category filter</p>
                         </div>
                       </div>
                     )}
@@ -518,28 +683,169 @@ export default function Dashboard() {
             </Card>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Main Chat Interface */}
-              <div className="lg:col-span-2">
-                <ChatInterface type="brands" onGenerate={handleGenerate} />
+              {/* Main Content */}
+              <div className="lg:col-span-2 space-y-6">
+                {/* Copilot Input */}
+                <Card className="p-6">
+                  <div className="space-y-4">
+                    <div className="relative">
+                      <Input
+                        value={currentPrompt}
+                        onChange={(e) => setCurrentPrompt(e.target.value)}
+                        placeholder="Describe what you want: 'Make a smiling teacher in a bright classroom'..."
+                        className="pr-12 h-12 text-base"
+                        onKeyPress={(e) => e.key === 'Enter' && handleGenerate(currentPrompt)}
+                      />
+                      <Button 
+                        onClick={() => handleGenerate(currentPrompt)}
+                        className="absolute right-2 top-2 h-8 w-8 p-0"
+                        disabled={isGenerating || !currentPrompt.trim()}
+                      >
+                        <Sparkles className="w-4 h-4" />
+                      </Button>
+                    </div>
+
+                    {/* Quick Presets */}
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium text-muted-foreground">Quick Presets</p>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        {[
+                          { icon: Star, label: "Commercial" },
+                          { icon: Sparkles, label: "Campaign" },
+                          { icon: Tag, label: "Product Mockup" },
+                          { icon: Star, label: "Ad Pack" }
+                        ].map((preset) => (
+                          <Button
+                            key={preset.label}
+                            variant="outline"
+                            className="h-16 flex-col gap-2"
+                            onClick={() => setCurrentPrompt(`Create a ${preset.label.toLowerCase()}`)}
+                          >
+                            <preset.icon className="w-5 h-5" />
+                            <span className="text-xs">{preset.label}</span>
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Advanced Options */}
+                    <Button
+                      variant="ghost"
+                      onClick={() => setShowAdvanced(!showAdvanced)}
+                      className="flex items-center gap-2 text-muted-foreground"
+                    >
+                      <SettingsIcon className="w-4 h-4" />
+                      Advanced Options ({showAdvanced ? 'Hide' : 'Show'})
+                    </Button>
+
+                    {showAdvanced && (
+                      <div className="space-y-4 p-4 bg-muted/30 rounded-lg">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor="style">Style</Label>
+                            <Input id="style" placeholder="Modern, Clean" />
+                          </div>
+                          <div>
+                            <Label htmlFor="format">Format</Label>
+                            <Input id="format" placeholder="Instagram Story" />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </Card>
+
+                {/* Generated Previews */}
+                {isGenerating && (
+                  <Card className="p-6">
+                    <div className="flex items-center justify-center py-8">
+                      <div className="flex items-center gap-3">
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                        <span className="text-muted-foreground">Generating your brand content...</span>
+                      </div>
+                    </div>
+                  </Card>
+                )}
+
+                {generatedPreviews.length > 0 && !isGenerating && (
+                  <Card className="p-6">
+                    <h3 className="text-lg font-semibold mb-4">Generated Previews</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {generatedPreviews.map((preview) => (
+                        <Card key={preview.id} className="overflow-hidden">
+                          <div className="aspect-square bg-muted relative">
+                            <img
+                              src={preview.imageUrl}
+                              alt={preview.title}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div className="p-3 space-y-2">
+                            <h4 className="font-medium text-sm">{preview.title}</h4>
+                            <p className="text-xs text-muted-foreground">{preview.description}</p>
+                            <div className="flex gap-1">
+                              <Button size="sm" variant="outline" className="text-xs">
+                                <Edit className="w-3 h-3 mr-1" />
+                                Quick Edit
+                              </Button>
+                              <Button size="sm" className="text-xs">
+                                <Download className="w-3 h-3 mr-1" />
+                                Save
+                              </Button>
+                            </div>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+
+                    {/* Chat Refinement */}
+                    <div className="mt-6 pt-4 border-t">
+                      <p className="text-sm font-medium mb-2">Refine with chat</p>
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Change colors to match brand, add logo..."
+                          className="flex-1"
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                              handleChatRefine((e.target as HTMLInputElement).value);
+                              (e.target as HTMLInputElement).value = '';
+                            }
+                          }}
+                        />
+                        <Button size="sm">Send</Button>
+                      </div>
+                    </div>
+                  </Card>
+                )}
               </div>
 
-              {/* Sidebar */}
+              {/* Sidebar - Brand Kit */}
               <div className="space-y-6">
-                {/* Brand Kit */}
                 <Card className="p-6">
                   <h3 className="text-lg font-display font-bold mb-4 flex items-center gap-2">
                     <SettingsIcon className="w-5 h-5 text-primary" />
                     Brand Kit
                   </h3>
                   <div className="space-y-4">
-                    <Button variant="outline" className="w-full justify-start gap-3">
+                    <Button variant="outline" className="w-full justify-start gap-3 h-12">
                       <Upload className="w-4 h-4" />
                       Upload Logo
                     </Button>
-                    <Button variant="outline" className="w-full justify-start gap-3">
-                      <SettingsIcon className="w-4 h-4" />
-                      Brand Colors
-                    </Button>
+                    <div className="space-y-2">
+                      <Button variant="outline" className="w-full justify-start gap-3 h-12">
+                        <SettingsIcon className="w-4 h-4" />
+                        Brand Colors
+                      </Button>
+                      <div className="grid grid-cols-4 gap-2 p-3 bg-muted/30 rounded-lg">
+                        {["#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4"].map((color) => (
+                          <div
+                            key={color}
+                            className="w-8 h-8 rounded-full cursor-pointer border-2 border-white shadow-sm"
+                            style={{ backgroundColor: color }}
+                          />
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </Card>
               </div>
