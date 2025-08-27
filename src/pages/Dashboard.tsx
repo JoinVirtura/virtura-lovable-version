@@ -2,6 +2,9 @@ import { useState } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { VirturaSidebar } from "@/components/VirturaSidebar";
 import { OverviewPage } from "@/components/OverviewPage";
+import virturaThumb1 from "@/assets/virtura-video-thumb-1.jpg";
+import virturaThumb2 from "@/assets/virtura-video-thumb-2.jpg";
+import virturaThumb3 from "@/assets/virtura-video-thumb-3.jpg";
 import { CreateAvatar } from "@/components/CreateAvatar";
 import { AvatarStudio } from "@/components/AvatarStudio";
 import { UploadSection } from "@/components/UploadSection";
@@ -702,15 +705,15 @@ export default function Dashboard() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {/* Main Tutorial Video */}
                 <Card className="overflow-hidden">
-                  <div className="aspect-video relative">
-                    <iframe
-                      src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                      title="Virtura Complete Tutorial"
-                      className="w-full h-full"
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
+                  <div className="aspect-video relative group cursor-pointer">
+                    <img 
+                      src={virturaThumb1} 
+                      alt="Virtura Complete Tutorial"
+                      className="w-full h-full object-cover"
                     />
+                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+                      <Play className="w-16 h-16 text-white opacity-80 group-hover:opacity-100 transition-opacity" />
+                    </div>
                   </div>
                   <div className="p-4">
                     <div className="flex items-center gap-2 mb-2">
@@ -726,15 +729,15 @@ export default function Dashboard() {
 
                 {/* Avatar Creation Video */}
                 <Card className="overflow-hidden">
-                  <div className="aspect-video relative">
-                    <iframe
-                      src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                      title="Avatar Creation Tutorial"
-                      className="w-full h-full"
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
+                  <div className="aspect-video relative group cursor-pointer">
+                    <img 
+                      src={virturaThumb2} 
+                      alt="Avatar Creation Tutorial"
+                      className="w-full h-full object-cover"
                     />
+                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+                      <Play className="w-16 h-16 text-white opacity-80 group-hover:opacity-100 transition-opacity" />
+                    </div>
                   </div>
                   <div className="p-4">
                     <div className="flex items-center gap-2 mb-2">
@@ -750,15 +753,15 @@ export default function Dashboard() {
 
                 {/* Enhancement Video */}
                 <Card className="overflow-hidden">
-                  <div className="aspect-video relative">
-                    <iframe
-                      src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                      title="Content Enhancement Tutorial"
-                      className="w-full h-full"
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
+                  <div className="aspect-video relative group cursor-pointer">
+                    <img 
+                      src={virturaThumb3} 
+                      alt="Content Enhancement Tutorial"
+                      className="w-full h-full object-cover"
                     />
+                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+                      <Play className="w-16 h-16 text-white opacity-80 group-hover:opacity-100 transition-opacity" />
+                    </div>
                   </div>
                   <div className="p-4">
                     <div className="flex items-center gap-2 mb-2">
@@ -936,15 +939,15 @@ export default function Dashboard() {
                                 <Video className="w-4 h-4 text-blue-500" />
                                 Tutorial Video
                               </h4>
-                              <div className="aspect-video bg-muted rounded-lg overflow-hidden">
-                                <iframe
-                                  src={todo.videoUrl}
-                                  title={`${todo.title} Tutorial`}
-                                  className="w-full h-full"
-                                  frameBorder="0"
-                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                  allowFullScreen
+                              <div className="aspect-video bg-muted rounded-lg overflow-hidden relative group cursor-pointer">
+                                <img 
+                                  src={virturaThumb1} 
+                                  alt={`${todo.title} Tutorial`}
+                                  className="w-full h-full object-cover"
                                 />
+                                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+                                  <Play className="w-12 h-12 text-white opacity-80 group-hover:opacity-100 transition-opacity" />
+                                </div>
                               </div>
                             </div>
                           </div>
