@@ -13,12 +13,12 @@ import { AvatarService } from "@/services/avatarService";
 import { Switch } from "@/components/ui/switch";
 
 // Import avatar images
-import jennaImg from "@/assets/model-jenna.jpg";
-import haleyImg from "@/assets/model-haley.jpg";
-import lenaImg from "@/assets/model-lena.jpg";
-import ravenImg from "@/assets/model-raven.jpg";
-import sofiaImg from "@/assets/model-sofia.jpg";
-import mayaImg from "@/assets/model-maya.jpg";
+import auroraImg from "@/assets/model-aurora.jpg";
+import bellaImg from "@/assets/model-bella.jpg";
+import chloeImg from "@/assets/model-chloe.jpg";
+import dianaImg from "@/assets/model-diana.jpg";
+import jadeImg from "@/assets/model-jade.jpg";
+import valentinaImg from "@/assets/model-valentina.jpg";
 import previewAvatarImg from "@/assets/preview-avatar.jpg";
 
 export const CreateAvatar = () => {
@@ -101,12 +101,12 @@ export const CreateAvatar = () => {
   const lighting = ["Natural", "Studio", "Dramatic", "Cinematic", "Neon"];
 
   const recentAvatars = [
-    { name: "Jenna", image: jennaImg, description: "Hey guys Jenna here, I love gaming, anime and having deep conversations 💖" },
-    { name: "Haley", image: haleyImg, description: "Small-town gym rat with big energy 💪 Ready for fun adventures and good vibes" },
-    { name: "Lena", image: lenaImg, description: "Bavarian soul ✨ Sweet, relaxed, and always up for meaningful connections" },
-    { name: "Raven", image: ravenImg, description: "Goth soul 🖤 Artist 🎨 Dark humor and creative conversations are my thing" },
-    { name: "Sofia", image: sofiaImg, description: "Creative and passionate with artistic flair and vibrant energy" },
-    { name: "Maya", image: mayaImg, description: "Free spirit with wanderlust and love for adventure and new experiences" }
+    { name: "Aurora", image: auroraImg, description: "Sophisticated redhead with emerald eyes" },
+    { name: "Bella", image: bellaImg, description: "Confident beauty with natural curls" },
+    { name: "Chloe", image: chloeImg, description: "Mysterious platinum blonde" },
+    { name: "Diana", image: dianaImg, description: "Serene and graceful" },
+    { name: "Jade", image: jadeImg, description: "Elegant Asian beauty in red silk" },
+    { name: "Valentina", image: valentinaImg, description: "Radiant Latina with bronze curls" }
   ];
 
   return (
