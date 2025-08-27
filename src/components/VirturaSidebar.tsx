@@ -45,12 +45,12 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
   ];
 
   const navigationTabs = [
+    { id: "upload", label: "Upload", icon: Upload },
     { id: "individuals", label: "Individuals", icon: User },
     { id: "brands", label: "Brands", icon: Building2 },
-    { id: "upload", label: "Upload", icon: Upload },
-    { id: "export", label: "Export", icon: Download },
     { id: "library", label: "My Library", icon: Library },
     { id: "guide", label: "To-Do Guide", icon: BookOpen },
+    { id: "export", label: "Export", icon: Download },
     { id: "settings", label: "Settings", icon: Settings },
   ];
 
