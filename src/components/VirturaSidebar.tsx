@@ -58,16 +58,19 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
     <Sidebar className="border-r border-border">
       <SidebarHeader className="p-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg overflow-hidden">
+          <div className="w-12 h-12 bg-black rounded-xl flex items-center justify-center p-2 shadow-lg">
             <img 
               src={virturaLogo} 
               alt="Virtura Logo" 
-              className="w-full h-full object-contain"
+              className="w-full h-full object-contain filter brightness-110"
             />
           </div>
-          <h1 className="text-xl font-display font-bold text-foreground">
-            Virtura
-          </h1>
+          <div>
+            <h1 className="text-xl font-display font-bold text-foreground leading-tight">
+              Virtura
+            </h1>
+            <p className="text-xs text-muted-foreground">Where Identity Evolves</p>
+          </div>
         </div>
       </SidebarHeader>
 
