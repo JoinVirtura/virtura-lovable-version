@@ -179,30 +179,75 @@ export default function Dashboard() {
                     AI Suggestions
                   </h3>
                   <div className="space-y-3">
-                    <Button variant="ghost" className="w-full justify-start text-left h-auto p-3">
-                      <div className="text-left">
-                        <p className="font-medium">Try different lighting</p>
-                        <p className="text-sm text-muted-foreground">
-                          "Professional headshot with golden hour lighting"
+                    {[
+                      {
+                        title: "Try different lighting",
+                        suggestion: "Professional headshot with golden hour lighting"
+                      },
+                      {
+                        title: "Add expressions", 
+                        suggestion: "Confident smile in business attire"
+                      },
+                      {
+                        title: "Change background",
+                        suggestion: "Modern office environment backdrop"
+                      },
+                      {
+                        title: "Vary the pose",
+                        suggestion: "Three-quarter view with arms crossed professionally"
+                      },
+                      {
+                        title: "Different styling",
+                        suggestion: "Casual entrepreneur in creative workspace"
+                      },
+                      {
+                        title: "Add personality",
+                        suggestion: "Warm approachable teacher with natural smile"
+                      }
+                    ].map((item, index) => (
+                      <div
+                        key={index}
+                        onClick={() => {
+                          // Find the textarea and populate it
+                          const textarea = document.getElementById('main-prompt-textarea') as HTMLTextAreaElement;
+                          if (textarea) {
+                            const event = new Event('input', { bubbles: true });
+                            textarea.value = item.suggestion;
+                            textarea.dispatchEvent(event);
+                            textarea.focus();
+                          }
+                        }}
+                        className="p-3 rounded-lg hover:bg-accent/50 cursor-pointer transition-colors group"
+                      >
+                        <p className="font-medium text-sm mb-1 group-hover:text-primary transition-colors">
+                          {item.title}
+                        </p>
+                        <p className="text-xs text-muted-foreground leading-relaxed break-words">
+                          "{item.suggestion}"
                         </p>
                       </div>
-                    </Button>
-                    <Button variant="ghost" className="w-full justify-start text-left h-auto p-3">
-                      <div className="text-left">
-                        <p className="font-medium">Add expressions</p>
-                        <p className="text-sm text-muted-foreground">
-                          "Confident smile in business attire"
-                        </p>
+                    ))}
+                  </div>
+                </Card>
+
+                {/* Recent Avatars */}
+                <Card className="p-6">
+                  <h3 className="text-lg font-display font-bold mb-4">Recent Avatars</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-muted rounded-lg"></div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">Professional headshot</p>
+                        <p className="text-xs text-muted-foreground">2 hours ago</p>
                       </div>
-                    </Button>
-                    <Button variant="ghost" className="w-full justify-start text-left h-auto p-3">
-                      <div className="text-left">
-                        <p className="font-medium">Change background</p>
-                        <p className="text-sm text-muted-foreground">
-                          "Modern office environment backdrop"
-                        </p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-muted rounded-lg"></div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">Casual portrait</p>
+                        <p className="text-xs text-muted-foreground">1 day ago</p>
                       </div>
-                    </Button>
+                    </div>
                   </div>
                 </Card>
               </div>

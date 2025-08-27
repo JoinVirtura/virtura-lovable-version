@@ -83,6 +83,7 @@ export function ChatInterface({ type, onGenerate }: ChatInterfaceProps) {
               onChange={(e) => setPrompt(e.target.value)}
               placeholder={`Describe what you want: 'Make a smiling teacher in a bright classroom'...`}
               className="min-h-[100px] text-base bg-background/50 border-border resize-none pr-12"
+              id="main-prompt-textarea"
             />
             <Button
               onClick={handleGenerate}
