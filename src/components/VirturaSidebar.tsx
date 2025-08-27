@@ -164,10 +164,10 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-0 mt-0">
+      <SidebarFooter className="p-0">
         <SidebarSeparator className="mx-3" />
         
-        <div className="flex items-center gap-3 px-3 py-2">
+        <div className="flex items-center gap-3 px-3 py-3">
           <Avatar className="w-8 h-8">
             <AvatarImage src="/lovable-uploads/517f5d9c-c223-4625-9aa5-5f2ef255f576.png" />
             <AvatarFallback>J</AvatarFallback>
