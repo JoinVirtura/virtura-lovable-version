@@ -1928,76 +1928,189 @@ export default function Dashboard() {
       case "library":
         return (
           <div className="space-y-6">
-            {/* Header */}
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-display font-bold text-foreground">My Library</h1>
-                <p className="text-muted-foreground">Manage all your generated content</p>
-              </div>
-              
-              <div className="flex items-center gap-4">
-                {/* Search */}
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search your library..."
-                    className="pl-10 w-64"
-                  />
-                </div>
-                
-                {/* View Toggle */}
-                <div className="flex border border-border rounded-lg">
-                  <Button
-                    variant={viewMode === "grid" ? "default" : "ghost"}
-                    size="sm"
-                    onClick={() => setViewMode("grid")}
-                    className="rounded-r-none"
-                  >
-                    <Grid3X3 className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant={viewMode === "list" ? "default" : "ghost"}
-                    size="sm"
-                    onClick={() => setViewMode("list")}
-                    className="rounded-l-none"
-                  >
-                    <List className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* Content Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredAssets.map((asset) => (
-                <Card key={asset.id} className="group overflow-hidden hover-zoom">
-                  <div className="aspect-square bg-muted relative">
-                    <div className="w-full h-full bg-gradient-to-br from-muted to-muted-foreground/20"></div>
-                    
-                    {/* Hover Actions */}
-                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
-                      <div className="flex gap-2">
-                        <Button size="sm" variant="outline" className="text-white border-white/50">
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button size="sm" variant="outline" className="text-white border-white/50">
-                          <Download className="w-4 h-4" />
-                        </Button>
-                        <Button size="sm" variant="outline" className="text-white border-white/50">
-                          <Share2 className="w-4 h-4" />
-                        </Button>
+            {/* Innovative Header with AI Stats */}
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 rounded-2xl blur-xl"></div>
+              <Card className="relative p-8 bg-gradient-to-br from-card via-card/95 to-card/90 border border-primary/20">
+                <div className="flex items-start justify-between">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-primary/10 rounded-xl">
+                        <Sparkles className="w-6 h-6 text-primary" />
+                      </div>
+                      <div>
+                        <h1 className="text-3xl font-display font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                          AI Generation Library
+                        </h1>
+                        <p className="text-muted-foreground">Your complete collection of AI-generated content</p>
                       </div>
                     </div>
                     
-                    <Badge className="absolute top-2 right-2">
-                      {asset.format}
-                    </Badge>
+                    {/* Real-time Stats */}
+                    <div className="flex items-center gap-6 mt-4">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-primary">{filteredAssets.length}</div>
+                        <div className="text-xs text-muted-foreground">Total Assets</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-secondary">12</div>
+                        <div className="text-xs text-muted-foreground">This Month</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-accent">4.2GB</div>
+                        <div className="text-xs text-muted-foreground">Storage Used</div>
+                      </div>
+                    </div>
                   </div>
                   
-                  <div className="p-4">
-                    <h3 className="font-medium truncate mb-1">{asset.title}</h3>
+                  {/* Quick Actions */}
+                  <div className="flex items-center gap-3">
+                    <Button variant="outline" className="gap-2">
+                      <Upload className="w-4 h-4" />
+                      Bulk Import
+                    </Button>
+                    <Button className="gap-2 bg-gradient-to-r from-primary to-primary/80">
+                      <Sparkles className="w-4 h-4" />
+                      AI Organize
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            {/* Enhanced Content Area */}
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+              <div className="lg:col-span-3">
+                <Card className="p-6">
+                  <div className="flex items-center gap-4 mb-6">
+                    {/* Enhanced Search */}
+                    <div className="relative flex-1">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Input
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search by name, tags, or AI model used..."
+                        className="pl-10 h-12 text-base"
+                      />
+                    </div>
+                    
+                    {/* View Controls */}
+                    <div className="flex border border-border rounded-lg overflow-hidden">
+                      <Button
+                        variant={viewMode === "grid" ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => setViewMode("grid")}
+                        className="rounded-none border-0"
+                      >
+                        <Grid3X3 className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant={viewMode === "list" ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => setViewMode("list")}
+                        className="rounded-none border-0"
+                      >
+                        <List className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Smart Grid Layout */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredAssets.map((asset) => (
+                      <Card key={asset.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border-2 hover:border-primary/30">
+                        <div className="aspect-square bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20 relative overflow-hidden">
+                          {/* Format Badge */}
+                          <div className="absolute top-3 left-3">
+                            <Badge variant="secondary" className="bg-black/70 text-white border-0">
+                              {asset.format}
+                            </Badge>
+                          </div>
+
+                          {/* Quality Score */}
+                          <div className="absolute top-3 right-3">
+                            <div className="flex items-center gap-1 bg-black/70 rounded-full px-2 py-1">
+                              <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
+                              <span className="text-xs text-white font-medium">9.2</span>
+                            </div>
+                          </div>
+                          
+                          {/* Hover Actions */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-4">
+                            <div className="flex justify-center gap-2">
+                              <Button size="sm" className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30">
+                                <Edit className="w-4 h-4 mr-1" />
+                                Edit
+                              </Button>
+                              <Button size="sm" className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30">
+                                <Download className="w-4 h-4 mr-1" />
+                                Save
+                              </Button>
+                              <Button size="sm" className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30">
+                                <Share2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="p-4 space-y-3">
+                          <div>
+                            <h3 className="font-semibold truncate">{asset.title}</h3>
+                            <p className="text-sm text-muted-foreground">{asset.date}</p>
+                          </div>
+                          
+                          {/* AI Tags */}
+                          <div className="flex flex-wrap gap-1">
+                            {asset.tags.map((tag, idx) => (
+                              <Badge key={idx} variant="secondary" className="text-xs py-0 px-2">
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                </Card>
+              </div>
+
+              {/* AI Insights Sidebar */}
+              <div className="space-y-6">
+                <Card className="p-6">
+                  <h3 className="font-semibold mb-4 flex items-center gap-2">
+                    <Trophy className="w-5 h-5 text-primary" />
+                    AI Insights
+                  </h3>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>Quality Score</span>
+                        <span className="font-medium">9.2/10</span>
+                      </div>
+                      <div className="w-full bg-muted rounded-full h-2">
+                        <div className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full" style={{ width: '92%' }}></div>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+
+                <Card className="p-6">
+                  <h3 className="font-semibold mb-4">Quick Actions</h3>
+                  <div className="space-y-3">
+                    <Button className="w-full justify-start gap-2" variant="outline">
+                      <Sparkles className="w-4 h-4" />
+                      Generate Similar
+                    </Button>
+                    <Button className="w-full justify-start gap-2" variant="outline">
+                      <Upload className="w-4 h-4" />
+                      Batch Process
+                    </Button>
+                  </div>
+                </Card>
+              </div>
+            </div>
+          </div>
+        );
                     <p className="text-sm text-muted-foreground mb-2">{asset.date}</p>
                     <div className="flex gap-1 flex-wrap">
                       {asset.tags.map((tag) => (
@@ -2006,9 +2119,8 @@ export default function Dashboard() {
                         </Badge>
                       ))}
                     </div>
-                  </div>
                 </Card>
-              ))}
+              </div>
             </div>
           </div>
         );
