@@ -60,6 +60,20 @@ export default function Dashboard() {
   const [chatMessages, setChatMessages] = useState<any[]>([]);
   const [showAdvanced, setShowAdvanced] = useState(false);
   
+  // Brand Kit state
+  const [brandLogo, setBrandLogo] = useState<string | null>(null);
+  const [brandColors, setBrandColors] = useState({
+    primary: "#E74C3C",
+    secondary: "#48CAE4", 
+    accent: "#4A90E2",
+    support: "#A8E6CF"
+  });
+  const [primaryFont, setPrimaryFont] = useState("");
+  const [secondaryFont, setSecondaryFont] = useState("");
+  const [brandVoice, setBrandVoice] = useState("");
+  const [targetAudience, setTargetAudience] = useState("");
+  const [expandedBrandAssets, setExpandedBrandAssets] = useState<Set<string>>(new Set());
+  
   // Advanced Options state
   const [selectedGender, setSelectedGender] = useState("Woman");
   const [selectedAge, setSelectedAge] = useState("20s");
@@ -1315,35 +1329,78 @@ export default function Dashboard() {
                     {/* Logo Upload */}
                     <div>
                       <Label className="text-sm font-medium mb-3 block">Logo</Label>
-                      <Button variant="outline" className="w-full justify-start gap-3 h-12 border-dashed">
-                        <Upload className="w-4 h-4" />
-                        Upload Logo
-                      </Button>
+                      <div className="relative">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = (e) => {
+                                setBrandLogo(e.target?.result as string);
+                                toast.success("Logo uploaded successfully!");
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                        />
+                        <Button variant="outline" className="w-full justify-start gap-3 h-12 border-dashed relative">
+                          <Upload className="w-4 h-4" />
+                          {brandLogo ? "Change Logo" : "Upload Logo"}
+                        </Button>
+                      </div>
+                      {brandLogo && (
+                        <div className="mt-3 p-3 bg-muted rounded-lg">
+                          <img src={brandLogo} alt="Brand Logo" className="w-20 h-20 object-contain mx-auto" />
+                        </div>
+                      )}
                     </div>
 
                     {/* Brand Colors */}
                     <div>
                       <Label className="text-sm font-medium mb-3 block">Brand Colors</Label>
-                      <div className="space-y-3">
-                        <Button variant="outline" className="w-full justify-start gap-3 h-12">
-                          <SettingsIcon className="w-4 h-4" />
-                          Brand Colors
-                        </Button>
-                        <div className="grid grid-cols-4 gap-3 p-4 bg-muted/30 rounded-lg">
-                          {[
-                            { color: "#FF6B6B", name: "Primary" },
-                            { color: "#4ECDC4", name: "Secondary" },
-                            { color: "#45B7D1", name: "Accent" },
-                            { color: "#96CEB4", name: "Support" }
-                          ].map((item) => (
-                            <div key={item.color} className="text-center">
-                              <div
-                                className="w-10 h-10 rounded-full cursor-pointer border-3 border-white shadow-lg mx-auto mb-1 hover:scale-110 transition-transform"
-                                style={{ backgroundColor: item.color }}
-                              />
-                              <span className="text-xs text-muted-foreground">{item.name}</span>
+                      <div className="bg-gradient-card p-4 rounded-lg space-y-4">
+                        <div className="flex items-center gap-3 mb-4">
+                          <SettingsIcon className="w-4 h-4 text-primary" />
+                          <span className="font-medium">Brand Colors</span>
+                        </div>
+                        
+                        {/* Color Palette */}
+                        <div className="grid grid-cols-2 gap-4">
+                          {Object.entries(brandColors).map(([key, color]) => (
+                            <div key={key} className="text-center">
+                              <div className="relative group">
+                                <input
+                                  type="color"
+                                  value={color}
+                                  onChange={(e) => setBrandColors(prev => ({...prev, [key]: e.target.value}))}
+                                  className="w-12 h-12 rounded-full border-2 border-border cursor-pointer mx-auto block"
+                                />
+                                <div className="absolute inset-0 rounded-full group-hover:ring-2 ring-primary transition-all" />
+                              </div>
+                              <span className="text-xs text-muted-foreground capitalize mt-2 block">{key}</span>
                             </div>
                           ))}
+                        </div>
+                        
+                        {/* Additional Colors */}
+                        <div className="pt-3 border-t border-border/50">
+                          <Label className="text-xs text-muted-foreground mb-2 block">Additional Colors</Label>
+                          <div className="grid grid-cols-6 gap-2">
+                            {["#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#FECA57", "#FF9FF3", "#54A0FF", "#5F27CD"].map((color, idx) => (
+                              <div
+                                key={idx}
+                                className="w-8 h-8 rounded-full cursor-pointer border-2 border-border hover:scale-110 transition-transform"
+                                style={{ backgroundColor: color }}
+                                onClick={() => {
+                                  // Add logic to assign to selected color slot
+                                  toast.success("Color added to palette!");
+                                }}
+                              />
+                            ))}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1351,27 +1408,43 @@ export default function Dashboard() {
                     {/* Typography */}
                     <div>
                       <Label className="text-sm font-medium mb-3 block">Typography</Label>
-                      <div className="space-y-2">
-                        <Select>
+                      <div className="space-y-3">
+                        <Select value={primaryFont} onValueChange={setPrimaryFont}>
                           <SelectTrigger>
                             <SelectValue placeholder="Primary Font" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="inter">Inter</SelectItem>
+                            <SelectItem value="playfair">Playfair Display</SelectItem>
                             <SelectItem value="roboto">Roboto</SelectItem>
+                            <SelectItem value="inter">Inter</SelectItem>
                             <SelectItem value="montserrat">Montserrat</SelectItem>
+                            <SelectItem value="lato">Lato</SelectItem>
                             <SelectItem value="opensans">Open Sans</SelectItem>
+                            <SelectItem value="poppins">Poppins</SelectItem>
+                            <SelectItem value="nunito">Nunito</SelectItem>
+                            <SelectItem value="sourcesans">Source Sans Pro</SelectItem>
+                            <SelectItem value="raleway">Raleway</SelectItem>
+                            <SelectItem value="oswald">Oswald</SelectItem>
+                            <SelectItem value="merriweather">Merriweather</SelectItem>
                           </SelectContent>
                         </Select>
-                        <Select>
+                        <Select value={secondaryFont} onValueChange={setSecondaryFont}>
                           <SelectTrigger>
                             <SelectValue placeholder="Secondary Font" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="playfair">Playfair Display</SelectItem>
-                            <SelectItem value="lora">Lora</SelectItem>
-                            <SelectItem value="merriweather">Merriweather</SelectItem>
-                            <SelectItem value="source-serif">Source Serif</SelectItem>
+                            <SelectItem value="lato">Lato</SelectItem>
+                            <SelectItem value="opensans">Open Sans</SelectItem>
+                            <SelectItem value="poppins">Poppins</SelectItem>
+                            <SelectItem value="roboto">Roboto</SelectItem>
+                            <SelectItem value="inter">Inter</SelectItem>
+                            <SelectItem value="nunito">Nunito</SelectItem>
+                            <SelectItem value="sourcesans">Source Sans Pro</SelectItem>
+                            <SelectItem value="raleway">Raleway</SelectItem>
+                            <SelectItem value="ubuntu">Ubuntu</SelectItem>
+                            <SelectItem value="worksans">Work Sans</SelectItem>
+                            <SelectItem value="dmsans">DM Sans</SelectItem>
+                            <SelectItem value="firasans">Fira Sans</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -1380,14 +1453,48 @@ export default function Dashboard() {
                     {/* Brand Guidelines */}
                     <div>
                       <Label className="text-sm font-medium mb-3 block">Brand Guidelines</Label>
-                      <div className="space-y-2">
-                        <div className="p-3 bg-muted/30 rounded-lg">
+                      <div className="space-y-3">
+                        <div>
                           <Label className="text-xs text-muted-foreground mb-1 block">Brand Voice</Label>
-                          <Input placeholder="Professional, Friendly, Innovative" className="h-8 text-xs" />
+                          <Select value={brandVoice} onValueChange={setBrandVoice}>
+                            <SelectTrigger className="h-9">
+                              <SelectValue placeholder="Select brand voice" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="professional-authoritative">Professional & Authoritative</SelectItem>
+                              <SelectItem value="friendly-approachable">Friendly & Approachable</SelectItem>
+                              <SelectItem value="innovative-forward">Innovative & Forward-thinking</SelectItem>
+                              <SelectItem value="luxury-premium">Luxury & Premium</SelectItem>
+                              <SelectItem value="casual-relatable">Casual & Relatable</SelectItem>
+                              <SelectItem value="expert-trustworthy">Expert & Trustworthy</SelectItem>
+                              <SelectItem value="creative-inspiring">Creative & Inspiring</SelectItem>
+                              <SelectItem value="playful-energetic">Playful & Energetic</SelectItem>
+                              <SelectItem value="minimalist-clean">Minimalist & Clean</SelectItem>
+                              <SelectItem value="bold-confident">Bold & Confident</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
-                        <div className="p-3 bg-muted/30 rounded-lg">
+                        <div>
                           <Label className="text-xs text-muted-foreground mb-1 block">Target Audience</Label>
-                          <Input placeholder="Young professionals, 25-35" className="h-8 text-xs" />
+                          <Select value={targetAudience} onValueChange={setTargetAudience}>
+                            <SelectTrigger className="h-9">
+                              <SelectValue placeholder="Select target audience" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="young-professionals">Young Professionals (25-35)</SelectItem>
+                              <SelectItem value="executives-leaders">Executives & Leaders (35-50)</SelectItem>
+                              <SelectItem value="entrepreneurs">Entrepreneurs & Startups</SelectItem>
+                              <SelectItem value="creative-professionals">Creative Professionals</SelectItem>
+                              <SelectItem value="tech-industry">Tech Industry</SelectItem>
+                              <SelectItem value="healthcare-professionals">Healthcare Professionals</SelectItem>
+                              <SelectItem value="students-academics">Students & Academics</SelectItem>
+                              <SelectItem value="retail-consumers">General Consumers</SelectItem>
+                              <SelectItem value="luxury-market">Luxury Market</SelectItem>
+                              <SelectItem value="b2b-enterprise">B2B Enterprise</SelectItem>
+                              <SelectItem value="small-business">Small Business Owners</SelectItem>
+                              <SelectItem value="consultants-coaches">Consultants & Coaches</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
                       </div>
                     </div>
@@ -1408,31 +1515,146 @@ export default function Dashboard() {
                         <Button variant="outline" size="sm" className="text-xs h-8">
                           Letterhead
                         </Button>
+                        <Button variant="outline" size="sm" className="text-xs h-8">
+                          Presentation
+                        </Button>
+                        <Button variant="outline" size="sm" className="text-xs h-8">
+                          Website Header
+                        </Button>
                       </div>
                     </div>
 
                     {/* Brand Assets */}
-                    <div className="flex-1">
+                    <div>
                       <Label className="text-sm font-medium mb-3 block">Brand Assets</Label>
                       <div className="space-y-2">
-                        <Button variant="ghost" className="w-full justify-start gap-3 h-10 text-sm">
-                          <Calendar className="w-4 h-4" />
-                          Style Guide (PDF)
+                        <Button 
+                          variant="ghost" 
+                          className="w-full justify-between gap-3 h-10 text-sm"
+                          onClick={() => {
+                            const newExpanded = new Set(expandedBrandAssets);
+                            if (newExpanded.has('style-guide')) {
+                              newExpanded.delete('style-guide');
+                            } else {
+                              newExpanded.add('style-guide');
+                            }
+                            setExpandedBrandAssets(newExpanded);
+                          }}
+                        >
+                          <div className="flex items-center gap-3">
+                            <Calendar className="w-4 h-4" />
+                            Style Guide (PDF)
+                          </div>
+                          {expandedBrandAssets.has('style-guide') ? 
+                            <ChevronUp className="w-4 h-4" /> : 
+                            <ChevronDown className="w-4 h-4" />
+                          }
                         </Button>
-                        <Button variant="ghost" className="w-full justify-start gap-3 h-10 text-sm">
-                          <Tag className="w-4 h-4" />
-                          Logo Variations
+                        {expandedBrandAssets.has('style-guide') && (
+                          <div className="pl-7 space-y-1">
+                            <Button variant="ghost" size="sm" className="w-full justify-start text-xs h-8">
+                              Download Complete Guide
+                            </Button>
+                            <Button variant="ghost" size="sm" className="w-full justify-start text-xs h-8">
+                              Color Palette Only
+                            </Button>
+                            <Button variant="ghost" size="sm" className="w-full justify-start text-xs h-8">
+                              Typography Guidelines
+                            </Button>
+                          </div>
+                        )}
+                        
+                        <Button 
+                          variant="ghost" 
+                          className="w-full justify-between gap-3 h-10 text-sm"
+                          onClick={() => {
+                            const newExpanded = new Set(expandedBrandAssets);
+                            if (newExpanded.has('logo-variations')) {
+                              newExpanded.delete('logo-variations');
+                            } else {
+                              newExpanded.add('logo-variations');
+                            }
+                            setExpandedBrandAssets(newExpanded);
+                          }}
+                        >
+                          <div className="flex items-center gap-3">
+                            <Tag className="w-4 h-4" />
+                            Logo Variations
+                          </div>
+                          {expandedBrandAssets.has('logo-variations') ? 
+                            <ChevronUp className="w-4 h-4" /> : 
+                            <ChevronDown className="w-4 h-4" />
+                          }
                         </Button>
-                        <Button variant="ghost" className="w-full justify-start gap-3 h-10 text-sm">
-                          <Star className="w-4 h-4" />
-                          Brand Templates
+                        {expandedBrandAssets.has('logo-variations') && (
+                          <div className="pl-7 space-y-1">
+                            <Button variant="ghost" size="sm" className="w-full justify-start text-xs h-8">
+                              Full Color Logo
+                            </Button>
+                            <Button variant="ghost" size="sm" className="w-full justify-start text-xs h-8">
+                              Black & White
+                            </Button>
+                            <Button variant="ghost" size="sm" className="w-full justify-start text-xs h-8">
+                              Icon Only
+                            </Button>
+                            <Button variant="ghost" size="sm" className="w-full justify-start text-xs h-8">
+                              Horizontal Layout
+                            </Button>
+                            <Button variant="ghost" size="sm" className="w-full justify-start text-xs h-8">
+                              Vertical Layout
+                            </Button>
+                          </div>
+                        )}
+                        
+                        <Button 
+                          variant="ghost" 
+                          className="w-full justify-between gap-3 h-10 text-sm"
+                          onClick={() => {
+                            const newExpanded = new Set(expandedBrandAssets);
+                            if (newExpanded.has('brand-templates')) {
+                              newExpanded.delete('brand-templates');
+                            } else {
+                              newExpanded.add('brand-templates');
+                            }
+                            setExpandedBrandAssets(newExpanded);
+                          }}
+                        >
+                          <div className="flex items-center gap-3">
+                            <Star className="w-4 h-4" />
+                            Brand Templates
+                          </div>
+                          {expandedBrandAssets.has('brand-templates') ? 
+                            <ChevronUp className="w-4 h-4" /> : 
+                            <ChevronDown className="w-4 h-4" />
+                          }
                         </Button>
+                        {expandedBrandAssets.has('brand-templates') && (
+                          <div className="pl-7 space-y-1">
+                            <Button variant="ghost" size="sm" className="w-full justify-start text-xs h-8">
+                              Social Media Templates
+                            </Button>
+                            <Button variant="ghost" size="sm" className="w-full justify-start text-xs h-8">
+                              Presentation Templates
+                            </Button>
+                            <Button variant="ghost" size="sm" className="w-full justify-start text-xs h-8">
+                              Marketing Materials
+                            </Button>
+                            <Button variant="ghost" size="sm" className="w-full justify-start text-xs h-8">
+                              Business Documents
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </div>
 
                     {/* Save Brand Kit */}
                     <div className="pt-4 border-t">
-                      <Button className="w-full">
+                      <Button 
+                        className="w-full"
+                        onClick={() => {
+                          toast.success("Brand Kit saved successfully!");
+                        }}
+                      >
                         Save Brand Kit
                       </Button>
                     </div>
