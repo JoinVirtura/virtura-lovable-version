@@ -122,15 +122,15 @@ export function UploadSection() {
           ) : (
             <>
               <div className="grid md:grid-cols-2 gap-6">
-                <Card className="p-6 hover-scale">
+                <Card className="p-6 hover-scale flex flex-col h-full">
                   <h3 className="text-lg font-semibold mb-4 flex items-center">
                     <Sparkles className="w-5 h-5 mr-2 text-yellow-500" />
                     Enhanced Version (Enhancor)
                   </h3>
-                  <div className="aspect-video bg-gradient-to-br from-muted to-muted/50 rounded-lg mb-4 flex items-center justify-center border">
+                  <div className="flex-1 bg-gradient-to-br from-muted to-muted/50 rounded-lg mb-6 flex items-center justify-center border min-h-[400px]">
                     <p className="text-muted-foreground">Enhanced version preview</p>
                   </div>
-                  <Button className="w-full" variant="outline">
+                  <Button className="w-full mt-auto" variant="outline">
                     <Download className="w-4 h-4 mr-2" />
                     Download Enhanced
                   </Button>
