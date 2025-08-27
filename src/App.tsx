@@ -23,14 +23,16 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Landing />} />
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/landing" element={<Landing />} />
           <Route path="/individuals" element={<IndividualsPage />} />
           <Route path="/brands" element={<BrandsPage />} />
           <Route path="/library" element={<LibraryPage />} />
           <Route path="/guide" element={<GuidePage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/create" element={<Dashboard />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/old-dashboard" element={<DashboardPage />} />
           <Route path="/chat" element={<Dashboard />} />
           <Route path="/gallery" element={<Dashboard />} />
           <Route path="/profile" element={<Dashboard />} />
