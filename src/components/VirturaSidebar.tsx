@@ -50,8 +50,6 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
     { id: "brands", label: "Brands", icon: Building2 },
     { id: "library", label: "My Library", icon: Library },
     { id: "guide", label: "To-Do Guide", icon: BookOpen },
-    { id: "export", label: "Export", icon: Download },
-    { id: "settings", label: "Settings", icon: Settings },
   ];
 
   return (
@@ -140,6 +138,34 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
                 <SidebarMenuButton className="w-full justify-start gap-3 hover:bg-accent">
                   <Crown className="w-5 h-5" />
                   <span className="font-medium">Upgrade Plan</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton 
+                  onClick={() => onViewChange("export")}
+                  isActive={activeView === "export"}
+                  className={`w-full justify-start gap-3 ${
+                    activeView === "export" 
+                      ? "bg-primary text-primary-foreground shadow-gold" 
+                      : "hover:bg-accent"
+                  }`}
+                >
+                  <Download className="w-5 h-5" />
+                  <span className="font-medium">Export</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton 
+                  onClick={() => onViewChange("settings")}
+                  isActive={activeView === "settings"}
+                  className={`w-full justify-start gap-3 ${
+                    activeView === "settings" 
+                      ? "bg-primary text-primary-foreground shadow-gold" 
+                      : "hover:bg-accent"
+                  }`}
+                >
+                  <Settings className="w-5 h-5" />
+                  <span className="font-medium">Settings</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>

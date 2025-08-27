@@ -299,20 +299,40 @@ export default function LibraryPage() {
                             </div>
                           </div>
                           
-                          {/* Smart Hover Actions */}
+                          {/* Smart Hover Actions - Fixed spacing */}
                           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-4">
-                            <div className="space-y-3">
-                              <div className="flex justify-center gap-2">
-                                <Button size="sm" className="bg-white/20 backdrop-blur-md text-white border-white/40 hover:bg-white/30 transition-all">
-                                  <Edit className="w-4 h-4 mr-2" />
-                                  Remix
+                            <div className="space-y-2">
+                              <div className="flex justify-center gap-3">
+                                <Button 
+                                  size="sm" 
+                                  className="bg-white/20 backdrop-blur-md text-white border-white/40 hover:bg-white/30 transition-all flex-1 min-w-0"
+                                  onClick={() => {
+                                    console.log(`Editing avatar ${asset.id}: ${asset.title}`);
+                                    // Add edit functionality here
+                                  }}
+                                >
+                                  <Edit className="w-4 h-4 mr-1" />
+                                  Edit
                                 </Button>
-                                <Button size="sm" className="bg-white/20 backdrop-blur-md text-white border-white/40 hover:bg-white/30 transition-all">
-                                  <Download className="w-4 h-4 mr-2" />
-                                  Export
+                                <Button 
+                                  size="sm" 
+                                  className="bg-white/20 backdrop-blur-md text-white border-white/40 hover:bg-white/30 transition-all flex-1 min-w-0"
+                                  onClick={() => {
+                                    // Create download link
+                                    const link = document.createElement('a');
+                                    link.href = asset.thumbnail;
+                                    link.download = `${asset.title.replace(/\s+/g, '_')}.${asset.format.toLowerCase()}`;
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    document.body.removeChild(link);
+                                    console.log(`Downloading ${asset.title}`);
+                                  }}
+                                >
+                                  <Download className="w-4 h-4 mr-1" />
+                                  Save
                                 </Button>
                               </div>
-                              <div className="flex justify-center gap-2">
+                              <div className="flex justify-center gap-1">
                                 <Button size="sm" variant="ghost" className="text-white hover:bg-white/20 p-2 backdrop-blur-sm">
                                   <Share2 className="w-4 h-4" />
                                 </Button>
