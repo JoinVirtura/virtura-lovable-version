@@ -1,4 +1,5 @@
 import { useState } from "react";
+import virturaLogo from "/lovable-uploads/f264298f-2877-485b-affc-d705994fc848.png";
 import { 
   Sidebar,
   SidebarContent,
@@ -56,11 +57,15 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
   return (
     <Sidebar className="border-r border-border">
       <SidebarHeader className="p-4">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-gradient-gold rounded-lg flex items-center justify-center">
-            <Sparkles className="w-5 h-5 text-primary-foreground" />
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg overflow-hidden">
+            <img 
+              src={virturaLogo} 
+              alt="Virtura Logo" 
+              className="w-full h-full object-contain"
+            />
           </div>
-          <h1 className="text-xl font-display font-bold bg-gradient-gold bg-clip-text text-transparent">
+          <h1 className="text-xl font-display font-bold text-foreground">
             Virtura
           </h1>
         </div>
