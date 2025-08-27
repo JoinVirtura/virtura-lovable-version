@@ -1714,83 +1714,35 @@ export default function Dashboard() {
                       <div className="space-y-3">
                         <div>
                            <Label className="text-xs text-muted-foreground mb-1 block">Brand Voice</Label>
-                           <Select value={brandVoice} onValueChange={setBrandVoice}>
-                             <SelectTrigger className="h-9">
-                               <SelectValue placeholder="Select brand voice" />
-                             </SelectTrigger>
-                             <SelectContent>
-                               <SelectItem value="professional-authoritative" className="flex items-center justify-between">
-                                 <span>Professional & Authoritative</span>
-                                 <Button 
-                                   size="sm" 
-                                   variant="ghost" 
-                                   className="h-6 w-6 p-0 ml-2 hover:bg-primary/10"
-                                   onClick={(e) => {
-                                     e.stopPropagation();
-                                     playVoicePreview("professional-authoritative");
-                                   }}
-                                 >
-                                   <Volume2 className="h-3 w-3" />
-                                 </Button>
-                               </SelectItem>
-                               <SelectItem value="friendly-approachable" className="flex items-center justify-between">
-                                 <span>Friendly & Approachable</span>
-                                 <Button 
-                                   size="sm" 
-                                   variant="ghost" 
-                                   className="h-6 w-6 p-0 ml-2 hover:bg-primary/10"
-                                   onClick={(e) => {
-                                     e.stopPropagation();
-                                     playVoicePreview("friendly-approachable");
-                                   }}
-                                 >
-                                   <Volume2 className="h-3 w-3" />
-                                 </Button>
-                               </SelectItem>
-                               <SelectItem value="innovative-forward" className="flex items-center justify-between">
-                                 <span>Innovative & Forward-thinking</span>
-                                 <Button 
-                                   size="sm" 
-                                   variant="ghost" 
-                                   className="h-6 w-6 p-0 ml-2 hover:bg-primary/10"
-                                   onClick={(e) => {
-                                     e.stopPropagation();
-                                     playVoicePreview("innovative-forward");
-                                   }}
-                                 >
-                                   <Volume2 className="h-3 w-3" />
-                                 </Button>
-                               </SelectItem>
-                               <SelectItem value="luxury-premium" className="flex items-center justify-between">
-                                 <span>Luxury & Premium</span>
-                                 <Button 
-                                   size="sm" 
-                                   variant="ghost" 
-                                   className="h-6 w-6 p-0 ml-2 hover:bg-primary/10"
-                                   onClick={(e) => {
-                                     e.stopPropagation();
-                                     playVoicePreview("luxury-premium");
-                                   }}
-                                 >
-                                   <Volume2 className="h-3 w-3" />
-                                 </Button>
-                               </SelectItem>
-                               <SelectItem value="casual-relatable" className="flex items-center justify-between">
-                                 <span>Casual & Relatable</span>
-                                 <Button 
-                                   size="sm" 
-                                   variant="ghost" 
-                                   className="h-6 w-6 p-0 ml-2 hover:bg-primary/10"
-                                   onClick={(e) => {
-                                     e.stopPropagation();
-                                     playVoicePreview("casual-relatable");
-                                   }}
-                                 >
-                                   <Volume2 className="h-3 w-3" />
-                                 </Button>
-                               </SelectItem>
-                             </SelectContent>
-                           </Select>
+                           <div className="relative">
+                             <Select value={brandVoice} onValueChange={setBrandVoice}>
+                               <SelectTrigger className="h-9 pr-16">
+                                 <SelectValue placeholder="Select brand voice" />
+                               </SelectTrigger>
+                               <SelectContent>
+                                 <SelectItem value="professional-authoritative">Professional & Authoritative</SelectItem>
+                                 <SelectItem value="friendly-approachable">Friendly & Approachable</SelectItem>
+                                 <SelectItem value="innovative-forward">Innovative & Forward-thinking</SelectItem>
+                                 <SelectItem value="luxury-premium">Luxury & Premium</SelectItem>
+                                 <SelectItem value="casual-relatable">Casual & Relatable</SelectItem>
+                                 <SelectItem value="expert-trustworthy">Expert & Trustworthy</SelectItem>
+                                 <SelectItem value="creative-inspiring">Creative & Inspiring</SelectItem>
+                                 <SelectItem value="playful-energetic">Playful & Energetic</SelectItem>
+                                 <SelectItem value="minimalist-clean">Minimalist & Clean</SelectItem>
+                                 <SelectItem value="bold-confident">Bold & Confident</SelectItem>
+                               </SelectContent>
+                             </Select>
+                             {brandVoice && (
+                               <Button 
+                                 size="sm" 
+                                 variant="ghost" 
+                                 className="absolute right-8 top-1/2 -translate-y-1/2 h-6 w-6 p-0 hover:bg-primary/10"
+                                 onClick={() => playVoicePreview(brandVoice)}
+                               >
+                                 <Volume2 className="h-3 w-3" />
+                               </Button>
+                             )}
+                           </div>
                         </div>
                         <div>
                           <Label className="text-xs text-muted-foreground mb-1 block">Target Audience</Label>
