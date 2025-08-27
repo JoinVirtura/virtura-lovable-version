@@ -74,6 +74,7 @@ export default function Dashboard() {
   const [brandVoice, setBrandVoice] = useState("");
   const [targetAudience, setTargetAudience] = useState("");
   const [expandedBrandAssets, setExpandedBrandAssets] = useState<Set<string>>(new Set());
+  const [selectedColorSlot, setSelectedColorSlot] = useState<keyof typeof brandColors>("primary");
   
   // Advanced Options state
   const [selectedGender, setSelectedGender] = useState("Woman");
@@ -1371,37 +1372,35 @@ export default function Dashboard() {
                         <div>
                           <div className="flex items-center gap-2 mb-4">
                             <div className="w-2 h-2 bg-primary rounded-full"></div>
-                            <span className="text-sm font-medium text-foreground">Primary Colors</span>
+                            <span className="text-sm font-medium text-foreground">Select Color to Modify</span>
                           </div>
                           
                           <div className="grid grid-cols-2 gap-4">
                             {Object.entries(brandColors).map(([key, color]) => (
-                              <div key={key} className="group">
+                              <div 
+                                key={key} 
+                                className={`group cursor-pointer ${selectedColorSlot === key ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : ''}`}
+                                onClick={() => setSelectedColorSlot(key as keyof typeof brandColors)}
+                              >
                                 <div className="relative">
-                                  <input
-                                    type="color"
-                                    value={color}
-                                    onChange={(e) => {
-                                      setBrandColors(prev => ({...prev, [key]: e.target.value}));
-                                      toast({
-                                        title: "Color Updated",
-                                        description: `${key.charAt(0).toUpperCase() + key.slice(1)} color changed to ${e.target.value}`,
-                                      });
-                                    }}
-                                    className="sr-only"
-                                    id={`color-${key}`}
-                                  />
-                                  <label 
-                                    htmlFor={`color-${key}`}
-                                    className="block w-16 h-16 rounded-xl cursor-pointer border-3 border-background shadow-lg group-hover:scale-105 transition-all duration-200 relative overflow-hidden"
+                                  <div 
+                                    className="w-16 h-16 rounded-xl border-3 border-background shadow-lg group-hover:scale-105 transition-all duration-200 relative overflow-hidden"
                                     style={{ backgroundColor: color }}
                                   >
                                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-200"></div>
-                                    <div className="absolute inset-0 ring-0 group-hover:ring-2 ring-primary/50 rounded-xl transition-all duration-200"></div>
-                                  </label>
+                                    {selectedColorSlot === key && (
+                                      <div className="absolute inset-0 bg-white/20 flex items-center justify-center">
+                                        <div className="w-6 h-6 bg-white rounded-full shadow-lg flex items-center justify-center">
+                                          <div className="w-3 h-3 bg-primary rounded-full"></div>
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
                                 <div className="mt-2 text-center">
-                                  <span className="text-xs font-medium text-foreground capitalize block">{key}</span>
+                                  <span className={`text-xs font-medium capitalize block ${selectedColorSlot === key ? 'text-primary' : 'text-foreground'}`}>
+                                    {key}
+                                  </span>
                                   <span className="text-xs text-muted-foreground uppercase">{color}</span>
                                 </div>
                               </div>
@@ -1411,28 +1410,12 @@ export default function Dashboard() {
                         
                         {/* Color Suggestions */}
                         <div className="pt-4 border-t border-border/30">
-                          <div className="flex items-center justify-between mb-3">
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 bg-accent rounded-full"></div>
-                              <span className="text-sm font-medium text-foreground">Quick Colors</span>
-                            </div>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="text-xs text-muted-foreground hover:text-foreground"
-                              onClick={() => {
-                                // Generate random color palette
-                                const randomColors = ["#E74C3C", "#3498DB", "#2ECC71", "#F39C12", "#9B59B6", "#1ABC9C"];
-                                const randomColor = randomColors[Math.floor(Math.random() * randomColors.length)];
-                                setBrandColors(prev => ({...prev, primary: randomColor}));
-                                toast({
-                                  title: "Random Color Applied",
-                                  description: "Generated a new color combination for your brand",
-                                });
-                              }}
-                            >
-                              Randomize
-                            </Button>
+                          <div className="flex items-center gap-2 mb-3">
+                            <div className="w-2 h-2 bg-accent rounded-full"></div>
+                            <span className="text-sm font-medium text-foreground">Quick Colors</span>
+                            <span className="text-xs text-muted-foreground ml-auto">
+                              Changing: {selectedColorSlot}
+                            </span>
                           </div>
                           
                           <div className="grid grid-cols-8 gap-2">
@@ -1446,15 +1429,10 @@ export default function Dashboard() {
                                 key={idx}
                                 className="relative group cursor-pointer"
                                 onClick={() => {
-                                  // Smart color assignment based on color type
-                                  const colorHue = parseInt(color.slice(1), 16);
-                                  const isWarm = (colorHue & 0xFF0000) > (colorHue & 0x0000FF);
-                                  const targetKey = isWarm ? 'primary' : 'accent';
-                                  
-                                  setBrandColors(prev => ({...prev, [targetKey]: color}));
+                                  setBrandColors(prev => ({...prev, [selectedColorSlot]: color}));
                                   toast({
-                                    title: "Color Added",
-                                    description: `Applied ${color} to ${targetKey} color`,
+                                    title: "Color Updated",
+                                    description: `Applied ${color} to ${selectedColorSlot} color`,
                                   });
                                 }}
                               >
@@ -1470,46 +1448,72 @@ export default function Dashboard() {
                         
                         {/* Color Harmony Suggestions */}
                         <div className="pt-4 border-t border-border/30">
-                          <div className="flex items-center gap-2 mb-3">
+                          <div className="flex items-center gap-2 mb-4">
                             <div className="w-2 h-2 bg-secondary rounded-full"></div>
                             <span className="text-sm font-medium text-foreground">Color Harmonies</span>
                           </div>
                           
-                          <div className="grid grid-cols-3 gap-3">
+                          <div className="grid grid-cols-2 gap-4">
                             {[
-                              { name: "Ocean", colors: ["#006994", "#47B5FF", "#DDF2FD"] },
-                              { name: "Sunset", colors: ["#FF6B35", "#F7931E", "#FFD23F"] },
-                              { name: "Forest", colors: ["#2D5016", "#C4D6B0", "#6B8E5A"] }
+                              { 
+                                name: "Ocean Breeze", 
+                                colors: { primary: "#006994", secondary: "#47B5FF", accent: "#DDF2FD", support: "#B8E6FF" }
+                              },
+                              { 
+                                name: "Sunset Glow", 
+                                colors: { primary: "#FF6B35", secondary: "#F7931E", accent: "#FFD23F", support: "#FFF0B8" }
+                              },
+                              { 
+                                name: "Forest Calm", 
+                                colors: { primary: "#2D5016", secondary: "#6B8E5A", accent: "#C4D6B0", support: "#E8F5E8" }
+                              },
+                              { 
+                                name: "Royal Purple", 
+                                colors: { primary: "#6A0572", secondary: "#AB83A1", accent: "#FFE5F1", support: "#F3D4FF" }
+                              },
+                              { 
+                                name: "Desert Sand", 
+                                colors: { primary: "#8B4513", secondary: "#D2691E", accent: "#F4A460", support: "#FAEBD7" }
+                              },
+                              { 
+                                name: "Midnight Blue", 
+                                colors: { primary: "#191970", secondary: "#4169E1", accent: "#87CEEB", support: "#E6F3FF" }
+                              },
+                              { 
+                                name: "Cherry Blossom", 
+                                colors: { primary: "#DA70D6", secondary: "#FFB6C1", accent: "#FFF0F5", support: "#FFEBF0" }
+                              },
+                              { 
+                                name: "Emerald City", 
+                                colors: { primary: "#50C878", secondary: "#90EE90", accent: "#F0FFF0", support: "#E0FFE0" }
+                              }
                             ].map((harmony, idx) => (
                               <div 
                                 key={idx}
-                                className="group cursor-pointer"
+                                className="group cursor-pointer p-3 bg-muted/20 rounded-lg hover:bg-muted/40 transition-colors"
                                 onClick={() => {
-                                  setBrandColors(prev => ({
-                                    ...prev,
-                                    primary: harmony.colors[0],
-                                    secondary: harmony.colors[1],
-                                    accent: harmony.colors[2],
-                                    support: harmony.colors[1] + "80"
-                                  }));
+                                  setBrandColors(harmony.colors);
                                   toast({
                                     title: "Harmony Applied",
                                     description: `Applied ${harmony.name} color harmony to your brand`,
                                   });
                                 }}
                               >
-                                <div className="flex gap-1 mb-1">
-                                  {harmony.colors.map((color, colorIdx) => (
+                                <div className="flex gap-1.5 mb-2">
+                                  {Object.values(harmony.colors).map((color, colorIdx) => (
                                     <div 
                                       key={colorIdx}
-                                      className="flex-1 h-6 rounded-md border border-background shadow-sm group-hover:shadow transition-shadow"
+                                      className="flex-1 h-8 rounded-md border border-background shadow-sm group-hover:shadow transition-shadow"
                                       style={{ backgroundColor: color }}
                                     />
                                   ))}
                                 </div>
-                                <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+                                <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
                                   {harmony.name}
                                 </span>
+                                <div className="text-xs text-muted-foreground mt-1">
+                                  Complete palette
+                                </div>
                               </div>
                             ))}
                           </div>
