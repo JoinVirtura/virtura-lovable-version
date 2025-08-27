@@ -115,8 +115,8 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-4 space-y-2">
-        <SidebarMenu>
+      <SidebarFooter className="p-0">
+        <SidebarMenu className="px-4 py-2">
           <SidebarMenuItem>
             <SidebarMenuButton 
               onClick={() => onViewChange("export")}
@@ -161,10 +161,10 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
           </SidebarMenuItem>
         </SidebarMenu>
         
-        <SidebarSeparator />
+        <SidebarSeparator className="mx-4" />
         
-        <div className="flex items-center gap-3 py-2">
-          <Avatar className="w-10 h-10">
+        <div className="flex items-center gap-3 px-4 py-2">
+          <Avatar className="w-8 h-8">
             <AvatarImage src="/lovable-uploads/517f5d9c-c223-4625-9aa5-5f2ef255f576.png" />
             <AvatarFallback>J</AvatarFallback>
           </Avatar>
@@ -174,13 +174,15 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
           </div>
         </div>
         
-        <Button 
-          variant="ghost" 
-          className="w-full justify-start gap-3 text-destructive hover:bg-destructive/10"
-        >
-          <LogOut className="w-4 h-4" />
-          <span className="font-medium">Logout</span>
-        </Button>
+        <div className="px-4 pb-4">
+          <Button 
+            variant="ghost" 
+            className="w-full justify-start gap-3 text-destructive hover:bg-destructive/10 h-auto px-3 py-2"
+          >
+            <LogOut className="w-4 h-4" />
+            <span className="font-medium">Logout</span>
+          </Button>
+        </div>
       </SidebarFooter>
     </Sidebar>
   );
