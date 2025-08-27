@@ -63,7 +63,7 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
         </div>
       </SidebarHeader>
 
-      <SidebarContent className="px-3">
+      <SidebarContent className="px-3 pb-0">
         <SidebarGroup>
           <SidebarGroupLabel className="text-muted-foreground px-0">Quick Actions</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -90,7 +90,7 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
 
         <SidebarSeparator />
 
-        <SidebarGroup>
+        <SidebarGroup className="pb-0">
           <SidebarGroupLabel className="text-muted-foreground px-0">Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -112,11 +112,9 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
-         </SidebarGroup>
-      </SidebarContent>
+        </SidebarGroup>
 
-      <SidebarFooter className="p-0 mt-0">
-        <SidebarMenu className="px-3 py-0 space-y-0">
+        <SidebarMenu className="py-0 space-y-0">
           <SidebarMenuItem>
             <SidebarMenuButton 
               onClick={() => onViewChange("export")}
@@ -160,7 +158,9 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-        
+      </SidebarContent>
+
+      <SidebarFooter className="p-0 mt-0">
         <SidebarSeparator className="mx-3" />
         
         <div className="flex items-center gap-3 px-3 py-2">
