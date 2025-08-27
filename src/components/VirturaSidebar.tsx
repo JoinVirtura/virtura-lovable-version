@@ -21,7 +21,12 @@ import {
   Zap, 
   Crown,
   LogOut,
-  Sparkles
+  Sparkles,
+  User,
+  Building2,
+  Library,
+  BookOpen,
+  Settings
 } from "lucide-react";
 
 interface VirturaSidebarProps {
@@ -34,6 +39,14 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
     { id: "overview", label: "Overview", icon: Activity },
     { id: "create", label: "Create Avatar", icon: Plus },
     { id: "studio", label: "Avatar Studio", icon: SettingsIcon },
+  ];
+
+  const navigationTabs = [
+    { id: "individuals", label: "Individuals", icon: User },
+    { id: "brands", label: "Brands", icon: Building2 },
+    { id: "library", label: "My Library", icon: Library },
+    { id: "guide", label: "To-Do Guide", icon: BookOpen },
+    { id: "settings", label: "Settings", icon: Settings },
   ];
 
   return (
@@ -54,6 +67,32 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
           <SidebarGroupContent>
             <SidebarMenu>
               {mainItems.map((item) => (
+                <SidebarMenuItem key={item.id}>
+                  <SidebarMenuButton 
+                    onClick={() => onViewChange(item.id)}
+                    isActive={activeView === item.id}
+                    className={`w-full justify-start gap-3 ${
+                      activeView === item.id 
+                        ? "bg-primary text-primary-foreground shadow-gold" 
+                        : "hover:bg-accent"
+                    }`}
+                  >
+                    <item.icon className="w-5 h-5" />
+                    <span className="font-medium">{item.label}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarSeparator />
+
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-muted-foreground">Navigation</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {navigationTabs.map((item) => (
                 <SidebarMenuItem key={item.id}>
                   <SidebarMenuButton 
                     onClick={() => onViewChange(item.id)}

@@ -52,6 +52,41 @@ export default function Dashboard() {
         return <CreateAvatar />;
       case "studio":
         return <AvatarStudio />;
+      case "individuals":
+        return (
+          <div className="space-y-6">
+            <h1 className="text-3xl font-display font-bold">Individuals</h1>
+            <p className="text-muted-foreground">Individual avatar creation and management coming soon...</p>
+          </div>
+        );
+      case "brands":
+        return (
+          <div className="space-y-6">
+            <h1 className="text-3xl font-display font-bold">Brands</h1>
+            <p className="text-muted-foreground">Brand content creation coming soon...</p>
+          </div>
+        );
+      case "library":
+        return (
+          <div className="space-y-6">
+            <h1 className="text-3xl font-display font-bold">My Library</h1>
+            <p className="text-muted-foreground">Content library management coming soon...</p>
+          </div>
+        );
+      case "guide":
+        return (
+          <div className="space-y-6">
+            <h1 className="text-3xl font-display font-bold">To-Do Guide</h1>
+            <p className="text-muted-foreground">Getting started guide coming soon...</p>
+          </div>
+        );
+      case "settings":
+        return (
+          <div className="space-y-6">
+            <h1 className="text-3xl font-display font-bold">Settings</h1>
+            <p className="text-muted-foreground">Account settings coming soon...</p>
+          </div>
+        );
       default:
         return <OverviewPage />;
     }
