@@ -1379,26 +1379,30 @@ export default function Dashboard() {
                             {Object.entries(brandColors).map(([key, color]) => (
                               <div 
                                 key={key} 
-                                className={`group cursor-pointer ${selectedColorSlot === key ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : ''}`}
+                                className={`group cursor-pointer transition-all duration-200 ${selectedColorSlot === key ? 'scale-105' : 'hover:scale-102'}`}
                                 onClick={() => setSelectedColorSlot(key as keyof typeof brandColors)}
                               >
                                 <div className="relative">
                                   <div 
-                                    className="w-16 h-16 rounded-xl border-3 border-background shadow-lg group-hover:scale-105 transition-all duration-200 relative overflow-hidden"
+                                    className={`w-16 h-16 rounded-xl border-3 shadow-lg transition-all duration-200 relative overflow-hidden ${
+                                      selectedColorSlot === key 
+                                        ? 'border-primary shadow-lg shadow-primary/25' 
+                                        : 'border-background group-hover:border-border'
+                                    }`}
                                     style={{ backgroundColor: color }}
                                   >
-                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-200"></div>
+                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-200"></div>
                                     {selectedColorSlot === key && (
-                                      <div className="absolute inset-0 bg-white/20 flex items-center justify-center">
-                                        <div className="w-6 h-6 bg-white rounded-full shadow-lg flex items-center justify-center">
-                                          <div className="w-3 h-3 bg-primary rounded-full"></div>
-                                        </div>
+                                      <div className="absolute top-1 right-1">
+                                        <div className="w-3 h-3 bg-primary rounded-full border-2 border-white shadow-sm"></div>
                                       </div>
                                     )}
                                   </div>
                                 </div>
                                 <div className="mt-2 text-center">
-                                  <span className={`text-xs font-medium capitalize block ${selectedColorSlot === key ? 'text-primary' : 'text-foreground'}`}>
+                                  <span className={`text-xs font-medium capitalize block transition-colors ${
+                                    selectedColorSlot === key ? 'text-primary' : 'text-foreground'
+                                  }`}>
                                     {key}
                                   </span>
                                   <span className="text-xs text-muted-foreground uppercase">{color}</span>
@@ -1414,16 +1418,16 @@ export default function Dashboard() {
                             <div className="w-2 h-2 bg-accent rounded-full"></div>
                             <span className="text-sm font-medium text-foreground">Quick Colors</span>
                             <span className="text-xs text-muted-foreground ml-auto">
-                              Changing: {selectedColorSlot}
+                              Modifying: {selectedColorSlot}
                             </span>
                           </div>
                           
                           <div className="grid grid-cols-8 gap-2">
                             {[
-                              "#E74C3C", "#3498DB", "#2ECC71", "#F39C12", 
-                              "#9B59B6", "#1ABC9C", "#E67E22", "#34495E",
-                              "#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", 
-                              "#FECA57", "#FF9FF3", "#54A0FF", "#5F27CD"
+                              "#FF6B35", "#FF8E53", "#FF6B6B", "#C44569",
+                              "#F8B500", "#FFD93D", "#6BCF7F", "#4BCFFA", 
+                              "#74B9FF", "#0984E3", "#A29BFE", "#6C5CE7",
+                              "#FD79A8", "#E84393", "#00B894", "#00CEC9"
                             ].map((color, idx) => (
                               <div
                                 key={idx}
@@ -1432,15 +1436,14 @@ export default function Dashboard() {
                                   setBrandColors(prev => ({...prev, [selectedColorSlot]: color}));
                                   toast({
                                     title: "Color Updated",
-                                    description: `Applied ${color} to ${selectedColorSlot} color`,
+                                    description: `Applied ${color} to ${selectedColorSlot}`,
                                   });
                                 }}
                               >
                                 <div 
-                                  className="w-8 h-8 rounded-lg border-2 border-background shadow-sm group-hover:scale-110 group-hover:shadow-md transition-all duration-200"
+                                  className="w-8 h-8 rounded-lg border-2 border-background shadow-sm group-hover:scale-110 group-hover:shadow-md transition-all duration-200 group-hover:border-primary/30"
                                   style={{ backgroundColor: color }}
                                 />
-                                <div className="absolute inset-0 rounded-lg ring-0 group-hover:ring-1 ring-primary/30 transition-all duration-200"></div>
                               </div>
                             ))}
                           </div>
@@ -1451,71 +1454,167 @@ export default function Dashboard() {
                           <div className="flex items-center gap-2 mb-4">
                             <div className="w-2 h-2 bg-secondary rounded-full"></div>
                             <span className="text-sm font-medium text-foreground">Color Harmonies</span>
+                            <span className="text-xs text-muted-foreground ml-auto">Based on Adobe Color</span>
                           </div>
                           
-                          <div className="grid grid-cols-2 gap-4">
-                            {[
-                              { 
-                                name: "Ocean Breeze", 
-                                colors: { primary: "#006994", secondary: "#47B5FF", accent: "#DDF2FD", support: "#B8E6FF" }
-                              },
-                              { 
-                                name: "Sunset Glow", 
-                                colors: { primary: "#FF6B35", secondary: "#F7931E", accent: "#FFD23F", support: "#FFF0B8" }
-                              },
-                              { 
-                                name: "Forest Calm", 
-                                colors: { primary: "#2D5016", secondary: "#6B8E5A", accent: "#C4D6B0", support: "#E8F5E8" }
-                              },
-                              { 
-                                name: "Royal Purple", 
-                                colors: { primary: "#6A0572", secondary: "#AB83A1", accent: "#FFE5F1", support: "#F3D4FF" }
-                              },
-                              { 
-                                name: "Desert Sand", 
-                                colors: { primary: "#8B4513", secondary: "#D2691E", accent: "#F4A460", support: "#FAEBD7" }
-                              },
-                              { 
-                                name: "Midnight Blue", 
-                                colors: { primary: "#191970", secondary: "#4169E1", accent: "#87CEEB", support: "#E6F3FF" }
-                              },
-                              { 
-                                name: "Cherry Blossom", 
-                                colors: { primary: "#DA70D6", secondary: "#FFB6C1", accent: "#FFF0F5", support: "#FFEBF0" }
-                              },
-                              { 
-                                name: "Emerald City", 
-                                colors: { primary: "#50C878", secondary: "#90EE90", accent: "#F0FFF0", support: "#E0FFE0" }
-                              }
-                            ].map((harmony, idx) => (
-                              <div 
-                                key={idx}
-                                className="group cursor-pointer p-3 bg-muted/20 rounded-lg hover:bg-muted/40 transition-colors"
-                                onClick={() => {
-                                  setBrandColors(harmony.colors);
-                                  toast({
-                                    title: "Harmony Applied",
-                                    description: `Applied ${harmony.name} color harmony to your brand`,
-                                  });
-                                }}
-                              >
-                                <div className="flex gap-1.5 mb-2">
-                                  {Object.values(harmony.colors).map((color, colorIdx) => (
-                                    <div 
-                                      key={colorIdx}
-                                      className="flex-1 h-8 rounded-md border border-background shadow-sm group-hover:shadow transition-shadow"
-                                      style={{ backgroundColor: color }}
-                                    />
-                                  ))}
+                          <div className="max-h-64 overflow-y-auto scrollbar-thin scrollbar-track-muted/20 scrollbar-thumb-border hover:scrollbar-thumb-border/80">
+                            <div className="grid grid-cols-1 gap-3 pr-2">
+                              {[
+                                // Analogous Harmonies
+                                { 
+                                  name: "Ocean Analogous", 
+                                  type: "Analogous",
+                                  colors: { primary: "#003f5c", secondary: "#2f4b7c", accent: "#665191", support: "#a05195" }
+                                },
+                                { 
+                                  name: "Sunset Analogous", 
+                                  type: "Analogous",
+                                  colors: { primary: "#ff6361", secondary: "#ff8531", accent: "#ffa600", support: "#ffc649" }
+                                },
+                                { 
+                                  name: "Forest Analogous", 
+                                  type: "Analogous",
+                                  colors: { primary: "#2d5016", secondary: "#4a6741", accent: "#6b8e5a", support: "#c4d6b0" }
+                                },
+                                
+                                // Complementary Harmonies
+                                { 
+                                  name: "Blue Orange Complementary", 
+                                  type: "Complementary",
+                                  colors: { primary: "#1f77b4", secondary: "#ff7f0e", accent: "#aec7e8", support: "#ffbb78" }
+                                },
+                                { 
+                                  name: "Purple Yellow Complementary", 
+                                  type: "Complementary",
+                                  colors: { primary: "#6a4c93", secondary: "#ffca3a", accent: "#c589e8", support: "#fff3cd" }
+                                },
+                                { 
+                                  name: "Red Green Complementary", 
+                                  type: "Complementary",
+                                  colors: { primary: "#d62728", secondary: "#2ca02c", accent: "#ff9896", support: "#98df8a" }
+                                },
+                                
+                                // Triadic Harmonies
+                                { 
+                                  name: "Primary Triadic", 
+                                  type: "Triadic",
+                                  colors: { primary: "#ff4757", secondary: "#3742fa", accent: "#2ed573", support: "#ffffff" }
+                                },
+                                { 
+                                  name: "Vibrant Triadic", 
+                                  type: "Triadic",
+                                  colors: { primary: "#ff3838", secondary: "#ff9500", accent: "#17c0eb", support: "#f1f2f6" }
+                                },
+                                { 
+                                  name: "Muted Triadic", 
+                                  type: "Triadic",
+                                  colors: { primary: "#8395a7", secondary: "#ff6b6b", accent: "#4834d4", support: "#ddd" }
+                                },
+                                
+                                // Monochromatic Harmonies
+                                { 
+                                  name: "Blue Monochromatic", 
+                                  type: "Monochromatic",
+                                  colors: { primary: "#0c2340", secondary: "#1e3a8a", accent: "#3b82f6", support: "#93c5fd" }
+                                },
+                                { 
+                                  name: "Green Monochromatic", 
+                                  type: "Monochromatic",
+                                  colors: { primary: "#052e16", secondary: "#166534", accent: "#22c55e", support: "#86efac" }
+                                },
+                                { 
+                                  name: "Purple Monochromatic", 
+                                  type: "Monochromatic",
+                                  colors: { primary: "#3c1361", secondary: "#7c3aed", accent: "#a855f7", support: "#c4b5fd" }
+                                },
+                                
+                                // Compound Harmonies
+                                { 
+                                  name: "Corporate Professional", 
+                                  type: "Compound",
+                                  colors: { primary: "#1a365d", secondary: "#2c5282", accent: "#63b3ed", support: "#bee3f8" }
+                                },
+                                { 
+                                  name: "Creative Agency", 
+                                  type: "Compound",
+                                  colors: { primary: "#d53f8c", secondary: "#ed64a6", accent: "#f687b3", support: "#fed7e2" }
+                                },
+                                { 
+                                  name: "Tech Startup", 
+                                  type: "Compound",
+                                  colors: { primary: "#2d3748", secondary: "#4a5568", accent: "#68d391", support: "#c6f6d5" }
+                                },
+                                
+                                // Seasonal Palettes
+                                { 
+                                  name: "Spring Bloom", 
+                                  type: "Seasonal",
+                                  colors: { primary: "#e91e63", secondary: "#8bc34a", accent: "#ffeb3b", support: "#f8bbd9" }
+                                },
+                                { 
+                                  name: "Summer Vibes", 
+                                  type: "Seasonal",
+                                  colors: { primary: "#ff5722", secondary: "#ffc107", accent: "#03a9f4", support: "#ffe0b2" }
+                                },
+                                { 
+                                  name: "Autumn Leaves", 
+                                  type: "Seasonal",
+                                  colors: { primary: "#d84315", secondary: "#ff8f00", accent: "#689f38", support: "#ffcc02" }
+                                },
+                                { 
+                                  name: "Winter Frost", 
+                                  type: "Seasonal",
+                                  colors: { primary: "#263238", secondary: "#607d8b", accent: "#b0bec5", support: "#eceff1" }
+                                },
+                                
+                                // Modern Trends
+                                { 
+                                  name: "Neon Dark", 
+                                  type: "Modern",
+                                  colors: { primary: "#0f0f23", secondary: "#00d4aa", accent: "#ff006e", support: "#8338ec" }
+                                },
+                                { 
+                                  name: "Pastel Dream", 
+                                  type: "Modern",
+                                  colors: { primary: "#ffc8dd", secondary: "#bde0ff", accent: "#a2d2ff", support: "#cdb4db" }
+                                },
+                                { 
+                                  name: "Cyberpunk", 
+                                  type: "Modern",
+                                  colors: { primary: "#0a0a0a", secondary: "#ff0080", accent: "#00ffff", support: "#8000ff" }
+                                }
+                              ].map((harmony, idx) => (
+                                <div 
+                                  key={idx}
+                                  className="group cursor-pointer p-3 bg-muted/10 hover:bg-muted/25 rounded-lg transition-all duration-200"
+                                  onClick={() => {
+                                    setBrandColors(harmony.colors);
+                                    toast({
+                                      title: "Harmony Applied",
+                                      description: `Applied ${harmony.name} (${harmony.type}) to your brand`,
+                                    });
+                                  }}
+                                >
+                                  <div className="flex gap-1.5 mb-2">
+                                    {Object.values(harmony.colors).map((color, colorIdx) => (
+                                      <div 
+                                        key={colorIdx}
+                                        className="flex-1 h-6 rounded-md shadow-sm group-hover:shadow transition-shadow"
+                                        style={{ backgroundColor: color }}
+                                      />
+                                    ))}
+                                  </div>
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
+                                      {harmony.name}
+                                    </span>
+                                    <span className="text-xs text-muted-foreground bg-muted/50 px-2 py-0.5 rounded">
+                                      {harmony.type}
+                                    </span>
+                                  </div>
                                 </div>
-                                <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
-                                  {harmony.name}
-                                </span>
-                                <div className="text-xs text-muted-foreground mt-1">
-                                  Complete palette
-                                </div>
-                              </div>
-                            ))}
+                              ))}
+                            </div>
                           </div>
                         </div>
                       </div>
