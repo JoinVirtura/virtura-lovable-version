@@ -1,8 +1,9 @@
 import { useState, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Upload, Sparkles, Download, ArrowRight } from "lucide-react";
+import { Upload, Sparkles, Download } from "lucide-react";
 import { toast } from "sonner";
+import { AISuggestionsLibrary } from "./AISuggestionsLibrary";
 
 export function UploadSection() {
   const [isDragging, setIsDragging] = useState(false);
@@ -150,21 +151,7 @@ export function UploadSection() {
                 </Card>
               </div>
 
-              <Card className="p-6 bg-gradient-to-r from-blue-50/50 to-purple-50/50 border-2 border-blue-200/50 animate-scale-in">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-lg font-semibold text-foreground mb-2 flex items-center">
-                      <Sparkles className="w-5 h-5 mr-2 text-blue-500" />
-                      AI Suggestion
-                    </h3>
-                    <p className="text-muted-foreground">Want me to make a TikTok ad version of this?</p>
-                  </div>
-                  <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white hover-scale">
-                    Create TikTok Ad
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
-                </div>
-              </Card>
+              <AISuggestionsLibrary />
 
               <Button 
                 variant="outline" 
