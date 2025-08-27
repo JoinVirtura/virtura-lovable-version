@@ -8,6 +8,7 @@ import { AvatarStudio } from "@/components/AvatarStudio";
 import { UploadSection } from "@/components/UploadSection";
 import { ExportSection } from "@/components/ExportSection";
 import { ChatInterface } from "@/components/ChatInterface";
+import UpgradePage from "./UpgradePage";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -2555,7 +2556,7 @@ export default function Dashboard() {
                 </div>
                 
                 <div className="flex gap-4">
-                  <Button onClick={() => (window.location.href = "/upgrade")}>Upgrade Plan</Button>
+                  <Button onClick={() => setActiveView("upgrade")}>Upgrade Plan</Button>
                   <Button variant="outline">View Billing History</Button>
                 </div>
               </div>
@@ -2566,6 +2567,8 @@ export default function Dashboard() {
         return <UploadSection />;
       case "export":
         return <ExportSection />;
+      case "upgrade":
+        return <UpgradePage />;
       default:
         return <OverviewPage />;
     }

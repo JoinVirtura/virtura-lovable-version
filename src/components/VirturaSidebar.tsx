@@ -118,7 +118,15 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
       <SidebarFooter className="p-4 space-y-2">
         <SidebarMenu>
             <SidebarMenuItem>
-            <SidebarMenuButton className="w-full justify-start gap-3 hover:bg-accent" onClick={() => (window.location.href = "/upgrade")}>
+            <SidebarMenuButton 
+              onClick={() => onViewChange("upgrade")}
+              isActive={activeView === "upgrade"}
+              className={`w-full justify-start gap-3 ${
+                activeView === "upgrade" 
+                  ? "bg-primary text-primary-foreground shadow-gold" 
+                  : "hover:bg-accent"
+              }`}
+            >
               <Crown className="w-5 h-5" />
               <span className="font-medium">Upgrade Plan</span>
             </SidebarMenuButton>
