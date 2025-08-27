@@ -15,6 +15,9 @@ import SettingsPage from "./pages/SettingsPage";
 import UploadPage from "./pages/UploadPage";
 import ExportPage from "./pages/ExportPage";
 import NotFound from "./pages/NotFound";
+import UpgradePage from "./pages/UpgradePage";
+import PaymentSuccess from "./pages/PaymentSuccess";
+import PaymentCanceled from "./pages/PaymentCanceled";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +44,9 @@ const App = () => (
           <Route path="/export" element={<ExportPage />} />
           <Route path="/profile" element={<Dashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/upgrade" element={<UpgradePage />} />
+          <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route path="/payment-canceled" element={<PaymentCanceled />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

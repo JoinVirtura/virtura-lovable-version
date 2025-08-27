@@ -2555,7 +2555,7 @@ export default function Dashboard() {
                 </div>
                 
                 <div className="flex gap-4">
-                  <Button>Upgrade Plan</Button>
+                  <Button onClick={() => (window.location.href = "/upgrade")}>Upgrade Plan</Button>
                   <Button variant="outline">View Billing History</Button>
                 </div>
               </div>
