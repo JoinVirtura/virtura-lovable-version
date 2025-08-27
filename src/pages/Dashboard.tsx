@@ -18,7 +18,7 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Play, 
   Sparkles, 
@@ -51,6 +51,7 @@ import {
 } from "lucide-react";
 
 export default function Dashboard() {
+  const { toast } = useToast();
   const [activeView, setActiveView] = useState("overview");
   
   // Copilot Flow state
@@ -1339,7 +1340,10 @@ export default function Dashboard() {
                               const reader = new FileReader();
                               reader.onload = (e) => {
                                 setBrandLogo(e.target?.result as string);
-                                toast.success("Logo uploaded successfully!");
+                                toast({
+                                  title: "Success",
+                                  description: "Logo uploaded successfully!",
+                                });
                               };
                               reader.readAsDataURL(file);
                             }
@@ -1360,45 +1364,153 @@ export default function Dashboard() {
 
                     {/* Brand Colors */}
                     <div>
-                      <Label className="text-sm font-medium mb-3 block">Brand Colors</Label>
-                      <div className="bg-gradient-card p-4 rounded-lg space-y-4">
-                        <div className="flex items-center gap-3 mb-4">
-                          <SettingsIcon className="w-4 h-4 text-primary" />
-                          <span className="font-medium">Brand Colors</span>
-                        </div>
+                      <Label className="text-sm font-medium mb-4 block">Brand Colors</Label>
+                      <div className="bg-gradient-to-br from-card via-card/95 to-card/90 p-6 rounded-xl border border-border/50 shadow-sm space-y-6">
                         
-                        {/* Color Palette */}
-                        <div className="grid grid-cols-2 gap-4">
-                          {Object.entries(brandColors).map(([key, color]) => (
-                            <div key={key} className="text-center">
-                              <div className="relative group">
-                                <input
-                                  type="color"
-                                  value={color}
-                                  onChange={(e) => setBrandColors(prev => ({...prev, [key]: e.target.value}))}
-                                  className="w-12 h-12 rounded-full border-2 border-border cursor-pointer mx-auto block"
-                                />
-                                <div className="absolute inset-0 rounded-full group-hover:ring-2 ring-primary transition-all" />
+                        {/* Main Brand Colors */}
+                        <div>
+                          <div className="flex items-center gap-2 mb-4">
+                            <div className="w-2 h-2 bg-primary rounded-full"></div>
+                            <span className="text-sm font-medium text-foreground">Primary Colors</span>
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-4">
+                            {Object.entries(brandColors).map(([key, color]) => (
+                              <div key={key} className="group">
+                                <div className="relative">
+                                  <input
+                                    type="color"
+                                    value={color}
+                                    onChange={(e) => {
+                                      setBrandColors(prev => ({...prev, [key]: e.target.value}));
+                                      toast({
+                                        title: "Color Updated",
+                                        description: `${key.charAt(0).toUpperCase() + key.slice(1)} color changed to ${e.target.value}`,
+                                      });
+                                    }}
+                                    className="sr-only"
+                                    id={`color-${key}`}
+                                  />
+                                  <label 
+                                    htmlFor={`color-${key}`}
+                                    className="block w-16 h-16 rounded-xl cursor-pointer border-3 border-background shadow-lg group-hover:scale-105 transition-all duration-200 relative overflow-hidden"
+                                    style={{ backgroundColor: color }}
+                                  >
+                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-200"></div>
+                                    <div className="absolute inset-0 ring-0 group-hover:ring-2 ring-primary/50 rounded-xl transition-all duration-200"></div>
+                                  </label>
+                                </div>
+                                <div className="mt-2 text-center">
+                                  <span className="text-xs font-medium text-foreground capitalize block">{key}</span>
+                                  <span className="text-xs text-muted-foreground uppercase">{color}</span>
+                                </div>
                               </div>
-                              <span className="text-xs text-muted-foreground capitalize mt-2 block">{key}</span>
-                            </div>
-                          ))}
+                            ))}
+                          </div>
                         </div>
                         
-                        {/* Additional Colors */}
-                        <div className="pt-3 border-t border-border/50">
-                          <Label className="text-xs text-muted-foreground mb-2 block">Additional Colors</Label>
-                          <div className="grid grid-cols-6 gap-2">
-                            {["#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#FECA57", "#FF9FF3", "#54A0FF", "#5F27CD"].map((color, idx) => (
+                        {/* Color Suggestions */}
+                        <div className="pt-4 border-t border-border/30">
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 bg-accent rounded-full"></div>
+                              <span className="text-sm font-medium text-foreground">Quick Colors</span>
+                            </div>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-xs text-muted-foreground hover:text-foreground"
+                              onClick={() => {
+                                // Generate random color palette
+                                const randomColors = ["#E74C3C", "#3498DB", "#2ECC71", "#F39C12", "#9B59B6", "#1ABC9C"];
+                                const randomColor = randomColors[Math.floor(Math.random() * randomColors.length)];
+                                setBrandColors(prev => ({...prev, primary: randomColor}));
+                                toast({
+                                  title: "Random Color Applied",
+                                  description: "Generated a new color combination for your brand",
+                                });
+                              }}
+                            >
+                              Randomize
+                            </Button>
+                          </div>
+                          
+                          <div className="grid grid-cols-8 gap-2">
+                            {[
+                              "#E74C3C", "#3498DB", "#2ECC71", "#F39C12", 
+                              "#9B59B6", "#1ABC9C", "#E67E22", "#34495E",
+                              "#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", 
+                              "#FECA57", "#FF9FF3", "#54A0FF", "#5F27CD"
+                            ].map((color, idx) => (
                               <div
                                 key={idx}
-                                className="w-8 h-8 rounded-full cursor-pointer border-2 border-border hover:scale-110 transition-transform"
-                                style={{ backgroundColor: color }}
+                                className="relative group cursor-pointer"
                                 onClick={() => {
-                                  // Add logic to assign to selected color slot
-                                  toast.success("Color added to palette!");
+                                  // Smart color assignment based on color type
+                                  const colorHue = parseInt(color.slice(1), 16);
+                                  const isWarm = (colorHue & 0xFF0000) > (colorHue & 0x0000FF);
+                                  const targetKey = isWarm ? 'primary' : 'accent';
+                                  
+                                  setBrandColors(prev => ({...prev, [targetKey]: color}));
+                                  toast({
+                                    title: "Color Added",
+                                    description: `Applied ${color} to ${targetKey} color`,
+                                  });
                                 }}
-                              />
+                              >
+                                <div 
+                                  className="w-8 h-8 rounded-lg border-2 border-background shadow-sm group-hover:scale-110 group-hover:shadow-md transition-all duration-200"
+                                  style={{ backgroundColor: color }}
+                                />
+                                <div className="absolute inset-0 rounded-lg ring-0 group-hover:ring-1 ring-primary/30 transition-all duration-200"></div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        {/* Color Harmony Suggestions */}
+                        <div className="pt-4 border-t border-border/30">
+                          <div className="flex items-center gap-2 mb-3">
+                            <div className="w-2 h-2 bg-secondary rounded-full"></div>
+                            <span className="text-sm font-medium text-foreground">Color Harmonies</span>
+                          </div>
+                          
+                          <div className="grid grid-cols-3 gap-3">
+                            {[
+                              { name: "Ocean", colors: ["#006994", "#47B5FF", "#DDF2FD"] },
+                              { name: "Sunset", colors: ["#FF6B35", "#F7931E", "#FFD23F"] },
+                              { name: "Forest", colors: ["#2D5016", "#C4D6B0", "#6B8E5A"] }
+                            ].map((harmony, idx) => (
+                              <div 
+                                key={idx}
+                                className="group cursor-pointer"
+                                onClick={() => {
+                                  setBrandColors(prev => ({
+                                    ...prev,
+                                    primary: harmony.colors[0],
+                                    secondary: harmony.colors[1],
+                                    accent: harmony.colors[2],
+                                    support: harmony.colors[1] + "80"
+                                  }));
+                                  toast({
+                                    title: "Harmony Applied",
+                                    description: `Applied ${harmony.name} color harmony to your brand`,
+                                  });
+                                }}
+                              >
+                                <div className="flex gap-1 mb-1">
+                                  {harmony.colors.map((color, colorIdx) => (
+                                    <div 
+                                      key={colorIdx}
+                                      className="flex-1 h-6 rounded-md border border-background shadow-sm group-hover:shadow transition-shadow"
+                                      style={{ backgroundColor: color }}
+                                    />
+                                  ))}
+                                </div>
+                                <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+                                  {harmony.name}
+                                </span>
+                              </div>
                             ))}
                           </div>
                         </div>
@@ -1652,7 +1764,10 @@ export default function Dashboard() {
                       <Button 
                         className="w-full"
                         onClick={() => {
-                          toast.success("Brand Kit saved successfully!");
+                          toast({
+                            title: "Success", 
+                            description: "Brand Kit saved successfully!",
+                          });
                         }}
                       >
                         Save Brand Kit
