@@ -797,14 +797,14 @@ export default function Dashboard() {
                           <div className="p-4 space-y-3">
                             <h4 className="font-medium text-sm">{preview.title}</h4>
                             <p className="text-xs text-muted-foreground">{preview.description}</p>
-                            <div className="flex gap-2">
-                              <Button size="sm" variant="outline" className="flex-1 text-xs h-8">
+                            <div className="flex gap-1.5">
+                              <Button size="sm" variant="outline" className="flex-1 text-xs h-8 px-2">
                                 <Edit className="w-3 h-3 mr-1" />
-                                Quick Edit
+                                <span className="truncate">Quick Edit</span>
                               </Button>
-                              <Button size="sm" className="flex-1 text-xs h-8">
+                              <Button size="sm" className="flex-1 text-xs h-8 px-2">
                                 <Download className="w-3 h-3 mr-1" />
-                                Save
+                                <span className="truncate">Save</span>
                               </Button>
                             </div>
                           </div>
