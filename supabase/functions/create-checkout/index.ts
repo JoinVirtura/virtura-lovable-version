@@ -17,31 +17,31 @@ serve(async (req) => {
       return new Response(JSON.stringify({ error: "Invalid plan" }), { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 });
     }
 
-    const supabaseClient = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_ANON_KEY") ?? ""
-    );
+    // Try to get user email if authenticated; allow guests
+    let customerEmail = "guest@example.com";
+    const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
+    const supabaseClient = createClient(supabaseUrl, anonKey);
 
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) throw new Error("Not authenticated");
-    const token = authHeader.replace("Bearer ", "");
-    const { data: userData } = await supabaseClient.auth.getUser(token);
-    const user = userData.user;
-    if (!user?.email) throw new Error("User not authenticated or email not available");
+    if (authHeader) {
+      try {
+        const token = authHeader.replace("Bearer ", "");
+        const { data } = await supabaseClient.auth.getUser(token);
+        if (data.user?.email) customerEmail = data.user.email;
+      } catch (error) {
+        console.log("Auth failed, using guest email:", error);
+      }
+    }
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { apiVersion: "2023-10-16" });
 
     const priceMap: Record<string, number> = { basic: 900, pro: 1900, enterprise: 4900 };
 
-    // Find or create customer by email
-    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-    const customerId = customers.data[0]?.id;
-
     const origin = req.headers.get("origin") || "http://localhost:5173";
 
     const session = await stripe.checkout.sessions.create({
-      customer: customerId,
-      customer_email: customerId ? undefined : user.email,
+      customer_email: customerEmail,
       line_items: [
         {
           price_data: {

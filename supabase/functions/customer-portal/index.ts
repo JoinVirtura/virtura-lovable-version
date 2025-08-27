@@ -21,18 +21,23 @@ serve(async (req) => {
       { auth: { persistSession: false } }
     );
 
+    // Try to get user email if authenticated
+    let userEmail = "guest@example.com";
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) throw new Error("Not authenticated");
-    const token = authHeader.replace("Bearer ", "");
-    const { data: userData, error: userError } = await supabaseClient.auth.getUser(token);
-    if (userError) throw new Error(`Authentication error: ${userError.message}`);
-    const user = userData.user;
-    if (!user?.email) throw new Error("User not authenticated or email not available");
+    if (authHeader) {
+      try {
+        const token = authHeader.replace("Bearer ", "");
+        const { data } = await supabaseClient.auth.getUser(token);
+        if (data.user?.email) userEmail = data.user.email;
+      } catch (error) {
+        console.log("Auth failed for portal:", error);
+      }
+    }
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
-    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
+    const customers = await stripe.customers.list({ email: userEmail, limit: 1 });
     if (customers.data.length === 0) {
-      throw new Error("No Stripe customer found for this user");
+      throw new Error("No Stripe customer found. Please complete a purchase first.");
     }
     const customerId = customers.data[0].id;
 

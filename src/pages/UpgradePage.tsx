@@ -106,7 +106,7 @@ export default function UpgradePage() {
         <h2 id="pricing-plans" className="sr-only">Pricing Plans</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {plans.map((plan) => (
-            <Card key={plan.id} className={`p-6 relative ${plan.popular ? "ring-2 ring-primary" : ""}`}>
+            <Card key={plan.id} className={`p-6 relative h-full flex flex-col ${plan.popular ? "ring-2 ring-primary" : ""}`}>
               {plan.popular && (
                 <Badge className="absolute -top-3 left-6 bg-gradient-gold">Most Popular</Badge>
               )}
@@ -114,12 +114,12 @@ export default function UpgradePage() {
                 <h3 className="text-xl font-display font-bold">{plan.name}</h3>
                 <p className="text-2xl font-display font-bold">{plan.price}</p>
               </div>
-              <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+              <ul className="mt-4 space-y-2 text-sm text-muted-foreground flex-1">
                 {plan.highlights.map((h) => (
                   <li key={h}>• {h}</li>
                 ))}
               </ul>
-              <Button className="mt-6 w-full" onClick={() => startSubscription(plan.id)}>
+              <Button className="mt-6 w-full bg-gradient-gold hover:bg-gradient-gold-hover text-primary-foreground" onClick={() => startSubscription(plan.id)}>
                 Choose {plan.name}
               </Button>
             </Card>
@@ -131,10 +131,10 @@ export default function UpgradePage() {
         <h2 id="token-topups" className="text-xl font-display font-bold mb-4">Need more credits? Buy tokens</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {tokenPacks.map((pack) => (
-            <Card key={pack.tokens} className="p-6">
+            <Card key={pack.tokens} className="p-6 h-full flex flex-col">
               <h3 className="text-lg font-display font-bold">{pack.tokens} tokens</h3>
               <p className="text-2xl font-display font-bold mt-1">{pack.price}</p>
-              <p className="text-sm text-muted-foreground mt-2">One-off purchase</p>
+              <p className="text-sm text-muted-foreground mt-2 flex-1">One-off purchase</p>
               <Button variant="outline" className="mt-4 w-full" onClick={() => buyTokens(pack.tokens)}>
                 Buy tokens
               </Button>
