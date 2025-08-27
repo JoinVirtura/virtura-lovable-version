@@ -19,9 +19,9 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				sans: ['Montserrat', 'sans-serif'],
-				serif: ['Playfair Display', 'serif'],
-				display: ['Playfair Display', 'serif']
+				sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+				display: ['Montserrat', 'system-ui', '-apple-system', 'sans-serif'],
+				heading: ['Montserrat', 'system-ui', '-apple-system', 'sans-serif']
 			},
 			colors: {
 				border: 'hsl(var(--border))',
@@ -31,6 +31,7 @@ export default {
 				foreground: 'hsl(var(--foreground))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
+					dark: 'hsl(var(--primary-dark))',
 					foreground: 'hsl(var(--primary-foreground))'
 				},
 				secondary: {
@@ -69,17 +70,15 @@ export default {
 				}
 			},
 			backgroundImage: {
-				'gradient-luxury': 'var(--gradient-luxury)',
-				'gradient-warm': 'var(--gradient-warm)',
+				'gradient-gold': 'var(--gradient-gold)',
+				'gradient-gold-hover': 'var(--gradient-gold-hover)',
 				'gradient-hero': 'var(--gradient-hero)',
-				'gradient-card': 'var(--gradient-card)',
-				'gradient-glow': 'var(--gradient-glow)'
+				'gradient-card': 'var(--gradient-card)'
 			},
 			boxShadow: {
-				'luxury': 'var(--shadow-luxury)',
-				'warm': 'var(--shadow-warm)',
-				'glow': 'var(--shadow-glow)',
-				'intense': 'var(--shadow-intense)'
+				'gold': 'var(--shadow-gold)',
+				'gold-intense': 'var(--shadow-gold-intense)',
+				'card': 'var(--shadow-card)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
