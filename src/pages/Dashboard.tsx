@@ -990,15 +990,248 @@ export default function Dashboard() {
                     </Button>
 
                     {showAdvanced && (
-                      <div className="space-y-4 p-4 bg-muted/30 rounded-lg">
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <Label htmlFor="style">Style</Label>
-                            <Input id="style" placeholder="Modern, Clean" />
+                      <div className="space-y-6 p-6 bg-muted/30 rounded-lg">
+                        <h4 className="text-lg font-semibold">Advanced Customization</h4>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          {/* Left Column */}
+                          <div className="space-y-4">
+                            {/* Gender */}
+                            <div>
+                              <Label className="text-sm font-medium mb-2 block">Gender</Label>
+                              <div className="flex gap-2">
+                                {["Woman", "Man", "Trans"].map((gender) => (
+                                  <Button
+                                    key={gender}
+                                    variant={selectedGender === gender ? "default" : "outline"}
+                                    size="sm"
+                                    onClick={() => setSelectedGender(gender)}
+                                    className="flex-1"
+                                  >
+                                    {gender}
+                                  </Button>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Age Range */}
+                            <div>
+                              <Label className="text-sm font-medium mb-2 block">Age Range</Label>
+                              <Select value={selectedAge} onValueChange={setSelectedAge}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select age range" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="teens">Teens</SelectItem>
+                                  <SelectItem value="20s">20s</SelectItem>
+                                  <SelectItem value="30s">30s</SelectItem>
+                                  <SelectItem value="40s">40s</SelectItem>
+                                  <SelectItem value="50s">50s</SelectItem>
+                                  <SelectItem value="60s+">60s+</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            {/* Body Type */}
+                            <div>
+                              <Label className="text-sm font-medium mb-2 block">Body Type</Label>
+                              <Select value={selectedBodyType} onValueChange={setSelectedBodyType}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select body type" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="slim">Slim</SelectItem>
+                                  <SelectItem value="athletic">Athletic</SelectItem>
+                                  <SelectItem value="average">Average</SelectItem>
+                                  <SelectItem value="curvy">Curvy</SelectItem>
+                                  <SelectItem value="plus-size">Plus Size</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            {/* Facial Expression */}
+                            <div>
+                              <Label className="text-sm font-medium mb-2 block">Facial Expression</Label>
+                              <Select value={selectedExpression} onValueChange={setSelectedExpression}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select expression" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="smile">Smile</SelectItem>
+                                  <SelectItem value="serious">Serious</SelectItem>
+                                  <SelectItem value="laugh">Laugh</SelectItem>
+                                  <SelectItem value="neutral">Neutral</SelectItem>
+                                  <SelectItem value="confident">Confident</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            {/* Creativity Level */}
+                            <div>
+                              <Label className="text-sm font-medium mb-2 block">
+                                Creativity Level: {creativityLevel}%
+                              </Label>
+                              <Slider
+                                value={[creativityLevel]}
+                                onValueChange={(value) => setCreativityLevel(value[0])}
+                                max={100}
+                                step={10}
+                                className="w-full"
+                              />
+                              <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                                <span>Conservative</span>
+                                <span>Experimental</span>
+                              </div>
+                            </div>
+
+                            {/* Resolution */}
+                            <div>
+                              <Label className="text-sm font-medium mb-2 block">Resolution</Label>
+                              <div className="space-y-2">
+                                {["512x512", "1024x1024", "1536x1536"].map((resolution) => (
+                                  <Button
+                                    key={resolution}
+                                    variant={selectedResolution === resolution ? "default" : "outline"}
+                                    onClick={() => setSelectedResolution(resolution)}
+                                    className="w-full"
+                                  >
+                                    {resolution}
+                                  </Button>
+                                ))}
+                              </div>
+                            </div>
                           </div>
-                          <div>
-                            <Label htmlFor="format">Format</Label>
-                            <Input id="format" placeholder="Instagram Story" />
+
+                          {/* Right Column */}
+                          <div className="space-y-4">
+                            {/* Hair */}
+                            <div>
+                              <Label className="text-sm font-medium mb-2 block">Hair</Label>
+                              <div className="space-y-2">
+                                <Select value={selectedHairColor} onValueChange={setSelectedHairColor}>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Color" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="black">Black</SelectItem>
+                                    <SelectItem value="brown">Brown</SelectItem>
+                                    <SelectItem value="blonde">Blonde</SelectItem>
+                                    <SelectItem value="red">Red</SelectItem>
+                                    <SelectItem value="gray">Gray</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <Select value={selectedHairStyle} onValueChange={setSelectedHairStyle}>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Style" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="short">Short</SelectItem>
+                                    <SelectItem value="medium">Medium</SelectItem>
+                                    <SelectItem value="long">Long</SelectItem>
+                                    <SelectItem value="curly">Curly</SelectItem>
+                                    <SelectItem value="straight">Straight</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+
+                            {/* Eyes */}
+                            <div>
+                              <Label className="text-sm font-medium mb-2 block">Eyes</Label>
+                              <Select value={selectedEyeColor} onValueChange={setSelectedEyeColor}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Eye color" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="brown">Brown</SelectItem>
+                                  <SelectItem value="blue">Blue</SelectItem>
+                                  <SelectItem value="green">Green</SelectItem>
+                                  <SelectItem value="hazel">Hazel</SelectItem>
+                                  <SelectItem value="gray">Gray</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            {/* Setting */}
+                            <div>
+                              <Label className="text-sm font-medium mb-2 block">Setting</Label>
+                              <div className="space-y-2">
+                                <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Location" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="studio">Studio</SelectItem>
+                                    <SelectItem value="office">Office</SelectItem>
+                                    <SelectItem value="outdoor">Outdoor</SelectItem>
+                                    <SelectItem value="home">Home</SelectItem>
+                                    <SelectItem value="cafe">Cafe</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <Select value={selectedLighting} onValueChange={setSelectedLighting}>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Lighting" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="natural">Natural</SelectItem>
+                                    <SelectItem value="studio">Studio</SelectItem>
+                                    <SelectItem value="golden-hour">Golden Hour</SelectItem>
+                                    <SelectItem value="dramatic">Dramatic</SelectItem>
+                                    <SelectItem value="soft">Soft</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+
+                            {/* Body Pose */}
+                            <div>
+                              <Label className="text-sm font-medium mb-2 block">Body Pose</Label>
+                              <Select value={selectedPose} onValueChange={setSelectedPose}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select pose" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="front">Front Facing</SelectItem>
+                                  <SelectItem value="side">Side Profile</SelectItem>
+                                  <SelectItem value="three-quarter">Three Quarter</SelectItem>
+                                  <SelectItem value="dynamic">Dynamic</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            {/* Clothing Style */}
+                            <div>
+                              <Label className="text-sm font-medium mb-2 block">Clothing Style</Label>
+                              <Select value={selectedOutfit} onValueChange={setSelectedOutfit}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select outfit" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="business">Business</SelectItem>
+                                  <SelectItem value="casual">Casual</SelectItem>
+                                  <SelectItem value="formal">Formal</SelectItem>
+                                  <SelectItem value="creative">Creative</SelectItem>
+                                  <SelectItem value="sporty">Sporty</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            {/* Accessories */}
+                            <div>
+                              <Label className="text-sm font-medium mb-2 block">Accessories</Label>
+                              <Select value={selectedAccessories} onValueChange={setSelectedAccessories}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select accessories" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="none">None</SelectItem>
+                                  <SelectItem value="glasses">Glasses</SelectItem>
+                                  <SelectItem value="jewelry">Jewelry</SelectItem>
+                                  <SelectItem value="watch">Watch</SelectItem>
+                                  <SelectItem value="hat">Hat</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -1031,17 +1264,17 @@ export default function Dashboard() {
                               className="w-full h-full object-cover"
                             />
                           </div>
-                          <div className="p-3 space-y-2">
+                          <div className="p-4 space-y-3">
                             <h4 className="font-medium text-sm">{preview.title}</h4>
                             <p className="text-xs text-muted-foreground">{preview.description}</p>
-                            <div className="flex gap-1">
-                              <Button size="sm" variant="outline" className="text-xs">
+                            <div className="flex gap-1.5">
+                              <Button size="sm" variant="outline" className="flex-1 text-xs h-8 px-2">
                                 <Edit className="w-3 h-3 mr-1" />
-                                Quick Edit
+                                <span className="truncate">Quick Edit</span>
                               </Button>
-                              <Button size="sm" className="text-xs">
+                              <Button size="sm" className="flex-1 text-xs h-8 px-2">
                                 <Download className="w-3 h-3 mr-1" />
-                                Save
+                                <span className="truncate">Save</span>
                               </Button>
                             </div>
                           </div>
