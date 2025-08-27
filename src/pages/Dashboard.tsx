@@ -46,6 +46,10 @@ export default function Dashboard() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
   
+  // AI Suggestions state
+  const [promptSearch, setPromptSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  
   // Guide page state
   const [todos, setTodos] = useState([
     {
@@ -74,6 +78,107 @@ export default function Dashboard() {
     }
   ]);
   const [showConfetti, setShowConfetti] = useState(false);
+
+  // Comprehensive AI Prompt Library
+  const promptLibrary = [
+    // Professional Business
+    { category: "Professional", title: "Executive Portrait", prompt: "Professional executive in navy suit with confident expression, modern office" },
+    { category: "Professional", title: "Business Headshot", prompt: "Professional headshot with golden hour lighting, business attire" },
+    { category: "Professional", title: "Corporate Leader", prompt: "Corporate leader presenting in boardroom with confidence" },
+    { category: "Professional", title: "Entrepreneur", prompt: "Young entrepreneur in modern coworking space with laptop" },
+    { category: "Professional", title: "Sales Professional", prompt: "Sales representative with confident handshake pose, office setting" },
+    { category: "Professional", title: "Consultant", prompt: "Business consultant with strategic documents and charts" },
+    { category: "Professional", title: "Team Leader", prompt: "Team leader in collaborative meeting room environment" },
+    { category: "Professional", title: "Manager Portrait", prompt: "Professional manager in corner office with city view" },
+    
+    // Healthcare & Medical
+    { category: "Healthcare", title: "Doctor Portrait", prompt: "Doctor in white coat with stethoscope, hospital background" },
+    { category: "Healthcare", title: "Nurse Professional", prompt: "Caring nurse in scrubs with medical equipment, bright clinic" },
+    { category: "Healthcare", title: "Surgeon", prompt: "Surgeon in operating room with surgical mask and cap" },
+    { category: "Healthcare", title: "Therapist", prompt: "Mental health professional in calming office with plants" },
+    { category: "Healthcare", title: "Veterinarian", prompt: "Veterinarian with friendly animals in modern clinic" },
+    { category: "Healthcare", title: "Dentist", prompt: "Dentist in dental office with modern equipment" },
+    { category: "Healthcare", title: "Pharmacist", prompt: "Pharmacist in pharmacy with medicine shelves background" },
+    
+    // Technology & Innovation
+    { category: "Technology", title: "Software Developer", prompt: "Software developer with multiple coding screens in tech office" },
+    { category: "Technology", title: "Data Scientist", prompt: "Data scientist analyzing complex charts and algorithms" },
+    { category: "Technology", title: "UX Designer", prompt: "UX designer with wireframes and design mockups" },
+    { category: "Technology", title: "Tech Startup Founder", prompt: "Tech entrepreneur in Silicon Valley style office" },
+    { category: "Technology", title: "Cybersecurity Expert", prompt: "Cybersecurity professional with network diagrams" },
+    { category: "Technology", title: "AI Researcher", prompt: "AI researcher in futuristic laboratory with advanced technology" },
+    { category: "Technology", title: "Mobile App Developer", prompt: "Mobile developer testing apps on multiple devices" },
+    
+    // Creative & Arts
+    { category: "Creative", title: "Graphic Designer", prompt: "Graphic designer with creative tools and colorful artwork" },
+    { category: "Creative", title: "Photographer", prompt: "Professional photographer with camera equipment in studio" },
+    { category: "Creative", title: "Artist Studio", prompt: "Artist in creative studio with paintings and art supplies" },
+    { category: "Creative", title: "Fashion Designer", prompt: "Fashion designer with sketches and fabric samples" },
+    { category: "Creative", title: "Interior Designer", prompt: "Interior designer with mood boards and material samples" },
+    { category: "Creative", title: "Architect", prompt: "Architect with blueprints in modern design studio" },
+    { category: "Creative", title: "Video Editor", prompt: "Video editor with multiple monitors and editing software" },
+    { category: "Creative", title: "Music Producer", prompt: "Music producer in professional recording studio" },
+    
+    // Education & Academia
+    { category: "Education", title: "Teacher Portrait", prompt: "Warm approachable teacher in bright classroom" },
+    { category: "Education", title: "Professor", prompt: "University professor in academic office with books" },
+    { category: "Education", title: "Researcher", prompt: "Research scientist in laboratory with equipment" },
+    { category: "Education", title: "Librarian", prompt: "Friendly librarian surrounded by books and knowledge" },
+    { category: "Education", title: "Principal", prompt: "School principal in welcoming educational environment" },
+    { category: "Education", title: "Tutor", prompt: "Personal tutor helping students with learning materials" },
+    
+    // Finance & Legal
+    { category: "Finance", title: "Financial Advisor", prompt: "Financial advisor with charts and professional demeanor" },
+    { category: "Finance", title: "Lawyer", prompt: "Professional lawyer in traditional law office with books" },
+    { category: "Finance", title: "Accountant", prompt: "Accountant with financial documents and calculator" },
+    { category: "Finance", title: "Investment Banker", prompt: "Investment banker in Wall Street style office" },
+    { category: "Finance", title: "Insurance Agent", prompt: "Insurance professional explaining policies to clients" },
+    
+    // Service & Hospitality
+    { category: "Service", title: "Chef Portrait", prompt: "Professional chef in modern kitchen with culinary tools" },
+    { category: "Service", title: "Restaurant Manager", prompt: "Restaurant manager in elegant dining establishment" },
+    { category: "Service", title: "Hotel Manager", prompt: "Hotel manager in luxury lobby with welcoming smile" },
+    { category: "Service", title: "Event Planner", prompt: "Event coordinator with elegant venue background" },
+    { category: "Service", title: "Real Estate Agent", prompt: "Real estate professional with property listings" },
+    
+    // Fitness & Wellness
+    { category: "Fitness", title: "Personal Trainer", prompt: "Personal trainer in modern gym with fitness equipment" },
+    { category: "Fitness", title: "Yoga Instructor", prompt: "Yoga teacher in peaceful studio with natural light" },
+    { category: "Fitness", title: "Nutritionist", prompt: "Nutritionist with healthy foods and meal plans" },
+    { category: "Fitness", title: "Sports Coach", prompt: "Sports coach with athletic equipment and motivational energy" },
+    
+    // Marketing & Media
+    { category: "Marketing", title: "Marketing Manager", prompt: "Marketing professional with laptop in bright creative office" },
+    { category: "Marketing", title: "Social Media Manager", prompt: "Social media expert with multiple screens and content" },
+    { category: "Marketing", title: "Content Creator", prompt: "Content creator with camera and creative setup" },
+    { category: "Marketing", title: "PR Specialist", prompt: "Public relations professional in corporate communications" },
+    { category: "Marketing", title: "Brand Manager", prompt: "Brand manager presenting creative campaigns" },
+    
+    // Lifestyle & Personal
+    { category: "Lifestyle", title: "Life Coach", prompt: "Life coach in inspiring motivational setting with books" },
+    { category: "Lifestyle", title: "Travel Blogger", prompt: "Travel influencer with world map and adventure gear" },
+    { category: "Lifestyle", title: "Wellness Expert", prompt: "Wellness expert in serene spa-like environment" },
+    { category: "Lifestyle", title: "Personal Stylist", prompt: "Fashion stylist with clothing and accessories" },
+    { category: "Lifestyle", title: "Home Organizer", prompt: "Organization expert in beautifully arranged space" },
+    
+    // Casual & Creative Portraits
+    { category: "Portrait", title: "Outdoor Natural", prompt: "Natural outdoor portrait with soft golden lighting" },
+    { category: "Portrait", title: "Urban Professional", prompt: "Urban professional against city skyline backdrop" },
+    { category: "Portrait", title: "Artistic Portrait", prompt: "Artistic portrait with dramatic lighting and shadows" },
+    { category: "Portrait", title: "Casual Friendly", prompt: "Casual friendly portrait in comfortable home setting" },
+    { category: "Portrait", title: "Vintage Style", prompt: "Vintage inspired portrait with classic styling" },
+    { category: "Portrait", title: "Minimalist", prompt: "Clean minimalist portrait with simple background" }
+  ];
+
+  const categories = ["All", "Professional", "Healthcare", "Technology", "Creative", "Education", "Finance", "Service", "Fitness", "Marketing", "Lifestyle", "Portrait"];
+
+  const filteredPrompts = promptLibrary.filter(prompt => {
+    const matchesSearch = prompt.title.toLowerCase().includes(promptSearch.toLowerCase()) || 
+                         prompt.prompt.toLowerCase().includes(promptSearch.toLowerCase()) ||
+                         prompt.category.toLowerCase().includes(promptSearch.toLowerCase());
+    const matchesCategory = selectedCategory === "All" || prompt.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   // Mock data for library
   const assets = [
@@ -172,197 +277,87 @@ export default function Dashboard() {
 
               {/* Sidebar */}
               <div className="space-y-6">
-                {/* AI Suggestions */}
+                {/* AI Suggestions Library */}
                 <Card className="p-6 h-[600px] flex flex-col">
                   <h3 className="text-lg font-display font-bold mb-4 flex items-center gap-2">
                     <Sparkles className="w-5 h-5 text-primary" />
-                    AI Suggestions
+                    AI Prompt Library
                   </h3>
-                  <div className="flex-1 overflow-y-auto space-y-3 pr-2">
-                    {[
-                      {
-                        title: "Professional Headshots",
-                        suggestion: "Professional headshot with golden hour lighting"
-                      },
-                      {
-                        title: "Business Portrait", 
-                        suggestion: "Confident smile in business attire"
-                      },
-                      {
-                        title: "Office Background",
-                        suggestion: "Modern office environment backdrop"
-                      },
-                      {
-                        title: "Professional Pose",
-                        suggestion: "Three-quarter view with arms crossed professionally"
-                      },
-                      {
-                        title: "Casual Entrepreneur",
-                        suggestion: "Casual entrepreneur in creative workspace"
-                      },
-                      {
-                        title: "Approachable Teacher",
-                        suggestion: "Warm approachable teacher with natural smile"
-                      },
-                      {
-                        title: "Corporate Executive",
-                        suggestion: "Executive in navy suit with confident expression"
-                      },
-                      {
-                        title: "Creative Professional",
-                        suggestion: "Creative professional in artistic studio setting"
-                      },
-                      {
-                        title: "Medical Professional",
-                        suggestion: "Doctor in white coat with stethoscope, hospital background"
-                      },
-                      {
-                        title: "Tech Startup Founder",
-                        suggestion: "Young tech entrepreneur in modern coworking space"
-                      },
-                      {
-                        title: "Marketing Manager",
-                        suggestion: "Marketing professional with laptop in bright office"
-                      },
-                      {
-                        title: "Outdoor Portrait",
-                        suggestion: "Natural outdoor portrait with soft natural lighting"
-                      },
-                      {
-                        title: "Home Office Setup",
-                        suggestion: "Professional working from home office with plants"
-                      },
-                      {
-                        title: "Conference Speaker",
-                        suggestion: "Confident speaker presenting at business conference"
-                      },
-                      {
-                        title: "Team Leader",
-                        suggestion: "Team leader in collaborative meeting room"
-                      },
-                      {
-                        title: "Consultant",
-                        suggestion: "Business consultant with strategic documents"
-                      },
-                      {
-                        title: "Designer Portrait",
-                        suggestion: "Graphic designer with creative tools and artwork"
-                      },
-                      {
-                        title: "Lawyer Professional",
-                        suggestion: "Professional lawyer in traditional law office"
-                      },
-                      {
-                        title: "Real Estate Agent",
-                        suggestion: "Real estate professional with property listings"
-                      },
-                      {
-                        title: "Financial Advisor",
-                        suggestion: "Financial advisor with charts and professional demeanor"
-                      },
-                      {
-                        title: "Chef Portrait",
-                        suggestion: "Professional chef in modern kitchen environment"
-                      },
-                      {
-                        title: "Fitness Trainer",
-                        suggestion: "Personal trainer in modern gym setting"
-                      },
-                      {
-                        title: "Architect",
-                        suggestion: "Architect with blueprints in modern design studio"
-                      },
-                      {
-                        title: "Social Media Manager",
-                        suggestion: "Social media expert with multiple screens and content"
-                      },
-                      {
-                        title: "Sales Professional",
-                        suggestion: "Sales representative with confident handshake pose"
-                      },
-                      {
-                        title: "HR Manager",
-                        suggestion: "Human resources professional in welcoming office"
-                      },
-                      {
-                        title: "Event Planner",
-                        suggestion: "Event coordinator with elegant venue background"
-                      },
-                      {
-                        title: "Photographer",
-                        suggestion: "Professional photographer with camera equipment"
-                      },
-                      {
-                        title: "Writer/Author",
-                        suggestion: "Author with books and cozy writing environment"
-                      },
-                      {
-                        title: "Music Producer",
-                        suggestion: "Music producer in professional recording studio"
-                      },
-                      {
-                        title: "Fashion Designer",
-                        suggestion: "Fashion designer with sketches and fabric samples"
-                      },
-                      {
-                        title: "Travel Blogger",
-                        suggestion: "Travel influencer with world map and luggage"
-                      },
-                      {
-                        title: "Life Coach",
-                        suggestion: "Life coach in inspiring motivational setting"
-                      },
-                      {
-                        title: "Yoga Instructor",
-                        suggestion: "Yoga teacher in peaceful studio with natural light"
-                      },
-                      {
-                        title: "Environmental Scientist",
-                        suggestion: "Scientist in laboratory with research equipment"
-                      },
-                      {
-                        title: "App Developer",
-                        suggestion: "Software developer with multiple coding screens"
-                      },
-                      {
-                        title: "Podcast Host",
-                        suggestion: "Podcast host with professional microphone setup"
-                      },
-                      {
-                        title: "Interior Designer",
-                        suggestion: "Interior designer with mood boards and samples"
-                      },
-                      {
-                        title: "Therapist",
-                        suggestion: "Mental health professional in calming office"
-                      },
-                      {
-                        title: "Veterinarian",
-                        suggestion: "Veterinarian with friendly animals in clinic"
-                      }
-                    ].map((item, index) => (
-                      <div
-                        key={index}
-                        onClick={() => {
-                          // Find the textarea and populate it
-                          const textarea = document.getElementById('main-prompt-textarea') as HTMLTextAreaElement;
-                          if (textarea) {
-                            const event = new Event('input', { bubbles: true });
-                            textarea.value = item.suggestion;
-                            textarea.dispatchEvent(event);
-                            textarea.focus();
-                          }
-                        }}
-                        className="p-3 rounded-lg hover:bg-accent/50 cursor-pointer transition-colors group border border-border/50 hover:border-primary/30"
-                      >
-                        <p className="font-medium text-sm mb-1 group-hover:text-primary transition-colors">
-                          {item.title}
-                        </p>
-                        <p className="text-xs text-muted-foreground leading-relaxed break-words">
-                          "{item.suggestion}"
-                        </p>
+                  
+                  {/* Search Bar */}
+                  <div className="relative mb-4">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      value={promptSearch}
+                      onChange={(e) => setPromptSearch(e.target.value)}
+                      placeholder="Search prompts..."
+                      className="pl-10"
+                    />
+                  </div>
+
+                  {/* Category Filters */}
+                  <div className="mb-4">
+                    <div className="flex flex-wrap gap-2 max-h-20 overflow-y-auto">
+                      {categories.map((category) => (
+                        <Button
+                          key={category}
+                          variant={selectedCategory === category ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setSelectedCategory(category)}
+                          className="text-xs h-8"
+                        >
+                          {category}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Results Count */}
+                  <div className="mb-3">
+                    <p className="text-xs text-muted-foreground">
+                      {filteredPrompts.length} prompt{filteredPrompts.length !== 1 ? 's' : ''} found
+                    </p>
+                  </div>
+                  
+                  {/* Scrollable Prompts */}
+                  <div className="flex-1 overflow-y-auto space-y-2 pr-2">
+                    {filteredPrompts.length > 0 ? (
+                      filteredPrompts.map((item, index) => (
+                        <div
+                          key={index}
+                          onClick={() => {
+                            const textarea = document.getElementById('main-prompt-textarea') as HTMLTextAreaElement;
+                            if (textarea) {
+                              const event = new Event('input', { bubbles: true });
+                              textarea.value = item.prompt;
+                              textarea.dispatchEvent(event);
+                              textarea.focus();
+                            }
+                          }}
+                          className="p-3 rounded-lg hover:bg-accent/50 cursor-pointer transition-colors group border border-border/30 hover:border-primary/50"
+                        >
+                          <div className="flex items-start justify-between mb-1">
+                            <p className="font-medium text-sm group-hover:text-primary transition-colors">
+                              {item.title}
+                            </p>
+                            <Badge variant="secondary" className="text-xs ml-2 flex-shrink-0">
+                              {item.category}
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-muted-foreground leading-relaxed break-words">
+                            "{item.prompt}"
+                          </p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="flex items-center justify-center h-32 text-center">
+                        <div>
+                          <Search className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                          <p className="text-sm text-muted-foreground">No prompts found</p>
+                          <p className="text-xs text-muted-foreground">Try a different search term or category</p>
+                        </div>
                       </div>
-                    ))}
+                    )}
                   </div>
                 </Card>
               </div>
