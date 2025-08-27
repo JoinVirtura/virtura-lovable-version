@@ -1405,7 +1405,7 @@ export default function Dashboard() {
                                   }`}>
                                     {key}
                                   </span>
-                                  <span className="text-xs text-muted-foreground uppercase">{color}</span>
+                                  <span className="text-xs text-muted-foreground uppercase text-center block">{color}</span>
                                 </div>
                               </div>
                             ))}
@@ -1414,13 +1414,10 @@ export default function Dashboard() {
                         
                         {/* Color Suggestions */}
                         <div className="pt-4 border-t border-border/30">
-                          <div className="flex items-center gap-2 mb-3">
-                            <div className="w-2 h-2 bg-accent rounded-full"></div>
-                            <span className="text-sm font-medium text-foreground">Quick Colors</span>
-                            <span className="text-xs text-muted-foreground ml-auto">
-                              Modifying: {selectedColorSlot}
-                            </span>
-                          </div>
+                           <div className="flex items-center gap-2 mb-3">
+                             <div className="w-2 h-2 bg-accent rounded-full"></div>
+                             <span className="text-sm font-medium text-foreground">Quick Colors</span>
+                           </div>
                           
                           <div className="grid grid-cols-8 gap-2">
                             {[
@@ -1451,11 +1448,10 @@ export default function Dashboard() {
                         
                         {/* Color Harmony Suggestions */}
                         <div className="pt-4 border-t border-border/30">
-                          <div className="flex items-center gap-2 mb-4">
-                            <div className="w-2 h-2 bg-secondary rounded-full"></div>
-                            <span className="text-sm font-medium text-foreground">Color Harmonies</span>
-                            <span className="text-xs text-muted-foreground ml-auto">Based on Adobe Color</span>
-                          </div>
+                           <div className="flex items-center gap-2 mb-4">
+                             <div className="w-2 h-2 bg-secondary rounded-full"></div>
+                             <span className="text-sm font-medium text-foreground">Color Harmonies</span>
+                           </div>
                           
                           <div className="max-h-64 overflow-y-auto scrollbar-thin scrollbar-track-muted/20 scrollbar-thumb-border hover:scrollbar-thumb-border/80">
                             <div className="grid grid-cols-1 gap-3 pr-2">
