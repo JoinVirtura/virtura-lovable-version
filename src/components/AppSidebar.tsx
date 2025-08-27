@@ -1,4 +1,4 @@
-import { Heart, Search, MessageCircle, Image, User, Zap } from "lucide-react"
+import { Heart, Search, MessageCircle, Image, User, Zap, Upload, Download } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 
 import {
@@ -17,6 +17,8 @@ const items = [
   { title: "Explore", url: "/", icon: Search },
   { title: "Chat", url: "/chat", icon: MessageCircle },
   { title: "Gallery", url: "/gallery", icon: Image },
+  { title: "Upload", url: "/upload", icon: Upload },
+  { title: "Export", url: "/export", icon: Download },
   { title: "Profile", url: "/profile", icon: User },
 ]
 

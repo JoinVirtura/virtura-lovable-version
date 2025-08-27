@@ -12,6 +12,8 @@ import BrandsPage from "./pages/BrandsPage";
 import LibraryPage from "./pages/LibraryPage";
 import GuidePage from "./pages/GuidePage";
 import SettingsPage from "./pages/SettingsPage";
+import UploadPage from "./pages/UploadPage";
+import ExportPage from "./pages/ExportPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,6 +37,8 @@ const App = () => (
           <Route path="/old-dashboard" element={<DashboardPage />} />
           <Route path="/chat" element={<Dashboard />} />
           <Route path="/gallery" element={<Dashboard />} />
+          <Route path="/upload" element={<UploadPage />} />
+          <Route path="/export" element={<ExportPage />} />
           <Route path="/profile" element={<Dashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
