@@ -2111,19 +2111,6 @@ export default function Dashboard() {
             </div>
           </div>
         );
-                    <p className="text-sm text-muted-foreground mb-2">{asset.date}</p>
-                    <div className="flex gap-1 flex-wrap">
-                      {asset.tags.map((tag) => (
-                        <Badge key={tag} variant="secondary" className="text-xs">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                </Card>
-              </div>
-            </div>
-          </div>
-        );
       case "guide":
         return (
           <div className="space-y-6">
