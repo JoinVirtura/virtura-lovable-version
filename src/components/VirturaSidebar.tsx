@@ -48,8 +48,8 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
     { id: "upload", label: "Upload", icon: Upload },
     { id: "individuals", label: "Individuals", icon: User },
     { id: "brands", label: "Brands", icon: Building2 },
-    { id: "library", label: "My Library", icon: Library },
-    { id: "guide", label: "To-Do Guide", icon: BookOpen },
+    { id: "library", label: "Library", icon: Library },
+    { id: "guide", label: "Tutorial", icon: BookOpen },
   ];
 
   return (
@@ -79,7 +79,7 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
                         : "hover:bg-accent"
                     }`}
                   >
-                    <item.icon className="w-5 h-5" />
+                    <item.icon className="w-4 h-4" />
                     <span className="font-medium">{item.label}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -105,7 +105,7 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
                         : "hover:bg-accent"
                     }`}
                   >
-                    <item.icon className="w-5 h-5" />
+                    <item.icon className="w-4 h-4" />
                     <span className="font-medium">{item.label}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -117,20 +117,6 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
 
       <SidebarFooter className="p-4 space-y-2">
         <SidebarMenu>
-            <SidebarMenuItem>
-            <SidebarMenuButton 
-              onClick={() => onViewChange("upgrade")}
-              isActive={activeView === "upgrade"}
-              className={`w-full justify-start gap-3 ${
-                activeView === "upgrade" 
-                  ? "bg-primary text-primary-foreground shadow-gold" 
-                  : "hover:bg-accent"
-              }`}
-            >
-              <Crown className="w-5 h-5" />
-              <span className="font-medium">Upgrade Plan</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton 
               onClick={() => onViewChange("export")}
@@ -141,7 +127,7 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
                   : "hover:bg-accent"
               }`}
             >
-              <Download className="w-5 h-5" />
+              <Download className="w-4 h-4" />
               <span className="font-medium">Export</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -155,8 +141,22 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
                   : "hover:bg-accent"
               }`}
             >
-              <Settings className="w-5 h-5" />
+              <Settings className="w-4 h-4" />
               <span className="font-medium">Settings</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton 
+              onClick={() => onViewChange("upgrade")}
+              isActive={activeView === "upgrade"}
+              className={`w-full justify-start gap-3 ${
+                activeView === "upgrade" 
+                  ? "bg-primary text-primary-foreground shadow-gold" 
+                  : "hover:bg-accent"
+              }`}
+            >
+              <Crown className="w-4 h-4" />
+              <span className="font-medium">Upgrade Plan</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -179,7 +179,7 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
           className="w-full justify-start gap-3 text-destructive hover:bg-destructive/10"
         >
           <LogOut className="w-4 h-4" />
-          Logout
+          <span className="font-medium">Logout</span>
         </Button>
       </SidebarFooter>
     </Sidebar>
