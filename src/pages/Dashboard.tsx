@@ -1399,13 +1399,13 @@ export default function Dashboard() {
                                     )}
                                   </div>
                                 </div>
-                                <div className="mt-2 text-center space-y-1">
-                                  <div className={`text-xs font-medium capitalize transition-colors ${
+                                <div className="mt-2 text-center">
+                                  <span className={`text-xs font-medium capitalize block transition-colors ${
                                     selectedColorSlot === key ? 'text-primary' : 'text-foreground'
                                   }`}>
                                     {key}
-                                  </div>
-                                  <div className="text-xs text-muted-foreground uppercase">{color}</div>
+                                  </span>
+                                  <span className="text-xs text-muted-foreground uppercase block">{color}</span>
                                 </div>
                               </div>
                             ))}
@@ -1419,31 +1419,39 @@ export default function Dashboard() {
                              <span className="text-sm font-medium text-foreground">Quick Colors</span>
                            </div>
                           
-                          <div className="grid grid-cols-8 gap-2">
-                            {[
-                              "#FF6B35", "#FF8E53", "#FF6B6B", "#C44569",
-                              "#F8B500", "#FFD93D", "#6BCF7F", "#4BCFFA", 
-                              "#74B9FF", "#0984E3", "#A29BFE", "#6C5CE7",
-                              "#FD79A8", "#E84393", "#00B894", "#00CEC9"
-                            ].map((color, idx) => (
-                              <div
-                                key={idx}
-                                className="relative group cursor-pointer"
-                                onClick={() => {
-                                  setBrandColors(prev => ({...prev, [selectedColorSlot]: color}));
-                                  toast({
-                                    title: "Color Updated",
-                                    description: `Applied ${color} to ${selectedColorSlot}`,
-                                  });
-                                }}
-                              >
-                                <div 
-                                  className="w-8 h-8 rounded-lg border-2 border-background shadow-sm group-hover:scale-110 group-hover:shadow-md transition-all duration-200 group-hover:border-primary/30"
-                                  style={{ backgroundColor: color }}
-                                />
-                              </div>
-                            ))}
-                          </div>
+                           <div className="overflow-x-auto">
+                             <div className="flex gap-2 pb-2 min-w-max">
+                               {[
+                                 "#FF6B35", "#FF8E53", "#FF6B6B", "#C44569", "#F8B500", "#FFD93D", 
+                                 "#6BCF7F", "#4BCFFA", "#74B9FF", "#0984E3", "#A29BFE", "#6C5CE7",
+                                 "#FD79A8", "#E84393", "#00B894", "#00CEC9", "#FF5722", "#E91E63",
+                                 "#9C27B0", "#673AB7", "#3F51B5", "#2196F3", "#03A9F4", "#00BCD4",
+                                 "#009688", "#4CAF50", "#8BC34A", "#CDDC39", "#FFEB3B", "#FFC107",
+                                 "#FF9800", "#795548", "#607D8B", "#455A64", "#263238", "#37474F",
+                                 "#546E7A", "#78909C", "#90A4AE", "#B0BEC5", "#CFD8DC", "#ECEFF1",
+                                 "#F44336", "#E57373", "#EF5350", "#F48FB1", "#CE93D8", "#B39DDB",
+                                 "#9FA8DA", "#90CAF9", "#81D4FA", "#80DEEA", "#80CBC4", "#A5D6A7",
+                                 "#C8E6C9", "#DCEDC8", "#F0F4C3", "#FFF9C4", "#FFECB3", "#FFE0B2"
+                               ].map((color, idx) => (
+                                 <div
+                                   key={idx}
+                                   className="relative group cursor-pointer flex-shrink-0"
+                                   onClick={() => {
+                                     setBrandColors(prev => ({...prev, [selectedColorSlot]: color}));
+                                     toast({
+                                       title: "Color Updated",
+                                       description: `Applied ${color} to ${selectedColorSlot}`,
+                                     });
+                                   }}
+                                 >
+                                   <div 
+                                     className="w-8 h-8 rounded-lg border-2 border-background shadow-sm group-hover:scale-110 group-hover:shadow-md transition-all duration-200 group-hover:border-primary/30"
+                                     style={{ backgroundColor: color }}
+                                   />
+                                 </div>
+                               ))}
+                             </div>
+                           </div>
                         </div>
                         
                         {/* Color Harmony Suggestions */}
