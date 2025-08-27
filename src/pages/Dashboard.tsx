@@ -893,7 +893,7 @@ export default function Dashboard() {
                               {item.category}
                             </Badge>
                           </div>
-                          <p className="text-xs text-muted-foreground leading-relaxed break-words min-h-[2.5rem] overflow-hidden">
+                          <p className="text-xs text-muted-foreground leading-relaxed break-words min-h-[3rem] overflow-hidden">
                             "{item.prompt}"
                           </p>
                         </div>
