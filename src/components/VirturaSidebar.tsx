@@ -161,7 +161,7 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
             <AvatarFallback>J</AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="font-medium text-sm">Jeff</p>
+            <p className="font-medium text-sm">Jeff Krammer</p>
             <p className="text-xs text-muted-foreground">Pro Plan</p>
           </div>
         </div>
