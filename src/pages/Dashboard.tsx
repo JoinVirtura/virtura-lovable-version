@@ -835,7 +835,7 @@ export default function Dashboard() {
 
               {/* Sidebar - AI Prompt Library */}
               <div className="space-y-6">
-                <Card className="p-6 h-[600px] flex flex-col">
+                <Card className={`p-6 flex flex-col transition-all duration-300 ${showAdvanced ? 'h-[900px]' : 'h-[600px]'}`}>
                   <h3 className="text-lg font-display font-bold mb-4 flex items-center gap-2">
                     <Sparkles className="w-5 h-5 text-primary" />
                     AI Prompt Library
