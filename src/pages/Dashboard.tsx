@@ -1399,13 +1399,13 @@ export default function Dashboard() {
                                     )}
                                   </div>
                                 </div>
-                                <div className="mt-2 text-center">
-                                  <span className={`text-xs font-medium capitalize block transition-colors ${
+                                <div className="mt-2 text-center space-y-1">
+                                  <div className={`text-xs font-medium capitalize transition-colors ${
                                     selectedColorSlot === key ? 'text-primary' : 'text-foreground'
                                   }`}>
                                     {key}
-                                  </span>
-                                  <span className="text-xs text-muted-foreground uppercase text-center block w-full">{color}</span>
+                                  </div>
+                                  <div className="text-xs text-muted-foreground uppercase">{color}</div>
                                 </div>
                               </div>
                             ))}
