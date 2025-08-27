@@ -12,6 +12,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
@@ -57,6 +59,22 @@ export default function Dashboard() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [chatMessages, setChatMessages] = useState<any[]>([]);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  
+  // Advanced Options state
+  const [selectedGender, setSelectedGender] = useState("Woman");
+  const [selectedAge, setSelectedAge] = useState("20s");
+  const [selectedBodyType, setSelectedBodyType] = useState("");
+  const [selectedExpression, setSelectedExpression] = useState("");
+  const [creativityLevel, setCreativityLevel] = useState(70);
+  const [selectedResolution, setSelectedResolution] = useState("1024x1024");
+  const [selectedHairColor, setSelectedHairColor] = useState("");
+  const [selectedHairStyle, setSelectedHairStyle] = useState("");
+  const [selectedEyeColor, setSelectedEyeColor] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("");
+  const [selectedLighting, setSelectedLighting] = useState("");
+  const [selectedPose, setSelectedPose] = useState("");
+  const [selectedOutfit, setSelectedOutfit] = useState("");
+  const [selectedAccessories, setSelectedAccessories] = useState("");
   
   // Library page state
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -502,15 +520,248 @@ export default function Dashboard() {
                     </Button>
 
                     {showAdvanced && (
-                      <div className="space-y-4 p-4 bg-muted/30 rounded-lg">
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <Label htmlFor="style">Style</Label>
-                            <Input id="style" placeholder="Photorealistic" />
+                      <div className="space-y-6 p-6 bg-muted/30 rounded-lg">
+                        <h4 className="text-lg font-semibold">Advanced Customization</h4>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          {/* Left Column */}
+                          <div className="space-y-4">
+                            {/* Gender */}
+                            <div>
+                              <Label className="text-sm font-medium mb-2 block">Gender</Label>
+                              <div className="flex gap-2">
+                                {["Woman", "Man", "Trans"].map((gender) => (
+                                  <Button
+                                    key={gender}
+                                    variant={selectedGender === gender ? "default" : "outline"}
+                                    size="sm"
+                                    onClick={() => setSelectedGender(gender)}
+                                    className="flex-1"
+                                  >
+                                    {gender}
+                                  </Button>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Age Range */}
+                            <div>
+                              <Label className="text-sm font-medium mb-2 block">Age Range</Label>
+                              <Select value={selectedAge} onValueChange={setSelectedAge}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select age range" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="teens">Teens</SelectItem>
+                                  <SelectItem value="20s">20s</SelectItem>
+                                  <SelectItem value="30s">30s</SelectItem>
+                                  <SelectItem value="40s">40s</SelectItem>
+                                  <SelectItem value="50s">50s</SelectItem>
+                                  <SelectItem value="60s+">60s+</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            {/* Body Type */}
+                            <div>
+                              <Label className="text-sm font-medium mb-2 block">Body Type</Label>
+                              <Select value={selectedBodyType} onValueChange={setSelectedBodyType}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select body type" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="slim">Slim</SelectItem>
+                                  <SelectItem value="athletic">Athletic</SelectItem>
+                                  <SelectItem value="average">Average</SelectItem>
+                                  <SelectItem value="curvy">Curvy</SelectItem>
+                                  <SelectItem value="plus-size">Plus Size</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            {/* Facial Expression */}
+                            <div>
+                              <Label className="text-sm font-medium mb-2 block">Facial Expression</Label>
+                              <Select value={selectedExpression} onValueChange={setSelectedExpression}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select expression" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="smile">Smile</SelectItem>
+                                  <SelectItem value="serious">Serious</SelectItem>
+                                  <SelectItem value="laugh">Laugh</SelectItem>
+                                  <SelectItem value="neutral">Neutral</SelectItem>
+                                  <SelectItem value="confident">Confident</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            {/* Creativity Level */}
+                            <div>
+                              <Label className="text-sm font-medium mb-2 block">
+                                Creativity Level: {creativityLevel}%
+                              </Label>
+                              <Slider
+                                value={[creativityLevel]}
+                                onValueChange={(value) => setCreativityLevel(value[0])}
+                                max={100}
+                                step={10}
+                                className="w-full"
+                              />
+                              <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                                <span>Conservative</span>
+                                <span>Experimental</span>
+                              </div>
+                            </div>
+
+                            {/* Resolution */}
+                            <div>
+                              <Label className="text-sm font-medium mb-2 block">Resolution</Label>
+                              <div className="space-y-2">
+                                {["512x512", "1024x1024", "1536x1536"].map((resolution) => (
+                                  <Button
+                                    key={resolution}
+                                    variant={selectedResolution === resolution ? "default" : "outline"}
+                                    onClick={() => setSelectedResolution(resolution)}
+                                    className="w-full"
+                                  >
+                                    {resolution}
+                                  </Button>
+                                ))}
+                              </div>
+                            </div>
                           </div>
-                          <div>
-                            <Label htmlFor="lighting">Lighting</Label>
-                            <Input id="lighting" placeholder="Natural light" />
+
+                          {/* Right Column */}
+                          <div className="space-y-4">
+                            {/* Hair */}
+                            <div>
+                              <Label className="text-sm font-medium mb-2 block">Hair</Label>
+                              <div className="space-y-2">
+                                <Select value={selectedHairColor} onValueChange={setSelectedHairColor}>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Color" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="black">Black</SelectItem>
+                                    <SelectItem value="brown">Brown</SelectItem>
+                                    <SelectItem value="blonde">Blonde</SelectItem>
+                                    <SelectItem value="red">Red</SelectItem>
+                                    <SelectItem value="gray">Gray</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <Select value={selectedHairStyle} onValueChange={setSelectedHairStyle}>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Style" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="short">Short</SelectItem>
+                                    <SelectItem value="medium">Medium</SelectItem>
+                                    <SelectItem value="long">Long</SelectItem>
+                                    <SelectItem value="curly">Curly</SelectItem>
+                                    <SelectItem value="straight">Straight</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+
+                            {/* Eyes */}
+                            <div>
+                              <Label className="text-sm font-medium mb-2 block">Eyes</Label>
+                              <Select value={selectedEyeColor} onValueChange={setSelectedEyeColor}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Eye color" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="brown">Brown</SelectItem>
+                                  <SelectItem value="blue">Blue</SelectItem>
+                                  <SelectItem value="green">Green</SelectItem>
+                                  <SelectItem value="hazel">Hazel</SelectItem>
+                                  <SelectItem value="gray">Gray</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            {/* Setting */}
+                            <div>
+                              <Label className="text-sm font-medium mb-2 block">Setting</Label>
+                              <div className="space-y-2">
+                                <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Location" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="studio">Studio</SelectItem>
+                                    <SelectItem value="office">Office</SelectItem>
+                                    <SelectItem value="outdoor">Outdoor</SelectItem>
+                                    <SelectItem value="home">Home</SelectItem>
+                                    <SelectItem value="cafe">Cafe</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <Select value={selectedLighting} onValueChange={setSelectedLighting}>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Lighting" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="natural">Natural</SelectItem>
+                                    <SelectItem value="studio">Studio</SelectItem>
+                                    <SelectItem value="golden-hour">Golden Hour</SelectItem>
+                                    <SelectItem value="dramatic">Dramatic</SelectItem>
+                                    <SelectItem value="soft">Soft</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+
+                            {/* Body Pose */}
+                            <div>
+                              <Label className="text-sm font-medium mb-2 block">Body Pose</Label>
+                              <Select value={selectedPose} onValueChange={setSelectedPose}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select pose" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="front">Front Facing</SelectItem>
+                                  <SelectItem value="side">Side Profile</SelectItem>
+                                  <SelectItem value="three-quarter">Three Quarter</SelectItem>
+                                  <SelectItem value="dynamic">Dynamic</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            {/* Clothing Style */}
+                            <div>
+                              <Label className="text-sm font-medium mb-2 block">Clothing Style</Label>
+                              <Select value={selectedOutfit} onValueChange={setSelectedOutfit}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select outfit" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="business">Business</SelectItem>
+                                  <SelectItem value="casual">Casual</SelectItem>
+                                  <SelectItem value="formal">Formal</SelectItem>
+                                  <SelectItem value="creative">Creative</SelectItem>
+                                  <SelectItem value="sporty">Sporty</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            {/* Accessories */}
+                            <div>
+                              <Label className="text-sm font-medium mb-2 block">Accessories</Label>
+                              <Select value={selectedAccessories} onValueChange={setSelectedAccessories}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select accessories" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="none">None</SelectItem>
+                                  <SelectItem value="glasses">Glasses</SelectItem>
+                                  <SelectItem value="jewelry">Jewelry</SelectItem>
+                                  <SelectItem value="watch">Watch</SelectItem>
+                                  <SelectItem value="hat">Hat</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -543,15 +794,15 @@ export default function Dashboard() {
                               className="w-full h-full object-cover"
                             />
                           </div>
-                          <div className="p-3 space-y-2">
+                          <div className="p-4 space-y-3">
                             <h4 className="font-medium text-sm">{preview.title}</h4>
                             <p className="text-xs text-muted-foreground">{preview.description}</p>
-                            <div className="flex gap-1">
-                              <Button size="sm" variant="outline" className="text-xs">
+                            <div className="flex gap-2">
+                              <Button size="sm" variant="outline" className="flex-1 text-xs h-8">
                                 <Edit className="w-3 h-3 mr-1" />
                                 Quick Edit
                               </Button>
-                              <Button size="sm" className="text-xs">
+                              <Button size="sm" className="flex-1 text-xs h-8">
                                 <Download className="w-3 h-3 mr-1" />
                                 Save
                               </Button>
@@ -821,30 +1072,136 @@ export default function Dashboard() {
 
               {/* Sidebar - Brand Kit */}
               <div className="space-y-6">
-                <Card className="p-6">
-                  <h3 className="text-lg font-display font-bold mb-4 flex items-center gap-2">
+                <Card className="p-6 flex flex-col h-full">
+                  <h3 className="text-lg font-display font-bold mb-6 flex items-center gap-2">
                     <SettingsIcon className="w-5 h-5 text-primary" />
                     Brand Kit
                   </h3>
-                  <div className="space-y-4">
-                    <Button variant="outline" className="w-full justify-start gap-3 h-12">
-                      <Upload className="w-4 h-4" />
-                      Upload Logo
-                    </Button>
-                    <div className="space-y-2">
-                      <Button variant="outline" className="w-full justify-start gap-3 h-12">
-                        <SettingsIcon className="w-4 h-4" />
-                        Brand Colors
+                  
+                  <div className="space-y-6 flex-1">
+                    {/* Logo Upload */}
+                    <div>
+                      <Label className="text-sm font-medium mb-3 block">Logo</Label>
+                      <Button variant="outline" className="w-full justify-start gap-3 h-12 border-dashed">
+                        <Upload className="w-4 h-4" />
+                        Upload Logo
                       </Button>
-                      <div className="grid grid-cols-4 gap-2 p-3 bg-muted/30 rounded-lg">
-                        {["#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4"].map((color) => (
-                          <div
-                            key={color}
-                            className="w-8 h-8 rounded-full cursor-pointer border-2 border-white shadow-sm"
-                            style={{ backgroundColor: color }}
-                          />
-                        ))}
+                    </div>
+
+                    {/* Brand Colors */}
+                    <div>
+                      <Label className="text-sm font-medium mb-3 block">Brand Colors</Label>
+                      <div className="space-y-3">
+                        <Button variant="outline" className="w-full justify-start gap-3 h-12">
+                          <SettingsIcon className="w-4 h-4" />
+                          Brand Colors
+                        </Button>
+                        <div className="grid grid-cols-4 gap-3 p-4 bg-muted/30 rounded-lg">
+                          {[
+                            { color: "#FF6B6B", name: "Primary" },
+                            { color: "#4ECDC4", name: "Secondary" },
+                            { color: "#45B7D1", name: "Accent" },
+                            { color: "#96CEB4", name: "Support" }
+                          ].map((item) => (
+                            <div key={item.color} className="text-center">
+                              <div
+                                className="w-10 h-10 rounded-full cursor-pointer border-3 border-white shadow-lg mx-auto mb-1 hover:scale-110 transition-transform"
+                                style={{ backgroundColor: item.color }}
+                              />
+                              <span className="text-xs text-muted-foreground">{item.name}</span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
+                    </div>
+
+                    {/* Typography */}
+                    <div>
+                      <Label className="text-sm font-medium mb-3 block">Typography</Label>
+                      <div className="space-y-2">
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Primary Font" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="inter">Inter</SelectItem>
+                            <SelectItem value="roboto">Roboto</SelectItem>
+                            <SelectItem value="montserrat">Montserrat</SelectItem>
+                            <SelectItem value="opensans">Open Sans</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Secondary Font" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="playfair">Playfair Display</SelectItem>
+                            <SelectItem value="lora">Lora</SelectItem>
+                            <SelectItem value="merriweather">Merriweather</SelectItem>
+                            <SelectItem value="source-serif">Source Serif</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    {/* Brand Guidelines */}
+                    <div>
+                      <Label className="text-sm font-medium mb-3 block">Brand Guidelines</Label>
+                      <div className="space-y-2">
+                        <div className="p-3 bg-muted/30 rounded-lg">
+                          <Label className="text-xs text-muted-foreground mb-1 block">Brand Voice</Label>
+                          <Input placeholder="Professional, Friendly, Innovative" className="h-8 text-xs" />
+                        </div>
+                        <div className="p-3 bg-muted/30 rounded-lg">
+                          <Label className="text-xs text-muted-foreground mb-1 block">Target Audience</Label>
+                          <Input placeholder="Young professionals, 25-35" className="h-8 text-xs" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Content Templates */}
+                    <div>
+                      <Label className="text-sm font-medium mb-3 block">Content Templates</Label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Button variant="outline" size="sm" className="text-xs h-8">
+                          Social Media
+                        </Button>
+                        <Button variant="outline" size="sm" className="text-xs h-8">
+                          Email Header
+                        </Button>
+                        <Button variant="outline" size="sm" className="text-xs h-8">
+                          Business Card
+                        </Button>
+                        <Button variant="outline" size="sm" className="text-xs h-8">
+                          Letterhead
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Brand Assets */}
+                    <div className="flex-1">
+                      <Label className="text-sm font-medium mb-3 block">Brand Assets</Label>
+                      <div className="space-y-2">
+                        <Button variant="ghost" className="w-full justify-start gap-3 h-10 text-sm">
+                          <Calendar className="w-4 h-4" />
+                          Style Guide (PDF)
+                        </Button>
+                        <Button variant="ghost" className="w-full justify-start gap-3 h-10 text-sm">
+                          <Tag className="w-4 h-4" />
+                          Logo Variations
+                        </Button>
+                        <Button variant="ghost" className="w-full justify-start gap-3 h-10 text-sm">
+                          <Star className="w-4 h-4" />
+                          Brand Templates
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Save Brand Kit */}
+                    <div className="pt-4 border-t">
+                      <Button className="w-full">
+                        Save Brand Kit
+                      </Button>
                     </div>
                   </div>
                 </Card>
