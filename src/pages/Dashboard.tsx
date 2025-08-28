@@ -2495,25 +2495,27 @@ export default function Dashboard() {
                             
                             <div className="p-5 space-y-4">
                               <div>
-                                <h3 className="font-semibold text-lg truncate">{asset.title}</h3>
-                                <p className="text-sm text-muted-foreground font-medium flex items-center gap-2">
-                                  <Calendar className="w-3 h-3" />
-                                  {asset.date}
-                                </p>
+                                <h3 className="font-semibold text-lg leading-tight">{asset.title}</h3>
+                                 <p className="text-sm text-muted-foreground font-medium flex items-center gap-2">
+                                   <Calendar className="w-3 h-3" />
+                                   {new Date(asset.date).toLocaleDateString('en-US', { 
+                                     month: 'short', 
+                                     day: 'numeric', 
+                                     year: 'numeric',
+                                     hour: 'numeric',
+                                     minute: '2-digit',
+                                     hour12: true
+                                   })}
+                                 </p>
                               </div>
                               
-                              {/* AI Tags */}
-                              <div className="flex flex-wrap gap-1.5">
-                                {asset.tags.slice(0, 3).map((tag, idx) => (
-                                  <Badge key={idx} variant="secondary" className="text-xs py-1 px-2 bg-muted/60">
-                                    {tag}
-                                  </Badge>
-                                ))}
-                                {asset.tags.length > 3 && (
-                                  <Badge variant="outline" className="text-xs py-1 px-2">
-                                    +{asset.tags.length - 3}
-                                  </Badge>
-                                )}
+                               {/* AI Tags - Always Visible */}
+                               <div className="flex flex-wrap gap-1.5">
+                                 {asset.tags.map((tag, idx) => (
+                                   <Badge key={idx} variant="secondary" className="text-xs py-1 px-2 bg-muted/60 font-medium">
+                                     {tag}
+                                   </Badge>
+                                 ))}
                               </div>
                               
                               {/* Generation Stats */}
