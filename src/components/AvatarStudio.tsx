@@ -25,7 +25,8 @@ import {
   Zap,
   Crown,
   Eye,
-  EyeOff
+  EyeOff,
+  Upload
 } from "lucide-react";
 
 interface ChatMessage {
@@ -287,6 +288,14 @@ export const AvatarStudio = () => {
     } else {
       // Generate new previews
       await generatePreviews(prompt);
+      
+      // Smooth scroll to Generated Previews
+      setTimeout(() => {
+        const previewsSection = document.querySelector('[class*="space-y-8"]');
+        if (previewsSection) {
+          previewsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 500);
     }
     
     setPrompt("");
@@ -346,8 +355,15 @@ export const AvatarStudio = () => {
                         handleSendMessage();
                       }
                     }}
-                    className="min-h-[80px] resize-none bg-background/50 border-0 focus-visible:ring-0 text-base"
+                    className="min-h-[60px] resize-none bg-background/50 border-0 focus-visible:ring-0 text-base"
                   />
+                  <Button 
+                    variant="outline"
+                    size="lg"
+                    className="px-4 py-4 border-border/50 hover:border-primary/50"
+                  >
+                    <Upload className="w-5 h-5" />
+                  </Button>
                   <Button 
                     onClick={handleSendMessage}
                     disabled={!prompt.trim() || isGenerating}
@@ -364,7 +380,7 @@ export const AvatarStudio = () => {
 
                 {/* Negative Prompt */}
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Negative Prompt (OpenArt Workflow)</label>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Negative Prompt</label>
                   <Textarea
                     placeholder="What to avoid: blurry fingers, extra limbs, distorted faces..."
                     value={negativePrompt}
@@ -724,22 +740,30 @@ export const AvatarStudio = () => {
                   </div>
                 </div>
 
-                {/* Quick Edit Suggestions - Horizontal Below */}
+                {/* Quick Edit Suggestions - Horizontal Scrollable */}
                 <div className="space-y-2">
                   <p className="text-sm text-muted-foreground font-medium">Quick Edits:</p>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
                     {[
                       "Change hair color to blonde",
                       "Add professional clothing", 
                       "Make background darker",
-                      "Change to sunset lighting"
+                      "Change to sunset lighting",
+                      "Add luxury jewelry",
+                      "Change pose to sitting",
+                      "Make outfit more casual",
+                      "Add natural makeup",
+                      "Change to studio lighting",
+                      "Add vintage filter",
+                      "Make skin tone warmer",
+                      "Change expression to smiling"
                     ].map((suggestion) => (
                       <Button
                         key={suggestion}
                         variant="outline"
                         size="sm"
                         onClick={() => setPrompt(suggestion)}
-                        className="text-sm border-border/30 hover:border-primary/30 justify-center h-10"
+                        className="text-sm border-border/30 hover:border-primary/30 whitespace-nowrap h-10 flex-shrink-0"
                       >
                         {suggestion}
                       </Button>
