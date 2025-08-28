@@ -39,7 +39,7 @@ interface VirturaSidebarProps {
 
 export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps) {
   const mainItems = [
-    { id: "overview", label: "Overview", icon: Activity },
+    { id: "overview", label: "Copilot", icon: Activity },
     { id: "create", label: "Create Avatar", icon: Plus },
     { id: "studio", label: "Avatar Studio", icon: SettingsIcon },
   ];
