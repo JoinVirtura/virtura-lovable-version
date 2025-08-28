@@ -27,6 +27,8 @@ export default function IndividualsPage() {
       const studioNegative = "blurry fingers, extra limbs, distorted faces, unrealistic body proportions, text, watermark, low quality, plastic skin, CGI, doll-like";
       const enhancedPrompt = `${prompt}, professional studio headshot, realistic natural lighting, high quality, professional photography, 8k resolution, sharp focus, realistic skin texture, detailed hair, photorealistic, single person`;
       
+      console.log("About to generate avatars with enhanced prompt:", enhancedPrompt);
+      
       // Generate 3 variations for individuals
       const results = await Promise.all([
         AvatarService.generateAvatar({
@@ -55,6 +57,8 @@ export default function IndividualsPage() {
         })
       ]);
 
+      console.log("Generation results:", results);
+
       const newAvatars: GeneratedAvatar[] = results
         .filter(result => result.success && result.image)
         .map((result, index) => ({
@@ -64,15 +68,20 @@ export default function IndividualsPage() {
           timestamp: new Date()
         }));
 
+      console.log("Filtered avatars:", newAvatars);
+
       if (newAvatars.length > 0) {
         setGeneratedAvatars(prev => [...newAvatars, ...prev]);
         toast.success(`Generated ${newAvatars.length} high-quality avatars!`);
       } else {
-        toast.error("Failed to generate avatars. Please try again.");
+        // Show more detailed error information
+        const errors = results.filter(r => !r.success).map(r => r.error).join(", ");
+        console.error("All generations failed. Errors:", errors);
+        toast.error(`Failed to generate avatars. Errors: ${errors || "Unknown error"}`);
       }
     } catch (error) {
       console.error('Avatar generation error:', error);
-      toast.error("An error occurred while generating avatars");
+      toast.error(`An error occurred while generating avatars: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsGenerating(false);
     }

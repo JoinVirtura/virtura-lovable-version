@@ -27,6 +27,8 @@ export default function BrandsPage() {
       const studioNegative = "blurry, low quality, text, watermark, logos, distorted, unrealistic, plastic";
       const brandPrompt = `${prompt}, professional commercial photography, high quality brand content, commercial advertising style, clean composition, professional lighting, marketing ready`;
       
+      console.log("About to generate brand assets with prompt:", brandPrompt);
+      
       // Generate brand assets with different orientations/styles
       const results = await Promise.all([
         AvatarService.generateAvatar({
@@ -55,6 +57,8 @@ export default function BrandsPage() {
         })
       ]);
 
+      console.log("Brand generation results:", results);
+
       const newAssets: BrandAsset[] = results
         .filter(result => result.success && result.image)
         .map((result, index) => ({
@@ -64,15 +68,20 @@ export default function BrandsPage() {
           timestamp: new Date()
         }));
 
+      console.log("Filtered brand assets:", newAssets);
+
       if (newAssets.length > 0) {
         setBrandAssets(prev => [...newAssets, ...prev]);
         toast.success(`Generated ${newAssets.length} brand assets!`);
       } else {
-        toast.error("Failed to generate brand assets. Please try again.");
+        // Show more detailed error information
+        const errors = results.filter(r => !r.success).map(r => r.error).join(", ");
+        console.error("All brand generations failed. Errors:", errors);
+        toast.error(`Failed to generate brand assets. Errors: ${errors || "Unknown error"}`);
       }
     } catch (error) {
       console.error('Brand asset generation error:', error);
-      toast.error("An error occurred while generating brand assets");
+      toast.error(`An error occurred while generating brand assets: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsGenerating(false);
     }
