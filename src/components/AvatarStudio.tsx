@@ -660,108 +660,114 @@ export const AvatarStudio = () => {
                 </div>
               </Card>
 
-              {/* Settings - Horizontal */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
-                {/* Format Settings */}
-                <Card className="p-6 bg-gradient-card border-border/50">
-                  <h3 className="font-semibold text-foreground mb-4">Format Options</h3>
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-3">
-                      <Button variant="outline" className="border-border/50">
-                        <FileImage className="w-4 h-4 mr-2" />
-                        PNG
-                      </Button>
-                      <Button variant="outline" className="border-border/50">
-                        <FileImage className="w-4 h-4 mr-2" />
-                        JPG
-                      </Button>
-                    </div>
-                    
-                    <Button variant="outline" className="w-full border-border/50">
-                      <Video className="w-4 h-4 mr-2" />
-                      MP4 Video
-                      <Crown className="w-4 h-4 ml-2 text-yellow-500" />
-                    </Button>
-                  </div>
-                </Card>
-
-              {/* Live Chat Interface */}
+              {/* Horizontal Live Chat Interface - Replaces Recent Conversations */}
               <Card className="p-6 bg-gradient-card border-border/50">
                 <h3 className="font-semibold text-foreground mb-4">Live Chat with AI</h3>
                 
-                {/* Chat Messages */}
-                <ScrollArea className="h-64 mb-4 border border-border/30 rounded-lg p-3 bg-background/30">
-                  <div className="space-y-3">
-                    {messages.map((message) => (
-                      <div key={message.id} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[80%] rounded-lg p-2 text-sm ${
-                          message.type === 'user' 
-                            ? 'bg-primary text-primary-foreground' 
-                            : 'bg-muted text-muted-foreground'
-                        }`}>
-                          <div className="flex items-start gap-2">
-                            {message.type === 'assistant' && <MessageCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />}
-                            <span>{message.content}</span>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  {/* Chat Messages - Takes 2/3 of the width */}
+                  <div className="lg:col-span-2">
+                    <ScrollArea className="h-48 border border-border/30 rounded-lg p-3 bg-background/30">
+                      <div className="space-y-3">
+                        {messages.map((message) => (
+                          <div key={message.id} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+                            <div className={`max-w-[80%] rounded-lg p-2 text-sm ${
+                              message.type === 'user' 
+                                ? 'bg-primary text-primary-foreground' 
+                                : 'bg-muted text-muted-foreground'
+                            }`}>
+                              <div className="flex items-start gap-2">
+                                {message.type === 'assistant' && <MessageCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />}
+                                <span>{message.content}</span>
+                              </div>
+                            </div>
                           </div>
-                        </div>
+                        ))}
                       </div>
-                    ))}
+                      <div ref={messagesEndRef} />
+                    </ScrollArea>
                   </div>
-                  <div ref={messagesEndRef} />
-                </ScrollArea>
 
-                {/* Chat Input */}
-                <div className="flex gap-2">
-                  <Textarea
-                    placeholder="Ask AI to make changes... e.g., 'change hair color to green' or 'make her smile more'"
-                    value={prompt}
-                    onChange={(e) => setPrompt(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        handleSendMessage();
-                      }
-                    }}
-                    className="flex-1 min-h-[60px] resize-none bg-background/50 border-border/30"
-                  />
-                  <Button 
-                    onClick={handleSendMessage}
-                    disabled={!prompt.trim() || isGenerating}
-                    className="px-4 py-2 bg-primary hover:bg-primary/90"
-                  >
-                    {isGenerating ? (
-                      <div className="animate-spin w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full" />
-                    ) : (
-                      <Send className="w-4 h-4" />
-                    )}
+                  {/* Chat Input & Quick Actions - Takes 1/3 of the width */}
+                  <div className="space-y-4">
+                    {/* Chat Input */}
+                    <div className="flex gap-2">
+                      <Textarea
+                        placeholder="Ask AI to make changes... e.g., 'change hair color to green'"
+                        value={prompt}
+                        onChange={(e) => setPrompt(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            handleSendMessage();
+                          }
+                        }}
+                        className="flex-1 min-h-[80px] resize-none bg-background/50 border-border/30 text-sm"
+                      />
+                      <Button 
+                        onClick={handleSendMessage}
+                        disabled={!prompt.trim() || isGenerating}
+                        className="px-3 py-2 bg-primary hover:bg-primary/90 self-end"
+                        size="sm"
+                      >
+                        {isGenerating ? (
+                          <div className="animate-spin w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full" />
+                        ) : (
+                          <Send className="w-4 h-4" />
+                        )}
+                      </Button>
+                    </div>
+
+                    {/* Quick Edit Suggestions */}
+                    <div className="space-y-2">
+                      <p className="text-xs text-muted-foreground font-medium">Quick Edits:</p>
+                      <div className="grid grid-cols-1 gap-1">
+                        {[
+                          "Change hair color to blonde",
+                          "Make her smile more",
+                          "Add professional lighting",
+                          "Change background to studio"
+                        ].map((suggestion) => (
+                          <Button
+                            key={suggestion}
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPrompt(suggestion)}
+                            className="text-xs border-border/50 hover:border-primary/50 justify-start h-8"
+                          >
+                            {suggestion}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Settings - Single Row */}
+              <Card className="p-6 bg-gradient-card border-border/50">
+                <h3 className="font-semibold text-foreground mb-4">Export & Format Options</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <Button variant="outline" className="border-border/50">
+                    <FileImage className="w-4 h-4 mr-2" />
+                    PNG
+                  </Button>
+                  <Button variant="outline" className="border-border/50">
+                    <FileImage className="w-4 h-4 mr-2" />
+                    JPG
+                  </Button>
+                  <Button variant="outline" className="border-border/50">
+                    <Video className="w-4 h-4 mr-2" />
+                    MP4 Video
+                    <Crown className="w-4 h-4 ml-2 text-yellow-500" />
+                  </Button>
+                  <Button variant="outline" className="border-border/50">
+                    <Download className="w-4 h-4 mr-2" />
+                    Export All
                   </Button>
                 </div>
               </Card>
-              </div>
             </div>
-          )}
-
-          {/* Chat History - Minimized */}
-          {messages.length > 1 && (
-            <Card className="mt-8 p-4 bg-gradient-card border-border/50">
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="font-medium text-foreground">Recent Conversations</h4>
-                <Badge variant="secondary" className="text-xs">{messages.length - 1} messages</Badge>
-              </div>
-              <ScrollArea className="h-32">
-                <div className="space-y-2">
-                  {messages.slice(1).map((message) => (
-                    <div key={message.id} className="text-sm">
-                      <span className={`font-medium ${message.type === 'user' ? 'text-primary' : 'text-muted-foreground'}`}>
-                        {message.type === 'user' ? 'You: ' : 'AI: '}
-                      </span>
-                      <span className="text-foreground">{message.content}</span>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
-            </Card>
           )}
         </div>
       </div>
