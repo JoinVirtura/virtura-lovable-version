@@ -2680,21 +2680,10 @@ export default function Dashboard() {
               {/* AI Insights Sidebar */}
               <div className="space-y-6">
                 <Card className="p-6 border-2 hover:border-secondary/20 transition-colors bg-gradient-to-br from-card via-card/98 to-card/95">
-                  <div className="flex items-center justify-between mb-6">
+                  <div className="mb-6">
                     <h3 className="font-bold text-lg bg-gradient-to-r from-foreground to-primary/80 bg-clip-text text-transparent">
                       Quick Actions
                     </h3>
-                    {selectedAvatarIds.size > 0 && (
-                      <div className="relative">
-                        <div className="flex items-center gap-2 bg-gradient-to-r from-primary/10 to-primary/5 px-4 py-2 rounded-full border border-primary/20">
-                          <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                          <span className="text-sm font-semibold text-primary">
-                            {selectedAvatarIds.size} Active
-                          </span>
-                        </div>
-                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-bounce"></div>
-                      </div>
-                    )}
                   </div>
                   <div className="space-y-3">
                     <Button 
