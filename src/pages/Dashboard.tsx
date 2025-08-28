@@ -2728,13 +2728,13 @@ export default function Dashboard() {
                   </div>
                 </Card>
 
-                <Card className="p-6 border-2 hover:border-accent/20 transition-colors">
-                  <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
-                    <Lightbulb className="w-5 h-5 text-accent" />
+                <Card className="p-8 border-2 hover:border-accent/20 transition-colors">
+                  <h3 className="font-semibold text-xl mb-6 flex items-center gap-3">
+                    <Lightbulb className="w-6 h-6 text-accent" />
                     AI Recommendations
                   </h3>
-                  <div className="max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent hover:scrollbar-thumb-muted-foreground/30 transition-colors">
-                    <div className="space-y-3 pr-2">
+                  <div className="max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent hover:scrollbar-thumb-muted-foreground/30 transition-colors">
+                    <div className="space-y-4 pr-3">
                       <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border border-primary/20 hover:border-primary/30 transition-colors cursor-pointer group">
                         <p className="text-sm font-medium text-primary group-hover:text-primary/80 transition-colors">Trending Style</p>
                         <p className="text-xs text-muted-foreground mt-1">Minimalist portraits are performing 23% better this week</p>
