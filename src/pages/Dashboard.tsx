@@ -357,86 +357,143 @@ export default function Dashboard() {
     return matchesSearch && matchesCategory;
   });
 
-  // Mock data for library with diverse avatars
+  // Mock library data with improved diversity and categories
   const assets = [
+    // Avatars
     {
       id: 1,
-      type: "avatar",
-      title: "Executive Portrait",
-      date: "2024-01-15T14:32:00Z",
-      format: "PNG",
-      tags: ["executive", "business", "professional"],
+      type: "Avatar",
+      title: "Business Executive",
+      date: "Dec 15, 2024 2:30 PM",
+      format: "JPG",
+      tags: ["Professional", "Business"],
       thumbnail: businessExecutiveImg,
-      quality: 9.2,
-      generationTime: "2.1s",
-      fileSize: "1.3MB"
+      quality: 98,
+      generationTime: "3.2s",
+      fileSize: "2.1 MB",
+      category: "Avatars"
     },
     {
       id: 2,
-      type: "avatar",
-      title: "Creative Studio Session",
-      date: "2024-01-14T09:18:00Z",
-      format: "JPG",
-      tags: ["creative", "artist", "studio", "casual"],
+      type: "Avatar", 
+      title: "Creative Artist",
+      date: "Dec 14, 2024 4:45 PM",
+      format: "PNG",
+      tags: ["Creative", "Artistic"],
       thumbnail: creativeArtistImg,
-      quality: 9.2,
-      generationTime: "1.9s",
-      fileSize: "1.1MB"
+      quality: 96,
+      generationTime: "2.8s",
+      fileSize: "3.4 MB",
+      category: "Avatars"
     },
+    // Headshots
     {
       id: 3,
-      type: "avatar",
-      title: "Fashion Editorial",
-      date: "2024-01-13T16:45:00Z",
-      format: "PNG",
-      tags: ["fashion", "luxury", "editorial"],
+      type: "Headshot",
+      title: "Professional Portrait",
+      date: "Dec 13, 2024 1:20 PM",
+      format: "JPG",
+      tags: ["Professional", "Portrait"],
       thumbnail: fashionLuxuryImg,
-      quality: 9.2,
-      generationTime: "2.4s",
-      fileSize: "1.5MB"
+      quality: 97,
+      generationTime: "3.5s",
+      fileSize: "2.3 MB",
+      category: "Headshots"
     },
     {
       id: 4,
-      type: "avatar",
-      title: "Casual Lifestyle",
-      date: "2024-01-12T11:23:00Z",
-      format: "JPG",
-      tags: ["casual", "lifestyle", "natural"],
-      thumbnail: "/src/assets/model-casual-woman.jpg",
-      quality: 9.0,
-      generationTime: "1.8s",
-      fileSize: "1.2MB"
+      type: "Headshot",
+      title: "Corporate Headshot",
+      date: "Dec 12, 2024 11:15 AM",
+      format: "PNG",
+      tags: ["Corporate", "Executive"],
+      thumbnail: businessExecutiveImg,
+      quality: 99,
+      generationTime: "3.7s",
+      fileSize: "2.7 MB",
+      category: "Headshots"
     },
+    // Brand Assets (multiple images)
     {
       id: 5,
-      type: "avatar",
-      title: "Professional Headshot",
-      date: "2024-01-11T15:07:00Z",
-      format: "PNG",
-      tags: ["professional", "corporate", "headshot"],
-      thumbnail: "/src/assets/model-professional-man.jpg",
-      quality: 9.1,
-      generationTime: "2.0s",
-      fileSize: "1.4MB"
+      type: "Brand Asset",
+      title: "Logo Collection",
+      date: "Dec 11, 2024 3:22 PM",
+      format: "SVG",
+      tags: ["Logo", "Branding"],
+      thumbnail: creativeArtistImg,
+      quality: 100,
+      generationTime: "1.5s",
+      fileSize: "450 KB",
+      category: "Brand Assets",
+      imageCount: 5
     },
     {
       id: 6,
-      type: "avatar",
-      title: "Fitness Portrait",
-      date: "2024-01-10T08:55:00Z",
+      type: "Brand Asset",
+      title: "Marketing Materials",
+      date: "Dec 10, 2024 9:30 AM",
+      format: "PNG",
+      tags: ["Marketing", "Templates"],
+      thumbnail: fashionLuxuryImg,
+      quality: 95,
+      generationTime: "4.2s",
+      fileSize: "8.9 MB",
+      category: "Brand Assets",
+      imageCount: 12
+    },
+    {
+      id: 7,
+      type: "Brand Asset",
+      title: "Social Media Pack",
+      date: "Dec 9, 2024 2:15 PM",
       format: "JPG",
-      tags: ["fitness", "athletic", "health"],
-      thumbnail: "/src/assets/model-fitness-man.jpg",
-      quality: 8.9,
-      generationTime: "1.7s",
-      fileSize: "1.1MB"
+      tags: ["Social", "Templates"],
+      thumbnail: businessExecutiveImg,
+      quality: 94,
+      generationTime: "3.8s",
+      fileSize: "6.2 MB",
+      category: "Brand Assets",
+      imageCount: 8
+    },
+    // Video
+    {
+      id: 8,
+      type: "Video",
+      title: "Avatar Introduction",
+      date: "Dec 8, 2024 5:45 PM",
+      format: "MP4",
+      tags: ["Avatar", "Video", "Introduction"],
+      thumbnail: creativeArtistImg,
+      quality: 96,
+      generationTime: "45.2s",
+      fileSize: "25.7 MB",
+      category: "Videos",
+      duration: "5s"
+    },
+    // Favorites (starred items)
+    {
+      id: 9,
+      type: "Avatar",
+      title: "Favorite Portrait",
+      date: "Dec 7, 2024 12:30 PM",
+      format: "PNG",
+      tags: ["Favorite", "Portrait"],
+      thumbnail: fashionLuxuryImg,
+      quality: 99,
+      generationTime: "3.1s",
+      fileSize: "2.9 MB",
+      category: "Favorites",
+      starred: true
     }
   ];
 
-  const filteredAssets = assets.filter(asset =>
-    asset.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    asset.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const filteredAssets = assets.filter(asset => {
+    const matchesSearch = asset.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         asset.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesCategory = selectedCategory === "All" || asset.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   const toggleTodo = (id: string) => {
     setTodos(prev => {
