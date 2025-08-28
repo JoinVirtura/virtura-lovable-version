@@ -2338,44 +2338,28 @@ export default function Dashboard() {
                     </div>
                     </div>
                     
-                    {/* Advanced AI Insights - Clean & Functional */}
-                    <div className="mt-8">
-                      <div className="bg-card/80 backdrop-blur-sm border border-border/30 rounded-xl p-6">
-                        <div className="flex items-center justify-between mb-6">
-                          <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                            <span className="text-sm font-medium text-foreground">AI Performance</span>
-                          </div>
-                          <span className="text-xs text-muted-foreground px-2 py-1 bg-muted/50 rounded-md">Live</span>
+                    {/* Elegant AI Metrics */}
+                    <div className="mt-6">
+                      <div className="grid grid-cols-3 gap-6">
+                        {/* Quality Score */}
+                        <div className="text-center space-y-3">
+                          <div className="text-3xl font-light text-primary">9.2</div>
+                          <div className="w-16 h-0.5 bg-primary mx-auto rounded-full"></div>
+                          <div className="text-xs text-muted-foreground/70 uppercase tracking-wider">Quality</div>
                         </div>
-                        
-                        <div className="grid grid-cols-3 gap-8">
-                          {/* Quality Metric */}
-                          <div className="text-center space-y-2">
-                            <div className="text-2xl font-bold text-primary">9.2</div>
-                            <div className="text-xs text-muted-foreground uppercase tracking-wide">Quality Score</div>
-                            <div className="w-full h-1 bg-muted rounded-full overflow-hidden">
-                              <div className="h-full bg-primary rounded-full transition-all duration-1000" style={{ width: '92%' }}></div>
-                            </div>
-                          </div>
 
-                          {/* Speed Metric */}
-                          <div className="text-center space-y-2">
-                            <div className="text-2xl font-bold text-secondary">2.1s</div>
-                            <div className="text-xs text-muted-foreground uppercase tracking-wide">Avg Speed</div>
-                            <div className="w-full h-1 bg-muted rounded-full overflow-hidden">
-                              <div className="h-full bg-secondary rounded-full transition-all duration-1000" style={{ width: '85%' }}></div>
-                            </div>
-                          </div>
+                        {/* Generation Speed */}
+                        <div className="text-center space-y-3">
+                          <div className="text-3xl font-light text-secondary">2.1s</div>
+                          <div className="w-16 h-0.5 bg-secondary mx-auto rounded-full"></div>
+                          <div className="text-xs text-muted-foreground/70 uppercase tracking-wider">Speed</div>
+                        </div>
 
-                          {/* Efficiency Metric */}
-                          <div className="text-center space-y-2">
-                            <div className="text-2xl font-bold text-accent">94%</div>
-                            <div className="text-xs text-muted-foreground uppercase tracking-wide">Efficiency</div>
-                            <div className="w-full h-1 bg-muted rounded-full overflow-hidden">
-                              <div className="h-full bg-accent rounded-full transition-all duration-1000" style={{ width: '94%' }}></div>
-                            </div>
-                          </div>
+                        {/* Efficiency */}
+                        <div className="text-center space-y-3">
+                          <div className="text-3xl font-light text-accent">94%</div>
+                          <div className="w-16 h-0.5 bg-accent mx-auto rounded-full"></div>
+                          <div className="text-xs text-muted-foreground/70 uppercase tracking-wider">Efficiency</div>
                         </div>
                       </div>
                     </div>
@@ -2401,13 +2385,9 @@ export default function Dashboard() {
                         <div className="absolute top-1/2 -right-2 w-2 h-2 bg-accent/60 rounded-full animate-micro-bounce" style={{ animationDelay: '1s' }}></div>
                       </div>
                       
-                      {/* Live Activity Indicator */}
-                      <div className="text-center space-y-1">
-                        <div className="flex items-center gap-2 justify-center">
-                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                          <span className="text-sm font-medium text-green-500">AI Active</span>
-                        </div>
-                        <p className="text-xs text-muted-foreground">Processing 3 generations</p>
+                      {/* Minimal Status Indicator */}
+                      <div className="text-center">
+                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mx-auto"></div>
                       </div>
                       
                       {/* Floating Action Buttons */}
