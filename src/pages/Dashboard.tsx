@@ -2318,52 +2318,31 @@ export default function Dashboard() {
                     </div>
                     
                     {/* Real-time Stats */}
-                    <div className="flex items-center gap-8 mt-6">
-                      <div className="text-center">
-                        <div className="text-3xl font-display font-bold text-primary">6</div>
-                        <div className="text-sm text-muted-foreground font-medium">Total Assets</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-3xl font-display font-bold text-secondary">12</div>
-                        <div className="text-sm text-muted-foreground font-medium">This Month</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-3xl font-display font-bold text-accent">4.2GB</div>
-                        <div className="text-sm text-muted-foreground font-medium">Storage Used</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-3xl font-display font-bold text-green-500">94%</div>
-                        <div className="text-sm text-muted-foreground font-medium">Avg Quality</div>
-                      </div>
-                    </div>
-                    </div>
                     
-                    {/* Elegant AI Metrics */}
-                    <div className="mt-6">
-                      <div className="grid grid-cols-3 gap-6">
-                        {/* Quality Score */}
-                        <div className="text-center space-y-3">
-                          <div className="text-3xl font-light text-primary">9.2</div>
-                          <div className="w-16 h-0.5 bg-primary mx-auto rounded-full"></div>
-                          <div className="text-xs text-muted-foreground/70 uppercase tracking-wider">Quality</div>
-                        </div>
-
-                        {/* Generation Speed */}
-                        <div className="text-center space-y-3">
-                          <div className="text-3xl font-light text-secondary">2.1s</div>
-                          <div className="w-16 h-0.5 bg-secondary mx-auto rounded-full"></div>
-                          <div className="text-xs text-muted-foreground/70 uppercase tracking-wider">Speed</div>
-                        </div>
-
-                        {/* Efficiency */}
-                        <div className="text-center space-y-3">
-                          <div className="text-3xl font-light text-accent">94%</div>
-                          <div className="w-16 h-0.5 bg-accent mx-auto rounded-full"></div>
-                          <div className="text-xs text-muted-foreground/70 uppercase tracking-wider">Efficiency</div>
-                        </div>
+                    {/* Enhanced Stats Section */}
+                    <div className="mt-8 grid grid-cols-4 gap-8">
+                      <div className="text-center group cursor-pointer">
+                        <div className="text-3xl font-display font-bold text-primary mb-2 group-hover:scale-110 transition-transform duration-300">6</div>
+                        <div className="text-sm text-muted-foreground font-medium">Total Assets</div>
+                        <div className="w-full h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent mt-2 group-hover:via-primary transition-colors duration-300"></div>
+                      </div>
+                      <div className="text-center group cursor-pointer">
+                        <div className="text-3xl font-display font-bold text-secondary mb-2 group-hover:scale-110 transition-transform duration-300">12</div>
+                        <div className="text-sm text-muted-foreground font-medium">This Month</div>
+                        <div className="w-full h-px bg-gradient-to-r from-transparent via-secondary/30 to-transparent mt-2 group-hover:via-secondary transition-colors duration-300"></div>
+                      </div>
+                      <div className="text-center group cursor-pointer">
+                        <div className="text-3xl font-display font-bold text-accent mb-2 group-hover:scale-110 transition-transform duration-300">4.2GB</div>
+                        <div className="text-sm text-muted-foreground font-medium">Storage Used</div>
+                        <div className="w-full h-px bg-gradient-to-r from-transparent via-accent/30 to-transparent mt-2 group-hover:via-accent transition-colors duration-300"></div>
+                      </div>
+                      <div className="text-center group cursor-pointer">
+                        <div className="text-3xl font-display font-bold text-green-500 mb-2 group-hover:scale-110 transition-transform duration-300">94%</div>
+                        <div className="text-sm text-muted-foreground font-medium">Avg Quality</div>
+                        <div className="w-full h-px bg-gradient-to-r from-transparent via-green-500/30 to-transparent mt-2 group-hover:via-green-500 transition-colors duration-300"></div>
                       </div>
                     </div>
-                  
+                  </div>
                   {/* Innovative AI Pulse Visualization */}
                   <div className="relative">
                     <div className="flex flex-col items-center space-y-4">
