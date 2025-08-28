@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { VirturaNavigation } from "@/components/VirturaNavigation";
 import { ChatInterface } from "@/components/ChatInterface";
 import { Card } from "@/components/ui/card";
@@ -14,8 +15,48 @@ interface GeneratedAvatar {
   timestamp: Date;
 }
 
+// Placeholder high-quality avatars
+const placeholderAvatars: GeneratedAvatar[] = [
+  {
+    id: "placeholder-1",
+    image: "/src/assets/avatar-business-executive.jpg",
+    prompt: "Professional business executive headshot",
+    timestamp: new Date()
+  },
+  {
+    id: "placeholder-2", 
+    image: "/src/assets/avatar-creative-artist.jpg",
+    prompt: "Creative artist portrait",
+    timestamp: new Date()
+  },
+  {
+    id: "placeholder-3",
+    image: "/src/assets/avatar-tech-entrepreneur.jpg", 
+    prompt: "Tech entrepreneur casual headshot",
+    timestamp: new Date()
+  },
+  {
+    id: "placeholder-4",
+    image: "/src/assets/avatar-fashion-model.jpg",
+    prompt: "Professional fashion model portrait",
+    timestamp: new Date()
+  },
+  {
+    id: "placeholder-5",
+    image: "/src/assets/avatar-healthcare-professional.jpg",
+    prompt: "Healthcare professional headshot",
+    timestamp: new Date()
+  },
+  {
+    id: "placeholder-6",
+    image: "/src/assets/avatar-fitness-coach.jpg",
+    prompt: "Fitness coach lifestyle portrait",
+    timestamp: new Date()
+  }
+];
+
 export default function IndividualsPage() {
-  const [generatedAvatars, setGeneratedAvatars] = useState<GeneratedAvatar[]>([]);
+  const [generatedAvatars, setGeneratedAvatars] = useState<GeneratedAvatar[]>(placeholderAvatars);
   const [isGenerating, setIsGenerating] = useState(false);
 
   const handleGenerate = async (prompt: string) => {
@@ -204,13 +245,6 @@ export default function IndividualsPage() {
                     </Card>
                   ))}
                 </div>
-              )}
-
-              {!isGenerating && generatedAvatars.length === 0 && (
-                <Card className="p-8 text-center">
-                  <Sparkles className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground">No avatars generated yet. Try a prompt above!</p>
-                </Card>
               )}
             </div>
           </div>

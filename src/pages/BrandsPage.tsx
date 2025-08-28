@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { VirturaNavigation } from "@/components/VirturaNavigation";
 import { ChatInterface } from "@/components/ChatInterface";
@@ -14,8 +15,42 @@ interface BrandAsset {
   timestamp: Date;
 }
 
+// Placeholder high-quality brand assets
+const placeholderBrandAssets: BrandAsset[] = [
+  {
+    id: "brand-placeholder-1",
+    image: "/src/assets/brand-marketing-campaign.jpg",
+    prompt: "Professional marketing campaign imagery",
+    timestamp: new Date()
+  },
+  {
+    id: "brand-placeholder-2", 
+    image: "/src/assets/brand-social-media.jpg",
+    prompt: "Social media brand content",
+    timestamp: new Date()
+  },
+  {
+    id: "brand-placeholder-3",
+    image: "/src/assets/brand-presentation-kit.jpg", 
+    prompt: "Corporate presentation materials",
+    timestamp: new Date()
+  },
+  {
+    id: "brand-placeholder-4",
+    image: "/src/assets/brand-logo-suite.jpg",
+    prompt: "Brand logo and identity suite",
+    timestamp: new Date()
+  },
+  {
+    id: "brand-placeholder-5",
+    image: "/src/assets/brand-signature-kit.jpg",
+    prompt: "Brand signature kit design",
+    timestamp: new Date()
+  }
+];
+
 export default function BrandsPage() {
-  const [brandAssets, setBrandAssets] = useState<BrandAsset[]>([]);
+  const [brandAssets, setBrandAssets] = useState<BrandAsset[]>(placeholderBrandAssets);
   const [isGenerating, setIsGenerating] = useState(false);
 
   const handleGenerate = async (prompt: string) => {
@@ -201,13 +236,6 @@ export default function BrandsPage() {
                     </Card>
                   ))}
                 </div>
-              )}
-
-              {!isGenerating && brandAssets.length === 0 && (
-                <Card className="p-8 text-center">
-                  <Sparkles className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground">No brand assets generated yet. Try a prompt above!</p>
-                </Card>
               )}
             </div>
           </div>
