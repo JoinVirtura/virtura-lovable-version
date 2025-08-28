@@ -346,13 +346,12 @@ export const AvatarStudio = () => {
                         handleSendMessage();
                       }
                     }}
-                    className="min-h-[80px] resize-none bg-background/50 border-0 focus-visible:ring-0 text-base"
+                    className="min-h-[50px] resize-none bg-background/50 border-0 focus-visible:ring-0 text-base"
                   />
                   <Button 
                     onClick={handleSendMessage}
                     disabled={!prompt.trim() || isGenerating}
-                    className="px-6 py-4 bg-primary hover:bg-primary/90"
-                    size="lg"
+                    className="px-6 py-3 bg-primary hover:bg-primary/90 h-[50px]"
                   >
                     {isGenerating ? (
                       <div className="animate-spin w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full" />
@@ -700,7 +699,7 @@ export const AvatarStudio = () => {
 
                 {/* Chat Input - Full Width */}
                 <div className="mb-4">
-                  <div className="flex gap-3 items-end">
+                  <div className="flex gap-2 items-center">
                     <Textarea
                       placeholder="Type editing commands... e.g., 'change hair color to green'"
                       value={prompt}
@@ -711,40 +710,49 @@ export const AvatarStudio = () => {
                           handleChatMessage();
                         }
                       }}
-                      className="flex-1 min-h-[80px] resize-none bg-background/50 border-border/30 text-sm"
+                      className="flex-1 min-h-[50px] resize-none bg-background/50 border-border/30 text-sm"
                     />
                     <Button 
                       onClick={handleChatMessage}
                       disabled={!prompt.trim() || isGenerating}
-                      className="px-6 h-[80px]"
-                      size="lg"
+                      className="px-6 py-3 h-[50px]"
                     >
                       <Send className="w-5 h-5" />
                     </Button>
                   </div>
                 </div>
 
-                {/* Quick Edit Suggestions - Horizontal Below */}
+                {/* Quick Edit Suggestions - Horizontal Scrollable */}
                 <div className="space-y-2">
                   <p className="text-sm text-muted-foreground font-medium">Quick Edits:</p>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {[
-                      "Change hair color to blonde",
-                      "Add professional clothing", 
-                      "Make background darker",
-                      "Change to sunset lighting"
-                    ].map((suggestion) => (
-                      <Button
-                        key={suggestion}
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setPrompt(suggestion)}
-                        className="text-sm border-border/30 hover:border-primary/30 justify-center h-10"
-                      >
-                        {suggestion}
-                      </Button>
-                    ))}
-                  </div>
+                  <ScrollArea className="w-full">
+                    <div className="flex gap-3 pb-2">
+                      {[
+                        "Change hair color to blonde",
+                        "Add professional clothing", 
+                        "Make background darker",
+                        "Change to sunset lighting",
+                        "Add casual clothing",
+                        "Make background brighter",
+                        "Change hair to brunette",
+                        "Add formal wear",
+                        "Change to studio lighting",
+                        "Add vintage style",
+                        "Make skin tone warmer",
+                        "Add business attire"
+                      ].map((suggestion) => (
+                        <Button
+                          key={suggestion}
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setPrompt(suggestion)}
+                          className="text-sm border-border/30 hover:border-primary/30 whitespace-nowrap flex-shrink-0 h-10"
+                        >
+                          {suggestion}
+                        </Button>
+                      ))}
+                    </div>
+                  </ScrollArea>
                 </div>
               </Card>
             </div>
