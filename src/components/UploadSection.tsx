@@ -52,30 +52,26 @@ export function UploadSection() {
         const base64Image = e.target?.result as string;
 
         try {
-          // Helper that calls the same edge function Avatar Studio uses (HF img2img)
-          const generate = async (prompt: string) => {
-            const resp = await supabase.functions.invoke('generate-avatar', {
-              body: {
-                prompt,
-                photoMode: true,
-                resolution: "1024x1024",
-                steps: 28,
-                adherence: 8,
-                referenceImage: base64Image,
-              },
-            });
-            if (resp.error || !resp.data?.success || !resp.data?.image) {
-              throw new Error(resp.error?.message || resp.data?.error || 'Generation failed');
-            }
-            return resp.data.image as string;
-          };
+          const { AvatarService } = await import("@/services/avatarService");
 
           // Base prompt derived from selected style
           const basePrompt = `${selectedPromptStyle}, professional studio headshot, photorealistic, sharp focus, high quality`;
 
-          // 1) Enhanced version
-          const enhancedUrl = await generate(`${basePrompt}, enhanced quality, premium lighting`);
-          setEnhancedVersion({ url: enhancedUrl });
+          // 1) Enhanced version (acts like an upscale/refine)
+          const enhanced = await AvatarService.generateAvatar({
+            prompt: `${basePrompt}, enhanced quality, premium lighting`,
+            photoMode: true,
+            resolution: "1024x1024",
+            steps: 28,
+            adherence: 8,
+            referenceImage: base64Image,
+          });
+
+          if (enhanced.success && enhanced.image) {
+            setEnhancedVersion({ url: enhanced.image });
+          } else {
+            toast.error(enhanced.error || 'Failed to generate enhanced version');
+          }
 
           // 2) Variations with consistent identity via reference image
           const variationDescriptors = [
@@ -87,10 +83,17 @@ export function UploadSection() {
 
           const results: any[] = [];
           for (let i = 0; i < variationDescriptors.length; i++) {
-            try {
-              const url = await generate(`${basePrompt}, ${variationDescriptors[i]}`);
-              results.push({ url });
-            } catch (_) {
+            const result = await AvatarService.generateAvatar({
+              prompt: `${basePrompt}, ${variationDescriptors[i]}`,
+              photoMode: true,
+              resolution: "1024x1024",
+              steps: 28,
+              adherence: 8,
+              referenceImage: base64Image,
+            });
+            if (result.success && result.image) {
+              results.push({ url: result.image });
+            } else {
               results.push(null);
             }
           }
