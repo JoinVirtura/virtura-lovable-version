@@ -1,460 +1,514 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import { Progress } from "@/components/ui/progress";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 import { 
-  User, 
-  Palette, 
-  Shirt, 
-  MapPin, 
-  Camera, 
+  MessageCircle,
+  Send, 
   Sparkles, 
   Download, 
   Share2, 
   Heart,
-  RotateCw,
+  Edit3,
+  Wand2,
+  Shield,
+  FileImage,
+  Video,
+  Instagram,
+  Linkedin,
+  PlayCircle,
+  CheckCircle,
   Zap,
   Crown,
-  Lock
+  Eye,
+  EyeOff
 } from "lucide-react";
 
+interface ChatMessage {
+  id: string;
+  type: 'user' | 'assistant' | 'system';
+  content: string;
+  timestamp: Date;
+}
+
+interface PreviewCard {
+  id: string;
+  imageUrl: string;
+  prompt: string;
+  isGenerating: boolean;
+  safetyPassed: boolean;
+}
+
+interface ExportPack {
+  id: string;
+  name: string;
+  description: string;
+  formats: string[];
+  icon: any;
+  premium?: boolean;
+}
+
 export const AvatarStudio = () => {
-  const [selectedCategory, setSelectedCategory] = useState("model");
-  const [generationProgress, setGenerationProgress] = useState(0);
+  const [prompt, setPrompt] = useState("");
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    {
+      id: "1",
+      type: "assistant",
+      content: "Hi! I'm your AI Copilot. Describe what you'd like to create and I'll generate 3 preview options with quick edit controls. Try: 'Professional headshot of a woman with curly hair'",
+      timestamp: new Date()
+    }
+  ]);
+  const [previewCards, setPreviewCards] = useState<PreviewCard[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [selectedExportPack, setSelectedExportPack] = useState<string | null>(null);
+  const [watermarkEnabled, setWatermarkEnabled] = useState(true);
+  const [aiProofEnabled, setAiProofEnabled] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const categories = [
-    { id: "model", name: "Model", icon: User },
-    { id: "head", name: "Head", icon: User },
-    { id: "body", name: "Body", icon: User },
-    { id: "theme", name: "Theme", icon: Crown },
-    { id: "image", name: "Image", icon: Camera }
+  const exportPacks: ExportPack[] = [
+    {
+      id: "social",
+      name: "Social Pack",
+      description: "IG Post, TikTok Reel, Story",
+      formats: ["1080x1080", "1080x1920", "1080x1920"],
+      icon: Instagram
+    },
+    {
+      id: "professional",
+      name: "Professional Pack", 
+      description: "LinkedIn headshot + banner",
+      formats: ["400x400", "1584x396"],
+      icon: Linkedin,
+      premium: true
+    },
+    {
+      id: "ad",
+      name: "Ad Pack",
+      description: "TikTok + LinkedIn + Meta ads",
+      formats: ["1080x1920", "1200x628", "1080x1080"],
+      icon: PlayCircle,
+      premium: true
+    }
   ];
 
-  const modelOptions = {
-    style: [
-      { name: "Realistic V2.1", selected: true, premium: false },
-      { name: "Anime V2", selected: false, premium: false },
-      { name: "Furry V2", selected: false, premium: true },
-      { name: "Legacy", selected: false, premium: false }
-    ],
-    gender: [
-      { name: "Woman", selected: true },
-      { name: "Man", selected: false },
-      { name: "Trans", selected: false }
-    ],
-    age: [
-      { name: "Teen (18+)", selected: false },
-      { name: "20s", selected: true },
-      { name: "30s", selected: false },
-      { name: "MILF", selected: false },
-      { name: "DILF", selected: false }
-    ],
-    ethnicity: [
-      { name: "Latina", selected: false },
-      { name: "Caucasian", selected: true },
-      { name: "Asian", selected: false },
-      { name: "Afro", selected: false },
-      { name: "Arab", selected: false },
-      { name: "Indian", selected: false }
-    ]
-  };
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
-  const headOptions = {
-    eyeColor: [
-      { name: "Blue", selected: true },
-      { name: "Brown", selected: false },
-      { name: "Green", selected: false },
-      { name: "Hazel", selected: false }
-    ],
-    hairColor: [
-      { name: "Blonde", selected: true },
-      { name: "Brunette", selected: false },
-      { name: "Black", selected: false },
-      { name: "Ginger", selected: false },
-      { name: "Pink", selected: false }
-    ],
-    hairStyle: [
-      { name: "Long", selected: true },
-      { name: "Short", selected: false },
-      { name: "Ponytail", selected: false },
-      { name: "Bun", selected: false },
-      { name: "Pigtails", selected: false }
-    ]
-  };
-
-  const bodyOptions = {
-    bodyType: [
-      { name: "Skinny", selected: false },
-      { name: "Slim", selected: true },
-      { name: "Fit", selected: false },
-      { name: "Athletic", selected: false },
-      { name: "Curvy", selected: false },
-      { name: "Muscular", selected: false }
-    ],
-    clothing: [
-      { name: "Lingerie", selected: true, premium: true },
-      { name: "Bikini", selected: false },
-      { name: "Dress", selected: false },
-      { name: "Casual", selected: false },
-      { name: "Sportswear", selected: false }
-    ],
-    pose: [
-      { name: "Standing", selected: true },
-      { name: "Sitting", selected: false },
-      { name: "Lying", selected: false },
-      { name: "Dancing", selected: false, premium: true }
-    ]
-  };
-
-  const locationOptions = [
-    { name: "Bedroom", selected: true },
-    { name: "Beach", selected: false },
-    { name: "Office", selected: false },
-    { name: "Gym", selected: false },
-    { name: "Pool", selected: false },
-    { name: "Outdoor", selected: false }
-  ];
-
-  const lightingOptions = [
-    { name: "Natural", selected: true },
-    { name: "Studio", selected: false },
-    { name: "Dramatic", selected: false },
-    { name: "Cinematic", selected: false },
-    { name: "Neon", selected: false, premium: true }
-  ];
-
-  const renderOptionGrid = (title: string, options: any[], columns = 3) => (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h4 className="font-medium text-foreground">{title}</h4>
-        <Button variant="ghost" size="sm" className="h-6 text-xs text-primary hover:text-primary/80">
-          <Sparkles className="w-3 h-3 mr-1" />
-          Random
-        </Button>
-      </div>
-      <div className={`grid grid-cols-${columns} gap-2`}>
-        {options.map((option, index) => (
-          <Button
-            key={index}
-            variant={option.selected ? "default" : "outline"}
-            size="sm"
-            className={`relative ${
-              option.selected
-                ? 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-glow'
-                : 'border-border/50 hover:border-primary/30 hover:bg-primary/5 text-foreground'
-            }`}
-          >
-            {option.premium && (
-              <Crown className="w-3 h-3 absolute -top-1 -right-1 text-yellow-500" />
-            )}
-            {option.name}
-          </Button>
-        ))}
-      </div>
-    </div>
-  );
-
-  const generateAvatar = () => {
-    setIsGenerating(true);
-    setGenerationProgress(0);
+  const checkPromptSafety = (text: string): { safe: boolean; reframedPrompt?: string } => {
+    const unsafeKeywords = ['nude', 'naked', 'explicit', 'nsfw', 'child', 'minor', 'violence', 'weapon'];
+    const lowerText = text.toLowerCase();
     
-    const interval = setInterval(() => {
-      setGenerationProgress(prev => {
-        if (prev >= 100) {
-          setIsGenerating(false);
-          clearInterval(interval);
-          return 100;
+    for (const keyword of unsafeKeywords) {
+      if (lowerText.includes(keyword)) {
+        // Reframe unsafe prompts
+        if (keyword === 'nude' || keyword === 'naked') {
+          return { 
+            safe: false, 
+            reframedPrompt: text.replace(/nude|naked/gi, 'portrait') + ' (appropriate clothing added for safety)'
+          };
         }
-        return prev + 10;
-      });
-    }, 200);
+        return { safe: false };
+      }
+    }
+    return { safe: true };
+  };
+
+  const generatePreviews = async (userPrompt: string) => {
+    const safetyCheck = checkPromptSafety(userPrompt);
+    
+    if (!safetyCheck.safe && !safetyCheck.reframedPrompt) {
+      toast.error("Prompt contains unsafe content. Please revise your request.");
+      return;
+    }
+
+    const finalPrompt = safetyCheck.reframedPrompt || userPrompt;
+    setIsGenerating(true);
+
+    // Generate 3 preview cards
+    const newCards: PreviewCard[] = [
+      {
+        id: Date.now() + "_1",
+        imageUrl: "/placeholder.svg",
+        prompt: finalPrompt + " - Style A",
+        isGenerating: true,
+        safetyPassed: true
+      },
+      {
+        id: Date.now() + "_2", 
+        imageUrl: "/placeholder.svg",
+        prompt: finalPrompt + " - Style B",
+        isGenerating: true,
+        safetyPassed: true
+      },
+      {
+        id: Date.now() + "_3",
+        imageUrl: "/placeholder.svg", 
+        prompt: finalPrompt + " - Style C",
+        isGenerating: true,
+        safetyPassed: true
+      }
+    ];
+
+    setPreviewCards(newCards);
+
+    // Simulate generation completion
+    setTimeout(() => {
+      setPreviewCards(prev => prev.map(card => ({ ...card, isGenerating: false })));
+      setIsGenerating(false);
+      
+      // Add copilot suggestion
+      const suggestions = [
+        "Want a LinkedIn banner version?",
+        "How about creating a social media pack?",
+        "Need this in different aspect ratios?"
+      ];
+      
+      setMessages(prev => [...prev, {
+        id: Date.now().toString(),
+        type: "assistant",
+        content: suggestions[Math.floor(Math.random() * suggestions.length)],
+        timestamp: new Date()
+      }]);
+    }, 3000);
+  };
+
+  const handleSendMessage = async () => {
+    if (!prompt.trim()) return;
+
+    const userMessage: ChatMessage = {
+      id: Date.now().toString(),
+      type: "user",
+      content: prompt,
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    
+    // Check if it's a refinement or new generation
+    if (previewCards.length > 0 && prompt.toLowerCase().includes('make')) {
+      // Handle refinements
+      const assistantMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        type: "assistant", 
+        content: `Great! I'll update the previews with: "${prompt}". Generating now...`,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, assistantMessage]);
+      
+      // Update existing cards
+      setIsGenerating(true);
+      setTimeout(() => {
+        setPreviewCards(prev => prev.map(card => ({
+          ...card,
+          prompt: card.prompt + ` + ${prompt}`
+        })));
+        setIsGenerating(false);
+      }, 2000);
+      
+    } else {
+      // Generate new previews
+      await generatePreviews(prompt);
+    }
+    
+    setPrompt("");
+  };
+
+  const handleQuickEdit = (cardId: string, edit: string) => {
+    setMessages(prev => [...prev, {
+      id: Date.now().toString(),
+      type: "assistant",
+      content: `Applying "${edit}" to your selection...`,
+      timestamp: new Date()
+    }]);
+
+    setPreviewCards(prev => prev.map(card => 
+      card.id === cardId 
+        ? { ...card, prompt: card.prompt + ` + ${edit}`, isGenerating: true }
+        : card
+    ));
+
+    setTimeout(() => {
+      setPreviewCards(prev => prev.map(card => 
+        card.id === cardId 
+          ? { ...card, isGenerating: false }
+          : card
+      ));
+    }, 2000);
   };
 
   return (
     <section className="min-h-screen bg-gradient-hero pt-20">
       <div className="container mx-auto px-6 py-8">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* Left Sidebar - Categories */}
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Wand2 className="w-6 h-6 text-primary" />
+              <h1 className="text-3xl font-display font-bold text-foreground">AI Copilot Studio</h1>
+              <Shield className="w-5 h-5 text-green-500" />
+            </div>
+            <p className="text-muted-foreground">Your ChatGPT-powered creative assistant for all avatar flows</p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            {/* Left - Chat Interface */}
             <div className="lg:col-span-1">
-              <Card className="p-4 bg-gradient-card border-border/50 sticky top-24">
-                <h3 className="font-semibold text-lg mb-4 text-foreground">Tags Library</h3>
-                <div className="space-y-2">
-                  {categories.map((category) => {
-                    const IconComponent = category.icon;
+              <Card className="h-[700px] bg-gradient-card border-border/50 flex flex-col">
+                <div className="p-4 border-b border-border/50">
+                  <div className="flex items-center gap-2">
+                    <MessageCircle className="w-4 h-4 text-primary" />
+                    <h3 className="font-semibold text-foreground">AI Copilot</h3>
+                    <Badge variant="secondary" className="text-xs">Live</Badge>
+                  </div>
+                </div>
+                
+                <ScrollArea className="flex-1 p-4">
+                  <div className="space-y-4">
+                    {messages.map((message) => (
+                      <div
+                        key={message.id}
+                        className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+                      >
+                        <div
+                          className={`max-w-[80%] p-3 rounded-lg ${
+                            message.type === 'user'
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-background/50 text-foreground border border-border/50'
+                          }`}
+                        >
+                          <p className="text-sm">{message.content}</p>
+                          <span className="text-xs opacity-70 mt-1 block">
+                            {message.timestamp.toLocaleTimeString()}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                    <div ref={messagesEndRef} />
+                  </div>
+                </ScrollArea>
+                
+                <div className="p-4 border-t border-border/50">
+                  <div className="flex gap-2">
+                    <Textarea
+                      placeholder="Describe your avatar idea or ask for changes..."
+                      value={prompt}
+                      onChange={(e) => setPrompt(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          handleSendMessage();
+                        }
+                      }}
+                      className="min-h-[60px] resize-none bg-background/50"
+                    />
+                    <Button 
+                      onClick={handleSendMessage}
+                      disabled={!prompt.trim() || isGenerating}
+                      className="px-3"
+                    >
+                      <Send className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            {/* Center - Preview Cards */}
+            <div className="lg:col-span-1">
+              <Card className="h-[700px] bg-gradient-card border-border/50 p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-semibold text-foreground">Preview Cards</h3>
+                  <Badge variant="outline" className="text-xs">3 Variants</Badge>
+                </div>
+                
+                {previewCards.length === 0 ? (
+                  <div className="h-full flex items-center justify-center text-center">
+                    <div>
+                      <Sparkles className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                      <p className="text-muted-foreground">Start a conversation to generate previews</p>
+                    </div>
+                  </div>
+                ) : (
+                  <ScrollArea className="h-[640px]">
+                    <div className="space-y-4">
+                      {previewCards.map((card, index) => (
+                        <Card key={card.id} className="p-4 bg-background/30 border-border/50">
+                          <div className="aspect-[3/4] bg-background/50 rounded-lg border border-border/30 mb-3 relative overflow-hidden">
+                            {card.isGenerating ? (
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="text-center">
+                                  <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full mx-auto mb-2" />
+                                  <p className="text-xs text-muted-foreground">Generating...</p>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="text-center">
+                                  <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-2" />
+                                  <p className="text-xs text-muted-foreground">Variant {index + 1}</p>
+                                </div>
+                              </div>
+                            )}
+                            
+                            {card.safetyPassed && (
+                              <Badge className="absolute top-2 right-2 bg-green-500/20 text-green-600 border-green-500/30">
+                                <Shield className="w-3 h-3 mr-1" />
+                                Safe
+                              </Badge>
+                            )}
+                          </div>
+                          
+                          <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{card.prompt}</p>
+                          
+                          <div className="grid grid-cols-2 gap-2">
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              onClick={() => handleQuickEdit(card.id, 'more stylized')}
+                              disabled={card.isGenerating}
+                            >
+                              <Edit3 className="w-3 h-3 mr-1" />
+                              Style
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              onClick={() => handleQuickEdit(card.id, 'better lighting')}
+                              disabled={card.isGenerating}
+                            >
+                              <Zap className="w-3 h-3 mr-1" />
+                              Light
+                            </Button>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                )}
+              </Card>
+            </div>
+
+            {/* Right - Export & Settings */}
+            <div className="lg:col-span-1 space-y-6">
+              
+              {/* Export Packs */}
+              <Card className="p-4 bg-gradient-card border-border/50">
+                <h3 className="font-semibold text-foreground mb-4">Export Packs</h3>
+                <div className="space-y-3">
+                  {exportPacks.map((pack) => {
+                    const IconComponent = pack.icon;
                     return (
                       <Button
-                        key={category.id}
-                        variant={selectedCategory === category.id ? "default" : "ghost"}
-                        className={`w-full justify-start ${
-                          selectedCategory === category.id
-                            ? 'bg-primary hover:bg-primary/90 text-primary-foreground'
-                            : 'hover:bg-primary/10 text-foreground'
+                        key={pack.id}
+                        variant={selectedExportPack === pack.id ? "default" : "outline"}
+                        className={`w-full justify-start h-auto p-3 ${
+                          selectedExportPack === pack.id
+                            ? 'bg-primary hover:bg-primary/90'
+                            : 'border-border/50 hover:border-primary/30'
                         }`}
-                        onClick={() => setSelectedCategory(category.id)}
+                        onClick={() => setSelectedExportPack(pack.id)}
                       >
-                        <IconComponent className="w-4 h-4 mr-3" />
-                        {category.name}
+                        <div className="flex items-start w-full">
+                          <IconComponent className="w-5 h-5 mr-3 mt-0.5 shrink-0" />
+                          <div className="text-left">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">{pack.name}</span>
+                              {pack.premium && <Crown className="w-3 h-3 text-yellow-500" />}
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-1">{pack.description}</p>
+                            <div className="text-xs text-muted-foreground mt-1">
+                              {pack.formats.join(', ')}
+                            </div>
+                          </div>
+                        </div>
                       </Button>
                     );
                   })}
                 </div>
+              </Card>
 
-                <Separator className="my-6 bg-border/50" />
-
-                {/* Quick Actions */}
-                <div className="space-y-3">
-                  <Button 
-                    variant="outline" 
-                    className="w-full border-primary/30 text-primary hover:bg-primary/10"
-                    onClick={generateAvatar}
-                    disabled={isGenerating}
-                  >
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    {isGenerating ? 'Generating...' : 'Generate Image'}
-                  </Button>
+              {/* Format Settings */}
+              <Card className="p-4 bg-gradient-card border-border/50">
+                <h3 className="font-semibold text-foreground mb-4">Format Options</h3>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <Button variant="outline" size="sm" className="border-border/50">
+                      <FileImage className="w-3 h-3 mr-1" />
+                      PNG
+                    </Button>
+                    <Button variant="outline" size="sm" className="border-border/50">
+                      <FileImage className="w-3 h-3 mr-1" />
+                      JPG
+                    </Button>
+                  </div>
                   
-                  {isGenerating && (
-                    <div className="space-y-2">
-                      <Progress value={generationProgress} className="w-full" />
-                      <p className="text-xs text-center text-muted-foreground">
-                        {generationProgress}% Complete
-                      </p>
-                    </div>
-                  )}
+                  <Button variant="outline" className="w-full border-border/50">
+                    <Video className="w-4 h-4 mr-2" />
+                    MP4 Video
+                    <Crown className="w-3 h-3 ml-2 text-yellow-500" />
+                  </Button>
+                </div>
+              </Card>
 
-                  <div className="flex space-x-2">
-                    <Button variant="outline" size="sm" className="flex-1 border-border/50">
-                      <RotateCw className="w-3 h-3 mr-1" />
-                      Retry
-                    </Button>
-                    <Button variant="outline" size="sm" className="flex-1 border-border/50">
-                      <Zap className="w-3 h-3 mr-1" />
-                      Enhance
-                    </Button>
+              {/* Safety & Watermark */}
+              <Card className="p-4 bg-gradient-card border-border/50">
+                <h3 className="font-semibold text-foreground mb-4">Safety & Settings</h3>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {watermarkEnabled ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                      <span className="text-sm">Watermark</span>
+                    </div>
+                    <Switch 
+                      checked={watermarkEnabled}
+                      onCheckedChange={setWatermarkEnabled}
+                    />
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Shield className="w-4 h-4" />
+                      <span className="text-sm">AI Proof Content</span>
+                    </div>
+                    <Switch 
+                      checked={aiProofEnabled}
+                      onCheckedChange={setAiProofEnabled}
+                    />
+                  </div>
+                  
+                  <div className="pt-2 border-t border-border/50">
+                    <div className="flex items-center gap-2 text-xs text-green-600">
+                      <CheckCircle className="w-3 h-3" />
+                      <span>Content scanning active</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-green-600 mt-1">
+                      <Shield className="w-3 h-3" />
+                      <span>Unsafe prompt blocking enabled</span>
+                    </div>
                   </div>
                 </div>
               </Card>
-            </div>
 
-            {/* Center - Options Panel */}
-            <div className="lg:col-span-2">
-              <Card className="p-6 bg-gradient-card border-border/50">
-                <ScrollArea className="h-[700px] pr-4">
-                  {selectedCategory === "model" && (
-                    <div className="space-y-6">
-                      {renderOptionGrid("Style", modelOptions.style, 2)}
-                      <Separator className="bg-border/50" />
-                      {renderOptionGrid("Gender", modelOptions.gender, 3)}
-                      <Separator className="bg-border/50" />
-                      {renderOptionGrid("Age", modelOptions.age, 3)}
-                      <Separator className="bg-border/50" />
-                      {renderOptionGrid("Ethnicity", modelOptions.ethnicity, 3)}
-                    </div>
-                  )}
-
-                  {selectedCategory === "head" && (
-                    <div className="space-y-6">
-                      {renderOptionGrid("Eyes Color", headOptions.eyeColor, 3)}
-                      <Separator className="bg-border/50" />
-                      {renderOptionGrid("Hair Color", headOptions.hairColor, 3)}
-                      <Separator className="bg-border/50" />
-                      {renderOptionGrid("Hair Style", headOptions.hairStyle, 3)}
-                    </div>
-                  )}
-
-                  {selectedCategory === "body" && (
-                    <div className="space-y-6">
-                      {renderOptionGrid("Body Type", bodyOptions.bodyType, 3)}
-                      <Separator className="bg-border/50" />
-                      {renderOptionGrid("Clothing", bodyOptions.clothing, 3)}
-                      <Separator className="bg-border/50" />
-                      {renderOptionGrid("Pose", bodyOptions.pose, 3)}
-                    </div>
-                  )}
-
-                  {selectedCategory === "theme" && (
-                    <div className="space-y-6">
-                      {renderOptionGrid("Location", locationOptions, 3)}
-                      <Separator className="bg-border/50" />
-                      {renderOptionGrid("Lighting", lightingOptions, 3)}
-                      
-                      <Separator className="bg-border/50" />
-                      
-                      {/* Advanced Settings */}
-                      <div className="space-y-4">
-                        <h4 className="font-medium text-foreground">Advanced Settings</h4>
-                        
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-between">
-                            <label className="text-sm text-foreground">HD Quality</label>
-                            <Switch />
-                          </div>
-                          
-                          <div className="space-y-2">
-                            <div className="flex items-center justify-between">
-                              <label className="text-sm text-foreground">Creativity</label>
-                              <span className="text-xs text-muted-foreground">75%</span>
-                            </div>
-                            <Slider defaultValue={[75]} max={100} step={1} />
-                          </div>
-                          
-                          <div className="space-y-2">
-                            <div className="flex items-center justify-between">
-                              <label className="text-sm text-foreground">Style Strength</label>
-                              <span className="text-xs text-muted-foreground">60%</span>
-                            </div>
-                            <Slider defaultValue={[60]} max={100} step={1} />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {selectedCategory === "image" && (
-                    <div className="space-y-6 text-center">
-                      <div className="border-2 border-dashed border-border/50 rounded-lg p-12 hover:border-primary/30 transition-colors">
-                        <Camera className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                        <h4 className="font-medium text-foreground mb-2">Upload Reference</h4>
-                        <p className="text-sm text-muted-foreground mb-4">
-                          Upload an image to use as reference for generation
-                        </p>
-                        <Button className="bg-primary hover:bg-primary/90">
-                          Choose File
-                        </Button>
-                      </div>
-                      
-                      <div className="grid grid-cols-2 gap-3">
-                        <Button variant="outline" className="border-border/50">
-                          <Palette className="w-4 h-4 mr-2" />
-                          Color Match
-                        </Button>
-                        <Button variant="outline" className="border-border/50">
-                          <User className="w-4 h-4 mr-2" />
-                          Face Reference
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                </ScrollArea>
+              {/* Quick Actions */}
+              <Card className="p-4 bg-gradient-card border-border/50">
+                <div className="grid grid-cols-3 gap-2">
+                  <Button variant="outline" size="sm" className="border-border/50">
+                    <Heart className="w-3 h-3" />
+                  </Button>
+                  <Button variant="outline" size="sm" className="border-border/50">
+                    <Share2 className="w-3 h-3" />
+                  </Button>
+                  <Button variant="outline" size="sm" className="border-border/50">
+                    <Download className="w-3 h-3" />
+                  </Button>
+                </div>
               </Card>
-            </div>
-
-            {/* Right - Preview & Results */}
-            <div className="lg:col-span-1">
-              <div className="space-y-6 sticky top-24">
-                {/* Preview */}
-                <Card className="p-4 bg-gradient-card border-border/50">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-semibold text-foreground">Preview</h3>
-                    <Badge variant="secondary" className="text-xs">4:5</Badge>
-                  </div>
-                  
-                  <div className="aspect-[4/5] bg-background/30 rounded-lg border border-border/30 flex items-center justify-center mb-4">
-                    {isGenerating ? (
-                      <div className="text-center">
-                        <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-2" />
-                        <p className="text-sm text-muted-foreground">Generating...</p>
-                      </div>
-                    ) : (
-                      <div className="text-center">
-                        <Sparkles className="w-12 h-12 text-muted-foreground mx-auto mb-2" />
-                        <p className="text-sm text-muted-foreground">Your avatar will appear here</p>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="grid grid-cols-4 gap-2">
-                    {["1:1", "5:4", "4:5", "16:9"].map((ratio) => (
-                      <Button
-                        key={ratio}
-                        variant={ratio === "4:5" ? "default" : "outline"}
-                        size="sm"
-                        className={`text-xs ${
-                          ratio === "4:5"
-                            ? 'bg-primary hover:bg-primary/90'
-                            : 'border-border/50 hover:border-primary/30'
-                        }`}
-                      >
-                        {ratio}
-                      </Button>
-                    ))}
-                  </div>
-                </Card>
-
-                {/* Generation Settings */}
-                <Card className="p-4 bg-gradient-card border-border/50">
-                  <h3 className="font-semibold text-foreground mb-4">Generation</h3>
-                  
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-foreground">Number of Images</span>
-                      <div className="flex space-x-1">
-                        {[1, 2, 4, 6].map((num) => (
-                          <Button
-                            key={num}
-                            variant={num === 1 ? "default" : "outline"}
-                            size="sm"
-                            className={`w-8 h-8 p-0 text-xs ${
-                              num === 1
-                                ? 'bg-primary hover:bg-primary/90'
-                                : 'border-border/50 hover:border-primary/30'
-                            }`}
-                          >
-                            {num}
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
-                    
-                    <Button 
-                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-glow"
-                      onClick={generateAvatar}
-                      disabled={isGenerating}
-                    >
-                      <Sparkles className="w-4 h-4 mr-2" />
-                      Generate Image
-                    </Button>
-                    
-                    <div className="text-center">
-                      <p className="text-xs text-muted-foreground">
-                        Cost: 1 token • You have 150 left
-                      </p>
-                    </div>
-                  </div>
-                </Card>
-
-                {/* Quick Actions */}
-                <Card className="p-4 bg-gradient-card border-border/50">
-                  <h3 className="font-semibold text-foreground mb-4">Actions</h3>
-                  
-                  <div className="grid grid-cols-2 gap-2">
-                    <Button variant="outline" size="sm" className="border-border/50">
-                      <Heart className="w-3 h-3 mr-1" />
-                      Like
-                    </Button>
-                    <Button variant="outline" size="sm" className="border-border/50">
-                      <Download className="w-3 h-3 mr-1" />
-                      Save
-                    </Button>
-                    <Button variant="outline" size="sm" className="border-border/50">
-                      <Share2 className="w-3 h-3 mr-1" />
-                      Share
-                    </Button>
-                    <Button variant="outline" size="sm" className="border-border/50">
-                      <Lock className="w-3 h-3 mr-1" />
-                      Private
-                    </Button>
-                  </div>
-                </Card>
-              </div>
             </div>
           </div>
         </div>
