@@ -40,7 +40,7 @@ serve(async (req) => {
         prompt: `Create a professional, enhanced version of this person: ${promptStyle}, photorealistic, high quality, studio lighting, sharp focus, professional photography`,
         n: 1,
         size: '1024x1024',
-        quality: 'hd',
+        quality: 'high',
         output_format: 'png'
       }),
     });
@@ -53,6 +53,8 @@ serve(async (req) => {
 
     const enhancedData = await enhancedResponse.json();
     console.log('Enhanced version created successfully');
+    const enhancedBase64: string | undefined = enhancedData?.data?.[0]?.b64_json || enhancedData?.data?.[0]?.url;
+    const enhancedUrl = enhancedBase64?.startsWith('data:') ? enhancedBase64 : `data:image/png;base64,${enhancedBase64}`;
 
     // Create variations using OpenAI
     const variationPromises = Array.from({ length: variations }, async (_, index) => {
@@ -76,7 +78,7 @@ serve(async (req) => {
           prompt: `Create a variation of this person: ${style}, photorealistic, high quality, professional photography, unique perspective`,
           n: 1,
           size: '1024x1024',
-          quality: 'hd',
+          quality: 'high',
           output_format: 'png'
         }),
       });
@@ -87,7 +89,8 @@ serve(async (req) => {
       }
 
       const data = await response.json();
-      return data.data[0];
+      const vBase64: string | undefined = data?.data?.[0]?.b64_json || data?.data?.[0]?.url;
+      return { url: vBase64?.startsWith('data:') ? vBase64 : `data:image/png;base64,${vBase64}` };
     });
 
     const variationResults = await Promise.allSettled(variationPromises);
@@ -118,7 +121,7 @@ serve(async (req) => {
             user_id: userData.user.id,
             title: "AI Avatar Twin",
             prompt: `Avatar twin created with style: ${promptStyle}`,
-            image_url: enhancedData.data[0].url,
+            image_url: enhancedUrl,
             tags: ["avatar-twin", "enhanced", promptStyle]
           });
           
@@ -133,8 +136,8 @@ serve(async (req) => {
     return new Response(JSON.stringify({
       success: true,
       enhancedVersion: {
-        url: enhancedData.data[0].url,
-        revised_prompt: enhancedData.data[0].revised_prompt
+        url: enhancedUrl,
+        revised_prompt: enhancedData?.data?.[0]?.revised_prompt || null
       },
       variations: successfulVariations,
       message: `Successfully created enhanced version and ${successfulVariations.length} variations`
