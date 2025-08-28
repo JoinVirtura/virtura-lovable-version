@@ -2412,36 +2412,14 @@ export default function Dashboard() {
                     {viewMode === "grid" ? (
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredAssets.map((asset) => (
-                           <Card key={asset.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border-2 hover:border-primary/30 bg-gradient-to-br from-card to-card/95 hover:scale-[1.02] animate-card-hover"
-                             onMouseEnter={(e) => {
-                               console.log('🎭 Avatar card hover started:', asset.title);
-                               const img = e.currentTarget.querySelector('img') as HTMLImageElement;
-                               if (img) {
-                                 img.classList.add('animate-avatar-alive');
-                                 console.log('✅ Animation class added to:', asset.title);
-                               } else {
-                                 console.log('❌ Could not find image for:', asset.title);
-                               }
-                             }}
-                             onMouseLeave={(e) => {
-                               console.log('🎭 Avatar card hover ended:', asset.title);
-                               const img = e.currentTarget.querySelector('img') as HTMLImageElement;
-                               if (img) {
-                                 img.classList.remove('animate-avatar-alive');
-                                 console.log('🛑 Animation class removed from:', asset.title);
-                               }
-                             }}
-                           >
+                           <Card key={asset.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border-2 hover:border-primary/30 bg-gradient-to-br from-card to-card/95 hover:scale-[1.02]">
                              <div className={`${viewMode === 'grid' ? 'aspect-square' : 'aspect-video w-32 h-20'} bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 relative overflow-hidden`}>
                               {/* Content Preview */}
                                <img 
                                  src={asset.thumbnail} 
                                  alt={asset.title}
                                  data-asset-id={asset.id}
-                                 className="w-full h-full object-cover transition-all duration-700"
-                                 style={{
-                                   transition: 'all 0.7s ease-in-out',
-                                 }}
+                                 className="w-full h-full object-cover transition-all duration-700 hover:scale-110 hover:brightness-125 hover:rotate-1"
                                  onError={(e) => {
                                    e.currentTarget.src = "/api/placeholder/300/300";
                                  }}
@@ -2455,23 +2433,13 @@ export default function Dashboard() {
                                 </div>
                               )}
                               
-                              {/* Format & Model Badges */}
-                              <div className="absolute top-3 left-3 flex gap-2">
-                                <Badge variant="secondary" className="bg-black/80 text-white border-0 font-medium">
-                                  {asset.format}
-                                </Badge>
-                                <Badge variant="outline" className="bg-black/80 text-white border-white/30 font-medium">
-                                  GPT-4V
-                                </Badge>
-                              </div>
-
-                              {/* Quality Score */}
-                              <div className="absolute top-3 right-3">
-                                <div className="flex items-center gap-1 bg-black/80 rounded-full px-3 py-1.5 backdrop-blur-sm">
-                                  <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
-                                  <span className="text-sm text-white font-semibold">9.2</span>
-                                </div>
-                              </div>
+                               {/* Quality Score */}
+                               <div className="absolute top-3 right-3">
+                                 <div className="flex items-center gap-1 bg-black/80 rounded-full px-3 py-1.5 backdrop-blur-sm">
+                                   <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
+                                   <span className="text-sm text-white font-semibold">9.2</span>
+                                 </div>
+                               </div>
                               
                                {/* Removed hover overlay - buttons will be below */}
                             </div>
