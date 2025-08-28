@@ -3,14 +3,79 @@ import { VirturaNavigation } from "@/components/VirturaNavigation";
 import { ChatInterface } from "@/components/ChatInterface";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Upload, Palette, Type, TrendingUp } from "lucide-react";
+import { Upload, Palette, Type, TrendingUp, Download, Share2, Sparkles } from "lucide-react";
+import { toast } from "sonner";
+import { AvatarService } from "@/services/avatarService";
+
+interface BrandAsset {
+  id: string;
+  image: string;
+  prompt: string;
+  timestamp: Date;
+}
 
 export default function BrandsPage() {
-  const [brandAssets, setBrandAssets] = useState<any[]>([]);
+  const [brandAssets, setBrandAssets] = useState<BrandAsset[]>([]);
+  const [isGenerating, setIsGenerating] = useState(false);
 
-  const handleGenerate = (prompt: string) => {
+  const handleGenerate = async (prompt: string) => {
     console.log("Generating brand content with prompt:", prompt);
-    // This will integrate with existing avatar generation service
+    setIsGenerating(true);
+    
+    try {
+      // Brand-focused generation parameters
+      const studioNegative = "blurry, low quality, text, watermark, logos, distorted, unrealistic, plastic";
+      const brandPrompt = `${prompt}, professional commercial photography, high quality brand content, commercial advertising style, clean composition, professional lighting, marketing ready`;
+      
+      // Generate brand assets with different orientations/styles
+      const results = await Promise.all([
+        AvatarService.generateAvatar({
+          prompt: `${brandPrompt}, professional corporate style`,
+          negativePrompt: studioNegative,
+          photoMode: true,
+          resolution: "1024x1024",
+          steps: 49,
+          adherence: 7,
+        }),
+        AvatarService.generateAvatar({
+          prompt: `${brandPrompt}, modern creative campaign style`,
+          negativePrompt: studioNegative,
+          photoMode: true,
+          resolution: "1024x1024",
+          steps: 49,
+          adherence: 7,
+        }),
+        AvatarService.generateAvatar({
+          prompt: `${brandPrompt}, lifestyle marketing style`,
+          negativePrompt: studioNegative,
+          photoMode: true,
+          resolution: "1024x1024",
+          steps: 49,
+          adherence: 7,
+        })
+      ]);
+
+      const newAssets: BrandAsset[] = results
+        .filter(result => result.success && result.image)
+        .map((result, index) => ({
+          id: `${Date.now()}_${index}`,
+          image: result.image!,
+          prompt: prompt,
+          timestamp: new Date()
+        }));
+
+      if (newAssets.length > 0) {
+        setBrandAssets(prev => [...newAssets, ...prev]);
+        toast.success(`Generated ${newAssets.length} brand assets!`);
+      } else {
+        toast.error("Failed to generate brand assets. Please try again.");
+      }
+    } catch (error) {
+      console.error('Brand asset generation error:', error);
+      toast.error("An error occurred while generating brand assets");
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   return (
@@ -41,48 +106,101 @@ export default function BrandsPage() {
           <div className="lg:col-span-2">
             <ChatInterface type="brands" onGenerate={handleGenerate} />
             
-            {/* Preview Grid */}
-            {brandAssets.length > 0 && (
-              <div className="mt-8">
-                <h3 className="text-lg font-display font-bold mb-4">Generated Brand Assets</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {brandAssets.map((asset, index) => (
-                    <Card key={index} className="group overflow-hidden hover-zoom">
+            {/* Generated Previews */}
+            <div className="mt-8">
+              <h3 className="text-lg font-display font-bold mb-4">Generated Previews</h3>
+              
+              {isGenerating && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                  {[1, 2, 3].map((i) => (
+                    <Card key={i} className="overflow-hidden animate-pulse">
+                      <div className="aspect-video bg-muted relative flex items-center justify-center">
+                        <Sparkles className="w-8 h-8 text-muted-foreground animate-spin" />
+                      </div>
+                      <div className="p-4">
+                        <div className="h-4 bg-muted rounded mb-2"></div>
+                        <div className="h-3 bg-muted rounded w-2/3"></div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
+              
+              {brandAssets.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {brandAssets.map((asset) => (
+                    <Card key={asset.id} className="group overflow-hidden hover-zoom">
                       <div className="aspect-video bg-muted relative">
-                        {asset.image && (
-                          <img 
-                            src={asset.image} 
-                            alt={asset.prompt}
-                            className="w-full h-full object-cover"
-                          />
-                        )}
+                        <img 
+                          src={asset.image} 
+                          alt={asset.prompt}
+                          className="w-full h-full object-cover"
+                        />
                         
-                        {/* Quick Edit Overlay */}
+                        {/* Quick Actions Overlay */}
                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
                           <div className="flex gap-2">
                             <Button size="sm" variant="outline" className="text-white border-white/50">
                               Brand Colors
                             </Button>
-                            <Button size="sm" variant="outline" className="text-white border-white/50">
-                              Logo
-                            </Button>
-                            <Button size="sm" variant="outline" className="text-white border-white/50">
-                              Copy
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="text-white border-white/50"
+                              onClick={() => {
+                                const link = document.createElement('a');
+                                link.href = asset.image;
+                                link.download = `brand-asset-${asset.id}.png`;
+                                link.click();
+                                toast.success('Brand asset downloaded!');
+                              }}
+                            >
+                              <Download className="w-4 h-4" />
                             </Button>
                           </div>
                         </div>
                       </div>
                       
                       <div className="p-4">
-                        <p className="text-sm text-muted-foreground truncate">
-                          {asset.prompt}
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm text-muted-foreground truncate flex-1">
+                            {asset.prompt}
+                          </p>
+                          <Button 
+                            size="icon" 
+                            variant="ghost" 
+                            className="h-8 w-8 ml-2"
+                            onClick={() => {
+                              if (navigator.share) {
+                                navigator.share({
+                                  title: 'AI Generated Brand Asset',
+                                  url: asset.image
+                                });
+                              } else {
+                                navigator.clipboard.writeText(asset.image);
+                                toast.success('Image URL copied!');
+                              }
+                            }}
+                          >
+                            <Share2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {asset.timestamp.toLocaleTimeString()}
                         </p>
                       </div>
                     </Card>
                   ))}
                 </div>
-              </div>
-            )}
+              )}
+
+              {!isGenerating && brandAssets.length === 0 && (
+                <Card className="p-8 text-center">
+                  <Sparkles className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">No brand assets generated yet. Try a prompt above!</p>
+                </Card>
+              )}
+            </div>
           </div>
 
           {/* Sidebar */}

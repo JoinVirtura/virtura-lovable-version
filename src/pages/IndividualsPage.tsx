@@ -3,14 +3,79 @@ import { VirturaNavigation } from "@/components/VirturaNavigation";
 import { ChatInterface } from "@/components/ChatInterface";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Play, Sparkles, Edit, Share2 } from "lucide-react";
+import { Play, Sparkles, Edit, Share2, Download, Eye } from "lucide-react";
+import { toast } from "sonner";
+import { AvatarService } from "@/services/avatarService";
+
+interface GeneratedAvatar {
+  id: string;
+  image: string;
+  prompt: string;
+  timestamp: Date;
+}
 
 export default function IndividualsPage() {
-  const [generatedAvatars, setGeneratedAvatars] = useState<any[]>([]);
+  const [generatedAvatars, setGeneratedAvatars] = useState<GeneratedAvatar[]>([]);
+  const [isGenerating, setIsGenerating] = useState(false);
 
-  const handleGenerate = (prompt: string) => {
-    console.log("Generating with prompt:", prompt);
-    // This will integrate with existing avatar generation service
+  const handleGenerate = async (prompt: string) => {
+    console.log("Generating individuals avatar with prompt:", prompt);
+    setIsGenerating(true);
+    
+    try {
+      // Avatar Studio workflow parameters
+      const studioNegative = "blurry fingers, extra limbs, distorted faces, unrealistic body proportions, text, watermark, low quality, plastic skin, CGI, doll-like";
+      const enhancedPrompt = `${prompt}, professional studio headshot, realistic natural lighting, high quality, professional photography, 8k resolution, sharp focus, realistic skin texture, detailed hair, photorealistic, single person`;
+      
+      // Generate 3 variations for individuals
+      const results = await Promise.all([
+        AvatarService.generateAvatar({
+          prompt: `${enhancedPrompt}, professional headshot style`,
+          negativePrompt: studioNegative,
+          photoMode: true,
+          resolution: "1024x1024",
+          steps: 49,
+          adherence: 7,
+        }),
+        AvatarService.generateAvatar({
+          prompt: `${enhancedPrompt}, creative artistic portrait`,
+          negativePrompt: studioNegative,
+          photoMode: true,
+          resolution: "1024x1024",
+          steps: 49,
+          adherence: 7,
+        }),
+        AvatarService.generateAvatar({
+          prompt: `${enhancedPrompt}, casual lifestyle portrait`,
+          negativePrompt: studioNegative,
+          photoMode: true,
+          resolution: "1024x1024",
+          steps: 49,
+          adherence: 7,
+        })
+      ]);
+
+      const newAvatars: GeneratedAvatar[] = results
+        .filter(result => result.success && result.image)
+        .map((result, index) => ({
+          id: `${Date.now()}_${index}`,
+          image: result.image!,
+          prompt: prompt,
+          timestamp: new Date()
+        }));
+
+      if (newAvatars.length > 0) {
+        setGeneratedAvatars(prev => [...newAvatars, ...prev]);
+        toast.success(`Generated ${newAvatars.length} high-quality avatars!`);
+      } else {
+        toast.error("Failed to generate avatars. Please try again.");
+      }
+    } catch (error) {
+      console.error('Avatar generation error:', error);
+      toast.error("An error occurred while generating avatars");
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   return (
@@ -41,33 +106,57 @@ export default function IndividualsPage() {
           <div className="lg:col-span-2">
             <ChatInterface type="individuals" onGenerate={handleGenerate} />
             
-            {/* Preview Grid */}
-            {generatedAvatars.length > 0 && (
-              <div className="mt-8">
-                <h3 className="text-lg font-display font-bold mb-4">Generated Avatars</h3>
+            {/* Generated Previews */}
+            <div className="mt-8">
+              <h3 className="text-lg font-display font-bold mb-4">Generated Previews</h3>
+              
+              {isGenerating && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                  {[1, 2, 3].map((i) => (
+                    <Card key={i} className="overflow-hidden animate-pulse">
+                      <div className="aspect-square bg-muted relative flex items-center justify-center">
+                        <Sparkles className="w-8 h-8 text-muted-foreground animate-spin" />
+                      </div>
+                      <div className="p-4">
+                        <div className="h-4 bg-muted rounded mb-2"></div>
+                        <div className="h-3 bg-muted rounded w-2/3"></div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
+              
+              {generatedAvatars.length > 0 && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {generatedAvatars.map((avatar, index) => (
-                    <Card key={index} className="group overflow-hidden hover-zoom">
+                  {generatedAvatars.map((avatar) => (
+                    <Card key={avatar.id} className="group overflow-hidden hover-zoom">
                       <div className="aspect-square bg-muted relative">
-                        {avatar.image && (
-                          <img 
-                            src={avatar.image} 
-                            alt={avatar.prompt}
-                            className="w-full h-full object-cover"
-                          />
-                        )}
+                        <img 
+                          src={avatar.image} 
+                          alt={avatar.prompt}
+                          className="w-full h-full object-cover"
+                        />
                         
-                        {/* Quick Edit Overlay */}
+                        {/* Quick Actions Overlay */}
                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
                           <div className="flex gap-2">
                             <Button size="sm" variant="outline" className="text-white border-white/50">
-                              Hair
+                              <Edit className="w-4 h-4 mr-1" />
+                              Quick Edit
                             </Button>
-                            <Button size="sm" variant="outline" className="text-white border-white/50">
-                              Outfit
-                            </Button>
-                            <Button size="sm" variant="outline" className="text-white border-white/50">
-                              Background
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="text-white border-white/50"
+                              onClick={() => {
+                                const link = document.createElement('a');
+                                link.href = avatar.image;
+                                link.download = `avatar-${avatar.id}.png`;
+                                link.click();
+                                toast.success('Avatar downloaded!');
+                              }}
+                            >
+                              <Download className="w-4 h-4" />
                             </Button>
                           </div>
                         </div>
@@ -75,24 +164,46 @@ export default function IndividualsPage() {
                       
                       <div className="p-4">
                         <div className="flex items-center justify-between">
-                          <p className="text-sm text-muted-foreground truncate">
+                          <p className="text-sm text-muted-foreground truncate flex-1">
                             {avatar.prompt}
                           </p>
-                          <div className="flex gap-1">
-                            <Button size="icon" variant="ghost" className="h-8 w-8">
-                              <Edit className="w-4 h-4" />
-                            </Button>
-                            <Button size="icon" variant="ghost" className="h-8 w-8">
+                          <div className="flex gap-1 ml-2">
+                            <Button 
+                              size="icon" 
+                              variant="ghost" 
+                              className="h-8 w-8"
+                              onClick={() => {
+                                if (navigator.share) {
+                                  navigator.share({
+                                    title: 'AI Generated Avatar',
+                                    url: avatar.image
+                                  });
+                                } else {
+                                  navigator.clipboard.writeText(avatar.image);
+                                  toast.success('Image URL copied!');
+                                }
+                              }}
+                            >
                               <Share2 className="w-4 h-4" />
                             </Button>
                           </div>
                         </div>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {avatar.timestamp.toLocaleTimeString()}
+                        </p>
                       </div>
                     </Card>
                   ))}
                 </div>
-              </div>
-            )}
+              )}
+
+              {!isGenerating && generatedAvatars.length === 0 && (
+                <Card className="p-8 text-center">
+                  <Sparkles className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">No avatars generated yet. Try a prompt above!</p>
+                </Card>
+              )}
+            </div>
           </div>
 
           {/* Sidebar */}
