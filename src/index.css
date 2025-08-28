@@ -135,47 +135,58 @@ All colors MUST be HSL.
     100% { transform: scale(1.02) translateY(-2px); }
   }
 
-  /* Live Avatar Animations - Realistic Human Motion */
-  @keyframes avatar-alive {
+  /* Dramatic Live Avatar Animations - True to Life Motion */
+  @keyframes avatar-come-alive {
     0% { 
-      transform: scale(1.1) translateX(0px) translateY(0px) rotate(1deg); 
+      transform: scale(1.15) translateX(0px) translateY(0px) rotate(0deg);
+      filter: brightness(1.3) contrast(1.1) saturate(1.2);
     }
-    20% { 
-      transform: scale(1.12) translateX(0.5px) translateY(-0.3px) rotate(1.2deg); 
+    15% { 
+      transform: scale(1.18) translateX(1.2px) translateY(-0.8px) rotate(0.5deg);
+      filter: brightness(1.35) contrast(1.15) saturate(1.25);
     }
-    40% { 
-      transform: scale(1.11) translateX(-0.3px) translateY(0.2px) rotate(0.8deg); 
+    30% { 
+      transform: scale(1.16) translateX(-0.8px) translateY(0.6px) rotate(-0.3deg);
+      filter: brightness(1.32) contrast(1.12) saturate(1.22);
+    }
+    45% { 
+      transform: scale(1.19) translateX(0.9px) translateY(-0.4px) rotate(0.4deg);
+      filter: brightness(1.38) contrast(1.18) saturate(1.28);
     }
     60% { 
-      transform: scale(1.13) translateX(0.2px) translateY(-0.1px) rotate(1.1deg); 
-    }
-    80% { 
-      transform: scale(1.11) translateX(-0.1px) translateY(0.3px) rotate(0.9deg); 
-    }
-    100% { 
-      transform: scale(1.1) translateX(0px) translateY(0px) rotate(1deg); 
-    }
-  }
-
-  @keyframes avatar-breathe {
-    0%, 100% { 
-      filter: brightness(1.25) contrast(1.05); 
-    }
-    50% { 
-      filter: brightness(1.3) contrast(1.1); 
-    }
-  }
-
-  @keyframes avatar-sway {
-    0%, 100% { 
-      transform: translateX(0px) rotate(0deg); 
-    }
-    25% { 
-      transform: translateX(0.8px) rotate(0.3deg); 
+      transform: scale(1.17) translateX(-0.6px) translateY(0.8px) rotate(-0.2deg);
+      filter: brightness(1.34) contrast(1.14) saturate(1.24);
     }
     75% { 
-      transform: translateX(-0.8px) rotate(-0.3deg); 
+      transform: scale(1.2) translateX(0.7px) translateY(-0.5px) rotate(0.3deg);
+      filter: brightness(1.4) contrast(1.2) saturate(1.3);
     }
+    100% { 
+      transform: scale(1.15) translateX(0px) translateY(0px) rotate(0deg);
+      filter: brightness(1.3) contrast(1.1) saturate(1.2);
+    }
+  }
+
+  @keyframes avatar-pulse-alive {
+    0%, 100% { 
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.4), 0 0 40px rgba(255, 215, 0, 0.2);
+    }
+    50% { 
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.6), 0 0 60px rgba(255, 215, 0, 0.3);
+    }
+  }
+
+  @keyframes avatar-micro-shake {
+    0%, 100% { transform: translateX(0px) translateY(0px); }
+    10% { transform: translateX(0.5px) translateY(-0.3px); }
+    20% { transform: translateX(-0.4px) translateY(0.4px); }
+    30% { transform: translateX(0.6px) translateY(-0.2px); }
+    40% { transform: translateX(-0.3px) translateY(0.5px); }
+    50% { transform: translateX(0.4px) translateY(-0.4px); }
+    60% { transform: translateX(-0.5px) translateY(0.3px); }
+    70% { transform: translateX(0.3px) translateY(-0.5px); }
+    80% { transform: translateX(-0.2px) translateY(0.4px); }
+    90% { transform: translateX(0.4px) translateY(-0.3px); }
   }
 
   /* Premium Animation Classes */
@@ -212,17 +223,21 @@ All colors MUST be HSL.
     transform: translateY(-1px);
   }
   
-  /* Avatar Live Animation Classes */
+  /* Avatar Truly Alive Animation Classes */
   .avatar-image {
-    transition: all 0.3s ease-out;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    border-radius: 12px;
   }
   
   .avatar-image:hover {
     animation: 
-      avatar-alive 5s ease-in-out infinite,
-      avatar-breathe 3s ease-in-out infinite,
-      avatar-sway 4s ease-in-out infinite;
-    animation-delay: 0s, 0.5s, 1s;
+      avatar-come-alive 4s ease-in-out infinite,
+      avatar-pulse-alive 2s ease-in-out infinite,
+      avatar-micro-shake 0.8s ease-in-out infinite;
+    animation-delay: 0s, 0.3s, 0.1s;
+    border-radius: 16px;
+    z-index: 10;
+    position: relative;
   }
   
   /* Line Clamp Utilities */
