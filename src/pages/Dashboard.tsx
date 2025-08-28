@@ -2302,9 +2302,6 @@ export default function Dashboard() {
       case "library":
         return (
           <div className="space-y-6">
-            <div className="mb-4 p-2 bg-green-500/20 text-green-400 rounded text-sm">
-              ✅ Library page loaded - Hover over avatar cards to see animations
-            </div>
             {/* Innovative Header with AI Stats */}
             <div className="relative mb-8">
               <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5 rounded-2xl blur-xl"></div>
@@ -2313,7 +2310,7 @@ export default function Dashboard() {
                   <div className="space-y-4">
                     <div className="flex items-center gap-3">
                       <div className="p-3 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl">
-                        <Sparkles className="w-7 h-7 text-primary" />
+                        <Trophy className="w-7 h-7 text-primary" />
                       </div>
                       <div>
                         <h1 className="text-4xl font-display font-bold bg-gradient-to-r from-foreground via-primary to-foreground/80 bg-clip-text text-transparent">
@@ -2344,6 +2341,48 @@ export default function Dashboard() {
                     </div>
                   </div>
                   
+                  {/* Innovative AI Pulse Visualization */}
+                  <div className="relative">
+                    <div className="flex flex-col items-center space-y-4">
+                      {/* AI Brain Visualization */}
+                      <div className="relative">
+                        <div className="w-24 h-24 bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20 rounded-full flex items-center justify-center relative overflow-hidden">
+                          <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent animate-pulse"></div>
+                          <div className="absolute inset-2 bg-gradient-to-br from-primary/30 to-secondary/30 rounded-full animate-breathe"></div>
+                          <div className="absolute inset-4 bg-gradient-to-br from-accent/40 to-primary/40 rounded-full animate-gentle-sway"></div>
+                          <div className="relative z-10 text-primary">
+                            <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c1.18 0 2.34-.2 3.41-.59.3-.11.49-.4.49-.72 0-.43-.35-.78-.78-.78-.23 0-.44.1-.59.26-.87.32-1.8.49-2.77.49-3.9 0-7.13-3.13-7.13-7s3.23-7 7.13-7 7.13 3.13 7.13 7c0 .97-.17 1.9-.49 2.77-.16.15-.26.36-.26.59 0 .43.35.78.78.78.32 0 .61-.19.72-.49.39-1.07.59-2.23.59-3.41C22 6.48 17.52 2 12 2zm0 6c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
+                            </svg>
+                          </div>
+                        </div>
+                        {/* Floating particles */}
+                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary/60 rounded-full animate-micro-bounce"></div>
+                        <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-secondary/60 rounded-full animate-micro-bounce" style={{ animationDelay: '0.5s' }}></div>
+                        <div className="absolute top-1/2 -right-2 w-2 h-2 bg-accent/60 rounded-full animate-micro-bounce" style={{ animationDelay: '1s' }}></div>
+                      </div>
+                      
+                      {/* Live Activity Indicator */}
+                      <div className="text-center space-y-1">
+                        <div className="flex items-center gap-2 justify-center">
+                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                          <span className="text-sm font-medium text-green-500">AI Active</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground">Processing 3 generations</p>
+                      </div>
+                      
+                      {/* Floating Action Buttons */}
+                      <div className="flex gap-2">
+                        <Button size="sm" className="relative overflow-hidden group bg-gradient-to-r from-primary to-primary/80 hover:scale-110 transition-all duration-300">
+                          <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                          <Sparkles className="w-4 h-4 relative z-10" />
+                        </Button>
+                        <Button size="sm" variant="outline" className="hover:scale-110 transition-all duration-300 border-primary/30 hover:border-primary/60">
+                          <TrendingUp className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </Card>
             </div>
