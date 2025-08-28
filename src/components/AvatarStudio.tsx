@@ -42,6 +42,8 @@ interface PreviewCard {
   prompt: string;
   isGenerating: boolean;
   safetyPassed: boolean;
+  isSelected?: boolean;
+  isFavorited?: boolean;
 }
 
 interface ExportPack {
@@ -70,6 +72,8 @@ export const AvatarStudio = () => {
   const [aiProofEnabled, setAiProofEnabled] = useState(false);
   const [referenceImage, setReferenceImage] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [selectedVariant, setSelectedVariant] = useState<string | null>(null);
+  const [savingToLibrary, setSavingToLibrary] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -173,6 +177,103 @@ export const AvatarStudio = () => {
     toast.success("Reference image removed");
   };
 
+  const handleVariantSelect = (cardId: string) => {
+    setSelectedVariant(selectedVariant === cardId ? null : cardId);
+    setPreviewCards(prev => prev.map(card => ({
+      ...card,
+      isSelected: card.id === cardId ? !card.isSelected : false
+    })));
+  };
+
+  const handleSaveToLibrary = async (card: PreviewCard) => {
+    if (!card.imageUrl || card.imageUrl === "/placeholder.svg") {
+      toast.error("Cannot save placeholder image to library");
+      return;
+    }
+
+    setSavingToLibrary(card.id);
+    
+    try {
+      const { supabase } = await import("@/integrations/supabase/client");
+      
+      // Save to avatar library
+      const { error } = await supabase
+        .from('avatar_library')
+        .insert({
+          image_url: card.imageUrl,
+          prompt: card.prompt,
+          title: `Generated Avatar ${new Date().toLocaleDateString()}`,
+          user_id: (await supabase.auth.getUser()).data.user?.id
+        });
+
+      if (error) {
+        console.error('Error saving to library:', error);
+        toast.error("Failed to save to library. Please try again.");
+        return;
+      }
+
+      // Update card state to show it's favorited
+      setPreviewCards(prev => prev.map(c => 
+        c.id === card.id ? { ...c, isFavorited: true } : c
+      ));
+
+      toast.success("Avatar saved to library!");
+    } catch (error) {
+      console.error('Save to library error:', error);
+      toast.error("Failed to save to library. Please try again.");
+    } finally {
+      setSavingToLibrary(null);
+    }
+  };
+
+  const handleShareVariant = async (card: PreviewCard) => {
+    if (!card.imageUrl || card.imageUrl === "/placeholder.svg") {
+      toast.error("Cannot share placeholder image");
+      return;
+    }
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: 'My AI Generated Avatar',
+          text: 'Check out this amazing avatar I created!',
+          url: window.location.href
+        });
+      } else {
+        // Fallback: copy URL to clipboard
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success("Link copied to clipboard!");
+      }
+    } catch (error) {
+      console.error('Share error:', error);
+      toast.error("Failed to share. Please try again.");
+    }
+  };
+
+  const handleDownloadVariant = async (card: PreviewCard) => {
+    if (!card.imageUrl || card.imageUrl === "/placeholder.svg") {
+      toast.error("Cannot download placeholder image");
+      return;
+    }
+
+    try {
+      const response = await fetch(card.imageUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `avatar-${card.id}.png`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      toast.success("Avatar downloaded!");
+    } catch (error) {
+      console.error('Download error:', error);
+      toast.error("Failed to download. Please try again.");
+    }
+  };
+
   const generatePreviews = async (userPrompt: string) => {
     const safetyCheck = checkPromptSafety(userPrompt);
     
@@ -200,7 +301,9 @@ export const AvatarStudio = () => {
         ? `${enhancedPositive}, ${poses[i]}` 
         : `${enhancedPositive} - ${poses[i]}`,
       isGenerating: true,
-      safetyPassed: true
+      safetyPassed: true,
+      isSelected: false,
+      isFavorited: false
     }));
 
     setPreviewCards(newCards);
@@ -613,9 +716,15 @@ export const AvatarStudio = () => {
                   <Badge variant="outline" className="text-sm">3 Variants</Badge>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
                   {previewCards.map((card, index) => (
-                    <Card key={card.id} className="p-4 bg-background/30 border-border/50">
+                    <Card 
+                      key={card.id} 
+                      className={`p-4 bg-background/30 border-border/50 cursor-pointer transition-all duration-200 ${
+                        card.isSelected ? 'ring-2 ring-primary border-primary/50' : 'hover:border-primary/30'
+                      }`}
+                      onClick={() => handleVariantSelect(card.id)}
+                    >
                       <div className="aspect-[3/4] bg-background/50 rounded-lg border border-border/30 mb-4 relative overflow-hidden">
                         {card.isGenerating ? (
                           <div className="absolute inset-0 flex items-center justify-center">
@@ -677,7 +786,8 @@ export const AvatarStudio = () => {
                             variant="outline" 
                             size="sm" 
                             className="border-border/50"
-                            onClick={() => {
+                            onClick={(e) => {
+                              e.stopPropagation();
                               const presetName = window.prompt(`Name your character preset (e.g., "Lucy"):`);
                               if (presetName && !card.isGenerating) {
                                 const newPreset = {
@@ -691,16 +801,51 @@ export const AvatarStudio = () => {
                               }
                             }}
                             disabled={card.isGenerating}
+                            title="Create character preset"
                           >
                             <Crown className="w-3 h-3" />
                           </Button>
-                          <Button variant="outline" size="sm" className="border-border/50">
-                            <Heart className="w-3 h-3" />
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className={`border-border/50 ${card.isFavorited ? 'text-red-500 border-red-500/50' : ''}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleSaveToLibrary(card);
+                            }}
+                            disabled={savingToLibrary === card.id || card.isGenerating}
+                            title="Save to library"
+                          >
+                            {savingToLibrary === card.id ? (
+                              <div className="animate-spin w-3 h-3 border border-primary border-t-transparent rounded-full" />
+                            ) : (
+                              <Heart className={`w-3 h-3 ${card.isFavorited ? 'fill-current' : ''}`} />
+                            )}
                           </Button>
-                          <Button variant="outline" size="sm" className="border-border/50">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="border-border/50"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleShareVariant(card);
+                            }}
+                            disabled={card.isGenerating}
+                            title="Share variant"
+                          >
                             <Share2 className="w-3 h-3" />
                           </Button>
-                          <Button variant="outline" size="sm" className="border-border/50">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="border-border/50"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDownloadVariant(card);
+                            }}
+                            disabled={card.isGenerating}
+                            title="Download variant"
+                          >
                             <Download className="w-3 h-3" />
                           </Button>
                         </div>
