@@ -22,6 +22,11 @@ import {
   TrendingUp
 } from "lucide-react";
 
+// Import new avatar images
+import businessExecutiveImg from "@/assets/model-business-executive.jpg";
+import creativeArtistImg from "@/assets/model-creative-artist.jpg";
+import fashionLuxuryImg from "@/assets/model-fashion-luxury.jpg";
+
 interface Asset {
   id: number;
   type: string;
@@ -40,43 +45,43 @@ export default function LibraryPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
 
-  // Enhanced mock data for library
+  // Enhanced mock data for library with new high-quality images
   const assets: Asset[] = [
     {
       id: 1,
       type: "avatar",
-      title: "Professional Headshot",
+      title: "Executive Portrait",
       date: "2024-01-15",
       format: "PNG",
-      tags: ["professional", "headshot", "business"],
-      thumbnail: "/api/placeholder/300/300",
+      tags: ["executive", "business", "professional"],
+      thumbnail: businessExecutiveImg,
       quality: 9.2,
-      generationTime: "2.3s",
-      fileSize: "1.2MB"
+      generationTime: "2.1s",
+      fileSize: "1.3MB"
     },
     {
       id: 2,
-      type: "video",
-      title: "Summer Campaign Ad",
+      type: "avatar", 
+      title: "Creative Studio Session",
       date: "2024-01-14",
-      format: "MP4",
-      tags: ["campaign", "summer", "video", "marketing"],
-      thumbnail: "/api/placeholder/300/200",
-      quality: 8.7,
-      generationTime: "15.2s",
-      fileSize: "24.5MB"
+      format: "JPG",
+      tags: ["creative", "artist", "studio", "casual"],
+      thumbnail: creativeArtistImg,
+      quality: 9.2,
+      generationTime: "1.9s",
+      fileSize: "1.1MB"
     },
     {
       id: 3,
       type: "avatar",
-      title: "Casual Portrait",
+      title: "Fashion Editorial",
       date: "2024-01-13",
-      format: "JPG",
-      tags: ["casual", "portrait", "lifestyle"],
-      thumbnail: "/api/placeholder/300/300",
-      quality: 9.0,
-      generationTime: "1.8s",
-      fileSize: "890KB"
+      format: "PNG",
+      tags: ["fashion", "luxury", "editorial"],
+      thumbnail: fashionLuxuryImg,
+      quality: 9.2,
+      generationTime: "2.4s",
+      fileSize: "1.5MB"
     },
     {
       id: 4,
@@ -273,13 +278,22 @@ export default function LibraryPage() {
                       <Card key={asset.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border-2 hover:border-primary/30 bg-gradient-to-br from-card to-card/95">
                         <div className="aspect-square bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 relative overflow-hidden">
                           {/* Content Preview */}
-                          <div className="w-full h-full bg-gradient-to-br from-primary/20 via-secondary/15 to-accent/20 flex items-center justify-center">
-                            {asset.type === "video" && (
+                          <img 
+                            src={asset.thumbnail} 
+                            alt={asset.title}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.src = "/api/placeholder/300/300";
+                            }}
+                          />
+                          
+                          {asset.type === "video" && (
+                            <div className="absolute inset-0 flex items-center justify-center">
                               <div className="w-16 h-16 bg-black/30 rounded-full flex items-center justify-center backdrop-blur-sm">
                                 <Play className="w-8 h-8 text-white ml-1" />
                               </div>
-                            )}
-                          </div>
+                            </div>
+                          )}
                           
                           {/* Format & Model Badges */}
                           <div className="absolute top-3 left-3 flex gap-2">
