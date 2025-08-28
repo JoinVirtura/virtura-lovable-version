@@ -2412,19 +2412,13 @@ export default function Dashboard() {
                     {viewMode === "grid" ? (
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredAssets.map((asset) => (
-                           <Card key={asset.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border-2 hover:border-primary/30 bg-gradient-to-br from-card to-card/95 hover:scale-[1.02]"
+                           <Card key={asset.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border-2 hover:border-primary/30 bg-gradient-to-br from-card to-card/95 hover:scale-[1.02] animate-card-hover"
                              onMouseEnter={(e) => {
                                console.log('🎭 Avatar card hover started:', asset.title);
                                const img = e.currentTarget.querySelector('img') as HTMLImageElement;
                                if (img) {
-                                 // Test with inline CSS transition first
-                                 img.style.transition = 'all 0.5s ease-in-out';
-                                 img.style.transform = 'scale(1.1) rotate(1deg)';
-                                 img.style.filter = 'brightness(1.2) contrast(1.1)';
-                                 
-                                 // Try to apply CSS animation
-                                 img.style.animation = 'alive 5s ease-in-out infinite';
-                                 console.log('✅ Animation applied to:', asset.title);
+                                 img.classList.add('animate-avatar-alive');
+                                 console.log('✅ Animation class added to:', asset.title);
                                } else {
                                  console.log('❌ Could not find image for:', asset.title);
                                }
@@ -2433,14 +2427,12 @@ export default function Dashboard() {
                                console.log('🎭 Avatar card hover ended:', asset.title);
                                const img = e.currentTarget.querySelector('img') as HTMLImageElement;
                                if (img) {
-                                 img.style.animation = 'none';
-                                 img.style.transform = 'scale(1) rotate(0deg)';
-                                 img.style.filter = 'brightness(1) contrast(1)';
-                                 console.log('🛑 Animation removed from:', asset.title);
+                                 img.classList.remove('animate-avatar-alive');
+                                 console.log('🛑 Animation class removed from:', asset.title);
                                }
                              }}
                            >
-                            <div className={`${viewMode === 'grid' ? 'aspect-square' : 'aspect-video w-32 h-20'} bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 relative overflow-hidden`}>
+                             <div className={`${viewMode === 'grid' ? 'aspect-square' : 'aspect-video w-32 h-20'} bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 relative overflow-hidden`}>
                               {/* Content Preview */}
                                <img 
                                  src={asset.thumbnail} 
@@ -2484,7 +2476,7 @@ export default function Dashboard() {
                                {/* Removed hover overlay - buttons will be below */}
                             </div>
                             
-                            <div className="p-5 space-y-4">
+                            <div className="p-6 space-y-4">
                               <div>
                                 <h3 className="font-semibold text-lg line-clamp-1">{asset.title}</h3>
                                  <p className="text-sm text-muted-foreground font-medium flex items-center gap-2">
