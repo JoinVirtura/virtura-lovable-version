@@ -75,6 +75,22 @@ import corporateExecutiveImg from "@/assets/avatar-corporate-executive.jpg";
 import linkedinProfileImg from "@/assets/avatar-linkedin-profile.jpg";
 import authorPortraitImg from "@/assets/avatar-author-portrait.jpg";
 
+// Import brand asset images
+import brandLogoSuiteImg from "@/assets/brand-logo-suite.jpg";
+import brandMarketingCampaignImg from "@/assets/brand-marketing-campaign.jpg";
+import brandSocialMediaImg from "@/assets/brand-social-media.jpg";
+import brandPresentationKitImg from "@/assets/brand-presentation-kit.jpg";
+
+// Import video content images
+import videoIntroReelImg from "@/assets/video-intro-reel.jpg";
+import videoProfessionalShowcaseImg from "@/assets/video-professional-showcase.jpg";
+import videoCreativePortfolioImg from "@/assets/video-creative-portfolio.jpg";
+import videoSocialStoryImg from "@/assets/video-social-story.jpg";
+
+// Import favorites images
+import avatarAwardWinningImg from "@/assets/avatar-award-winning.jpg";
+import brandSignatureKitImg from "@/assets/brand-signature-kit.jpg";
+
 export default function Dashboard() {
   const { toast } = useToast();
   const [activeView, setActiveView] = useState("overview");
@@ -492,7 +508,7 @@ export default function Dashboard() {
       date: "Dec 6, 2024 3:22 PM",
       format: "SVG",
       tags: ["Logo", "Branding", "Identity"],
-      thumbnail: businessExecutiveImg,
+      thumbnail: brandLogoSuiteImg,
       quality: 100,
       generationTime: "1.5s",
       fileSize: "450 KB",
@@ -507,7 +523,7 @@ export default function Dashboard() {
       date: "Dec 5, 2024 9:30 AM",
       format: "PNG",
       tags: ["Marketing", "Campaign", "Templates"],
-      thumbnail: creativeArtistImg,
+      thumbnail: brandMarketingCampaignImg,
       quality: 95,
       generationTime: "4.2s",
       fileSize: "12.9 MB",
@@ -522,7 +538,7 @@ export default function Dashboard() {
       date: "Dec 4, 2024 2:15 PM",
       format: "JPG",
       tags: ["Social", "Instagram", "Facebook", "Twitter"],
-      thumbnail: fashionModelImg,
+      thumbnail: brandSocialMediaImg,
       quality: 94,
       generationTime: "3.8s",
       fileSize: "8.2 MB",
@@ -537,7 +553,7 @@ export default function Dashboard() {
       date: "Dec 3, 2024 11:45 AM",
       format: "PNG",
       tags: ["Presentation", "Business", "Professional"],
-      thumbnail: businessExecutiveImg,
+      thumbnail: brandPresentationKitImg,
       quality: 98,
       generationTime: "5.1s",
       fileSize: "15.7 MB",
@@ -553,7 +569,7 @@ export default function Dashboard() {
       date: "Dec 2, 2024 5:45 PM",
       format: "MP4",
       tags: ["Avatar", "Video", "Introduction", "Reel"],
-      thumbnail: creativeArtistImg,
+      thumbnail: videoIntroReelImg,
       quality: 96,
       generationTime: "45.2s",
       fileSize: "25.7 MB",
@@ -568,7 +584,7 @@ export default function Dashboard() {
       date: "Dec 1, 2024 3:20 PM",
       format: "MP4",
       tags: ["Professional", "Business", "Showcase"],
-      thumbnail: businessExecutiveImg,
+      thumbnail: videoProfessionalShowcaseImg,
       quality: 98,
       generationTime: "52.8s",
       fileSize: "31.4 MB",
@@ -583,7 +599,7 @@ export default function Dashboard() {
       date: "Nov 30, 2024 1:10 PM",
       format: "MP4",
       tags: ["Creative", "Portfolio", "Artistic"],
-      thumbnail: fashionModelImg,
+      thumbnail: videoCreativePortfolioImg,
       quality: 94,
       generationTime: "38.7s",
       fileSize: "22.1 MB",
@@ -598,7 +614,7 @@ export default function Dashboard() {
       date: "Nov 29, 2024 4:35 PM",
       format: "MP4",
       tags: ["Social", "Story", "Instagram", "TikTok"],
-      thumbnail: creativeArtistImg,
+      thumbnail: videoSocialStoryImg,
       quality: 92,
       generationTime: "33.5s",
       fileSize: "18.9 MB",
@@ -614,7 +630,7 @@ export default function Dashboard() {
       date: "Nov 28, 2024 12:30 PM",
       format: "PNG",
       tags: ["Award", "Professional", "Premium"],
-      thumbnail: fashionModelImg,
+      thumbnail: avatarAwardWinningImg,
       quality: 100,
       generationTime: "3.1s",
       fileSize: "2.9 MB",
@@ -629,7 +645,7 @@ export default function Dashboard() {
       date: "Nov 27, 2024 10:15 AM",
       format: "SVG",
       tags: ["Premium", "Signature", "Complete"],
-      thumbnail: businessExecutiveImg,
+      thumbnail: brandSignatureKitImg,
       quality: 100,
       generationTime: "2.8s",
       fileSize: "1.2 MB",
@@ -2438,6 +2454,7 @@ export default function Dashboard() {
                                     <Button 
                                       size="sm" 
                                       className="bg-white/20 backdrop-blur-md text-white border-white/40 hover:bg-white/30 transition-all flex-1 min-w-0"
+                                      onClick={() => handleEdit(asset)}
                                     >
                                       <Edit className="w-4 h-4 mr-1" />
                                       Edit
@@ -2445,19 +2462,30 @@ export default function Dashboard() {
                                     <Button 
                                       size="sm" 
                                       className="bg-white/20 backdrop-blur-md text-white border-white/40 hover:bg-white/30 transition-all flex-1 min-w-0"
+                                      onClick={() => handleDownload(asset)}
                                     >
                                       <Download className="w-4 h-4 mr-1" />
                                       Save
                                     </Button>
                                   </div>
                                   <div className="flex justify-center gap-1">
-                                    <Button size="sm" variant="ghost" className="text-white hover:bg-white/20 p-2 backdrop-blur-sm">
+                                    <Button 
+                                      size="sm" 
+                                      variant="ghost" 
+                                      className="text-white hover:bg-white/20 p-2 backdrop-blur-sm"
+                                      onClick={() => handleShare(asset)}
+                                    >
                                       <Share2 className="w-4 h-4" />
                                     </Button>
                                     <Button size="sm" variant="ghost" className="text-white hover:bg-white/20 p-2 backdrop-blur-sm">
                                       <Star className="w-4 h-4" />
                                     </Button>
-                                    <Button size="sm" variant="ghost" className="text-white hover:bg-white/20 p-2 backdrop-blur-sm">
+                                    <Button 
+                                      size="sm" 
+                                      variant="ghost" 
+                                      className="text-white hover:bg-white/20 p-2 backdrop-blur-sm"
+                                      onClick={() => handleDelete(asset.id)}
+                                    >
                                       <Trash2 className="w-4 h-4" />
                                     </Button>
                                   </div>
@@ -2468,7 +2496,10 @@ export default function Dashboard() {
                             <div className="p-5 space-y-4">
                               <div>
                                 <h3 className="font-semibold text-lg truncate">{asset.title}</h3>
-                                <p className="text-sm text-muted-foreground">{asset.date}</p>
+                                <p className="text-sm text-muted-foreground font-medium flex items-center gap-2">
+                                  <Calendar className="w-3 h-3" />
+                                  {asset.date}
+                                </p>
                               </div>
                               
                               {/* AI Tags */}
@@ -2518,7 +2549,10 @@ export default function Dashboard() {
                                   <div className="space-y-2">
                                     <h3 className="font-semibold text-lg truncate">{asset.title}</h3>
                                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                                      <span>{asset.date}</span>
+                                      <span className="flex items-center gap-1 font-medium">
+                                        <Calendar className="w-3 h-3" />
+                                        {asset.date}
+                                      </span>
                                       <Badge variant="secondary" className="text-xs">{asset.format}</Badge>
                                       <span className="flex items-center gap-1">
                                         <Star className="w-3 h-3 text-yellow-500" />
@@ -2534,16 +2568,36 @@ export default function Dashboard() {
                                     </div>
                                   </div>
                                   <div className="flex items-center gap-2">
-                                    <Button size="sm" variant="ghost" className="hover:bg-primary/10">
+                                    <Button 
+                                      size="sm" 
+                                      variant="ghost" 
+                                      className="hover:bg-primary/10"
+                                      onClick={() => handleEdit(asset)}
+                                    >
                                       <Edit className="w-4 h-4" />
                                     </Button>
-                                    <Button size="sm" variant="ghost" className="hover:bg-secondary/10">
+                                    <Button 
+                                      size="sm" 
+                                      variant="ghost" 
+                                      className="hover:bg-secondary/10"
+                                      onClick={() => handleDownload(asset)}
+                                    >
                                       <Download className="w-4 h-4" />
                                     </Button>
-                                    <Button size="sm" variant="ghost" className="hover:bg-accent/10">
+                                    <Button 
+                                      size="sm" 
+                                      variant="ghost" 
+                                      className="hover:bg-accent/10"
+                                      onClick={() => handleShare(asset)}
+                                    >
                                       <Share2 className="w-4 h-4" />
                                     </Button>
-                                    <Button size="sm" variant="ghost" className="hover:bg-destructive/10 text-destructive">
+                                    <Button 
+                                      size="sm" 
+                                      variant="ghost" 
+                                      className="hover:bg-destructive/10 text-destructive"
+                                      onClick={() => handleDelete(asset.id)}
+                                    >
                                       <Trash2 className="w-4 h-4" />
                                     </Button>
                                   </div>
