@@ -2338,83 +2338,42 @@ export default function Dashboard() {
                     </div>
                     </div>
                     
-                    {/* Innovative AI Insights Section */}
-                    <div className="mt-8 relative">
-                      <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-accent/5 to-secondary/5 rounded-2xl blur-sm"></div>
-                      <div className="relative bg-gradient-to-br from-card/95 via-card to-card/90 backdrop-blur-sm border border-primary/20 rounded-2xl p-6">
+                    {/* Advanced AI Insights - Clean & Functional */}
+                    <div className="mt-8">
+                      <div className="bg-card/80 backdrop-blur-sm border border-border/30 rounded-xl p-6">
                         <div className="flex items-center justify-between mb-6">
-                          <div className="flex items-center gap-3">
-                            <div className="relative">
-                              <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/70 rounded-xl flex items-center justify-center relative overflow-hidden">
-                                <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
-                                <Trophy className="w-5 h-5 text-white relative z-10" />
-                              </div>
-                              <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                            </div>
-                            <div>
-                              <h3 className="font-bold text-lg bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent">
-                                AI Insights
-                              </h3>
-                              <p className="text-xs text-muted-foreground">Real-time performance metrics</p>
-                            </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                            <span className="text-sm font-medium text-foreground">AI Performance</span>
                           </div>
-                          <div className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-full">
-                            Live
-                          </div>
+                          <span className="text-xs text-muted-foreground px-2 py-1 bg-muted/50 rounded-md">Live</span>
                         </div>
                         
-                        <div className="grid grid-cols-3 gap-4">
-                          {/* Quality Score */}
-                          <div className="relative group">
-                            <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-4 border border-primary/20 hover:border-primary/40 transition-all duration-300 hover:scale-105">
-                              <div className="flex items-center justify-between mb-3">
-                                <span className="text-sm font-medium text-muted-foreground">Quality</span>
-                                <span className="text-lg font-bold text-primary">9.2</span>
-                              </div>
-                              <div className="relative h-2 bg-muted rounded-full overflow-hidden">
-                                <div 
-                                  className="absolute inset-y-0 left-0 bg-gradient-to-r from-primary to-primary/80 rounded-full transition-all duration-1000 animate-pulse"
-                                  style={{ width: '92%' }}
-                                ></div>
-                                <div className="absolute inset-y-0 right-0 w-1 bg-primary/60 animate-bounce" style={{ animationDelay: '0.5s' }}></div>
-                              </div>
-                              <div className="mt-2 text-xs text-primary/80 font-medium">Excellent</div>
+                        <div className="grid grid-cols-3 gap-8">
+                          {/* Quality Metric */}
+                          <div className="text-center space-y-2">
+                            <div className="text-2xl font-bold text-primary">9.2</div>
+                            <div className="text-xs text-muted-foreground uppercase tracking-wide">Quality Score</div>
+                            <div className="w-full h-1 bg-muted rounded-full overflow-hidden">
+                              <div className="h-full bg-primary rounded-full transition-all duration-1000" style={{ width: '92%' }}></div>
                             </div>
                           </div>
 
-                          {/* Generation Speed */}
-                          <div className="relative group">
-                            <div className="bg-gradient-to-br from-secondary/10 to-secondary/5 rounded-xl p-4 border border-secondary/20 hover:border-secondary/40 transition-all duration-300 hover:scale-105">
-                              <div className="flex items-center justify-between mb-3">
-                                <span className="text-sm font-medium text-muted-foreground">Speed</span>
-                                <span className="text-lg font-bold text-secondary">Fast</span>
-                              </div>
-                              <div className="relative h-2 bg-muted rounded-full overflow-hidden">
-                                <div 
-                                  className="absolute inset-y-0 left-0 bg-gradient-to-r from-secondary to-secondary/80 rounded-full transition-all duration-1000"
-                                  style={{ width: '87%' }}
-                                ></div>
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
-                              </div>
-                              <div className="mt-2 text-xs text-secondary/80 font-medium">2.1s avg</div>
+                          {/* Speed Metric */}
+                          <div className="text-center space-y-2">
+                            <div className="text-2xl font-bold text-secondary">2.1s</div>
+                            <div className="text-xs text-muted-foreground uppercase tracking-wide">Avg Speed</div>
+                            <div className="w-full h-1 bg-muted rounded-full overflow-hidden">
+                              <div className="h-full bg-secondary rounded-full transition-all duration-1000" style={{ width: '85%' }}></div>
                             </div>
                           </div>
 
-                          {/* Storage Efficiency */}
-                          <div className="relative group">
-                            <div className="bg-gradient-to-br from-accent/10 to-accent/5 rounded-xl p-4 border border-accent/20 hover:border-accent/40 transition-all duration-300 hover:scale-105">
-                              <div className="flex items-center justify-between mb-3">
-                                <span className="text-sm font-medium text-muted-foreground">Storage</span>
-                                <span className="text-lg font-bold text-accent">94%</span>
-                              </div>
-                              <div className="relative h-2 bg-muted rounded-full overflow-hidden">
-                                <div 
-                                  className="absolute inset-y-0 left-0 bg-gradient-to-r from-accent to-accent/80 rounded-full transition-all duration-1000"
-                                  style={{ width: '94%' }}
-                                ></div>
-                                <div className="absolute top-0 left-0 h-full w-full bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                              </div>
-                              <div className="mt-2 text-xs text-accent/80 font-medium">Optimized</div>
+                          {/* Efficiency Metric */}
+                          <div className="text-center space-y-2">
+                            <div className="text-2xl font-bold text-accent">94%</div>
+                            <div className="text-xs text-muted-foreground uppercase tracking-wide">Efficiency</div>
+                            <div className="w-full h-1 bg-muted rounded-full overflow-hidden">
+                              <div className="h-full bg-accent rounded-full transition-all duration-1000" style={{ width: '94%' }}></div>
                             </div>
                           </div>
                         </div>
