@@ -383,9 +383,9 @@ export const AvatarStudio = () => {
   };
 
   return (
-    <section className="min-h-screen bg-gradient-hero pt-20">
-      <div className="container mx-auto px-6 py-8">
-        <div className="max-w-6xl mx-auto">
+    <section className="min-h-screen bg-gradient-hero pt-20 overflow-x-hidden">
+      <div className="container mx-auto px-4 py-8 max-w-full">
+        <div className="max-w-6xl mx-auto w-full">
           
           {/* Header */}
           <div className="text-center mb-12">
@@ -397,10 +397,10 @@ export const AvatarStudio = () => {
             <p className="text-lg text-muted-foreground mb-8">Your ChatGPT-powered creative assistant</p>
             
             {/* Main Search Bar */}
-            <Card className="max-w-4xl mx-auto p-4 bg-gradient-card border-border/50 shadow-lg">
-              <div className="space-y-4">
+            <Card className="w-full max-w-4xl mx-auto p-4 bg-gradient-card border-border/50 shadow-lg">
+              <div className="space-y-4 w-full">
                 {/* Positive Prompt */}
-                <div className="flex gap-2">
+                <div className="flex gap-2 w-full">
                   <Textarea
                     placeholder="Describe your avatar idea... e.g., 'Tall young woman walking down the street in high heels, detailed clothing, realistic natural lighting'"
                     value={prompt}
@@ -411,7 +411,7 @@ export const AvatarStudio = () => {
                         handleSendMessage();
                       }
                     }}
-                    className="min-h-[60px] resize-none bg-background/50 border-0 focus-visible:ring-0 text-base"
+                    className="flex-1 min-h-[60px] resize-none bg-background/50 border-0 focus-visible:ring-0 text-base min-w-0"
                   />
                   <input
                     ref={fileInputRef}
@@ -423,7 +423,7 @@ export const AvatarStudio = () => {
                   <Button 
                     variant="outline"
                     size="lg"
-                    className="px-4 py-4 border-border/50 hover:border-primary/50"
+                    className="px-4 py-4 border-border/50 hover:border-primary/50 flex-shrink-0"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isUploading}
                   >
@@ -570,12 +570,12 @@ export const AvatarStudio = () => {
 
           {/* Results Section */}
           {previewCards.length > 0 && (
-            <div className="space-y-8">
+            <div className="space-y-8 w-full">
               
               {/* Export Packs - Horizontal */}
               <Card className="p-6 bg-gradient-card border-border/50">
                 <h3 className="font-semibold text-foreground mb-4 text-center">Choose Export Pack</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
                   {exportPacks.map((pack) => {
                     const IconComponent = pack.icon;
                     return (
