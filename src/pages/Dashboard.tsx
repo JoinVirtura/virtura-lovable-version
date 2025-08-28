@@ -1979,149 +1979,139 @@ export default function Dashboard() {
                       <Sparkles className="w-4 h-4" />
                       AI Organize
                     </Button>
+                    <Button variant="outline" className="gap-2">
+                      <Sparkles className="w-4 h-4" />
+                      Generate Similar
+                    </Button>
+                    <Button variant="outline" className="gap-2">
+                      <Upload className="w-4 h-4" />
+                      Batch Process
+                    </Button>
+                  </div>
+                </div>
+                
+                {/* AI Insights Bar */}
+                <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
+                  <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-2">
+                      <Trophy className="w-5 h-5 text-primary" />
+                      <span className="font-semibold">AI Insights</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="text-sm">
+                        <span className="text-muted-foreground">Quality Score:</span>
+                        <span className="font-medium ml-2">9.2/10</span>
+                      </div>
+                      <div className="w-24 bg-muted rounded-full h-2">
+                        <div className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full" style={{ width: '92%' }}></div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </Card>
             </div>
 
-            {/* Enhanced Content Area */}
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-              <div className="lg:col-span-3">
-                <Card className="p-6">
-                  <div className="flex items-center gap-4 mb-6">
-                    {/* Enhanced Search */}
-                    <div className="relative flex-1">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Search by name, tags, or AI model used..."
-                        className="pl-10 h-12 text-base"
-                      />
-                    </div>
-                    
-                    {/* View Controls */}
-                    <div className="flex border border-border rounded-lg overflow-hidden">
-                      <Button
-                        variant={viewMode === "grid" ? "default" : "ghost"}
-                        size="sm"
-                        onClick={() => setViewMode("grid")}
-                        className="rounded-none border-0"
-                      >
-                        <Grid3X3 className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant={viewMode === "list" ? "default" : "ghost"}
-                        size="sm"
-                        onClick={() => setViewMode("list")}
-                        className="rounded-none border-0"
-                      >
-                        <List className="w-4 h-4" />
-                      </Button>
-                    </div>
+            {/* Enhanced Content Area - Full Width */}
+            <div className="space-y-6">
+              <Card className="p-6">
+                <div className="flex items-center gap-4 mb-6">
+                  {/* Enhanced Search */}
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search by name, tags, or AI model used..."
+                      className="pl-10 h-12 text-base"
+                    />
                   </div>
+                  
+                  {/* View Controls */}
+                  <div className="flex border border-border rounded-lg overflow-hidden">
+                    <Button
+                      variant={viewMode === "grid" ? "default" : "ghost"}
+                      size="sm"
+                      onClick={() => setViewMode("grid")}
+                      className="rounded-none border-0"
+                    >
+                      <Grid3X3 className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant={viewMode === "list" ? "default" : "ghost"}
+                      size="sm"
+                      onClick={() => setViewMode("list")}
+                      className="rounded-none border-0"
+                    >
+                      <List className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
 
-                  {/* Smart Grid Layout */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredAssets.map((asset) => (
-                      <Card key={asset.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border-2 hover:border-primary/30">
-                        <div className="aspect-square relative overflow-hidden">
-                          <img 
-                            src={asset.thumbnail} 
-                            alt={asset.title}
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                            onError={(e) => {
-                              e.currentTarget.src = "/api/placeholder/300/300";
-                            }}
-                          />
-                          {/* Format Badge */}
-                          <div className="absolute top-3 left-3">
-                            <Badge variant="secondary" className="bg-black/70 text-white border-0">
-                              {asset.format}
-                            </Badge>
-                          </div>
+                {/* Larger Grid Layout - More space for images */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                  {filteredAssets.map((asset) => (
+                    <Card key={asset.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border-2 hover:border-primary/30">
+                      <div className="aspect-square relative overflow-hidden">
+                        <img 
+                          src={asset.thumbnail} 
+                          alt={asset.title}
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                          onError={(e) => {
+                            e.currentTarget.src = "/api/placeholder/300/300";
+                          }}
+                        />
+                        {/* Format Badge */}
+                        <div className="absolute top-3 left-3">
+                          <Badge variant="secondary" className="bg-black/70 text-white border-0">
+                            {asset.format}
+                          </Badge>
+                        </div>
 
-                          {/* Quality Score */}
-                          <div className="absolute top-3 right-3">
-                            <div className="flex items-center gap-1 bg-black/70 rounded-full px-2 py-1">
-                              <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
-                              <span className="text-xs text-white font-medium">9.2</span>
-                            </div>
-                          </div>
-                          
-                          {/* Hover Actions */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-4">
-                            <div className="flex justify-center gap-2">
-                              <Button size="sm" className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30">
-                                <Edit className="w-4 h-4 mr-1" />
-                                Edit
-                              </Button>
-                              <Button size="sm" className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30">
-                                <Download className="w-4 h-4 mr-1" />
-                                Save
-                              </Button>
-                              <Button size="sm" className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30">
-                                <Share2 className="w-4 h-4" />
-                              </Button>
-                            </div>
+                        {/* Quality Score */}
+                        <div className="absolute top-3 right-3">
+                          <div className="flex items-center gap-1 bg-black/70 rounded-full px-2 py-1">
+                            <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
+                            <span className="text-xs text-white font-medium">9.2</span>
                           </div>
                         </div>
                         
-                        <div className="p-4 space-y-3">
-                          <div>
-                            <h3 className="font-semibold truncate">{asset.title}</h3>
-                            <p className="text-sm text-muted-foreground">{asset.date}</p>
-                          </div>
-                          
-                          {/* AI Tags */}
-                          <div className="flex flex-wrap gap-1">
-                            {asset.tags.map((tag, idx) => (
-                              <Badge key={idx} variant="secondary" className="text-xs py-0 px-2">
-                                {tag}
-                              </Badge>
-                            ))}
+                        {/* Hover Actions */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-4">
+                          <div className="flex justify-center gap-2">
+                            <Button size="sm" className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30">
+                              <Edit className="w-4 h-4 mr-1" />
+                              Edit
+                            </Button>
+                            <Button size="sm" className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30">
+                              <Download className="w-4 h-4 mr-1" />
+                              Save
+                            </Button>
+                            <Button size="sm" className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30">
+                              <Share2 className="w-4 h-4" />
+                            </Button>
                           </div>
                         </div>
-                      </Card>
-                    ))}
-                  </div>
-                </Card>
-              </div>
-
-              {/* AI Insights Sidebar */}
-              <div className="space-y-6">
-                <Card className="p-6">
-                  <h3 className="font-semibold mb-4 flex items-center gap-2">
-                    <Trophy className="w-5 h-5 text-primary" />
-                    AI Insights
-                  </h3>
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span>Quality Score</span>
-                        <span className="font-medium">9.2/10</span>
                       </div>
-                      <div className="w-full bg-muted rounded-full h-2">
-                        <div className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full" style={{ width: '92%' }}></div>
+                      
+                      <div className="p-4 space-y-3">
+                        <div>
+                          <h3 className="font-semibold truncate">{asset.title}</h3>
+                          <p className="text-sm text-muted-foreground">{asset.date}</p>
+                        </div>
+                        
+                        {/* AI Tags */}
+                        <div className="flex flex-wrap gap-1">
+                          {asset.tags.map((tag, idx) => (
+                            <Badge key={idx} variant="secondary" className="text-xs py-0 px-2">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card className="p-6">
-                  <h3 className="font-semibold mb-4">Quick Actions</h3>
-                  <div className="space-y-3">
-                    <Button className="w-full justify-start gap-2" variant="outline">
-                      <Sparkles className="w-4 h-4" />
-                      Generate Similar
-                    </Button>
-                    <Button className="w-full justify-start gap-2" variant="outline">
-                      <Upload className="w-4 h-4" />
-                      Batch Process
-                    </Button>
-                  </div>
-                </Card>
-              </div>
+                    </Card>
+                  ))}
+                </div>
+              </Card>
             </div>
           </div>
         );
