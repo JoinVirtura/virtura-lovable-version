@@ -42,10 +42,60 @@ export function UploadSection() {
     }
     
     setUploadedFile(file);
+    // Don't start processing until user selects style and clicks generate
+  };
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      handleFileSelect(e.target.files[0]);
+    }
+  };
+
+  const downloadImage = async (imageUrl: string, filename: string) => {
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      toast.success('Image downloaded successfully!');
+    } catch (error) {
+      toast.error('Failed to download image');
+    }
+  };
+
+  const shareImage = async (imageUrl: string) => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: 'AI Avatar Twin',
+          text: 'Check out my AI Avatar Twin!',
+          url: imageUrl
+        });
+      } else {
+        await navigator.clipboard.writeText(imageUrl);
+        toast.success('Image URL copied to clipboard!');
+      }
+    } catch (error) {
+      toast.error('Failed to share image');
+    }
+  };
+
+  const handleGenerateAvatars = async () => {
+    if (!uploadedFile) {
+      toast.error('Please upload an image first');
+      return;
+    }
+
     setIsProcessing(true);
     setEnhancedVersion(null);
     setVariations([]);
-    
+
     try {
       const reader = new FileReader();
       reader.onload = async (e) => {
@@ -106,52 +156,11 @@ export function UploadSection() {
           setIsProcessing(false);
         }
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(uploadedFile);
     } catch (error) {
       console.error('Error processing file:', error);
       toast.error('Failed to process file');
       setIsProcessing(false);
-    }
-  };
-
-  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      handleFileSelect(e.target.files[0]);
-    }
-  };
-
-  const downloadImage = async (imageUrl: string, filename: string) => {
-    try {
-      const response = await fetch(imageUrl);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-      toast.success('Image downloaded successfully!');
-    } catch (error) {
-      toast.error('Failed to download image');
-    }
-  };
-
-  const shareImage = async (imageUrl: string) => {
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: 'AI Avatar Twin',
-          text: 'Check out my AI Avatar Twin!',
-          url: imageUrl
-        });
-      } else {
-        await navigator.clipboard.writeText(imageUrl);
-        toast.success('Image URL copied to clipboard!');
-      }
-    } catch (error) {
-      toast.error('Failed to share image');
     }
   };
 
@@ -223,26 +232,46 @@ export function UploadSection() {
             </Card>
           ) : (
             <div className="space-y-6 animate-fade-in">
-              {/* Prompt Style Selection */}
-              <Card className="p-4">
-                <h3 className="text-lg font-semibold mb-3">Avatar Style</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                  {[
-                    "professional portrait",
-                    "creative artistic",
-                    "casual lifestyle", 
-                    "elegant formal"
-                  ].map((style) => (
-                    <Button
-                      key={style}
-                      variant={selectedPromptStyle === style ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setSelectedPromptStyle(style)}
-                      className="text-xs"
-                    >
-                      {style}
-                    </Button>
-                  ))}
+              {/* Style Selection and Generate */}
+              <Card className="p-6">
+                <h3 className="text-lg font-semibold mb-4">Select Avatar Style & Generate</h3>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    {[
+                      "professional portrait",
+                      "creative artistic",
+                      "casual lifestyle", 
+                      "elegant formal"
+                    ].map((style) => (
+                      <Button
+                        key={style}
+                        variant={selectedPromptStyle === style ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setSelectedPromptStyle(style)}
+                        className="text-xs"
+                      >
+                        {style}
+                      </Button>
+                    ))}
+                  </div>
+                  
+                  <Button 
+                    onClick={handleGenerateAvatars}
+                    disabled={isProcessing || !uploadedFile}
+                    className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white"
+                  >
+                    {isProcessing ? (
+                      <>
+                        <Sparkles className="w-4 h-4 mr-2 animate-spin" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        Generate Avatar Variations
+                      </>
+                    )}
+                  </Button>
                 </div>
               </Card>
 
