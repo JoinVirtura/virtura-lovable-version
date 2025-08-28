@@ -357,16 +357,16 @@ export default function Dashboard() {
     return matchesSearch && matchesCategory;
   });
 
-  // Mock library data with improved diversity and categories
+  // Mock library data with diverse avatars and enhanced brand assets
   const assets = [
-    // Avatars
+    // Diverse Avatars
     {
       id: 1,
       type: "Avatar",
       title: "Business Executive",
       date: "Dec 15, 2024 2:30 PM",
       format: "JPG",
-      tags: ["Professional", "Business"],
+      tags: ["Professional", "Business", "Executive"],
       thumbnail: businessExecutiveImg,
       quality: 98,
       generationTime: "3.2s",
@@ -379,112 +379,258 @@ export default function Dashboard() {
       title: "Creative Artist",
       date: "Dec 14, 2024 4:45 PM",
       format: "PNG",
-      tags: ["Creative", "Artistic"],
+      tags: ["Creative", "Artistic", "Bohemian"],
       thumbnail: creativeArtistImg,
       quality: 96,
       generationTime: "2.8s",
       fileSize: "3.4 MB",
       category: "Avatars"
     },
-    // Headshots
     {
       id: 3,
-      type: "Headshot",
-      title: "Professional Portrait",
+      type: "Avatar",
+      title: "Fashion Model",
       date: "Dec 13, 2024 1:20 PM",
       format: "JPG",
-      tags: ["Professional", "Portrait"],
+      tags: ["Fashion", "Luxury", "Editorial"],
       thumbnail: fashionLuxuryImg,
+      quality: 97,
+      generationTime: "3.5s",
+      fileSize: "2.3 MB",
+      category: "Avatars"
+    },
+    {
+      id: 4,
+      type: "Avatar",
+      title: "Tech Entrepreneur",
+      date: "Dec 12, 2024 11:15 AM",
+      format: "PNG",
+      tags: ["Technology", "Startup", "Innovation"],
+      thumbnail: businessExecutiveImg,
+      quality: 95,
+      generationTime: "3.7s",
+      fileSize: "2.7 MB",
+      category: "Avatars"
+    },
+    {
+      id: 5,
+      type: "Avatar",
+      title: "Healthcare Professional",
+      date: "Dec 11, 2024 9:30 AM",
+      format: "JPG",
+      tags: ["Medical", "Healthcare", "Doctor"],
+      thumbnail: creativeArtistImg,
+      quality: 99,
+      generationTime: "2.9s",
+      fileSize: "2.5 MB",
+      category: "Avatars"
+    },
+    {
+      id: 6,
+      type: "Avatar",
+      title: "Fitness Coach",
+      date: "Dec 10, 2024 3:22 PM",
+      format: "PNG",
+      tags: ["Fitness", "Health", "Athletic"],
+      thumbnail: fashionLuxuryImg,
+      quality: 94,
+      generationTime: "3.1s",
+      fileSize: "2.8 MB",
+      category: "Avatars"
+    },
+    // Professional Headshots
+    {
+      id: 7,
+      type: "Headshot",
+      title: "Corporate Executive",
+      date: "Dec 9, 2024 1:20 PM",
+      format: "JPG",
+      tags: ["Corporate", "Executive", "Professional"],
+      thumbnail: businessExecutiveImg,
       quality: 97,
       generationTime: "3.5s",
       fileSize: "2.3 MB",
       category: "Headshots"
     },
     {
-      id: 4,
+      id: 8,
       type: "Headshot",
-      title: "Corporate Headshot",
-      date: "Dec 12, 2024 11:15 AM",
+      title: "LinkedIn Profile",
+      date: "Dec 8, 2024 11:15 AM",
       format: "PNG",
-      tags: ["Corporate", "Executive"],
-      thumbnail: businessExecutiveImg,
+      tags: ["LinkedIn", "Professional", "Portrait"],
+      thumbnail: creativeArtistImg,
       quality: 99,
       generationTime: "3.7s",
       fileSize: "2.7 MB",
       category: "Headshots"
     },
-    // Brand Assets (multiple images)
     {
-      id: 5,
+      id: 9,
+      type: "Headshot",
+      title: "Author Portrait",
+      date: "Dec 7, 2024 4:45 PM",
+      format: "JPG",
+      tags: ["Author", "Writer", "Creative"],
+      thumbnail: fashionLuxuryImg,
+      quality: 96,
+      generationTime: "3.2s",
+      fileSize: "2.4 MB",
+      category: "Headshots"
+    },
+    // Enhanced Brand Assets with Multiple Images
+    {
+      id: 10,
       type: "Brand Asset",
-      title: "Logo Collection",
-      date: "Dec 11, 2024 3:22 PM",
+      title: "Complete Logo Suite",
+      date: "Dec 6, 2024 3:22 PM",
       format: "SVG",
-      tags: ["Logo", "Branding"],
-      thumbnail: creativeArtistImg,
+      tags: ["Logo", "Branding", "Identity"],
+      thumbnail: businessExecutiveImg,
       quality: 100,
       generationTime: "1.5s",
       fileSize: "450 KB",
       category: "Brand Assets",
-      imageCount: 5
+      imageCount: 15,
+      description: "15 logo variations including main, monochrome, icon, and social media versions"
     },
     {
-      id: 6,
+      id: 11,
       type: "Brand Asset",
-      title: "Marketing Materials",
-      date: "Dec 10, 2024 9:30 AM",
+      title: "Marketing Campaign Pack",
+      date: "Dec 5, 2024 9:30 AM",
       format: "PNG",
-      tags: ["Marketing", "Templates"],
-      thumbnail: fashionLuxuryImg,
+      tags: ["Marketing", "Campaign", "Templates"],
+      thumbnail: creativeArtistImg,
       quality: 95,
       generationTime: "4.2s",
-      fileSize: "8.9 MB",
+      fileSize: "12.9 MB",
       category: "Brand Assets",
-      imageCount: 12
+      imageCount: 24,
+      description: "24 marketing materials: banners, ads, social posts, email headers"
     },
     {
-      id: 7,
+      id: 12,
       type: "Brand Asset",
-      title: "Social Media Pack",
-      date: "Dec 9, 2024 2:15 PM",
+      title: "Social Media Bundle",
+      date: "Dec 4, 2024 2:15 PM",
       format: "JPG",
-      tags: ["Social", "Templates"],
-      thumbnail: businessExecutiveImg,
+      tags: ["Social", "Instagram", "Facebook", "Twitter"],
+      thumbnail: fashionLuxuryImg,
       quality: 94,
       generationTime: "3.8s",
-      fileSize: "6.2 MB",
+      fileSize: "8.2 MB",
       category: "Brand Assets",
-      imageCount: 8
+      imageCount: 32,
+      description: "32 social media assets for all major platforms with various sizes"
     },
-    // Video
     {
-      id: 8,
+      id: 13,
+      type: "Brand Asset",
+      title: "Business Presentation Kit",
+      date: "Dec 3, 2024 11:45 AM",
+      format: "PNG",
+      tags: ["Presentation", "Business", "Professional"],
+      thumbnail: businessExecutiveImg,
+      quality: 98,
+      generationTime: "5.1s",
+      fileSize: "15.7 MB",
+      category: "Brand Assets",
+      imageCount: 45,
+      description: "45 presentation slides, charts, and business graphics"
+    },
+    // Video Content (Multiple Videos)
+    {
+      id: 14,
       type: "Video",
-      title: "Avatar Introduction",
-      date: "Dec 8, 2024 5:45 PM",
+      title: "Avatar Introduction Reel",
+      date: "Dec 2, 2024 5:45 PM",
       format: "MP4",
-      tags: ["Avatar", "Video", "Introduction"],
+      tags: ["Avatar", "Video", "Introduction", "Reel"],
       thumbnail: creativeArtistImg,
       quality: 96,
       generationTime: "45.2s",
       fileSize: "25.7 MB",
       category: "Videos",
-      duration: "5s"
+      duration: "5s",
+      description: "Short avatar introduction video for social media"
+    },
+    {
+      id: 15,
+      type: "Video",
+      title: "Professional Showcase",
+      date: "Dec 1, 2024 3:20 PM",
+      format: "MP4",
+      tags: ["Professional", "Business", "Showcase"],
+      thumbnail: businessExecutiveImg,
+      quality: 98,
+      generationTime: "52.8s",
+      fileSize: "31.4 MB",
+      category: "Videos",
+      duration: "8s",
+      description: "Professional avatar showcase for corporate use"
+    },
+    {
+      id: 16,
+      type: "Video",
+      title: "Creative Portfolio Demo",
+      date: "Nov 30, 2024 1:10 PM",
+      format: "MP4",
+      tags: ["Creative", "Portfolio", "Artistic"],
+      thumbnail: fashionLuxuryImg,
+      quality: 94,
+      generationTime: "38.7s",
+      fileSize: "22.1 MB",
+      category: "Videos",
+      duration: "6s",
+      description: "Artistic avatar demonstration for creative portfolios"
+    },
+    {
+      id: 17,
+      type: "Video",
+      title: "Social Media Story",
+      date: "Nov 29, 2024 4:35 PM",
+      format: "MP4",
+      tags: ["Social", "Story", "Instagram", "TikTok"],
+      thumbnail: creativeArtistImg,
+      quality: 92,
+      generationTime: "33.5s",
+      fileSize: "18.9 MB",
+      category: "Videos",
+      duration: "3s",
+      description: "Quick avatar story content for social platforms"
     },
     // Favorites (starred items)
     {
-      id: 9,
+      id: 18,
       type: "Avatar",
-      title: "Favorite Portrait",
-      date: "Dec 7, 2024 12:30 PM",
+      title: "Award-Winning Portrait",
+      date: "Nov 28, 2024 12:30 PM",
       format: "PNG",
-      tags: ["Favorite", "Portrait"],
+      tags: ["Award", "Professional", "Premium"],
       thumbnail: fashionLuxuryImg,
-      quality: 99,
+      quality: 100,
       generationTime: "3.1s",
       fileSize: "2.9 MB",
       category: "Favorites",
-      starred: true
+      starred: true,
+      description: "Premium quality avatar that won creative excellence award"
+    },
+    {
+      id: 19,
+      type: "Brand Asset",
+      title: "Signature Brand Kit",
+      date: "Nov 27, 2024 10:15 AM",
+      format: "SVG",
+      tags: ["Premium", "Signature", "Complete"],
+      thumbnail: businessExecutiveImg,
+      quality: 100,
+      generationTime: "2.8s",
+      fileSize: "1.2 MB",
+      category: "Favorites",
+      starred: true,
+      imageCount: 28,
+      description: "Complete signature brand kit with 28 premium assets"
     }
   ];
 
@@ -2221,7 +2367,7 @@ export default function Dashboard() {
 
                   {/* AI-Powered Category Tags */}
                   <div className="flex flex-wrap gap-3 mb-8">
-                    {["All", "Avatars", "Headshots", "Brand Assets", "Videos", "Recent", "Favorites"].map((category) => (
+                    {["All", "Avatars", "Headshots", "Brand Assets", "Videos", "Favorites"].map((category) => (
                       <Button
                         key={category}
                         variant={selectedCategory === category ? "default" : "outline"}
@@ -2229,7 +2375,6 @@ export default function Dashboard() {
                         className="h-9 px-4 text-sm font-medium transition-all hover:scale-105 hover:shadow-md"
                         onClick={() => setSelectedCategory(category)}
                       >
-                        {category === "Recent" && <Clock className="w-4 h-4 mr-2" />}
                         {category === "Favorites" && <Star className="w-4 h-4 mr-2" />}
                         {category}
                         {category === "All" && <Badge variant="secondary" className="ml-2 text-xs">6</Badge>}
