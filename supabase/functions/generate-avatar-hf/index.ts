@@ -201,15 +201,18 @@ function buildEnhancedPrompt(params: GenerateAvatarRequest): string {
   let enhancedPrompt = params.prompt;
 
   if (params.photoMode) {
-    // OpenArt workflow: hyper-realistic photography prompts
-    enhancedPrompt = `professional portrait photography, ${enhancedPrompt}, detailed clothing, realistic natural lighting, high quality, professional photography, 8k resolution, sharp focus, realistic skin texture, detailed hair, photorealistic`;
+    // Ultra-realistic photography prompts for highest quality
+    enhancedPrompt = `hyperrealistic professional portrait photograph, ${enhancedPrompt}, ultra-detailed skin texture, natural facial features, professional studio photography, commercial headshot quality, 85mm lens, perfect lighting, photorealistic human face, natural skin tone, realistic hair texture, detailed eyes, professional makeup, sharp focus, high resolution, editorial quality`;
     
-    // Add OpenArt-style realism enhancers
-    enhancedPrompt += `, hyper-realistic, detailed facial features, natural skin tone, professional lighting setup, studio quality, high resolution, crisp details`;
+    // Add stronger realism constraints
+    enhancedPrompt += `, ultra-realistic, lifelike, natural human proportions, realistic lighting, professional photography setup, studio quality, crystal clear details, natural expression, authentic human features`;
+    
+    // Add negative prompts inline for better results
+    enhancedPrompt += `, not cartoon, not anime, not illustration, not CGI, not painting, not 3D render, not artificial, not plastic, not doll-like, realistic human only`;
     
     // Character preset integration
     if (params.selectedPreset) {
-      enhancedPrompt = `@${params.selectedPreset}, ${enhancedPrompt}`;
+      enhancedPrompt = `${params.selectedPreset}, ${enhancedPrompt}`;
     }
   } else {
     // For creative mode, allow more stylistic variation
@@ -218,14 +221,14 @@ function buildEnhancedPrompt(params: GenerateAvatarRequest): string {
     }
   }
 
-  // Add demographic details if provided
-  if (params.gender) enhancedPrompt += `, ${params.gender}`;
+  // Add demographic details if provided (more naturally)
+  if (params.gender) enhancedPrompt += `, ${params.gender} person`;
   if (params.age) enhancedPrompt += `, ${params.age} years old`;
-  if (params.hairColor) enhancedPrompt += `, ${params.hairColor} hair`;
+  if (params.hairColor) enhancedPrompt += `, natural ${params.hairColor} hair`;
   if (params.eyeColor) enhancedPrompt += `, ${params.eyeColor} eyes`;
   
   // Add environmental details
-  if (params.setting) enhancedPrompt += `, ${params.setting}`;
+  if (params.setting) enhancedPrompt += `, ${params.setting} background`;
   if (params.pose) enhancedPrompt += `, ${params.pose}`;
   if (params.clothing) enhancedPrompt += `, wearing ${params.clothing}`;
   if (params.accessories) enhancedPrompt += `, with ${params.accessories}`;

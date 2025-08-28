@@ -99,7 +99,7 @@ export function UploadSection() {
     setEnhancedVersion(null);
     setVariations([]);
     setProgressStep(0);
-    setEstimatedTimeLeft(45); // 45 seconds estimated
+    setEstimatedTimeLeft(60); // Increased time for quality generation
 
     
     // Start countdown timer
@@ -113,26 +113,26 @@ export function UploadSection() {
         const base64Image = e.target?.result as string;
 
         try {
-          console.log('Starting avatar generation with uploaded image...');
+          console.log('Starting high-quality avatar generation with uploaded image...');
           setProgressStep(1);
           setProgressText("Analyzing uploaded image...");
           
           const { AvatarService } = await import("@/services/avatarService");
 
-          // Base prompt derived from selected style
-          const basePrompt = `${selectedPromptStyle}, professional studio headshot, photorealistic, sharp focus, high quality`;
-          console.log('Using base prompt:', basePrompt);
+          // Enhanced prompt for realistic results
+          const basePrompt = `hyperrealistic professional portrait photograph, ${selectedPromptStyle}, photorealistic human face, natural skin texture, professional studio lighting, commercial photography quality, ultra-realistic, high definition, sharp focus`;
+          console.log('Using enhanced prompt:', basePrompt);
 
-          // Step 1: Enhanced version (acts like an upscale/refine)
+          // Step 1: Enhanced version (large format)
           setProgressStep(2);
-          setProgressText("Creating enhanced version...");
+          setProgressText("Creating enhanced version (high quality)...");
           console.log('Generating enhanced version...');
           const enhanced = await AvatarService.generateAvatar({
-            prompt: `${basePrompt}, enhanced quality, premium lighting`,
+            prompt: `${basePrompt}, premium professional headshot, editorial quality, hyperrealistic skin texture, natural facial features`,
             photoMode: true,
             resolution: "1024x1024",
-            steps: 28,
-            adherence: 8,
+            steps: 50, // Higher steps for better quality
+            adherence: 9, // Higher adherence for more realistic results
             referenceImage: base64Image,
           });
           console.log('Enhanced generation result:', enhanced);
@@ -143,41 +143,46 @@ export function UploadSection() {
             setProgressText("Generating style variations...");
           } else {
             toast.error(enhanced.error || 'Failed to generate enhanced version');
+            clearInterval(timer);
+            setIsProcessing(false);
+            return;
           }
 
-          // Step 2: Generate variations more efficiently (reduced from 4 to 2 for speed)
+          // Step 2: Generate all 4 variations with distinct styles
           const variationDescriptors = [
-            "business portrait, confident expression",
-            "creative artistic portrait, dynamic lighting",
+            "business professional portrait, confident expression, corporate headshot style",
+            "creative artistic portrait, dynamic professional lighting, editorial style",
+            "casual lifestyle portrait, natural expression, soft lighting",
+            "elegant formal portrait, sophisticated look, premium studio lighting"
           ];
 
           const results: any[] = [];
           for (let i = 0; i < variationDescriptors.length; i++) {
             setProgressText(`Creating variation ${i + 1} of ${variationDescriptors.length}...`);
-            setProgressStep(3 + i);
+            setProgressStep(3 + ((i + 1) / variationDescriptors.length));
             
             const result = await AvatarService.generateAvatar({
-              prompt: `${basePrompt}, ${variationDescriptors[i]}`,
+              prompt: `${basePrompt}, ${variationDescriptors[i]}, maintaining facial likeness, realistic human features`,
               photoMode: true,
               resolution: "1024x1024",
-              steps: 28,
-              adherence: 8,
+              steps: 40, // Good quality but faster than enhanced
+              adherence: 9,
               referenceImage: base64Image,
             });
+            
             if (result.success && result.image) {
               results.push({ url: result.image });
             } else {
+              console.warn(`Variation ${i + 1} failed:`, result.error);
               results.push(null);
             }
           }
           
-          // Add placeholders for the other two variations
-          results.push(null, null);
           setVariations(results);
           
           setProgressStep(5);
-          setProgressText("Complete! Your avatar variations are ready.");
-          toast.success("Generated enhanced image and variations");
+          setProgressText("Complete! Your high-quality avatar variations are ready.");
+          toast.success("Generated enhanced image and 4 style variations");
         } catch (genErr) {
           console.error('Generation error:', genErr);
           toast.error('Generation failed. Please try again.');

@@ -171,23 +171,23 @@ function buildEnhancedPrompt(params: GenerateAvatarRequest): string {
 
   // Photo Mode gets maximum realism treatment
   if (params.photoMode) {
-    // Transform to professional headshot format
-    prompt = `Professional studio headshot photograph of ${prompt.toLowerCase().replace('professional portrait', 'person').replace('professional studio headshot photograph of ', '')}`;
+    // Transform to ultra-realistic professional headshot format
+    prompt = `Ultra-realistic professional studio headshot photograph of ${prompt.toLowerCase().replace('professional portrait', 'person').replace('professional studio headshot photograph of ', '').replace('hyperrealistic professional portrait photograph', 'person')}`;
     
     // Add clean demographics
-    if (params.gender) prompt += `, ${params.gender}`;
-    if (params.age) prompt += `, ${params.age}`;
+    if (params.gender) prompt += `, ${params.gender} person`;
+    if (params.age) prompt += `, ${params.age} years old`;
     
     // Single appearance choices (no alternatives)
-    if (params.hairColor) prompt += `, ${params.hairColor} hair`;
+    if (params.hairColor) prompt += `, natural ${params.hairColor} hair`;
     if (params.eyeColor) prompt += `, ${params.eyeColor} eyes`;
     if (params.clothing) prompt += `, wearing ${params.clothing.split(',')[0].trim()}`;
     
-    // Professional photography specifications
-    prompt += ", professional studio portrait, commercial photography quality, 85mm lens, professional lighting, three-point lighting setup, natural skin texture, professional makeup, sharp focus, shallow depth of field, neutral grey background, single person headshot, editorial quality, hyperrealistic detail, natural lighting, professional color grading";
+    // Ultra-realistic photography specifications for premium quality
+    prompt += ", hyperrealistic professional studio portrait, commercial photography quality, 85mm portrait lens, professional three-point lighting setup, natural human skin texture, realistic facial features, professional makeup, razor sharp focus, shallow depth of field, neutral studio background, single person headshot, editorial magazine quality, ultra-detailed, lifelike, natural human proportions, authentic lighting, photorealistic human face, crystal clear details";
     
-    // Strong negative constraints
-    prompt += ", not a cartoon, not anime, not illustration, not CGI, not painting, not 3D, not multiple people, not collage, no text, no watermarks, no borders, no artificial smoothing, no plastic skin, no extra limbs, no face distortion, no blurry, single consistent look";
+    // Stronger negative constraints for realism
+    prompt += ", not a cartoon, not anime, not illustration, not CGI, not painting, not 3D render, not multiple people, not collage, no text, no watermarks, no borders, no artificial smoothing, no plastic skin, no extra limbs, no face distortion, no blurry features, single consistent realistic look, not doll-like, not artificial, authentic human only";
     
   } else {
     // Creative mode with more freedom
@@ -195,7 +195,7 @@ function buildEnhancedPrompt(params: GenerateAvatarRequest): string {
       switch (params.style.toLowerCase()) {
         case 'photorealistic':
         case 'realistic':
-          prompt += ", photorealistic portrait photography, high quality";
+          prompt += ", hyperrealistic portrait photography, ultra-detailed, high quality";
           break;
         case 'artistic':
           prompt += ", artistic portrait, creative interpretation";
