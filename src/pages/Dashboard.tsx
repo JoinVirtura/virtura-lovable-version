@@ -18,6 +18,8 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { 
@@ -50,7 +52,16 @@ import {
   Lightbulb,
   Video,
   Volume2,
-  TrendingUp
+  TrendingUp,
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+  MessageCircle,
+  Mail,
+  X,
+  Heart,
+  MessageSquare
 } from "lucide-react";
 
 // Import new library images
@@ -107,6 +118,12 @@ export default function Dashboard() {
   // AI Suggestions state
   const [promptSearch, setPromptSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  
+  // Modal states
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [selectedAsset, setSelectedAsset] = useState<any>(null);
+  const [editPrompt, setEditPrompt] = useState("");
   
   // Guide page state
   const [todos, setTodos] = useState([
@@ -542,6 +559,86 @@ export default function Dashboard() {
         variant: "destructive"
       });
     }
+  };
+
+  // Button handlers for library
+  const handleEdit = (asset: any) => {
+    setSelectedAsset(asset);
+    setEditPrompt(`Update this ${asset.type.toLowerCase()}: ${asset.title}`);
+    setEditModalOpen(true);
+  };
+
+  const handleShare = (asset: any) => {
+    setSelectedAsset(asset);
+    setShareModalOpen(true);
+  };
+
+  const handleDownload = (asset: any) => {
+    // Create a temporary link element for download
+    const link = document.createElement('a');
+    link.href = asset.thumbnail;
+    link.download = `${asset.title.replace(/\s+/g, '_')}.${asset.format.toLowerCase()}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast({
+      title: "Download Started",
+      description: `${asset.title} is being downloaded.`,
+    });
+  };
+
+  const handleDelete = (assetId: number) => {
+    // In a real app, this would call an API to delete the asset
+    toast({
+      title: "Asset Deleted",
+      description: "The asset has been removed from your library.",
+      variant: "destructive"
+    });
+  };
+
+  const handleSaveEdit = () => {
+    if (selectedAsset && editPrompt.trim()) {
+      toast({
+        title: "Avatar Updated",
+        description: `${selectedAsset.title} has been updated with your changes.`,
+      });
+      setEditModalOpen(false);
+      setEditPrompt("");
+      setSelectedAsset(null);
+    }
+  };
+
+  const handleSocialShare = (platform: string) => {
+    const shareText = `Check out this amazing ${selectedAsset?.type} I created with Virtura AI!`;
+    const shareUrl = window.location.href;
+    
+    let url = '';
+    switch (platform) {
+      case 'twitter':
+        url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+        break;
+      case 'facebook':
+        url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+        break;
+      case 'linkedin':
+        url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
+        break;
+      case 'instagram':
+        // Instagram doesn't support direct URL sharing, so copy to clipboard
+        navigator.clipboard.writeText(shareText);
+        toast({
+          title: "Copied to Clipboard",
+          description: "Share text copied! You can paste it on Instagram.",
+        });
+        return;
+    }
+    
+    if (url) {
+      window.open(url, '_blank', 'width=600,height=400');
+    }
+    
+    setShareModalOpen(false);
   };
 
   const renderContent = () => {
@@ -2835,6 +2932,94 @@ export default function Dashboard() {
           </main>
         </div>
       </div>
+
+      {/* Edit Modal */}
+      <Dialog open={editModalOpen} onOpenChange={setEditModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Edit className="h-5 w-5" />
+              Edit {selectedAsset?.type}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="edit-prompt">Update Description</Label>
+              <Textarea
+                id="edit-prompt"
+                placeholder="Describe the changes you want to make..."
+                value={editPrompt}
+                onChange={(e) => setEditPrompt(e.target.value)}
+                className="min-h-[100px]"
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setEditModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleSaveEdit} disabled={!editPrompt.trim()}>
+                Apply Changes
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Share Modal */}
+      <Dialog open={shareModalOpen} onOpenChange={setShareModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Share2 className="h-5 w-5" />
+              Share {selectedAsset?.title}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="text-sm text-muted-foreground">
+              Share your creation on social media platforms
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                variant="outline"
+                className="flex items-center gap-2 h-12"
+                onClick={() => handleSocialShare('twitter')}
+              >
+                <Twitter className="h-4 w-4" />
+                Twitter
+              </Button>
+              <Button
+                variant="outline"
+                className="flex items-center gap-2 h-12"
+                onClick={() => handleSocialShare('facebook')}
+              >
+                <Facebook className="h-4 w-4" />
+                Facebook
+              </Button>
+              <Button
+                variant="outline"
+                className="flex items-center gap-2 h-12"
+                onClick={() => handleSocialShare('linkedin')}
+              >
+                <Linkedin className="h-4 w-4" />
+                LinkedIn
+              </Button>
+              <Button
+                variant="outline"
+                className="flex items-center gap-2 h-12"
+                onClick={() => handleSocialShare('instagram')}
+              >
+                <Instagram className="h-4 w-4" />
+                Instagram
+              </Button>
+            </div>
+            <div className="flex justify-end">
+              <Button variant="outline" onClick={() => setShareModalOpen(false)}>
+                Close
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </SidebarProvider>
   );
 }
