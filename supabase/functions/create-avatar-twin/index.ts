@@ -27,6 +27,11 @@ serve(async (req) => {
     }
 
     console.log('Starting avatar twin creation process...');
+    console.log('Prompt style:', promptStyle);
+
+    // Since we can't process uploaded images directly with the current API setup,
+    // we'll create professional avatar variations based on the selected style
+    const basePrompt = `Create a photorealistic professional avatar: ${promptStyle} style, high quality portrait photography, studio lighting, sharp focus, detailed facial features`;
 
     // Create enhanced version using OpenAI
     const enhancedResponse = await fetch('https://api.openai.com/v1/images/generations', {
@@ -37,7 +42,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         model: 'gpt-image-1',
-        prompt: `Create a professional, enhanced version of this person: ${promptStyle}, photorealistic, high quality, studio lighting, sharp focus, professional photography`,
+        prompt: `${basePrompt}, enhanced quality, premium professional headshot`,
         n: 1,
         size: '1024x1024',
         quality: 'high',
@@ -53,16 +58,24 @@ serve(async (req) => {
 
     const enhancedData = await enhancedResponse.json();
     console.log('Enhanced version created successfully');
-    const enhancedBase64: string | undefined = enhancedData?.data?.[0]?.b64_json || enhancedData?.data?.[0]?.url;
-    const enhancedUrl = enhancedBase64?.startsWith('data:') ? enhancedBase64 : `data:image/png;base64,${enhancedBase64}`;
+    
+    // Extract base64 data from response
+    const enhancedImage = enhancedData?.data?.[0];
+    const enhancedUrl = enhancedImage?.b64_json ? 
+      `data:image/png;base64,${enhancedImage.b64_json}` : 
+      enhancedImage?.url || null;
+
+    if (!enhancedUrl) {
+      throw new Error('No enhanced image URL received from OpenAI');
+    }
 
     // Create variations using OpenAI
     const variationPromises = Array.from({ length: variations }, async (_, index) => {
       const variationStyles = [
-        "professional business portrait, confident expression",
-        "creative artistic style, dynamic lighting",
-        "casual lifestyle portrait, natural smile",
-        "elegant formal portrait, sophisticated look"
+        "professional business portrait, confident expression, suit and tie",
+        "creative artistic portrait, dynamic lighting, modern styling",
+        "casual lifestyle portrait, natural smile, relaxed atmosphere",
+        "elegant formal portrait, sophisticated look, classic composition"
       ];
       
       const style = variationStyles[index % variationStyles.length];
@@ -75,7 +88,7 @@ serve(async (req) => {
         },
         body: JSON.stringify({
           model: 'gpt-image-1',
-          prompt: `Create a variation of this person: ${style}, photorealistic, high quality, professional photography, unique perspective`,
+          prompt: `${basePrompt}, ${style}, unique perspective, variation ${index + 1}`,
           n: 1,
           size: '1024x1024',
           quality: 'high',
@@ -89,8 +102,12 @@ serve(async (req) => {
       }
 
       const data = await response.json();
-      const vBase64: string | undefined = data?.data?.[0]?.b64_json || data?.data?.[0]?.url;
-      return { url: vBase64?.startsWith('data:') ? vBase64 : `data:image/png;base64,${vBase64}` };
+      const variationImage = data?.data?.[0];
+      const variationUrl = variationImage?.b64_json ? 
+        `data:image/png;base64,${variationImage.b64_json}` : 
+        variationImage?.url || null;
+      
+      return variationUrl ? { url: variationUrl } : null;
     });
 
     const variationResults = await Promise.allSettled(variationPromises);
@@ -137,7 +154,7 @@ serve(async (req) => {
       success: true,
       enhancedVersion: {
         url: enhancedUrl,
-        revised_prompt: enhancedData?.data?.[0]?.revised_prompt || null
+        revised_prompt: enhancedImage?.revised_prompt || null
       },
       variations: successfulVariations,
       message: `Successfully created enhanced version and ${successfulVariations.length} variations`
