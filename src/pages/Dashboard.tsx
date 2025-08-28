@@ -2409,17 +2409,17 @@ export default function Dashboard() {
                     {viewMode === "grid" ? (
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredAssets.map((asset) => (
-                          <Card key={asset.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border-2 hover:border-primary/30 bg-gradient-to-br from-card to-card/95">
+                          <Card key={asset.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border-2 hover:border-primary/30 bg-gradient-to-br from-card to-card/95 hover:scale-[1.02]">
                             <div className={`${viewMode === 'grid' ? 'aspect-square' : 'aspect-video w-32 h-20'} bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 relative overflow-hidden`}>
                               {/* Content Preview */}
-                              <img 
-                                src={asset.thumbnail} 
-                                alt={asset.title}
-                                className="w-full h-full object-cover"
-                                onError={(e) => {
-                                  e.currentTarget.src = "/api/placeholder/300/300";
-                                }}
-                              />
+                               <img 
+                                 src={asset.thumbnail} 
+                                 alt={asset.title}
+                                 className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105 group-hover:animate-alive"
+                                 onError={(e) => {
+                                   e.currentTarget.src = "/api/placeholder/300/300";
+                                 }}
+                               />
                               
                               {asset.type === "video" && (
                                 <div className="absolute inset-0 flex items-center justify-center">
