@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Upload, Sparkles, Download, Eye, Heart, Share2 } from "lucide-react";
+import { Upload, Sparkles, Download, Eye, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { AISuggestionsLibrary } from "./AISuggestionsLibrary";
 import { supabase } from "@/integrations/supabase/client";
@@ -43,40 +43,66 @@ export function UploadSection() {
     
     setUploadedFile(file);
     setIsProcessing(true);
+    setEnhancedVersion(null);
+    setVariations([]);
     
     try {
-      // Convert file to base64
       const reader = new FileReader();
       reader.onload = async (e) => {
         const base64Image = e.target?.result as string;
-        
-        // Call the avatar twin creation function
-        const { data, error } = await supabase.functions.invoke('create-avatar-twin', {
-          body: {
-            sourceImage: base64Image,
-            promptStyle: selectedPromptStyle,
-            variations: 4
+
+        try {
+          // Helper that calls the same edge function Avatar Studio uses (HF img2img)
+          const generate = async (prompt: string) => {
+            const resp = await supabase.functions.invoke('generate-avatar', {
+              body: {
+                prompt,
+                photoMode: true,
+                resolution: "1024x1024",
+                steps: 28,
+                adherence: 8,
+                referenceImage: base64Image,
+              },
+            });
+            if (resp.error || !resp.data?.success || !resp.data?.image) {
+              throw new Error(resp.error?.message || resp.data?.error || 'Generation failed');
+            }
+            return resp.data.image as string;
+          };
+
+          // Base prompt derived from selected style
+          const basePrompt = `${selectedPromptStyle}, professional studio headshot, photorealistic, sharp focus, high quality`;
+
+          // 1) Enhanced version
+          const enhancedUrl = await generate(`${basePrompt}, enhanced quality, premium lighting`);
+          setEnhancedVersion({ url: enhancedUrl });
+
+          // 2) Variations with consistent identity via reference image
+          const variationDescriptors = [
+            "business portrait, confident expression",
+            "creative artistic portrait, dynamic lighting",
+            "casual lifestyle portrait, natural smile",
+            "elegant formal portrait, sophisticated look",
+          ];
+
+          const results: any[] = [];
+          for (let i = 0; i < variationDescriptors.length; i++) {
+            try {
+              const url = await generate(`${basePrompt}, ${variationDescriptors[i]}`);
+              results.push({ url });
+            } catch (_) {
+              results.push(null);
+            }
           }
-        });
-        
-        if (error) {
-          console.error('Avatar twin creation error:', error);
-          toast.error(`Failed to create avatar twin: ${error.message}`);
+          setVariations(results);
+          toast.success("Generated enhanced image and variations");
+        } catch (genErr) {
+          console.error('Generation error:', genErr);
+          toast.error('Generation failed. Please try again.');
+        } finally {
           setIsProcessing(false);
-          return;
         }
-        
-        if (data.success) {
-          setEnhancedVersion(data.enhancedVersion);
-          setVariations(data.variations);
-          toast.success(data.message);
-        } else {
-          toast.error(data.error || 'Failed to create avatar twin');
-        }
-        
-        setIsProcessing(false);
       };
-      
       reader.readAsDataURL(file);
     } catch (error) {
       console.error('Error processing file:', error);
