@@ -40,12 +40,12 @@ interface VirturaSidebarProps {
 export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps) {
   const mainItems = [
     { id: "overview", label: "Copilot", icon: Activity },
+    { id: "upload", label: "Upload", icon: Upload },
     { id: "create", label: "Create Avatar", icon: Plus },
     { id: "studio", label: "Avatar Studio", icon: SettingsIcon },
   ];
 
   const navigationTabs = [
-    { id: "upload", label: "Upload", icon: Upload },
     { id: "individuals", label: "Individuals", icon: User },
     { id: "brands", label: "Brands", icon: Building2 },
     { id: "library", label: "Library", icon: Library },
