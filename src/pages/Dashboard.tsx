@@ -2681,14 +2681,9 @@ export default function Dashboard() {
               <div className="space-y-6">
                 <Card className="p-6 border-2 hover:border-secondary/20 transition-colors bg-gradient-to-br from-card via-card/98 to-card/95">
                   <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl flex items-center justify-center">
-                        <Sparkles className="w-5 h-5 text-primary" />
-                      </div>
-                      <h3 className="font-bold text-lg bg-gradient-to-r from-foreground to-primary/80 bg-clip-text text-transparent">
-                        Quick Actions
-                      </h3>
-                    </div>
+                    <h3 className="font-bold text-lg bg-gradient-to-r from-foreground to-primary/80 bg-clip-text text-transparent">
+                      Quick Actions
+                    </h3>
                     {selectedAvatarIds.size > 0 && (
                       <div className="relative">
                         <div className="flex items-center gap-2 bg-gradient-to-r from-primary/10 to-primary/5 px-4 py-2 rounded-full border border-primary/20">
