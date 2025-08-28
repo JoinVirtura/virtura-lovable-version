@@ -119,20 +119,22 @@ export function UploadSection() {
           
           const { AvatarService } = await import("@/services/avatarService");
 
-          // Enhanced prompt for realistic results
-          const basePrompt = `hyperrealistic professional portrait photograph, ${selectedPromptStyle}, photorealistic human face, natural skin texture, professional studio lighting, commercial photography quality, ultra-realistic, high definition, sharp focus`;
-          console.log('Using enhanced prompt:', basePrompt);
+          // Avatar Studio-style prompt and settings
+          const studioNegative = "blurry fingers, extra limbs, distorted faces, unrealistic body proportions, text, watermark, low quality, plastic skin, CGI, doll-like";
+          const basePrompt = `${selectedPromptStyle}, professional studio headshot, realistic natural lighting, high quality, professional photography, 8k resolution, sharp focus, realistic skin texture, detailed hair, photorealistic, single person`;
+          console.log('Using Avatar Studio workflow prompt:', basePrompt);
 
           // Step 1: Enhanced version (large format)
           setProgressStep(2);
           setProgressText("Creating enhanced version (high quality)...");
           console.log('Generating enhanced version...');
           const enhanced = await AvatarService.generateAvatar({
-            prompt: `${basePrompt}, premium professional headshot, editorial quality, hyperrealistic skin texture, natural facial features`,
+            prompt: `${basePrompt}, premium professional headshot, editorial magazine quality`,
+            negativePrompt: studioNegative,
             photoMode: true,
             resolution: "1024x1024",
-            steps: 50, // Higher steps for better quality
-            adherence: 9, // Higher adherence for more realistic results
+            steps: 49,
+            adherence: 7,
             referenceImage: base64Image,
           });
           console.log('Enhanced generation result:', enhanced);
@@ -163,10 +165,11 @@ export function UploadSection() {
             
             const result = await AvatarService.generateAvatar({
               prompt: `${basePrompt}, ${variationDescriptors[i]}, maintaining facial likeness, realistic human features`,
+              negativePrompt: studioNegative,
               photoMode: true,
               resolution: "1024x1024",
-              steps: 40, // Good quality but faster than enhanced
-              adherence: 9,
+              steps: 49,
+              adherence: 7,
               referenceImage: base64Image,
             });
             
