@@ -13,12 +13,9 @@ import { AvatarService } from "@/services/avatarService";
 import { Switch } from "@/components/ui/switch";
 
 // Import avatar images
-import auroraImg from "@/assets/model-aurora.jpg";
-import bellaImg from "@/assets/model-bella.jpg";
-import chloeImg from "@/assets/model-chloe.jpg";
-import dianaImg from "@/assets/model-diana.jpg";
-import jadeImg from "@/assets/model-jade.jpg";
-import valentinaImg from "@/assets/model-valentina.jpg";
+import casualWomanImg from "@/assets/model-casual-woman.jpg";
+import fitnessManImg from "@/assets/model-fitness-man.jpg";
+import professionalManImg from "@/assets/model-professional-man.jpg";
 import previewAvatarImg from "@/assets/preview-avatar.jpg";
 
 export const CreateAvatar = () => {
@@ -101,12 +98,9 @@ export const CreateAvatar = () => {
   const lighting = ["Natural", "Studio", "Dramatic", "Cinematic", "Neon"];
 
   const recentAvatars = [
-    { name: "Aurora", image: auroraImg, description: "Sophisticated redhead with emerald eyes" },
-    { name: "Bella", image: bellaImg, description: "Confident beauty with natural curls" },
-    { name: "Chloe", image: chloeImg, description: "Mysterious platinum blonde" },
-    { name: "Diana", image: dianaImg, description: "Serene and graceful" },
-    { name: "Jade", image: jadeImg, description: "Elegant Asian beauty in red silk" },
-    { name: "Valentina", image: valentinaImg, description: "Radiant Latina with bronze curls" }
+    { name: "Professional Headshot", image: professionalManImg, description: "Confident business professional with navy suit" },
+    { name: "Summer Campaign", image: casualWomanImg, description: "Beautiful model in casual white top" },
+    { name: "Casual Portrait", image: fitnessManImg, description: "Athletic fitness model in gym setting" }
   ];
 
   return (

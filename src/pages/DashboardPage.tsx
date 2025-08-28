@@ -32,10 +32,9 @@ import { AvatarCard } from "@/components/AvatarCard"
 import { AvatarEditModal } from "@/components/AvatarEditModal"
 
 // Import avatar images
-import auroraImg from "@/assets/model-aurora.jpg"
-import bellaImg from "@/assets/model-bella.jpg"
-import chloeImg from "@/assets/model-chloe.jpg"
-import dianaImg from "@/assets/model-diana.jpg"
+import casualWomanImg from "@/assets/model-casual-woman.jpg"
+import fitnessManImg from "@/assets/model-fitness-man.jpg"
+import professionalManImg from "@/assets/model-professional-man.jpg"
 import userAvatarImg from "@/assets/avatar-1.jpg"
 
 export default function DashboardPage() {
@@ -51,35 +50,27 @@ export default function DashboardPage() {
   const recentAvatars = [
     { 
       id: 1, 
-      name: "Aurora", 
+      name: "Professional Headshot", 
       style: "Realistic", 
       status: "completed", 
-      image: auroraImg,
-      description: "Sophisticated redhead with emerald eyes and elegant charm"
+      image: professionalManImg,
+      description: "Confident business professional with navy suit and warm smile"
     },
     { 
       id: 2, 
-      name: "Bella", 
+      name: "Summer Campaign Ad", 
       style: "Realistic", 
       status: "completed", 
-      image: bellaImg,
-      description: "Confident beauty with natural curls and warm golden glow"
+      image: casualWomanImg,
+      description: "Beautiful model in casual white top with natural lighting"
     },
     { 
       id: 3, 
-      name: "Chloe", 
+      name: "Casual Portrait", 
       style: "Realistic", 
       status: "completed", 
-      image: chloeImg,
-      description: "Mysterious platinum blonde with captivating blue eyes"
-    },
-    { 
-      id: 4, 
-      name: "Diana", 
-      style: "Realistic", 
-      status: "completed", 
-      image: dianaImg,
-      description: "Serene and graceful with gentle smile and natural beauty"
+      image: fitnessManImg,
+      description: "Athletic fitness model in gym setting with confident expression"
     },
   ]
 
