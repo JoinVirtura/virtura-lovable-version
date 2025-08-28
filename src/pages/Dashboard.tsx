@@ -340,13 +340,13 @@ export default function Dashboard() {
     return matchesSearch && matchesCategory;
   });
 
-  // Mock data for library
+  // Mock data for library with diverse avatars
   const assets = [
     {
       id: 1,
       type: "avatar",
       title: "Executive Portrait",
-      date: "2024-01-15",
+      date: "2024-01-15T14:32:00Z",
       format: "PNG",
       tags: ["executive", "business", "professional"],
       thumbnail: businessExecutiveImg,
@@ -358,7 +358,7 @@ export default function Dashboard() {
       id: 2,
       type: "avatar",
       title: "Creative Studio Session",
-      date: "2024-01-14",
+      date: "2024-01-14T09:18:00Z",
       format: "JPG",
       tags: ["creative", "artist", "studio", "casual"],
       thumbnail: creativeArtistImg,
@@ -370,13 +370,49 @@ export default function Dashboard() {
       id: 3,
       type: "avatar",
       title: "Fashion Editorial",
-      date: "2024-01-13",
+      date: "2024-01-13T16:45:00Z",
       format: "PNG",
       tags: ["fashion", "luxury", "editorial"],
       thumbnail: fashionLuxuryImg,
       quality: 9.2,
       generationTime: "2.4s",
       fileSize: "1.5MB"
+    },
+    {
+      id: 4,
+      type: "avatar",
+      title: "Casual Lifestyle",
+      date: "2024-01-12T11:23:00Z",
+      format: "JPG",
+      tags: ["casual", "lifestyle", "natural"],
+      thumbnail: "/src/assets/model-casual-woman.jpg",
+      quality: 9.0,
+      generationTime: "1.8s",
+      fileSize: "1.2MB"
+    },
+    {
+      id: 5,
+      type: "avatar",
+      title: "Professional Headshot",
+      date: "2024-01-11T15:07:00Z",
+      format: "PNG",
+      tags: ["professional", "corporate", "headshot"],
+      thumbnail: "/src/assets/model-professional-man.jpg",
+      quality: 9.1,
+      generationTime: "2.0s",
+      fileSize: "1.4MB"
+    },
+    {
+      id: 6,
+      type: "avatar",
+      title: "Fitness Portrait",
+      date: "2024-01-10T08:55:00Z",
+      format: "JPG",
+      tags: ["fitness", "athletic", "health"],
+      thumbnail: "/src/assets/model-fitness-man.jpg",
+      quality: 8.9,
+      generationTime: "1.7s",
+      fileSize: "1.1MB"
     }
   ];
 
@@ -1965,39 +2001,24 @@ export default function Dashboard() {
                     {/* Real-time Stats */}
                     <div className="flex items-center gap-8 mt-6">
                       <div className="text-center">
-                        <div className="text-3xl font-bold text-primary">3</div>
-                        <div className="text-sm text-muted-foreground">Total Assets</div>
+                        <div className="text-3xl font-display font-bold text-primary">6</div>
+                        <div className="text-sm text-muted-foreground font-medium">Total Assets</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-3xl font-bold text-secondary">12</div>
-                        <div className="text-sm text-muted-foreground">This Month</div>
+                        <div className="text-3xl font-display font-bold text-secondary">12</div>
+                        <div className="text-sm text-muted-foreground font-medium">This Month</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-3xl font-bold text-accent">4.2GB</div>
-                        <div className="text-sm text-muted-foreground">Storage Used</div>
+                        <div className="text-3xl font-display font-bold text-accent">4.2GB</div>
+                        <div className="text-sm text-muted-foreground font-medium">Storage Used</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-3xl font-bold text-green-500">94%</div>
-                        <div className="text-sm text-muted-foreground">Avg Quality</div>
+                        <div className="text-3xl font-display font-bold text-green-500">94%</div>
+                        <div className="text-sm text-muted-foreground font-medium">Avg Quality</div>
                       </div>
                     </div>
                   </div>
                   
-                  {/* Quick Actions */}
-                  <div className="flex items-center gap-3">
-                    <Button variant="outline" className="gap-2 hover:scale-105 transition-transform">
-                      <Upload className="w-4 h-4" />
-                      Bulk Import
-                    </Button>
-                    <Button className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:scale-105 transition-transform">
-                      <Sparkles className="w-4 h-4" />
-                      AI Organize
-                    </Button>
-                    <Button variant="outline" className="gap-2 hover:scale-105 transition-transform">
-                      <TrendingUp className="w-4 h-4" />
-                      Analytics
-                    </Button>
-                  </div>
                 </div>
               </Card>
             </div>
@@ -2057,7 +2078,7 @@ export default function Dashboard() {
                         {category === "Recent" && <Clock className="w-4 h-4 mr-2" />}
                         {category === "Favorites" && <Star className="w-4 h-4 mr-2" />}
                         {category}
-                        {category === "All" && <Badge variant="secondary" className="ml-2 text-xs">3</Badge>}
+                        {category === "All" && <Badge variant="secondary" className="ml-2 text-xs">6</Badge>}
                       </Button>
                     ))}
                   </div>
@@ -2068,7 +2089,7 @@ export default function Dashboard() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredAssets.map((asset) => (
                           <Card key={asset.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border-2 hover:border-primary/30 bg-gradient-to-br from-card to-card/95">
-                            <div className="aspect-square bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 relative overflow-hidden">
+                            <div className={`${viewMode === 'grid' ? 'aspect-square' : 'aspect-video w-32 h-20'} bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 relative overflow-hidden`}>
                               {/* Content Preview */}
                               <img 
                                 src={asset.thumbnail} 
@@ -2174,14 +2195,19 @@ export default function Dashboard() {
                     ) : (
                       /* Enhanced List View */
                       <div className="space-y-3">
-                        {filteredAssets.map((asset) => (
-                          <Card key={asset.id} className="p-5 hover:shadow-lg transition-all duration-200 hover:bg-muted/20 border-2 hover:border-primary/20">
-                            <div className="flex items-center gap-6">
-                              <div className="w-20 h-20 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-xl flex-shrink-0 flex items-center justify-center">
-                                {asset.type === "video" && <Play className="w-6 h-6 text-primary" />}
-                                {asset.type === "avatar" && <Star className="w-6 h-6 text-secondary" />}
-                                {asset.type === "brand" && <Sparkles className="w-6 h-6 text-accent" />}
-                              </div>
+                         {filteredAssets.map((asset) => (
+                           <Card key={asset.id} className="p-5 hover:shadow-lg transition-all duration-200 hover:bg-muted/20 border-2 hover:border-primary/20">
+                             <div className="flex items-center gap-6">
+                               <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-xl flex-shrink-0 overflow-hidden">
+                                 <img 
+                                   src={asset.thumbnail} 
+                                   alt={asset.title}
+                                   className="w-full h-full object-cover"
+                                   onError={(e) => {
+                                     e.currentTarget.src = "/api/placeholder/64/64";
+                                   }}
+                                 />
+                               </div>
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-start justify-between">
                                   <div className="space-y-2">
