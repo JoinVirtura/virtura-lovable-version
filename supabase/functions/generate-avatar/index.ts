@@ -81,8 +81,6 @@ serve(async (req) => {
     };
 
     // 1) Try gpt-image-1 (best quality, may require org verification)
-    const size = mapResolutionToSize(body.resolution || 'HD');
-    console.log('Using size:', size);
 
     const primaryPayload: any = {
       model: 'gpt-image-1',
