@@ -2309,9 +2309,6 @@ export default function Dashboard() {
                 <div className="flex items-start justify-between">
                   <div className="space-y-4">
                     <div className="flex items-center gap-3">
-                      <div className="p-3 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl">
-                        <Trophy className="w-7 h-7 text-primary" />
-                      </div>
                       <div>
                         <h1 className="text-4xl font-display font-bold bg-gradient-to-r from-foreground via-primary to-foreground/80 bg-clip-text text-transparent">
                           AI Generation Library
