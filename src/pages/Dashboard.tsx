@@ -2729,8 +2729,8 @@ export default function Dashboard() {
                 </Card>
 
                 <Card className="p-6 border-2 hover:border-accent/20 transition-colors bg-gradient-to-br from-card via-card/98 to-card/95">
-                  <h3 className="font-bold text-lg mb-4 bg-gradient-to-r from-foreground to-accent/80 bg-clip-text text-transparent">
-                    Enhancements
+                  <h3 className="font-bold text-lg mb-4 bg-gradient-to-r from-foreground to-primary/80 bg-clip-text text-transparent">
+                    AI Insights
                   </h3>
                   <div className="max-h-80 overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent hover:scrollbar-thumb-muted-foreground/30 transition-colors">
                     <div className="space-y-3 pr-2">
