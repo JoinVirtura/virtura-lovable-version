@@ -147,6 +147,28 @@ export default function Dashboard() {
   const [selectedAsset, setSelectedAsset] = useState<any>(null);
   const [editPrompt, setEditPrompt] = useState("");
   
+  // Avatar selection state
+  const [selectedAvatarIds, setSelectedAvatarIds] = useState<Set<number>>(new Set());
+  
+  // Quick Actions modals
+  const [generateSimilarOpen, setGenerateSimilarOpen] = useState(false);
+  const [batchProcessOpen, setBatchProcessOpen] = useState(false);
+  const [createCollectionOpen, setCreateCollectionOpen] = useState(false);
+  const [viewAnalyticsOpen, setViewAnalyticsOpen] = useState(false);
+  
+  // Avatar selection handler
+  const handleAvatarSelect = (avatarId: number) => {
+    setSelectedAvatarIds(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(avatarId)) {
+        newSet.delete(avatarId);
+      } else {
+        newSet.add(avatarId);
+      }
+      return newSet;
+    });
+  };
+  
   // Guide page state
   const [todos, setTodos] = useState([
     {
@@ -2448,8 +2470,16 @@ export default function Dashboard() {
                   <div className="space-y-6">
                     {viewMode === "grid" ? (
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {filteredAssets.map((asset) => (
-                           <Card key={asset.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border-2 hover:border-primary/30 bg-gradient-to-br from-card to-card/95 hover:scale-[1.02]">
+                         {filteredAssets.map((asset) => (
+                           <Card 
+                             key={asset.id} 
+                             className={`group overflow-hidden transition-all duration-500 hover:-translate-y-3 border-2 bg-gradient-to-br from-card to-card/95 hover:scale-[1.02] cursor-pointer ${
+                               selectedAvatarIds.has(asset.id) 
+                                 ? 'border-primary shadow-2xl shadow-primary/20 ring-2 ring-primary/30' 
+                                 : 'hover:shadow-2xl hover:border-primary/30'
+                             }`}
+                             onClick={() => handleAvatarSelect(asset.id)}
+                           >
                              <div className={`${viewMode === 'grid' ? 'aspect-square' : 'aspect-video w-32 h-20'} bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 relative overflow-hidden`}>
                               {/* Content Preview */}
                                <img 
@@ -2650,21 +2680,46 @@ export default function Dashboard() {
               {/* AI Insights Sidebar */}
               <div className="space-y-6">
                 <Card className="p-6 border-2 hover:border-secondary/20 transition-colors">
-                  <h3 className="font-semibold text-lg mb-4">Quick Actions</h3>
+                  <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-primary" />
+                    Quick Actions
+                    {selectedAvatarIds.size > 0 && (
+                      <Badge variant="secondary" className="ml-2">{selectedAvatarIds.size} selected</Badge>
+                    )}
+                  </h3>
                   <div className="space-y-3">
-                    <Button className="w-full justify-start gap-3 h-12 hover:scale-105 transition-transform" variant="outline">
+                    <Button 
+                      className="w-full justify-start gap-3 h-12 hover:scale-105 transition-transform" 
+                      variant="outline"
+                      onClick={() => setGenerateSimilarOpen(true)}
+                      disabled={selectedAvatarIds.size === 0}
+                    >
                       <Sparkles className="w-5 h-5" />
                       Generate Similar
                     </Button>
-                    <Button className="w-full justify-start gap-3 h-12 hover:scale-105 transition-transform" variant="outline">
+                    <Button 
+                      className="w-full justify-start gap-3 h-12 hover:scale-105 transition-transform" 
+                      variant="outline"
+                      onClick={() => setBatchProcessOpen(true)}
+                      disabled={selectedAvatarIds.size === 0}
+                    >
                       <Upload className="w-5 h-5" />
                       Batch Process
                     </Button>
-                    <Button className="w-full justify-start gap-3 h-12 hover:scale-105 transition-transform" variant="outline">
+                    <Button 
+                      className="w-full justify-start gap-3 h-12 hover:scale-105 transition-transform" 
+                      variant="outline"
+                      onClick={() => setCreateCollectionOpen(true)}
+                      disabled={selectedAvatarIds.size === 0}
+                    >
                       <Share2 className="w-5 h-5" />
                       Create Collection
                     </Button>
-                    <Button className="w-full justify-start gap-3 h-12 hover:scale-105 transition-transform" variant="outline">
+                    <Button 
+                      className="w-full justify-start gap-3 h-12 hover:scale-105 transition-transform" 
+                      variant="outline"
+                      onClick={() => setViewAnalyticsOpen(true)}
+                    >
                       <TrendingUp className="w-5 h-5" />
                       View Analytics
                     </Button>
@@ -3276,6 +3331,208 @@ export default function Dashboard() {
                 Close
               </Button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Generate Similar Modal */}
+      <Dialog open={generateSimilarOpen} onOpenChange={setGenerateSimilarOpen}>
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-primary" />
+              Generate Similar Avatars
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6">
+            <div className="text-sm text-muted-foreground">
+              Create variations of your selected avatar{selectedAvatarIds.size > 1 ? 's' : ''} with AI-powered generation
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Style Variation</Label>
+                <Select defaultValue="similar">
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="similar">Keep Similar Style</SelectItem>
+                    <SelectItem value="professional">More Professional</SelectItem>
+                    <SelectItem value="artistic">More Artistic</SelectItem>
+                    <SelectItem value="casual">More Casual</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Number of Variations</Label>
+                <Select defaultValue="4">
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="2">2 Variations</SelectItem>
+                    <SelectItem value="4">4 Variations</SelectItem>
+                    <SelectItem value="6">6 Variations</SelectItem>
+                    <SelectItem value="8">8 Variations</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <Button onClick={() => setGenerateSimilarOpen(false)} variant="outline" className="flex-1">
+                Cancel
+              </Button>
+              <Button onClick={() => { 
+                toast({ description: "Generating similar avatars..." });
+                setGenerateSimilarOpen(false);
+              }} className="flex-1">
+                Generate {selectedAvatarIds.size > 1 ? `${selectedAvatarIds.size} Sets` : 'Variations'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Batch Process Modal */}
+      <Dialog open={batchProcessOpen} onOpenChange={setBatchProcessOpen}>
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Upload className="h-5 w-5 text-secondary" />
+              Batch Process ({selectedAvatarIds.size} items)
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Process Type</Label>
+                <Select defaultValue="enhance">
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="enhance">Quality Enhancement</SelectItem>
+                    <SelectItem value="resize">Bulk Resize</SelectItem>
+                    <SelectItem value="format">Format Conversion</SelectItem>
+                    <SelectItem value="background">Remove Background</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Output Format</Label>
+                <Select defaultValue="png">
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="png">PNG</SelectItem>
+                    <SelectItem value="jpg">JPG</SelectItem>
+                    <SelectItem value="webp">WebP</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <Button onClick={() => setBatchProcessOpen(false)} variant="outline" className="flex-1">
+                Cancel
+              </Button>
+              <Button onClick={() => { 
+                toast({ description: `Processing ${selectedAvatarIds.size} avatars...` });
+                setBatchProcessOpen(false);
+              }} className="flex-1">
+                Start Processing
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Collection Modal */}
+      <Dialog open={createCollectionOpen} onOpenChange={setCreateCollectionOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Share2 className="h-5 w-5 text-accent" />
+              Create Collection
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Collection Name</Label>
+              <Input placeholder="e.g., Business Avatars, Creative Portfolio" />
+            </div>
+            <div>
+              <Label>Description</Label>
+              <Textarea placeholder="Optional description for your collection..." rows={3} />
+            </div>
+            <div className="text-sm text-muted-foreground">
+              {selectedAvatarIds.size} avatar{selectedAvatarIds.size > 1 ? 's' : ''} will be added to this collection
+            </div>
+            <div className="flex gap-3">
+              <Button onClick={() => setCreateCollectionOpen(false)} variant="outline" className="flex-1">
+                Cancel
+              </Button>
+              <Button onClick={() => { 
+                toast({ description: "Collection created successfully!" });
+                setCreateCollectionOpen(false);
+              }} className="flex-1">
+                Create Collection
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* View Analytics Modal */}
+      <Dialog open={viewAnalyticsOpen} onOpenChange={setViewAnalyticsOpen}>
+        <DialogContent className="sm:max-w-3xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-primary" />
+              Analytics Dashboard
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6">
+            <div className="grid grid-cols-3 gap-4">
+              <Card className="p-4 text-center">
+                <div className="text-2xl font-bold text-primary">847</div>
+                <div className="text-sm text-muted-foreground">Total Generations</div>
+              </Card>
+              <Card className="p-4 text-center">
+                <div className="text-2xl font-bold text-secondary">2.1s</div>
+                <div className="text-sm text-muted-foreground">Avg Speed</div>
+              </Card>
+              <Card className="p-4 text-center">
+                <div className="text-2xl font-bold text-accent">94%</div>
+                <div className="text-sm text-muted-foreground">Success Rate</div>
+              </Card>
+            </div>
+            <div className="space-y-4">
+              <h4 className="font-semibold">Popular Styles</h4>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span>Professional Business</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-24 h-2 bg-muted rounded-full">
+                      <div className="w-3/4 h-2 bg-primary rounded-full"></div>
+                    </div>
+                    <span className="text-sm text-muted-foreground">75%</span>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>Creative Artistic</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-24 h-2 bg-muted rounded-full">
+                      <div className="w-1/2 h-2 bg-secondary rounded-full"></div>
+                    </div>
+                    <span className="text-sm text-muted-foreground">50%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <Button onClick={() => setViewAnalyticsOpen(false)} className="w-full">
+              Close
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
