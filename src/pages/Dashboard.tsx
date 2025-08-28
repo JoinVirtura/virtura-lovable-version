@@ -52,6 +52,11 @@ import {
   Volume2
 } from "lucide-react";
 
+// Import new library images
+import businessExecutiveImg from "@/assets/model-business-executive.jpg";
+import creativeArtistImg from "@/assets/model-creative-artist.jpg";
+import fashionLuxuryImg from "@/assets/model-fashion-luxury.jpg";
+
 export default function Dashboard() {
   const { toast } = useToast();
   const [activeView, setActiveView] = useState("overview");
@@ -339,29 +344,29 @@ export default function Dashboard() {
     {
       id: 1,
       type: "avatar",
-      title: "Professional Headshot",
+      title: "Executive Portrait",
       date: "2024-01-15",
       format: "PNG",
-      tags: ["professional", "headshot"],
-      thumbnail: "/api/placeholder/300/300"
+      tags: ["executive", "business", "professional"],
+      thumbnail: businessExecutiveImg
     },
     {
       id: 2,
-      type: "brand",
-      title: "Summer Campaign Ad",
+      type: "avatar",
+      title: "Creative Studio Session",
       date: "2024-01-14",
-      format: "MP4",
-      tags: ["campaign", "summer", "video"],
-      thumbnail: "/api/placeholder/300/200"
+      format: "JPG",
+      tags: ["creative", "artist", "studio", "casual"],
+      thumbnail: creativeArtistImg
     },
     {
       id: 3,
       type: "avatar",
-      title: "Casual Portrait",
+      title: "Fashion Editorial",
       date: "2024-01-13",
-      format: "JPG",
-      tags: ["casual", "portrait"],
-      thumbnail: "/api/placeholder/300/300"
+      format: "PNG",
+      tags: ["fashion", "luxury", "editorial"],
+      thumbnail: fashionLuxuryImg
     }
   ];
 
@@ -2020,7 +2025,15 @@ export default function Dashboard() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredAssets.map((asset) => (
                       <Card key={asset.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border-2 hover:border-primary/30">
-                        <div className="aspect-square bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20 relative overflow-hidden">
+                        <div className="aspect-square relative overflow-hidden">
+                          <img 
+                            src={asset.thumbnail} 
+                            alt={asset.title}
+                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                            onError={(e) => {
+                              e.currentTarget.src = "/api/placeholder/300/300";
+                            }}
+                          />
                           {/* Format Badge */}
                           <div className="absolute top-3 left-3">
                             <Badge variant="secondary" className="bg-black/70 text-white border-0">
