@@ -2495,7 +2495,7 @@ export default function Dashboard() {
                             
                             <div className="p-5 space-y-4">
                               <div>
-                                <h3 className="font-semibold text-lg leading-tight">{asset.title}</h3>
+                                <h3 className="font-semibold text-lg line-clamp-1">{asset.title}</h3>
                                  <p className="text-sm text-muted-foreground font-medium flex items-center gap-2">
                                    <Calendar className="w-3 h-3" />
                                    {new Date(asset.date).toLocaleDateString('en-US', { 
@@ -2510,9 +2510,9 @@ export default function Dashboard() {
                               </div>
                               
                                {/* AI Tags - Always Visible */}
-                               <div className="flex flex-wrap gap-1.5">
+                               <div className="flex flex-wrap gap-1.5 mt-2">
                                  {asset.tags.map((tag, idx) => (
-                                   <Badge key={idx} variant="secondary" className="text-xs py-1 px-2 bg-muted/60 font-medium">
+                                   <Badge key={idx} variant="secondary" className="text-xs py-1 px-2 bg-primary/10 text-primary border-primary/20 font-medium">
                                      {tag}
                                    </Badge>
                                  ))}
