@@ -2679,49 +2679,67 @@ export default function Dashboard() {
 
               {/* AI Insights Sidebar */}
               <div className="space-y-6">
-                <Card className="p-6 border-2 hover:border-secondary/20 transition-colors">
-                  <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-primary" />
-                    Quick Actions
+                <Card className="p-6 border-2 hover:border-secondary/20 transition-colors bg-gradient-to-br from-card via-card/98 to-card/95">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl flex items-center justify-center">
+                        <Sparkles className="w-5 h-5 text-primary" />
+                      </div>
+                      <h3 className="font-bold text-lg bg-gradient-to-r from-foreground to-primary/80 bg-clip-text text-transparent">
+                        Quick Actions
+                      </h3>
+                    </div>
                     {selectedAvatarIds.size > 0 && (
-                      <Badge variant="secondary" className="ml-2">{selectedAvatarIds.size} selected</Badge>
+                      <div className="relative">
+                        <div className="flex items-center gap-2 bg-gradient-to-r from-primary/10 to-primary/5 px-4 py-2 rounded-full border border-primary/20">
+                          <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                          <span className="text-sm font-semibold text-primary">
+                            {selectedAvatarIds.size} Active
+                          </span>
+                        </div>
+                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-bounce"></div>
+                      </div>
                     )}
-                  </h3>
+                  </div>
                   <div className="space-y-3">
                     <Button 
-                      className="w-full justify-start gap-3 h-12 hover:scale-105 transition-transform" 
-                      variant="outline"
+                      className="w-full justify-start gap-3 h-12 hover:scale-[1.02] transition-all duration-300 group relative overflow-hidden" 
+                      variant={selectedAvatarIds.size > 0 ? "default" : "outline"}
                       onClick={() => setGenerateSimilarOpen(true)}
                       disabled={selectedAvatarIds.size === 0}
                     >
-                      <Sparkles className="w-5 h-5" />
-                      Generate Similar
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                      <Sparkles className="w-5 h-5 relative z-10" />
+                      <span className="relative z-10">Generate Similar</span>
                     </Button>
                     <Button 
-                      className="w-full justify-start gap-3 h-12 hover:scale-105 transition-transform" 
-                      variant="outline"
+                      className="w-full justify-start gap-3 h-12 hover:scale-[1.02] transition-all duration-300 group relative overflow-hidden" 
+                      variant={selectedAvatarIds.size > 0 ? "default" : "outline"}
                       onClick={() => setBatchProcessOpen(true)}
                       disabled={selectedAvatarIds.size === 0}
                     >
-                      <Upload className="w-5 h-5" />
-                      Batch Process
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                      <Upload className="w-5 h-5 relative z-10" />
+                      <span className="relative z-10">Batch Process</span>
                     </Button>
                     <Button 
-                      className="w-full justify-start gap-3 h-12 hover:scale-105 transition-transform" 
-                      variant="outline"
+                      className="w-full justify-start gap-3 h-12 hover:scale-[1.02] transition-all duration-300 group relative overflow-hidden" 
+                      variant={selectedAvatarIds.size > 0 ? "default" : "outline"}
                       onClick={() => setCreateCollectionOpen(true)}
                       disabled={selectedAvatarIds.size === 0}
                     >
-                      <Share2 className="w-5 h-5" />
-                      Create Collection
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                      <Share2 className="w-5 h-5 relative z-10" />
+                      <span className="relative z-10">Create Collection</span>
                     </Button>
                     <Button 
-                      className="w-full justify-start gap-3 h-12 hover:scale-105 transition-transform" 
+                      className="w-full justify-start gap-3 h-12 hover:scale-[1.02] transition-all duration-300 group relative overflow-hidden" 
                       variant="outline"
                       onClick={() => setViewAnalyticsOpen(true)}
                     >
-                      <TrendingUp className="w-5 h-5" />
-                      View Analytics
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                      <TrendingUp className="w-5 h-5 relative z-10" />
+                      <span className="relative z-10">View Analytics</span>
                     </Button>
                   </div>
                 </Card>
