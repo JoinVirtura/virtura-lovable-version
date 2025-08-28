@@ -2729,19 +2729,91 @@ export default function Dashboard() {
                 </Card>
 
                 <Card className="p-6 border-2 hover:border-accent/20 transition-colors">
-                  <h3 className="font-semibold text-lg mb-4">AI Recommendations</h3>
-                  <div className="space-y-4">
-                    <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border border-primary/20">
-                      <p className="text-sm font-medium text-primary">Trending Style</p>
-                      <p className="text-xs text-muted-foreground mt-1">Minimalist portraits are performing 23% better this week</p>
-                    </div>
-                    <div className="p-4 bg-gradient-to-r from-secondary/10 to-secondary/5 rounded-lg border border-secondary/20">
-                      <p className="text-sm font-medium text-secondary">Optimize Quality</p>
-                      <p className="text-xs text-muted-foreground mt-1">Try higher resolution settings for better engagement</p>
-                    </div>
-                    <div className="p-4 bg-gradient-to-r from-accent/10 to-accent/5 rounded-lg border border-accent/20">
-                      <p className="text-sm font-medium text-accent">Storage Tip</p>
-                      <p className="text-xs text-muted-foreground mt-1">Archive older assets to free up 2.1GB space</p>
+                  <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                    <Lightbulb className="w-5 h-5 text-accent" />
+                    AI Recommendations
+                  </h3>
+                  <div className="max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent hover:scrollbar-thumb-muted-foreground/30 transition-colors">
+                    <div className="space-y-3 pr-2">
+                      <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border border-primary/20 hover:border-primary/30 transition-colors cursor-pointer group">
+                        <p className="text-sm font-medium text-primary group-hover:text-primary/80 transition-colors">Trending Style</p>
+                        <p className="text-xs text-muted-foreground mt-1">Minimalist portraits are performing 23% better this week</p>
+                      </div>
+                      
+                      <div className="p-4 bg-gradient-to-r from-secondary/10 to-secondary/5 rounded-lg border border-secondary/20 hover:border-secondary/30 transition-colors cursor-pointer group">
+                        <p className="text-sm font-medium text-secondary group-hover:text-secondary/80 transition-colors">Optimize Quality</p>
+                        <p className="text-xs text-muted-foreground mt-1">Try higher resolution settings for better engagement</p>
+                      </div>
+                      
+                      <div className="p-4 bg-gradient-to-r from-accent/10 to-accent/5 rounded-lg border border-accent/20 hover:border-accent/30 transition-colors cursor-pointer group">
+                        <p className="text-sm font-medium text-accent group-hover:text-accent/80 transition-colors">Storage Tip</p>
+                        <p className="text-xs text-muted-foreground mt-1">Archive older assets to free up 2.1GB space</p>
+                      </div>
+                      
+                      <div className="p-4 bg-gradient-to-r from-green-500/10 to-green-500/5 rounded-lg border border-green-500/20 hover:border-green-500/30 transition-colors cursor-pointer group">
+                        <p className="text-sm font-medium text-green-500 group-hover:text-green-500/80 transition-colors">Popular Lighting</p>
+                        <p className="text-xs text-muted-foreground mt-1">Golden hour lighting increases downloads by 34%</p>
+                      </div>
+                      
+                      <div className="p-4 bg-gradient-to-r from-blue-500/10 to-blue-500/5 rounded-lg border border-blue-500/20 hover:border-blue-500/30 transition-colors cursor-pointer group">
+                        <p className="text-sm font-medium text-blue-500 group-hover:text-blue-500/80 transition-colors">Color Palette</p>
+                        <p className="text-xs text-muted-foreground mt-1">Warm tones are trending in business portraits</p>
+                      </div>
+                      
+                      <div className="p-4 bg-gradient-to-r from-purple-500/10 to-purple-500/5 rounded-lg border border-purple-500/20 hover:border-purple-500/30 transition-colors cursor-pointer group">
+                        <p className="text-sm font-medium text-purple-500 group-hover:text-purple-500/80 transition-colors">Background Focus</p>
+                        <p className="text-xs text-muted-foreground mt-1">Blurred backgrounds improve subject focus by 41%</p>
+                      </div>
+                      
+                      <div className="p-4 bg-gradient-to-r from-orange-500/10 to-orange-500/5 rounded-lg border border-orange-500/20 hover:border-orange-500/30 transition-colors cursor-pointer group">
+                        <p className="text-sm font-medium text-orange-500 group-hover:text-orange-500/80 transition-colors">Expression Analysis</p>
+                        <p className="text-xs text-muted-foreground mt-1">Subtle smiles perform better than serious expressions</p>
+                      </div>
+                      
+                      <div className="p-4 bg-gradient-to-r from-pink-500/10 to-pink-500/5 rounded-lg border border-pink-500/20 hover:border-pink-500/30 transition-colors cursor-pointer group">
+                        <p className="text-sm font-medium text-pink-500 group-hover:text-pink-500/80 transition-colors">Outfit Suggestions</p>
+                        <p className="text-xs text-muted-foreground mt-1">Business casual outfits have 28% higher engagement</p>
+                      </div>
+                      
+                      <div className="p-4 bg-gradient-to-r from-teal-500/10 to-teal-500/5 rounded-lg border border-teal-500/20 hover:border-teal-500/30 transition-colors cursor-pointer group">
+                        <p className="text-sm font-medium text-teal-500 group-hover:text-teal-500/80 transition-colors">AI Model Update</p>
+                        <p className="text-xs text-muted-foreground mt-1">New model v2.1 available with 15% quality improvement</p>
+                      </div>
+                      
+                      <div className="p-4 bg-gradient-to-r from-indigo-500/10 to-indigo-500/5 rounded-lg border border-indigo-500/20 hover:border-indigo-500/30 transition-colors cursor-pointer group">
+                        <p className="text-sm font-medium text-indigo-500 group-hover:text-indigo-500/80 transition-colors">Batch Processing</p>
+                        <p className="text-xs text-muted-foreground mt-1">Process multiple avatars overnight for efficiency</p>
+                      </div>
+                      
+                      <div className="p-4 bg-gradient-to-r from-rose-500/10 to-rose-500/5 rounded-lg border border-rose-500/20 hover:border-rose-500/30 transition-colors cursor-pointer group">
+                        <p className="text-sm font-medium text-rose-500 group-hover:text-rose-500/80 transition-colors">Platform Optimization</p>
+                        <p className="text-xs text-muted-foreground mt-1">LinkedIn prefers 1:1 ratio, Instagram favors 4:5</p>
+                      </div>
+                      
+                      <div className="p-4 bg-gradient-to-r from-cyan-500/10 to-cyan-500/5 rounded-lg border border-cyan-500/20 hover:border-cyan-500/30 transition-colors cursor-pointer group">
+                        <p className="text-sm font-medium text-cyan-500 group-hover:text-cyan-500/80 transition-colors">Creative Trends</p>
+                        <p className="text-xs text-muted-foreground mt-1">Abstract backgrounds are gaining popularity (+18%)</p>
+                      </div>
+                      
+                      <div className="p-4 bg-gradient-to-r from-yellow-500/10 to-yellow-500/5 rounded-lg border border-yellow-500/20 hover:border-yellow-500/30 transition-colors cursor-pointer group">
+                        <p className="text-sm font-medium text-yellow-500 group-hover:text-yellow-500/80 transition-colors">Performance Boost</p>
+                        <p className="text-xs text-muted-foreground mt-1">Clear cache to improve generation speed by 12%</p>
+                      </div>
+                      
+                      <div className="p-4 bg-gradient-to-r from-emerald-500/10 to-emerald-500/5 rounded-lg border border-emerald-500/20 hover:border-emerald-500/30 transition-colors cursor-pointer group">
+                        <p className="text-sm font-medium text-emerald-500 group-hover:text-emerald-500/80 transition-colors">Seasonal Trends</p>
+                        <p className="text-xs text-muted-foreground mt-1">Winter professional looks trending this month</p>
+                      </div>
+                      
+                      <div className="p-4 bg-gradient-to-r from-violet-500/10 to-violet-500/5 rounded-lg border border-violet-500/20 hover:border-violet-500/30 transition-colors cursor-pointer group">
+                        <p className="text-sm font-medium text-violet-500 group-hover:text-violet-500/80 transition-colors">Quality Metrics</p>
+                        <p className="text-xs text-muted-foreground mt-1">Your average quality score improved to 9.2/10</p>
+                      </div>
+                      
+                      <div className="p-4 bg-gradient-to-r from-slate-500/10 to-slate-500/5 rounded-lg border border-slate-500/20 hover:border-slate-500/30 transition-colors cursor-pointer group">
+                        <p className="text-sm font-medium text-slate-500 group-hover:text-slate-500/80 transition-colors">Export Formats</p>
+                        <p className="text-xs text-muted-foreground mt-1">WebP format reduces file size by 40% vs PNG</p>
+                      </div>
                     </div>
                   </div>
                 </Card>
