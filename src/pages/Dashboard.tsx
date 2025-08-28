@@ -2481,50 +2481,7 @@ export default function Dashboard() {
                                 </div>
                               </div>
                               
-                              {/* Smart Hover Actions */}
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-4">
-                                <div className="space-y-2">
-                                  <div className="flex justify-center gap-3">
-                                    <Button 
-                                      size="sm" 
-                                      className="bg-white/20 backdrop-blur-md text-white border-white/40 hover:bg-white/30 transition-all flex-1 min-w-0"
-                                      onClick={() => handleEdit(asset)}
-                                    >
-                                      <Edit className="w-4 h-4 mr-1" />
-                                      Edit
-                                    </Button>
-                                    <Button 
-                                      size="sm" 
-                                      className="bg-white/20 backdrop-blur-md text-white border-white/40 hover:bg-white/30 transition-all flex-1 min-w-0"
-                                      onClick={() => handleDownload(asset)}
-                                    >
-                                      <Download className="w-4 h-4 mr-1" />
-                                      Save
-                                    </Button>
-                                  </div>
-                                  <div className="flex justify-center gap-1">
-                                    <Button 
-                                      size="sm" 
-                                      variant="ghost" 
-                                      className="text-white hover:bg-white/20 p-2 backdrop-blur-sm"
-                                      onClick={() => handleShare(asset)}
-                                    >
-                                      <Share2 className="w-4 h-4" />
-                                    </Button>
-                                    <Button size="sm" variant="ghost" className="text-white hover:bg-white/20 p-2 backdrop-blur-sm">
-                                      <Star className="w-4 h-4" />
-                                    </Button>
-                                    <Button 
-                                      size="sm" 
-                                      variant="ghost" 
-                                      className="text-white hover:bg-white/20 p-2 backdrop-blur-sm"
-                                      onClick={() => handleDelete(asset.id)}
-                                    >
-                                      <Trash2 className="w-4 h-4" />
-                                    </Button>
-                                  </div>
-                                </div>
-                              </div>
+                               {/* Removed hover overlay - buttons will be below */}
                             </div>
                             
                             <div className="p-5 space-y-4">
@@ -2550,7 +2507,52 @@ export default function Dashboard() {
                                      {tag}
                                    </Badge>
                                  ))}
-                              </div>
+                               </div>
+
+                               {/* Action Buttons - Always Visible */}
+                               <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/50">
+                                 <div className="flex gap-2">
+                                   <Button 
+                                     size="sm" 
+                                     variant="outline"
+                                     className="h-8 px-3"
+                                     onClick={() => handleEdit(asset)}
+                                   >
+                                     <Edit className="w-3 h-3 mr-1" />
+                                     Edit
+                                   </Button>
+                                   <Button 
+                                     size="sm" 
+                                     variant="outline"
+                                     className="h-8 px-3"
+                                     onClick={() => handleDownload(asset)}
+                                   >
+                                     <Download className="w-3 h-3 mr-1" />
+                                     Save
+                                   </Button>
+                                 </div>
+                                 <div className="flex gap-1">
+                                   <Button 
+                                     size="sm" 
+                                     variant="ghost"
+                                     className="h-8 w-8 p-0"
+                                     onClick={() => handleShare(asset)}
+                                   >
+                                     <Share2 className="w-3 h-3" />
+                                   </Button>
+                                   <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                                     <Star className="w-3 h-3" />
+                                   </Button>
+                                   <Button 
+                                     size="sm" 
+                                     variant="ghost"
+                                     className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                                     onClick={() => handleDelete(asset.id)}
+                                   >
+                                     <Trash2 className="w-3 h-3" />
+                                   </Button>
+                                 </div>
+                               </div>
                               
                               {/* Generation Stats */}
                               <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t border-border/50">
