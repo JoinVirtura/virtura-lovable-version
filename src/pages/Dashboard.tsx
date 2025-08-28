@@ -49,7 +49,8 @@ import {
   AlertCircle,
   Lightbulb,
   Video,
-  Volume2
+  Volume2,
+  TrendingUp
 } from "lucide-react";
 
 // Import new library images
@@ -1931,187 +1932,353 @@ export default function Dashboard() {
             </div>
           </div>
         );
-      case "library":
         return (
           <div className="space-y-6">
             {/* Innovative Header with AI Stats */}
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 rounded-2xl blur-xl"></div>
-              <Card className="relative p-8 bg-gradient-to-br from-card via-card/95 to-card/90 border border-primary/20">
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5 rounded-2xl blur-xl"></div>
+              <Card className="relative p-8 bg-gradient-to-br from-card via-card/98 to-card/95 border border-primary/10">
                 <div className="flex items-start justify-between">
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-primary/10 rounded-xl">
-                        <Sparkles className="w-6 h-6 text-primary" />
+                      <div className="p-3 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl">
+                        <Sparkles className="w-7 h-7 text-primary" />
                       </div>
                       <div>
-                        <h1 className="text-3xl font-display font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                        <h1 className="text-4xl font-display font-bold bg-gradient-to-r from-foreground via-primary to-foreground/80 bg-clip-text text-transparent">
                           AI Generation Library
                         </h1>
-                        <p className="text-muted-foreground">Your complete collection of AI-generated content</p>
+                        <p className="text-muted-foreground text-lg">Your complete collection of AI-generated content</p>
                       </div>
                     </div>
                     
                     {/* Real-time Stats */}
-                    <div className="flex items-center gap-6 mt-4">
+                    <div className="flex items-center gap-8 mt-6">
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-primary">{filteredAssets.length}</div>
-                        <div className="text-xs text-muted-foreground">Total Assets</div>
+                        <div className="text-3xl font-bold text-primary">{filteredAssets.length}</div>
+                        <div className="text-sm text-muted-foreground">Total Assets</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-secondary">12</div>
-                        <div className="text-xs text-muted-foreground">This Month</div>
+                        <div className="text-3xl font-bold text-secondary">12</div>
+                        <div className="text-sm text-muted-foreground">This Month</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-accent">4.2GB</div>
-                        <div className="text-xs text-muted-foreground">Storage Used</div>
+                        <div className="text-3xl font-bold text-accent">4.2GB</div>
+                        <div className="text-sm text-muted-foreground">Storage Used</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-3xl font-bold text-green-500">94%</div>
+                        <div className="text-sm text-muted-foreground">Avg Quality</div>
                       </div>
                     </div>
                   </div>
                   
                   {/* Quick Actions */}
                   <div className="flex items-center gap-3">
-                    <Button variant="outline" className="gap-2">
+                    <Button variant="outline" className="gap-2 hover:scale-105 transition-transform">
                       <Upload className="w-4 h-4" />
                       Bulk Import
                     </Button>
-                    <Button className="gap-2 bg-gradient-to-r from-primary to-primary/80">
+                    <Button className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:scale-105 transition-transform">
                       <Sparkles className="w-4 h-4" />
                       AI Organize
                     </Button>
-                    <Button variant="outline" className="gap-2">
-                      <Sparkles className="w-4 h-4" />
-                      Generate Similar
+                    <Button variant="outline" className="gap-2 hover:scale-105 transition-transform">
+                      <TrendingUp className="w-4 h-4" />
+                      Analytics
                     </Button>
-                    <Button variant="outline" className="gap-2">
-                      <Upload className="w-4 h-4" />
-                      Batch Process
-                    </Button>
-                  </div>
-                </div>
-                
-                {/* AI Insights Bar */}
-                <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
-                  <div className="flex items-center gap-6">
-                    <div className="flex items-center gap-2">
-                      <Trophy className="w-5 h-5 text-primary" />
-                      <span className="font-semibold">AI Insights</span>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className="text-sm">
-                        <span className="text-muted-foreground">Quality Score:</span>
-                        <span className="font-medium ml-2">9.2/10</span>
-                      </div>
-                      <div className="w-24 bg-muted rounded-full h-2">
-                        <div className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full" style={{ width: '92%' }}></div>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </Card>
             </div>
 
-            {/* Enhanced Content Area - Full Width */}
-            <div className="space-y-6">
-              <Card className="p-6">
-                <div className="flex items-center gap-4 mb-6">
-                  {/* Enhanced Search */}
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search by name, tags, or AI model used..."
-                      className="pl-10 h-12 text-base"
-                    />
-                  </div>
-                  
-                  {/* View Controls */}
-                  <div className="flex border border-border rounded-lg overflow-hidden">
-                    <Button
-                      variant={viewMode === "grid" ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => setViewMode("grid")}
-                      className="rounded-none border-0"
-                    >
-                      <Grid3X3 className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant={viewMode === "list" ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => setViewMode("list")}
-                      className="rounded-none border-0"
-                    >
-                      <List className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Larger Grid Layout - More space for images */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                  {filteredAssets.map((asset) => (
-                    <Card key={asset.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border-2 hover:border-primary/30">
-                      <div className="aspect-square relative overflow-hidden">
-                        <img 
-                          src={asset.thumbnail} 
-                          alt={asset.title}
-                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                          onError={(e) => {
-                            e.currentTarget.src = "/api/placeholder/300/300";
-                          }}
-                        />
-                        {/* Format Badge */}
-                        <div className="absolute top-3 left-3">
-                          <Badge variant="secondary" className="bg-black/70 text-white border-0">
-                            {asset.format}
-                          </Badge>
-                        </div>
-
-                        {/* Quality Score */}
-                        <div className="absolute top-3 right-3">
-                          <div className="flex items-center gap-1 bg-black/70 rounded-full px-2 py-1">
-                            <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
-                            <span className="text-xs text-white font-medium">9.2</span>
-                          </div>
-                        </div>
-                        
-                        {/* Hover Actions */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-4">
-                          <div className="flex justify-center gap-2">
-                            <Button size="sm" className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30">
-                              <Edit className="w-4 h-4 mr-1" />
-                              Edit
-                            </Button>
-                            <Button size="sm" className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30">
-                              <Download className="w-4 h-4 mr-1" />
-                              Save
-                            </Button>
-                            <Button size="sm" className="bg-white/20 backdrop-blur-sm text-white border-white/30 hover:bg-white/30">
-                              <Share2 className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        </div>
+            {/* Enhanced Content Area */}
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+              <div className="lg:col-span-3">
+                <Card className="p-6 border-2 hover:border-primary/20 transition-colors">
+                  <div className="flex items-center gap-4 mb-6">
+                    {/* Enhanced Search */}
+                    <div className="relative flex-1">
+                      <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search by name, tags, AI model, or content type..."
+                        className="pl-12 h-14 text-base bg-muted/30 border-0 focus:bg-background transition-colors"
+                      />
+                      <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0 hover:bg-primary/10">
+                          <Filter className="w-4 h-4" />
+                        </Button>
                       </div>
-                      
-                      <div className="p-4 space-y-3">
-                        <div>
-                          <h3 className="font-semibold truncate">{asset.title}</h3>
-                          <p className="text-sm text-muted-foreground">{asset.date}</p>
-                        </div>
-                        
-                        {/* AI Tags */}
-                        <div className="flex flex-wrap gap-1">
-                          {asset.tags.map((tag, idx) => (
-                            <Badge key={idx} variant="secondary" className="text-xs py-0 px-2">
-                              {tag}
-                            </Badge>
-                          ))}
-                        </div>
+                    </div>
+                    
+                    {/* View Controls */}
+                    <div className="flex border-2 border-border/50 rounded-xl overflow-hidden bg-muted/20">
+                      <Button
+                        variant={viewMode === "grid" ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => setViewMode("grid")}
+                        className="rounded-none border-0 px-4"
+                      >
+                        <Grid3X3 className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant={viewMode === "list" ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => setViewMode("list")}
+                        className="rounded-none border-0 px-4"
+                      >
+                        <List className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* AI-Powered Category Tags */}
+                  <div className="flex flex-wrap gap-3 mb-8">
+                    {["All", "Avatars", "Headshots", "Brand Assets", "Videos", "Recent", "Favorites"].map((category) => (
+                      <Button
+                        key={category}
+                        variant={selectedCategory === category ? "default" : "outline"}
+                        size="sm"
+                        className="h-9 px-4 text-sm font-medium transition-all hover:scale-105 hover:shadow-md"
+                        onClick={() => setSelectedCategory(category)}
+                      >
+                        {category === "Recent" && <Clock className="w-4 h-4 mr-2" />}
+                        {category === "Favorites" && <Star className="w-4 h-4 mr-2" />}
+                        {category}
+                        {category === "All" && <Badge variant="secondary" className="ml-2 text-xs">{filteredAssets.length}</Badge>}
+                      </Button>
+                    ))}
+                  </div>
+
+                  {/* Smart Grid Layout */}
+                  <div className="space-y-6">
+                    {viewMode === "grid" ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {filteredAssets.map((asset) => (
+                          <Card key={asset.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border-2 hover:border-primary/30 bg-gradient-to-br from-card to-card/95">
+                            <div className="aspect-square relative overflow-hidden">
+                              <img 
+                                src={asset.thumbnail} 
+                                alt={asset.title}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  e.currentTarget.src = "/api/placeholder/300/300";
+                                }}
+                              />
+                              
+                              {/* Format & Model Badges */}
+                              <div className="absolute top-3 left-3 flex gap-2">
+                                <Badge variant="secondary" className="bg-black/80 text-white border-0 font-medium">
+                                  {asset.format}
+                                </Badge>
+                                <Badge variant="outline" className="bg-black/80 text-white border-white/30 font-medium">
+                                  GPT-4V
+                                </Badge>
+                              </div>
+
+                              {/* Quality Score */}
+                              <div className="absolute top-3 right-3">
+                                <div className="flex items-center gap-1 bg-black/80 rounded-full px-3 py-1.5 backdrop-blur-sm">
+                                  <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
+                                  <span className="text-sm text-white font-semibold">9.2</span>
+                                </div>
+                              </div>
+                              
+                              {/* Smart Hover Actions */}
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-4">
+                                <div className="space-y-2">
+                                  <div className="flex justify-center gap-3">
+                                    <Button 
+                                      size="sm" 
+                                      className="bg-white/20 backdrop-blur-md text-white border-white/40 hover:bg-white/30 transition-all flex-1 min-w-0"
+                                    >
+                                      <Edit className="w-4 h-4 mr-1" />
+                                      Edit
+                                    </Button>
+                                    <Button 
+                                      size="sm" 
+                                      className="bg-white/20 backdrop-blur-md text-white border-white/40 hover:bg-white/30 transition-all flex-1 min-w-0"
+                                    >
+                                      <Download className="w-4 h-4 mr-1" />
+                                      Save
+                                    </Button>
+                                  </div>
+                                  <div className="flex justify-center gap-1">
+                                    <Button size="sm" variant="ghost" className="text-white hover:bg-white/20 p-2 backdrop-blur-sm">
+                                      <Share2 className="w-4 h-4" />
+                                    </Button>
+                                    <Button size="sm" variant="ghost" className="text-white hover:bg-white/20 p-2 backdrop-blur-sm">
+                                      <Star className="w-4 h-4" />
+                                    </Button>
+                                    <Button size="sm" variant="ghost" className="text-white hover:bg-white/20 p-2 backdrop-blur-sm">
+                                      <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div className="p-5 space-y-4">
+                              <div>
+                                <h3 className="font-semibold text-lg truncate">{asset.title}</h3>
+                                <p className="text-sm text-muted-foreground">{asset.date}</p>
+                              </div>
+                              
+                              {/* AI Tags */}
+                              <div className="flex flex-wrap gap-1.5">
+                                {asset.tags.slice(0, 3).map((tag, idx) => (
+                                  <Badge key={idx} variant="secondary" className="text-xs py-1 px-2 bg-muted/60">
+                                    {tag}
+                                  </Badge>
+                                ))}
+                                {asset.tags.length > 3 && (
+                                  <Badge variant="outline" className="text-xs py-1 px-2">
+                                    +{asset.tags.length - 3}
+                                  </Badge>
+                                )}
+                              </div>
+                              
+                              {/* Generation Stats */}
+                              <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t border-border/50">
+                                <span className="flex items-center gap-1">
+                                  <Clock className="w-3 h-3" />
+                                  2.1s
+                                </span>
+                                <span className="font-medium">1.3MB</span>
+                              </div>
+                            </div>
+                          </Card>
+                        ))}
                       </div>
-                    </Card>
-                  ))}
-                </div>
-              </Card>
+                    ) : (
+                      /* Enhanced List View */
+                      <div className="space-y-3">
+                        {filteredAssets.map((asset) => (
+                          <Card key={asset.id} className="p-5 hover:shadow-lg transition-all duration-200 hover:bg-muted/20 border-2 hover:border-primary/20">
+                            <div className="flex items-center gap-6">
+                              <div className="w-20 h-20 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-xl flex-shrink-0 flex items-center justify-center overflow-hidden">
+                                <img 
+                                  src={asset.thumbnail} 
+                                  alt={asset.title}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    e.currentTarget.src = "/api/placeholder/300/300";
+                                  }}
+                                />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-start justify-between">
+                                  <div>
+                                    <h3 className="font-semibold text-lg truncate">{asset.title}</h3>
+                                    <p className="text-sm text-muted-foreground">{asset.date}</p>
+                                    <div className="flex flex-wrap gap-1 mt-2">
+                                      {asset.tags.map((tag, idx) => (
+                                        <Badge key={idx} variant="secondary" className="text-xs">
+                                          {tag}
+                                        </Badge>
+                                      ))}
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Badge variant="secondary" className="bg-black/10">{asset.format}</Badge>
+                                    <div className="flex items-center gap-1">
+                                      <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
+                                      <span className="text-sm font-medium">9.2</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Button size="sm" variant="outline">
+                                  <Edit className="w-4 h-4" />
+                                </Button>
+                                <Button size="sm" variant="outline">
+                                  <Download className="w-4 h-4" />
+                                </Button>
+                                <Button size="sm" variant="outline">
+                                  <Share2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </Card>
+              </div>
+
+              {/* AI Insights Sidebar */}
+              <div className="space-y-6">
+                <Card className="p-6 border-2 hover:border-primary/20 transition-colors">
+                  <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                    <Trophy className="w-5 h-5 text-primary" />
+                    AI Insights
+                  </h3>
+                  <div className="space-y-4">
+                    <div className="space-y-3">
+                      <div className="flex justify-between text-sm">
+                        <span>Quality Score</span>
+                        <span className="font-semibold">9.2/10</span>
+                      </div>
+                      <div className="w-full bg-muted rounded-full h-3">
+                        <div className="bg-gradient-to-r from-primary to-secondary h-3 rounded-full transition-all duration-1000" style={{ width: '92%' }}></div>
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="flex justify-between text-sm">
+                        <span>Storage Efficiency</span>
+                        <span className="font-semibold">Excellent</span>
+                      </div>
+                      <div className="w-full bg-muted rounded-full h-3">
+                        <div className="bg-gradient-to-r from-accent to-primary h-3 rounded-full transition-all duration-1000" style={{ width: '94%' }}></div>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+
+                <Card className="p-6 border-2 hover:border-secondary/20 transition-colors">
+                  <h3 className="font-semibold text-lg mb-4">Quick Actions</h3>
+                  <div className="space-y-3">
+                    <Button className="w-full justify-start gap-3 h-12 hover:scale-105 transition-transform" variant="outline">
+                      <Sparkles className="w-5 h-5" />
+                      Generate Similar
+                    </Button>
+                    <Button className="w-full justify-start gap-3 h-12 hover:scale-105 transition-transform" variant="outline">
+                      <Upload className="w-5 h-5" />
+                      Batch Process
+                    </Button>
+                    <Button className="w-full justify-start gap-3 h-12 hover:scale-105 transition-transform" variant="outline">
+                      <Share2 className="w-5 h-5" />
+                      Create Collection
+                    </Button>
+                    <Button className="w-full justify-start gap-3 h-12 hover:scale-105 transition-transform" variant="outline">
+                      <TrendingUp className="w-5 h-5" />
+                      View Analytics
+                    </Button>
+                  </div>
+                </Card>
+
+                <Card className="p-6 border-2 hover:border-accent/20 transition-colors">
+                  <h3 className="font-semibold text-lg mb-4">AI Recommendations</h3>
+                  <div className="space-y-4">
+                    <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border border-primary/20">
+                      <p className="text-sm font-medium text-primary">Trending Style</p>
+                      <p className="text-xs text-muted-foreground mt-1">Minimalist portraits are performing 23% better this week</p>
+                    </div>
+                    <div className="p-4 bg-gradient-to-r from-secondary/10 to-secondary/5 rounded-lg border border-secondary/20">
+                      <p className="text-sm font-medium text-secondary">Optimize Quality</p>
+                      <p className="text-xs text-muted-foreground mt-1">Try higher resolution settings for better engagement</p>
+                    </div>
+                    <div className="p-4 bg-gradient-to-r from-accent/10 to-accent/5 rounded-lg border border-accent/20">
+                      <p className="text-sm font-medium text-accent">Storage Tip</p>
+                      <p className="text-xs text-muted-foreground mt-1">Archive older assets to free up 2.1GB space</p>
+                    </div>
+                  </div>
+                </Card>
+              </div>
             </div>
           </div>
         );
