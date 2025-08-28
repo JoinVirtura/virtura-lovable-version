@@ -2732,7 +2732,7 @@ export default function Dashboard() {
                   <h3 className="font-bold text-lg mb-4 bg-gradient-to-r from-foreground to-primary/80 bg-clip-text text-transparent">
                     AI Insights
                   </h3>
-                  <div className="h-[420px] overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent hover:scrollbar-thumb-muted-foreground/30 transition-colors">
+                  <div className="h-[580px] overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent hover:scrollbar-thumb-muted-foreground/30 transition-colors">
                     <div className="space-y-3 pr-2">
                       <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border border-primary/20 hover:border-primary/30 transition-colors cursor-pointer group">
                         <p className="text-sm font-medium text-primary group-hover:text-primary/80 transition-colors">Trending Style</p>
