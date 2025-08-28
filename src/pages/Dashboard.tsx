@@ -2413,22 +2413,26 @@ export default function Dashboard() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredAssets.map((asset) => (
                            <Card key={asset.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border-2 hover:border-primary/30 bg-gradient-to-br from-card to-card/95 hover:scale-[1.02]"
-                             onMouseEnter={() => {
+                             onMouseEnter={(e) => {
                                console.log('🎭 Avatar card hover started:', asset.title);
-                               const img = document.querySelector(`[data-asset-id="${asset.id}"]`) as HTMLImageElement;
+                               const img = e.currentTarget.querySelector('img') as HTMLImageElement;
                                if (img) {
                                  img.style.animation = 'alive 5s ease-in-out infinite, breathe 3s ease-in-out infinite';
                                  img.style.transform = 'scale(1.05)';
                                  img.style.filter = 'brightness(1.1)';
+                                 console.log('✅ Animation applied to:', asset.title);
+                               } else {
+                                 console.log('❌ Could not find image for:', asset.title);
                                }
                              }}
-                             onMouseLeave={() => {
+                             onMouseLeave={(e) => {
                                console.log('🎭 Avatar card hover ended:', asset.title);
-                               const img = document.querySelector(`[data-asset-id="${asset.id}"]`) as HTMLImageElement;
+                               const img = e.currentTarget.querySelector('img') as HTMLImageElement;
                                if (img) {
                                  img.style.animation = 'none';
                                  img.style.transform = 'scale(1)';
                                  img.style.filter = 'brightness(1)';
+                                 console.log('🛑 Animation removed from:', asset.title);
                                }
                              }}
                            >
