@@ -2412,28 +2412,35 @@ export default function Dashboard() {
                     {viewMode === "grid" ? (
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredAssets.map((asset) => (
-                          <Card key={asset.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border-2 hover:border-primary/30 bg-gradient-to-br from-card to-card/95 hover:scale-[1.02]">
+                           <Card key={asset.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border-2 hover:border-primary/30 bg-gradient-to-br from-card to-card/95 hover:scale-[1.02]"
+                             onMouseEnter={() => {
+                               console.log('🎭 Avatar card hover started:', asset.title);
+                               const img = document.querySelector(`[data-asset-id="${asset.id}"]`) as HTMLImageElement;
+                               if (img) {
+                                 img.style.animation = 'alive 5s ease-in-out infinite, breathe 3s ease-in-out infinite';
+                                 img.style.transform = 'scale(1.05)';
+                                 img.style.filter = 'brightness(1.1)';
+                               }
+                             }}
+                             onMouseLeave={() => {
+                               console.log('🎭 Avatar card hover ended:', asset.title);
+                               const img = document.querySelector(`[data-asset-id="${asset.id}"]`) as HTMLImageElement;
+                               if (img) {
+                                 img.style.animation = 'none';
+                                 img.style.transform = 'scale(1)';
+                                 img.style.filter = 'brightness(1)';
+                               }
+                             }}
+                           >
                             <div className={`${viewMode === 'grid' ? 'aspect-square' : 'aspect-video w-32 h-20'} bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 relative overflow-hidden`}>
                               {/* Content Preview */}
                                <img 
                                  src={asset.thumbnail} 
                                  alt={asset.title}
-                                 className="w-full h-full object-cover transition-all duration-700 hover:scale-105"
+                                 data-asset-id={asset.id}
+                                 className="w-full h-full object-cover transition-all duration-700"
                                  style={{
                                    transition: 'all 0.7s ease-in-out',
-                                 }}
-                                 onMouseEnter={(e) => {
-                                   console.log('🎭 Avatar hover started:', asset.title);
-                                   // Apply multiple animations for realistic "alive" effect
-                                   e.currentTarget.style.animation = 'alive 5s ease-in-out infinite, breathe 3s ease-in-out infinite';
-                                   e.currentTarget.style.transform = 'scale(1.05)';
-                                   e.currentTarget.style.filter = 'brightness(1.1)';
-                                 }}
-                                 onMouseLeave={(e) => {
-                                   console.log('🎭 Avatar hover ended:', asset.title);
-                                   e.currentTarget.style.animation = 'none';
-                                   e.currentTarget.style.transform = 'scale(1)';
-                                   e.currentTarget.style.filter = 'brightness(1)';
                                  }}
                                  onError={(e) => {
                                    e.currentTarget.src = "/api/placeholder/300/300";
