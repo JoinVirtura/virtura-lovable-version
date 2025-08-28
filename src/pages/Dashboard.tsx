@@ -75,21 +75,21 @@ import corporateExecutiveImg from "@/assets/avatar-corporate-executive.jpg";
 import linkedinProfileImg from "@/assets/avatar-linkedin-profile.jpg";
 import authorPortraitImg from "@/assets/avatar-author-portrait.jpg";
 
-// Import brand asset avatars
-import avatarLogoDesignerImg from "@/assets/avatar-logo-designer.jpg";
-import avatarMarketingManagerImg from "@/assets/avatar-marketing-manager.jpg";
-import avatarSocialMediaManagerImg from "@/assets/avatar-social-media-manager.jpg";
-import avatarBusinessPresenterImg from "@/assets/avatar-business-presenter.jpg";
+// Import realistic brand asset avatars
+import avatarLogoDesignerImg from "@/assets/avatar-logo-designer-realistic.jpg";
+import avatarMarketingManagerImg from "@/assets/avatar-marketing-manager-realistic.jpg";
+import avatarSocialMediaManagerImg from "@/assets/avatar-social-media-manager-realistic.jpg";
+import avatarBusinessPresenterImg from "@/assets/avatar-business-presenter-realistic.jpg";
 
-// Import video content avatars
-import avatarVideoCreatorImg from "@/assets/avatar-video-creator.jpg";
-import avatarVideoProducerImg from "@/assets/avatar-video-producer.jpg";
-import avatarCreativeVideoArtistImg from "@/assets/avatar-creative-video-artist.jpg";
-import avatarSocialInfluencerImg from "@/assets/avatar-social-influencer.jpg";
+// Import realistic video content avatars
+import avatarVideoCreatorImg from "@/assets/avatar-video-creator-realistic.jpg";
+import avatarVideoProducerImg from "@/assets/avatar-video-producer-realistic.jpg";
+import avatarCreativeVideoArtistImg from "@/assets/avatar-creative-video-artist-realistic.jpg";
+import avatarSocialInfluencerImg from "@/assets/avatar-social-influencer-realistic.jpg";
 
-// Import favorites avatars
-import avatarAwardPhotographerImg from "@/assets/avatar-award-photographer.jpg";
-import avatarBrandConsultantImg from "@/assets/avatar-brand-consultant.jpg";
+// Import realistic favorites avatars
+import avatarAwardPhotographerImg from "@/assets/avatar-award-photographer-realistic.jpg";
+import avatarBrandConsultantImg from "@/assets/avatar-brand-consultant-realistic.jpg";
 
 export default function Dashboard() {
   const { toast } = useToast();
