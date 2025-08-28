@@ -135,24 +135,47 @@ All colors MUST be HSL.
     100% { transform: scale(1.02) translateY(-2px); }
   }
 
-  /* Live Avatar Animations */
-  @keyframes alive {
-    0% { transform: scale(1) translateX(0) rotate(0deg); }
-    25% { transform: scale(1.01) translateX(0.5px) rotate(0.2deg); }
-    50% { transform: scale(1.02) translateX(0) rotate(0deg); }
-    75% { transform: scale(1.01) translateX(-0.5px) rotate(-0.2deg); }
-    100% { transform: scale(1) translateX(0) rotate(0deg); }
+  /* Live Avatar Animations - Realistic Human Motion */
+  @keyframes avatar-alive {
+    0% { 
+      transform: scale(1.1) translateX(0px) translateY(0px) rotate(1deg); 
+    }
+    20% { 
+      transform: scale(1.12) translateX(0.5px) translateY(-0.3px) rotate(1.2deg); 
+    }
+    40% { 
+      transform: scale(1.11) translateX(-0.3px) translateY(0.2px) rotate(0.8deg); 
+    }
+    60% { 
+      transform: scale(1.13) translateX(0.2px) translateY(-0.1px) rotate(1.1deg); 
+    }
+    80% { 
+      transform: scale(1.11) translateX(-0.1px) translateY(0.3px) rotate(0.9deg); 
+    }
+    100% { 
+      transform: scale(1.1) translateX(0px) translateY(0px) rotate(1deg); 
+    }
   }
 
-  @keyframes breathe {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.02); }
+  @keyframes avatar-breathe {
+    0%, 100% { 
+      filter: brightness(1.25) contrast(1.05); 
+    }
+    50% { 
+      filter: brightness(1.3) contrast(1.1); 
+    }
   }
 
-  @keyframes gentle-sway {
-    0%, 100% { transform: translateX(0) rotate(0deg); }
-    25% { transform: translateX(1px) rotate(0.3deg); }
-    75% { transform: translateX(-1px) rotate(-0.3deg); }
+  @keyframes avatar-sway {
+    0%, 100% { 
+      transform: translateX(0px) rotate(0deg); 
+    }
+    25% { 
+      transform: translateX(0.8px) rotate(0.3deg); 
+    }
+    75% { 
+      transform: translateX(-0.8px) rotate(-0.3deg); 
+    }
   }
 
   /* Premium Animation Classes */
@@ -189,12 +212,17 @@ All colors MUST be HSL.
     transform: translateY(-1px);
   }
   
-  /* Avatar Animation Classes */
-  .animate-avatar-alive {
-    animation: alive 5s ease-in-out infinite !important;
-    transform: scale(1.1) rotate(1deg) !important;
-    filter: brightness(1.2) contrast(1.1) !important;
-    transition: all 0.5s ease-in-out !important;
+  /* Avatar Live Animation Classes */
+  .avatar-image {
+    transition: all 0.3s ease-out;
+  }
+  
+  .avatar-image:hover {
+    animation: 
+      avatar-alive 5s ease-in-out infinite,
+      avatar-breathe 3s ease-in-out infinite,
+      avatar-sway 4s ease-in-out infinite;
+    animation-delay: 0s, 0.5s, 1s;
   }
   
   /* Line Clamp Utilities */

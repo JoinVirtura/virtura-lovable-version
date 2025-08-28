@@ -2419,7 +2419,7 @@ export default function Dashboard() {
                                  src={asset.thumbnail} 
                                  alt={asset.title}
                                  data-asset-id={asset.id}
-                                 className="w-full h-full object-cover transition-all duration-700 hover:scale-110 hover:brightness-125 hover:rotate-1"
+                                 className="avatar-image w-full h-full object-cover"
                                  onError={(e) => {
                                    e.currentTarget.src = "/api/placeholder/300/300";
                                  }}
