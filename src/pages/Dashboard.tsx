@@ -75,21 +75,21 @@ import corporateExecutiveImg from "@/assets/avatar-corporate-executive.jpg";
 import linkedinProfileImg from "@/assets/avatar-linkedin-profile.jpg";
 import authorPortraitImg from "@/assets/avatar-author-portrait.jpg";
 
-// Import brand asset images
-import brandLogoSuiteImg from "@/assets/brand-logo-suite.jpg";
-import brandMarketingCampaignImg from "@/assets/brand-marketing-campaign.jpg";
-import brandSocialMediaImg from "@/assets/brand-social-media.jpg";
-import brandPresentationKitImg from "@/assets/brand-presentation-kit.jpg";
+// Import brand asset avatars
+import avatarLogoDesignerImg from "@/assets/avatar-logo-designer.jpg";
+import avatarMarketingManagerImg from "@/assets/avatar-marketing-manager.jpg";
+import avatarSocialMediaManagerImg from "@/assets/avatar-social-media-manager.jpg";
+import avatarBusinessPresenterImg from "@/assets/avatar-business-presenter.jpg";
 
-// Import video content images
-import videoIntroReelImg from "@/assets/video-intro-reel.jpg";
-import videoProfessionalShowcaseImg from "@/assets/video-professional-showcase.jpg";
-import videoCreativePortfolioImg from "@/assets/video-creative-portfolio.jpg";
-import videoSocialStoryImg from "@/assets/video-social-story.jpg";
+// Import video content avatars
+import avatarVideoCreatorImg from "@/assets/avatar-video-creator.jpg";
+import avatarVideoProducerImg from "@/assets/avatar-video-producer.jpg";
+import avatarCreativeVideoArtistImg from "@/assets/avatar-creative-video-artist.jpg";
+import avatarSocialInfluencerImg from "@/assets/avatar-social-influencer.jpg";
 
-// Import favorites images
-import avatarAwardWinningImg from "@/assets/avatar-award-winning.jpg";
-import brandSignatureKitImg from "@/assets/brand-signature-kit.jpg";
+// Import favorites avatars
+import avatarAwardPhotographerImg from "@/assets/avatar-award-photographer.jpg";
+import avatarBrandConsultantImg from "@/assets/avatar-brand-consultant.jpg";
 
 export default function Dashboard() {
   const { toast } = useToast();
@@ -508,7 +508,7 @@ export default function Dashboard() {
       date: "Dec 6, 2024 3:22 PM",
       format: "SVG",
       tags: ["Logo", "Branding", "Identity"],
-      thumbnail: brandLogoSuiteImg,
+      thumbnail: avatarLogoDesignerImg,
       quality: 100,
       generationTime: "1.5s",
       fileSize: "450 KB",
@@ -523,7 +523,7 @@ export default function Dashboard() {
       date: "Dec 5, 2024 9:30 AM",
       format: "PNG",
       tags: ["Marketing", "Campaign", "Templates"],
-      thumbnail: brandMarketingCampaignImg,
+      thumbnail: avatarMarketingManagerImg,
       quality: 95,
       generationTime: "4.2s",
       fileSize: "12.9 MB",
@@ -538,7 +538,7 @@ export default function Dashboard() {
       date: "Dec 4, 2024 2:15 PM",
       format: "JPG",
       tags: ["Social", "Instagram", "Facebook", "Twitter"],
-      thumbnail: brandSocialMediaImg,
+      thumbnail: avatarSocialMediaManagerImg,
       quality: 94,
       generationTime: "3.8s",
       fileSize: "8.2 MB",
@@ -553,7 +553,7 @@ export default function Dashboard() {
       date: "Dec 3, 2024 11:45 AM",
       format: "PNG",
       tags: ["Presentation", "Business", "Professional"],
-      thumbnail: brandPresentationKitImg,
+      thumbnail: avatarBusinessPresenterImg,
       quality: 98,
       generationTime: "5.1s",
       fileSize: "15.7 MB",
@@ -569,7 +569,7 @@ export default function Dashboard() {
       date: "Dec 2, 2024 5:45 PM",
       format: "MP4",
       tags: ["Avatar", "Video", "Introduction", "Reel"],
-      thumbnail: videoIntroReelImg,
+      thumbnail: avatarVideoCreatorImg,
       quality: 96,
       generationTime: "45.2s",
       fileSize: "25.7 MB",
@@ -584,7 +584,7 @@ export default function Dashboard() {
       date: "Dec 1, 2024 3:20 PM",
       format: "MP4",
       tags: ["Professional", "Business", "Showcase"],
-      thumbnail: videoProfessionalShowcaseImg,
+      thumbnail: avatarVideoProducerImg,
       quality: 98,
       generationTime: "52.8s",
       fileSize: "31.4 MB",
@@ -599,7 +599,7 @@ export default function Dashboard() {
       date: "Nov 30, 2024 1:10 PM",
       format: "MP4",
       tags: ["Creative", "Portfolio", "Artistic"],
-      thumbnail: videoCreativePortfolioImg,
+      thumbnail: avatarCreativeVideoArtistImg,
       quality: 94,
       generationTime: "38.7s",
       fileSize: "22.1 MB",
@@ -614,7 +614,7 @@ export default function Dashboard() {
       date: "Nov 29, 2024 4:35 PM",
       format: "MP4",
       tags: ["Social", "Story", "Instagram", "TikTok"],
-      thumbnail: videoSocialStoryImg,
+      thumbnail: avatarSocialInfluencerImg,
       quality: 92,
       generationTime: "33.5s",
       fileSize: "18.9 MB",
@@ -630,7 +630,7 @@ export default function Dashboard() {
       date: "Nov 28, 2024 12:30 PM",
       format: "PNG",
       tags: ["Award", "Professional", "Premium"],
-      thumbnail: avatarAwardWinningImg,
+      thumbnail: avatarAwardPhotographerImg,
       quality: 100,
       generationTime: "3.1s",
       fileSize: "2.9 MB",
@@ -645,7 +645,7 @@ export default function Dashboard() {
       date: "Nov 27, 2024 10:15 AM",
       format: "SVG",
       tags: ["Premium", "Signature", "Complete"],
-      thumbnail: brandSignatureKitImg,
+      thumbnail: avatarBrandConsultantImg,
       quality: 100,
       generationTime: "2.8s",
       fileSize: "1.2 MB",
