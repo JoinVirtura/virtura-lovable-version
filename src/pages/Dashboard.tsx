@@ -2302,18 +2302,26 @@ export default function Dashboard() {
       case "library":
         return (
           <div className="space-y-6">
+            <div className="mb-4 p-2 bg-green-500/20 text-green-400 rounded text-sm">
+              ✅ Library page loaded - Hover over avatar cards to see animations
+            </div>
             {/* Innovative Header with AI Stats */}
             <div className="relative mb-8">
               <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5 rounded-2xl blur-xl"></div>
               <Card className="relative p-8 bg-gradient-to-br from-card via-card/98 to-card/95 border border-primary/10">
                 <div className="flex items-start justify-between">
-                    <div className="space-y-4">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-3 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl">
+                        <Sparkles className="w-7 h-7 text-primary" />
+                      </div>
                       <div>
                         <h1 className="text-4xl font-display font-bold bg-gradient-to-r from-foreground via-primary to-foreground/80 bg-clip-text text-transparent">
                           AI Generation Library
                         </h1>
                         <p className="text-muted-foreground text-lg">Your complete collection of AI-generated content</p>
                       </div>
+                    </div>
                     
                     {/* Real-time Stats */}
                     <div className="flex items-center gap-8 mt-6">
@@ -2411,7 +2419,7 @@ export default function Dashboard() {
                                  src={asset.thumbnail} 
                                  alt={asset.title}
                                  data-asset-id={asset.id}
-                                 className="avatar-image w-full h-full object-cover"
+                                 className="w-full h-full object-cover transition-all duration-700 hover:scale-110 hover:brightness-125 hover:rotate-1"
                                  onError={(e) => {
                                    e.currentTarget.src = "/api/placeholder/300/300";
                                  }}
