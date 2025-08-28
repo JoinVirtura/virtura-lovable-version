@@ -1,4 +1,3 @@
-
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
@@ -26,6 +25,7 @@ interface GenerateAvatarRequest {
   creativity?: number;
   resolution?: string;
   photoMode?: boolean;
+  referenceImage?: string; // Base64 encoded image for image-to-image
 }
 
 serve(async (req) => {
@@ -62,8 +62,8 @@ serve(async (req) => {
     console.log('Enhanced prompt:', enhancedPrompt);
 
     // Map resolution to size - use standard DALL-E sizes
-    const size = mapResolutionToSize(body.resolution || 'HD');
-    console.log('Using size:', size);
+    const imageSize = mapResolutionToSize(body.resolution || 'HD');
+    console.log('Using size:', imageSize);
 
     // Helper to call OpenAI Images API
     const callOpenAI = async (payload: any) => {
@@ -81,12 +81,11 @@ serve(async (req) => {
     };
 
     // 1) Try gpt-image-1 (best quality, may require org verification)
-
     const primaryPayload: any = {
       model: 'gpt-image-1',
       prompt: enhancedPrompt,
       n: 1,
-      size,
+      size: imageSize,
       quality: body.photoMode ? 'high' : 'auto',
       moderation: 'low',
     };
@@ -105,7 +104,7 @@ serve(async (req) => {
           model: 'dall-e-3',
           prompt: enhancedPrompt,
           n: 1,
-          size,
+          size: imageSize,
           quality: body.photoMode ? 'hd' : 'standard', // valid for dall-e-3
           style: body.photoMode ? 'natural' : 'vivid', // valid for dall-e-3
         };

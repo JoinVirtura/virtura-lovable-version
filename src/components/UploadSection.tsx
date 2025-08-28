@@ -102,12 +102,15 @@ export function UploadSection() {
         const base64Image = e.target?.result as string;
 
         try {
+          console.log('Starting avatar generation with uploaded image...');
           const { AvatarService } = await import("@/services/avatarService");
 
           // Base prompt derived from selected style
           const basePrompt = `${selectedPromptStyle}, professional studio headshot, photorealistic, sharp focus, high quality`;
+          console.log('Using base prompt:', basePrompt);
 
           // 1) Enhanced version (acts like an upscale/refine)
+          console.log('Generating enhanced version...');
           const enhanced = await AvatarService.generateAvatar({
             prompt: `${basePrompt}, enhanced quality, premium lighting`,
             photoMode: true,
@@ -116,6 +119,7 @@ export function UploadSection() {
             adherence: 8,
             referenceImage: base64Image,
           });
+          console.log('Enhanced generation result:', enhanced);
 
           if (enhanced.success && enhanced.image) {
             setEnhancedVersion({ url: enhanced.image });
