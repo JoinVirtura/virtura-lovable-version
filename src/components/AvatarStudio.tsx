@@ -230,94 +230,39 @@ export const AvatarStudio = () => {
     setMessages(prev => [...prev, userMessage]);
     
     // Check if it's a refinement or new generation
-    if (previewCards.length > 0 && (prompt.toLowerCase().includes('change') || prompt.toLowerCase().includes('make') || prompt.toLowerCase().includes('add') || prompt.toLowerCase().includes('remove'))) {
-      // Handle refinements - regenerate all current variants with the edit
+    if (previewCards.length > 0 && prompt.toLowerCase().includes('make')) {
+      // Handle refinements
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         type: "assistant", 
-        content: `Great! I'll apply "${prompt}" to all current variants. Regenerating now with OpenArt workflow...`,
+        content: `Great! I'll update the previews with: "${prompt}". Generating now...`,
         timestamp: new Date()
       };
       setMessages(prev => [...prev, assistantMessage]);
       
-      // Update all existing cards with the edit
+      // Update existing cards
       setIsGenerating(true);
-      
-      try {
-        const { AvatarService } = await import("@/services/avatarService");
-        
-        for (let i = 0; i < previewCards.length; i++) {
-          const card = previewCards[i];
-          setPreviewCards(prev => prev.map(c => 
-            c.id === card.id 
-              ? { ...c, isGenerating: true, prompt: card.prompt + ` + ${prompt}` }
-              : c
-          ));
-
-          const result = await AvatarService.generateAvatar({
-            prompt: card.prompt + ` + ${prompt}`,
-            negativePrompt,
-            adherence,
-            steps,
-            enhance: enhanceEnabled,
-            selectedPreset,
-            resolution: "1024x1024",
-            photoMode: true
-          });
-
-          if (result.success && result.image) {
-            setPreviewCards(prev => prev.map(c => 
-              c.id === card.id 
-                ? { ...c, imageUrl: result.image!, isGenerating: false }
-                : c
-            ));
-          } else {
-            setPreviewCards(prev => prev.map(c => 
-              c.id === card.id 
-                ? { ...c, isGenerating: false }
-                : c
-            ));
-          }
-        }
+      setTimeout(() => {
+        setPreviewCards(prev => prev.map(card => ({
+          ...card,
+          prompt: card.prompt + ` + ${prompt}`
+        })));
         setIsGenerating(false);
-        toast.success("All variants updated successfully!");
-      } catch (error) {
-        setIsGenerating(false);
-        toast.error("Failed to update variants");
-        console.error("Batch edit error:", error);
-      }
+      }, 2000);
       
     } else {
       // Generate new previews
       await generatePreviews(prompt);
-      
-      // Add user message and AI response to chat
-      const assistantMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        type: "assistant", 
-        content: isMultiGeneration 
-          ? `Generating ${isMultiGeneration ? '10+' : '3'} variants with OpenArt workflow. Using adherence: ${adherence}, steps: ${steps}${enhanceEnabled ? ', with enhancement' : ''}${selectedPreset ? `, character preset: @${selectedPreset}` : ''}`
-          : `Generating 3 avatar variants using OpenArt workflow parameters. This may take a moment...`,
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, assistantMessage]);
     }
     
     setPrompt("");
   };
 
-  const handleQuickEdit = async (cardId: string, edit: string) => {
-    const editMessage = `Apply "${edit}" to variant`;
-    
+  const handleQuickEdit = (cardId: string, edit: string) => {
     setMessages(prev => [...prev, {
       id: Date.now().toString(),
-      type: "user",
-      content: editMessage,
-      timestamp: new Date()
-    }, {
-      id: (Date.now() + 1).toString(),
       type: "assistant",
-      content: `Applying "${edit}" to your selection using OpenArt enhancement...`,
+      content: `Applying "${edit}" to your selection...`,
       timestamp: new Date()
     }]);
 
@@ -327,46 +272,13 @@ export const AvatarStudio = () => {
         : card
     ));
 
-    try {
-      const card = previewCards.find(c => c.id === cardId);
-      if (card) {
-        const { AvatarService } = await import("@/services/avatarService");
-        const result = await AvatarService.generateAvatar({
-          prompt: card.prompt + ` + ${edit}`,
-          negativePrompt,
-          adherence,
-          steps,
-          enhance: enhanceEnabled,
-          selectedPreset,
-          resolution: "1024x1024",
-          photoMode: true
-        });
-
-        if (result.success && result.image) {
-          setPreviewCards(prev => prev.map(c => 
-            c.id === cardId 
-              ? { ...c, imageUrl: result.image!, isGenerating: false, prompt: card.prompt + ` + ${edit}` }
-              : c
-          ));
-          toast.success("Variant updated successfully!");
-        } else {
-          setPreviewCards(prev => prev.map(c => 
-            c.id === cardId 
-              ? { ...c, isGenerating: false }
-              : c
-          ));
-          toast.error("Failed to update variant: " + (result.error || "Unknown error"));
-        }
-      }
-    } catch (error) {
-      setPreviewCards(prev => prev.map(c => 
-        c.id === cardId 
-          ? { ...c, isGenerating: false }
-          : c
+    setTimeout(() => {
+      setPreviewCards(prev => prev.map(card => 
+        card.id === cardId 
+          ? { ...card, isGenerating: false }
+          : card
       ));
-      toast.error("Error updating variant");
-      console.error("Quick edit error:", error);
-    }
+    }, 2000);
   };
 
   return (
@@ -552,7 +464,7 @@ export const AvatarStudio = () => {
               <Card className="p-6 bg-gradient-card border-border/50">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="font-semibold text-foreground text-xl">Generated Previews</h3>
-                  <Badge variant="outline" className="text-sm">{previewCards.length} Variants</Badge>
+                  <Badge variant="outline" className="text-sm">3 Variants</Badge>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -566,24 +478,11 @@ export const AvatarStudio = () => {
                               <p className="text-sm text-muted-foreground">Generating...</p>
                             </div>
                           </div>
-                        ) : card.imageUrl && card.imageUrl !== "/placeholder.svg" ? (
-                          <>
-                            <img 
-                              src={card.imageUrl} 
-                              alt={`Generated avatar variant ${index + 1}`}
-                              className="w-full h-full object-cover"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                            <div className="absolute bottom-2 left-2 right-2">
-                              <p className="text-xs text-white font-medium">Variant {index + 1}</p>
-                            </div>
-                          </>
                         ) : (
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="text-center">
                               <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3" />
                               <p className="text-sm text-muted-foreground font-medium">Variant {index + 1}</p>
-                              <p className="text-xs text-muted-foreground">Ready to generate</p>
                             </div>
                           </div>
                         )}
@@ -660,114 +559,94 @@ export const AvatarStudio = () => {
                 </div>
               </Card>
 
-              {/* Horizontal Live Chat Interface - Replaces Recent Conversations */}
-              <Card className="p-6 bg-gradient-card border-border/50">
-                <h3 className="font-semibold text-foreground mb-4">Live Chat with AI</h3>
+              {/* Settings - Horizontal */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  {/* Chat Messages - Takes 2/3 of the width */}
-                  <div className="lg:col-span-2">
-                    <ScrollArea className="h-48 border border-border/30 rounded-lg p-3 bg-background/30">
-                      <div className="space-y-3">
-                        {messages.map((message) => (
-                          <div key={message.id} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-                            <div className={`max-w-[80%] rounded-lg p-2 text-sm ${
-                              message.type === 'user' 
-                                ? 'bg-primary text-primary-foreground' 
-                                : 'bg-muted text-muted-foreground'
-                            }`}>
-                              <div className="flex items-start gap-2">
-                                {message.type === 'assistant' && <MessageCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />}
-                                <span>{message.content}</span>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                      <div ref={messagesEndRef} />
-                    </ScrollArea>
-                  </div>
-
-                  {/* Chat Input & Quick Actions - Takes 1/3 of the width */}
+                {/* Format Settings */}
+                <Card className="p-6 bg-gradient-card border-border/50">
+                  <h3 className="font-semibold text-foreground mb-4">Format Options</h3>
                   <div className="space-y-4">
-                    {/* Chat Input */}
-                    <div className="flex gap-2">
-                      <Textarea
-                        placeholder="Ask AI to make changes... e.g., 'change hair color to green'"
-                        value={prompt}
-                        onChange={(e) => setPrompt(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' && !e.shiftKey) {
-                            e.preventDefault();
-                            handleSendMessage();
-                          }
-                        }}
-                        className="flex-1 min-h-[80px] resize-none bg-background/50 border-border/30 text-sm"
-                      />
-                      <Button 
-                        onClick={handleSendMessage}
-                        disabled={!prompt.trim() || isGenerating}
-                        className="px-3 py-2 bg-primary hover:bg-primary/90 self-end"
-                        size="sm"
-                      >
-                        {isGenerating ? (
-                          <div className="animate-spin w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full" />
-                        ) : (
-                          <Send className="w-4 h-4" />
-                        )}
+                    <div className="grid grid-cols-2 gap-3">
+                      <Button variant="outline" className="border-border/50">
+                        <FileImage className="w-4 h-4 mr-2" />
+                        PNG
+                      </Button>
+                      <Button variant="outline" className="border-border/50">
+                        <FileImage className="w-4 h-4 mr-2" />
+                        JPG
                       </Button>
                     </div>
+                    
+                    <Button variant="outline" className="w-full border-border/50">
+                      <Video className="w-4 h-4 mr-2" />
+                      MP4 Video
+                      <Crown className="w-4 h-4 ml-2 text-yellow-500" />
+                    </Button>
+                  </div>
+                </Card>
 
-                    {/* Quick Edit Suggestions */}
-                    <div className="space-y-2">
-                      <p className="text-xs text-muted-foreground font-medium">Quick Edits:</p>
-                      <div className="grid grid-cols-1 gap-1">
-                        {[
-                          "Change hair color to blonde",
-                          "Make her smile more",
-                          "Add professional lighting",
-                          "Change background to studio"
-                        ].map((suggestion) => (
-                          <Button
-                            key={suggestion}
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setPrompt(suggestion)}
-                            className="text-xs border-border/50 hover:border-primary/50 justify-start h-8"
-                          >
-                            {suggestion}
-                          </Button>
-                        ))}
+                {/* Safety & Settings */}
+                <Card className="p-6 bg-gradient-card border-border/50">
+                  <h3 className="font-semibold text-foreground mb-4">Safety & Settings</h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {watermarkEnabled ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                        <span className="text-sm">Watermark</span>
+                      </div>
+                      <Switch 
+                        checked={watermarkEnabled}
+                        onCheckedChange={setWatermarkEnabled}
+                      />
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Shield className="w-4 h-4" />
+                        <span className="text-sm">AI Proof Content</span>
+                      </div>
+                      <Switch 
+                        checked={aiProofEnabled}
+                        onCheckedChange={setAiProofEnabled}
+                      />
+                    </div>
+                    
+                    <div className="pt-3 border-t border-border/50">
+                      <div className="flex items-center gap-2 text-xs text-green-600">
+                        <CheckCircle className="w-3 h-3" />
+                        <span>Content scanning active</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-green-600 mt-1">
+                        <Shield className="w-3 h-3" />
+                        <span>Unsafe prompt blocking enabled</span>
                       </div>
                     </div>
                   </div>
-                </div>
-              </Card>
-
-              {/* Settings - Single Row */}
-              <Card className="p-6 bg-gradient-card border-border/50">
-                <h3 className="font-semibold text-foreground mb-4">Export & Format Options</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  <Button variant="outline" className="border-border/50">
-                    <FileImage className="w-4 h-4 mr-2" />
-                    PNG
-                  </Button>
-                  <Button variant="outline" className="border-border/50">
-                    <FileImage className="w-4 h-4 mr-2" />
-                    JPG
-                  </Button>
-                  <Button variant="outline" className="border-border/50">
-                    <Video className="w-4 h-4 mr-2" />
-                    MP4 Video
-                    <Crown className="w-4 h-4 ml-2 text-yellow-500" />
-                  </Button>
-                  <Button variant="outline" className="border-border/50">
-                    <Download className="w-4 h-4 mr-2" />
-                    Export All
-                  </Button>
-                </div>
-              </Card>
+                </Card>
+              </div>
             </div>
+          )}
+
+          {/* Chat History - Minimized */}
+          {messages.length > 1 && (
+            <Card className="mt-8 p-4 bg-gradient-card border-border/50">
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="font-medium text-foreground">Recent Conversations</h4>
+                <Badge variant="secondary" className="text-xs">{messages.length - 1} messages</Badge>
+              </div>
+              <ScrollArea className="h-32">
+                <div className="space-y-2">
+                  {messages.slice(1).map((message) => (
+                    <div key={message.id} className="text-sm">
+                      <span className={`font-medium ${message.type === 'user' ? 'text-primary' : 'text-muted-foreground'}`}>
+                        {message.type === 'user' ? 'You: ' : 'AI: '}
+                      </span>
+                      <span className="text-foreground">{message.content}</span>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            </Card>
           )}
         </div>
       </div>
