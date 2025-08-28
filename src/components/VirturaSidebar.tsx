@@ -156,7 +156,7 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
                   }`}
                 >
                   <Crown className="w-4 h-4" />
-                  <span className="font-medium">Upgrade Plan</span>
+                  <span className="font-medium">Upgrade</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
