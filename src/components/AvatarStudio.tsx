@@ -61,14 +61,7 @@ export const AvatarStudio = () => {
   const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isMultiGeneration, setIsMultiGeneration] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: "1",
-      type: "assistant",
-      content: "Hi! I'm your OpenArt AI Workflow Assistant. Describe your avatar idea and I'll follow the professional workflow: detailed prompts, negative prompts, enhancement, and character presets. Try: 'Tall young woman walking down the street in high heels'",
-      timestamp: new Date()
-    }
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [previewCards, setPreviewCards] = useState<PreviewCard[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedExportPack, setSelectedExportPack] = useState<string | null>(null);
@@ -709,7 +702,7 @@ export const AvatarStudio = () => {
 
             {/* Chat Input - Full Width */}
             <div className="mb-4">
-              <div className="flex gap-2">
+              <div className="flex gap-3 items-end">
                 <Textarea
                   placeholder="Type editing commands... e.g., 'change hair color to green'"
                   value={prompt}
@@ -725,7 +718,7 @@ export const AvatarStudio = () => {
                 <Button 
                   onClick={handleChatMessage}
                   disabled={!prompt.trim() || isGenerating}
-                  className="px-6 py-4"
+                  className="px-6 h-[80px]"
                   size="lg"
                 >
                   <Send className="w-5 h-5" />
