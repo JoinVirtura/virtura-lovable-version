@@ -337,11 +337,19 @@ export const AvatarStudio = () => {
       // Generate new previews
       await generatePreviews(prompt);
       
-      // Smooth scroll to Generated Previews
+      // Smooth scroll to Generated Previews section
       setTimeout(() => {
-        const previewsSection = document.querySelector('[class*="space-y-8"]');
-        if (previewsSection) {
-          previewsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const resultsSection = document.querySelector('.space-y-8:has(.grid.grid-cols-1.md\\:grid-cols-3)');
+        if (resultsSection) {
+          resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          // Fallback: scroll to any element with "Generated Previews" text
+          const elements = Array.from(document.querySelectorAll('*')).find(el => 
+            el.textContent?.includes('Generated Previews')
+          );
+          if (elements) {
+            elements.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
         }
       }, 500);
     }
@@ -829,7 +837,7 @@ export const AvatarStudio = () => {
                 {/* Quick Edit Suggestions - Horizontal Scrollable */}
                 <div className="space-y-2">
                   <p className="text-sm text-muted-foreground font-medium">Quick Edits:</p>
-                  <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                  <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
                     {[
                       "Change hair color to blonde",
                       "Add professional clothing", 
