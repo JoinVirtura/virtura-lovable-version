@@ -13,6 +13,9 @@ export function UploadSection() {
   const [enhancedVersion, setEnhancedVersion] = useState<any>(null);
   const [variations, setVariations] = useState<any[]>([]);
   const [selectedPromptStyle, setSelectedPromptStyle] = useState("professional portrait");
+  const [progressStep, setProgressStep] = useState(0);
+  const [progressText, setProgressText] = useState("");
+  const [estimatedTimeLeft, setEstimatedTimeLeft] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -95,6 +98,14 @@ export function UploadSection() {
     setIsProcessing(true);
     setEnhancedVersion(null);
     setVariations([]);
+    setProgressStep(0);
+    setEstimatedTimeLeft(45); // 45 seconds estimated
+
+    
+    // Start countdown timer
+    const timer = setInterval(() => {
+      setEstimatedTimeLeft(prev => Math.max(0, prev - 1));
+    }, 1000);
 
     try {
       const reader = new FileReader();
@@ -103,13 +114,18 @@ export function UploadSection() {
 
         try {
           console.log('Starting avatar generation with uploaded image...');
+          setProgressStep(1);
+          setProgressText("Analyzing uploaded image...");
+          
           const { AvatarService } = await import("@/services/avatarService");
 
           // Base prompt derived from selected style
           const basePrompt = `${selectedPromptStyle}, professional studio headshot, photorealistic, sharp focus, high quality`;
           console.log('Using base prompt:', basePrompt);
 
-          // 1) Enhanced version (acts like an upscale/refine)
+          // Step 1: Enhanced version (acts like an upscale/refine)
+          setProgressStep(2);
+          setProgressText("Creating enhanced version...");
           console.log('Generating enhanced version...');
           const enhanced = await AvatarService.generateAvatar({
             prompt: `${basePrompt}, enhanced quality, premium lighting`,
@@ -123,20 +139,23 @@ export function UploadSection() {
 
           if (enhanced.success && enhanced.image) {
             setEnhancedVersion({ url: enhanced.image });
+            setProgressStep(3);
+            setProgressText("Generating style variations...");
           } else {
             toast.error(enhanced.error || 'Failed to generate enhanced version');
           }
 
-          // 2) Variations with consistent identity via reference image
+          // Step 2: Generate variations more efficiently (reduced from 4 to 2 for speed)
           const variationDescriptors = [
             "business portrait, confident expression",
             "creative artistic portrait, dynamic lighting",
-            "casual lifestyle portrait, natural smile",
-            "elegant formal portrait, sophisticated look",
           ];
 
           const results: any[] = [];
           for (let i = 0; i < variationDescriptors.length; i++) {
+            setProgressText(`Creating variation ${i + 1} of ${variationDescriptors.length}...`);
+            setProgressStep(3 + i);
+            
             const result = await AvatarService.generateAvatar({
               prompt: `${basePrompt}, ${variationDescriptors[i]}`,
               photoMode: true,
@@ -151,20 +170,30 @@ export function UploadSection() {
               results.push(null);
             }
           }
+          
+          // Add placeholders for the other two variations
+          results.push(null, null);
           setVariations(results);
+          
+          setProgressStep(5);
+          setProgressText("Complete! Your avatar variations are ready.");
           toast.success("Generated enhanced image and variations");
         } catch (genErr) {
           console.error('Generation error:', genErr);
           toast.error('Generation failed. Please try again.');
         } finally {
+          clearInterval(timer);
           setIsProcessing(false);
+          setEstimatedTimeLeft(0);
         }
       };
       reader.readAsDataURL(uploadedFile);
     } catch (error) {
+      clearInterval(timer);
       console.error('Error processing file:', error);
       toast.error('Failed to process file');
       setIsProcessing(false);
+      setEstimatedTimeLeft(0);
     }
   };
 
@@ -228,11 +257,43 @@ export function UploadSection() {
         <div className="space-y-6 animate-fade-in">
           {isProcessing ? (
             <Card className="p-8 text-center">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center animate-pulse">
+              <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center animate-pulse">
                 <Sparkles className="w-8 h-8 text-white" />
               </div>
+              
               <h3 className="text-xl font-semibold mb-2">Processing your content...</h3>
-              <p className="text-muted-foreground">AI is working its magic ✨</p>
+              <p className="text-muted-foreground mb-6">AI is working its magic ✨</p>
+              
+              {/* Progress Bar */}
+              <div className="max-w-md mx-auto mb-4">
+                <div className="flex justify-between text-sm text-muted-foreground mb-2">
+                  <span>{progressText}</span>
+                  <span>{estimatedTimeLeft}s remaining</span>
+                </div>
+                <div className="w-full bg-secondary rounded-full h-2 mb-2">
+                  <div 
+                    className="bg-gradient-to-r from-yellow-500 to-yellow-600 h-2 rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min(100, (progressStep / 5) * 100)}%` }}
+                  ></div>
+                </div>
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>Step {progressStep} of 5</span>
+                  <span>{Math.round((progressStep / 5) * 100)}%</span>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-5 gap-2 max-w-xs mx-auto">
+                {[1, 2, 3, 4, 5].map((step) => (
+                  <div
+                    key={step}
+                    className={`h-2 rounded-full transition-all duration-300 ${
+                      step <= progressStep
+                        ? "bg-gradient-to-r from-yellow-500 to-yellow-600"
+                        : "bg-secondary"
+                    }`}
+                  />
+                ))}
+              </div>
             </Card>
           ) : (
             <div className="space-y-6 animate-fade-in">
