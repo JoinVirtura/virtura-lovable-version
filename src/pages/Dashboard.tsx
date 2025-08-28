@@ -678,6 +678,50 @@ export default function Dashboard() {
     }
   ];
 
+  // Calculate dynamic stats from assets
+  const calculateStats = () => {
+    const totalAssets = assets.length;
+    
+    // Calculate this month's assets (current month)
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+    const thisMonthAssets = assets.filter(asset => {
+      const assetDate = new Date(asset.date);
+      return assetDate.getMonth() === currentMonth && assetDate.getFullYear() === currentYear;
+    }).length;
+    
+    // Calculate total storage used (convert MB to GB and sum)
+    const totalStorageBytes = assets.reduce((total, asset) => {
+      const sizeStr = asset.fileSize;
+      const sizeValue = parseFloat(sizeStr);
+      const unit = sizeStr.includes('MB') ? 'MB' : 'KB';
+      const bytesPerMB = 1024 * 1024;
+      const bytesPerKB = 1024;
+      
+      if (unit === 'MB') {
+        return total + (sizeValue * bytesPerMB);
+      } else {
+        return total + (sizeValue * bytesPerKB);
+      }
+    }, 0);
+    
+    const storageGB = (totalStorageBytes / (1024 * 1024 * 1024)).toFixed(1);
+    
+    // Calculate average quality
+    const avgQuality = Math.round(
+      assets.reduce((sum, asset) => sum + asset.quality, 0) / assets.length
+    );
+    
+    return {
+      totalAssets,
+      thisMonthAssets,
+      storageUsed: `${storageGB}GB`,
+      avgQuality: `${avgQuality}%`
+    };
+  };
+
+  const stats = calculateStats();
+
   const filteredAssets = assets.filter(asset => {
     const matchesSearch = asset.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          asset.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
@@ -2344,22 +2388,22 @@ export default function Dashboard() {
                     {/* Enhanced Stats Section */}
                     <div className="mt-8 grid grid-cols-4 gap-8">
                       <div className="text-center group cursor-pointer">
-                        <div className="text-3xl font-display font-bold text-primary mb-2 group-hover:scale-110 transition-transform duration-300">6</div>
+                        <div className="text-3xl font-display font-bold text-primary mb-2 group-hover:scale-110 transition-transform duration-300">{stats.totalAssets}</div>
                         <div className="text-sm text-muted-foreground font-medium">Total Assets</div>
                         <div className="w-full h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent mt-2 group-hover:via-primary transition-colors duration-300"></div>
                       </div>
                       <div className="text-center group cursor-pointer">
-                        <div className="text-3xl font-display font-bold text-secondary mb-2 group-hover:scale-110 transition-transform duration-300">12</div>
+                        <div className="text-3xl font-display font-bold text-secondary mb-2 group-hover:scale-110 transition-transform duration-300">{stats.thisMonthAssets}</div>
                         <div className="text-sm text-muted-foreground font-medium">This Month</div>
                         <div className="w-full h-px bg-gradient-to-r from-transparent via-secondary/30 to-transparent mt-2 group-hover:via-secondary transition-colors duration-300"></div>
                       </div>
                       <div className="text-center group cursor-pointer">
-                        <div className="text-3xl font-display font-bold text-accent mb-2 group-hover:scale-110 transition-transform duration-300">4.2GB</div>
+                        <div className="text-3xl font-display font-bold text-accent mb-2 group-hover:scale-110 transition-transform duration-300">{stats.storageUsed}</div>
                         <div className="text-sm text-muted-foreground font-medium">Storage Used</div>
                         <div className="w-full h-px bg-gradient-to-r from-transparent via-accent/30 to-transparent mt-2 group-hover:via-accent transition-colors duration-300"></div>
                       </div>
                       <div className="text-center group cursor-pointer">
-                        <div className="text-3xl font-display font-bold text-green-500 mb-2 group-hover:scale-110 transition-transform duration-300">94%</div>
+                        <div className="text-3xl font-display font-bold text-green-500 mb-2 group-hover:scale-110 transition-transform duration-300">{stats.avgQuality}</div>
                         <div className="text-sm text-muted-foreground font-medium">Avg Quality</div>
                         <div className="w-full h-px bg-gradient-to-r from-transparent via-green-500/30 to-transparent mt-2 group-hover:via-green-500 transition-colors duration-300"></div>
                       </div>
