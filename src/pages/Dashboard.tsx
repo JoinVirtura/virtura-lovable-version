@@ -2302,6 +2302,9 @@ export default function Dashboard() {
       case "library":
         return (
           <div className="space-y-6">
+            <div className="mb-4 p-2 bg-green-500/20 text-green-400 rounded text-sm">
+              ✅ Library page loaded - Hover over avatar cards to see animations
+            </div>
             {/* Innovative Header with AI Stats */}
             <div className="relative mb-8">
               <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5 rounded-2xl blur-xl"></div>
@@ -2415,19 +2418,22 @@ export default function Dashboard() {
                                <img 
                                  src={asset.thumbnail} 
                                  alt={asset.title}
-                                 className="w-full h-full object-cover transition-all duration-700"
+                                 className="w-full h-full object-cover transition-all duration-700 hover:scale-105"
                                  style={{
                                    transition: 'all 0.7s ease-in-out',
                                  }}
                                  onMouseEnter={(e) => {
-                                   console.log('Mouse entered avatar card');
-                                   e.currentTarget.style.animation = 'alive 5s ease-in-out infinite';
+                                   console.log('🎭 Avatar hover started:', asset.title);
+                                   // Apply multiple animations for realistic "alive" effect
+                                   e.currentTarget.style.animation = 'alive 5s ease-in-out infinite, breathe 3s ease-in-out infinite';
                                    e.currentTarget.style.transform = 'scale(1.05)';
+                                   e.currentTarget.style.filter = 'brightness(1.1)';
                                  }}
                                  onMouseLeave={(e) => {
-                                   console.log('Mouse left avatar card');
+                                   console.log('🎭 Avatar hover ended:', asset.title);
                                    e.currentTarget.style.animation = 'none';
                                    e.currentTarget.style.transform = 'scale(1)';
+                                   e.currentTarget.style.filter = 'brightness(1)';
                                  }}
                                  onError={(e) => {
                                    e.currentTarget.src = "/api/placeholder/300/300";
