@@ -6,6 +6,12 @@ verify_jwt = false
 [functions.generate-avatar-hf]
 verify_jwt = false
 
+[functions.optimize-avatar-prompt]
+verify_jwt = false
+
+[functions.generate-avatar-premium]
+verify_jwt = false
+
 [functions.test-openai]
 verify_jwt = false
 

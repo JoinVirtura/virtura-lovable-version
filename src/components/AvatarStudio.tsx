@@ -27,6 +27,7 @@ import {
   Eye,
   EyeOff
 } from "lucide-react";
+import { AvatarService } from "@/services/avatarService";
 
 interface ChatMessage {
   id: string;
@@ -137,75 +138,110 @@ export const AvatarStudio = () => {
     const finalPrompt = safetyCheck.reframedPrompt || userPrompt;
     setIsGenerating(true);
 
-    // Enhanced prompts following OpenArt workflow
-    const enhancedPositive = `${finalPrompt}, detailed clothing, realistic natural lighting, high quality, professional photography, 8k resolution, sharp focus, realistic skin texture, detailed hair, photorealistic`;
-    
-    // Generate cards based on multi-generation setting
-    const cardCount = isMultiGeneration ? 10 : 3;
-    const poses = isMultiGeneration 
-      ? ["front facing close-up", "full body portrait", "three-quarter view", "profile view", "sitting pose", "standing pose", "professional pose", "casual pose", "dynamic angle", "elegant stance"]
-      : ["Style A - Professional", "Style B - Creative", "Style C - Natural"];
-
-    const newCards: PreviewCard[] = Array.from({ length: cardCount }, (_, i) => ({
-      id: Date.now() + "_" + (i + 1),
-      imageUrl: "/placeholder.svg",
-      prompt: isMultiGeneration 
-        ? `${enhancedPositive}, ${poses[i]}` 
-        : `${enhancedPositive} - ${poses[i]}`,
-      isGenerating: true,
-      safetyPassed: true
-    }));
-
-    setPreviewCards(newCards);
-
     try {
-      // Call actual avatar generation service
-      const { AvatarService } = await import("@/services/avatarService");
+      // Step 1: Optimize the prompt for high-quality generation
+      console.log("Optimizing prompt for premium quality...");
+      const optimizationResult = await AvatarService.optimizePrompt(finalPrompt, "professional", 3);
       
-      for (let i = 0; i < newCards.length; i++) {
-        const result = await AvatarService.generateAvatar({
-          prompt: newCards[i].prompt,
-          negativePrompt,
-          adherence,
-          steps,
-          enhance: enhanceEnabled,
-          selectedPreset,
-          resolution: "1024x1024",
-          photoMode: true
-        });
+      if (!optimizationResult.success || optimizationResult.optimizedPrompts.length === 0) {
+        console.warn("Prompt optimization failed, using fallback approach");
+        // Fallback to enhanced positive prompt
+        const enhancedPositive = `${finalPrompt}, detailed clothing, realistic natural lighting, high quality, professional photography, 8k resolution, sharp focus, realistic skin texture, detailed hair, photorealistic`;
+        
+        const newCards: PreviewCard[] = Array.from({ length: 3 }, (_, i) => ({
+          id: Date.now() + "_" + (i + 1),
+          imageUrl: "/placeholder.svg",
+          prompt: `${enhancedPositive} - Style ${String.fromCharCode(65 + i)}`,
+          isGenerating: true,
+          safetyPassed: true
+        }));
 
-        if (result.success && result.image) {
-          setPreviewCards(prev => prev.map(card => 
-            card.id === newCards[i].id 
-              ? { ...card, imageUrl: result.image!, isGenerating: false }
-              : card
-          ));
-        } else {
-          setPreviewCards(prev => prev.map(card => 
-            card.id === newCards[i].id 
-              ? { ...card, isGenerating: false }
-              : card
-          ));
-          toast.error(`Generation failed for variant ${i + 1}: ${result.error}`);
+        setPreviewCards(newCards);
+        
+        // Use standard generation
+        for (let i = 0; i < newCards.length; i++) {
+          const result = await AvatarService.generateAvatar({
+            prompt: newCards[i].prompt,
+            negativePrompt,
+            adherence,
+            steps,
+            enhance: enhanceEnabled,
+            selectedPreset,
+            resolution: "1024x1024",
+            photoMode: true
+          });
+
+          if (result.success && result.image) {
+            setPreviewCards(prev => prev.map(card => 
+              card.id === newCards[i].id 
+                ? { ...card, imageUrl: result.image!, isGenerating: false }
+                : card
+            ));
+          } else {
+            setPreviewCards(prev => prev.map(card => 
+              card.id === newCards[i].id 
+                ? { ...card, isGenerating: false }
+                : card
+            ));
+            toast.error(`Generation failed for variant ${i + 1}: ${result.error}`);
+          }
+        }
+      } else {
+        // Step 2: Use optimized prompts for premium generation
+        console.log("Using optimized prompts for premium generation");
+        const optimizedPrompts = optimizationResult.optimizedPrompts;
+        
+        const newCards: PreviewCard[] = optimizedPrompts.map((opt, i) => ({
+          id: Date.now() + "_" + (i + 1),
+          imageUrl: "/placeholder.svg",
+          prompt: opt.prompt,
+          isGenerating: true,
+          safetyPassed: true
+        }));
+
+        setPreviewCards(newCards);
+        
+        // Generate each variant using premium quality
+        for (let i = 0; i < newCards.length; i++) {
+          const optimizedPrompt = optimizedPrompts[i];
+          
+          console.log(`Generating premium variant ${i + 1} with optimized prompt`);
+          const result = await AvatarService.generatePremiumAvatar(
+            optimizedPrompt.prompt,
+            optimizedPrompt.negativePrompt,
+            "1024x1536" // Portrait mode for higher quality
+          );
+
+          if (result.success && result.image) {
+            setPreviewCards(prev => prev.map(card => 
+              card.id === newCards[i].id 
+                ? { ...card, imageUrl: result.image!, isGenerating: false }
+                : card
+            ));
+            toast.success(`High-quality variant ${i + 1} generated successfully!`);
+          } else {
+            setPreviewCards(prev => prev.map(card => 
+              card.id === newCards[i].id 
+                ? { ...card, isGenerating: false }
+                : card
+            ));
+            toast.error(`Premium generation failed for variant ${i + 1}: ${result.error}`);
+          }
         }
       }
       
       setIsGenerating(false);
       
-      // Add workflow suggestion
-      const suggestions = isMultiGeneration 
-        ? ["Great! Now enhance the best images and create a character preset"]
-        : ["Perfect! Try 'Generate 10+ variants' for a full dataset, or enhance your favorite"];
-      
       setMessages(prev => [...prev, {
         id: Date.now().toString(),
         type: "assistant",
-        content: suggestions[0],
+        content: "Premium quality avatars generated using OpenAI's gpt-image-1 model with optimized prompts for maximum realism and consistency!",
         timestamp: new Date()
       }]);
+      
     } catch (error) {
       setIsGenerating(false);
-      toast.error("Generation failed. Please try again.");
+      toast.error("Premium generation failed. Please try again.");
       console.error("Avatar generation error:", error);
     }
   };
