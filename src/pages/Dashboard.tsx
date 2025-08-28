@@ -64,10 +64,16 @@ import {
   MessageSquare
 } from "lucide-react";
 
-// Import new library images
-import businessExecutiveImg from "@/assets/model-business-executive.jpg";
-import creativeArtistImg from "@/assets/model-creative-artist.jpg";
-import fashionLuxuryImg from "@/assets/model-fashion-luxury.jpg";
+// Import diverse avatar images
+import businessExecutiveImg from "@/assets/avatar-business-executive.jpg";
+import creativeArtistImg from "@/assets/avatar-creative-artist.jpg";
+import fashionModelImg from "@/assets/avatar-fashion-model.jpg";
+import techEntrepreneurImg from "@/assets/avatar-tech-entrepreneur.jpg";
+import healthcareProfessionalImg from "@/assets/avatar-healthcare-professional.jpg";
+import fitnessCoachImg from "@/assets/avatar-fitness-coach.jpg";
+import corporateExecutiveImg from "@/assets/avatar-corporate-executive.jpg";
+import linkedinProfileImg from "@/assets/avatar-linkedin-profile.jpg";
+import authorPortraitImg from "@/assets/avatar-author-portrait.jpg";
 
 export default function Dashboard() {
   const { toast } = useToast();
@@ -393,7 +399,7 @@ export default function Dashboard() {
       date: "Dec 13, 2024 1:20 PM",
       format: "JPG",
       tags: ["Fashion", "Luxury", "Editorial"],
-      thumbnail: fashionLuxuryImg,
+      thumbnail: fashionModelImg,
       quality: 97,
       generationTime: "3.5s",
       fileSize: "2.3 MB",
@@ -406,7 +412,7 @@ export default function Dashboard() {
       date: "Dec 12, 2024 11:15 AM",
       format: "PNG",
       tags: ["Technology", "Startup", "Innovation"],
-      thumbnail: businessExecutiveImg,
+      thumbnail: techEntrepreneurImg,
       quality: 95,
       generationTime: "3.7s",
       fileSize: "2.7 MB",
@@ -419,7 +425,7 @@ export default function Dashboard() {
       date: "Dec 11, 2024 9:30 AM",
       format: "JPG",
       tags: ["Medical", "Healthcare", "Doctor"],
-      thumbnail: creativeArtistImg,
+      thumbnail: healthcareProfessionalImg,
       quality: 99,
       generationTime: "2.9s",
       fileSize: "2.5 MB",
@@ -432,7 +438,7 @@ export default function Dashboard() {
       date: "Dec 10, 2024 3:22 PM",
       format: "PNG",
       tags: ["Fitness", "Health", "Athletic"],
-      thumbnail: fashionLuxuryImg,
+      thumbnail: fitnessCoachImg,
       quality: 94,
       generationTime: "3.1s",
       fileSize: "2.8 MB",
@@ -446,7 +452,7 @@ export default function Dashboard() {
       date: "Dec 9, 2024 1:20 PM",
       format: "JPG",
       tags: ["Corporate", "Executive", "Professional"],
-      thumbnail: businessExecutiveImg,
+      thumbnail: corporateExecutiveImg,
       quality: 97,
       generationTime: "3.5s",
       fileSize: "2.3 MB",
@@ -459,7 +465,7 @@ export default function Dashboard() {
       date: "Dec 8, 2024 11:15 AM",
       format: "PNG",
       tags: ["LinkedIn", "Professional", "Portrait"],
-      thumbnail: creativeArtistImg,
+      thumbnail: linkedinProfileImg,
       quality: 99,
       generationTime: "3.7s",
       fileSize: "2.7 MB",
@@ -472,7 +478,7 @@ export default function Dashboard() {
       date: "Dec 7, 2024 4:45 PM",
       format: "JPG",
       tags: ["Author", "Writer", "Creative"],
-      thumbnail: fashionLuxuryImg,
+      thumbnail: authorPortraitImg,
       quality: 96,
       generationTime: "3.2s",
       fileSize: "2.4 MB",
@@ -516,7 +522,7 @@ export default function Dashboard() {
       date: "Dec 4, 2024 2:15 PM",
       format: "JPG",
       tags: ["Social", "Instagram", "Facebook", "Twitter"],
-      thumbnail: fashionLuxuryImg,
+      thumbnail: fashionModelImg,
       quality: 94,
       generationTime: "3.8s",
       fileSize: "8.2 MB",
@@ -577,7 +583,7 @@ export default function Dashboard() {
       date: "Nov 30, 2024 1:10 PM",
       format: "MP4",
       tags: ["Creative", "Portfolio", "Artistic"],
-      thumbnail: fashionLuxuryImg,
+      thumbnail: fashionModelImg,
       quality: 94,
       generationTime: "38.7s",
       fileSize: "22.1 MB",
@@ -608,7 +614,7 @@ export default function Dashboard() {
       date: "Nov 28, 2024 12:30 PM",
       format: "PNG",
       tags: ["Award", "Professional", "Premium"],
-      thumbnail: fashionLuxuryImg,
+      thumbnail: fashionModelImg,
       quality: 100,
       generationTime: "3.1s",
       fileSize: "2.9 MB",
@@ -2377,7 +2383,7 @@ export default function Dashboard() {
                       >
                         {category === "Favorites" && <Star className="w-4 h-4 mr-2" />}
                         {category}
-                        {category === "All" && <Badge variant="secondary" className="ml-2 text-xs">6</Badge>}
+                        {category === "All" && <Badge variant="secondary" className="ml-2 text-xs">{assets.length}</Badge>}
                       </Button>
                     ))}
                   </div>
