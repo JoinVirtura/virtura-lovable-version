@@ -493,9 +493,7 @@ export const AvatarStudio = () => {
           {/* Header */}
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-2 mb-6">
-              <Wand2 className="w-8 h-8 text-primary" />
               <h1 className="text-4xl font-display font-bold text-foreground">AI Copilot Studio</h1>
-              <Shield className="w-6 h-6 text-green-500" />
             </div>
             <p className="text-lg text-muted-foreground mb-8">Your ChatGPT-powered creative assistant</p>
             
