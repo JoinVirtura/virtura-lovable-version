@@ -97,7 +97,44 @@ export default function Dashboard() {
   
   // Copilot Flow state
   const [currentPrompt, setCurrentPrompt] = useState("");
-  const [generatedPreviews, setGeneratedPreviews] = useState<any[]>([]);
+  const [generatedPreviews, setGeneratedPreviews] = useState<any[]>([
+    {
+      id: 1,
+      title: "Professional Executive",
+      description: "Confident business professional in modern office setting",
+      imageUrl: businessExecutiveImg
+    },
+    {
+      id: 2,
+      title: "Creative Artist",
+      description: "Artistic portrait with vibrant studio background",
+      imageUrl: creativeArtistImg
+    },
+    {
+      id: 3,
+      title: "Tech Entrepreneur",
+      description: "Innovative tech leader in contemporary workspace",
+      imageUrl: techEntrepreneurImg
+    },
+    {
+      id: 4,
+      title: "Fashion Portrait",
+      description: "Elegant fashion model with professional styling",
+      imageUrl: fashionModelImg
+    },
+    {
+      id: 5,
+      title: "Healthcare Professional",
+      description: "Medical professional in clinical environment",
+      imageUrl: healthcareProfessionalImg
+    },
+    {
+      id: 6,
+      title: "Fitness Coach",
+      description: "Active lifestyle coach in training facility",
+      imageUrl: fitnessCoachImg
+    }
+  ]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [chatMessages, setChatMessages] = useState<any[]>([]);
   const [showAdvanced, setShowAdvanced] = useState(false);
