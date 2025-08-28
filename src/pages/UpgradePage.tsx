@@ -7,54 +7,60 @@ import { useToast } from "@/hooks/use-toast";
 
 const plans = [
   {
-    id: "basic",
-    name: "Basic",
-    price: "$9/mo",
-    amount: 9,
+    id: "individual",
+    name: "Individual",
+    price: "$20/mo",
+    amount: 20,
     highlights: [
-      "200 credits/month",
-      "Photorealistic avatars",
-      "1 Export Pack/mo",
+      "200 tokens/month",
+      "Image & video generations",
+      "Export packs",
+      "Tokens never expire",
       "Community support",
     ],
     popular: false,
+    description: "For creators, hobbyists, and freelancers"
   },
   {
     id: "pro",
     name: "Pro",
-    price: "$19/mo",
-    amount: 19,
+    price: "$99/mo",
+    amount: 99,
     highlights: [
-      "1,000 credits/month",
-      "Unlimited generations (fair use)",
-      "All Export Packs",
-      "Priority queue",
-      "Advanced editing",
+      "1,000 tokens/month",
+      "All generation features",
+      "Priority processing",
+      "Advanced editing tools",
       "Email support",
+      "Commercial licensing",
     ],
     popular: true,
+    description: "For professionals and small teams"
   },
   {
     id: "enterprise",
     name: "Enterprise",
-    price: "$49/mo",
-    amount: 49,
+    price: "$299/mo",
+    amount: 299,
     highlights: [
-      "5,000 credits/month",
-      "Unlimited avatars + brand assets",
-      "All Export Packs",
-      "Team seats (up to 5)",
-      "Brand Kit",
+      "3,000 tokens/month",
+      "Unlimited scaling",
+      "Team collaboration",
+      "White-label options",
       "Priority support",
+      "Custom integrations",
     ],
     popular: false,
+    description: "For agencies and high-volume users"
   },
 ] as const;
 
 const tokenPacks = [
-  { tokens: 100, price: "$5", amount: 5 },
-  { tokens: 500, price: "$20", amount: 20 },
-  { tokens: 1500, price: "$50", amount: 50 },
+  { tokens: 100, price: "$15", amount: 15 },
+  { tokens: 500, price: "$75", amount: 75 },
+  { tokens: 1000, price: "$150", amount: 150 },
+  { tokens: 5000, price: "$750", amount: 750 },
+  { tokens: 10000, price: "$1,500", amount: 1500 },
 ] as const;
 
 export default function UpgradePage() {
@@ -113,6 +119,7 @@ export default function UpgradePage() {
               <div className="space-y-2">
                 <h3 className="text-xl font-display font-bold">{plan.name}</h3>
                 <p className="text-2xl font-display font-bold">{plan.price}</p>
+                <p className="text-sm text-muted-foreground">{plan.description}</p>
               </div>
               <ul className="mt-4 space-y-2 text-sm text-muted-foreground flex-1">
                 {plan.highlights.map((h) => (
@@ -128,8 +135,9 @@ export default function UpgradePage() {
       </section>
 
       <section aria-labelledby="token-topups" className="mb-12">
-        <h2 id="token-topups" className="text-xl font-display font-bold mb-4">Need more credits? Buy tokens</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <h2 id="token-topups" className="text-xl font-display font-bold mb-4">Need more tokens? À la carte pricing</h2>
+        <p className="text-sm text-muted-foreground mb-6">Premium rate: $0.15 per token (vs $0.10 in subscriptions)</p>
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           {tokenPacks.map((pack) => (
             <Card key={pack.tokens} className="p-6 h-full flex flex-col">
               <h3 className="text-lg font-display font-bold">{pack.tokens} tokens</h3>
