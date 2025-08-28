@@ -68,7 +68,10 @@ export const AvatarStudio = () => {
   const [selectedExportPack, setSelectedExportPack] = useState<string | null>(null);
   const [watermarkEnabled, setWatermarkEnabled] = useState(true);
   const [aiProofEnabled, setAiProofEnabled] = useState(false);
+  const [referenceImage, setReferenceImage] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Character presets (stored locally for session)
   const [characterPresets, setCharacterPresets] = useState<Array<{
@@ -127,6 +130,49 @@ export const AvatarStudio = () => {
     return { safe: true };
   };
 
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error("Please upload an image file");
+      return;
+    }
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Image must be smaller than 10MB");
+      return;
+    }
+
+    setIsUploading(true);
+    
+    try {
+      // Convert to base64 for immediate preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64 = e.target?.result as string;
+        setReferenceImage(base64);
+        toast.success("Reference image uploaded successfully!");
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error("Failed to upload image. Please try again.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const removeReferenceImage = () => {
+    setReferenceImage(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    toast.success("Reference image removed");
+  };
+
   const generatePreviews = async (userPrompt: string) => {
     const safetyCheck = checkPromptSafety(userPrompt);
     
@@ -172,7 +218,8 @@ export const AvatarStudio = () => {
           enhance: enhanceEnabled,
           selectedPreset,
           resolution: "1024x1024",
-          photoMode: true
+          photoMode: true,
+          referenceImage
         });
 
         if (result.success && result.image) {
@@ -257,7 +304,8 @@ export const AvatarStudio = () => {
             enhance: enhanceEnabled,
             selectedPreset,
             resolution: "1024x1024",
-            photoMode: true
+            photoMode: true,
+            referenceImage
           });
 
           if (result.success && result.image) {
@@ -357,12 +405,25 @@ export const AvatarStudio = () => {
                     }}
                     className="min-h-[60px] resize-none bg-background/50 border-0 focus-visible:ring-0 text-base"
                   />
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
                   <Button 
                     variant="outline"
                     size="lg"
                     className="px-4 py-4 border-border/50 hover:border-primary/50"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading}
                   >
-                    <Upload className="w-5 h-5" />
+                    {isUploading ? (
+                      <div className="animate-spin w-5 h-5 border-2 border-primary border-t-transparent rounded-full" />
+                    ) : (
+                      <Upload className="w-5 h-5" />
+                    )}
                   </Button>
                   <Button 
                     onClick={handleSendMessage}
@@ -377,6 +438,31 @@ export const AvatarStudio = () => {
                     )}
                   </Button>
                 </div>
+
+                {/* Reference Image Preview */}
+                {referenceImage && (
+                  <div className="flex items-center gap-3 p-3 bg-background/30 rounded-lg border border-border/30">
+                    <div className="w-16 h-16 rounded-lg overflow-hidden bg-background/50">
+                      <img 
+                        src={referenceImage} 
+                        alt="Reference" 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-foreground">Reference Image</p>
+                      <p className="text-xs text-muted-foreground">This image will guide the generation</p>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={removeReferenceImage}
+                      className="border-border/50 hover:border-red-500/50 hover:text-red-500"
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                )}
 
                 {/* Negative Prompt */}
                 <div>

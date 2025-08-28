@@ -26,6 +26,7 @@ interface GenerateAvatarRequest {
   creativity?: number;
   resolution?: string;
   photoMode?: boolean;
+  referenceImage?: string; // Base64 encoded image
 }
 
 serve(async (req) => {
@@ -72,11 +73,39 @@ serve(async (req) => {
       // Use FLUX.1-dev for Photo Mode (higher quality), schnell for speed otherwise
       const model = body.photoMode ? 'black-forest-labs/FLUX.1-dev' : 'black-forest-labs/FLUX.1-schnell';
       console.log(`Generating with ${model}...`);
-      image = await hf.textToImage({
-        inputs: enhancedPrompt,
-        model,
-        parameters: { width, height },
-      });
+      
+      // Check if we have a reference image for image-to-image generation
+      if (body.referenceImage) {
+        console.log('Using reference image for img2img generation...');
+        // Convert base64 to blob for reference image
+        const base64Data = body.referenceImage.split(',')[1];
+        const binaryData = atob(base64Data);
+        const uint8Array = new Uint8Array(binaryData.length);
+        for (let i = 0; i < binaryData.length; i++) {
+          uint8Array[i] = binaryData.charCodeAt(i);
+        }
+        const referenceBlob = new Blob([uint8Array], { type: 'image/png' });
+        
+        image = await hf.imageToImage({
+          inputs: referenceBlob,
+          model,
+          parameters: { 
+            prompt: enhancedPrompt,
+            negative_prompt: body.negativePrompt,
+            width, 
+            height,
+            strength: 0.8, // How much to change the reference image
+            guidance_scale: body.adherence || 7,
+            num_inference_steps: body.steps || 28
+          },
+        });
+      } else {
+        image = await hf.textToImage({
+          inputs: enhancedPrompt,
+          model,
+          parameters: { width, height },
+        });
+      }
     } catch (e) {
       const msg = (e as Error)?.message || String(e);
       console.error('HF generation error (primary):', msg);

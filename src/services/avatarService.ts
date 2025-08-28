@@ -19,6 +19,7 @@ export interface AvatarGenerationParams {
   creativity?: number;
   resolution?: string;
   photoMode?: boolean;
+  referenceImage?: string; // Base64 encoded image
 }
 
 
