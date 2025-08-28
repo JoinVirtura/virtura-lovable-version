@@ -2745,11 +2745,6 @@ export default function Dashboard() {
                         <p className="text-xs text-muted-foreground mt-1">Try higher resolution settings for better engagement</p>
                       </div>
                       
-                      <div className="p-4 bg-gradient-to-r from-accent/10 to-accent/5 rounded-lg border border-accent/20 hover:border-accent/30 transition-colors cursor-pointer group">
-                        <p className="text-sm font-medium text-accent group-hover:text-accent/80 transition-colors">Storage Tip</p>
-                        <p className="text-xs text-muted-foreground mt-1">Archive older assets to free up 2.1GB space</p>
-                      </div>
-                      
                       <div className="p-4 bg-gradient-to-r from-green-500/10 to-green-500/5 rounded-lg border border-green-500/20 hover:border-green-500/30 transition-colors cursor-pointer group">
                         <p className="text-sm font-medium text-green-500 group-hover:text-green-500/80 transition-colors">Popular Lighting</p>
                         <p className="text-xs text-muted-foreground mt-1">Golden hour lighting increases downloads by 34%</p>
@@ -2832,7 +2827,12 @@ export default function Dashboard() {
                     <p className="text-muted-foreground text-lg mt-2">
                       Try adjusting your search or filters to find what you're looking for.
                     </p>
-                  </div>
+                      </div>
+                      
+                      <div className="p-4 bg-gradient-to-r from-accent/10 to-accent/5 rounded-lg border border-accent/20 hover:border-accent/30 transition-colors cursor-pointer group">
+                        <p className="text-sm font-medium text-accent group-hover:text-accent/80 transition-colors">Storage Tip</p>
+                        <p className="text-xs text-muted-foreground mt-1">Archive older assets to free up 2.1GB space</p>
+                      </div>
                   <div className="flex gap-3 justify-center">
                     <Button variant="outline" onClick={() => setSearchQuery("")} className="hover:scale-105 transition-transform">
                       Clear Search
