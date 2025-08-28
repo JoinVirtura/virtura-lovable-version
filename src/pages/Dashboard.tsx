@@ -2336,7 +2336,46 @@ export default function Dashboard() {
                         <div className="text-sm text-muted-foreground font-medium">Avg Quality</div>
                       </div>
                     </div>
-                  </div>
+                    </div>
+                    
+                    {/* AI Insights Section */}
+                    <div className="mt-8 p-6 bg-gradient-to-r from-muted/30 via-muted/20 to-muted/30 rounded-xl border border-border/50">
+                      <h3 className="font-semibold text-lg mb-4 flex items-center gap-2 text-foreground">
+                        <Trophy className="w-5 h-5 text-primary" />
+                        AI Insights
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="space-y-3">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Quality Score</span>
+                            <span className="font-semibold text-foreground">9.2/10</span>
+                          </div>
+                          <div className="w-full bg-muted rounded-full h-3">
+                            <div className="bg-gradient-to-r from-primary to-secondary h-3 rounded-full transition-all duration-1000" style={{ width: '92%' }}></div>
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-3">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Generation Speed</span>
+                            <span className="font-semibold text-foreground">Fast</span>
+                          </div>
+                          <div className="w-full bg-muted rounded-full h-3">
+                            <div className="bg-gradient-to-r from-secondary to-accent h-3 rounded-full transition-all duration-1000" style={{ width: '87%' }}></div>
+                          </div>
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Storage Efficiency</span>
+                            <span className="font-semibold text-foreground">Excellent</span>
+                          </div>
+                          <div className="w-full bg-muted rounded-full h-3">
+                            <div className="bg-gradient-to-r from-accent to-primary h-3 rounded-full transition-all duration-1000" style={{ width: '94%' }}></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   
                   {/* Innovative AI Pulse Visualization */}
                   <div className="relative">
@@ -2648,44 +2687,6 @@ export default function Dashboard() {
 
               {/* AI Insights Sidebar */}
               <div className="space-y-6">
-                <Card className="p-6 border-2 hover:border-primary/20 transition-colors">
-                  <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
-                    <Trophy className="w-5 h-5 text-primary" />
-                    AI Insights
-                  </h3>
-                  <div className="space-y-6">
-                    <div className="space-y-3">
-                      <div className="flex justify-between text-sm">
-                        <span>Quality Score</span>
-                        <span className="font-semibold">9.2/10</span>
-                      </div>
-                      <div className="w-full bg-muted rounded-full h-3">
-                        <div className="bg-gradient-to-r from-primary to-secondary h-3 rounded-full transition-all duration-1000" style={{ width: '92%' }}></div>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-3">
-                      <div className="flex justify-between text-sm">
-                        <span>Generation Speed</span>
-                        <span className="font-semibold">Fast</span>
-                      </div>
-                      <div className="w-full bg-muted rounded-full h-3">
-                        <div className="bg-gradient-to-r from-secondary to-accent h-3 rounded-full transition-all duration-1000" style={{ width: '87%' }}></div>
-                      </div>
-                    </div>
-
-                    <div className="space-y-3">
-                      <div className="flex justify-between text-sm">
-                        <span>Storage Efficiency</span>
-                        <span className="font-semibold">Excellent</span>
-                      </div>
-                      <div className="w-full bg-muted rounded-full h-3">
-                        <div className="bg-gradient-to-r from-accent to-primary h-3 rounded-full transition-all duration-1000" style={{ width: '94%' }}></div>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-
                 <Card className="p-6 border-2 hover:border-secondary/20 transition-colors">
                   <h3 className="font-semibold text-lg mb-4">Quick Actions</h3>
                   <div className="space-y-3">
