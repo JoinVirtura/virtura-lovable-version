@@ -9,6 +9,11 @@ const corsHeaders = {
 
 interface GenerateAvatarRequest {
   prompt: string;
+  negativePrompt?: string;
+  adherence?: number;
+  steps?: number;
+  enhance?: boolean;
+  selectedPreset?: string | null;
   style?: string;
   gender?: string;
   age?: string;
@@ -164,69 +169,39 @@ serve(async (req) => {
 });
 
 function buildEnhancedPrompt(params: GenerateAvatarRequest): string {
-  // Start with clean, focused prompt - avoid lists and alternatives
-  let prompt = (params.prompt && params.prompt.trim().length > 0)
-    ? params.prompt.trim().replace(/,?\s*(or|and|either|with|including)[^,]*/g, '').split(',')[0].trim()
-    : "Professional headshot portrait";
+  let enhancedPrompt = params.prompt;
 
-  // Photo Mode gets priority treatment for maximum realism
   if (params.photoMode) {
-    // Replace with studio photography setup
-    prompt = `Professional studio headshot of ${prompt.toLowerCase().replace('professional headshot of ', '').replace('professional headshot portrait', 'person')}`;
+    // OpenArt workflow: hyper-realistic photography prompts
+    enhancedPrompt = `professional portrait photography, ${enhancedPrompt}, detailed clothing, realistic natural lighting, high quality, professional photography, 8k resolution, sharp focus, realistic skin texture, detailed hair, photorealistic`;
     
-    // Add essential demographics cleanly
-    if (params.gender) prompt += `, ${params.gender}`;
-    if (params.age) prompt += `, ${params.age}`;
+    // Add OpenArt-style realism enhancers
+    enhancedPrompt += `, hyper-realistic, detailed facial features, natural skin tone, professional lighting setup, studio quality, high resolution, crisp details`;
     
-    // Single appearance details (no alternatives)
-    if (params.hairColor) prompt += `, ${params.hairColor} hair`;
-    if (params.eyeColor) prompt += `, ${params.eyeColor} eyes`;
-    if (params.clothing) prompt += `, wearing ${params.clothing.split(',')[0].trim()}`;
-    
-    // Professional photography technical details
-    prompt += ", shot with Canon 5D Mark IV, 85mm f/1.4 lens, professional studio lighting, three-point lighting setup, softbox key light, rim lighting, natural skin texture with visible pores and micro-details, subsurface scattering, professional color grading, shallow depth of field, creamy bokeh background, crystal clear sharp focus on eyes, natural makeup, commercial photography quality";
-    
-    // Strong constraints for consistency
-    prompt += ", single person headshot, neutral grey studio background, consistent lighting, one haircut, one outfit, professional portrait photography, editorial quality";
-    
-    // Powerful negative prompts for realism
-    prompt += ", no cartoon, no anime, no illustration, no CGI, no painting, no 3D render, no artificial skin smoothing, no plastic texture, no multiple people, no collage, no split screen, no text overlay, no watermarks, no borders, no frames, no extra limbs, no deformities, no face distortion, no blurry details";
-    
-  } else {
-    // Non-photo mode: more creative freedom
-    if (params.style) {
-      switch (params.style.toLowerCase()) {
-        case 'photorealistic':
-          prompt += ", photorealistic portrait, professional photography";
-          break;
-        case 'artistic':
-          prompt += ", artistic portrait, painterly style";
-          break;
-        case 'anime':
-          prompt += ", anime style, manga art";
-          break;
-        case 'fantasy':
-          prompt += ", fantasy art style, magical";
-          break;
-        default:
-          prompt += `, ${params.style} style`;
-      }
+    // Character preset integration
+    if (params.selectedPreset) {
+      enhancedPrompt = `@${params.selectedPreset}, ${enhancedPrompt}`;
     }
-    
-    // Add other parameters for creative mode
-    if (params.gender) prompt += `, ${params.gender}`;
-    if (params.age) prompt += `, ${params.age}`;
-    if (params.hairColor) prompt += `, ${params.hairColor} hair`;
-    if (params.eyeColor) prompt += `, ${params.eyeColor} eyes`;
-    if (params.clothing) prompt += `, wearing ${params.clothing}`;
-    if (params.accessories) prompt += `, with ${params.accessories}`;
-    if (params.pose) prompt += `, ${params.pose} pose`;
-    if (params.setting) prompt += `, ${params.setting} background`;
-    
-    prompt += ", high quality, detailed, professional lighting";
+  } else {
+    // For creative mode, allow more stylistic variation
+    if (params.style) {
+      enhancedPrompt = `${params.style} style, ${enhancedPrompt}`;
+    }
   }
 
-  return prompt;
+  // Add demographic details if provided
+  if (params.gender) enhancedPrompt += `, ${params.gender}`;
+  if (params.age) enhancedPrompt += `, ${params.age} years old`;
+  if (params.hairColor) enhancedPrompt += `, ${params.hairColor} hair`;
+  if (params.eyeColor) enhancedPrompt += `, ${params.eyeColor} eyes`;
+  
+  // Add environmental details
+  if (params.setting) enhancedPrompt += `, ${params.setting}`;
+  if (params.pose) enhancedPrompt += `, ${params.pose}`;
+  if (params.clothing) enhancedPrompt += `, wearing ${params.clothing}`;
+  if (params.accessories) enhancedPrompt += `, with ${params.accessories}`;
+
+  return enhancedPrompt;
 }
 
 function mapResolutionToSize(resolution?: string): { width: number; height: number } {

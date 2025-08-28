@@ -54,11 +54,18 @@ interface ExportPack {
 
 export const AvatarStudio = () => {
   const [prompt, setPrompt] = useState("");
+  const [negativePrompt, setNegativePrompt] = useState("blurry fingers, extra limbs, distorted faces, unrealistic body proportions, text, watermark, low quality");
+  const [adherence, setAdherence] = useState(7);
+  const [steps, setSteps] = useState(49);
+  const [enhanceEnabled, setEnhanceEnabled] = useState(false);
+  const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [isMultiGeneration, setIsMultiGeneration] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "1",
       type: "assistant",
-      content: "Hi! I'm your AI Copilot. Describe what you'd like to create and I'll generate 3 preview options with quick edit controls. Try: 'Professional headshot of a woman with curly hair'",
+      content: "Hi! I'm your OpenArt AI Workflow Assistant. Describe your avatar idea and I'll follow the professional workflow: detailed prompts, negative prompts, enhancement, and character presets. Try: 'Tall young woman walking down the street in high heels'",
       timestamp: new Date()
     }
   ]);
@@ -68,6 +75,14 @@ export const AvatarStudio = () => {
   const [watermarkEnabled, setWatermarkEnabled] = useState(true);
   const [aiProofEnabled, setAiProofEnabled] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Character presets (stored locally for session)
+  const [characterPresets, setCharacterPresets] = useState<Array<{
+    id: string;
+    name: string;
+    baseImage: string;
+    prompt: string;
+  }>>([]);
 
   const exportPacks: ExportPack[] = [
     {
@@ -129,52 +144,77 @@ export const AvatarStudio = () => {
     const finalPrompt = safetyCheck.reframedPrompt || userPrompt;
     setIsGenerating(true);
 
-    // Generate 3 preview cards
-    const newCards: PreviewCard[] = [
-      {
-        id: Date.now() + "_1",
-        imageUrl: "/placeholder.svg",
-        prompt: finalPrompt + " - Style A",
-        isGenerating: true,
-        safetyPassed: true
-      },
-      {
-        id: Date.now() + "_2", 
-        imageUrl: "/placeholder.svg",
-        prompt: finalPrompt + " - Style B",
-        isGenerating: true,
-        safetyPassed: true
-      },
-      {
-        id: Date.now() + "_3",
-        imageUrl: "/placeholder.svg", 
-        prompt: finalPrompt + " - Style C",
-        isGenerating: true,
-        safetyPassed: true
-      }
-    ];
+    // Enhanced prompts following OpenArt workflow
+    const enhancedPositive = `${finalPrompt}, detailed clothing, realistic natural lighting, high quality, professional photography, 8k resolution, sharp focus, realistic skin texture, detailed hair, photorealistic`;
+    
+    // Generate cards based on multi-generation setting
+    const cardCount = isMultiGeneration ? 10 : 3;
+    const poses = isMultiGeneration 
+      ? ["front facing close-up", "full body portrait", "three-quarter view", "profile view", "sitting pose", "standing pose", "professional pose", "casual pose", "dynamic angle", "elegant stance"]
+      : ["Style A - Professional", "Style B - Creative", "Style C - Natural"];
+
+    const newCards: PreviewCard[] = Array.from({ length: cardCount }, (_, i) => ({
+      id: Date.now() + "_" + (i + 1),
+      imageUrl: "/placeholder.svg",
+      prompt: isMultiGeneration 
+        ? `${enhancedPositive}, ${poses[i]}` 
+        : `${enhancedPositive} - ${poses[i]}`,
+      isGenerating: true,
+      safetyPassed: true
+    }));
 
     setPreviewCards(newCards);
 
-    // Simulate generation completion
-    setTimeout(() => {
-      setPreviewCards(prev => prev.map(card => ({ ...card, isGenerating: false })));
+    try {
+      // Call actual avatar generation service
+      const { AvatarService } = await import("@/services/avatarService");
+      
+      for (let i = 0; i < newCards.length; i++) {
+        const result = await AvatarService.generateAvatar({
+          prompt: newCards[i].prompt,
+          negativePrompt,
+          adherence,
+          steps,
+          enhance: enhanceEnabled,
+          selectedPreset,
+          resolution: "1024x1024",
+          photoMode: true
+        });
+
+        if (result.success && result.image) {
+          setPreviewCards(prev => prev.map(card => 
+            card.id === newCards[i].id 
+              ? { ...card, imageUrl: result.image!, isGenerating: false }
+              : card
+          ));
+        } else {
+          setPreviewCards(prev => prev.map(card => 
+            card.id === newCards[i].id 
+              ? { ...card, isGenerating: false }
+              : card
+          ));
+          toast.error(`Generation failed for variant ${i + 1}: ${result.error}`);
+        }
+      }
+      
       setIsGenerating(false);
       
-      // Add copilot suggestion
-      const suggestions = [
-        "Want a LinkedIn banner version?",
-        "How about creating a social media pack?",
-        "Need this in different aspect ratios?"
-      ];
+      // Add workflow suggestion
+      const suggestions = isMultiGeneration 
+        ? ["Great! Now enhance the best images and create a character preset"]
+        : ["Perfect! Try 'Generate 10+ variants' for a full dataset, or enhance your favorite"];
       
       setMessages(prev => [...prev, {
         id: Date.now().toString(),
         type: "assistant",
-        content: suggestions[Math.floor(Math.random() * suggestions.length)],
+        content: suggestions[0],
         timestamp: new Date()
       }]);
-    }, 3000);
+    } catch (error) {
+      setIsGenerating(false);
+      toast.error("Generation failed. Please try again.");
+      console.error("Avatar generation error:", error);
+    }
   };
 
   const handleSendMessage = async () => {
@@ -256,32 +296,108 @@ export const AvatarStudio = () => {
             <p className="text-lg text-muted-foreground mb-8">Your ChatGPT-powered creative assistant</p>
             
             {/* Main Search Bar */}
-            <Card className="max-w-2xl mx-auto p-2 bg-gradient-card border-border/50 shadow-lg">
-              <div className="flex gap-2">
-                <Textarea
-                  placeholder="Describe your avatar idea... e.g., 'Professional headshot of a woman with curly hair'"
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleSendMessage();
-                    }
-                  }}
-                  className="min-h-[60px] resize-none bg-background/50 border-0 focus-visible:ring-0 text-base"
-                />
-                <Button 
-                  onClick={handleSendMessage}
-                  disabled={!prompt.trim() || isGenerating}
-                  className="px-6 py-4 bg-primary hover:bg-primary/90"
-                  size="lg"
-                >
-                  {isGenerating ? (
-                    <div className="animate-spin w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full" />
-                  ) : (
-                    <Send className="w-5 h-5" />
+            <Card className="max-w-4xl mx-auto p-4 bg-gradient-card border-border/50 shadow-lg">
+              <div className="space-y-4">
+                {/* Positive Prompt */}
+                <div className="flex gap-2">
+                  <Textarea
+                    placeholder="Describe your avatar idea... e.g., 'Tall young woman walking down the street in high heels, detailed clothing, realistic natural lighting'"
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSendMessage();
+                      }
+                    }}
+                    className="min-h-[80px] resize-none bg-background/50 border-0 focus-visible:ring-0 text-base"
+                  />
+                  <Button 
+                    onClick={handleSendMessage}
+                    disabled={!prompt.trim() || isGenerating}
+                    className="px-6 py-4 bg-primary hover:bg-primary/90"
+                    size="lg"
+                  >
+                    {isGenerating ? (
+                      <div className="animate-spin w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full" />
+                    ) : (
+                      <Send className="w-5 h-5" />
+                    )}
+                  </Button>
+                </div>
+
+                {/* Negative Prompt */}
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Negative Prompt (OpenArt Workflow)</label>
+                  <Textarea
+                    placeholder="What to avoid: blurry fingers, extra limbs, distorted faces..."
+                    value={negativePrompt}
+                    onChange={(e) => setNegativePrompt(e.target.value)}
+                    className="min-h-[60px] resize-none bg-background/30 border-border/30 text-sm"
+                  />
+                </div>
+
+                {/* Settings Row */}
+                <div className="flex flex-wrap items-center gap-4 pt-2">
+                  <div className="flex items-center gap-2">
+                    <label className="text-sm text-muted-foreground">Adherence:</label>
+                    <select 
+                      value={adherence} 
+                      onChange={(e) => setAdherence(Number(e.target.value))}
+                      className="px-2 py-1 rounded border border-border/30 bg-background/50 text-sm"
+                    >
+                      {[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18].map(n => (
+                        <option key={n} value={n}>{n}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <label className="text-sm text-muted-foreground">Steps:</label>
+                    <select 
+                      value={steps} 
+                      onChange={(e) => setSteps(Number(e.target.value))}
+                      className="px-2 py-1 rounded border border-border/30 bg-background/50 text-sm"
+                    >
+                      <option value={20}>20</option>
+                      <option value={30}>30</option>
+                      <option value={49}>49 (Recommended)</option>
+                      <option value={100}>100</option>
+                    </select>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Switch 
+                      checked={enhanceEnabled}
+                      onCheckedChange={setEnhanceEnabled}
+                    />
+                    <label className="text-sm text-muted-foreground">Enhance</label>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Switch 
+                      checked={isMultiGeneration}
+                      onCheckedChange={setIsMultiGeneration}
+                    />
+                    <label className="text-sm text-muted-foreground">Generate 10+ variants</label>
+                  </div>
+
+                  {characterPresets.length > 0 && (
+                    <div className="flex items-center gap-2">
+                      <label className="text-sm text-muted-foreground">Character:</label>
+                      <select 
+                        value={selectedPreset || ''} 
+                        onChange={(e) => setSelectedPreset(e.target.value || null)}
+                        className="px-2 py-1 rounded border border-border/30 bg-background/50 text-sm"
+                      >
+                        <option value="">None</option>
+                        {characterPresets.map(preset => (
+                          <option key={preset.id} value={preset.name}>@{preset.name}</option>
+                        ))}
+                      </select>
+                    </div>
                   )}
-                </Button>
+                </div>
               </div>
             </Card>
 
@@ -405,7 +521,28 @@ export const AvatarStudio = () => {
                           </Button>
                         </div>
 
-                        <div className="grid grid-cols-3 gap-1">
+                        <div className="grid grid-cols-4 gap-1">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="border-border/50"
+                            onClick={() => {
+                              const presetName = window.prompt(`Name your character preset (e.g., "Lucy"):`);
+                              if (presetName && !card.isGenerating) {
+                                const newPreset = {
+                                  id: Date.now().toString(),
+                                  name: presetName,
+                                  baseImage: card.imageUrl,
+                                  prompt: card.prompt
+                                };
+                                setCharacterPresets(prev => [...prev, newPreset]);
+                                toast.success(`Character preset "@${presetName}" created!`);
+                              }
+                            }}
+                            disabled={card.isGenerating}
+                          >
+                            <Crown className="w-3 h-3" />
+                          </Button>
                           <Button variant="outline" size="sm" className="border-border/50">
                             <Heart className="w-3 h-3" />
                           </Button>

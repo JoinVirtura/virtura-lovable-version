@@ -9,6 +9,11 @@ const corsHeaders = {
 
 interface GenerateAvatarRequest {
   prompt: string;
+  negativePrompt?: string;
+  adherence?: number;
+  steps?: number;
+  enhance?: boolean;
+  selectedPreset?: string | null;
   style?: string;
   gender?: string;
   age?: string;
