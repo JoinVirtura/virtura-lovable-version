@@ -230,25 +230,66 @@ export const AvatarStudio = () => {
     setMessages(prev => [...prev, userMessage]);
     
     // Check if it's a refinement or new generation
-    if (previewCards.length > 0 && prompt.toLowerCase().includes('make')) {
-      // Handle refinements
+    if (previewCards.length > 0 && (prompt.toLowerCase().includes('change') || prompt.toLowerCase().includes('make') || prompt.toLowerCase().includes('add') || prompt.toLowerCase().includes('remove'))) {
+      // Handle refinements - apply to all variants
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         type: "assistant", 
-        content: `Great! I'll update the previews with: "${prompt}". Generating now...`,
+        content: `Applying "${prompt}" to all variants. Regenerating now...`,
         timestamp: new Date()
       };
       setMessages(prev => [...prev, assistantMessage]);
       
-      // Update existing cards
+      // Update and regenerate all existing cards with the edit
       setIsGenerating(true);
-      setTimeout(() => {
-        setPreviewCards(prev => prev.map(card => ({
-          ...card,
-          prompt: card.prompt + ` + ${prompt}`
-        })));
+      const updatedPrompt = prompt;
+      
+      try {
+        for (let i = 0; i < previewCards.length; i++) {
+          const updatedCardPrompt = previewCards[i].prompt + `, ${updatedPrompt}`;
+          
+          // Mark card as generating
+          setPreviewCards(prev => prev.map((card, idx) => 
+            idx === i ? { ...card, isGenerating: true, prompt: updatedCardPrompt } : card
+          ));
+
+          // Generate new image with updated prompt
+          const { AvatarService } = await import("@/services/avatarService");
+          const result = await AvatarService.generateAvatar({
+            prompt: updatedCardPrompt,
+            negativePrompt,
+            adherence,
+            steps,
+            enhance: enhanceEnabled,
+            selectedPreset,
+            resolution: "1024x1024",
+            photoMode: true
+          });
+
+          if (result.success && result.image) {
+            setPreviewCards(prev => prev.map((card, idx) => 
+              idx === i ? { ...card, imageUrl: result.image!, isGenerating: false } : card
+            ));
+          } else {
+            setPreviewCards(prev => prev.map((card, idx) => 
+              idx === i ? { ...card, isGenerating: false } : card
+            ));
+          }
+        }
+        
         setIsGenerating(false);
-      }, 2000);
+        
+        setMessages(prev => [...prev, {
+          id: (Date.now() + 2).toString(),
+          type: "assistant",
+          content: "All variants updated successfully! Try another edit or generate new variants.",
+          timestamp: new Date()
+        }]);
+        
+      } catch (error) {
+        setIsGenerating(false);
+        toast.error("Edit failed. Please try again.");
+      }
       
     } else {
       // Generate new previews
@@ -257,6 +298,8 @@ export const AvatarStudio = () => {
     
     setPrompt("");
   };
+
+  const handleChatMessage = handleSendMessage;
 
   const handleQuickEdit = (cardId: string, edit: string) => {
     setMessages(prev => [...prev, {
@@ -478,6 +521,18 @@ export const AvatarStudio = () => {
                               <p className="text-sm text-muted-foreground">Generating...</p>
                             </div>
                           </div>
+                        ) : card.imageUrl && card.imageUrl !== "/placeholder.svg" ? (
+                          <>
+                            <img 
+                              src={card.imageUrl} 
+                              alt={`Generated avatar variant ${index + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+                            <Badge className="absolute top-2 right-2 bg-green-500/20 text-green-600 border-green-500/30">
+                              <Shield className="w-3 h-3 mr-1" />
+                              Safe
+                            </Badge>
+                          </>
                         ) : (
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="text-center">
@@ -485,13 +540,6 @@ export const AvatarStudio = () => {
                               <p className="text-sm text-muted-foreground font-medium">Variant {index + 1}</p>
                             </div>
                           </div>
-                        )}
-                        
-                        {card.safetyPassed && (
-                          <Badge className="absolute top-2 right-2 bg-green-500/20 text-green-600 border-green-500/30">
-                            <Shield className="w-3 h-3 mr-1" />
-                            Safe
-                          </Badge>
                         )}
                       </div>
                       
@@ -627,27 +675,88 @@ export const AvatarStudio = () => {
             </div>
           )}
 
-          {/* Chat History - Minimized */}
-          {messages.length > 1 && (
-            <Card className="mt-8 p-4 bg-gradient-card border-border/50">
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="font-medium text-foreground">Recent Conversations</h4>
-                <Badge variant="secondary" className="text-xs">{messages.length - 1} messages</Badge>
+          {/* Studio Chat - Horizontal Interface */}
+          <Card className="mt-8 p-6 bg-gradient-card border-border/50">
+            <h3 className="font-semibold text-foreground mb-4">Studio Chat</h3>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Chat Messages - Takes 2/3 width */}
+              <div className="lg:col-span-2">
+                <ScrollArea className="h-48 border border-border/30 rounded-lg bg-background/30 p-4">
+                  <div className="space-y-3">
+                    {messages.slice(-5).map((message) => (
+                      <div
+                        key={message.id}
+                        className={`p-3 rounded-lg ${
+                          message.type === 'user'
+                            ? 'bg-primary/10 border-l-2 border-primary ml-4'
+                            : 'bg-muted/50 border-l-2 border-muted-foreground mr-4'
+                        }`}
+                      >
+                        <div className="flex items-start gap-2">
+                          <span className="font-medium text-sm">
+                            {message.type === 'user' ? 'You:' : 'AI:'}
+                          </span>
+                          <span className="text-sm text-muted-foreground">
+                            {message.content}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                    <div ref={messagesEndRef} />
+                  </div>
+                </ScrollArea>
               </div>
-              <ScrollArea className="h-32">
-                <div className="space-y-2">
-                  {messages.slice(1).map((message) => (
-                    <div key={message.id} className="text-sm">
-                      <span className={`font-medium ${message.type === 'user' ? 'text-primary' : 'text-muted-foreground'}`}>
-                        {message.type === 'user' ? 'You: ' : 'AI: '}
-                      </span>
-                      <span className="text-foreground">{message.content}</span>
-                    </div>
-                  ))}
+
+              {/* Chat Input & Quick Actions - Takes 1/3 width */}
+              <div className="space-y-4">
+                <div className="flex gap-2">
+                  <Textarea
+                    placeholder="Type editing commands... e.g., 'change hair color to green'"
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleChatMessage();
+                      }
+                    }}
+                    className="flex-1 min-h-[80px] resize-none bg-background/50 border-border/30 text-sm"
+                  />
+                  <Button 
+                    onClick={handleChatMessage}
+                    disabled={!prompt.trim() || isGenerating}
+                    className="px-4 py-2"
+                    size="sm"
+                  >
+                    <Send className="w-4 h-4" />
+                  </Button>
                 </div>
-              </ScrollArea>
-            </Card>
-          )}
+
+                {/* Quick Edit Suggestions */}
+                <div className="space-y-2">
+                  <p className="text-xs text-muted-foreground font-medium">Quick Edits:</p>
+                  <div className="grid grid-cols-1 gap-2">
+                    {[
+                      "Change hair color to blonde",
+                      "Add professional clothing",
+                      "Make background darker",
+                      "Change to sunset lighting"
+                    ].map((suggestion) => (
+                      <Button
+                        key={suggestion}
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setPrompt(suggestion)}
+                        className="text-xs border-border/30 hover:border-primary/30 justify-start h-8"
+                      >
+                        {suggestion}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
         </div>
       </div>
     </section>
