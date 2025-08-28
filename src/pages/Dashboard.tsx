@@ -2415,7 +2415,20 @@ export default function Dashboard() {
                                <img 
                                  src={asset.thumbnail} 
                                  alt={asset.title}
-                                 className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105 group-hover:animate-alive"
+                                 className="w-full h-full object-cover transition-all duration-700"
+                                 style={{
+                                   transition: 'all 0.7s ease-in-out',
+                                 }}
+                                 onMouseEnter={(e) => {
+                                   console.log('Mouse entered avatar card');
+                                   e.currentTarget.style.animation = 'alive 5s ease-in-out infinite';
+                                   e.currentTarget.style.transform = 'scale(1.05)';
+                                 }}
+                                 onMouseLeave={(e) => {
+                                   console.log('Mouse left avatar card');
+                                   e.currentTarget.style.animation = 'none';
+                                   e.currentTarget.style.transform = 'scale(1)';
+                                 }}
                                  onError={(e) => {
                                    e.currentTarget.src = "/api/placeholder/300/300";
                                  }}
