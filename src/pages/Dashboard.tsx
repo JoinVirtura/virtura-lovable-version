@@ -2417,9 +2417,13 @@ export default function Dashboard() {
                                console.log('🎭 Avatar card hover started:', asset.title);
                                const img = e.currentTarget.querySelector('img') as HTMLImageElement;
                                if (img) {
-                                 img.style.animation = 'alive 5s ease-in-out infinite, breathe 3s ease-in-out infinite';
-                                 img.style.transform = 'scale(1.05)';
-                                 img.style.filter = 'brightness(1.1)';
+                                 // Test with inline CSS transition first
+                                 img.style.transition = 'all 0.5s ease-in-out';
+                                 img.style.transform = 'scale(1.1) rotate(1deg)';
+                                 img.style.filter = 'brightness(1.2) contrast(1.1)';
+                                 
+                                 // Try to apply CSS animation
+                                 img.style.animation = 'alive 5s ease-in-out infinite';
                                  console.log('✅ Animation applied to:', asset.title);
                                } else {
                                  console.log('❌ Could not find image for:', asset.title);
@@ -2430,8 +2434,8 @@ export default function Dashboard() {
                                const img = e.currentTarget.querySelector('img') as HTMLImageElement;
                                if (img) {
                                  img.style.animation = 'none';
-                                 img.style.transform = 'scale(1)';
-                                 img.style.filter = 'brightness(1)';
+                                 img.style.transform = 'scale(1) rotate(0deg)';
+                                 img.style.filter = 'brightness(1) contrast(1)';
                                  console.log('🛑 Animation removed from:', asset.title);
                                }
                              }}
