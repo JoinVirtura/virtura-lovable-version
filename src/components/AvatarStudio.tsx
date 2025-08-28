@@ -678,82 +678,81 @@ export const AvatarStudio = () => {
           {/* Studio Chat - Horizontal Interface */}
           <Card className="mt-8 p-6 bg-gradient-card border-border/50">
             <h3 className="font-semibold text-foreground mb-4">Studio Chat</h3>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Chat Messages - Takes 2/3 width */}
-              <div className="lg:col-span-2">
-                <ScrollArea className="h-48 border border-border/30 rounded-lg bg-background/30 p-4">
-                  <div className="space-y-3">
-                    {messages.slice(-5).map((message) => (
-                      <div
-                        key={message.id}
-                        className={`p-3 rounded-lg ${
-                          message.type === 'user'
-                            ? 'bg-primary/10 border-l-2 border-primary ml-4'
-                            : 'bg-muted/50 border-l-2 border-muted-foreground mr-4'
-                        }`}
-                      >
-                        <div className="flex items-start gap-2">
-                          <span className="font-medium text-sm">
-                            {message.type === 'user' ? 'You:' : 'AI:'}
-                          </span>
-                          <span className="text-sm text-muted-foreground">
-                            {message.content}
-                          </span>
-                        </div>
+            
+            {/* Chat Messages - Full Width */}
+            <div className="mb-4">
+              <ScrollArea className="h-48 border border-border/30 rounded-lg bg-background/30 p-4">
+                <div className="space-y-3">
+                  {messages.slice(-5).map((message) => (
+                    <div
+                      key={message.id}
+                      className={`p-3 rounded-lg ${
+                        message.type === 'user'
+                          ? 'bg-primary/10 border-l-2 border-primary ml-4'
+                          : 'bg-muted/50 border-l-2 border-muted-foreground mr-4'
+                      }`}
+                    >
+                      <div className="flex items-start gap-2">
+                        <span className="font-medium text-sm">
+                          {message.type === 'user' ? 'You:' : 'AI:'}
+                        </span>
+                        <span className="text-sm text-muted-foreground">
+                          {message.content}
+                        </span>
                       </div>
-                    ))}
-                    <div ref={messagesEndRef} />
-                  </div>
-                </ScrollArea>
+                    </div>
+                  ))}
+                  <div ref={messagesEndRef} />
+                </div>
+              </ScrollArea>
+            </div>
+
+            {/* Chat Input - Full Width */}
+            <div className="mb-4">
+              <div className="flex gap-2">
+                <Textarea
+                  placeholder="Type editing commands... e.g., 'change hair color to green'"
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleChatMessage();
+                    }
+                  }}
+                  className="flex-1 min-h-[80px] resize-none bg-background/50 border-border/30 text-sm"
+                />
+                <Button 
+                  onClick={handleChatMessage}
+                  disabled={!prompt.trim() || isGenerating}
+                  className="px-6 py-4"
+                  size="lg"
+                >
+                  <Send className="w-5 h-5" />
+                </Button>
               </div>
+            </div>
 
-              {/* Chat Input & Quick Actions - Takes 1/3 width */}
-              <div className="space-y-4">
-                <div className="flex gap-2">
-                  <Textarea
-                    placeholder="Type editing commands... e.g., 'change hair color to green'"
-                    value={prompt}
-                    onChange={(e) => setPrompt(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        handleChatMessage();
-                      }
-                    }}
-                    className="flex-1 min-h-[80px] resize-none bg-background/50 border-border/30 text-sm"
-                  />
-                  <Button 
-                    onClick={handleChatMessage}
-                    disabled={!prompt.trim() || isGenerating}
-                    className="px-4 py-2"
+            {/* Quick Edit Suggestions - Horizontal Below */}
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground font-medium">Quick Edits:</p>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {[
+                  "Change hair color to blonde",
+                  "Add professional clothing", 
+                  "Make background darker",
+                  "Change to sunset lighting"
+                ].map((suggestion) => (
+                  <Button
+                    key={suggestion}
+                    variant="outline"
                     size="sm"
+                    onClick={() => setPrompt(suggestion)}
+                    className="text-sm border-border/30 hover:border-primary/30 justify-center h-10"
                   >
-                    <Send className="w-4 h-4" />
+                    {suggestion}
                   </Button>
-                </div>
-
-                {/* Quick Edit Suggestions */}
-                <div className="space-y-2">
-                  <p className="text-xs text-muted-foreground font-medium">Quick Edits:</p>
-                  <div className="grid grid-cols-1 gap-2">
-                    {[
-                      "Change hair color to blonde",
-                      "Add professional clothing",
-                      "Make background darker",
-                      "Change to sunset lighting"
-                    ].map((suggestion) => (
-                      <Button
-                        key={suggestion}
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setPrompt(suggestion)}
-                        className="text-xs border-border/30 hover:border-primary/30 justify-start h-8"
-                      >
-                        {suggestion}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </Card>
