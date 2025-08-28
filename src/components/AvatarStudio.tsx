@@ -383,9 +383,9 @@ export const AvatarStudio = () => {
   };
 
   return (
-    <section className="min-h-screen bg-gradient-hero pt-20 overflow-x-hidden">
-      <div className="container mx-auto px-4 py-8 max-w-full">
-        <div className="max-w-6xl mx-auto w-full">
+    <section className="min-h-screen bg-gradient-hero pt-20 overflow-x-hidden w-full">
+      <div className="w-full px-4 py-8">
+        <div className="max-w-5xl mx-auto w-full">
           
           {/* Header */}
           <div className="text-center mb-12">
@@ -397,8 +397,8 @@ export const AvatarStudio = () => {
             <p className="text-lg text-muted-foreground mb-8">Your ChatGPT-powered creative assistant</p>
             
             {/* Main Search Bar */}
-            <Card className="w-full max-w-4xl mx-auto p-4 bg-gradient-card border-border/50 shadow-lg">
-              <div className="space-y-4 w-full">
+            <Card className="w-full max-w-3xl mx-auto p-3 bg-gradient-card border-border/50 shadow-lg">
+              <div className="space-y-3 w-full">
                 {/* Positive Prompt */}
                 <div className="flex gap-2 w-full">
                   <Textarea
@@ -423,7 +423,7 @@ export const AvatarStudio = () => {
                   <Button 
                     variant="outline"
                     size="lg"
-                    className="px-4 py-4 border-border/50 hover:border-primary/50 flex-shrink-0"
+                    className="px-3 py-4 border-border/50 hover:border-primary/50 flex-shrink-0"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isUploading}
                   >
@@ -573,9 +573,9 @@ export const AvatarStudio = () => {
             <div className="space-y-8 w-full">
               
               {/* Export Packs - Horizontal */}
-              <Card className="p-6 bg-gradient-card border-border/50">
-                <h3 className="font-semibold text-foreground mb-4 text-center">Choose Export Pack</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+              <Card className="p-4 bg-gradient-card border-border/50 w-full">
+                <h3 className="font-semibold text-foreground mb-3 text-center">Choose Export Pack</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full">
                   {exportPacks.map((pack) => {
                     const IconComponent = pack.icon;
                     return (
@@ -607,7 +607,7 @@ export const AvatarStudio = () => {
               </Card>
 
               {/* Preview Results - Horizontal Grid */}
-              <Card className="p-6 bg-gradient-card border-border/50">
+              <Card className="p-4 bg-gradient-card border-border/50 w-full">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="font-semibold text-foreground text-xl">Generated Previews</h3>
                   <Badge variant="outline" className="text-sm">3 Variants</Badge>
@@ -714,9 +714,9 @@ export const AvatarStudio = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
                 {/* Format Settings */}
-                <Card className="p-6 bg-gradient-card border-border/50">
-                  <h3 className="font-semibold text-foreground mb-4">Format Options</h3>
-                  <div className="space-y-4">
+                <Card className="p-4 bg-gradient-card border-border/50 w-full">
+                  <h3 className="font-semibold text-foreground mb-3">Format Options</h3>
+                  <div className="space-y-3">
                     <div className="grid grid-cols-2 gap-3">
                       <Button variant="outline" className="border-border/50">
                         <FileImage className="w-4 h-4 mr-2" />
@@ -737,9 +737,9 @@ export const AvatarStudio = () => {
                 </Card>
 
                 {/* Safety & Settings */}
-                <Card className="p-6 bg-gradient-card border-border/50">
-                  <h3 className="font-semibold text-foreground mb-4">Safety & Settings</h3>
-                  <div className="space-y-4">
+                <Card className="p-4 bg-gradient-card border-border/50 w-full">
+                  <h3 className="font-semibold text-foreground mb-3">Safety & Settings</h3>
+                  <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         {watermarkEnabled ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
@@ -777,8 +777,8 @@ export const AvatarStudio = () => {
               </div>
 
               {/* Studio Chat - Horizontal Interface */}
-              <Card className="mt-8 p-6 bg-gradient-card border-border/50">
-                <h3 className="font-semibold text-foreground mb-4">Studio Chat</h3>
+              <Card className="mt-6 p-4 bg-gradient-card border-border/50 w-full">
+                <h3 className="font-semibold text-foreground mb-3">Studio Chat</h3>
                 
                 {/* Chat Messages - Full Width */}
                 <div className="mb-4">
