@@ -22,6 +22,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { AvatarService } from "@/services/avatarService";
 import { 
   Play, 
   Sparkles, 
@@ -97,44 +98,7 @@ export default function Dashboard() {
   
   // Copilot Flow state
   const [currentPrompt, setCurrentPrompt] = useState("");
-  const [generatedPreviews, setGeneratedPreviews] = useState<any[]>([
-    {
-      id: 1,
-      title: "Professional Executive",
-      description: "Confident business professional in modern office setting",
-      imageUrl: businessExecutiveImg
-    },
-    {
-      id: 2,
-      title: "Creative Artist",
-      description: "Artistic portrait with vibrant studio background",
-      imageUrl: creativeArtistImg
-    },
-    {
-      id: 3,
-      title: "Tech Entrepreneur",
-      description: "Innovative tech leader in contemporary workspace",
-      imageUrl: techEntrepreneurImg
-    },
-    {
-      id: 4,
-      title: "Fashion Portrait",
-      description: "Elegant fashion model with professional styling",
-      imageUrl: fashionModelImg
-    },
-    {
-      id: 5,
-      title: "Healthcare Professional",
-      description: "Medical professional in clinical environment",
-      imageUrl: healthcareProfessionalImg
-    },
-    {
-      id: 6,
-      title: "Fitness Coach",
-      description: "Active lifestyle coach in training facility",
-      imageUrl: fitnessCoachImg
-    }
-  ]);
+  const [generatedPreviews, setGeneratedPreviews] = useState<any[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [chatMessages, setChatMessages] = useState<any[]>([]);
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -808,34 +772,84 @@ export default function Dashboard() {
   };
 
   const handleGenerate = async (prompt: string) => {
+    console.log("Generating avatars with prompt:", prompt);
     setIsGenerating(true);
     setCurrentPrompt(prompt);
     
-    // Simulate AI generation with mock data
-    setTimeout(() => {
-      const mockPreviews = [
-        {
-          id: 1,
-          imageUrl: virturaLogo,
-          title: "Professional Look",
-          description: "Clean, professional headshot with modern lighting"
-        },
-        {
-          id: 2,
-          imageUrl: virturaLogo,
-          title: "Creative Style",
-          description: "Artistic portrait with dynamic composition"
-        },
-        {
-          id: 3,
-          imageUrl: virturaLogo,
-          title: "Casual Vibe",
-          description: "Relaxed, approachable style with warm tones"
-        }
-      ];
-      setGeneratedPreviews(mockPreviews);
+    try {
+      // Avatar Studio workflow parameters
+      const studioNegative = "blurry fingers, extra limbs, distorted faces, unrealistic body proportions, text, watermark, low quality, plastic skin, CGI, doll-like";
+      const enhancedPrompt = `${prompt}, professional studio headshot, realistic natural lighting, high quality, professional photography, 8k resolution, sharp focus, realistic skin texture, detailed hair, photorealistic, single person`;
+      
+      console.log("About to generate avatars with enhanced prompt:", enhancedPrompt);
+      
+      // Generate 3 variations
+      const results = await Promise.all([
+        AvatarService.generateAvatar({
+          prompt: `${enhancedPrompt}, professional headshot style`,
+          negativePrompt: studioNegative,
+          photoMode: true,
+          resolution: "1024x1024",
+          steps: 49,
+          adherence: 7,
+        }),
+        AvatarService.generateAvatar({
+          prompt: `${enhancedPrompt}, creative artistic portrait`,
+          negativePrompt: studioNegative,
+          photoMode: true,
+          resolution: "1024x1024",
+          steps: 49,
+          adherence: 7,
+        }),
+        AvatarService.generateAvatar({
+          prompt: `${enhancedPrompt}, casual lifestyle portrait`,
+          negativePrompt: studioNegative,
+          photoMode: true,
+          resolution: "1024x1024",
+          steps: 49,
+          adherence: 7,
+        })
+      ]);
+
+      console.log("Generation results:", results);
+
+      const newPreviews = results
+        .filter(result => result.success && result.image)
+        .map((result, index) => ({
+          id: `${Date.now()}_${index}`,
+          imageUrl: result.image!,
+          title: index === 0 ? "Professional Style" : index === 1 ? "Creative Style" : "Casual Style",
+          description: prompt
+        }));
+
+      console.log("Filtered previews:", newPreviews);
+
+      if (newPreviews.length > 0) {
+        setGeneratedPreviews(newPreviews);
+        toast({
+          title: "Success!",
+          description: `Generated ${newPreviews.length} high-quality avatars!`,
+        });
+      } else {
+        // Show more detailed error information
+        const errors = results.filter(r => !r.success).map(r => r.error).join(", ");
+        console.error("All generations failed. Errors:", errors);
+        toast({
+          title: "Generation Failed",
+          description: `Failed to generate avatars. Errors: ${errors || "Unknown error"}`,
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Avatar generation error:', error);
+      toast({
+        title: "Error",
+        description: `An error occurred while generating avatars: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        variant: "destructive"
+      });
+    } finally {
       setIsGenerating(false);
-    }, 2000);
+    }
   };
 
   const handleQuickEdit = (previewId: number, editType: string) => {
