@@ -78,6 +78,10 @@ export const AvatarStudio = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState<string | null>(null);
   const [savingToLibrary, setSavingToLibrary] = useState<string | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [recognition, setRecognition] = useState<any>(null);
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+  const [audioChunks, setAudioChunks] = useState<Blob[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
