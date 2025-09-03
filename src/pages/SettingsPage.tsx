@@ -106,6 +106,31 @@ export default function SettingsPage() {
             </div>
           </Card>
 
+          {/* AI & Media Providers */}
+          <Card className="p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <SettingsIcon className="w-5 h-5 text-primary" />
+              <h2 className="text-xl font-display font-bold">AI & Media Providers</h2>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="openaiKey">OpenAI API Key (Optional)</Label>
+                <p className="text-sm text-muted-foreground mb-2">
+                  Required for voice transcription with Whisper API. Leave empty to use browser speech recognition.
+                </p>
+                <Input 
+                  id="openaiKey" 
+                  type="password" 
+                  placeholder="sk-..." 
+                  className="font-mono text-sm"
+                />
+              </div>
+              
+              <Button>Save API Keys</Button>
+            </div>
+          </Card>
+
           {/* Privacy & Security */}
           <Card className="p-6">
             <div className="flex items-center gap-3 mb-6">

@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { 
   MessageCircle,
@@ -26,8 +27,11 @@ import {
   Crown,
   Eye,
   EyeOff,
-  Upload
+  Upload,
+  Mic,
+  MicOff
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ChatMessage {
   id: string;
