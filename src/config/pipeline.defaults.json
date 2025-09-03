@@ -1,0 +1,32 @@
+{
+  "voice": {
+    "mode": "synthetic",
+    "language": "en",
+    "accent": "american",
+    "gender": "female",
+    "age": "young_adult",
+    "model": "eleven_multilingual_v2",
+    "prompt": "Create a friendly, professional voice for avatar demonstrations"
+  },
+  "video": {
+    "engine": "kling",
+    "duration": 10,
+    "prompt": "Professional headshot style, good lighting, neutral background"
+  },
+  "sync": {
+    "engine": "pixverse",
+    "trimEnabled": true,
+    "wav2lipFallback": true
+  },
+  "sample": {
+    "script": "Hello, this is a Virtura test. I'm demonstrating our talking avatar technology with realistic lip-sync and natural voice synthesis.",
+    "avatarImage": "/assets/input/avatars/sample_avatar.jpg"
+  },
+  "settings": {
+    "storageProvider": "local",
+    "storageBucket": "virtura-media",
+    "ffmpegTrimEnabled": true,
+    "maxRetries": 3,
+    "timeout": 300000
+  }
+}

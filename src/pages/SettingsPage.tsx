@@ -126,6 +126,106 @@ export default function SettingsPage() {
                   className="font-mono text-sm"
                 />
               </div>
+
+              <div>
+                <Label htmlFor="elevenlabsKey">ElevenLabs API Key</Label>
+                <p className="text-sm text-muted-foreground mb-2">
+                  Required for voice cloning and synthesis in talking avatar pipeline.
+                </p>
+                <Input 
+                  id="elevenlabsKey" 
+                  type="password" 
+                  placeholder="el_..." 
+                  className="font-mono text-sm"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="elevenlabsModel">ElevenLabs Model</Label>
+                <Input 
+                  id="elevenlabsModel" 
+                  placeholder="eleven_multilingual_v2" 
+                  defaultValue="eleven_multilingual_v2"
+                  className="font-mono text-sm"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="klingKey">Kling API Key</Label>
+                <p className="text-sm text-muted-foreground mb-2">
+                  Required for video generation with Kling engine.
+                </p>
+                <Input 
+                  id="klingKey" 
+                  type="password" 
+                  placeholder="kling_..." 
+                  className="font-mono text-sm"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="openartKey">OpenArt API Key</Label>
+                <p className="text-sm text-muted-foreground mb-2">
+                  Required for video generation with Veo3 engine via OpenArt.
+                </p>
+                <Input 
+                  id="openartKey" 
+                  type="password" 
+                  placeholder="oa_..." 
+                  className="font-mono text-sm"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="pixverseKey">Pixverse API Key</Label>
+                <p className="text-sm text-muted-foreground mb-2">
+                  Required for lip-sync generation with Pixverse engine.
+                </p>
+                <Input 
+                  id="pixverseKey" 
+                  type="password" 
+                  placeholder="pv_..." 
+                  className="font-mono text-sm"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="storageProvider">Storage Provider</Label>
+                  <select 
+                    id="storageProvider"
+                    className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground"
+                    defaultValue="local"
+                  >
+                    <option value="local">Local</option>
+                    <option value="supabase">Supabase</option>
+                  </select>
+                </div>
+                <div>
+                  <Label htmlFor="storageBucket">Storage Bucket</Label>
+                  <Input 
+                    id="storageBucket" 
+                    placeholder="virtura-media" 
+                    defaultValue="virtura-media"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label>Use Wav2Lip Fallback</Label>
+                  <p className="text-sm text-muted-foreground">Enable Wav2Lip when Pixverse is unsupported</p>
+                </div>
+                <Switch defaultChecked />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label>FFmpeg Trim Enabled</Label>
+                  <p className="text-sm text-muted-foreground">Enable video trimming capabilities</p>
+                </div>
+                <Switch defaultChecked />
+              </div>
               
               <Button>Save API Keys</Button>
             </div>
