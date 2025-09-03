@@ -703,6 +703,30 @@ export const AvatarStudio = () => {
                       <Upload className="w-5 h-5" />
                     )}
                   </Button>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button 
+                          variant="outline"
+                          size="lg"
+                          className={`px-3 py-4 border-border/50 hover:border-primary/50 flex-shrink-0 ${
+                            isRecording ? 'animate-pulse bg-red-500/20 border-red-500/50' : ''
+                          }`}
+                          onClick={toggleVoiceInput}
+                          disabled={isGenerating}
+                        >
+                          {isRecording ? (
+                            <MicOff className="w-5 h-5 text-red-500" />
+                          ) : (
+                            <Mic className="w-5 h-5" />
+                          )}
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Speak your prompt</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                   <Button 
                     onClick={handleSendMessage}
                     disabled={!prompt.trim() || isGenerating}
