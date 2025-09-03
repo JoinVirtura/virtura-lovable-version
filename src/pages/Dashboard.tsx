@@ -988,6 +988,8 @@ export default function Dashboard() {
     switch (activeView) {
       case "overview":
         return <OverviewPage />;
+      case "talking-avatar":
+        return <TalkingAvatarWorkflow />;
       case "create":
         return <CreateAvatar />;
       case "studio":
