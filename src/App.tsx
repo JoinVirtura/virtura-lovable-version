@@ -18,7 +18,7 @@ import NotFound from "./pages/NotFound";
 import UpgradePage from "./pages/UpgradePage";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCanceled from "./pages/PaymentCanceled";
-import TalkingAvatarPage from "./pages/TalkingAvatarPage";
+
 
 const queryClient = new QueryClient();
 
@@ -44,7 +44,7 @@ const App = () => (
           <Route path="/upload" element={<UploadPage />} />
           <Route path="/export" element={<ExportPage />} />
           <Route path="/profile" element={<Dashboard />} />
-          <Route path="/workflows/talking-avatar" element={<TalkingAvatarPage />} />
+          
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="/upgrade" element={<UpgradePage />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />

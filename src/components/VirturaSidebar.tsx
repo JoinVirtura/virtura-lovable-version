@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
 import virturaLogo from "/lovable-uploads/f264298f-2877-485b-affc-d705994fc848.png";
 import { 
   Sidebar,
@@ -39,12 +38,10 @@ interface VirturaSidebarProps {
 }
 
 export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps) {
-  const navigate = useNavigate();
-  const location = useLocation();
   
   const mainItems = [
     { id: "overview", label: "Copilot", icon: Activity },
-    { id: "talking-avatar", label: "🎭 Talking Avatar", icon: Sparkles, route: "/workflows/talking-avatar" },
+    { id: "talking-avatar", label: "🎭 Talking Avatar", icon: Sparkles },
     { id: "upload", label: "Upload", icon: Upload },
     { id: "create", label: "Create Avatar", icon: Plus },
     { id: "studio", label: "Avatar Studio", icon: SettingsIcon },
@@ -76,16 +73,10 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
               {mainItems.map((item) => (
                 <SidebarMenuItem key={item.id}>
                   <SidebarMenuButton 
-                    onClick={() => {
-                      if (item.route) {
-                        navigate(item.route);
-                      } else {
-                        onViewChange(item.id);
-                      }
-                    }}
-                    isActive={item.route ? location.pathname === item.route : activeView === item.id}
+                    onClick={() => onViewChange(item.id)}
+                    isActive={activeView === item.id}
                     className={`w-full justify-start gap-3 ${
-                      (item.route ? location.pathname === item.route : activeView === item.id)
+                      activeView === item.id 
                         ? "bg-primary text-primary-foreground shadow-gold" 
                         : "hover:bg-accent"
                     }`}
