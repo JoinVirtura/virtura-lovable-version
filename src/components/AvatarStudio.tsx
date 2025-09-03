@@ -468,6 +468,167 @@ export const AvatarStudio = () => {
     setPrompt("");
   };
 
+  // Voice input functionality
+  const toggleVoiceInput = () => {
+    if (isRecording) {
+      stopRecording();
+    } else {
+      startVoiceInput();
+    }
+  };
+
+  const startVoiceInput = () => {
+    if (recognition) {
+      try {
+        setIsRecording(true);
+        recognition.start();
+        toast.info("Listening... Click mic again to stop");
+        
+        // Auto-stop after 15 seconds
+        setTimeout(() => {
+          if (isRecording) {
+            recognition.stop();
+          }
+        }, 15000);
+      } catch (error) {
+        console.error('Error starting speech recognition:', error);
+        setIsRecording(false);
+        startRecordingWithFallback();
+      }
+    } else {
+      startRecordingWithFallback();
+    }
+  };
+
+  const stopRecording = () => {
+    if (recognition && isRecording) {
+      recognition.stop();
+    }
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+      mediaRecorder.stop();
+    }
+    setIsRecording(false);
+  };
+
+  const startRecordingWithFallback = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      const chunks: Blob[] = [];
+
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          chunks.push(event.data);
+        }
+      };
+
+      recorder.onstop = async () => {
+        const audioBlob = new Blob(chunks, { type: 'audio/webm' });
+        await transcribeWithWhisper(audioBlob);
+        stream.getTracks().forEach(track => track.stop());
+      };
+
+      setMediaRecorder(recorder);
+      setAudioChunks(chunks);
+      setIsRecording(true);
+      recorder.start();
+      
+      toast.info("Recording with Whisper API... Click mic to stop");
+
+      // Auto-stop after 15 seconds
+      setTimeout(() => {
+        if (recorder.state === 'recording') {
+          recorder.stop();
+          setIsRecording(false);
+        }
+      }, 15000);
+
+    } catch (error) {
+      console.error('Error accessing microphone:', error);
+      toast.error("Could not access microphone. Please check permissions.");
+      setIsRecording(false);
+    }
+  };
+
+  const transcribeWithWhisper = async (audioBlob: Blob) => {
+    try {
+      // Convert blob to base64
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64Audio = (reader.result as string).split(',')[1];
+        
+        const { data, error } = await supabase.functions.invoke('voice-transcribe', {
+          body: { audio: base64Audio }
+        });
+
+        if (error) {
+          console.error('Transcription error:', error);
+          toast.error("Transcription failed. Please try again or use text input.");
+          return;
+        }
+
+        if (data.ok && data.transcript) {
+          setPrompt(prev => prev ? `${prev} ${data.transcript}` : data.transcript);
+          toast.success("Voice transcribed successfully!");
+        } else {
+          toast.error("No speech detected. Please try again.");
+        }
+      };
+      reader.readAsDataURL(audioBlob);
+    } catch (error) {
+      console.error('Transcription error:', error);
+      toast.error("Transcription failed. Please try again.");
+    }
+  };
+
+  // Initialize speech recognition
+  useEffect(() => {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = 'en-US';
+      
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        setPrompt(prev => prev ? `${prev} ${transcript}` : transcript);
+        setIsRecording(false);
+        toast.success("Voice input captured!");
+      };
+
+      recognition.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error);
+        setIsRecording(false);
+        if (event.error === 'not-allowed') {
+          toast.error("Microphone access denied. Please allow microphone access.");
+        } else {
+          toast.error("Speech recognition failed. Trying Whisper API...");
+          startRecordingWithFallback();
+        }
+      };
+
+      recognition.onend = () => {
+        setIsRecording(false);
+      };
+
+      setRecognition(recognition);
+    }
+  }, []);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === 'm') {
+        event.preventDefault();
+        toggleVoiceInput();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isRecording]);
+
   const handleChatMessage = handleSendMessage;
 
   const handleQuickEdit = (cardId: string, edit: string) => {
