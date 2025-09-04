@@ -8,7 +8,7 @@ import { AvatarStudio } from "@/components/AvatarStudio";
 import { UploadSection } from "@/components/UploadSection";
 import { ExportSection } from "@/components/ExportSection";
 import { ChatInterface } from "@/components/ChatInterface";
-import { TalkingAvatarWorkflow } from "@/components/TalkingAvatarWorkflow";
+import { TalkingAvatarStudio } from "@/components/TalkingAvatarStudio";
 import UpgradePage from "./UpgradePage";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -989,7 +989,7 @@ export default function Dashboard() {
       case "overview":
         return <OverviewPage />;
       case "talking-avatar":
-        return <TalkingAvatarWorkflow />;
+        return <TalkingAvatarStudio />;
       case "create":
         return <CreateAvatar />;
       case "studio":
