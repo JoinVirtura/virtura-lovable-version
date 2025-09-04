@@ -1,809 +1,46 @@
-import { useState, useRef, useCallback } from "react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Slider } from "@/components/ui/slider";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Switch } from "@/components/ui/switch";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/components/ui/use-toast";
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Slider } from '@/components/ui/slider';
+import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Upload, 
   Play, 
   Pause, 
-  Mic, 
-  Volume2, 
-  Settings, 
-  Eye, 
-  Download,
-  ImageIcon,
-  VideoIcon,
-  Sparkles,
-  MessageSquare,
-  CheckCircle2,
-  Circle,
-  Target,
-  Palette,
-  Film,
-  Package,
-  Wand2,
-  Camera,
-  Lightbulb,
-  RotateCcw,
-  Clock,
-  AlertCircle,
-  RefreshCw,
+  Download, 
+  Share, 
   Save,
-  Share
-} from "lucide-react";
-import { AvatarLibraryModal } from "./AvatarLibraryModal";
-import { AudioPlayerWithControls } from "./AudioPlayerWithControls";
+  User,
+  Mic,
+  Palette,
+  Video,
+  Eye,
+  CheckCircle,
+  Clock,
+  XCircle,
+  Camera,
+  Library
+} from 'lucide-react';
+import { useTalkingAvatar } from '@/hooks/useTalkingAvatar';
+import { initialVoice, initialStyle, initialExports } from '@/features/talking-avatar/store';
+import { AvatarLibraryModal } from './AvatarLibraryModal';
+import { AudioPlayerWithControls } from './AudioPlayerWithControls';
+import { TalkingAvatarWorkflow } from './TalkingAvatarWorkflow';
 
-// Import the store types and hook
-import type { Voice, Style, Exports } from "@/features/talking-avatar/store";
-import { initialVoice, initialStyle, initialExports } from "@/features/talking-avatar/store";
-import { useTalkingAvatar } from "@/hooks/useTalkingAvatar";
-
-// Hero Canvas Component
-const HeroCanvas = ({ 
-  uploadedFile, 
-  onFileUpload 
-}: { 
-  uploadedFile: File | null;
-  onFileUpload: (file: File) => void;
-}) => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isDragOver, setIsDragOver] = useState(false);
-
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(true);
-  }, []);
-
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-  }, []);
-
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-    
-    const files = Array.from(e.dataTransfer.files);
-    const validFile = files.find(file => 
-      (file.type.startsWith('image/') && file.size <= 10 * 1024 * 1024) ||
-      (file.type.startsWith('video/') && file.size <= 50 * 1024 * 1024)
-    );
-    
-    if (validFile) {
-      onFileUpload(validFile);
-    }
-  }, [onFileUpload]);
-
-  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      onFileUpload(file);
-    }
-  }, [onFileUpload]);
-
-  return (
-    <Card 
-      className={`h-80 relative bg-gradient-to-br from-card/80 to-card/60 rounded-2xl border border-border/50 overflow-hidden cursor-pointer transition-all duration-300 ${
-        isDragOver ? 'border-primary/50 shadow-lg shadow-primary/20' : ''
-      }`}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
-      onClick={() => fileInputRef.current?.click()}
-    >
-      {/* Subtle particles background */}
-      <div className="absolute inset-0 opacity-30">
-        <div className="animate-pulse absolute top-1/4 left-1/4 w-2 h-2 bg-primary/40 rounded-full"></div>
-        <div className="animate-pulse absolute top-1/2 right-1/3 w-1 h-1 bg-primary/30 rounded-full" style={{animationDelay: '1s'}}></div>
-        <div className="animate-pulse absolute bottom-1/3 left-1/2 w-1.5 h-1.5 bg-primary/35 rounded-full" style={{animationDelay: '2s'}}></div>
-      </div>
-
-      {uploadedFile ? (
-        <div className="flex items-center justify-center h-full relative">
-          {uploadedFile.type.startsWith('image/') ? (
-            <div className="relative">
-              <img 
-                src={URL.createObjectURL(uploadedFile)} 
-                alt="Uploaded avatar" 
-                className="max-h-72 max-w-full object-contain rounded-lg animate-fade-in"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent rounded-lg"></div>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center space-y-4">
-              <VideoIcon className="w-16 h-16 text-primary" />
-              <p className="text-sm text-muted-foreground">{uploadedFile.name}</p>
-              <div className="flex space-x-2">
-                <Button size="sm" variant="outline">
-                  <Play className="w-4 h-4 mr-1" />
-                  Preview
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
-      ) : (
-        <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
-          <div className={`p-4 rounded-full border-2 border-dashed border-primary/30 bg-primary/5 transition-all duration-300 ${
-            isDragOver ? 'border-primary/60 bg-primary/10 scale-110' : ''
-          }`}>
-            <Upload className="w-8 h-8 text-primary" />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold mb-1">Drop image/video here or click to upload</h3>
-            <p className="text-sm text-muted-foreground">
-              Images: PNG, JPG, WebP (up to 10MB) • Videos: MP4, MOV, WebM (up to 50MB)
-            </p>
-          </div>
-        </div>
-      )}
-
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/png,image/jpg,image/jpeg,image/webp,video/mp4,video/mov,video/webm"
-        className="hidden"
-        onChange={handleFileSelect}
-      />
-    </Card>
-  );
-};
-
-// Avatar Panel
-const AvatarPanel = ({ uploadedFile, onFileUpload }: { uploadedFile: File | null; onFileUpload: (file: File) => void }) => {
+export const TalkingAvatarStudio = () => {
+  const [script, setScript] = useState('');
+  const [videoPrompt, setVideoPrompt] = useState('Create a natural talking video with professional presentation style');
   const [showLibrary, setShowLibrary] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [currentStep, setCurrentStep] = useState(1);
 
-  const handleLibrarySelect = (avatarUrl: string) => {
-    // Convert URL to File object for consistency
-    fetch(avatarUrl)
-      .then(res => res.blob())
-      .then(blob => {
-        const file = new File([blob], 'avatar.jpg', { type: 'image/jpeg' });
-        onFileUpload(file);
-      });
-  };
-
-  return (
-    <div className="space-y-6">
-      <div className="flex space-x-4">
-        <Button 
-          variant="outline" 
-          className="flex-1"
-          onClick={() => fileInputRef.current?.click()}
-        >
-          <Upload className="w-4 h-4 mr-2" />
-          Upload/Replace
-        </Button>
-        <Button 
-          variant="outline" 
-          className="flex-1"
-          onClick={() => setShowLibrary(true)}
-        >
-          <ImageIcon className="w-4 h-4 mr-2" />
-          Choose from Library
-        </Button>
-        <Button variant="outline" className="flex-1">
-          <Sparkles className="w-4 h-4 mr-2" />
-          Generate AI Avatar
-        </Button>
-      </div>
-
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/png,image/jpg,image/jpeg,image/webp"
-        className="hidden"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) onFileUpload(file);
-        }}
-      />
-
-      <AvatarLibraryModal 
-        open={showLibrary}
-        onOpenChange={setShowLibrary}
-        onSelectAvatar={handleLibrarySelect}
-      />
-    
-      {uploadedFile && (
-        <Card className="p-4">
-          <h4 className="font-medium mb-3">Face Alignment</h4>
-          <div className="text-sm text-muted-foreground mb-3">
-            Adjust positioning for optimal lip-sync results
-          </div>
-          <div className="flex space-x-4">
-            <Button size="sm" variant="outline">
-              <Camera className="w-4 h-4 mr-1" />
-              Auto-Align
-            </Button>
-            <Button size="sm" variant="outline">
-              <RotateCcw className="w-4 h-4 mr-1" />
-              Reset
-            </Button>
-          </div>
-        </Card>
-      )}
-    </div>
-  );
-};
-
-// Voice Panel
-const VoicePanel = ({ 
-  voice, 
-  onVoiceChange, 
-  onGenerateAudio,
-  isProcessing,
-  generatedAudio 
-}: { 
-  voice: Voice; 
-  onVoiceChange: (voice: Partial<Voice>) => void;
-  onGenerateAudio: (script: string) => void;
-  isProcessing: boolean;
-  generatedAudio: string | null;
-}) => {
-  const [script, setScript] = useState("");
-  const [isRecording, setIsRecording] = useState(false);
-  const { toast } = useToast();
-
-  const handleGenerateAudio = () => {
-    if (!script.trim()) {
-      toast({
-        title: "Error",
-        description: "Please enter a script first",
-        variant: "destructive",
-      });
-      return;
-    }
-    onGenerateAudio(script);
-  };
-
-  const playAudio = () => {
-    if (generatedAudio) {
-      const audio = new Audio(generatedAudio);
-      audio.play();
-    }
-  };
-
-  return (
-    <div className="space-y-6">
-      {/* Text-to-Speech Editor */}
-      <Card className="p-4">
-        <h4 className="font-medium mb-3">Script</h4>
-        <Textarea
-          placeholder="Enter your script here..."
-          value={script}
-          onChange={(e) => setScript(e.target.value)}
-          className="min-h-24 resize-none"
-          maxLength={600}
-        />
-        <div className="flex justify-between items-center mt-2 text-xs text-muted-foreground">
-          <span>{script.length}/600 characters</span>
-          <span className="text-green-500">Auto-saved</span>
-        </div>
-      </Card>
-
-      {/* Recording & Upload */}
-      <div className="grid grid-cols-2 gap-4">
-        <Button
-          variant={isRecording ? "destructive" : "outline"}
-          onClick={() => setIsRecording(!isRecording)}
-          className="h-20 flex-col"
-          disabled={isProcessing}
-        >
-          <Mic className="w-6 h-6 mb-1" />
-          {isRecording ? "Stop Recording" : "Record Voice"}
-        </Button>
-        <Button variant="outline" className="h-20 flex-col" disabled={isProcessing}>
-          <Upload className="w-6 h-6 mb-1" />
-          Upload Audio
-        </Button>
-      </div>
-
-      {/* Voice Settings */}
-      <Card className="p-4">
-        <h4 className="font-medium mb-4">Voice Settings</h4>
-        <div className="space-y-4">
-          <div>
-            <label className="text-sm font-medium mb-2 block">Voice</label>
-            <Select value={voice.voiceId} onValueChange={(value) => onVoiceChange({ voiceId: value })}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="9BWtsMINqrJLrRacOk9x">Aria - Professional Female (Natural)</SelectItem>
-                <SelectItem value="CwhRBWXzGAHq8TQ4Fs17">Roger - Executive Male (Authoritative)</SelectItem>
-                <SelectItem value="EXAVITQu4vr4xnSDxMaL">Sarah - Young Female (Friendly)</SelectItem>
-                <SelectItem value="FGY2WhTYpPnrIDTdsKH5">Laura - Narrator Female (Storyteller)</SelectItem>
-                <SelectItem value="IKne3meq5aSn9XLyUdCD">Charlie - Conversational Male (Warm)</SelectItem>
-                <SelectItem value="XB0fDUnXU5powFXDhCwa">Charlotte - Energetic Female (Dynamic)</SelectItem>
-                <SelectItem value="TX3LPaxmHKxFdv7VOQHJ">Liam - Deep Male (Cinematic)</SelectItem>
-                <SelectItem value="pFZP5JQG7iQjIQuC4Bku">Lily - Soft Female (Gentle)</SelectItem>
-                <SelectItem value="onwK4e9ZLuTAKqWW03F9">Daniel - Professional Male (Corporate)</SelectItem>
-                <SelectItem value="cgSgspJ2msm6clMCkdW9">Jessica - Confident Female (Leader)</SelectItem>
-                <SelectItem value="cjVigY5qzO86Huf0OWal">Eric - Friendly Male (Approachable)</SelectItem>
-                <SelectItem value="nPczCjzI2devNBz1zQrb">Brian - Casual Male (Relaxed)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <label className="text-sm font-medium mb-2 block">Emotion</label>
-              <Slider
-                value={[voice.emotion]}
-                onValueChange={([value]) => onVoiceChange({ emotion: value })}
-                max={100}
-                step={1}
-                className="mb-2"
-              />
-              <span className="text-xs text-muted-foreground">{voice.emotion}%</span>
-            </div>
-            <div>
-              <label className="text-sm font-medium mb-2 block">Speed</label>
-              <Slider
-                value={[voice.speed]}
-                onValueChange={([value]) => onVoiceChange({ speed: value })}
-                min={0.5}
-                max={2}
-                step={0.1}
-                className="mb-2"
-              />
-              <span className="text-xs text-muted-foreground">{voice.speed}x</span>
-            </div>
-            <div>
-              <label className="text-sm font-medium mb-2 block">Pitch</label>
-              <Slider
-                value={[voice.pitch]}
-                onValueChange={([value]) => onVoiceChange({ pitch: value })}
-                min={0.5}
-                max={2}
-                step={0.1}
-                className="mb-2"
-              />
-              <span className="text-xs text-muted-foreground">{voice.pitch}x</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex gap-2 mt-4">
-          <Button 
-            className="flex-1" 
-            onClick={handleGenerateAudio}
-            disabled={isProcessing || !script.trim()}
-          >
-            {isProcessing ? (
-              <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-            ) : (
-              <Volume2 className="w-4 h-4 mr-2" />
-            )}
-            Generate Audio
-          </Button>
-        </div>
-
-        {/* Audio Player with Controls */}
-        {generatedAudio && (
-          <Card className="p-4">
-            <h5 className="font-medium mb-3">Generated Audio Preview</h5>
-            <AudioPlayerWithControls 
-              audioUrl={generatedAudio} 
-              isGenerating={isProcessing}
-            />
-          </Card>
-        )}
-      </Card>
-    </div>
-  );
-};
-
-// Style & FX Panel
-const StylePanel = ({ style, onStyleChange }: { style: Style; onStyleChange: (style: Partial<Style>) => void }) => (
-  <div className="space-y-6">
-    {/* Presets */}
-    <div>
-      <h4 className="font-medium mb-3">Style Presets</h4>
-      <div className="grid grid-cols-2 gap-3">
-        {['Studio', 'Cinematic', 'Clean White', 'Gradient Fade'].map((preset) => (
-          <Card
-            key={preset}
-            className={`p-4 cursor-pointer transition-all hover:border-primary/50 ${
-              style.preset === preset ? 'border-primary bg-primary/5' : ''
-            }`}
-            onClick={() => onStyleChange({ preset })}
-          >
-            <div className="text-sm font-medium">{preset}</div>
-          </Card>
-        ))}
-      </div>
-    </div>
-
-    {/* AI Look Modes */}
-    <div>
-      <h4 className="font-medium mb-3">AI Look Mode</h4>
-      <div className="grid grid-cols-3 gap-2">
-        {['realistic', 'pixar', 'vintage', 'cyberpunk', 'anime'].map((mode) => (
-          <Button
-            key={mode}
-            variant={style.lookMode === mode ? "default" : "outline"}
-            size="sm"
-            onClick={() => onStyleChange({ lookMode: mode as any })}
-            className="capitalize"
-          >
-            {mode}
-          </Button>
-        ))}
-      </div>
-    </div>
-
-    {/* Background */}
-    <div>
-      <h4 className="font-medium mb-3">Background</h4>
-      <div className="grid grid-cols-4 gap-2">
-        {['blur', 'solid', 'upload', 'green'].map((bg) => (
-          <Button
-            key={bg}
-            variant={style.bg === bg ? "default" : "outline"}
-            size="sm"
-            onClick={() => onStyleChange({ bg: bg as any })}
-            className="capitalize"
-          >
-            {bg}
-          </Button>
-        ))}
-      </div>
-    </div>
-
-    {/* Lighting Controls */}
-    <Card className="p-4">
-      <h4 className="font-medium mb-4">Lighting & Camera</h4>
-      <div className="space-y-4">
-        <div className="grid grid-cols-3 gap-4">
-          <div>
-            <label className="text-sm font-medium mb-2 block">Key Light</label>
-            <Slider
-              value={[style.lighting.key]}
-              onValueChange={([value]) => onStyleChange({ lighting: { ...style.lighting, key: value } })}
-              max={100}
-              className="mb-1"
-            />
-            <span className="text-xs text-muted-foreground">{style.lighting.key}%</span>
-          </div>
-          <div>
-            <label className="text-sm font-medium mb-2 block">Fill Light</label>
-            <Slider
-              value={[style.lighting.fill]}
-              onValueChange={([value]) => onStyleChange({ lighting: { ...style.lighting, fill: value } })}
-              max={100}
-              className="mb-1"
-            />
-            <span className="text-xs text-muted-foreground">{style.lighting.fill}%</span>
-          </div>
-          <div>
-            <label className="text-sm font-medium mb-2 block">Rim Light</label>
-            <Slider
-              value={[style.lighting.rim]}
-              onValueChange={([value]) => onStyleChange({ lighting: { ...style.lighting, rim: value } })}
-              max={100}
-              className="mb-1"
-            />
-            <span className="text-xs text-muted-foreground">{style.lighting.rim}%</span>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="text-sm font-medium mb-2 block">FOV</label>
-            <Slider
-              value={[style.camera.fov]}
-              onValueChange={([value]) => onStyleChange({ camera: { ...style.camera, fov: value } })}
-              min={20}
-              max={80}
-              className="mb-1"
-            />
-            <span className="text-xs text-muted-foreground">{style.camera.fov}°</span>
-          </div>
-          <div>
-            <label className="text-sm font-medium mb-2 block">Framing</label>
-            <Select 
-              value={style.camera.frame} 
-              onValueChange={(value) => onStyleChange({ camera: { ...style.camera, frame: value as any } })}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="tight">Tight</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="wide">Wide</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </div>
-    </Card>
-  </div>
-);
-
-// Timeline Panel
-const TimelinePanel = () => (
-  <div className="space-y-6">
-    <Card className="p-4">
-      <h4 className="font-medium mb-3">Timeline Editor</h4>
-      <div className="h-32 bg-muted/20 rounded border-2 border-dashed border-muted-foreground/30 flex items-center justify-center">
-        <p className="text-muted-foreground">Timeline visualization coming soon</p>
-      </div>
-    </Card>
-
-    <div className="flex items-center space-x-2">
-      <Switch id="captions" />
-      <label htmlFor="captions" className="text-sm font-medium">Auto-generate captions</label>
-    </div>
-  </div>
-);
-
-// Preview & Export Panel
-const PreviewExportPanel = ({ 
-  exports, 
-  onExportsChange,
-  generatedVideo,
-  finalVideo,
-  onGenerateVideo,
-  onSyncAudioVideo,
-  onDownloadVideo,
-  onShareVideo,
-  onSaveToLibrary,
-  isProcessing,
-  uploadedFile 
-}: { 
-  exports: Exports; 
-  onExportsChange: (exports: Partial<Exports>) => void;
-  generatedVideo: string | null;
-  finalVideo: string | null;
-  onGenerateVideo: (prompt: string) => void;
-  onSyncAudioVideo: () => void;
-  onDownloadVideo: () => void;
-  onShareVideo: () => void;
-  onSaveToLibrary: () => void;
-  isProcessing: boolean;
-  uploadedFile: File | null;
-}) => {
-  const [videoPrompt, setVideoPrompt] = useState("Create a natural talking video with professional presentation style");
-
-  const videoToShow = finalVideo || generatedVideo;
-
-  return (
-    <div className="space-y-6">
-      <Card className="p-4">
-        <h4 className="font-medium mb-3">Live Preview</h4>
-        <div className="aspect-video bg-muted/20 rounded border-2 border-dashed border-muted-foreground/30 flex items-center justify-center overflow-hidden">
-          {videoToShow ? (
-            <video 
-              src={videoToShow} 
-              controls 
-              className="w-full h-full object-contain rounded"
-              poster={uploadedFile ? URL.createObjectURL(uploadedFile) : undefined}
-            />
-          ) : uploadedFile && uploadedFile.type.startsWith('image/') ? (
-            <img 
-              src={URL.createObjectURL(uploadedFile)} 
-              alt="Avatar preview" 
-              className="w-full h-full object-contain rounded"
-            />
-          ) : (
-            <p className="text-muted-foreground">Upload an avatar and generate audio to see preview</p>
-          )}
-        </div>
-      </Card>
-
-      {/* Video Generation */}
-      <Card className="p-4">
-        <h4 className="font-medium mb-3">Video Generation</h4>
-        <Textarea
-          placeholder="Describe the video style and presentation..."
-          value={videoPrompt}
-          onChange={(e) => setVideoPrompt(e.target.value)}
-          className="min-h-16 resize-none mb-3"
-          maxLength={200}
-        />
-        <Button 
-          className="w-full mb-3" 
-          onClick={() => onGenerateVideo(videoPrompt)}
-          disabled={isProcessing || !uploadedFile}
-        >
-          {isProcessing ? (
-            <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-          ) : (
-            <VideoIcon className="w-4 h-4 mr-2" />
-          )}
-          Generate Video
-        </Button>
-        
-        {generatedVideo && (
-          <Button 
-            className="w-full" 
-            variant="outline"
-            onClick={onSyncAudioVideo}
-            disabled={isProcessing}
-          >
-            <Wand2 className="w-4 h-4 mr-2" />
-            Sync Audio & Video
-          </Button>
-        )}
-      </Card>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="text-sm font-medium mb-2 block">Aspect Ratio</label>
-          <Select value={exports.ratio} onValueChange={(value) => onExportsChange({ ratio: value as any })}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="9:16">9:16 (Stories)</SelectItem>
-              <SelectItem value="1:1">1:1 (Square)</SelectItem>
-              <SelectItem value="16:9">16:9 (Landscape)</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          <label className="text-sm font-medium mb-2 block">Quality</label>
-          <Select value={exports.quality.toString()} onValueChange={(value) => onExportsChange({ quality: parseInt(value) as any })}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="720">720p</SelectItem>
-              <SelectItem value="1080">1080p</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <div className="space-y-3">
-        <div className="flex items-center space-x-2">
-          <Switch 
-            id="captions-export" 
-            checked={exports.captions}
-            onCheckedChange={(checked) => onExportsChange({ captions: checked })}
-          />
-          <label htmlFor="captions-export" className="text-sm font-medium">Burn-in captions</label>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Switch 
-            id="transparent" 
-            checked={exports.transparent}
-            onCheckedChange={(checked) => onExportsChange({ transparent: checked })}
-          />
-          <label htmlFor="transparent" className="text-sm font-medium">Transparent background</label>
-        </div>
-      </div>
-
-      {/* Final Actions */}
-      {videoToShow && (
-        <div className="flex gap-2">
-          <Button onClick={onDownloadVideo} className="flex-1">
-            <Download className="w-4 h-4 mr-2" />
-            Download
-          </Button>
-          <Button variant="outline" onClick={onShareVideo} className="flex-1">
-            <Share className="w-4 h-4 mr-2" />
-            Share
-          </Button>
-          <Button variant="outline" onClick={onSaveToLibrary} className="flex-1">
-            <Save className="w-4 h-4 mr-2" />
-            Save to Library
-          </Button>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// Job Status Card
-const JobStatusCard = ({ job, isProcessing }: { job: any; isProcessing: boolean }) => {
-  if (!job && !isProcessing) return null;
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'done':
-        return <CheckCircle2 className="w-4 h-4 text-green-500" />;
-      case 'running':
-        return <RefreshCw className="w-4 h-4 text-primary animate-spin" />;
-      case 'error':
-        return <AlertCircle className="w-4 h-4 text-destructive" />;
-      default:
-        return <Circle className="w-4 h-4 text-muted-foreground" />;
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'done':
-        return "text-green-500";
-      case 'running':
-        return "text-primary";
-      case 'error':
-        return "text-destructive";
-      default:
-        return "text-muted-foreground";
-    }
-  };
-
-  return (
-    <Card className="p-6">
-      <h3 className="text-lg font-semibold mb-4">Generation Progress</h3>
-      
-      <div className="space-y-4">
-        <div className="flex justify-between text-sm">
-          <span>Overall Progress</span>
-          <span>{job?.progress || 0}%</span>
-        </div>
-        <Progress value={job?.progress || 0} className="h-2" />
-        
-        <div className="space-y-3">
-          {Object.entries(job?.steps || {
-            voice: 'pending',
-            'lip-sync': 'pending', 
-            style: 'pending',
-            render: 'pending',
-            export: 'pending'
-          }).map(([step, status], idx) => (
-            <div key={idx} className="flex items-center space-x-3">
-              {getStatusIcon(status as string)}
-              <span className={`text-sm capitalize ${getStatusColor(status as string)}`}>
-                {step.replace('-', ' ')}
-              </span>
-            </div>
-          ))}
-        </div>
-        
-        {job?.status === 'error' && (
-          <div className="text-xs text-destructive mt-4 p-2 bg-destructive/10 rounded">
-            Error: {job.logs?.[job.logs.length - 1] || 'Generation failed'}
-          </div>
-        )}
-        
-        {isProcessing && job?.status !== 'error' && (
-          <div className="text-xs text-muted-foreground mt-4 flex items-center gap-2">
-            <Clock className="w-3 h-3" />
-            Processing... ETA: ~2 minutes
-          </div>
-        )}
-      </div>
-    </Card>
-  );
-};
-
-// AI Assist Card
-const AIAssistCard = () => (
-  <Card className="p-4">
-    <div className="flex items-center space-x-2 mb-3">
-      <Wand2 className="w-4 h-4 text-primary" />
-      <h4 className="font-medium">AI Assist</h4>
-    </div>
-    <div className="space-y-2 text-sm text-muted-foreground">
-      <p>💡 Try energetic voice for better engagement</p>
-      <p>🎬 Use cinematic lighting for premium feel</p>
-    </div>
-    <Button size="sm" variant="outline" className="w-full mt-3">
-      <MessageSquare className="w-4 h-4 mr-2" />
-      Chat with AI
-    </Button>
-  </Card>
-);
-
-// Main Talking Avatar Studio
-export default function TalkingAvatarStudio() {
   const {
-    // State
     uploadedFile,
     voice,
     style,
@@ -813,8 +50,6 @@ export default function TalkingAvatarStudio() {
     finalVideo,
     job,
     isProcessing,
-    
-    // Actions
     handleFileUpload,
     updateVoice,
     updateStyle,
@@ -828,104 +63,552 @@ export default function TalkingAvatarStudio() {
     resetWorkflow,
   } = useTalkingAvatar(initialVoice, initialStyle, initialExports);
 
+  const canProceedToNext = () => {
+    switch (currentStep) {
+      case 1: return !!uploadedFile;
+      case 2: return !!generatedAudio;
+      case 3: return true; // Style step always allows proceeding
+      case 4: return !!generatedVideo;
+      case 5: return true; // Final step
+      default: return false;
+    }
+  };
+
+  const handleNext = () => {
+    if (currentStep < 5) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const handleLibrarySelect = (avatarUrl: string) => {
+    fetch(avatarUrl)
+      .then(res => res.blob())
+      .then(blob => {
+        const file = new File([blob], 'avatar.jpg', { type: 'image/jpeg' });
+        handleFileUpload(file);
+      });
+    setShowLibrary(false);
+  };
+
   return (
-    <div className="flex gap-6">
-      {/* Main Content */}
-      <div className="flex-1 space-y-6">
-        {/* Hero Canvas */}
-        <HeroCanvas uploadedFile={uploadedFile} onFileUpload={handleFileUpload} />
-
-        {/* Workflow Tabs */}
-        <Tabs defaultValue="avatar" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 bg-muted/10">
-            <TabsTrigger value="avatar" className="flex items-center space-x-2">
-              <ImageIcon className="w-4 h-4" />
-              <span>Avatar</span>
-            </TabsTrigger>
-            <TabsTrigger value="voice" className="flex items-center space-x-2">
-              <Volume2 className="w-4 h-4" />
-              <span>Voice</span>
-            </TabsTrigger>
-            <TabsTrigger value="style" className="flex items-center space-x-2">
-              <Palette className="w-4 h-4" />
-              <span>Style & FX</span>
-            </TabsTrigger>
-            <TabsTrigger value="timeline" className="flex items-center space-x-2">
-              <Film className="w-4 h-4" />
-              <span>Timeline</span>
-            </TabsTrigger>
-            <TabsTrigger value="export" className="flex items-center space-x-2">
-              <Download className="w-4 h-4" />
-              <span>Preview & Export</span>
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="avatar" className="space-y-6">
-            <AvatarPanel 
-              uploadedFile={uploadedFile}
-              onFileUpload={handleFileUpload}
-            />
-          </TabsContent>
-          
-          <TabsContent value="voice" className="space-y-6">
-            <VoicePanel 
-              voice={voice}
-              onVoiceChange={updateVoice}
-              onGenerateAudio={generateAudio}
-              isProcessing={isProcessing}
-              generatedAudio={generatedAudio}
-            />
-          </TabsContent>
-          
-          <TabsContent value="style" className="space-y-6">
-            <StylePanel 
-              style={style}
-              onStyleChange={updateStyle}
-            />
-          </TabsContent>
-          
-          <TabsContent value="timeline" className="space-y-6">
-            <TimelinePanel />
-          </TabsContent>
-          
-          <TabsContent value="export" className="space-y-6">
-            <PreviewExportPanel 
-              exports={exports}
-              onExportsChange={updateExports}
-              generatedVideo={generatedVideo}
-              finalVideo={finalVideo}
-              onGenerateVideo={generateVideo}
-              onSyncAudioVideo={syncAudioVideo}
-              onDownloadVideo={downloadVideo}
-              onShareVideo={shareVideo}
-              onSaveToLibrary={saveToLibrary}
-              isProcessing={isProcessing}
-              uploadedFile={uploadedFile}
-            />
-          </TabsContent>
-        </Tabs>
+    <div className="max-w-7xl mx-auto p-6 space-y-6">
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+          Talking Avatar Studio
+        </h1>
+        <p className="text-muted-foreground mt-2">
+          Create professional talking avatar videos with AI
+        </p>
       </div>
 
-      {/* Right Rail */}
-      <div className="w-80 space-y-6">
-        <JobStatusCard job={job} isProcessing={isProcessing} />
-        <AIAssistCard />
-        
-        {/* Reset Workflow */}
-        {(uploadedFile || generatedAudio || generatedVideo) && (
-          <Card className="p-4">
-            <Button 
-              variant="outline" 
-              className="w-full" 
-              onClick={resetWorkflow}
-              disabled={isProcessing}
-            >
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Start New Project
-            </Button>
+      {/* Workflow Component */}
+      <TalkingAvatarWorkflow
+        currentStep={currentStep}
+        onStepChange={setCurrentStep}
+        job={job}
+        isProcessing={isProcessing}
+        onNext={handleNext}
+        onPrevious={handlePrevious}
+        canProceed={canProceedToNext()}
+      />
+
+      <div className="grid lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          {/* Step-based Content */}
+          {currentStep === 1 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <User className="h-5 w-5" />
+                  Avatar Selection
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Button
+                    variant="outline"
+                    className="h-24 flex flex-col items-center gap-2"
+                    onClick={() => document.getElementById('avatar-upload')?.click()}
+                  >
+                    <Upload className="h-6 w-6" />
+                    Upload Image
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="h-24 flex flex-col items-center gap-2"
+                    onClick={() => setShowLibrary(true)}
+                  >
+                    <Library className="h-6 w-6" />
+                    From Library
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="h-24 flex flex-col items-center gap-2"
+                    disabled
+                  >
+                    <Camera className="h-6 w-6" />
+                    Generate AI Avatar
+                  </Button>
+                </div>
+                
+                <input
+                  id="avatar-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      handleFileUpload(file);
+                    }
+                  }}
+                />
+
+                {uploadedFile && (
+                  <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+                    <CheckCircle className="h-5 w-5 text-green-500" />
+                    <span className="text-sm">{uploadedFile.name}</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowLibrary(true)}
+                    >
+                      Replace
+                    </Button>
+                  </div>
+                )}
+
+                {uploadedFile && (
+                  <div className="aspect-video bg-muted rounded-lg overflow-hidden">
+                    <img 
+                      src={URL.createObjectURL(uploadedFile)} 
+                      alt="Avatar preview"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {currentStep === 2 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Mic className="h-5 w-5" />
+                  Voice Configuration
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="script">Script</Label>
+                  <Textarea
+                    id="script"
+                    placeholder="Enter your script here..."
+                    value={script}
+                    onChange={(e) => setScript(e.target.value)}
+                    className="min-h-24"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label>Voice</Label>
+                    <Select value={voice.voiceId} onValueChange={(value) => updateVoice({ voiceId: value })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="9BWtsMINqrJLrRacOk9x">Aria (Expressive)</SelectItem>
+                        <SelectItem value="IKne3meq5aSn9XLyUdCD">Freya (Conversational)</SelectItem>
+                        <SelectItem value="EXAVITQu4vr4xnSDxMaL">Sarah (Professional)</SelectItem>
+                        <SelectItem value="pNInz6obpgDQGcFmaJgB">Adam (Confident)</SelectItem>
+                        <SelectItem value="TxGEqnHWrfWFTfGW9XjX">Josh (Deep)</SelectItem>
+                        <SelectItem value="VR6AewLTigWG4xSOukaG">Arnold (Authoritative)</SelectItem>
+                        <SelectItem value="21m00Tcm4TlvDq8ikWAM">Rachel (Warm)</SelectItem>
+                        <SelectItem value="AZnzlk1XvdvUeBnXmlld">Domi (Professional)</SelectItem>
+                        <SelectItem value="ErXwobaYiN019PkySvjV">Antoni (Narrative)</SelectItem>
+                        <SelectItem value="MF3mGyEYCl7XYWbV9V6O">Elli (Energetic)</SelectItem>
+                        <SelectItem value="XrExE9yKIg1WjnnlVkGX">Matilda (Friendly)</SelectItem>
+                        <SelectItem value="jsCqWAovK2LkecY7zXl4">Freya (Clear)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label>Language</Label>
+                    <Select value={voice.language} onValueChange={(value) => updateVoice({ language: value })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="en">English</SelectItem>
+                        <SelectItem value="es">Spanish</SelectItem>
+                        <SelectItem value="fr">French</SelectItem>
+                        <SelectItem value="de">German</SelectItem>
+                        <SelectItem value="it">Italian</SelectItem>
+                        <SelectItem value="pt">Portuguese</SelectItem>
+                        <SelectItem value="pl">Polish</SelectItem>
+                        <SelectItem value="hi">Hindi</SelectItem>
+                        <SelectItem value="ja">Japanese</SelectItem>
+                        <SelectItem value="ko">Korean</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <Label>Emotion ({voice.emotion}%)</Label>
+                    <Slider
+                      value={[voice.emotion]}
+                      onValueChange={(value) => updateVoice({ emotion: value[0] })}
+                      max={100}
+                      step={5}
+                      className="mt-2"
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Speed ({voice.speed}x)</Label>
+                    <Slider
+                      value={[voice.speed]}
+                      onValueChange={(value) => updateVoice({ speed: value[0] })}
+                      min={0.5}
+                      max={2}
+                      step={0.1}
+                      className="mt-2"
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Pitch ({voice.pitch}x)</Label>
+                    <Slider
+                      value={[voice.pitch]}
+                      onValueChange={(value) => updateVoice({ pitch: value[0] })}
+                      min={0.5}
+                      max={2}
+                      step={0.1}
+                      className="mt-2"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => generateAudio(script)}
+                    disabled={!script.trim() || isProcessing}
+                    className="flex-1"
+                  >
+                    <Mic className="h-4 w-4 mr-2" />
+                    Generate Voice
+                  </Button>
+                </div>
+
+                {generatedAudio && (
+                  <div className="mt-4">
+                    <Label>Generated Audio</Label>
+                    <AudioPlayerWithControls audioUrl={generatedAudio} />
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {currentStep === 3 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Palette className="h-5 w-5" />
+                  Style & Effects
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label>Style Preset</Label>
+                    <Select value={style.preset} onValueChange={(value) => updateStyle({ preset: value })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="professional">Professional</SelectItem>
+                        <SelectItem value="casual">Casual</SelectItem>
+                        <SelectItem value="creative">Creative</SelectItem>
+                        <SelectItem value="corporate">Corporate</SelectItem>
+                        <SelectItem value="educational">Educational</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label>Look Mode</Label>
+                    <Select value={style.lookMode} onValueChange={(value) => updateStyle({ lookMode: value as any })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="realistic">Realistic</SelectItem>
+                        <SelectItem value="pixar">Pixar Style</SelectItem>
+                        <SelectItem value="vintage">Vintage</SelectItem>
+                        <SelectItem value="cyberpunk">Cyberpunk</SelectItem>
+                        <SelectItem value="anime">Anime</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div>
+                  <Label>Background</Label>
+                  <div className="grid grid-cols-4 gap-2 mt-2">
+                    {['blur', 'solid', 'upload', 'green'].map((bg) => (
+                      <Button
+                        key={bg}
+                        variant={style.bg === bg ? 'default' : 'outline'}
+                        onClick={() => updateStyle({ bg: bg as any })}
+                        className="h-16 capitalize"
+                      >
+                        {bg}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <Label>Key Lighting ({style.lighting.key}%)</Label>
+                    <Slider
+                      value={[style.lighting.key]}
+                      onValueChange={(value) => updateStyle({ 
+                        lighting: { ...style.lighting, key: value[0] } 
+                      })}
+                      max={100}
+                      className="mt-2"
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Fill Lighting ({style.lighting.fill}%)</Label>
+                    <Slider
+                      value={[style.lighting.fill]}
+                      onValueChange={(value) => updateStyle({ 
+                        lighting: { ...style.lighting, fill: value[0] } 
+                      })}
+                      max={100}
+                      className="mt-2"
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Camera FOV ({style.camera.fov}°)</Label>
+                    <Slider
+                      value={[style.camera.fov]}
+                      onValueChange={(value) => updateStyle({ 
+                        camera: { ...style.camera, fov: value[0] } 
+                      })}
+                      min={20}
+                      max={80}
+                      className="mt-2"
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {currentStep === 4 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Video className="h-5 w-5" />
+                  Video Generation
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="videoPrompt">Video Prompt</Label>
+                  <Textarea
+                    id="videoPrompt"
+                    value={videoPrompt}
+                    onChange={(e) => setVideoPrompt(e.target.value)}
+                    placeholder="Describe the style and mood for your video..."
+                    className="min-h-20"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Aspect Ratio</Label>
+                    <Select value={exports.ratio} onValueChange={(value) => updateExports({ ratio: value as any })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="16:9">16:9 (Landscape)</SelectItem>
+                        <SelectItem value="1:1">1:1 (Square)</SelectItem>
+                        <SelectItem value="9:16">9:16 (Portrait)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label>Quality</Label>
+                    <Select value={exports.quality.toString()} onValueChange={(value) => updateExports({ quality: Number(value) as any })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="720">720p</SelectItem>
+                        <SelectItem value="1080">1080p</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="captions"
+                      checked={exports.captions}
+                      onCheckedChange={(checked) => updateExports({ captions: checked })}
+                    />
+                    <Label htmlFor="captions">Burn-in captions</Label>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="transparent"
+                      checked={exports.transparent}
+                      onCheckedChange={(checked) => updateExports({ transparent: checked })}
+                    />
+                    <Label htmlFor="transparent">Transparent background</Label>
+                  </div>
+                </div>
+
+                <Button
+                  onClick={() => generateVideo(videoPrompt)}
+                  disabled={!uploadedFile || !generatedAudio || isProcessing}
+                  className="w-full h-12"
+                >
+                  <Video className="h-4 w-4 mr-2" />
+                  Generate Video
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
+          {currentStep === 5 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Eye className="h-5 w-5" />
+                  Preview & Export
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {generatedVideo && (
+                  <div>
+                    <Label>Generated Video</Label>
+                    <div className="mt-2 aspect-video bg-muted rounded-lg flex items-center justify-center">
+                      <video 
+                        src={generatedVideo} 
+                        controls 
+                        className="w-full h-full rounded-lg"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex gap-3">
+                  <Button onClick={downloadVideo} disabled={!generatedVideo} className="flex-1">
+                    <Download className="h-4 w-4 mr-2" />
+                    Download
+                  </Button>
+                  <Button onClick={shareVideo} disabled={!generatedVideo} variant="outline" className="flex-1">
+                    <Share className="h-4 w-4 mr-2" />
+                    Share
+                  </Button>
+                  <Button onClick={saveToLibrary} disabled={!generatedVideo} variant="outline" className="flex-1">
+                    <Save className="h-4 w-4 mr-2" />
+                    Save to Library
+                  </Button>
+                </div>
+
+                <Button onClick={resetWorkflow} variant="outline" className="w-full">
+                  Start New Project
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
+        {/* Right Sidebar */}
+        <div className="space-y-4">
+          {/* Status Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Project Status</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm">Avatar</span>
+                {uploadedFile ? (
+                  <Badge variant="default">Ready</Badge>
+                ) : (
+                  <Badge variant="secondary">Pending</Badge>
+                )}
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm">Audio</span>
+                {generatedAudio ? (
+                  <Badge variant="default">Generated</Badge>
+                ) : (
+                  <Badge variant="secondary">Pending</Badge>
+                )}
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm">Video</span>
+                {generatedVideo ? (
+                  <Badge variant="default">Generated</Badge>
+                ) : (
+                  <Badge variant="secondary">Pending</Badge>
+                )}
+              </div>
+            </CardContent>
           </Card>
-        )}
+
+          {/* Preview */}
+          {(generatedVideo || finalVideo) && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Preview</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="aspect-video bg-muted rounded-lg overflow-hidden">
+                  <video 
+                    src={finalVideo || generatedVideo} 
+                    controls 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
+
+      {/* Avatar Library Modal */}
+      <AvatarLibraryModal 
+        open={showLibrary}
+        onOpenChange={setShowLibrary}
+        onSelectAvatar={handleLibrarySelect}
+      />
     </div>
   );
-}
+};

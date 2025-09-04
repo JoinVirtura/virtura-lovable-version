@@ -1,511 +1,166 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import { 
-  Play, 
-  Download, 
-  Upload, 
-  CheckCircle, 
-  Mic,
-  Video,
-  Zap,
-  User,
-  FileAudio,
-  Loader2,
-  Share2,
-  Sparkles
-} from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { CheckCircle, Circle, Clock, XCircle, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Job } from '@/features/talking-avatar/store';
 
-export function TalkingAvatarWorkflow() {
-  const { toast } = useToast();
-  const [step, setStep] = useState(1);
-  const [isProcessing, setIsProcessing] = useState(false);
-  
-  // User inputs
-  const [avatarImage, setAvatarImage] = useState<string>('');
-  const [audioFile, setAudioFile] = useState<string>('');
-  const [script, setScript] = useState('Hello! This is an amazing AI-generated talking avatar video.');
-  const [prompt, setPrompt] = useState('Create a professional speaking video with natural head movements and expressions');
-  
-  // Generated outputs
-  const [generatedAudio, setGeneratedAudio] = useState<string>('');
-  const [generatedVideo, setGeneratedVideo] = useState<string>('');
-  const [finalVideo, setFinalVideo] = useState<string>('');
+interface TalkingAvatarWorkflowProps {
+  currentStep: number;
+  onStepChange: (step: number) => void;
+  job: Job | null;
+  isProcessing: boolean;
+  onNext: () => void;
+  onPrevious: () => void;
+  canProceed: boolean;
+}
 
-  const availableVoices = [
-    { id: '9BWtsMINqrJLrRacOk9x', name: 'Aria', gender: 'Female', accent: 'American' },
-    { id: 'CwhRBWXzGAHq8TQ4Fs17', name: 'Roger', gender: 'Male', accent: 'American' },
-    { id: 'EXAVITQu4vr4xnSDxMaL', name: 'Sarah', gender: 'Female', accent: 'American' },
-    { id: 'FGY2WhTYpPnrIDTdsKH5', name: 'Laura', gender: 'Female', accent: 'British' },
-    { id: 'TX3LPaxmHKxFdv7VOQHJ', name: 'Liam', gender: 'Male', accent: 'American' }
-  ];
+const WORKFLOW_STEPS = [
+  { id: 1, title: 'Avatar Selection', description: 'Choose or upload your avatar image' },
+  { id: 2, title: 'Voice Configuration', description: 'Select voice and generate audio' },
+  { id: 3, title: 'Style & Effects', description: 'Configure visual style and effects' },
+  { id: 4, title: 'Video Generation', description: 'Generate your talking avatar video' },
+  { id: 5, title: 'Preview & Export', description: 'Review and export your video' },
+];
 
-  const [selectedVoice, setSelectedVoice] = useState(availableVoices[0].id);
+const GENERATION_STEPS = [
+  { key: 'voice', label: 'Voice Generation' },
+  { key: 'lip-sync', label: 'Lip Synchronization' },
+  { key: 'style', label: 'Style Application' },
+  { key: 'render', label: 'Video Rendering' },
+  { key: 'export', label: 'Final Export' },
+];
 
-  const handleAvatarUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setAvatarImage(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleAudioUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setAudioFile(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const generateAudio = async () => {
-    if (!script.trim()) {
-      toast({
-        title: "Script Required",
-        description: "Please enter a script to generate audio",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsProcessing(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('voice-generate', {
-        body: {
-          script: script,
-          voiceId: selectedVoice,
-          model: 'eleven_multilingual_v2',
-          voiceSettings: {
-            stability: 0.5,
-            similarity_boost: 0.75,
-            style: 0.0,
-            use_speaker_boost: true
-          }
-        }
-      });
-
-      if (error) throw error;
-
-      if (data.success) {
-        setGeneratedAudio(data.audioData);
-        toast({
-          title: "Audio Generated! 🎵",
-          description: "Your AI voice has been created successfully!",
-        });
-        setStep(2);
-      } else {
-        throw new Error(data.error);
-      }
-    } catch (error: any) {
-      console.error('Audio generation error:', error);
-      toast({
-        title: "Generation Failed",
-        description: error.message || "Failed to generate audio",
-        variant: "destructive",
-      });
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const generateVideo = async () => {
-    if (!avatarImage) {
-      toast({
-        title: "Avatar Required",
-        description: "Please upload an avatar image first",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsProcessing(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('video-generate', {
-        body: {
-          avatarImage: avatarImage,
-          engine: 'heygen',
-          prompt: prompt,
-          duration: 30
-        }
-      });
-
-      if (error) throw error;
-
-      if (data.success) {
-        setGeneratedVideo(data.videoUrl);
-        toast({
-          title: "Video Generated! 🎬",
-          description: "Your AI video has been created successfully!",
-        });
-        setStep(3);
-      } else {
-        throw new Error(data.error);
-      }
-    } catch (error: any) {
-      console.error('Video generation error:', error);
-      toast({
-        title: "Generation Failed",
-        description: error.message || "Failed to generate video",
-        variant: "destructive",
-      });
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const syncAudioVideo = async () => {
-    const audioSource = audioFile || generatedAudio;
-    
-    if (!audioSource || !generatedVideo) {
-      toast({
-        title: "Assets Required",
-        description: "Please ensure both audio and video are ready",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsProcessing(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('video-sync', {
-        body: {
-          audioUrl: audioSource,
-          videoUrl: generatedVideo,
-          engine: 'heygen',
-          trimSettings: null
-        }
-      });
-
-      if (error) throw error;
-
-      if (data.success) {
-        setFinalVideo(data.finalVideoUrl);
-        toast({
-          title: "Video Synced! ✨",
-          description: "Your final talking avatar video is ready!",
-        });
-      } else {
-        throw new Error(data.error);
-      }
-    } catch (error: any) {
-      console.error('Sync error:', error);
-      toast({
-        title: "Sync Failed",
-        description: error.message || "Failed to sync audio and video",
-        variant: "destructive",
-      });
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const downloadVideo = () => {
-    if (finalVideo) {
-      const link = document.createElement('a');
-      link.href = finalVideo;
-      link.download = 'talking-avatar-video.mp4';
-      link.click();
-    }
-  };
-
-  const shareVideo = async () => {
-    if (finalVideo && navigator.share) {
-      try {
-        await navigator.share({
-          title: 'My AI Talking Avatar Video',
-          text: 'Check out this amazing AI-generated talking avatar video!',
-          url: finalVideo,
-        });
-      } catch (error) {
-        console.error('Error sharing:', error);
-      }
+export const TalkingAvatarWorkflow: React.FC<TalkingAvatarWorkflowProps> = ({
+  currentStep,
+  onStepChange,
+  job,
+  isProcessing,
+  onNext,
+  onPrevious,
+  canProceed,
+}) => {
+  const getStepIcon = (stepId: number) => {
+    if (stepId < currentStep) {
+      return <CheckCircle className="h-5 w-5 text-green-500" />;
+    } else if (stepId === currentStep) {
+      return <Circle className="h-5 w-5 text-primary fill-primary" />;
     } else {
-      // Fallback: copy to clipboard
-      navigator.clipboard.writeText(finalVideo);
-      toast({
-        title: "Link Copied!",
-        description: "Video link copied to clipboard",
-      });
+      return <Circle className="h-5 w-5 text-muted-foreground" />;
+    }
+  };
+
+  const getGenerationStepIcon = (stepKey: string) => {
+    if (!job?.steps) return <Circle className="h-4 w-4 text-muted-foreground" />;
+    
+    const status = job.steps[stepKey];
+    switch (status) {
+      case 'done':
+        return <CheckCircle className="h-4 w-4 text-green-500" />;
+      case 'running':
+        return <Clock className="h-4 w-4 text-yellow-500 animate-pulse" />;
+      case 'error':
+        return <XCircle className="h-4 w-4 text-red-500" />;
+      default:
+        return <Circle className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6 max-w-4xl">
-      {/* Header */}
-      <div className="text-center space-y-2">
-        <div className="flex items-center justify-center space-x-2">
-          <div className="w-10 h-10 bg-gradient-to-r from-primary to-primary/80 rounded-full flex items-center justify-center">
-            <Sparkles className="w-5 h-5 text-primary-foreground" />
-          </div>
-          <h1 className="text-3xl font-bold">AI Talking Avatar Studio</h1>
-        </div>
-        <p className="text-muted-foreground text-lg">Create stunning AI videos in 3 simple steps</p>
-      </div>
-
-      {/* Progress Steps */}
-      <div className="flex justify-center">
-        <div className="flex items-center space-x-4">
-          {[1, 2, 3].map((num) => (
-            <React.Fragment key={num}>
-              <div className={`flex items-center justify-center w-10 h-10 rounded-full font-semibold ${
-                step >= num ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
-              }`}>
-                {num}
-              </div>
-              {num < 3 && (
-                <div className={`w-8 h-0.5 ${step > num ? 'bg-primary' : 'bg-muted'}`} />
-              )}
-            </React.Fragment>
-          ))}
-        </div>
-      </div>
-
-      {/* Step 1: Avatar & Audio Setup */}
-      {step >= 1 && (
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <User className="w-5 h-5 mr-2" />
-              Step 1: Upload Avatar & Create Audio
-            </CardTitle>
-            <CardDescription>Upload your avatar image and create or upload audio</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-6">
-              {/* Avatar Upload */}
-              <div className="space-y-4">
-                <Label className="text-base font-semibold">Avatar Image</Label>
-                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
-                  {avatarImage ? (
-                    <div className="space-y-2">
-                      <img src={avatarImage} alt="Avatar" className="w-24 h-24 rounded-full mx-auto object-cover" />
-                      <p className="text-sm text-green-600 font-medium">Avatar uploaded!</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      <Upload className="w-8 h-8 mx-auto text-muted-foreground" />
-                      <p className="text-sm text-muted-foreground">Upload your avatar image</p>
-                    </div>
-                  )}
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleAvatarUpload}
-                    className="mt-2"
-                  />
+    <div className="space-y-6">
+      {/* Workflow Steps */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Workflow Progress</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between mb-4">
+            {WORKFLOW_STEPS.map((step, index) => (
+              <React.Fragment key={step.id}>
+                <div 
+                  className={`flex flex-col items-center cursor-pointer transition-all duration-200 ${
+                    step.id <= currentStep ? 'opacity-100' : 'opacity-50'
+                  }`}
+                  onClick={() => step.id <= currentStep && onStepChange(step.id)}
+                >
+                  {getStepIcon(step.id)}
+                  <span className="text-xs mt-1 text-center max-w-16">{step.title}</span>
                 </div>
-              </div>
-
-              {/* Audio Section */}
-              <div className="space-y-4">
-                <Label className="text-base font-semibold">Audio Source</Label>
-                <div className="space-y-3">
-                  <div>
-                    <Label className="text-sm">Upload Audio File</Label>
-                    <Input
-                      type="file"
-                      accept="audio/*"
-                      onChange={handleAudioUpload}
-                      className="mt-1"
-                    />
-                    {audioFile && (
-                      <div className="mt-2 p-2 bg-green-50 rounded flex items-center">
-                        <FileAudio className="w-4 h-4 text-green-600 mr-2" />
-                        <span className="text-sm text-green-700">Audio uploaded!</span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="text-center text-sm text-muted-foreground">OR</div>
-
-                  <div>
-                    <Label className="text-sm">Generate from Script</Label>
-                    <Textarea
-                      value={script}
-                      onChange={(e) => setScript(e.target.value)}
-                      placeholder="Enter your script here..."
-                      className="mt-1 min-h-[80px]"
-                    />
-                    <div className="mt-2">
-                      <Label className="text-sm">Voice</Label>
-                      <Select value={selectedVoice} onValueChange={setSelectedVoice}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {availableVoices.map((voice) => (
-                            <SelectItem key={voice.id} value={voice.id}>
-                              {voice.name} ({voice.gender}, {voice.accent})
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <Button
-                      onClick={generateAudio}
-                      disabled={isProcessing || !script.trim()}
-                      className="w-full mt-2"
-                    >
-                      {isProcessing ? (
-                        <>
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Generating Audio...
-                        </>
-                      ) : (
-                        <>
-                          <Mic className="w-4 h-4 mr-2" />
-                          Generate Audio
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                </div>
-
-                {generatedAudio && (
-                  <div className="p-3 bg-green-50 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-green-700">Audio Ready!</span>
-                      <Button size="sm" variant="outline" onClick={() => {
-                        const audio = new Audio(generatedAudio);
-                        audio.play();
-                      }}>
-                        <Play className="w-3 h-3" />
-                      </Button>
-                    </div>
-                    <audio controls className="w-full">
-                      <source src={generatedAudio} type="audio/mpeg" />
-                    </audio>
-                  </div>
+                {index < WORKFLOW_STEPS.length - 1 && (
+                  <div className={`flex-1 h-px mx-2 ${
+                    step.id < currentStep ? 'bg-primary' : 'bg-muted'
+                  }`} />
                 )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+              </React.Fragment>
+            ))}
+          </div>
+          
+          <div className="text-center">
+            <h3 className="font-medium">{WORKFLOW_STEPS[currentStep - 1]?.title}</h3>
+            <p className="text-sm text-muted-foreground">{WORKFLOW_STEPS[currentStep - 1]?.description}</p>
+          </div>
+        </CardContent>
+      </Card>
 
-      {/* Step 2: Video Generation */}
-      {step >= 2 && (
-        <Card className="w-full">
+      {/* Generation Progress (only show when processing) */}
+      {job && (
+        <Card>
           <CardHeader>
-            <CardTitle className="flex items-center">
-              <Video className="w-5 h-5 mr-2" />
-              Step 2: Generate Video
-            </CardTitle>
-            <CardDescription>Create your AI video with HeyGen technology</CardDescription>
+            <CardTitle>Generation Progress</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-3">
-              <Label>Video Generation Prompt</Label>
-              <Textarea
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                placeholder="Describe how you want your avatar to appear and behave..."
-                className="min-h-[80px]"
-              />
-            </div>
-
-            <Button
-              onClick={generateVideo}
-              disabled={isProcessing || !avatarImage}
-              className="w-full"
-            >
-              {isProcessing ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Generating Video...
-                </>
-              ) : (
-                <>
-                  <Video className="w-4 h-4 mr-2" />
-                  Generate Video with HeyGen
-                </>
-              )}
-            </Button>
-
-            {generatedVideo && (
-              <div className="p-4 bg-green-50 rounded-lg">
-                <div className="flex items-center space-x-2 mb-2">
-                  <CheckCircle className="w-5 h-5 text-green-500" />
-                  <span className="text-green-700 font-medium">Video generated successfully!</span>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <div className="flex justify-between text-sm mb-2">
+                  <span>Overall Progress</span>
+                  <span>{job.progress}%</span>
                 </div>
-                <video controls className="w-full rounded">
-                  <source src={generatedVideo} type="video/mp4" />
-                </video>
+                <Progress value={job.progress} className="h-2" />
               </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Step 3: Sync & Export */}
-      {step >= 3 && (
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Zap className="w-5 h-5 mr-2" />
-              Step 3: Sync & Export
-            </CardTitle>
-            <CardDescription>Combine audio and video with perfect lip-sync</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Button
-              onClick={syncAudioVideo}
-              disabled={isProcessing || (!audioFile && !generatedAudio) || !generatedVideo}
-              className="w-full"
-            >
-              {isProcessing ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Syncing Audio & Video...
-                </>
-              ) : (
-                <>
-                  <Zap className="w-4 h-4 mr-2" />
-                  Create Final Video
-                </>
-              )}
-            </Button>
-
-            {finalVideo && (
-              <div className="space-y-4">
-                <div className="p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg">
-                  <div className="flex items-center space-x-2 mb-3">
-                    <CheckCircle className="w-6 h-6 text-green-500" />
-                    <span className="text-lg font-semibold text-green-700">Your AI Talking Avatar is Ready! 🎉</span>
+              
+              <div className="space-y-2">
+                {GENERATION_STEPS.map((step) => (
+                  <div key={step.key} className="flex items-center gap-3">
+                    {getGenerationStepIcon(step.key)}
+                    <span className="text-sm">{step.label}</span>
+                    <span className="text-xs text-muted-foreground ml-auto">
+                      {job.steps?.[step.key] || 'pending'}
+                    </span>
                   </div>
-                  <video controls className="w-full rounded-lg">
-                    <source src={finalVideo} type="video/mp4" />
-                  </video>
-                </div>
-
-                <div className="flex space-x-3">
-                  <Button onClick={downloadVideo} className="flex-1">
-                    <Download className="w-4 h-4 mr-2" />
-                    Download Video
-                  </Button>
-                  <Button onClick={shareVideo} variant="outline" className="flex-1">
-                    <Share2 className="w-4 h-4 mr-2" />
-                    Share Video
-                  </Button>
-                </div>
+                ))}
               </div>
-            )}
+
+              {job.status === 'error' && (
+                <div className="bg-destructive/10 text-destructive p-3 rounded-md text-sm">
+                  {job.logs?.[job.logs.length - 1] || 'An error occurred during generation'}
+                </div>
+              )}
+            </div>
           </CardContent>
         </Card>
       )}
+
+      {/* Navigation Buttons */}
+      <div className="flex justify-between">
+        <Button
+          variant="outline"
+          onClick={onPrevious}
+          disabled={currentStep === 1 || isProcessing}
+          className="flex items-center gap-2"
+        >
+          <ChevronLeft className="h-4 w-4" />
+          Previous
+        </Button>
+        
+        <Button
+          onClick={onNext}
+          disabled={!canProceed || isProcessing}
+          className="flex items-center gap-2"
+        >
+          {currentStep === WORKFLOW_STEPS.length ? 'Complete' : 'Next'}
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   );
-}
+};
