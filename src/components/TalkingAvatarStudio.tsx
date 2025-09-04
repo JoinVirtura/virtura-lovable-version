@@ -100,7 +100,7 @@ export const TalkingAvatarStudio = () => {
     <div className="max-w-7xl mx-auto p-6 space-y-6">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-          Talking Avatar Studio
+          Avatar Studio
         </h1>
         <p className="text-muted-foreground mt-2">
           Create professional talking avatar videos with AI

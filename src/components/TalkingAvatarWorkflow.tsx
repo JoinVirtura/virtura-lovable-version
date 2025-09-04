@@ -71,7 +71,7 @@ export const TalkingAvatarWorkflow: React.FC<TalkingAvatarWorkflowProps> = ({
       {/* Workflow Steps */}
       <Card>
         <CardHeader>
-          <CardTitle>Workflow Progress</CardTitle>
+          <CardTitle>{WORKFLOW_STEPS[currentStep - 1]?.title}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between mb-4">
