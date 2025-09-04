@@ -987,7 +987,7 @@ export default function Dashboard() {
   const renderContent = () => {
     switch (activeView) {
       case "overview":
-        return <OverviewPage />;
+        return <OverviewPage onViewChange={setActiveView} />;
       case "talking-avatar":
         return <TalkingAvatarStudio />;
       case "create":
@@ -3401,7 +3401,7 @@ export default function Dashboard() {
       case "upgrade":
         return <UpgradePage />;
       default:
-        return <OverviewPage />;
+        return <OverviewPage onViewChange={setActiveView} />;
     }
   };
 
