@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import virturaLogo from "/lovable-uploads/f264298f-2877-485b-affc-d705994fc848.png";
 import { 
   Sidebar,
@@ -34,6 +35,7 @@ import {
   Download,
   Menu
 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 interface VirturaSidebarProps {
   activeView: string;
@@ -42,6 +44,8 @@ interface VirturaSidebarProps {
 
 export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps) {
   const { state } = useSidebar();
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
   const isCollapsed = state === "collapsed";
   
   const mainItems = [
@@ -56,6 +60,15 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
     { id: "library", label: "Library", icon: Library },
     { id: "guide", label: "Tutorial", icon: BookOpen },
   ];
+  
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      navigate("/auth");
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
 
   return (
     <Sidebar 
@@ -196,6 +209,7 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
         <div className={isCollapsed ? "px-1 pb-3" : "px-3 pb-3"}>
           <Button 
             variant="ghost" 
+            onClick={handleLogout}
             className={`w-full ${isCollapsed ? "justify-center px-2" : "justify-start gap-3"} text-destructive hover:bg-destructive/10 h-auto py-2`}
           >
             <LogOut className="w-4 h-4 shrink-0" />
