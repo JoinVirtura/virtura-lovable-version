@@ -17,6 +17,8 @@ serve(async (req) => {
       throw new Error('Script is required');
     }
 
+    const normalizedScript = String(script).trim().slice(0, 1000);
+
     // Validate voice ID exists
     const validVoiceIds = [
       '9BWtsMINqrJLrRacOk9x', // Aria
@@ -54,10 +56,10 @@ serve(async (req) => {
       throw new Error('ElevenLabs API key not configured');
     }
 
-    console.log('Generating voice with ElevenLabs:', { script, voiceId, model });
+    console.log('Generating voice with ElevenLabs:', { len: normalizedScript.length, voiceId: selectedVoiceId, model });
 
-    // Call ElevenLabs TTS API
-    const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${selectedVoiceId}`, {
+    // Primary request
+    const primaryResponse = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${selectedVoiceId}`, {
       method: 'POST',
       headers: {
         'Accept': 'audio/mpeg',
@@ -65,7 +67,7 @@ serve(async (req) => {
         'xi-api-key': elevenlabsKey,
       },
       body: JSON.stringify({
-        text: script,
+        text: normalizedScript,
         model_id: model || 'eleven_multilingual_v2',
         voice_settings: voiceSettings || {
           stability: 0.5,
@@ -76,13 +78,42 @@ serve(async (req) => {
       }),
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('ElevenLabs API error:', errorText);
-      throw new Error(`ElevenLabs API error: ${response.statusText}`);
+    let finalResponse = primaryResponse;
+
+    if (!primaryResponse.ok) {
+      const primaryText = await primaryResponse.text();
+      console.warn('ElevenLabs primary model failed:', primaryText);
+
+      // Fallback to Turbo
+      const fallbackResponse = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${selectedVoiceId}`, {
+        method: 'POST',
+        headers: {
+          'Accept': 'audio/mpeg',
+          'Content-Type': 'application/json',
+          'xi-api-key': elevenlabsKey,
+        },
+        body: JSON.stringify({
+          text: normalizedScript,
+          model_id: 'eleven_turbo_v2_5',
+          voice_settings: voiceSettings || {
+            stability: 0.5,
+            similarity_boost: 0.5,
+            style: 0.0,
+            use_speaker_boost: true
+          },
+        }),
+      });
+
+      finalResponse = fallbackResponse;
+
+      if (!fallbackResponse.ok) {
+        const fallbackText = await fallbackResponse.text();
+        console.error('ElevenLabs fallback model failed:', fallbackText);
+        throw new Error(`ElevenLabs API error: ${fallbackResponse.status} ${fallbackResponse.statusText}: ${fallbackText}`);
+      }
     }
 
-    const audioBuffer = await response.arrayBuffer();
+    const audioBuffer = await finalResponse.arrayBuffer();
     const base64Audio = btoa(String.fromCharCode(...new Uint8Array(audioBuffer)));
 
     return new Response(
