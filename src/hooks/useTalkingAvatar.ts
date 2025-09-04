@@ -3,9 +3,19 @@ import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import type { Voice, Style, Exports, Asset, Job } from '@/features/talking-avatar/store';
 
+interface AvatarData {
+  id: string;
+  original_image_url: string;
+  heygen_talking_photo_id?: string;
+  openai_avatar_id?: string;
+  runway_avatar_id?: string;
+  status: string;
+}
+
 interface TalkingAvatarHookReturn {
   // State
   uploadedFile: File | null;
+  avatarData: AvatarData | null;
   voice: Voice;
   style: Style;
   exports: Exports;
@@ -16,12 +26,12 @@ interface TalkingAvatarHookReturn {
   isProcessing: boolean;
   
   // Actions
-  handleFileUpload: (file: File) => void;
+  handleFileUpload: (file: File) => Promise<void>;
   updateVoice: (voice: Partial<Voice>) => void;
   updateStyle: (style: Partial<Style>) => void;
   updateExports: (exports: Partial<Exports>) => void;
   generateAudio: (script: string) => Promise<void>;
-  generateVideo: (prompt: string) => Promise<void>;
+  generateVideo: (prompt: string, provider?: string) => Promise<void>;
   syncAudioVideo: () => Promise<void>;
   downloadVideo: () => void;
   shareVideo: () => void;
@@ -38,6 +48,7 @@ export const useTalkingAvatar = (
   
   // State
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [avatarData, setAvatarData] = useState<AvatarData | null>(null);
   const [voice, setVoice] = useState<Voice>(initialVoice);
   const [style, setStyle] = useState<Style>(initialStyle);
   const [exports, setExports] = useState<Exports>(initialExports);
@@ -48,12 +59,52 @@ export const useTalkingAvatar = (
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Actions
-  const handleFileUpload = useCallback((file: File) => {
+  const handleFileUpload = useCallback(async (file: File) => {
     setUploadedFile(file);
-    toast({
-      title: "File uploaded",
-      description: `${file.name} uploaded successfully`,
-    });
+    setIsProcessing(true);
+
+    try {
+      // Upload to Supabase storage
+      const fileName = `${Date.now()}-${file.name}`;
+      const filePath = `${crypto.randomUUID()}/${fileName}`;
+      
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      // Upload to providers and save metadata
+      const { data, error } = await supabase.functions.invoke('upload-avatar', {
+        body: { photoUrl: publicUrl }
+      });
+
+      if (error) throw error;
+
+      if (data?.success) {
+        setAvatarData(data.avatar);
+        toast({
+          title: "Avatar Ready",
+          description: `${file.name} uploaded and processed successfully`,
+        });
+      } else {
+        throw new Error(data?.error || 'Failed to process avatar');
+      }
+    } catch (error: any) {
+      console.error('Avatar upload error:', error);
+      toast({
+        title: "Upload Failed",
+        description: error.message || "Failed to upload avatar",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   }, [toast]);
 
   const updateVoice = useCallback((voiceUpdate: Partial<Voice>) => {
@@ -145,8 +196,8 @@ export const useTalkingAvatar = (
     }
   }, [voice, toast]);
 
-  const generateVideo = useCallback(async (prompt: string) => {
-    if (!uploadedFile) {
+  const generateVideo = useCallback(async (prompt: string, provider = 'auto') => {
+    if (!avatarData) {
       toast({
         title: "Error",
         description: "Please upload an avatar image first",
@@ -176,53 +227,21 @@ export const useTalkingAvatar = (
     });
 
     try {
-      // Convert file to base64 for API call
-      const reader = new FileReader();
-      const base64Image = await new Promise<string>((resolve) => {
-        reader.onload = () => resolve(reader.result as string);
-        reader.readAsDataURL(uploadedFile);
-      });
-
-      const { data, error } = await supabase.functions.invoke('video-generate', {
+      const { data, error } = await supabase.functions.invoke('video-generate-multi', {
         body: {
-          avatarImage: base64Image,
-          engine: 'heygen',
+          avatarId: avatarData.id,
           prompt: prompt || 'Generate a natural talking video',
-          duration: 30
+          audioUrl: generatedAudio,
+          provider
         }
       });
 
-      const handleLimitAndRetry = async (reason?: string) => {
-        const fallbackId = window.prompt((reason || 'HeyGen photo avatar limit reached.') + '\nEnter an existing HeyGen talking_photo_id to continue:');
-        if (fallbackId && fallbackId.trim()) {
-          const retry = await supabase.functions.invoke('video-generate', {
-            body: { avatarImage: fallbackId.trim(), engine: 'heygen', prompt: prompt || 'Generate a natural talking video', duration: 30 }
-          });
-          return retry;
-        }
-        return { data: null, error: { message: 'User did not provide talking_photo_id' } } as any;
-      };
+      if (error) throw error;
 
-      if (error) {
-        // Try to parse additional info from function response when possible
-        console.error('Video generation invoke error:', error);
-        const retryRes = await handleLimitAndRetry();
-        if ((retryRes as any).error) throw (retryRes as any).error;
-        const retryData = (retryRes as any).data;
-        if (!retryData?.success) throw new Error(retryData?.error || 'Failed to generate video');
-        setGeneratedVideo(retryData.videoUrl);
-      } else if (!data?.success) {
-        if (data?.code === 'HEYGEN_TALKING_PHOTO_LIMIT') {
-          const retryRes = await handleLimitAndRetry(data?.error);
-          if ((retryRes as any).error) throw (retryRes as any).error;
-          const retryData = (retryRes as any).data;
-          if (!retryData?.success) throw new Error(retryData?.error || 'Failed to generate video');
-          setGeneratedVideo(retryData.videoUrl);
-        } else {
-          throw new Error(data?.error || 'Failed to generate video');
-        }
-      } else {
+      if (data?.success) {
         setGeneratedVideo(data.videoUrl);
+      } else {
+        throw new Error(data?.error || 'Failed to generate video');
       }
 
       setJob(prev => prev ? {
@@ -260,7 +279,7 @@ export const useTalkingAvatar = (
     } finally {
       setIsProcessing(false);
     }
-  }, [uploadedFile, toast]);
+  }, [avatarData, generatedAudio, toast]);
 
   const syncAudioVideo = useCallback(async () => {
     if (!generatedAudio || !generatedVideo) {
@@ -445,6 +464,7 @@ export const useTalkingAvatar = (
   return {
     // State
     uploadedFile,
+    avatarData,
     voice,
     style,
     exports,

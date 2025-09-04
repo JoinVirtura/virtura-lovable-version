@@ -47,6 +47,51 @@ export type Database = {
         }
         Relationships: []
       }
+      talking_avatars: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          heygen_talking_photo_id: string | null
+          id: string
+          kling_avatar_id: string | null
+          krea_avatar_id: string | null
+          metadata: Json | null
+          original_image_url: string
+          runwayml_avatar_id: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          heygen_talking_photo_id?: string | null
+          id?: string
+          kling_avatar_id?: string | null
+          krea_avatar_id?: string | null
+          metadata?: Json | null
+          original_image_url: string
+          runwayml_avatar_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          heygen_talking_photo_id?: string | null
+          id?: string
+          kling_avatar_id?: string | null
+          krea_avatar_id?: string | null
+          metadata?: Json | null
+          original_image_url?: string
+          runwayml_avatar_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
