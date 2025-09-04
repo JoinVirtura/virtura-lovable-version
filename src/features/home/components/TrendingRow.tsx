@@ -33,7 +33,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
         <Button 
           variant="ghost" 
           className="text-primary hover:text-primary/80 hover:bg-primary/10 group"
-          onClick={() => window.location.href = '/library'}
+          onClick={() => window.location.href = '/studio'}
         >
           View All
           <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
