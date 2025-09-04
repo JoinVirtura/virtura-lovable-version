@@ -34,8 +34,12 @@ import {
   RotateCcw,
   Clock,
   AlertCircle,
-  RefreshCw
+  RefreshCw,
+  Save,
+  Share
 } from "lucide-react";
+import { AvatarLibraryModal } from "./AvatarLibraryModal";
+import { AudioPlayerWithControls } from "./AudioPlayerWithControls";
 
 // Import the store types and hook
 import type { Voice, Style, Exports } from "@/features/talking-avatar/store";
@@ -154,43 +158,83 @@ const HeroCanvas = ({
 };
 
 // Avatar Panel
-const AvatarPanel = ({ uploadedFile, onFileUpload }: { uploadedFile: File | null; onFileUpload: (file: File) => void }) => (
-  <div className="space-y-6">
-    <div className="flex space-x-4">
-      <Button variant="outline" className="flex-1">
-        <Upload className="w-4 h-4 mr-2" />
-        Upload/Replace
-      </Button>
-      <Button variant="outline" className="flex-1">
-        <ImageIcon className="w-4 h-4 mr-2" />
-        Choose from Library
-      </Button>
-      <Button variant="outline" className="flex-1">
-        <Sparkles className="w-4 h-4 mr-2" />
-        Generate AI Avatar
-      </Button>
-    </div>
+const AvatarPanel = ({ uploadedFile, onFileUpload }: { uploadedFile: File | null; onFileUpload: (file: File) => void }) => {
+  const [showLibrary, setShowLibrary] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleLibrarySelect = (avatarUrl: string) => {
+    // Convert URL to File object for consistency
+    fetch(avatarUrl)
+      .then(res => res.blob())
+      .then(blob => {
+        const file = new File([blob], 'avatar.jpg', { type: 'image/jpeg' });
+        onFileUpload(file);
+      });
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex space-x-4">
+        <Button 
+          variant="outline" 
+          className="flex-1"
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <Upload className="w-4 h-4 mr-2" />
+          Upload/Replace
+        </Button>
+        <Button 
+          variant="outline" 
+          className="flex-1"
+          onClick={() => setShowLibrary(true)}
+        >
+          <ImageIcon className="w-4 h-4 mr-2" />
+          Choose from Library
+        </Button>
+        <Button variant="outline" className="flex-1">
+          <Sparkles className="w-4 h-4 mr-2" />
+          Generate AI Avatar
+        </Button>
+      </div>
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/png,image/jpg,image/jpeg,image/webp"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) onFileUpload(file);
+        }}
+      />
+
+      <AvatarLibraryModal 
+        open={showLibrary}
+        onOpenChange={setShowLibrary}
+        onSelectAvatar={handleLibrarySelect}
+      />
     
-    {uploadedFile && (
-      <Card className="p-4">
-        <h4 className="font-medium mb-3">Face Alignment</h4>
-        <div className="text-sm text-muted-foreground mb-3">
-          Adjust positioning for optimal lip-sync results
-        </div>
-        <div className="flex space-x-4">
-          <Button size="sm" variant="outline">
-            <Camera className="w-4 h-4 mr-1" />
-            Auto-Align
-          </Button>
-          <Button size="sm" variant="outline">
-            <RotateCcw className="w-4 h-4 mr-1" />
-            Reset
-          </Button>
-        </div>
-      </Card>
-    )}
-  </div>
-);
+      {uploadedFile && (
+        <Card className="p-4">
+          <h4 className="font-medium mb-3">Face Alignment</h4>
+          <div className="text-sm text-muted-foreground mb-3">
+            Adjust positioning for optimal lip-sync results
+          </div>
+          <div className="flex space-x-4">
+            <Button size="sm" variant="outline">
+              <Camera className="w-4 h-4 mr-1" />
+              Auto-Align
+            </Button>
+            <Button size="sm" variant="outline">
+              <RotateCcw className="w-4 h-4 mr-1" />
+              Reset
+            </Button>
+          </div>
+        </Card>
+      )}
+    </div>
+  );
+};
 
 // Voice Panel
 const VoicePanel = ({ 
@@ -275,12 +319,18 @@ const VoicePanel = ({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="9BWtsMINqrJLrRacOk9x">Aria (Professional Female)</SelectItem>
-                <SelectItem value="CwhRBWXzGAHq8TQ4Fs17">Roger (Mature Male)</SelectItem>
-                <SelectItem value="EXAVITQu4vr4xnSDxMaL">Sarah (Young Female)</SelectItem>
-                <SelectItem value="FGY2WhTYpPnrIDTdsKH5">Laura (Narrative Female)</SelectItem>
-                <SelectItem value="IKne3meq5aSn9XLyUdCD">Charlie (Conversational Male)</SelectItem>
-                <SelectItem value="XB0fDUnXU5powFXDhCwa">Charlotte (Energetic Female)</SelectItem>
+                <SelectItem value="9BWtsMINqrJLrRacOk9x">Aria - Professional Female (Natural)</SelectItem>
+                <SelectItem value="CwhRBWXzGAHq8TQ4Fs17">Roger - Executive Male (Authoritative)</SelectItem>
+                <SelectItem value="EXAVITQu4vr4xnSDxMaL">Sarah - Young Female (Friendly)</SelectItem>
+                <SelectItem value="FGY2WhTYpPnrIDTdsKH5">Laura - Narrator Female (Storyteller)</SelectItem>
+                <SelectItem value="IKne3meq5aSn9XLyUdCD">Charlie - Conversational Male (Warm)</SelectItem>
+                <SelectItem value="XB0fDUnXU5powFXDhCwa">Charlotte - Energetic Female (Dynamic)</SelectItem>
+                <SelectItem value="TX3LPaxmHKxFdv7VOQHJ">Liam - Deep Male (Cinematic)</SelectItem>
+                <SelectItem value="pFZP5JQG7iQjIQuC4Bku">Lily - Soft Female (Gentle)</SelectItem>
+                <SelectItem value="onwK4e9ZLuTAKqWW03F9">Daniel - Professional Male (Corporate)</SelectItem>
+                <SelectItem value="cgSgspJ2msm6clMCkdW9">Jessica - Confident Female (Leader)</SelectItem>
+                <SelectItem value="cjVigY5qzO86Huf0OWal">Eric - Friendly Male (Approachable)</SelectItem>
+                <SelectItem value="nPczCjzI2devNBz1zQrb">Brian - Casual Male (Relaxed)</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -337,12 +387,18 @@ const VoicePanel = ({
             )}
             Generate Audio
           </Button>
-          {generatedAudio && (
-            <Button variant="outline" onClick={playAudio}>
-              <Play className="w-4 h-4" />
-            </Button>
-          )}
         </div>
+
+        {/* Audio Player with Controls */}
+        {generatedAudio && (
+          <Card className="p-4">
+            <h5 className="font-medium mb-3">Generated Audio Preview</h5>
+            <AudioPlayerWithControls 
+              audioUrl={generatedAudio} 
+              isGenerating={isProcessing}
+            />
+          </Card>
+        )}
       </Card>
     </div>
   );
@@ -503,6 +559,7 @@ const PreviewExportPanel = ({
   onSyncAudioVideo,
   onDownloadVideo,
   onShareVideo,
+  onSaveToLibrary,
   isProcessing,
   uploadedFile 
 }: { 
@@ -514,6 +571,7 @@ const PreviewExportPanel = ({
   onSyncAudioVideo: () => void;
   onDownloadVideo: () => void;
   onShareVideo: () => void;
+  onSaveToLibrary: () => void;
   isProcessing: boolean;
   uploadedFile: File | null;
 }) => {
@@ -628,25 +686,23 @@ const PreviewExportPanel = ({
         </div>
       </div>
 
-      <div className="space-y-3">
-        <Button 
-          className="w-full" 
-          onClick={onDownloadVideo}
-          disabled={!videoToShow}
-        >
-          <Download className="w-4 h-4 mr-2" />
-          Download Video
-        </Button>
-        <Button 
-          className="w-full" 
-          variant="outline"
-          onClick={onShareVideo}
-          disabled={!videoToShow}
-        >
-          <MessageSquare className="w-4 h-4 mr-2" />
-          Share Video
-        </Button>
-      </div>
+      {/* Final Actions */}
+      {videoToShow && (
+        <div className="flex gap-2">
+          <Button onClick={onDownloadVideo} className="flex-1">
+            <Download className="w-4 h-4 mr-2" />
+            Download
+          </Button>
+          <Button variant="outline" onClick={onShareVideo} className="flex-1">
+            <Share className="w-4 h-4 mr-2" />
+            Share
+          </Button>
+          <Button variant="outline" onClick={onSaveToLibrary} className="flex-1">
+            <Save className="w-4 h-4 mr-2" />
+            Save to Library
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
@@ -768,6 +824,7 @@ export default function TalkingAvatarStudio() {
     syncAudioVideo,
     downloadVideo,
     shareVideo,
+    saveToLibrary,
     resetWorkflow,
   } = useTalkingAvatar(initialVoice, initialStyle, initialExports);
 
@@ -841,6 +898,7 @@ export default function TalkingAvatarStudio() {
               onSyncAudioVideo={syncAudioVideo}
               onDownloadVideo={downloadVideo}
               onShareVideo={shareVideo}
+              onSaveToLibrary={saveToLibrary}
               isProcessing={isProcessing}
               uploadedFile={uploadedFile}
             />

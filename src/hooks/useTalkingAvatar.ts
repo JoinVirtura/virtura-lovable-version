@@ -25,6 +25,7 @@ interface TalkingAvatarHookReturn {
   syncAudioVideo: () => Promise<void>;
   downloadVideo: () => void;
   shareVideo: () => void;
+  saveToLibrary: () => void;
   resetWorkflow: () => void;
 }
 
@@ -364,6 +365,43 @@ export const useTalkingAvatar = (
     }
   }, [finalVideo, generatedVideo, toast]);
 
+  const saveToLibrary = useCallback(async () => {
+    const videoUrl = finalVideo || generatedVideo;
+    if (!videoUrl) {
+      toast({
+        title: "Error",
+        description: "No video available to save",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // Save to Supabase storage bucket
+      const { data, error } = await supabase.functions.invoke('save-to-library', {
+        body: {
+          videoUrl,
+          title: `Talking Avatar ${new Date().toISOString()}`,
+          type: 'talking_avatar'
+        }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Saved to Library",
+        description: "Video saved to your library successfully",
+      });
+    } catch (error: any) {
+      console.error('Save to library error:', error);
+      toast({
+        title: "Save Failed",
+        description: error.message || "Failed to save video to library",
+        variant: "destructive",
+      });
+    }
+  }, [finalVideo, generatedVideo, toast]);
+
   const resetWorkflow = useCallback(() => {
     setUploadedFile(null);
     setGeneratedAudio(null);
@@ -400,6 +438,7 @@ export const useTalkingAvatar = (
     syncAudioVideo,
     downloadVideo,
     shareVideo,
+    saveToLibrary,
     resetWorkflow,
   };
 };

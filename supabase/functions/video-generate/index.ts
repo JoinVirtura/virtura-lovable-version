@@ -35,24 +35,24 @@ serve(async (req) => {
         test: false,
         caption: false,
         dimension: {
-          width: 1280,
-          height: 720
+          width: 1920,
+          height: 1080
         },
         video_inputs: [{
           character: {
             type: "talking_photo",
-            talking_photo_id: avatarImage,
+            talking_photo: avatarImage,
             scale: 1.0,
-            talking_photo_style: "rectangle"
+            talking_photo_style: "closeup_body"
           },
           voice: {
             type: "text",
             input_text: prompt,
-            voice_id: "default"
+            voice_id: "1bd001e7e50f421d891986aad5158bc8"
           },
           background: {
             type: "color",
-            value: "#ffffff"
+            value: "#000000"
           }
         }]
       }),
