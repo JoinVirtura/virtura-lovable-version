@@ -241,6 +241,10 @@ export const useTalkingAvatar = (
 
       if (data?.success) {
         setGeneratedVideo(data.videoUrl);
+        toast({
+          title: "Video Generated",
+          description: "Talking avatar video created successfully. You can now proceed to preview & export.",
+        });
       } else {
         throw new Error(data?.error || 'Failed to generate video');
       }
