@@ -9,17 +9,28 @@ import { Search, Filter, User, Sparkles, Crown, Loader2, Star } from "lucide-rea
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-// Import avatar assets
-import avatarBusinessExecutive from "@/assets/avatar-business-executive.jpg";
-import avatarCreativeArtist from "@/assets/avatar-creative-artist.jpg";
-import avatarTechEntrepreneur from "@/assets/avatar-tech-entrepreneur.jpg";
-import avatarFashionModel from "@/assets/avatar-fashion-model.jpg";
-import avatarHealthcareProfessional from "@/assets/avatar-healthcare-professional.jpg";
-import avatarFitnessCoach from "@/assets/avatar-fitness-coach.jpg";
+// Import all avatar assets
+import avatar1 from "@/assets/avatar-1.jpg";
+import avatar2 from "@/assets/avatar-2.jpg";
+import avatar3 from "@/assets/avatar-3.jpg";
+import avatar4 from "@/assets/avatar-4.jpg";
+import avatarAuthorPortrait from "@/assets/avatar-author-portrait.jpg";
 import avatarAwardPhotographer from "@/assets/avatar-award-photographer.jpg";
+import avatarAwardWinning from "@/assets/avatar-award-winning.jpg";
 import avatarBrandConsultant from "@/assets/avatar-brand-consultant.jpg";
+import avatarBusinessExecutive from "@/assets/avatar-business-executive.jpg";
+import avatarBusinessPresenter from "@/assets/avatar-business-presenter.jpg";
+import avatarCorporateExecutive from "@/assets/avatar-corporate-executive.jpg";
+import avatarCreativeArtist from "@/assets/avatar-creative-artist.jpg";
+import avatarCreativeVideoArtist from "@/assets/avatar-creative-video-artist.jpg";
+import avatarFashionModel from "@/assets/avatar-fashion-model.jpg";
+import avatarFitnessCoach from "@/assets/avatar-fitness-coach.jpg";
+import avatarHealthcareProfessional from "@/assets/avatar-healthcare-professional.jpg";
+import avatarLinkedinProfile from "@/assets/avatar-linkedin-profile.jpg";
+import avatarTechEntrepreneur from "@/assets/avatar-tech-entrepreneur.jpg";
+import avatarVideoCreator from "@/assets/avatar-video-creator.jpg";
 
-// Built-in avatar library data
+// Built-in avatar library data - All 19 avatars
 const defaultAvatars: AvatarLibraryItem[] = [
   { id: "default-1", name: "Business Executive", category: "Professional", premium: false, url: avatarBusinessExecutive, rating: 9.2, tags: ["Professional", "Business", "Executive"] },
   { id: "default-2", name: "Creative Artist", category: "Creative", premium: false, url: avatarCreativeArtist, rating: 9.1, tags: ["Creative", "Artistic", "Bohemian"] },
@@ -29,6 +40,17 @@ const defaultAvatars: AvatarLibraryItem[] = [
   { id: "default-6", name: "Fitness Coach", category: "Lifestyle", premium: false, url: avatarFitnessCoach, rating: 8.8, tags: ["Fitness", "Health", "Active"] },
   { id: "default-7", name: "Award Photographer", category: "Creative", premium: true, url: avatarAwardPhotographer, rating: 9.4, tags: ["Creative", "Photography", "Artistic"] },
   { id: "default-8", name: "Brand Consultant", category: "Professional", premium: true, url: avatarBrandConsultant, rating: 9.0, tags: ["Professional", "Brand", "Strategy"] },
+  { id: "default-9", name: "Corporate Executive", category: "Professional", premium: true, url: avatarCorporateExecutive, rating: 9.1, tags: ["Professional", "Corporate", "Leadership"] },
+  { id: "default-10", name: "Business Presenter", category: "Professional", premium: false, url: avatarBusinessPresenter, rating: 8.7, tags: ["Professional", "Presentation", "Speaker"] },
+  { id: "default-11", name: "Video Creator", category: "Creative", premium: true, url: avatarVideoCreator, rating: 9.3, tags: ["Creative", "Video", "Content"] },
+  { id: "default-12", name: "Creative Video Artist", category: "Creative", premium: true, url: avatarCreativeVideoArtist, rating: 9.2, tags: ["Creative", "Video", "Artistic"] },
+  { id: "default-13", name: "Award Winning", category: "Professional", premium: true, url: avatarAwardWinning, rating: 9.5, tags: ["Professional", "Award", "Excellence"] },
+  { id: "default-14", name: "LinkedIn Profile", category: "Professional", premium: false, url: avatarLinkedinProfile, rating: 8.6, tags: ["Professional", "LinkedIn", "Network"] },
+  { id: "default-15", name: "Author Portrait", category: "Creative", premium: false, url: avatarAuthorPortrait, rating: 8.9, tags: ["Creative", "Author", "Writer"] },
+  { id: "default-16", name: "Avatar 1", category: "Lifestyle", premium: false, url: avatar1, rating: 8.5, tags: ["Lifestyle", "Casual", "Portrait"] },
+  { id: "default-17", name: "Avatar 2", category: "Lifestyle", premium: false, url: avatar2, rating: 8.6, tags: ["Lifestyle", "Casual", "Portrait"] },
+  { id: "default-18", name: "Avatar 3", category: "Lifestyle", premium: false, url: avatar3, rating: 8.7, tags: ["Lifestyle", "Casual", "Portrait"] },
+  { id: "default-19", name: "Avatar 4", category: "Lifestyle", premium: false, url: avatar4, rating: 8.8, tags: ["Lifestyle", "Casual", "Portrait"] },
 ];
 
 interface AvatarLibraryItem {
