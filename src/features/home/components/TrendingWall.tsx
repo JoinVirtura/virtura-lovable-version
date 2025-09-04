@@ -43,13 +43,16 @@ export const TrendingWall: React.FC<TrendingWallProps> = ({ tiles, className }) 
 
   // Masonry layout helper - create a more balanced distribution
   const getMasonryItemClass = (index: number) => {
-    // Create patterns that repeat every 12 items for better distribution
-    const pattern = index % 12;
+    // Create patterns that repeat every 15 items for better distribution
+    const pattern = index % 15;
     
     const variants = [
       '', // normal - 1x1
       'col-span-2', // wide - 2x1
       'row-span-2', // tall - 1x2  
+      '', // normal - 1x1
+      'row-span-2', // tall - 1x2
+      'col-span-2', // wide - 2x1
       '', // normal - 1x1
       'col-span-2 row-span-2', // large - 2x2
       '', // normal - 1x1
@@ -57,8 +60,8 @@ export const TrendingWall: React.FC<TrendingWallProps> = ({ tiles, className }) 
       '', // normal - 1x1
       'col-span-2', // wide - 2x1
       '', // normal - 1x1
-      '', // normal - 1x1
-      'row-span-2' // tall - 1x2
+      'row-span-3', // very tall - 1x3
+      '' // normal - 1x1
     ];
     
     return variants[pattern] || '';
@@ -66,8 +69,8 @@ export const TrendingWall: React.FC<TrendingWallProps> = ({ tiles, className }) 
 
   // Dynamic grid classes based on screen size
   const getGridClass = () => {
-    return "grid gap-3 auto-rows-[180px] sm:gap-4 sm:auto-rows-[200px] md:gap-4 md:auto-rows-[220px] lg:gap-6 lg:auto-rows-[240px] " +
-           "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8";
+    return "grid gap-1 auto-rows-[160px] sm:gap-1 sm:auto-rows-[180px] md:gap-1 md:auto-rows-[200px] lg:gap-1 lg:auto-rows-[220px] " +
+           "grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8";
   };
 
   return (

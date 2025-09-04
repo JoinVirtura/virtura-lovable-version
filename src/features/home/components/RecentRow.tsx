@@ -17,14 +17,14 @@ const quickActions = [
     id: 'video',
     label: 'Generate Video',
     icon: Play,
-    route: '/dashboard#video',
+    route: '/video',
     gradient: 'from-blue-500 to-cyan-500',
   },
   {
     id: 'drama',
     label: 'Open Studio',
     icon: Sparkles,
-    route: '/dashboard#talking-avatar',
+    route: '/talking-avatar',
     gradient: 'from-emerald-500 to-teal-500',
   }
 ];
