@@ -19,37 +19,25 @@ serve(async (req) => {
 
     const normalizedScript = String(script).trim().slice(0, 1000);
 
-    // Validate voice ID exists
-    const validVoiceIds = [
-      '9BWtsMINqrJLrRacOk9x', // Aria
-      'CwhRBWXzGAHq8TQ4Fs17', // Roger  
-      'EXAVITQu4vr4xnSDxMaL', // Sarah
-      'FGY2WhTYpPnrIDTdsKH5', // Laura
-      'IKne3meq5aSn9XLyUdCD', // Charlie
-      'JBFqnCBsd6RMkjVDRZzb', // George
-      'N2lVS1w4EtoT3dr4eOWO', // Callum
-      'SAz9YHcvj6GT2YYXdXww', // River
-      'TX3LPaxmHKxFdv7VOQHJ', // Liam
-      'XB0fDUnXU5powFXDhCwa', // Charlotte
-      'Xb7hH8MSUJpSbSDYk0k2', // Alice
-      'XrExE9yKIg1WjnnlVkGX', // Matilda
-      'bIHbv24MWmeRgasZH58o', // Will
-      'cgSgspJ2msm6clMCkdW9', // Jessica
-      'cjVigY5qzO86Huf0OWal', // Eric
-      'iP95p4xoKVk53GoZ742B', // Chris
-      'nPczCjzI2devNBz1zQrb', // Brian
-      'onwK4e9ZLuTAKqWW03F9', // Daniel
-      'pFZP5JQG7iQjIQuC4Bku', // Lily
-      'pqHfZKP75CvOlQylNhV4', // Bill
-      '21m00Tcm4TlvDq8ikWAM', // Rachel (Warm)
-      'AZnzlk1XvdvUeBnXmlld', // Domi
-      'ErXwobaYiN019PkySvjV', // Antoni
-      'MF3mGyEYCl7XYWbV9V6O', // Elli
-      'jsCqWAovK2LkecY7zXl4', // Freya (Clear)
-      'pNInz6obpgDQGcFmaJgB', // Adam
-    ];
+    // Accept any provided ElevenLabs voiceId, fall back to Aria if missing
+    const selectedVoiceId = (typeof voiceId === 'string' && voiceId.trim().length > 0)
+      ? voiceId.trim()
+      : '9BWtsMINqrJLrRacOk9x';
 
-    const selectedVoiceId = voiceId && validVoiceIds.includes(voiceId) ? voiceId : '9BWtsMINqrJLrRacOk9x';
+    // Sanitize/normalize voice settings to avoid API 4xx due to wrong types
+    const sanitizeVoiceSettings = (vs: any) => {
+      const toNum = (v: any, d: number) => {
+        const n = typeof v === 'string' ? parseFloat(v) : (typeof v === 'number' ? v : d);
+        if (Number.isFinite(n)) return Math.max(0, Math.min(1, n));
+        return d;
+      };
+      return {
+        stability: toNum(vs?.stability, 0.5),
+        similarity_boost: toNum(vs?.similarity_boost, 0.5),
+        style: toNum(vs?.style, 0.0),
+        use_speaker_boost: typeof vs?.use_speaker_boost === 'boolean' ? vs.use_speaker_boost : true,
+      };
+    };
 
     const elevenlabsKey = Deno.env.get('ELEVENLABS_API_KEY');
     if (!elevenlabsKey) {
@@ -69,12 +57,7 @@ serve(async (req) => {
       body: JSON.stringify({
         text: normalizedScript,
         model_id: model || 'eleven_multilingual_v2',
-        voice_settings: voiceSettings || {
-          stability: 0.5,
-          similarity_boost: 0.5,
-          style: 0.0,
-          use_speaker_boost: true
-        },
+        voice_settings: sanitizeVoiceSettings(voiceSettings),
       }),
     });
 
@@ -95,12 +78,7 @@ serve(async (req) => {
         body: JSON.stringify({
           text: normalizedScript,
           model_id: 'eleven_turbo_v2_5',
-          voice_settings: voiceSettings || {
-            stability: 0.5,
-            similarity_boost: 0.5,
-            style: 0.0,
-            use_speaker_boost: true
-          },
+          voice_settings: sanitizeVoiceSettings(voiceSettings),
         }),
       });
 
