@@ -23,39 +23,41 @@ import PaymentCanceled from "./pages/PaymentCanceled";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <BrowserRouter>
-        <Toaster />
-        <Sonner />
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/landing" element={<Landing />} />
-          <Route path="/individuals" element={<IndividualsPage />} />
-          <Route path="/brands" element={<BrandsPage />} />
-          <Route path="/library" element={<LibraryPage />} />
-          <Route path="/guide" element={<GuidePage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/dashboard/talking-avatar" element={<TalkingAvatarPage />} />
-          <Route path="/create" element={<Dashboard />} />
-          <Route path="/old-dashboard" element={<DashboardPage />} />
-          <Route path="/chat" element={<Dashboard />} />
-          <Route path="/gallery" element={<Dashboard />} />
-          <Route path="/upload" element={<UploadPage />} />
-          <Route path="/export" element={<ExportPage />} />
-          <Route path="/profile" element={<Dashboard />} />
-          
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="/upgrade" element={<UpgradePage />} />
-          <Route path="/payment-success" element={<PaymentSuccess />} />
-          <Route path="/payment-canceled" element={<PaymentCanceled />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <BrowserRouter>
+          <Toaster />
+          <Sonner />
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/landing" element={<Landing />} />
+            <Route path="/individuals" element={<IndividualsPage />} />
+            <Route path="/brands" element={<BrandsPage />} />
+            <Route path="/library" element={<LibraryPage />} />
+            <Route path="/guide" element={<GuidePage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/dashboard/talking-avatar" element={<TalkingAvatarPage />} />
+            <Route path="/create" element={<Dashboard />} />
+            <Route path="/old-dashboard" element={<DashboardPage />} />
+            <Route path="/chat" element={<Dashboard />} />
+            <Route path="/gallery" element={<Dashboard />} />
+            <Route path="/upload" element={<UploadPage />} />
+            <Route path="/export" element={<ExportPage />} />
+            <Route path="/profile" element={<Dashboard />} />
+            
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="/upgrade" element={<UpgradePage />} />
+            <Route path="/payment-success" element={<PaymentSuccess />} />
+            <Route path="/payment-canceled" element={<PaymentCanceled />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

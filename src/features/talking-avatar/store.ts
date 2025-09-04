@@ -1,6 +1,4 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-
+// Simple store interface without zustand for now
 interface Asset {
   id: string;
   kind: 'image' | 'video';
@@ -51,21 +49,13 @@ interface Job {
   logs: string[];
 }
 
-interface TalkingAvatarStore {
+interface TalkingAvatarState {
   asset?: Asset;
   voice: Voice;
   style: Style;
   markers: Marker[];
   exports: Exports;
   job?: Job;
-  
-  // Setters
-  setAsset: (asset: Asset | undefined) => void;
-  setVoice: (voice: Partial<Voice>) => void;
-  setStyle: (style: Partial<Style>) => void;
-  setMarkers: (markers: Marker[]) => void;
-  setExports: (exports: Partial<Exports>) => void;
-  setJob: (job: Job | undefined) => void;
 }
 
 const initialVoice: Voice = {
@@ -99,47 +89,6 @@ const initialExports: Exports = {
   transparent: false
 };
 
-export const useTalkingAvatarStore = create<TalkingAvatarStore>()(
-  persist(
-    (set) => ({
-      asset: undefined,
-      voice: initialVoice,
-      style: initialStyle,
-      markers: [],
-      exports: initialExports,
-      job: undefined,
-
-      setAsset: (asset) => set({ asset }),
-      
-      setVoice: (voice) => set((state) => ({
-        voice: { ...state.voice, ...voice }
-      })),
-      
-      setStyle: (style) => set((state) => ({
-        style: { 
-          ...state.style, 
-          ...style,
-          lighting: style.lighting ? { ...state.style.lighting, ...style.lighting } : state.style.lighting,
-          camera: style.camera ? { ...state.style.camera, ...style.camera } : state.style.camera
-        }
-      })),
-      
-      setMarkers: (markers) => set({ markers }),
-      
-      setExports: (exports) => set((state) => ({
-        exports: { ...state.exports, ...exports }
-      })),
-      
-      setJob: (job) => set({ job }),
-    }),
-    {
-      name: 'talking-avatar-store',
-      partialize: (state) => ({
-        voice: state.voice,
-        style: state.style,
-        exports: state.exports,
-        markers: state.markers
-      })
-    }
-  )
-);
+// Export the types and initial state for now
+export type { Asset, Voice, Style, Marker, Exports, Job, TalkingAvatarState };
+export { initialVoice, initialStyle, initialExports };
