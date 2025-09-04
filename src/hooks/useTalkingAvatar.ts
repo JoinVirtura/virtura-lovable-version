@@ -192,31 +192,57 @@ export const useTalkingAvatar = (
         }
       });
 
-      if (error) throw error;
+      const handleLimitAndRetry = async (reason?: string) => {
+        const fallbackId = window.prompt((reason || 'HeyGen photo avatar limit reached.') + '\nEnter an existing HeyGen talking_photo_id to continue:');
+        if (fallbackId && fallbackId.trim()) {
+          const retry = await supabase.functions.invoke('video-generate', {
+            body: { avatarImage: fallbackId.trim(), engine: 'heygen', prompt: prompt || 'Generate a natural talking video', duration: 30 }
+          });
+          return retry;
+        }
+        return { data: null, error: { message: 'User did not provide talking_photo_id' } } as any;
+      };
 
-      if (data?.success) {
-        setGeneratedVideo(data.videoUrl);
-        setJob(prev => prev ? {
-          ...prev,
-          progress: 100,
-          status: 'done',
-          steps: { 
-            ...prev.steps, 
-            'lip-sync': 'done',
-            style: 'done',
-            render: 'done',
-            export: 'done'
-          },
-          logs: [...prev.logs, 'Video generated successfully']
-        } : null);
-        
-        toast({
-          title: "Video Generated",
-          description: "Talking avatar video created successfully",
-        });
+      if (error) {
+        // Try to parse additional info from function response when possible
+        console.error('Video generation invoke error:', error);
+        const retryRes = await handleLimitAndRetry();
+        if ((retryRes as any).error) throw (retryRes as any).error;
+        const retryData = (retryRes as any).data;
+        if (!retryData?.success) throw new Error(retryData?.error || 'Failed to generate video');
+        setGeneratedVideo(retryData.videoUrl);
+      } else if (!data?.success) {
+        if (data?.code === 'HEYGEN_TALKING_PHOTO_LIMIT') {
+          const retryRes = await handleLimitAndRetry(data?.error);
+          if ((retryRes as any).error) throw (retryRes as any).error;
+          const retryData = (retryRes as any).data;
+          if (!retryData?.success) throw new Error(retryData?.error || 'Failed to generate video');
+          setGeneratedVideo(retryData.videoUrl);
+        } else {
+          throw new Error(data?.error || 'Failed to generate video');
+        }
       } else {
-        throw new Error(data?.error || 'Failed to generate video');
+        setGeneratedVideo(data.videoUrl);
       }
+
+      setJob(prev => prev ? {
+        ...prev,
+        progress: 100,
+        status: 'done',
+        steps: { 
+          ...prev.steps, 
+          'lip-sync': 'done',
+          style: 'done',
+          render: 'done',
+          export: 'done'
+        },
+        logs: [...prev.logs, 'Video generated successfully']
+      } : null);
+      
+      toast({
+        title: "Video Generated",
+        description: "Talking avatar video created successfully",
+      });
     } catch (error: any) {
       console.error('Video generation error:', error);
       setJob(prev => prev ? {

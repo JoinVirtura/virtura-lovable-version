@@ -241,12 +241,14 @@ const blob = dataUrlToBlob(audioUrl, 'audio/mpeg');
       }
     );
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Video sync error:', error);
+    const msg = String(error?.message || 'Unknown error');
+    const code = msg.includes('HEYGEN_TALKING_PHOTO_LIMIT') ? 'HEYGEN_TALKING_PHOTO_LIMIT' : 'SYNC_ERROR';
     return new Response(
-      JSON.stringify({ success: false, error: error.message }),
+      JSON.stringify({ success: false, error: msg, code }),
       { 
-        status: 500,
+        status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
     );

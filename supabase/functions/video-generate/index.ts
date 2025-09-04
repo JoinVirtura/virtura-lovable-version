@@ -70,6 +70,9 @@ serve(async (req) => {
 
           if (!uploadRes.ok) {
             console.error('HeyGen upload error:', uploadText);
+            if (uploadJson?.code === 401028 || /exceeded your limit/i.test(uploadText)) {
+              throw new Error(`HEYGEN_TALKING_PHOTO_LIMIT: ${uploadJson?.message || uploadText}`);
+            }
             throw new Error(`HeyGen upload failed: ${uploadRes.status} ${uploadRes.statusText}`);
           }
 
@@ -143,12 +146,14 @@ serve(async (req) => {
       }
     );
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Video generation error:', error);
+    const msg = String(error?.message || 'Unknown error');
+    const code = msg.includes('HEYGEN_TALKING_PHOTO_LIMIT') ? 'HEYGEN_TALKING_PHOTO_LIMIT' : 'GENERATION_ERROR';
     return new Response(
-      JSON.stringify({ success: false, error: error.message }),
+      JSON.stringify({ success: false, error: msg, code }),
       { 
-        status: 500,
+        status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
     );
