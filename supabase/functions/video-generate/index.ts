@@ -32,16 +32,27 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        background: "#ffffff",
-        clips: [{
-          avatar_id: "default",
-          avatar_style: "normal",
-          input_text: prompt,
-          input_audio: null,
-          avatar_image: avatarImage
-        }],
-        aspect_ratio: "16:9",
-        test: false
+        test: false,
+        caption: false,
+        dimension: {
+          width: 1280,
+          height: 720
+        },
+        video_inputs: [{
+          character: {
+            type: "avatar",
+            avatar_id: "default",
+            avatar_style: "normal"
+          },
+          voice: {
+            type: "text",
+            input_text: prompt
+          },
+          background: {
+            type: "color",
+            value: "#ffffff"
+          }
+        }]
       }),
     });
 
