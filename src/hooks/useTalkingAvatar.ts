@@ -198,10 +198,23 @@ export const useTalkingAvatar = (
   }, [voice, toast]);
 
   const generateVideo = useCallback(async (prompt: string, provider = 'auto') => {
+    console.log('generateVideo called with:', { prompt, avatarData: !!avatarData, generatedAudio: !!generatedAudio });
+    
     if (!avatarData) {
+      console.log('No avatar data available');
       toast({
         title: "Error",
         description: "Please upload an avatar image first",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!generatedAudio) {
+      console.log('No generated audio available');
+      toast({
+        title: "Error", 
+        description: "Please generate audio first",
         variant: "destructive",
       });
       return;
