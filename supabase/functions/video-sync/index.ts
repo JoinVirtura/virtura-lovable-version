@@ -1,10 +1,39 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
+import { decode as base64Decode } from "https://deno.land/std@0.168.0/encoding/base64.ts";
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Utility helpers
+const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+async function fetchWithRetry(url: string, init: RequestInit, retries = 2) {
+  let attempt = 0;
+  let res: Response | null = null;
+  while (attempt <= retries) {
+    res = await fetch(url, init);
+    if (res.ok) return res;
+    // Retry on 5xx and 429
+    if (res.status >= 500 || res.status === 429) {
+      const backoff = Math.min(2000, 300 * 2 ** attempt);
+      await sleep(backoff);
+      attempt++;
+      continue;
+    }
+    break;
+  }
+  return res!;
+}
+
+function dataUrlToBlob(dataUrl: string, fallbackType: string): Blob {
+  const [meta, base64] = dataUrl.split(',');
+  const match = /data:(.*?);base64/.exec(meta || '');
+  const contentType = match?.[1] || fallbackType;
+  const bytes = base64Decode(base64 || '');
+  return new Blob([bytes], { type: contentType });
+}
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -36,13 +65,7 @@ serve(async (req) => {
       if (typeof audioUrl === 'string' && audioUrl.startsWith('data:')) {
         if (!supabase) throw new Error('Supabase client not configured for audio upload');
 
-        const [meta, base64] = audioUrl.split(',');
-        const match = /data:(.*?);base64/.exec(meta || '');
-        const contentType = match?.[1] || 'audio/mpeg';
-        const binary = atob(base64 || '');
-        const bytes = new Uint8Array(binary.length);
-        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-        const blob = new Blob([bytes], { type: contentType });
+const blob = dataUrlToBlob(audioUrl, 'audio/mpeg');
 
         const bucket = 'virtura-media';
         // Ensure bucket exists and is public
@@ -56,6 +79,7 @@ serve(async (req) => {
           try { await supabase.storage.createBucket(bucket, { public: true }); } catch { /* ignore */ }
         }
 
+        const contentType = (blob.type as string) || 'audio/mpeg';
         const ext = contentType.includes('wav') ? 'wav' : contentType.includes('ogg') ? 'ogg' : 'mp3';
         const path = `assets/output/audio/sync/${Date.now()}.${ext}`;
         console.log('Uploading audio data URL to Supabase storage at', path);
@@ -83,7 +107,7 @@ serve(async (req) => {
 
     if (isVideoFile) {
       // Re-sync an existing video with provided audio
-      const response = await fetch('https://api.heygen.com/v1/video/translate', {
+      const response = await fetchWithRetry('https://api.heygen.com/v1/video/translate', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${heygenKey}`,
@@ -95,7 +119,7 @@ serve(async (req) => {
           audio_url: resolvedAudioUrl,
           translate_audio: false
         }),
-      });
+      }, 2);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -121,13 +145,7 @@ serve(async (req) => {
           let imageBlob: Blob | null = null;
 
           if (videoUrl.startsWith('data:')) {
-            const [meta, base64] = videoUrl.split(',');
-            const match = /data:(.*?);base64/.exec(meta || '');
-            const contentType = match?.[1] || 'image/png';
-            const binary = atob(base64 || '');
-            const bytes = new Uint8Array(binary.length);
-            for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-            imageBlob = new Blob([bytes], { type: contentType });
+            imageBlob = dataUrlToBlob(videoUrl, 'image/png');
           } else if (videoUrl.startsWith('http://') || videoUrl.startsWith('https://')) {
             const imgRes = await fetch(videoUrl);
             if (!imgRes.ok) throw new Error(`Failed to fetch image URL for talking photo: ${imgRes.status}`);
@@ -136,14 +154,14 @@ serve(async (req) => {
 
           if (imageBlob) {
             console.log('Uploading talking photo to HeyGen (video-sync)...');
-            const uploadRes = await fetch('https://upload.heygen.com/v1/talking_photo', {
+            const uploadRes = await fetchWithRetry('https://upload.heygen.com/v1/talking_photo', {
               method: 'POST',
               headers: {
                 'x-api-key': heygenKey,
                 'Content-Type': imageBlob.type || 'image/jpeg',
               },
               body: imageBlob,
-            });
+            }, 2);
 
             const uploadText = await uploadRes.text();
             let uploadJson: any = {};
@@ -151,6 +169,9 @@ serve(async (req) => {
 
             if (!uploadRes.ok) {
               console.error('HeyGen talking_photo upload error:', uploadText);
+              if (uploadJson?.code === 401028 || /exceeded your limit/i.test(uploadText)) {
+                throw new Error(`HEYGEN_TALKING_PHOTO_LIMIT: ${uploadJson?.message || uploadText}`);
+              }
               throw new Error(`HeyGen upload failed: ${uploadRes.status} ${uploadRes.statusText}`);
             }
 
@@ -167,7 +188,7 @@ serve(async (req) => {
         throw new Error('No valid image or talking_photo_id provided for lip sync');
       }
 
-      const genRes = await fetch('https://api.heygen.com/v2/video/generate', {
+      const genRes = await fetchWithRetry('https://api.heygen.com/v2/video/generate', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${heygenKey}`,
@@ -191,7 +212,7 @@ serve(async (req) => {
             background: { type: 'color', value: '#000000' }
           }]
         }),
-      });
+      }, 2);
 
       if (!genRes.ok) {
         const errorText = await genRes.text();
