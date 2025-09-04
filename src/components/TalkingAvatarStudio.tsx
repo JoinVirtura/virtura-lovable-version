@@ -494,11 +494,11 @@ export const TalkingAvatarStudio = () => {
 
                 <Button
                   onClick={() => generateVideo(videoPrompt)}
-                  disabled={!avatarData || !generatedAudio || isProcessing}
+                  disabled={!avatarData || !generatedAudio || isProcessing || !videoPrompt.trim()}
                   className="w-full h-12"
                 >
                   <Video className="h-4 w-4 mr-2" />
-                  Generate Video
+                  {isProcessing ? 'Generating...' : 'Generate Video'}
                 </Button>
               </CardContent>
             </Card>
