@@ -1,9 +1,20 @@
 import { Tile } from './types';
 
-// Import existing assets for mock data
-import heroAvatar1 from "@/assets/hero-avatar-1.jpg";
-import heroAvatar2 from "@/assets/hero-avatar-2.jpg";
-import heroAvatar3 from "@/assets/hero-avatar-3.jpg";
+// Import diverse, photorealistic avatar assets
+import diverseAvatar1 from "@/assets/avatar-diverse-1.jpg";
+import diverseAvatar2 from "@/assets/avatar-diverse-2.jpg";
+import diverseAvatar3 from "@/assets/avatar-diverse-3.jpg";
+import diverseAvatar4 from "@/assets/avatar-diverse-4.jpg";
+import diverseAvatar5 from "@/assets/avatar-diverse-5.jpg";
+import diverseAvatar6 from "@/assets/avatar-diverse-6.jpg";
+import diverseAvatar7 from "@/assets/avatar-diverse-7.jpg";
+import diverseAvatar8 from "@/assets/avatar-diverse-8.jpg";
+import diverseAvatar9 from "@/assets/avatar-diverse-9.jpg";
+import diverseAvatar10 from "@/assets/avatar-diverse-10.jpg";
+import diverseAvatar11 from "@/assets/avatar-diverse-11.jpg";
+import diverseAvatar12 from "@/assets/avatar-diverse-12.jpg";
+
+// Import existing assets for additional variety
 import heroModel1 from "@/assets/hero-model-1.jpg";
 import heroModel2 from "@/assets/hero-model-2.jpg";
 import heroModel3 from "@/assets/hero-model-3.jpg";
@@ -15,270 +26,258 @@ import model5 from "@/assets/model-iris.jpg";
 import model6 from "@/assets/model-jade.jpg";
 import model7 from "@/assets/model-jenna.jpg";
 import model8 from "@/assets/model-lena.jpg";
-import model9 from "@/assets/model-luna.jpg";
-import model10 from "@/assets/model-maya.jpg";
-import model11 from "@/assets/model-nova.jpg";
-import model12 from "@/assets/model-raven.jpg";
-import model13 from "@/assets/model-sage.jpg";
-import model14 from "@/assets/model-sofia.jpg";
-import model15 from "@/assets/model-valentina.jpg";
-import model16 from "@/assets/model-zara.jpg";
-import avatar1 from "@/assets/avatar-1.jpg";
-import avatar2 from "@/assets/avatar-2.jpg";
-import avatar3 from "@/assets/avatar-3.jpg";
-import avatar4 from "@/assets/avatar-4.jpg";
 
 export const mockTiles: Tile[] = [
   {
     id: '1',
     kind: 'video',
-    posterUrl: heroAvatar1,
+    posterUrl: diverseAvatar1,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-1.jpg',
-    title: 'Corporate Executive',
+    title: 'Business Executive',
     tag: 'Professional',
     duration: '0:29',
     views: 12500,
-    byline: 'Alex Chen'
+    byline: 'Sarah Johnson, CEO'
   },
   {
     id: '2',
     kind: 'image',
-    posterUrl: model1,
-    title: 'Creative Portrait',
-    tag: 'Artistic',
+    posterUrl: diverseAvatar2,
+    title: 'Healthcare Professional',
+    tag: 'Medical',
     views: 23100,
-    byline: 'Maya Studios'
+    byline: 'Dr. Miguel Rodriguez'
   },
   {
     id: '3',
     kind: 'video',
-    posterUrl: heroAvatar2,
+    posterUrl: diverseAvatar3,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-2.jpg',
-    title: 'Fashion Campaign',
-    tag: 'Fashion',
+    title: 'Tech Innovation',
+    tag: 'Technology',
     duration: '0:44',
     views: 15200,
-    byline: 'Style Labs'
+    byline: 'Amy Chen, CTO'
   },
   {
     id: '4',
     kind: 'image',
-    posterUrl: heroModel1,
-    title: 'Business Leader',
-    tag: 'Corporate',
+    posterUrl: diverseAvatar4,
+    title: 'Medical Consultation',
+    tag: 'Healthcare',
     views: 9800,
-    byline: 'Pro Studios'
+    byline: 'Dr. Ahmad Hassan'
   },
   {
     id: '5',
     kind: 'video',
-    posterUrl: model2,
+    posterUrl: diverseAvatar5,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-3.jpg',
-    title: 'Brand Ambassador',
-    tag: 'Marketing',
+    title: 'Creative Director',
+    tag: 'Design',
     duration: '0:16',
     views: 18900,
-    byline: 'Brand Co'
+    byline: 'Maya Thompson'
   },
   {
     id: '6',
     kind: 'image',
-    posterUrl: model3,
-    title: 'Lifestyle Model',
-    tag: 'Lifestyle',
+    posterUrl: diverseAvatar6,
+    title: 'Business Leadership',
+    tag: 'Corporate',
     views: 11200,
-    byline: 'Life Media'
+    byline: 'Joseph Hawk'
   },
   {
     id: '7',
     kind: 'video',
-    posterUrl: model4,
+    posterUrl: diverseAvatar7,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-1.jpg',
-    title: 'Confession Time',
-    tag: 'Drama',
+    title: 'Startup Founder',
+    tag: 'Entrepreneurship',
     duration: '0:39',
     views: 23100,
-    byline: 'Drama Lab'
+    byline: 'Priya Patel'
   },
   {
     id: '8',
     kind: 'image',
-    posterUrl: model5,
-    title: 'Portrait Study',
-    tag: 'Art',
+    posterUrl: diverseAvatar8,
+    title: 'Educational Leader',
+    tag: 'Education',
     views: 8600,
-    byline: 'Art House'
+    byline: 'David Miller'
   },
   {
     id: '9',
     kind: 'video',
-    posterUrl: model6,
+    posterUrl: diverseAvatar9,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-2.jpg',
-    title: 'Love Story',
-    tag: 'Romance',
+    title: 'Business Consultant',
+    tag: 'Consulting',
     duration: '0:29',
     views: 18900,
-    byline: 'Romance Films'
+    byline: 'Grace Adomaa'
   },
   {
     id: '10',
     kind: 'image',
-    posterUrl: model7,
-    title: 'Adventure Spirit',
-    tag: 'Adventure',
+    posterUrl: diverseAvatar10,
+    title: 'Sports Professional',
+    tag: 'Athletics',
     views: 7300,
-    byline: 'Wild Studios'
+    byline: 'Carlos Mendez'
   },
   {
     id: '11',
     kind: 'video',
-    posterUrl: model8,
+    posterUrl: diverseAvatar11,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-3.jpg',
-    title: 'Tech Presentation',
-    tag: 'Technology',
+    title: 'Marine Research',
+    tag: 'Science',
     duration: '1:05',
     views: 14700,
-    byline: 'Tech Vision'
+    byline: 'Dr. Leilani Nakamura'
   },
   {
     id: '12',
     kind: 'image',
-    posterUrl: model9,
-    title: 'Elegant Portrait',
-    tag: 'Elegance',
+    posterUrl: diverseAvatar12,
+    title: 'Architecture Vision',
+    tag: 'Design',
     views: 9100,
-    byline: 'Elite Media'
+    byline: 'Marcus Williams'
   },
   {
     id: '13',
     kind: 'video',
-    posterUrl: model10,
+    posterUrl: model1,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-1.jpg',
     title: 'Fashion Forward',
     tag: 'Fashion',
     duration: '0:22',
     views: 16800,
-    byline: 'Vogue AI'
+    byline: 'Style Studios'
   },
   {
     id: '14',
     kind: 'image',
-    posterUrl: model11,
-    title: 'Cosmic Beauty',
-    tag: 'Fantasy',
+    posterUrl: model2,
+    title: 'Creative Expression',
+    tag: 'Art',
     views: 12400,
-    byline: 'Cosmic Studios'
+    byline: 'Creative Labs'
   },
   {
     id: '15',
     kind: 'video',
-    posterUrl: model12,
+    posterUrl: model3,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-2.jpg',
-    title: 'Dark Elegance',
-    tag: 'Gothic',
+    title: 'Professional Portrait',
+    tag: 'Corporate',
     duration: '0:55',
     views: 13600,
-    byline: 'Dark Arts'
+    byline: 'Pro Media'
   },
   {
     id: '16',
     kind: 'image',
-    posterUrl: model13,
-    title: 'Natural Beauty',
-    tag: 'Natural',
+    posterUrl: model4,
+    title: 'Lifestyle Brand',
+    tag: 'Lifestyle',
     views: 10300,
-    byline: 'Pure Media'
+    byline: 'Brand Vision'
   },
   {
     id: '17',
     kind: 'video',
-    posterUrl: model14,
+    posterUrl: model5,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-3.jpg',
-    title: 'Luxury Brand',
-    tag: 'Luxury',
+    title: 'Modern Portrait',
+    tag: 'Contemporary',
     duration: '0:33',
     views: 19200,
-    byline: 'Lux Studios'
+    byline: 'Modern Studios'
   },
   {
     id: '18',
     kind: 'image',
-    posterUrl: model15,
-    title: 'Vintage Glamour',
-    tag: 'Vintage',
+    posterUrl: model6,
+    title: 'Professional Headshot',
+    tag: 'Corporate',
     views: 8900,
-    byline: 'Retro Vision'
+    byline: 'Executive Media'
   },
   {
     id: '19',
     kind: 'video',
-    posterUrl: model16,
+    posterUrl: model7,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-1.jpg',
-    title: 'Modern Icon',
-    tag: 'Modern',
+    title: 'Business Leader',
+    tag: 'Leadership',
     duration: '0:41',
     views: 17500,
-    byline: 'Icon Labs'
+    byline: 'Leadership Labs'
   },
   {
     id: '20',
     kind: 'image',
-    posterUrl: avatar1,
-    title: 'Casual Chic',
-    tag: 'Casual',
+    posterUrl: model8,
+    title: 'Professional Style',
+    tag: 'Professional',
     views: 6700,
-    byline: 'Everyday AI'
+    byline: 'Style AI'
   },
   {
     id: '21',
     kind: 'video',
-    posterUrl: avatar2,
+    posterUrl: heroModel1,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-2.jpg',
-    title: 'Sports Energy',
-    tag: 'Sports',
+    title: 'Corporate Vision',
+    tag: 'Business',
     duration: '0:27',
     views: 14100,
-    byline: 'Athletic Studios'
+    byline: 'Vision Studios'
   },
   {
     id: '22',
     kind: 'image',
-    posterUrl: avatar3,
-    title: 'Artistic Vision',
-    tag: 'Artistic',
+    posterUrl: heroModel2,
+    title: 'Executive Portrait',
+    tag: 'Executive',
     views: 11800,
-    byline: 'Vision AI'
+    byline: 'Executive AI'
   },
   {
     id: '23',
     kind: 'video',
-    posterUrl: avatar4,
+    posterUrl: heroModel3,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-3.jpg',
-    title: 'Evening Elegance',
-    tag: 'Evening',
+    title: 'Professional Brand',
+    tag: 'Branding',
     duration: '0:48',
     views: 15900,
-    byline: 'Night Studios'
+    byline: 'Brand Studios'
   },
   {
     id: '24',
     kind: 'image',
-    posterUrl: heroModel2,
-    title: 'Summer Vibes',
-    tag: 'Summer',
+    posterUrl: diverseAvatar1,
+    title: 'Leadership Excellence',
+    tag: 'Leadership',
     views: 9500,
-    byline: 'Sunny AI'
+    byline: 'Excellence Media'
   },
   {
     id: '25',
     kind: 'video',
-    posterUrl: heroModel3,
+    posterUrl: diverseAvatar2,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-1.jpg',
-    title: 'Winter Fashion',
-    tag: 'Winter',
+    title: 'Healthcare Innovation',
+    tag: 'Medical',
     duration: '0:35',
     views: 12700,
-    byline: 'Season Studios'
+    byline: 'Medical Innovation'
   }
 ];
 
@@ -286,20 +285,20 @@ export const mockTutorials: Tile[] = [
   {
     id: 'tutorial-1',
     kind: 'video',
-    posterUrl: heroModel1,
+    posterUrl: diverseAvatar3,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-1.jpg',
-    title: 'Video Tutorial',
+    title: 'AI Video Creation Tutorial',
     tag: 'Tutorial',
     duration: '5:23',
     views: 45600,
-    byline: 'Explore AI video magic'
+    byline: 'Learn professional video creation'
   },
   {
     id: 'tutorial-2',
     kind: 'video',
-    posterUrl: heroModel2,
+    posterUrl: diverseAvatar7,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-2.jpg',
-    title: 'Avatar Tutorial',
+    title: 'Avatar Studio Mastery',
     tag: 'Tutorial',
     duration: '3:47',
     views: 32100,
