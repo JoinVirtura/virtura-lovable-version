@@ -42,6 +42,7 @@ export const TalkingAvatarStudio = () => {
 
   const {
     uploadedFile,
+    avatarData,
     voice,
     style,
     exports,
@@ -65,7 +66,7 @@ export const TalkingAvatarStudio = () => {
 
   const canProceedToNext = () => {
     switch (currentStep) {
-      case 1: return !!uploadedFile;
+      case 1: return !!(uploadedFile || avatarData);
       case 2: return !!generatedAudio;
       case 3: return true; // Style step always allows proceeding
       case 4: return !!generatedVideo;
@@ -493,7 +494,7 @@ export const TalkingAvatarStudio = () => {
 
                 <Button
                   onClick={() => generateVideo(videoPrompt)}
-                  disabled={!uploadedFile || !generatedAudio || isProcessing}
+                  disabled={!avatarData || !generatedAudio || isProcessing}
                   className="w-full h-12"
                 >
                   <Video className="h-4 w-4 mr-2" />
@@ -558,7 +559,7 @@ export const TalkingAvatarStudio = () => {
             <CardContent className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm">Avatar</span>
-                {uploadedFile ? (
+                {(uploadedFile || avatarData) ? (
                   <Badge variant="default">Ready</Badge>
                 ) : (
                   <Badge variant="secondary">Pending</Badge>

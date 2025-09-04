@@ -450,6 +450,7 @@ export const useTalkingAvatar = (
 
   const resetWorkflow = useCallback(() => {
     setUploadedFile(null);
+    setAvatarData(null);
     setGeneratedAudio(null);
     setGeneratedVideo(null);
     setFinalVideo(null);
