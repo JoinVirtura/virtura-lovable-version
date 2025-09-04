@@ -12,6 +12,8 @@ import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarGroupContent,
+  SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -29,7 +31,8 @@ import {
   BookOpen,
   Settings,
   Upload,
-  Download
+  Download,
+  Menu
 } from "lucide-react";
 
 interface VirturaSidebarProps {
@@ -38,13 +41,13 @@ interface VirturaSidebarProps {
 }
 
 export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps) {
+  const { state } = useSidebar();
+  const isCollapsed = state === "collapsed";
   
   const mainItems = [
     { id: "overview", label: "Home", icon: Activity },
-    { id: "talking-avatar", label: "🎭 Talking Avatar", icon: Sparkles },
-    { id: "upload", label: "Upload", icon: Upload },
-    { id: "create", label: "Create Avatar", icon: Plus },
-    { id: "studio", label: "Avatar Studio", icon: SettingsIcon },
+    { id: "talking-avatar", label: "Avatar", icon: Sparkles },
+    { id: "studio", label: "Studio", icon: SettingsIcon },
   ];
 
   const navigationTabs = [
@@ -57,17 +60,20 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
   return (
     <Sidebar className="border-r border-border">
       <SidebarHeader className="p-4">
-        <div>
-          <h1 className="text-xl font-display font-bold text-foreground leading-tight">
-            Virtura
-          </h1>
-          <p className="text-xs text-muted-foreground">Where Identity Evolves</p>
+        <div className="flex items-center justify-between">
+          <div className={isCollapsed ? "hidden" : "block"}>
+            <h1 className="text-xl font-display font-bold text-foreground leading-tight">
+              Virtura
+            </h1>
+            <p className="text-xs text-muted-foreground">Where Identity Evolves</p>
+          </div>
+          <SidebarTrigger className="h-8 w-8 p-0" />
         </div>
       </SidebarHeader>
 
       <SidebarContent className="px-3 pb-0">
         <SidebarGroup>
-          <SidebarGroupLabel className="text-muted-foreground px-0">Quick Actions</SidebarGroupLabel>
+          <SidebarGroupLabel className={`text-muted-foreground px-0 ${isCollapsed ? "hidden" : "block"}`}>Quick Actions</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {mainItems.map((item) => (
@@ -80,10 +86,10 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
                         ? "bg-primary text-primary-foreground shadow-gold" 
                         : "hover:bg-accent"
                     }`}
-                  >
-                    <item.icon className="w-4 h-4" />
-                    <span className="font-medium">{item.label}</span>
-                  </SidebarMenuButton>
+                    >
+                      <item.icon className="w-4 h-4" />
+                      {!isCollapsed && <span className="font-medium">{item.label}</span>}
+                    </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
@@ -93,7 +99,7 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
         <SidebarSeparator />
 
         <SidebarGroup className="pb-0">
-          <SidebarGroupLabel className="text-muted-foreground px-0">Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel className={`text-muted-foreground px-0 ${isCollapsed ? "hidden" : "block"}`}>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navigationTabs.map((item) => (
@@ -108,7 +114,7 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
                     }`}
                   >
                     <item.icon className="w-4 h-4" />
-                    <span className="font-medium">{item.label}</span>
+                    {!isCollapsed && <span className="font-medium">{item.label}</span>}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -130,7 +136,7 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
                   }`}
                 >
                   <Download className="w-4 h-4" />
-                  <span className="font-medium">Export</span>
+                  {!isCollapsed && <span className="font-medium">Export</span>}
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
@@ -144,7 +150,7 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
                   }`}
                 >
                   <Settings className="w-4 h-4" />
-                  <span className="font-medium">Settings</span>
+                  {!isCollapsed && <span className="font-medium">Settings</span>}
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
@@ -158,7 +164,7 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
                   }`}
                 >
                   <Crown className="w-4 h-4" />
-                  <span className="font-medium">Upgrade</span>
+                  {!isCollapsed && <span className="font-medium">Upgrade</span>}
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -174,10 +180,12 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
             <AvatarImage src="/lovable-uploads/517f5d9c-c223-4625-9aa5-5f2ef255f576.png" />
             <AvatarFallback>J</AvatarFallback>
           </Avatar>
-          <div className="flex-1 min-w-0">
-            <p className="font-medium text-sm">Jeff Krammer</p>
-            <p className="text-xs text-muted-foreground">Pro Plan</p>
-          </div>
+          {!isCollapsed && (
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-sm">Jeff Krammer</p>
+              <p className="text-xs text-muted-foreground">Pro Plan</p>
+            </div>
+          )}
         </div>
         
         <div className="px-3 pb-3">
@@ -186,7 +194,7 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
             className="w-full justify-start gap-3 text-destructive hover:bg-destructive/10 h-auto px-3 py-2"
           >
             <LogOut className="w-4 h-4" />
-            <span className="font-medium">Logout</span>
+            {!isCollapsed && <span className="font-medium">Logout</span>}
           </Button>
         </div>
       </SidebarFooter>
