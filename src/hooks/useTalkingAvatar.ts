@@ -88,10 +88,20 @@ export const useTalkingAvatar = (
 
       if (data?.success) {
         setAvatarData(data.avatar);
-        toast({
-          title: "Avatar Ready",
-          description: `${file.name} uploaded and processed successfully`,
-        });
+        
+        // Show appropriate message based on HeyGen availability
+        if (data.heygen_available) {
+          toast({
+            title: "Avatar Ready",
+            description: `${file.name} uploaded successfully with HeyGen support - ready for high-quality video generation!`,
+          });
+        } else {
+          toast({
+            title: "Avatar Uploaded",
+            description: `${file.name} uploaded. ${data.heygen_error ? 'HeyGen unavailable - using fallback mode.' : 'Basic functionality available.'}`,
+            variant: "default",
+          });
+        }
       } else {
         throw new Error(data?.error || 'Failed to process avatar');
       }
@@ -210,11 +220,10 @@ export const useTalkingAvatar = (
       return;
     }
 
-    if (!generatedAudio) {
-      console.log('No generated audio available');
+    if (!prompt?.trim()) {
       toast({
-        title: "Error", 
-        description: "Please generate audio first",
+        title: "Error",
+        description: "Please enter a video prompt",
         variant: "destructive",
       });
       return;
@@ -241,12 +250,11 @@ export const useTalkingAvatar = (
     });
 
     try {
-      const { data, error } = await supabase.functions.invoke('video-generate-multi', {
+      const { data, error } = await supabase.functions.invoke('video-generate-simple', {
         body: {
           avatarId: avatarData.id,
           prompt: prompt || 'Generate a natural talking video',
-          audioUrl: generatedAudio,
-          provider
+          audioUrl: generatedAudio
         }
       });
 
@@ -254,10 +262,18 @@ export const useTalkingAvatar = (
 
       if (data?.success) {
         setGeneratedVideo(data.videoUrl);
-        toast({
-          title: "Video Generated",
-          description: "Talking avatar video created successfully. You can now proceed to preview & export.",
-        });
+        
+        if (data.provider === 'heygen') {
+          toast({
+            title: "Video Generated",
+            description: "High-quality talking avatar video created successfully with HeyGen!",
+          });
+        } else {
+          toast({
+            title: "Avatar Ready",
+            description: data.note || "Avatar processed - video generation available with HeyGen integration.",
+          });
+        }
       } else {
         throw new Error(data?.error || 'Failed to generate video');
       }
@@ -275,11 +291,6 @@ export const useTalkingAvatar = (
         },
         logs: [...prev.logs, 'Video generated successfully']
       } : null);
-      
-      toast({
-        title: "Video Generated",
-        description: "Talking avatar video created successfully",
-      });
     } catch (error: any) {
       console.error('Video generation error:', error);
       setJob(prev => prev ? {

@@ -21,6 +21,10 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    // Get API keys
+    const heygenKey = Deno.env.get('HEYGEN_API_KEY');
+    const openaiKey = Deno.env.get('OPENAI_API_KEY');
+
     // Get the authorization header
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
@@ -63,15 +67,65 @@ serve(async (req) => {
       );
     }
 
-    // Insert into talking_avatars table with simplified working data
+    let heygenTalkingPhotoId = null;
+    let heygenError = null;
+
+    // Try to upload to HeyGen first (primary provider)
+    if (heygenKey) {
+      try {
+        console.log('Uploading to HeyGen...');
+        
+        // Fetch the image from the URL
+        const imageResponse = await fetch(photoUrl);
+        if (!imageResponse.ok) {
+          throw new Error(`Failed to fetch image: ${imageResponse.statusText}`);
+        }
+        
+        const imageBlob = await imageResponse.blob();
+        console.log('Image fetched, size:', imageBlob.size, 'type:', imageBlob.type);
+
+        // Upload to HeyGen talking photo API
+        const heygenResponse = await fetch('https://api.heygen.com/v1/talking_photo', {
+          method: 'POST',
+          headers: {
+            'X-API-KEY': heygenKey,
+            'Content-Type': imageBlob.type || 'image/jpeg',
+          },
+          body: imageBlob,
+        });
+
+        const heygenResponseText = await heygenResponse.text();
+        console.log('HeyGen response status:', heygenResponse.status);
+        console.log('HeyGen response:', heygenResponseText);
+
+        if (heygenResponse.ok) {
+          const heygenData = JSON.parse(heygenResponseText);
+          heygenTalkingPhotoId = heygenData.data?.talking_photo_id || heygenData.talking_photo_id;
+          console.log('HeyGen upload successful, talking_photo_id:', heygenTalkingPhotoId);
+        } else {
+          heygenError = `HeyGen upload failed: ${heygenResponse.status} ${heygenResponseText}`;
+          console.error(heygenError);
+        }
+      } catch (error) {
+        heygenError = `HeyGen upload error: ${error.message}`;
+        console.error(heygenError);
+      }
+    } else {
+      console.log('HeyGen API key not configured, skipping HeyGen upload');
+    }
+
+    // Prepare avatar data for database
     const avatarData = {
       user_id: user.id,
       original_image_url: photoUrl,
-      openai_avatar_id: photoUrl, // Use the URL as the ID 
-      status: 'ready',
+      heygen_talking_photo_id: heygenTalkingPhotoId,
+      openai_avatar_id: photoUrl, // Use URL as fallback ID for OpenAI
+      status: heygenTalkingPhotoId ? 'ready' : 'partial',
+      error_message: heygenError,
       metadata: {
         uploaded_at: new Date().toISOString(),
-        provider: 'direct'
+        heygen_upload: heygenTalkingPhotoId ? 'success' : 'failed',
+        heygen_error: heygenError || null
       }
     };
 
@@ -102,8 +156,9 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         success: true, 
-        avatarData: data,
-        talking_photo_id: data.openai_avatar_id
+        avatar: data,
+        heygen_available: !!heygenTalkingPhotoId,
+        heygen_error: heygenError
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 

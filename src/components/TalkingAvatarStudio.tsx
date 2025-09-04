@@ -493,20 +493,12 @@ export const TalkingAvatarStudio = () => {
                 </div>
 
                 <Button
-                  onClick={() => {
-                    if (!generatedAudio) {
-                      generateAudio(script).then(() => {
-                        generateVideo(videoPrompt);
-                      });
-                    } else {
-                      generateVideo(videoPrompt);
-                    }
-                  }}
-                  disabled={!avatarData || !script.trim() || isProcessing || !videoPrompt.trim()}
+                  onClick={() => generateVideo(videoPrompt)}
+                  disabled={!avatarData || !videoPrompt.trim() || isProcessing}
                   className="w-full h-12"
                 >
                   <Video className="h-4 w-4 mr-2" />
-                  {isProcessing ? 'Generating...' : 'Generate Video'}
+                  {isProcessing ? 'Generating Video...' : 'Generate Video'}
                 </Button>
               </CardContent>
             </Card>
