@@ -69,7 +69,7 @@ export const TrendingWall: React.FC<TrendingWallProps> = ({ tiles, className }) 
 
   // Dynamic grid classes based on screen size
   const getGridClass = () => {
-    return "grid gap-1 auto-rows-[160px] sm:gap-1 sm:auto-rows-[180px] md:gap-1 md:auto-rows-[200px] lg:gap-1 lg:auto-rows-[220px] " +
+    return "grid gap-0.5 auto-rows-[180px] sm:gap-0.5 sm:auto-rows-[200px] md:gap-0.5 md:auto-rows-[220px] lg:gap-0.5 lg:auto-rows-[240px] " +
            "grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8";
   };
 

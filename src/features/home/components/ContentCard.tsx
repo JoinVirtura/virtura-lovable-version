@@ -134,10 +134,9 @@ export const ContentCard: React.FC<ContentCardProps> = ({
     >
       <Card 
         className={cn(
-          'relative overflow-hidden cursor-pointer bg-card/50 backdrop-blur-sm border-border/50 rounded-2xl transition-all duration-500',
-          'hover:shadow-2xl hover:shadow-primary/20 hover:border-primary/40',
+          'relative overflow-hidden cursor-pointer bg-card border-0 rounded-xl transition-all duration-300',
+          'hover:shadow-lg hover:scale-[1.01]',
           'focus-within:ring-2 focus-within:ring-primary/50',
-          'hover:scale-[1.02] hover:-translate-y-1',
           sizeClasses[size]
         )}
         onMouseEnter={handleMouseEnter}
