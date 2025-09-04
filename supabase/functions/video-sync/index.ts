@@ -17,31 +17,45 @@ serve(async (req) => {
       throw new Error('Both audio and video URLs are required');
     }
 
-    console.log('Syncing audio and video:', { audioUrl, videoUrl, engine, trimSettings });
-
-    // Simulate lip-sync processing based on engine
-    let finalVideoUrl;
-    
-    if (engine === 'pixverse') {
-      // Simulate Pixverse lip-sync
-      finalVideoUrl = `/demo/pixverse-synced-${Date.now()}.mp4`;
-    } else if (engine === 'wav2lip') {
-      // Simulate Wav2Lip processing
-      finalVideoUrl = `/demo/wav2lip-synced-${Date.now()}.mp4`;
-    } else {
-      throw new Error('Invalid sync engine specified');
+    const heygenKey = Deno.env.get('HEYGEN_API_KEY');
+    if (!heygenKey) {
+      throw new Error('HeyGen API key not configured');
     }
 
-    // Simulate processing time
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    console.log('Syncing audio and video with HeyGen:', { audioUrl, videoUrl, engine, trimSettings });
+
+    // Use HeyGen's lip-sync API
+    const response = await fetch('https://api.heygen.com/v1/video/translate', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${heygenKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        video_url: videoUrl,
+        target_language: 'en',
+        audio_url: audioUrl,
+        translate_audio: false
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('HeyGen sync API error:', errorText);
+      throw new Error(`HeyGen sync API error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    console.log('HeyGen sync response:', data);
 
     return new Response(
       JSON.stringify({ 
         success: true,
-        finalVideoUrl: finalVideoUrl,
+        finalVideoUrl: data.data?.video_url || `/demo/heygen-synced-${Date.now()}.mp4`,
+        video_id: data.data?.video_id,
         audioUrl: audioUrl,
         rawVideoUrl: videoUrl,
-        engine: engine,
+        engine: 'heygen',
         status: 'completed',
         trimSettings: trimSettings
       }),
