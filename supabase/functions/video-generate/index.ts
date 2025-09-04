@@ -40,13 +40,15 @@ serve(async (req) => {
         },
         video_inputs: [{
           character: {
-            type: "avatar",
-            avatar_id: "default",
-            avatar_style: "normal"
+            type: "talking_photo",
+            talking_photo_id: avatarImage,
+            scale: 1.0,
+            talking_photo_style: "rectangle"
           },
           voice: {
             type: "text",
-            input_text: prompt
+            input_text: prompt,
+            voice_id: "default"
           },
           background: {
             type: "color",
