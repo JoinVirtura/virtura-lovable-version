@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
 import DashboardPage from "./pages/DashboardPage";
+import TalkingAvatarPage from "./pages/TalkingAvatarPage";
 import IndividualsPage from "./pages/IndividualsPage";
 import BrandsPage from "./pages/BrandsPage";
 import LibraryPage from "./pages/LibraryPage";
@@ -37,6 +38,7 @@ const App = () => (
           <Route path="/guide" element={<GuidePage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard/talking-avatar" element={<TalkingAvatarPage />} />
           <Route path="/create" element={<Dashboard />} />
           <Route path="/old-dashboard" element={<DashboardPage />} />
           <Route path="/chat" element={<Dashboard />} />
