@@ -41,20 +41,33 @@ export const TrendingWall: React.FC<TrendingWallProps> = ({ tiles, className }) 
     }, 1000); // Simulate loading
   };
 
-  // Masonry layout helper - assign random aspect ratios for variety
+  // Masonry layout helper - create a more balanced distribution
   const getMasonryItemClass = (index: number) => {
+    // Create patterns that repeat every 12 items for better distribution
+    const pattern = index % 12;
+    
     const variants = [
-      'row-span-2', // tall
-      'col-span-2', // wide  
-      'col-span-2 row-span-2', // large square
-      '', // normal
-      '', // normal
-      '' // normal
+      '', // normal - 1x1
+      'col-span-2', // wide - 2x1
+      'row-span-2', // tall - 1x2  
+      '', // normal - 1x1
+      'col-span-2 row-span-2', // large - 2x2
+      '', // normal - 1x1
+      'row-span-2', // tall - 1x2
+      '', // normal - 1x1
+      'col-span-2', // wide - 2x1
+      '', // normal - 1x1
+      '', // normal - 1x1
+      'row-span-2' // tall - 1x2
     ];
     
-    // Create a pseudo-random but deterministic distribution
-    const variant = variants[index % variants.length];
-    return variant;
+    return variants[pattern] || '';
+  };
+
+  // Dynamic grid classes based on screen size
+  const getGridClass = () => {
+    return "grid gap-3 auto-rows-[180px] sm:gap-4 sm:auto-rows-[200px] md:gap-4 md:auto-rows-[220px] lg:gap-6 lg:auto-rows-[240px] " +
+           "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8";
   };
 
   return (
@@ -74,40 +87,55 @@ export const TrendingWall: React.FC<TrendingWallProps> = ({ tiles, className }) 
         </p>
       </motion.div>
 
-      {/* Masonry Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 auto-rows-[200px] gap-4">
+      {/* Seamless Masonry Grid */}
+      <div className={getGridClass()}>
         {displayedTiles.map((tile, index) => {
           const masonryClass = getMasonryItemClass(index);
           
           return (
             <motion.div
               key={`${tile.id}-${index}`}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ 
-                duration: 0.4, 
-                delay: (index % 12) * 0.05,
+                duration: 0.5, 
+                delay: (index % 16) * 0.03, // Stagger animation
                 ease: "easeOut"
               }}
               className={cn(
-                'relative',
+                'relative group',
                 masonryClass
               )}
+              whileHover={{ 
+                scale: 1.02,
+                transition: { duration: 0.2 }
+              }}
             >
               <ContentCard 
                 tile={tile} 
-                className="h-full"
+                className="h-full w-full"
+                size="md"
               />
             </motion.div>
           );
         })}
         
-        {/* Loading Skeletons */}
-        {isLoading && Array.from({ length: 6 }).map((_, index) => (
-          <div key={`skeleton-${index}`} className="h-48">
-            <Skeleton className="w-full h-full rounded-2xl" />
-          </div>
-        ))}
+        {/* Loading Skeletons with proper grid placement */}
+        {isLoading && Array.from({ length: 8 }).map((_, index) => {
+          const skeletonClass = getMasonryItemClass(displayedTiles.length + index);
+          
+          return (
+            <motion.div 
+              key={`skeleton-${index}`} 
+              className={cn('relative', skeletonClass)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3, delay: index * 0.1 }}
+            >
+              <Skeleton className="w-full h-full rounded-2xl bg-card/20" />
+            </motion.div>
+          );
+        })}
       </div>
 
       {/* Load More Button */}
