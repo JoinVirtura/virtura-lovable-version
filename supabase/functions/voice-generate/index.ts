@@ -93,8 +93,10 @@ serve(async (req) => {
     }
 
     const audioBuffer = await finalResponse.arrayBuffer();
-    // Safe base64 conversion without spreading huge arrays (prevents call stack overflow)
+    // Convert to Uint8Array once
     const bytes = new Uint8Array(audioBuffer);
+
+    // Also prepare a base64 data URL for immediate playback (small scripts only)
     const chunkSize = 0x8000; // 32KB chunks
     let binary = '';
     for (let i = 0; i < bytes.length; i += chunkSize) {
@@ -103,11 +105,40 @@ serve(async (req) => {
     }
     const base64Audio = btoa(binary);
 
+    // Upload MP3 to Supabase Storage for a stable URL consumers can use downstream
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+    const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+    let publicUrl: string | null = null;
+
+    if (SUPABASE_URL && SERVICE_ROLE_KEY) {
+      try {
+        const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
+        const fileName = `audio/${Date.now()}-${(crypto as any).randomUUID?.() || Math.random().toString(36).slice(2)}.mp3`;
+        const blob = new Blob([bytes], { type: 'audio/mpeg' });
+        const { error: uploadError } = await supabase.storage.from('virtura-media').upload(fileName, blob, {
+          contentType: 'audio/mpeg',
+          upsert: false,
+        });
+        if (uploadError) {
+          console.warn('Audio upload failed, fallback to base64 only:', uploadError.message);
+        } else {
+          const { data: pub } = supabase.storage.from('virtura-media').getPublicUrl(fileName);
+          publicUrl = pub?.publicUrl || null;
+          console.log('Uploaded audio to storage at:', publicUrl);
+        }
+      } catch (e) {
+        console.warn('Error uploading audio to storage:', e);
+      }
+    } else {
+      console.warn('Missing SUPABASE_URL or SERVICE_ROLE_KEY; skipping storage upload');
+    }
+
     return new Response(
       JSON.stringify({ 
         success: true,
         audioData: `data:audio/mpeg;base64,${base64Audio}`,
-        audioUrl: `/audio/${Date.now()}.mp3`,
+        audioUrl: publicUrl,
         duration: 'estimated_duration'
       }),
       { 

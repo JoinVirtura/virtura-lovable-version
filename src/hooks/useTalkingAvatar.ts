@@ -161,20 +161,21 @@ export const useTalkingAvatar = (
 
       if (error) throw error;
 
-      if (data?.success) {
-        setGeneratedAudio(data.audioData);
-        setJob(prev => prev ? {
-          ...prev,
-          progress: 50,
-          steps: { ...prev.steps, voice: 'done' },
-          logs: [...prev.logs, 'Audio generated successfully']
-        } : null);
-        
-        toast({
-          title: "Audio Generated",
-          description: "Voice synthesis completed successfully",
-        });
-      } else {
+        if (data?.success) {
+          const audioUrl = data.audioUrl || data.audioData || null;
+          setGeneratedAudio(audioUrl);
+          setJob(prev => prev ? {
+            ...prev,
+            progress: 50,
+            steps: { ...prev.steps, voice: 'done' },
+            logs: [...prev.logs, `Audio generated successfully${data.audioUrl ? ' (uploaded to storage)' : ''}`]
+          } : null);
+          
+          toast({
+            title: "Audio Generated",
+            description: "Voice synthesis completed successfully",
+          });
+        } else {
         throw new Error(data?.error || 'Failed to generate audio');
       }
     } catch (error: any) {
