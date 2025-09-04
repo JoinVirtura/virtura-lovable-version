@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/components/ui/use-toast";
 import { 
   Upload, 
   Play, 
@@ -30,12 +31,16 @@ import {
   Wand2,
   Camera,
   Lightbulb,
-  RotateCcw
+  RotateCcw,
+  Clock,
+  AlertCircle,
+  RefreshCw
 } from "lucide-react";
 
-// Import the store types
+// Import the store types and hook
 import type { Voice, Style, Exports } from "@/features/talking-avatar/store";
 import { initialVoice, initialStyle, initialExports } from "@/features/talking-avatar/store";
+import { useTalkingAvatar } from "@/hooks/useTalkingAvatar";
 
 // Hero Canvas Component
 const HeroCanvas = ({ 
@@ -188,9 +193,41 @@ const AvatarPanel = ({ uploadedFile, onFileUpload }: { uploadedFile: File | null
 );
 
 // Voice Panel
-const VoicePanel = ({ voice, onVoiceChange }: { voice: Voice; onVoiceChange: (voice: Partial<Voice>) => void }) => {
+const VoicePanel = ({ 
+  voice, 
+  onVoiceChange, 
+  onGenerateAudio,
+  isProcessing,
+  generatedAudio 
+}: { 
+  voice: Voice; 
+  onVoiceChange: (voice: Partial<Voice>) => void;
+  onGenerateAudio: (script: string) => void;
+  isProcessing: boolean;
+  generatedAudio: string | null;
+}) => {
   const [script, setScript] = useState("");
   const [isRecording, setIsRecording] = useState(false);
+  const { toast } = useToast();
+
+  const handleGenerateAudio = () => {
+    if (!script.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a script first",
+        variant: "destructive",
+      });
+      return;
+    }
+    onGenerateAudio(script);
+  };
+
+  const playAudio = () => {
+    if (generatedAudio) {
+      const audio = new Audio(generatedAudio);
+      audio.play();
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -216,11 +253,12 @@ const VoicePanel = ({ voice, onVoiceChange }: { voice: Voice; onVoiceChange: (vo
           variant={isRecording ? "destructive" : "outline"}
           onClick={() => setIsRecording(!isRecording)}
           className="h-20 flex-col"
+          disabled={isProcessing}
         >
           <Mic className="w-6 h-6 mb-1" />
           {isRecording ? "Stop Recording" : "Record Voice"}
         </Button>
-        <Button variant="outline" className="h-20 flex-col">
+        <Button variant="outline" className="h-20 flex-col" disabled={isProcessing}>
           <Upload className="w-6 h-6 mb-1" />
           Upload Audio
         </Button>
@@ -240,6 +278,9 @@ const VoicePanel = ({ voice, onVoiceChange }: { voice: Voice; onVoiceChange: (vo
                 <SelectItem value="9BWtsMINqrJLrRacOk9x">Aria (Professional Female)</SelectItem>
                 <SelectItem value="CwhRBWXzGAHq8TQ4Fs17">Roger (Mature Male)</SelectItem>
                 <SelectItem value="EXAVITQu4vr4xnSDxMaL">Sarah (Young Female)</SelectItem>
+                <SelectItem value="FGY2WhTYpPnrIDTdsKH5">Laura (Narrative Female)</SelectItem>
+                <SelectItem value="IKne3meq5aSn9XLyUdCD">Charlie (Conversational Male)</SelectItem>
+                <SelectItem value="XB0fDUnXU5powFXDhCwa">Charlotte (Energetic Female)</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -283,10 +324,25 @@ const VoicePanel = ({ voice, onVoiceChange }: { voice: Voice; onVoiceChange: (vo
           </div>
         </div>
 
-        <Button className="w-full mt-4">
-          <Volume2 className="w-4 h-4 mr-2" />
-          Generate Audio
-        </Button>
+        <div className="flex gap-2 mt-4">
+          <Button 
+            className="flex-1" 
+            onClick={handleGenerateAudio}
+            disabled={isProcessing || !script.trim()}
+          >
+            {isProcessing ? (
+              <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <Volume2 className="w-4 h-4 mr-2" />
+            )}
+            Generate Audio
+          </Button>
+          {generatedAudio && (
+            <Button variant="outline" onClick={playAudio}>
+              <Play className="w-4 h-4" />
+            </Button>
+          )}
+        </div>
       </Card>
     </div>
   );
@@ -438,114 +494,234 @@ const TimelinePanel = () => (
 );
 
 // Preview & Export Panel
-const PreviewExportPanel = ({ exports, onExportsChange }: { exports: Exports; onExportsChange: (exports: Partial<Exports>) => void }) => (
-  <div className="space-y-6">
-    <Card className="p-4">
-      <h4 className="font-medium mb-3">Live Preview</h4>
-      <div className="aspect-video bg-muted/20 rounded border-2 border-dashed border-muted-foreground/30 flex items-center justify-center">
-        <p className="text-muted-foreground">Preview will appear here</p>
-      </div>
-    </Card>
+const PreviewExportPanel = ({ 
+  exports, 
+  onExportsChange,
+  generatedVideo,
+  finalVideo,
+  onGenerateVideo,
+  onSyncAudioVideo,
+  onDownloadVideo,
+  onShareVideo,
+  isProcessing,
+  uploadedFile 
+}: { 
+  exports: Exports; 
+  onExportsChange: (exports: Partial<Exports>) => void;
+  generatedVideo: string | null;
+  finalVideo: string | null;
+  onGenerateVideo: (prompt: string) => void;
+  onSyncAudioVideo: () => void;
+  onDownloadVideo: () => void;
+  onShareVideo: () => void;
+  isProcessing: boolean;
+  uploadedFile: File | null;
+}) => {
+  const [videoPrompt, setVideoPrompt] = useState("Create a natural talking video with professional presentation style");
 
-    <div className="grid grid-cols-2 gap-4">
-      <div>
-        <label className="text-sm font-medium mb-2 block">Aspect Ratio</label>
-        <Select value={exports.ratio} onValueChange={(value) => onExportsChange({ ratio: value as any })}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="9:16">9:16 (Stories)</SelectItem>
-            <SelectItem value="1:1">1:1 (Square)</SelectItem>
-            <SelectItem value="16:9">16:9 (Landscape)</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <div>
-        <label className="text-sm font-medium mb-2 block">Quality</label>
-        <Select value={exports.quality.toString()} onValueChange={(value) => onExportsChange({ quality: parseInt(value) as any })}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="720">720p</SelectItem>
-            <SelectItem value="1080">1080p</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-    </div>
-
-    <div className="space-y-3">
-      <div className="flex items-center space-x-2">
-        <Switch 
-          id="captions-export" 
-          checked={exports.captions}
-          onCheckedChange={(checked) => onExportsChange({ captions: checked })}
-        />
-        <label htmlFor="captions-export" className="text-sm font-medium">Burn-in captions</label>
-      </div>
-      <div className="flex items-center space-x-2">
-        <Switch 
-          id="transparent" 
-          checked={exports.transparent}
-          onCheckedChange={(checked) => onExportsChange({ transparent: checked })}
-        />
-        <label htmlFor="transparent" className="text-sm font-medium">Transparent background</label>
-      </div>
-    </div>
-
-    <div className="grid grid-cols-3 gap-3">
-      <Button variant="outline">
-        <Eye className="w-4 h-4 mr-2" />
-        Render Draft
-      </Button>
-      <Button>
-        <Film className="w-4 h-4 mr-2" />
-        Render Final
-      </Button>
-      <Button variant="outline">
-        <Download className="w-4 h-4 mr-2" />
-        Export All
-      </Button>
-    </div>
-  </div>
-);
-
-// Job Status Card
-const JobStatusCard = () => {
-  const steps = [
-    { label: 'Voice', icon: Volume2, status: 'done' },
-    { label: 'Lip-Sync', icon: Target, status: 'running' },
-    { label: 'Style', icon: Palette, status: 'pending' },
-    { label: 'Render', icon: Film, status: 'pending' },
-    { label: 'Export', icon: Package, status: 'pending' },
-  ];
+  const videoToShow = finalVideo || generatedVideo;
 
   return (
-    <Card className="p-4">
-      <h4 className="font-medium mb-4">Job Status</h4>
-      <div className="space-y-3">
-        {steps.map((step, index) => (
-          <div key={step.label} className="flex items-center space-x-3">
-            <div className={`p-1.5 rounded-full ${
-              step.status === 'done' ? 'bg-green-500/20 text-green-500' :
-              step.status === 'running' ? 'bg-primary/20 text-primary' :
-              'bg-muted/20 text-muted-foreground'
-            }`}>
-              {step.status === 'done' ? (
-                <CheckCircle2 className="w-4 h-4" />
-              ) : step.status === 'running' ? (
-                <step.icon className="w-4 h-4 animate-pulse" />
-              ) : (
-                <Circle className="w-4 h-4" />
-              )}
-            </div>
-            <span className="text-sm">{step.label}</span>
-          </div>
-        ))}
+    <div className="space-y-6">
+      <Card className="p-4">
+        <h4 className="font-medium mb-3">Live Preview</h4>
+        <div className="aspect-video bg-muted/20 rounded border-2 border-dashed border-muted-foreground/30 flex items-center justify-center overflow-hidden">
+          {videoToShow ? (
+            <video 
+              src={videoToShow} 
+              controls 
+              className="w-full h-full object-contain rounded"
+              poster={uploadedFile ? URL.createObjectURL(uploadedFile) : undefined}
+            />
+          ) : uploadedFile && uploadedFile.type.startsWith('image/') ? (
+            <img 
+              src={URL.createObjectURL(uploadedFile)} 
+              alt="Avatar preview" 
+              className="w-full h-full object-contain rounded"
+            />
+          ) : (
+            <p className="text-muted-foreground">Upload an avatar and generate audio to see preview</p>
+          )}
+        </div>
+      </Card>
+
+      {/* Video Generation */}
+      <Card className="p-4">
+        <h4 className="font-medium mb-3">Video Generation</h4>
+        <Textarea
+          placeholder="Describe the video style and presentation..."
+          value={videoPrompt}
+          onChange={(e) => setVideoPrompt(e.target.value)}
+          className="min-h-16 resize-none mb-3"
+          maxLength={200}
+        />
+        <Button 
+          className="w-full mb-3" 
+          onClick={() => onGenerateVideo(videoPrompt)}
+          disabled={isProcessing || !uploadedFile}
+        >
+          {isProcessing ? (
+            <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+          ) : (
+            <VideoIcon className="w-4 h-4 mr-2" />
+          )}
+          Generate Video
+        </Button>
+        
+        {generatedVideo && (
+          <Button 
+            className="w-full" 
+            variant="outline"
+            onClick={onSyncAudioVideo}
+            disabled={isProcessing}
+          >
+            <Wand2 className="w-4 h-4 mr-2" />
+            Sync Audio & Video
+          </Button>
+        )}
+      </Card>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="text-sm font-medium mb-2 block">Aspect Ratio</label>
+          <Select value={exports.ratio} onValueChange={(value) => onExportsChange({ ratio: value as any })}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="9:16">9:16 (Stories)</SelectItem>
+              <SelectItem value="1:1">1:1 (Square)</SelectItem>
+              <SelectItem value="16:9">16:9 (Landscape)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <label className="text-sm font-medium mb-2 block">Quality</label>
+          <Select value={exports.quality.toString()} onValueChange={(value) => onExportsChange({ quality: parseInt(value) as any })}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="720">720p</SelectItem>
+              <SelectItem value="1080">1080p</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
-      <Progress value={40} className="mt-4" />
-      <p className="text-xs text-muted-foreground mt-2">ETA: 2m 30s</p>
+
+      <div className="space-y-3">
+        <div className="flex items-center space-x-2">
+          <Switch 
+            id="captions-export" 
+            checked={exports.captions}
+            onCheckedChange={(checked) => onExportsChange({ captions: checked })}
+          />
+          <label htmlFor="captions-export" className="text-sm font-medium">Burn-in captions</label>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Switch 
+            id="transparent" 
+            checked={exports.transparent}
+            onCheckedChange={(checked) => onExportsChange({ transparent: checked })}
+          />
+          <label htmlFor="transparent" className="text-sm font-medium">Transparent background</label>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <Button 
+          className="w-full" 
+          onClick={onDownloadVideo}
+          disabled={!videoToShow}
+        >
+          <Download className="w-4 h-4 mr-2" />
+          Download Video
+        </Button>
+        <Button 
+          className="w-full" 
+          variant="outline"
+          onClick={onShareVideo}
+          disabled={!videoToShow}
+        >
+          <MessageSquare className="w-4 h-4 mr-2" />
+          Share Video
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+// Job Status Card
+const JobStatusCard = ({ job, isProcessing }: { job: any; isProcessing: boolean }) => {
+  if (!job && !isProcessing) return null;
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'done':
+        return <CheckCircle2 className="w-4 h-4 text-green-500" />;
+      case 'running':
+        return <RefreshCw className="w-4 h-4 text-primary animate-spin" />;
+      case 'error':
+        return <AlertCircle className="w-4 h-4 text-destructive" />;
+      default:
+        return <Circle className="w-4 h-4 text-muted-foreground" />;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'done':
+        return "text-green-500";
+      case 'running':
+        return "text-primary";
+      case 'error':
+        return "text-destructive";
+      default:
+        return "text-muted-foreground";
+    }
+  };
+
+  return (
+    <Card className="p-6">
+      <h3 className="text-lg font-semibold mb-4">Generation Progress</h3>
+      
+      <div className="space-y-4">
+        <div className="flex justify-between text-sm">
+          <span>Overall Progress</span>
+          <span>{job?.progress || 0}%</span>
+        </div>
+        <Progress value={job?.progress || 0} className="h-2" />
+        
+        <div className="space-y-3">
+          {Object.entries(job?.steps || {
+            voice: 'pending',
+            'lip-sync': 'pending', 
+            style: 'pending',
+            render: 'pending',
+            export: 'pending'
+          }).map(([step, status], idx) => (
+            <div key={idx} className="flex items-center space-x-3">
+              {getStatusIcon(status as string)}
+              <span className={`text-sm capitalize ${getStatusColor(status as string)}`}>
+                {step.replace('-', ' ')}
+              </span>
+            </div>
+          ))}
+        </div>
+        
+        {job?.status === 'error' && (
+          <div className="text-xs text-destructive mt-4 p-2 bg-destructive/10 rounded">
+            Error: {job.logs?.[job.logs.length - 1] || 'Generation failed'}
+          </div>
+        )}
+        
+        {isProcessing && job?.status !== 'error' && (
+          <div className="text-xs text-muted-foreground mt-4 flex items-center gap-2">
+            <Clock className="w-3 h-3" />
+            Processing... ETA: ~2 minutes
+          </div>
+        )}
+      </div>
     </Card>
   );
 };
@@ -568,88 +744,130 @@ const AIAssistCard = () => (
   </Card>
 );
 
-export function TalkingAvatarStudio() {
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [voice, setVoice] = useState<Voice>(initialVoice);
-  const [style, setStyle] = useState<Style>(initialStyle);
-  const [exports, setExports] = useState<Exports>(initialExports);
-  const [activeTab, setActiveTab] = useState("avatar");
-
-  const handleVoiceChange = (changes: Partial<Voice>) => {
-    setVoice(prev => ({ ...prev, ...changes }));
-  };
-
-  const handleStyleChange = (changes: Partial<Style>) => {
-    setStyle(prev => ({ 
-      ...prev, 
-      ...changes,
-      lighting: changes.lighting ? { ...prev.lighting, ...changes.lighting } : prev.lighting,
-      camera: changes.camera ? { ...prev.camera, ...changes.camera } : prev.camera
-    }));
-  };
-
-  const handleExportsChange = (changes: Partial<Exports>) => {
-    setExports(prev => ({ ...prev, ...changes }));
-  };
+// Main Talking Avatar Studio
+export default function TalkingAvatarStudio() {
+  const {
+    // State
+    uploadedFile,
+    voice,
+    style,
+    exports,
+    generatedAudio,
+    generatedVideo,
+    finalVideo,
+    job,
+    isProcessing,
+    
+    // Actions
+    handleFileUpload,
+    updateVoice,
+    updateStyle,
+    updateExports,
+    generateAudio,
+    generateVideo,
+    syncAudioVideo,
+    downloadVideo,
+    shareVideo,
+    resetWorkflow,
+  } = useTalkingAvatar(initialVoice, initialStyle, initialExports);
 
   return (
-    <div className="space-y-6">
-      {/* Hero Canvas */}
-      <HeroCanvas uploadedFile={uploadedFile} onFileUpload={setUploadedFile} />
+    <div className="flex gap-6">
+      {/* Main Content */}
+      <div className="flex-1 space-y-6">
+        {/* Hero Canvas */}
+        <HeroCanvas uploadedFile={uploadedFile} onFileUpload={handleFileUpload} />
 
-      {/* Workflow Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-5 bg-muted/10">
-          <TabsTrigger value="avatar" className="flex items-center space-x-2">
-            <ImageIcon className="w-4 h-4" />
-            <span>Avatar</span>
-          </TabsTrigger>
-          <TabsTrigger value="voice" className="flex items-center space-x-2">
-            <Volume2 className="w-4 h-4" />
-            <span>Voice</span>
-          </TabsTrigger>
-          <TabsTrigger value="style" className="flex items-center space-x-2">
-            <Palette className="w-4 h-4" />
-            <span>Style & FX</span>
-          </TabsTrigger>
-          <TabsTrigger value="timeline" className="flex items-center space-x-2">
-            <Film className="w-4 h-4" />
-            <span>Timeline</span>
-          </TabsTrigger>
-          <TabsTrigger value="export" className="flex items-center space-x-2">
-            <Download className="w-4 h-4" />
-            <span>Preview & Export</span>
-          </TabsTrigger>
-        </TabsList>
+        {/* Workflow Tabs */}
+        <Tabs defaultValue="avatar" className="w-full">
+          <TabsList className="grid w-full grid-cols-5 bg-muted/10">
+            <TabsTrigger value="avatar" className="flex items-center space-x-2">
+              <ImageIcon className="w-4 h-4" />
+              <span>Avatar</span>
+            </TabsTrigger>
+            <TabsTrigger value="voice" className="flex items-center space-x-2">
+              <Volume2 className="w-4 h-4" />
+              <span>Voice</span>
+            </TabsTrigger>
+            <TabsTrigger value="style" className="flex items-center space-x-2">
+              <Palette className="w-4 h-4" />
+              <span>Style & FX</span>
+            </TabsTrigger>
+            <TabsTrigger value="timeline" className="flex items-center space-x-2">
+              <Film className="w-4 h-4" />
+              <span>Timeline</span>
+            </TabsTrigger>
+            <TabsTrigger value="export" className="flex items-center space-x-2">
+              <Download className="w-4 h-4" />
+              <span>Preview & Export</span>
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Main Content */}
-        <div className="flex gap-6 mt-6">
-          {/* Panels */}
-          <div className="flex-1">
-            <TabsContent value="avatar" className="mt-0">
-              <AvatarPanel uploadedFile={uploadedFile} onFileUpload={setUploadedFile} />
-            </TabsContent>
-            <TabsContent value="voice" className="mt-0">
-              <VoicePanel voice={voice} onVoiceChange={handleVoiceChange} />
-            </TabsContent>
-            <TabsContent value="style" className="mt-0">
-              <StylePanel style={style} onStyleChange={handleStyleChange} />
-            </TabsContent>
-            <TabsContent value="timeline" className="mt-0">
-              <TimelinePanel />
-            </TabsContent>
-            <TabsContent value="export" className="mt-0">
-              <PreviewExportPanel exports={exports} onExportsChange={handleExportsChange} />
-            </TabsContent>
-          </div>
+          <TabsContent value="avatar" className="space-y-6">
+            <AvatarPanel 
+              uploadedFile={uploadedFile}
+              onFileUpload={handleFileUpload}
+            />
+          </TabsContent>
+          
+          <TabsContent value="voice" className="space-y-6">
+            <VoicePanel 
+              voice={voice}
+              onVoiceChange={updateVoice}
+              onGenerateAudio={generateAudio}
+              isProcessing={isProcessing}
+              generatedAudio={generatedAudio}
+            />
+          </TabsContent>
+          
+          <TabsContent value="style" className="space-y-6">
+            <StylePanel 
+              style={style}
+              onStyleChange={updateStyle}
+            />
+          </TabsContent>
+          
+          <TabsContent value="timeline" className="space-y-6">
+            <TimelinePanel />
+          </TabsContent>
+          
+          <TabsContent value="export" className="space-y-6">
+            <PreviewExportPanel 
+              exports={exports}
+              onExportsChange={updateExports}
+              generatedVideo={generatedVideo}
+              finalVideo={finalVideo}
+              onGenerateVideo={generateVideo}
+              onSyncAudioVideo={syncAudioVideo}
+              onDownloadVideo={downloadVideo}
+              onShareVideo={shareVideo}
+              isProcessing={isProcessing}
+              uploadedFile={uploadedFile}
+            />
+          </TabsContent>
+        </Tabs>
+      </div>
 
-          {/* Right Rail */}
-          <div className="w-80 space-y-4">
-            <JobStatusCard />
-            <AIAssistCard />
-          </div>
-        </div>
-      </Tabs>
+      {/* Right Rail */}
+      <div className="w-80 space-y-6">
+        <JobStatusCard job={job} isProcessing={isProcessing} />
+        <AIAssistCard />
+        
+        {/* Reset Workflow */}
+        {(uploadedFile || generatedAudio || generatedVideo) && (
+          <Card className="p-4">
+            <Button 
+              variant="outline" 
+              className="w-full" 
+              onClick={resetWorkflow}
+              disabled={isProcessing}
+            >
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Start New Project
+            </Button>
+          </Card>
+        )}
+      </div>
     </div>
   );
 }

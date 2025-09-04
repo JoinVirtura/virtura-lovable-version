@@ -8,7 +8,7 @@ import { AvatarStudio } from "@/components/AvatarStudio";
 import { UploadSection } from "@/components/UploadSection";
 import { ExportSection } from "@/components/ExportSection";
 import { ChatInterface } from "@/components/ChatInterface";
-import { TalkingAvatarStudio } from "@/components/TalkingAvatarStudio";
+import TalkingAvatarStudio from "@/components/TalkingAvatarStudio";
 import UpgradePage from "./UpgradePage";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
