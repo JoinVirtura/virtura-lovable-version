@@ -67,9 +67,9 @@ export const TalkingAvatarStudio = () => {
   const canProceedToNext = () => {
     switch (currentStep) {
       case 1: return !!(uploadedFile || avatarData);
-      case 2: return !!generatedAudio;
+      case 2: return !!script.trim(); // Can proceed after entering script, don't require audio generation
       case 3: return true; // Style step always allows proceeding
-      case 4: return !!generatedVideo; // Must have generated video to proceed
+      case 4: return !!videoPrompt.trim(); // Can proceed after entering video prompt
       case 5: return true; // Final step
       default: return false;
     }
@@ -493,8 +493,16 @@ export const TalkingAvatarStudio = () => {
                 </div>
 
                 <Button
-                  onClick={() => generateVideo(videoPrompt)}
-                  disabled={!avatarData || !generatedAudio || isProcessing || !videoPrompt.trim()}
+                  onClick={() => {
+                    if (!generatedAudio) {
+                      generateAudio(script).then(() => {
+                        generateVideo(videoPrompt);
+                      });
+                    } else {
+                      generateVideo(videoPrompt);
+                    }
+                  }}
+                  disabled={!avatarData || !script.trim() || isProcessing || !videoPrompt.trim()}
                   className="w-full h-12"
                 >
                   <Video className="h-4 w-4 mr-2" />
