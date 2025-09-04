@@ -180,7 +180,7 @@ serve(async (req) => {
           video_inputs: [{
             character: {
               type: 'talking_photo',
-              talking_photo: { talking_photo_id: talkingPhotoId },
+              talking_photo_id: talkingPhotoId,
               scale: 1.0,
               talking_photo_style: 'closeup_body'
             },
