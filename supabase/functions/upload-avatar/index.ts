@@ -63,30 +63,33 @@ serve(async (req) => {
       );
     }
 
-    // Insert into talking_avatars table with simplified data
+    // Insert into talking_avatars table with simplified working data
     const avatarData = {
       user_id: user.id,
       original_image_url: photoUrl,
-      openai_avatar_id: photoUrl, // Use the URL as the ID for simplicity
+      openai_avatar_id: photoUrl, // Use the URL as the ID 
       status: 'ready',
       metadata: {
         uploaded_at: new Date().toISOString(),
-        file_url: photoUrl
+        provider: 'direct'
       }
     };
 
     console.log('Inserting avatar data:', avatarData);
 
-    const { data: insertData, error: insertError } = await supabase
+    const { data, error } = await supabase
       .from('talking_avatars')
       .insert(avatarData)
       .select()
       .single();
 
-    if (insertError) {
-      console.error('Database insert error:', insertError);
+    if (error) {
+      console.error('Database insertion error:', error);
       return new Response(
-        JSON.stringify({ error: `Database error: ${insertError.message}` }),
+        JSON.stringify({ 
+          error: `Database error: ${error.message}`,
+          details: error
+        }),
         { 
           status: 500, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -94,27 +97,29 @@ serve(async (req) => {
       );
     }
 
-    console.log('Avatar uploaded successfully:', insertData);
+    console.log('Avatar data inserted successfully:', data);
 
     return new Response(
       JSON.stringify({ 
         success: true, 
-        avatar_id: insertData.id,
-        openai_avatar_id: photoUrl,
-        status: 'ready'
+        avatarData: data,
+        talking_photo_id: data.openai_avatar_id
       }),
       { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
       }
     );
 
   } catch (error) {
-    console.error('Upload avatar error:', error);
+    console.error('Function error:', error);
     return new Response(
-      JSON.stringify({ error: `Server error: ${error.message}` }),
+      JSON.stringify({ 
+        error: error.message || 'Unknown error occurred',
+        success: false 
+      }),
       { 
         status: 500, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
       }
     );
   }
