@@ -9,28 +9,38 @@ import { Search, Filter, User, Sparkles, Crown, Loader2, Star } from "lucide-rea
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-// Import all avatar assets
+// Import all avatar assets exactly as they are available
 import avatar1 from "@/assets/avatar-1.jpg";
 import avatar2 from "@/assets/avatar-2.jpg";
 import avatar3 from "@/assets/avatar-3.jpg";
 import avatar4 from "@/assets/avatar-4.jpg";
 import avatarAuthorPortrait from "@/assets/avatar-author-portrait.jpg";
 import avatarAwardPhotographer from "@/assets/avatar-award-photographer.jpg";
+import avatarAwardPhotographerRealistic from "@/assets/avatar-award-photographer-realistic.jpg";
 import avatarAwardWinning from "@/assets/avatar-award-winning.jpg";
 import avatarBrandConsultant from "@/assets/avatar-brand-consultant.jpg";
+import avatarBrandConsultantRealistic from "@/assets/avatar-brand-consultant-realistic.jpg";
 import avatarBusinessExecutive from "@/assets/avatar-business-executive.jpg";
 import avatarBusinessPresenter from "@/assets/avatar-business-presenter.jpg";
+import avatarBusinessPresenterRealistic from "@/assets/avatar-business-presenter-realistic.jpg";
 import avatarCorporateExecutive from "@/assets/avatar-corporate-executive.jpg";
 import avatarCreativeArtist from "@/assets/avatar-creative-artist.jpg";
 import avatarCreativeVideoArtist from "@/assets/avatar-creative-video-artist.jpg";
+import avatarCreativeVideoArtistRealistic from "@/assets/avatar-creative-video-artist-realistic.jpg";
 import avatarFashionModel from "@/assets/avatar-fashion-model.jpg";
 import avatarFitnessCoach from "@/assets/avatar-fitness-coach.jpg";
 import avatarHealthcareProfessional from "@/assets/avatar-healthcare-professional.jpg";
 import avatarLinkedinProfile from "@/assets/avatar-linkedin-profile.jpg";
+import avatarLogoDesignerRealistic from "@/assets/avatar-logo-designer-realistic.jpg";
+import avatarMarketingManagerRealistic from "@/assets/avatar-marketing-manager-realistic.jpg";
+import avatarSocialInfluencerRealistic from "@/assets/avatar-social-influencer-realistic.jpg";
+import avatarSocialMediaManagerRealistic from "@/assets/avatar-social-media-manager-realistic.jpg";
 import avatarTechEntrepreneur from "@/assets/avatar-tech-entrepreneur.jpg";
 import avatarVideoCreator from "@/assets/avatar-video-creator.jpg";
+import avatarVideoCreatorRealistic from "@/assets/avatar-video-creator-realistic.jpg";
+import avatarVideoProducerRealistic from "@/assets/avatar-video-producer-realistic.jpg";
 
-// Built-in avatar library data - All 19 avatars
+// Built-in avatar library data - All available avatars
 const defaultAvatars: AvatarLibraryItem[] = [
   { id: "default-1", name: "Business Executive", category: "Professional", premium: false, url: avatarBusinessExecutive, rating: 9.2, tags: ["Professional", "Business", "Executive"] },
   { id: "default-2", name: "Creative Artist", category: "Creative", premium: false, url: avatarCreativeArtist, rating: 9.1, tags: ["Creative", "Artistic", "Bohemian"] },
@@ -51,6 +61,16 @@ const defaultAvatars: AvatarLibraryItem[] = [
   { id: "default-17", name: "Avatar 2", category: "Lifestyle", premium: false, url: avatar2, rating: 8.6, tags: ["Lifestyle", "Casual", "Portrait"] },
   { id: "default-18", name: "Avatar 3", category: "Lifestyle", premium: false, url: avatar3, rating: 8.7, tags: ["Lifestyle", "Casual", "Portrait"] },
   { id: "default-19", name: "Avatar 4", category: "Lifestyle", premium: false, url: avatar4, rating: 8.8, tags: ["Lifestyle", "Casual", "Portrait"] },
+  { id: "default-20", name: "Logo Designer", category: "Creative", premium: true, url: avatarLogoDesignerRealistic, rating: 9.1, tags: ["Creative", "Design", "Branding"] },
+  { id: "default-21", name: "Marketing Manager", category: "Professional", premium: true, url: avatarMarketingManagerRealistic, rating: 9.0, tags: ["Professional", "Marketing", "Strategy"] },
+  { id: "default-22", name: "Social Media Manager", category: "Creative", premium: true, url: avatarSocialMediaManagerRealistic, rating: 8.9, tags: ["Creative", "Social", "Digital"] },
+  { id: "default-23", name: "Business Presenter Pro", category: "Professional", premium: true, url: avatarBusinessPresenterRealistic, rating: 9.2, tags: ["Professional", "Presentation", "Executive"] },
+  { id: "default-24", name: "Video Creator Pro", category: "Creative", premium: true, url: avatarVideoCreatorRealistic, rating: 9.3, tags: ["Creative", "Video", "Professional"] },
+  { id: "default-25", name: "Video Producer", category: "Creative", premium: true, url: avatarVideoProducerRealistic, rating: 9.1, tags: ["Creative", "Production", "Media"] },
+  { id: "default-26", name: "Creative Video Artist Pro", category: "Creative", premium: true, url: avatarCreativeVideoArtistRealistic, rating: 9.4, tags: ["Creative", "Video", "Artistic"] },
+  { id: "default-27", name: "Social Influencer", category: "Creative", premium: true, url: avatarSocialInfluencerRealistic, rating: 9.0, tags: ["Creative", "Social", "Influencer"] },
+  { id: "default-28", name: "Award Photographer Pro", category: "Creative", premium: true, url: avatarAwardPhotographerRealistic, rating: 9.5, tags: ["Creative", "Photography", "Professional"] },
+  { id: "default-29", name: "Brand Consultant Pro", category: "Professional", premium: true, url: avatarBrandConsultantRealistic, rating: 9.2, tags: ["Professional", "Brand", "Consulting"] },
 ];
 
 interface AvatarLibraryItem {
@@ -136,7 +156,7 @@ export const AvatarLibraryModal = ({ open, onOpenChange, onSelectAvatar }: Avata
             <User className="w-5 h-5" />
             Avatar Library
             <Badge variant="secondary" className="ml-auto">
-              {filteredAvatars.length} avatars
+              {filteredAvatars.length} of 29 avatars
             </Badge>
           </DialogTitle>
         </DialogHeader>

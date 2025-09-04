@@ -12,10 +12,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAuth } from "@/hooks/useAuth";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const { user, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -78,18 +80,50 @@ const Navigation = () => {
 
           {/* Desktop Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button 
-              variant="outline"
-              onClick={() => navigate('/dashboard')}
-            >
-              Demo
-            </Button>
-            <Button variant="outline">
-              Login
-            </Button>
-            <Button>
-              Sign Up
-            </Button>
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="rounded-full">
+                    <Avatar className="w-8 h-8">
+                      <AvatarImage src={user.user_metadata?.avatar_url} />
+                      <AvatarFallback>
+                        {user.email?.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium">{user.user_metadata?.full_name || 'User'}</p>
+                      <p className="text-xs text-muted-foreground">{user.email}</p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => navigate('/settings')}>
+                    <Settings className="mr-2 h-4 w-4" />
+                    Settings
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={signOut}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Log out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <>
+                <Button 
+                  variant="outline"
+                  onClick={() => navigate('/auth')}
+                >
+                  Login
+                </Button>
+                <Button onClick={() => navigate('/auth')}>
+                  Sign Up
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -124,22 +158,54 @@ const Navigation = () => {
                 </Link>
               ))}
               <div className="border-t border-border/50 pt-3 mt-3 space-y-2">
-                <Button 
-                  variant="outline" 
-                  className="w-full"
-                  onClick={() => {
-                    navigate('/dashboard');
-                    setIsOpen(false);
-                  }}
-                >
-                  Demo
-                </Button>
-                <Button variant="outline" className="w-full">
-                  Login
-                </Button>
-                <Button className="w-full">
-                  Sign Up
-                </Button>
+                {user ? (
+                  <>
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={() => {
+                        navigate('/settings');
+                        setIsOpen(false);
+                      }}
+                    >
+                      <Settings className="mr-2 h-4 w-4" />
+                      Settings
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={() => {
+                        signOut();
+                        setIsOpen(false);
+                      }}
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Log out
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={() => {
+                        navigate('/auth');
+                        setIsOpen(false);
+                      }}
+                    >
+                      Login
+                    </Button>
+                    <Button 
+                      className="w-full"
+                      onClick={() => {
+                        navigate('/auth');
+                        setIsOpen(false);
+                      }}
+                    >
+                      Sign Up
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </div>
