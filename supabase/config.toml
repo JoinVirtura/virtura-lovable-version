@@ -26,3 +26,9 @@ verify_jwt = false
 
 [functions.video-sync]
 verify_jwt = false
+
+[functions.upload-avatar]
+verify_jwt = true
+
+[functions.video-generate-multi]
+verify_jwt = true
