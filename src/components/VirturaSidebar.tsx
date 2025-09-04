@@ -58,20 +58,25 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
   ];
 
   return (
-    <Sidebar className="border-r border-border">
-      <SidebarHeader className="p-4">
+    <Sidebar 
+      className="border-r border-border"
+      collapsible="icon"
+    >
+      <SidebarHeader className={isCollapsed ? "p-2" : "p-4"}>
         <div className="flex items-center justify-between">
-          <div className={isCollapsed ? "hidden" : "block"}>
-            <h1 className="text-xl font-display font-bold text-foreground leading-tight">
-              Virtura
-            </h1>
-            <p className="text-xs text-muted-foreground">Where Identity Evolves</p>
-          </div>
-          <SidebarTrigger className="h-8 w-8 p-0" />
+          {!isCollapsed && (
+            <div>
+              <h1 className="text-xl font-display font-bold text-foreground leading-tight">
+                Virtura
+              </h1>
+              <p className="text-xs text-muted-foreground">Where Identity Evolves</p>
+            </div>
+          )}
+          <SidebarTrigger className="h-8 w-8 p-0 ml-auto" />
         </div>
       </SidebarHeader>
 
-      <SidebarContent className="px-3 pb-0">
+      <SidebarContent className={isCollapsed ? "px-1 pb-0" : "px-3 pb-0"}>
         <SidebarGroup>
           <SidebarGroupLabel className={`text-muted-foreground px-0 ${isCollapsed ? "hidden" : "block"}`}>Quick Actions</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -81,15 +86,15 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
                   <SidebarMenuButton 
                     onClick={() => onViewChange(item.id)}
                     isActive={activeView === item.id}
-                    className={`w-full justify-start gap-3 ${
+                    className={`w-full ${isCollapsed ? "justify-center px-2" : "justify-start gap-3"} ${
                       activeView === item.id 
                         ? "bg-primary text-primary-foreground shadow-gold" 
                         : "hover:bg-accent"
                     }`}
-                    >
-                      <item.icon className="w-4 h-4" />
-                      {!isCollapsed && <span className="font-medium">{item.label}</span>}
-                    </SidebarMenuButton>
+                  >
+                    <item.icon className="w-4 h-4 shrink-0" />
+                    {!isCollapsed && <span className="font-medium">{item.label}</span>}
+                  </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
@@ -107,13 +112,13 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
                   <SidebarMenuButton 
                     onClick={() => onViewChange(item.id)}
                     isActive={activeView === item.id}
-                    className={`w-full justify-start gap-3 ${
+                    className={`w-full ${isCollapsed ? "justify-center px-2" : "justify-start gap-3"} ${
                       activeView === item.id 
                         ? "bg-primary text-primary-foreground shadow-gold" 
                         : "hover:bg-accent"
                     }`}
                   >
-                    <item.icon className="w-4 h-4" />
+                    <item.icon className="w-4 h-4 shrink-0" />
                     {!isCollapsed && <span className="font-medium">{item.label}</span>}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -129,13 +134,13 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
                 <SidebarMenuButton 
                   onClick={() => onViewChange("export")}
                   isActive={activeView === "export"}
-                  className={`w-full justify-start gap-3 ${
+                  className={`w-full ${isCollapsed ? "justify-center px-2" : "justify-start gap-3"} ${
                     activeView === "export" 
                       ? "bg-primary text-primary-foreground shadow-gold" 
                       : "hover:bg-accent"
                   }`}
                 >
-                  <Download className="w-4 h-4" />
+                  <Download className="w-4 h-4 shrink-0" />
                   {!isCollapsed && <span className="font-medium">Export</span>}
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -143,13 +148,13 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
                 <SidebarMenuButton 
                   onClick={() => onViewChange("settings")}
                   isActive={activeView === "settings"}
-                  className={`w-full justify-start gap-3 ${
+                  className={`w-full ${isCollapsed ? "justify-center px-2" : "justify-start gap-3"} ${
                     activeView === "settings" 
                       ? "bg-primary text-primary-foreground shadow-gold" 
                       : "hover:bg-accent"
                   }`}
                 >
-                  <Settings className="w-4 h-4" />
+                  <Settings className="w-4 h-4 shrink-0" />
                   {!isCollapsed && <span className="font-medium">Settings</span>}
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -157,13 +162,13 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
                 <SidebarMenuButton 
                   onClick={() => onViewChange("upgrade")}
                   isActive={activeView === "upgrade"}
-                  className={`w-full justify-start gap-3 ${
+                  className={`w-full ${isCollapsed ? "justify-center px-2" : "justify-start gap-3"} ${
                     activeView === "upgrade" 
                       ? "bg-primary text-primary-foreground shadow-gold" 
                       : "hover:bg-accent"
                   }`}
                 >
-                  <Crown className="w-4 h-4" />
+                  <Crown className="w-4 h-4 shrink-0" />
                   {!isCollapsed && <span className="font-medium">Upgrade</span>}
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -173,9 +178,9 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
       </SidebarContent>
 
       <SidebarFooter className="p-0">
-        <SidebarSeparator className="mx-3" />
+        <SidebarSeparator className={isCollapsed ? "mx-1" : "mx-3"} />
         
-        <div className="flex items-center gap-3 px-3 py-3">
+        <div className={`flex items-center gap-3 ${isCollapsed ? "px-1 py-3 justify-center" : "px-3 py-3"}`}>
           <Avatar className="w-8 h-8">
             <AvatarImage src="/lovable-uploads/517f5d9c-c223-4625-9aa5-5f2ef255f576.png" />
             <AvatarFallback>J</AvatarFallback>
@@ -188,12 +193,12 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
           )}
         </div>
         
-        <div className="px-3 pb-3">
+        <div className={isCollapsed ? "px-1 pb-3" : "px-3 pb-3"}>
           <Button 
             variant="ghost" 
-            className="w-full justify-start gap-3 text-destructive hover:bg-destructive/10 h-auto px-3 py-2"
+            className={`w-full ${isCollapsed ? "justify-center px-2" : "justify-start gap-3"} text-destructive hover:bg-destructive/10 h-auto py-2`}
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="w-4 h-4 shrink-0" />
             {!isCollapsed && <span className="font-medium">Logout</span>}
           </Button>
         </div>
