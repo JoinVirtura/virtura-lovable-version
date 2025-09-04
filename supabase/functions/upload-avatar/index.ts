@@ -1,5 +1,6 @@
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.55.0";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -7,129 +8,112 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { photoUrl } = await req.json();
+    console.log('Upload avatar function called');
     
-    if (!photoUrl) {
-      throw new Error('Photo URL is required');
-    }
-
-    // Initialize providers based on available API keys
-    const providers = [];
-    
-    const heygenKey = Deno.env.get('HEYGEN_API_KEY');
-    const openaiKey = Deno.env.get('OPENAI_API_KEY');
-    const runwayKey = Deno.env.get('RUNWAY_API_KEY');
-    
-    let results = {
-      heygen_talking_photo_id: null,
-      openai_avatar_id: null,
-      runway_avatar_id: null,
-      errors: []
-    };
-
-    // Try HeyGen first if available
-    if (heygenKey) {
-      try {
-        console.log('Uploading to HeyGen...');
-        const heygenResponse = await fetch('https://upload.heygen.com/v1/talking_photo', {
-          method: 'POST',
-          headers: {
-            'x-api-key': heygenKey,
-          },
-          body: await fetch(photoUrl).then(r => r.blob())
-        });
-
-        const heygenData = await heygenResponse.json();
-        
-        if (heygenResponse.ok && heygenData?.data?.talking_photo_id) {
-          results.heygen_talking_photo_id = heygenData.data.talking_photo_id;
-          console.log('HeyGen upload successful:', results.heygen_talking_photo_id);
-        } else {
-          results.errors.push(`HeyGen: ${heygenData?.message || 'Upload failed'}`);
-        }
-      } catch (error) {
-        results.errors.push(`HeyGen: ${error.message}`);
-      }
-    }
-
-    // Try OpenAI avatar creation as fallback
-    if (openaiKey && !results.heygen_talking_photo_id) {
-      try {
-        console.log('Creating OpenAI avatar reference...');
-        // For OpenAI, we'll store the image URL as the avatar ID since it's used directly
-        results.openai_avatar_id = photoUrl;
-        console.log('OpenAI avatar reference created');
-      } catch (error) {
-        results.errors.push(`OpenAI: ${error.message}`);
-      }
-    }
-
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Get user from auth header
+    // Get the authorization header
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      throw new Error('No authorization header');
+      console.error('No authorization header');
+      return new Response(
+        JSON.stringify({ error: 'Missing authorization header' }),
+        { 
+          status: 401, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
     }
 
-    const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    // Verify the user
+    const { data: { user }, error: authError } = await supabase.auth.getUser(
+      authHeader.replace('Bearer ', '')
+    );
     
     if (authError || !user) {
-      throw new Error('Invalid authentication');
+      console.error('Auth error:', authError);
+      return new Response(
+        JSON.stringify({ error: 'Invalid authentication' }),
+        { 
+          status: 401, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
     }
 
-    // Save avatar data to database
-    const { data: avatarData, error: dbError } = await supabase
+    const { photoUrl } = await req.json();
+    console.log('Processing upload for user:', user.id, 'photoUrl:', photoUrl);
+
+    if (!photoUrl) {
+      return new Response(
+        JSON.stringify({ error: 'Missing photoUrl parameter' }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
+    }
+
+    // Insert into talking_avatars table with simplified data
+    const avatarData = {
+      user_id: user.id,
+      original_image_url: photoUrl,
+      openai_avatar_id: photoUrl, // Use the URL as the ID for simplicity
+      status: 'ready',
+      metadata: {
+        uploaded_at: new Date().toISOString(),
+        file_url: photoUrl
+      }
+    };
+
+    console.log('Inserting avatar data:', avatarData);
+
+    const { data: insertData, error: insertError } = await supabase
       .from('talking_avatars')
-      .insert({
-        user_id: user.id,
-        original_image_url: photoUrl,
-        heygen_talking_photo_id: results.heygen_talking_photo_id,
-        openai_avatar_id: results.openai_avatar_id,
-        runway_avatar_id: results.runway_avatar_id,
-        status: results.heygen_talking_photo_id || results.openai_avatar_id ? 'ready' : 'error',
-        error_message: results.errors.length > 0 ? results.errors.join('; ') : null,
-        metadata: { upload_timestamp: new Date().toISOString(), providers_attempted: Object.keys(results).filter(k => k !== 'errors') }
-      })
+      .insert(avatarData)
       .select()
       .single();
 
-    if (dbError) {
-      console.error('Database error:', dbError);
-      throw new Error(`Database error: ${dbError.message}`);
+    if (insertError) {
+      console.error('Database insert error:', insertError);
+      return new Response(
+        JSON.stringify({ error: `Database error: ${insertError.message}` }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
     }
 
+    console.log('Avatar uploaded successfully:', insertData);
+
     return new Response(
-      JSON.stringify({
-        success: true,
-        avatar: avatarData,
-        providers_available: providers,
-        ...results
+      JSON.stringify({ 
+        success: true, 
+        avatar_id: insertData.id,
+        openai_avatar_id: photoUrl,
+        status: 'ready'
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
     );
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('Upload avatar error:', error);
     return new Response(
-      JSON.stringify({ 
-        success: false, 
-        error: error.message,
-        code: 'UPLOAD_AVATAR_ERROR'
-      }),
+      JSON.stringify({ error: `Server error: ${error.message}` }),
       { 
-        status: 200,
+        status: 500, 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
     );

@@ -52,11 +52,15 @@ export type Database = {
           created_at: string
           error_message: string | null
           heygen_talking_photo_id: string | null
+          heygen_video_id: string | null
           id: string
           kling_avatar_id: string | null
           krea_avatar_id: string | null
           metadata: Json | null
+          openai_avatar_id: string | null
+          openai_video_id: string | null
           original_image_url: string
+          runway_avatar_id: string | null
           runwayml_avatar_id: string | null
           status: string
           updated_at: string
@@ -66,11 +70,15 @@ export type Database = {
           created_at?: string
           error_message?: string | null
           heygen_talking_photo_id?: string | null
+          heygen_video_id?: string | null
           id?: string
           kling_avatar_id?: string | null
           krea_avatar_id?: string | null
           metadata?: Json | null
+          openai_avatar_id?: string | null
+          openai_video_id?: string | null
           original_image_url: string
+          runway_avatar_id?: string | null
           runwayml_avatar_id?: string | null
           status?: string
           updated_at?: string
@@ -80,11 +88,15 @@ export type Database = {
           created_at?: string
           error_message?: string | null
           heygen_talking_photo_id?: string | null
+          heygen_video_id?: string | null
           id?: string
           kling_avatar_id?: string | null
           krea_avatar_id?: string | null
           metadata?: Json | null
+          openai_avatar_id?: string | null
+          openai_video_id?: string | null
           original_image_url?: string
+          runway_avatar_id?: string | null
           runwayml_avatar_id?: string | null
           status?: string
           updated_at?: string
