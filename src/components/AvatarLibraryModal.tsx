@@ -9,16 +9,26 @@ import { Search, Filter, User, Sparkles, Crown, Loader2, Star } from "lucide-rea
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+// Import avatar assets
+import avatarBusinessExecutive from "@/assets/avatar-business-executive.jpg";
+import avatarCreativeArtist from "@/assets/avatar-creative-artist.jpg";
+import avatarTechEntrepreneur from "@/assets/avatar-tech-entrepreneur.jpg";
+import avatarFashionModel from "@/assets/avatar-fashion-model.jpg";
+import avatarHealthcareProfessional from "@/assets/avatar-healthcare-professional.jpg";
+import avatarFitnessCoach from "@/assets/avatar-fitness-coach.jpg";
+import avatarAwardPhotographer from "@/assets/avatar-award-photographer.jpg";
+import avatarBrandConsultant from "@/assets/avatar-brand-consultant.jpg";
+
 // Built-in avatar library data
 const defaultAvatars: AvatarLibraryItem[] = [
-  { id: "default-1", name: "Business Executive", category: "Professional", premium: false, url: "/src/assets/avatar-business-executive.jpg", rating: 9.2, tags: ["Professional", "Business", "Executive"] },
-  { id: "default-2", name: "Creative Artist", category: "Creative", premium: false, url: "/src/assets/avatar-creative-artist.jpg", rating: 9.1, tags: ["Creative", "Artistic", "Bohemian"] },
-  { id: "default-3", name: "Tech Entrepreneur", category: "Professional", premium: true, url: "/src/assets/avatar-tech-entrepreneur.jpg", rating: 9.3, tags: ["Professional", "Tech", "Innovation"] },
-  { id: "default-4", name: "Fashion Model", category: "Creative", premium: true, url: "/src/assets/avatar-fashion-model.jpg", rating: 9.2, tags: ["Fashion", "Luxury", "Editorial"] },
-  { id: "default-5", name: "Healthcare Professional", category: "Professional", premium: false, url: "/src/assets/avatar-healthcare-professional.jpg", rating: 8.9, tags: ["Professional", "Healthcare", "Medical"] },
-  { id: "default-6", name: "Fitness Coach", category: "Lifestyle", premium: false, url: "/src/assets/avatar-fitness-coach.jpg", rating: 8.8, tags: ["Fitness", "Health", "Active"] },
-  { id: "default-7", name: "Award Photographer", category: "Creative", premium: true, url: "/src/assets/avatar-award-photographer.jpg", rating: 9.4, tags: ["Creative", "Photography", "Artistic"] },
-  { id: "default-8", name: "Brand Consultant", category: "Professional", premium: true, url: "/src/assets/avatar-brand-consultant.jpg", rating: 9.0, tags: ["Professional", "Brand", "Strategy"] },
+  { id: "default-1", name: "Business Executive", category: "Professional", premium: false, url: avatarBusinessExecutive, rating: 9.2, tags: ["Professional", "Business", "Executive"] },
+  { id: "default-2", name: "Creative Artist", category: "Creative", premium: false, url: avatarCreativeArtist, rating: 9.1, tags: ["Creative", "Artistic", "Bohemian"] },
+  { id: "default-3", name: "Tech Entrepreneur", category: "Professional", premium: true, url: avatarTechEntrepreneur, rating: 9.3, tags: ["Professional", "Tech", "Innovation"] },
+  { id: "default-4", name: "Fashion Model", category: "Creative", premium: true, url: avatarFashionModel, rating: 9.2, tags: ["Fashion", "Luxury", "Editorial"] },
+  { id: "default-5", name: "Healthcare Professional", category: "Professional", premium: false, url: avatarHealthcareProfessional, rating: 8.9, tags: ["Professional", "Healthcare", "Medical"] },
+  { id: "default-6", name: "Fitness Coach", category: "Lifestyle", premium: false, url: avatarFitnessCoach, rating: 8.8, tags: ["Fitness", "Health", "Active"] },
+  { id: "default-7", name: "Award Photographer", category: "Creative", premium: true, url: avatarAwardPhotographer, rating: 9.4, tags: ["Creative", "Photography", "Artistic"] },
+  { id: "default-8", name: "Brand Consultant", category: "Professional", premium: true, url: avatarBrandConsultant, rating: 9.0, tags: ["Professional", "Brand", "Strategy"] },
 ];
 
 interface AvatarLibraryItem {
