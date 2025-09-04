@@ -266,7 +266,7 @@ export const useTalkingAvatar = (
       if (error) throw error;
 
       if (data?.success) {
-        setFinalVideo(data.videoUrl);
+        setFinalVideo(data.finalVideoUrl || data.videoUrl);
         setJob(prev => prev ? {
           ...prev,
           progress: 100,

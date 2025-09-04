@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -24,6 +25,57 @@ serve(async (req) => {
 
     console.log('Syncing audio and video with HeyGen:', { audioUrl, videoUrl, engine, trimSettings });
 
+    // Prepare Supabase client for optional audio upload (data URLs)
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || Deno.env.get('SUPABASE_ANON_KEY') || '';
+    const supabase = (supabaseUrl && supabaseKey) ? createClient(supabaseUrl, supabaseKey) : null;
+
+    // Normalize audio URL: if it's a data URL, upload to a public bucket and use its public URL
+    let resolvedAudioUrl: string = audioUrl;
+    try {
+      if (typeof audioUrl === 'string' && audioUrl.startsWith('data:')) {
+        if (!supabase) throw new Error('Supabase client not configured for audio upload');
+
+        const [meta, base64] = audioUrl.split(',');
+        const match = /data:(.*?);base64/.exec(meta || '');
+        const contentType = match?.[1] || 'audio/mpeg';
+        const binary = atob(base64 || '');
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        const blob = new Blob([bytes], { type: contentType });
+
+        const bucket = 'virtura-media';
+        // Ensure bucket exists and is public
+        try {
+          const { data: gotBucket, error: getErr } = await supabase.storage.getBucket(bucket);
+          if (getErr || !gotBucket) {
+            await supabase.storage.createBucket(bucket, { public: true });
+          }
+        } catch (_) {
+          // Attempt to create bucket if getBucket is not available or failed
+          try { await supabase.storage.createBucket(bucket, { public: true }); } catch { /* ignore */ }
+        }
+
+        const ext = contentType.includes('wav') ? 'wav' : contentType.includes('ogg') ? 'ogg' : 'mp3';
+        const path = `assets/output/audio/sync/${Date.now()}.${ext}`;
+        console.log('Uploading audio data URL to Supabase storage at', path);
+        const { data: uploadData, error: uploadErr } = await supabase.storage.from(bucket).upload(path, blob, {
+          contentType,
+          upsert: true,
+        });
+        if (uploadErr) {
+          console.error('Supabase audio upload error:', uploadErr.message);
+          throw uploadErr;
+        }
+        const { data: pub } = supabase.storage.from(bucket).getPublicUrl(uploadData!.path);
+        resolvedAudioUrl = pub.publicUrl;
+        console.log('Audio uploaded. Public URL:', resolvedAudioUrl);
+      }
+    } catch (e) {
+      console.error('Audio normalization/upload failed:', e);
+      // proceed with original audioUrl; HeyGen may reject, but we log the reason
+    }
+
     // Decide path: if videoUrl is a real video, use translate; otherwise treat it as an image and generate from talking_photo + audio
     const isVideoFile = typeof videoUrl === 'string' && /\.(mp4|mov|webm|mkv)(\?|$)/i.test(videoUrl);
 
@@ -40,7 +92,7 @@ serve(async (req) => {
         body: JSON.stringify({
           video_url: videoUrl,
           target_language: 'en',
-          audio_url: audioUrl,
+          audio_url: resolvedAudioUrl,
           translate_audio: false
         }),
       });
@@ -134,7 +186,7 @@ serve(async (req) => {
             },
             voice: {
               type: 'audio',
-              audio_url: audioUrl
+              audio_url: resolvedAudioUrl
             },
             background: { type: 'color', value: '#000000' }
           }]
@@ -155,8 +207,9 @@ serve(async (req) => {
       JSON.stringify({ 
         success: true,
         finalVideoUrl: data?.data?.video_url || `/demo/heygen-synced-${Date.now()}.mp4`,
+        videoUrl: data?.data?.video_url || `/demo/heygen-synced-${Date.now()}.mp4`,
         video_id: data?.data?.video_id,
-        audioUrl: audioUrl,
+        audioUrl: resolvedAudioUrl,
         rawVideoUrl: videoUrl,
         engine: 'heygen',
         status: 'completed',
