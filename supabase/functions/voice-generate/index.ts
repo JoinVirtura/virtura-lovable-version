@@ -38,7 +38,13 @@ serve(async (req) => {
       'nPczCjzI2devNBz1zQrb', // Brian
       'onwK4e9ZLuTAKqWW03F9', // Daniel
       'pFZP5JQG7iQjIQuC4Bku', // Lily
-      'pqHfZKP75CvOlQylNhV4'  // Bill
+      'pqHfZKP75CvOlQylNhV4', // Bill
+      '21m00Tcm4TlvDq8ikWAM', // Rachel (Warm)
+      'AZnzlk1XvdvUeBnXmlld', // Domi
+      'ErXwobaYiN019PkySvjV', // Antoni
+      'MF3mGyEYCl7XYWbV9V6O', // Elli
+      'jsCqWAovK2LkecY7zXl4', // Freya (Clear)
+      'pNInz6obpgDQGcFmaJgB', // Adam
     ];
 
     const selectedVoiceId = voiceId && validVoiceIds.includes(voiceId) ? voiceId : '9BWtsMINqrJLrRacOk9x';
