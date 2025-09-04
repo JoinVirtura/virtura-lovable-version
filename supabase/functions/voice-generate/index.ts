@@ -1,6 +1,6 @@
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.55.0";
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -40,36 +40,15 @@ serve(async (req) => {
       };
     };
 
-    const elevenlabsKey = Deno.env.get('ELEVENLABS_API_KEY');
-    if (!elevenlabsKey) {
-      throw new Error('ElevenLabs API key not configured');
-    }
+    const elevenlabsKey = Deno.env.get('ELEVENLABS_API_KEY') || '';
+    const openaiKey = Deno.env.get('OPENAI_API_KEY') || '';
+    console.log('voice-generate: providers', { hasElevenLabs: !!elevenlabsKey, hasOpenAI: !!openaiKey });
 
-    console.log('Generating voice with ElevenLabs:', { len: normalizedScript.length, voiceId: selectedVoiceId, model });
+    const sanitize = sanitizeVoiceSettings(voiceSettings);
 
-    // Primary request
-    const primaryResponse = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${selectedVoiceId}`, {
-      method: 'POST',
-      headers: {
-        'Accept': 'audio/mpeg',
-        'Content-Type': 'application/json',
-        'xi-api-key': elevenlabsKey,
-      },
-      body: JSON.stringify({
-        text: normalizedScript,
-        model_id: model || 'eleven_multilingual_v2',
-        voice_settings: sanitizeVoiceSettings(voiceSettings),
-      }),
-    });
-
-    let finalResponse = primaryResponse;
-
-    if (!primaryResponse.ok) {
-      const primaryText = await primaryResponse.text();
-      console.warn('ElevenLabs primary model failed:', primaryText);
-
-      // Fallback to Turbo
-      const fallbackResponse = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${selectedVoiceId}`, {
+    const generateWithElevenLabs = async (modelId: string): Promise<Uint8Array> => {
+      console.log(`Trying ElevenLabs TTS with model ${modelId}...`);
+      const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${selectedVoiceId}`, {
         method: 'POST',
         headers: {
           'Accept': 'audio/mpeg',
@@ -78,25 +57,77 @@ serve(async (req) => {
         },
         body: JSON.stringify({
           text: normalizedScript,
-          model_id: 'eleven_turbo_v2_5',
-          voice_settings: sanitizeVoiceSettings(voiceSettings),
+          model_id: model || modelId,
+          voice_settings: sanitize,
         }),
       });
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error(`ElevenLabs API error: ${res.status} ${res.statusText}: ${txt}`);
+      }
+      const buf = await res.arrayBuffer();
+      return new Uint8Array(buf);
+    };
 
-      finalResponse = fallbackResponse;
+    const generateWithOpenAI = async (): Promise<Uint8Array> => {
+      console.log('Trying OpenAI TTS (tts-1)...');
+      const res = await fetch('https://api.openai.com/v1/audio/speech', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${openaiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'tts-1',
+          input: normalizedScript,
+          voice: 'alloy',
+          response_format: 'mp3',
+        }),
+      });
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error(`OpenAI TTS error: ${res.status} ${res.statusText}: ${txt}`);
+      }
+      const buf = await res.arrayBuffer();
+      return new Uint8Array(buf);
+    };
 
-      if (!fallbackResponse.ok) {
-        const fallbackText = await fallbackResponse.text();
-        console.error('ElevenLabs fallback model failed:', fallbackText);
-        throw new Error(`ElevenLabs API error: ${fallbackResponse.status} ${fallbackResponse.statusText}: ${fallbackText}`);
+    let bytes: Uint8Array | null = null;
+    let providerUsed = '';
+
+    if (elevenlabsKey) {
+      try {
+        bytes = await generateWithElevenLabs('eleven_multilingual_v2');
+        providerUsed = 'elevenlabs';
+      } catch (e) {
+        console.warn('ElevenLabs primary failed:', e);
+        try {
+          bytes = await generateWithElevenLabs('eleven_turbo_v2_5');
+          providerUsed = 'elevenlabs-turbo';
+        } catch (e2) {
+          console.warn('ElevenLabs turbo failed:', e2);
+        }
       }
     }
 
-    const audioBuffer = await finalResponse.arrayBuffer();
-    // Convert to Uint8Array once
-    const bytes = new Uint8Array(audioBuffer);
+    if (!bytes && openaiKey) {
+      try {
+        bytes = await generateWithOpenAI();
+        providerUsed = 'openai-tts-1';
+      } catch (e) {
+        console.error('OpenAI TTS fallback failed:', e);
+      }
+    }
 
-    // Also prepare a base64 data URL for immediate playback (small scripts only)
+    if (!bytes) {
+      console.error('No TTS provider succeeded.');
+      return new Response(
+        JSON.stringify({ success: false, error: elevenlabsKey ? 'All TTS providers failed' : 'ELEVENLABS_API_KEY missing and OpenAI fallback failed' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      );
+    }
+
+    // Prepare base64 for inline playback
     const chunkSize = 0x8000; // 32KB chunks
     let binary = '';
     for (let i = 0; i < bytes.length; i += chunkSize) {
@@ -105,7 +136,7 @@ serve(async (req) => {
     }
     const base64Audio = btoa(binary);
 
-    // Upload MP3 to Supabase Storage for a stable URL consumers can use downstream
+    // Upload MP3 to Supabase Storage for a stable URL
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
@@ -125,7 +156,7 @@ serve(async (req) => {
         } else {
           const { data: pub } = supabase.storage.from('virtura-media').getPublicUrl(fileName);
           publicUrl = pub?.publicUrl || null;
-          console.log('Uploaded audio to storage at:', publicUrl);
+          console.log('Uploaded audio to storage at:', publicUrl, 'provider:', providerUsed);
         }
       } catch (e) {
         console.warn('Error uploading audio to storage:', e);
@@ -137,21 +168,20 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         success: true,
+        provider: providerUsed,
         audioData: `data:audio/mpeg;base64,${base64Audio}`,
         audioUrl: publicUrl,
         duration: 'estimated_duration'
       }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
     console.error('Voice generation error:', error);
     return new Response(
-      JSON.stringify({ success: false, error: error.message }),
+      JSON.stringify({ success: false, error: (error as Error).message, code: 'TTS_ERROR' }),
       { 
-        status: 500,
+        status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
     );
