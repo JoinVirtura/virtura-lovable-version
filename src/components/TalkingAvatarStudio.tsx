@@ -69,7 +69,7 @@ export const TalkingAvatarStudio = () => {
       case 1: return !!(uploadedFile || avatarData);
       case 2: return !!generatedAudio;
       case 3: return true; // Style step always allows proceeding
-      case 4: return !!generatedVideo;
+      case 4: return !!(avatarData && generatedAudio && videoPrompt.trim()); // Can proceed after entering prompt
       case 5: return true; // Final step
       default: return false;
     }
