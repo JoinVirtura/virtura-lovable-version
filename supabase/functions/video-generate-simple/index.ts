@@ -45,7 +45,7 @@ serve(async (req) => {
       .select('*')
       .eq('id', avatarId)
       .eq('user_id', user.id)
-      .single();
+      .maybeSingle();
 
     if (avatarError || !avatarData) {
       throw new Error('Avatar not found or access denied');
@@ -57,17 +57,16 @@ serve(async (req) => {
       status: avatarData.status
     });
 
-    // Get API keys
     const heygenKey = Deno.env.get('HEYGEN_API_KEY');
 
-    let videoResult = null;
+    let videoResult: any = null;
 
     // Try HeyGen first if available
     if (avatarData.heygen_talking_photo_id && heygenKey) {
       try {
         console.log('Generating video with HeyGen...');
         
-        const payload = {
+        const payload: any = {
           test: false,
           caption: false,
           dimension: { width: 1920, height: 1080 },
@@ -110,67 +109,58 @@ serve(async (req) => {
 
         if (response.ok) {
           const data = JSON.parse(responseText);
+
+          // Poll status until success or timeout
+          const videoId = data.data?.video_id;
+          let finalUrl = data.data?.video_url || null;
+          if (videoId && !finalUrl) {
+            const statusEndpoint = `https://api.heygen.com/v1/video/status?video_id=${videoId}`;
+            const start = Date.now();
+            while (!finalUrl && Date.now() - start < 120000) { // up to 120s
+              await new Promise(r => setTimeout(r, 3000));
+              const statusResp = await fetch(statusEndpoint, {
+                headers: { 'Authorization': `Bearer ${heygenKey}` }
+              });
+              const statusText = await statusResp.text();
+              console.log('HeyGen status:', statusResp.status, statusText);
+              if (statusResp.ok) {
+                const statusData = JSON.parse(statusText);
+                if (statusData.data?.status === 'success' && statusData.data?.video_url) {
+                  finalUrl = statusData.data.video_url;
+                } else if (statusData.data?.status === 'failed') {
+                  throw new Error(statusData.data?.error || 'HeyGen video failed');
+                }
+              }
+            }
+          }
+
           videoResult = {
-            videoUrl: data.data?.video_url || `demo-heygen-${Date.now()}.mp4`,
+            videoUrl: finalUrl || data.data?.video_url,
             provider: 'heygen',
-            video_id: data.data?.video_id,
+            video_id: videoId,
             duration: 30,
             status: 'completed'
           };
-          console.log('HeyGen video generation successful:', videoResult);
+          if (!videoResult.videoUrl) {
+            throw new Error('HeyGen did not return a video URL in time');
+          }
         } else {
           const errorMsg = `HeyGen API error: ${response.status} ${responseText}`;
           console.error(errorMsg);
           throw new Error(errorMsg);
         }
       } catch (error) {
-        console.error('HeyGen generation failed:', error.message);
+        console.error('HeyGen generation failed:', (error as any).message);
         throw error;
       }
     } else {
-      // Generate actual talking avatar video using alternative method
-      console.log('HeyGen not available, generating avatar video with RunwayML/alternative...');
-      
-      try {
-        // Create a proper talking avatar video using the avatar image and audio
-        const videoGenerationPayload = {
-          image_url: avatarData.original_image_url,
-          audio_url: audioUrl,
-          prompt: prompt || 'Generate a photorealistic talking avatar video with natural lip sync and professional presentation style',
-          style: 'photorealistic',
-          duration: audioUrl ? 'auto' : 30,
-          resolution: '1920x1080',
-          format: 'mp4'
-        };
-
-        // Call video generation service (this could be D-ID, Runway, or other services)
-        console.log('Generating video with payload:', videoGenerationPayload);
-        
-        // For now, create a temporary solution that shows the avatar image
-        // In production, this would call an actual video generation API
-        videoResult = {
-          videoUrl: avatarData.original_image_url,
-          provider: 'avatar-image',
-          video_id: `avatar_${Date.now()}`,
-          duration: 30,
-          status: 'completed',
-          note: 'Avatar image ready - Professional video generation requires HeyGen API key. Please add HeyGen API key for full talking video functionality.'
-        };
-        
-      } catch (error) {
-        console.error('Alternative video generation failed:', error);
-        throw new Error('Video generation failed - HeyGen API key required for talking videos');
-      }
+      console.log('HeyGen not available - cannot generate talking video');
+      throw new Error('HeyGen avatar not ready. Please re-upload image to create a talking photo.');
     }
 
     return new Response(
-      JSON.stringify({
-        success: true,
-        ...videoResult
-      }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
+      JSON.stringify({ success: true, ...videoResult }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error: any) {

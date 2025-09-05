@@ -130,8 +130,49 @@ serve(async (req) => {
           heygenTalkingPhotoId = heygenData.data?.talking_photo_id || heygenData.talking_photo_id;
           console.log('HeyGen upload successful, talking_photo_id:', heygenTalkingPhotoId);
         } else {
-          heygenError = `HeyGen upload failed: ${heygenResponse.status} ${heygenResponseText}`;
-          console.error(heygenError);
+          // If limit exceeded, try remote cleanup and retry once
+          if (heygenResponse.status === 400 && heygenResponseText.includes('401028')) {
+            console.warn('HeyGen limit reached. Performing remote cleanup...');
+            try {
+              const listResp = await fetch('https://api.heygen.com/v2/avatars', {
+                headers: { 'Authorization': `Bearer ${heygenKey}` }
+              });
+              const listText = await listResp.text();
+              console.log('List avatars status:', listResp.status);
+              console.log('List avatars resp:', listText);
+              if (listResp.ok) {
+                const listData = JSON.parse(listText);
+                const toDelete = (listData.data?.avatars || []).filter((a: any) => a.avatar_type === 'talking_photo').slice(0, 3);
+                for (const a of toDelete) {
+                  try {
+                    const del = await fetch(`https://api.heygen.com/v1/photo_avatar/${a.avatar_id}`, { method: 'DELETE', headers: { 'x-api-key': heygenKey } });
+                    console.log('Deleted remote avatar', a.avatar_id, 'status', del.status);
+                  } catch (e) {
+                    console.log('Remote delete failed:', e);
+                  }
+                }
+                // retry upload once
+                const retry = await fetch('https://upload.heygen.com/v1/talking_photo', {
+                  method: 'POST',
+                  headers: { 'x-api-key': heygenKey, 'Content-Type': imageBlob.type || 'image/jpeg' },
+                  body: imageBlob,
+                });
+                const retryText = await retry.text();
+                console.log('Retry upload status:', retry.status, retryText);
+                if (retry.ok) {
+                  const retryData = JSON.parse(retryText);
+                  heygenTalkingPhotoId = retryData.data?.talking_photo_id || retryData.talking_photo_id;
+                } else {
+                  heygenError = `HeyGen retry failed: ${retry.status} ${retryText}`;
+                }
+              }
+            } catch (cleanupErr) {
+              console.error('Remote cleanup error:', cleanupErr);
+            }
+          } else {
+            heygenError = `HeyGen upload failed: ${heygenResponse.status} ${heygenResponseText}`;
+            console.error(heygenError);
+          }
         }
       } catch (error) {
         heygenError = `HeyGen upload error: ${error.message}`;
