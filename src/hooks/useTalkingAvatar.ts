@@ -64,6 +64,14 @@ export const useTalkingAvatar = (
     setIsProcessing(true);
 
     try {
+      // First cleanup old HeyGen avatars
+      try {
+        console.log('Cleaning up old HeyGen avatars...');
+        await supabase.functions.invoke('cleanup-heygen-avatars');
+      } catch (cleanupError) {
+        console.log('Cleanup warning:', cleanupError);
+      }
+
       // Upload to Supabase storage
       const fileName = `${Date.now()}-${file.name}`;
       const filePath = `${crypto.randomUUID()}/${fileName}`;
@@ -92,13 +100,13 @@ export const useTalkingAvatar = (
         // Show appropriate message based on HeyGen availability
         if (data.heygen_available) {
           toast({
-            title: "Avatar Ready",
-            description: `${file.name} uploaded successfully with HeyGen support - ready for high-quality video generation!`,
+            title: "Avatar Ready for Video",
+            description: `${file.name} uploaded successfully with HeyGen support - ready for photorealistic video generation!`,
           });
         } else {
           toast({
             title: "Avatar Uploaded",
-            description: `${file.name} uploaded. ${data.heygen_error ? 'HeyGen unavailable - using fallback mode.' : 'Basic functionality available.'}`,
+            description: `${file.name} uploaded. HeyGen integration in progress... ${data.heygen_error || 'Processing avatar...'}`,
             variant: "default",
           });
         }

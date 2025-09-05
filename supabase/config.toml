@@ -32,3 +32,9 @@ verify_jwt = true
 
 [functions.video-generate-multi]
 verify_jwt = true
+
+[functions.video-generate-simple]
+verify_jwt = true
+
+[functions.cleanup-heygen-avatars]
+verify_jwt = true
