@@ -85,10 +85,10 @@ serve(async (req) => {
         console.log('Image fetched, size:', imageBlob.size, 'type:', imageBlob.type);
 
         // Upload to HeyGen talking photo API
-        const heygenResponse = await fetch('https://api.heygen.com/v1/talking_photo', {
+        const heygenResponse = await fetch('https://upload.heygen.com/v1/talking_photo', {
           method: 'POST',
           headers: {
-            'X-API-KEY': heygenKey,
+            'x-api-key': heygenKey,
             'Content-Type': imageBlob.type || 'image/jpeg',
           },
           body: imageBlob,
@@ -120,7 +120,7 @@ serve(async (req) => {
       original_image_url: photoUrl,
       heygen_talking_photo_id: heygenTalkingPhotoId,
       openai_avatar_id: photoUrl, // Use URL as fallback ID for OpenAI
-      status: heygenTalkingPhotoId ? 'ready' : 'partial',
+      status: heygenTalkingPhotoId ? 'ready' : 'failed',
       error_message: heygenError,
       metadata: {
         uploaded_at: new Date().toISOString(),
