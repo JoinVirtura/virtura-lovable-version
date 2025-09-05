@@ -75,6 +75,33 @@ serve(async (req) => {
       try {
         console.log('Uploading to HeyGen...');
         
+        // First, try to clean up old avatars to stay within limits
+        try {
+          const { data: existingAvatars } = await supabase
+            .from('talking_avatars')
+            .select('heygen_talking_photo_id')
+            .eq('user_id', user.id)
+            .not('heygen_talking_photo_id', 'is', null)
+            .order('created_at', { ascending: true })
+            .limit(2); // Keep only newest 2, delete older ones
+
+          if (existingAvatars && existingAvatars.length > 0) {
+            for (const avatar of existingAvatars) {
+              try {
+                await fetch(`https://api.heygen.com/v1/photo_avatar/${avatar.heygen_talking_photo_id}`, {
+                  method: 'DELETE',
+                  headers: { 'x-api-key': heygenKey }
+                });
+                console.log('Deleted old HeyGen avatar:', avatar.heygen_talking_photo_id);
+              } catch (deleteError) {
+                console.log('Failed to delete old avatar:', deleteError);
+              }
+            }
+          }
+        } catch (cleanupError) {
+          console.log('Cleanup warning:', cleanupError);
+        }
+        
         // Fetch the image from the URL
         const imageResponse = await fetch(photoUrl);
         if (!imageResponse.ok) {
