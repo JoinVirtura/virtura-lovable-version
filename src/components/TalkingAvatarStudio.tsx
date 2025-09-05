@@ -26,7 +26,9 @@ import {
   Clock,
   XCircle,
   Camera,
-  Library
+  Library,
+  AlertCircle,
+  ExternalLink
 } from 'lucide-react';
 import { useTalkingAvatar } from '@/hooks/useTalkingAvatar';
 import { initialVoice, initialStyle, initialExports } from '@/features/talking-avatar/store';
@@ -131,6 +133,34 @@ export const TalkingAvatarStudio = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                {!avatarData?.heygen_talking_photo_id && (
+                  <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0 w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                        <AlertCircle className="w-4 h-4 text-yellow-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-yellow-800 mb-1">
+                          HeyGen API Required for Talking Videos
+                        </h4>
+                        <p className="text-sm text-yellow-700 mb-3">
+                          For photorealistic talking avatar videos with perfect lip sync, you need a HeyGen API key. 
+                          Without it, you'll get static avatar images only.
+                        </p>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => window.open('https://app.heygen.com/api', '_blank')}
+                          className="text-yellow-700 border-yellow-300 hover:bg-yellow-100"
+                        >
+                          <ExternalLink className="h-3 w-3 mr-1" />
+                          Get HeyGen API Key
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <Button
                     variant="outline"
