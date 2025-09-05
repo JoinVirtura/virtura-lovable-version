@@ -13,20 +13,26 @@ serve(async (req) => {
   }
 
   try {
+    console.log('=== VIDEO GENERATION FUNCTION START ===');
+    
     const { avatarId, prompt, audioUrl } = await req.json();
+    console.log('Request params:', { avatarId, prompt: !!prompt, audioUrl: !!audioUrl });
     
     if (!avatarId || !prompt) {
       throw new Error('Avatar ID and prompt are required');
     }
 
-    console.log('Simple video generation request:', { avatarId, prompt, hasAudio: !!audioUrl });
-
-    // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Get user from auth header
+    const heygenKey = Deno.env.get('HEYGEN_API_KEY');
+    console.log('HeyGen API Key available:', !!heygenKey);
+    
+    if (!heygenKey) {
+      throw new Error('HeyGen API key not configured in backend');
+    }
+
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       throw new Error('No authorization header');
@@ -39,132 +45,141 @@ serve(async (req) => {
       throw new Error('Invalid authentication');
     }
 
-    // Get avatar data from database
+    // Get avatar data
     const { data: avatarData, error: avatarError } = await supabase
       .from('talking_avatars')
       .select('*')
       .eq('id', avatarId)
       .eq('user_id', user.id)
-      .maybeSingle();
+      .single();
 
     if (avatarError || !avatarData) {
+      console.error('Avatar not found:', avatarError);
       throw new Error('Avatar not found or access denied');
     }
 
-    console.log('Avatar data found:', {
+    console.log('Avatar data:', {
       id: avatarData.id,
-      hasHeyGen: !!avatarData.heygen_talking_photo_id,
+      heygen_talking_photo_id: avatarData.heygen_talking_photo_id,
       status: avatarData.status
     });
 
-    const heygenKey = Deno.env.get('HEYGEN_API_KEY');
-
-    let videoResult: any = null;
-
-    // Try HeyGen first if available
-    if (avatarData.heygen_talking_photo_id && heygenKey) {
-      try {
-        console.log('Generating video with HeyGen...');
-        
-        const payload: any = {
-          test: false,
-          caption: false,
-          dimension: { width: 1920, height: 1080 },
-          video_inputs: [{
-            character: {
-              type: "talking_photo",
-              talking_photo_id: avatarData.heygen_talking_photo_id,
-              scale: 1.0,
-              talking_photo_style: "closeup_body"
-            },
-            voice: audioUrl ? {
-              type: "audio",
-              audio_url: audioUrl
-            } : {
-              type: "text",
-              input_text: prompt,
-              voice_id: "1bd001e7e50f421d891986aad5158bc8"
-            },
-            background: {
-              type: "color",
-              value: "#000000"
-            }
-          }]
-        };
-
-        console.log('HeyGen payload prepared:', JSON.stringify(payload, null, 2));
-
-        const response = await fetch('https://api.heygen.com/v2/video/generate', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${heygenKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-        });
-
-        const responseText = await response.text();
-        console.log('HeyGen response status:', response.status);
-        console.log('HeyGen response:', responseText);
-
-        if (response.ok) {
-          const data = JSON.parse(responseText);
-
-          // Poll status until success or timeout
-          const videoId = data.data?.video_id;
-          let finalUrl = data.data?.video_url || null;
-          if (videoId && !finalUrl) {
-            const statusEndpoint = `https://api.heygen.com/v1/video/status?video_id=${videoId}`;
-            const start = Date.now();
-            while (!finalUrl && Date.now() - start < 120000) { // up to 120s
-              await new Promise(r => setTimeout(r, 3000));
-              const statusResp = await fetch(statusEndpoint, {
-                headers: { 'Authorization': `Bearer ${heygenKey}` }
-              });
-              const statusText = await statusResp.text();
-              console.log('HeyGen status:', statusResp.status, statusText);
-              if (statusResp.ok) {
-                const statusData = JSON.parse(statusText);
-                if (statusData.data?.status === 'success' && statusData.data?.video_url) {
-                  finalUrl = statusData.data.video_url;
-                } else if (statusData.data?.status === 'failed') {
-                  throw new Error(statusData.data?.error || 'HeyGen video failed');
-                }
-              }
-            }
-          }
-
-          videoResult = {
-            videoUrl: finalUrl || data.data?.video_url,
-            provider: 'heygen',
-            video_id: videoId,
-            duration: 30,
-            status: 'completed'
-          };
-          if (!videoResult.videoUrl) {
-            throw new Error('HeyGen did not return a video URL in time');
-          }
-        } else {
-          const errorMsg = `HeyGen API error: ${response.status} ${responseText}`;
-          console.error(errorMsg);
-          throw new Error(errorMsg);
-        }
-      } catch (error) {
-        console.error('HeyGen generation failed:', (error as any).message);
-        throw error;
-      }
-    } else {
-      console.log('HeyGen not available - cannot generate talking video');
-      throw new Error('HeyGen avatar not ready. Please re-upload image to create a talking photo.');
+    if (!avatarData.heygen_talking_photo_id) {
+      throw new Error('HeyGen talking photo not ready. Please re-upload your avatar image.');
     }
 
+    console.log('Generating video with HeyGen...');
+    
+    const payload = {
+      test: false,
+      caption: false,
+      dimension: { width: 1920, height: 1080 },
+      video_inputs: [{
+        character: {
+          type: "talking_photo",
+          talking_photo_id: avatarData.heygen_talking_photo_id,
+          scale: 1.0,
+          talking_photo_style: "closeup_body"
+        },
+        voice: audioUrl ? {
+          type: "audio",
+          audio_url: audioUrl
+        } : {
+          type: "text",
+          input_text: prompt,
+          voice_id: "1bd001e7e50f421d891986aad5158bc8"
+        },
+        background: {
+          type: "color",
+          value: "#000000"
+        }
+      }]
+    };
+
+    console.log('Sending video generation request to HeyGen...');
+    const response = await fetch('https://api.heygen.com/v2/video/generate', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${heygenKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const responseText = await response.text();
+    console.log('HeyGen video response status:', response.status);
+    console.log('HeyGen video response:', responseText);
+
+    if (!response.ok) {
+      throw new Error(`HeyGen video generation failed: ${response.status} ${responseText}`);
+    }
+
+    const data = JSON.parse(responseText);
+    const videoId = data.data?.video_id;
+    
+    if (!videoId) {
+      throw new Error('No video ID returned from HeyGen');
+    }
+
+    console.log('Video generation started, ID:', videoId);
+    console.log('Polling for video completion...');
+
+    // Poll for completion
+    let finalUrl = null;
+    const maxWaitTime = 180000; // 3 minutes
+    const pollInterval = 5000; // 5 seconds
+    const startTime = Date.now();
+
+    while (!finalUrl && (Date.now() - startTime) < maxWaitTime) {
+      await new Promise(resolve => setTimeout(resolve, pollInterval));
+      
+      try {
+        const statusResponse = await fetch(`https://api.heygen.com/v1/video/status?video_id=${videoId}`, {
+          headers: { 'Authorization': `Bearer ${heygenKey}` }
+        });
+
+        const statusText = await statusResponse.text();
+        console.log('Status check:', statusResponse.status, statusText);
+
+        if (statusResponse.ok) {
+          const statusData = JSON.parse(statusText);
+          console.log('Video status:', statusData.data?.status);
+          
+          if (statusData.data?.status === 'success' && statusData.data?.video_url) {
+            finalUrl = statusData.data.video_url;
+            console.log('✅ Video generation completed! URL:', finalUrl);
+          } else if (statusData.data?.status === 'failed') {
+            throw new Error(statusData.data?.error || 'Video generation failed');
+          }
+        }
+      } catch (statusError) {
+        console.log('Status check error:', statusError);
+      }
+    }
+
+    if (!finalUrl) {
+      throw new Error('Video generation timed out. Please try again.');
+    }
+
+    console.log('=== VIDEO GENERATION FUNCTION SUCCESS ===');
+
     return new Response(
-      JSON.stringify({ success: true, ...videoResult }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({
+        success: true,
+        videoUrl: finalUrl,
+        provider: 'heygen',
+        video_id: videoId,
+        duration: 30,
+        status: 'completed'
+      }),
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      }
     );
 
   } catch (error: any) {
-    console.error('Video generation error:', error);
+    console.error('=== VIDEO GENERATION FUNCTION ERROR ===');
+    console.error('Error details:', error);
     return new Response(
       JSON.stringify({ 
         success: false, 
@@ -172,7 +187,7 @@ serve(async (req) => {
         code: 'VIDEO_GENERATION_ERROR'
       }),
       { 
-        status: 200,
+        status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
     );

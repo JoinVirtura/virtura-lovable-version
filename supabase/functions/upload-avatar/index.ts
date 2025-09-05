@@ -1,6 +1,6 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.55.0";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -8,196 +8,129 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    console.log('Upload avatar function called');
+    console.log('=== UPLOAD AVATAR FUNCTION START ===');
     
-    // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Get API keys
     const heygenKey = Deno.env.get('HEYGEN_API_KEY');
-    const openaiKey = Deno.env.get('OPENAI_API_KEY');
-
-    // Get the authorization header
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      console.error('No authorization header');
-      return new Response(
-        JSON.stringify({ error: 'Missing authorization header' }),
-        { 
-          status: 401, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      );
+    console.log('HeyGen API Key available:', !!heygenKey);
+    
+    if (!heygenKey) {
+      throw new Error('HeyGen API key not configured in backend');
     }
 
-    // Verify the user
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      throw new Error('No authorization header');
+    }
+
     const { data: { user }, error: authError } = await supabase.auth.getUser(
       authHeader.replace('Bearer ', '')
     );
     
     if (authError || !user) {
-      console.error('Auth error:', authError);
-      return new Response(
-        JSON.stringify({ error: 'Invalid authentication' }),
-        { 
-          status: 401, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      );
+      throw new Error('Invalid authentication');
     }
 
     const { photoUrl } = await req.json();
     console.log('Processing upload for user:', user.id, 'photoUrl:', photoUrl);
 
     if (!photoUrl) {
-      return new Response(
-        JSON.stringify({ error: 'Missing photoUrl parameter' }),
-        { 
-          status: 400, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      );
+      throw new Error('Missing photoUrl parameter');
     }
+
+    // Step 1: Clear ALL existing HeyGen avatars first
+    console.log('Step 1: Clearing existing HeyGen avatars...');
+    try {
+      const listResponse = await fetch('https://api.heygen.com/v2/avatars', {
+        headers: {
+          'Authorization': `Bearer ${heygenKey}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (listResponse.ok) {
+        const listData = await listResponse.json();
+        console.log('Found avatars:', listData.data?.avatars?.length || 0);
+        
+        if (listData.data?.avatars) {
+          for (const avatar of listData.data.avatars) {
+            if (avatar.avatar_type === 'talking_photo') {
+              try {
+                const deleteResponse = await fetch(`https://api.heygen.com/v1/photo_avatar/${avatar.avatar_id}`, {
+                  method: 'DELETE',
+                  headers: { 'x-api-key': heygenKey }
+                });
+                console.log(`Deleted existing avatar ${avatar.avatar_id}, status: ${deleteResponse.status}`);
+              } catch (deleteError) {
+                console.log('Delete error (continuing):', deleteError);
+              }
+            }
+          }
+        }
+      }
+    } catch (cleanupError) {
+      console.log('Cleanup warning (continuing):', cleanupError);
+    }
+
+    // Step 2: Fetch and upload image to HeyGen
+    console.log('Step 2: Uploading new image to HeyGen...');
+    const imageResponse = await fetch(photoUrl);
+    if (!imageResponse.ok) {
+      throw new Error(`Failed to fetch image: ${imageResponse.statusText}`);
+    }
+    
+    const imageBlob = await imageResponse.blob();
+    console.log('Image fetched, size:', imageBlob.size, 'type:', imageBlob.type);
+
+    const heygenResponse = await fetch('https://upload.heygen.com/v1/talking_photo', {
+      method: 'POST',
+      headers: {
+        'x-api-key': heygenKey,
+        'Content-Type': imageBlob.type || 'image/jpeg',
+      },
+      body: imageBlob,
+    });
+
+    const heygenResponseText = await heygenResponse.text();
+    console.log('HeyGen upload response status:', heygenResponse.status);
+    console.log('HeyGen upload response:', heygenResponseText);
 
     let heygenTalkingPhotoId = null;
     let heygenError = null;
 
-    // Try to upload to HeyGen first (primary provider)
-    if (heygenKey) {
-      try {
-        console.log('Uploading to HeyGen...');
-        
-        // First, try to clean up old avatars to stay within limits
-        try {
-          const { data: existingAvatars } = await supabase
-            .from('talking_avatars')
-            .select('heygen_talking_photo_id')
-            .eq('user_id', user.id)
-            .not('heygen_talking_photo_id', 'is', null)
-            .order('created_at', { ascending: true })
-            .limit(2); // Keep only newest 2, delete older ones
-
-          if (existingAvatars && existingAvatars.length > 0) {
-            for (const avatar of existingAvatars) {
-              try {
-                await fetch(`https://api.heygen.com/v1/photo_avatar/${avatar.heygen_talking_photo_id}`, {
-                  method: 'DELETE',
-                  headers: { 'x-api-key': heygenKey }
-                });
-                console.log('Deleted old HeyGen avatar:', avatar.heygen_talking_photo_id);
-              } catch (deleteError) {
-                console.log('Failed to delete old avatar:', deleteError);
-              }
-            }
-          }
-        } catch (cleanupError) {
-          console.log('Cleanup warning:', cleanupError);
-        }
-        
-        // Fetch the image from the URL
-        const imageResponse = await fetch(photoUrl);
-        if (!imageResponse.ok) {
-          throw new Error(`Failed to fetch image: ${imageResponse.statusText}`);
-        }
-        
-        const imageBlob = await imageResponse.blob();
-        console.log('Image fetched, size:', imageBlob.size, 'type:', imageBlob.type);
-
-        // Upload to HeyGen talking photo API
-        const heygenResponse = await fetch('https://upload.heygen.com/v1/talking_photo', {
-          method: 'POST',
-          headers: {
-            'x-api-key': heygenKey,
-            'Content-Type': imageBlob.type || 'image/jpeg',
-          },
-          body: imageBlob,
-        });
-
-        const heygenResponseText = await heygenResponse.text();
-        console.log('HeyGen response status:', heygenResponse.status);
-        console.log('HeyGen response:', heygenResponseText);
-
-        if (heygenResponse.ok) {
-          const heygenData = JSON.parse(heygenResponseText);
-          heygenTalkingPhotoId = heygenData.data?.talking_photo_id || heygenData.talking_photo_id;
-          console.log('HeyGen upload successful, talking_photo_id:', heygenTalkingPhotoId);
-        } else {
-          // If limit exceeded, try remote cleanup and retry once
-          if (heygenResponse.status === 400 && heygenResponseText.includes('401028')) {
-            console.warn('HeyGen limit reached. Performing remote cleanup...');
-            try {
-              const listResp = await fetch('https://api.heygen.com/v2/avatars', {
-                headers: { 'Authorization': `Bearer ${heygenKey}` }
-              });
-              const listText = await listResp.text();
-              console.log('List avatars status:', listResp.status);
-              console.log('List avatars resp:', listText);
-              if (listResp.ok) {
-                const listData = JSON.parse(listText);
-                const toDelete = (listData.data?.avatars || []).filter((a: any) => a.avatar_type === 'talking_photo').slice(0, 3);
-                for (const a of toDelete) {
-                  try {
-                    const del = await fetch(`https://api.heygen.com/v1/photo_avatar/${a.avatar_id}`, { method: 'DELETE', headers: { 'x-api-key': heygenKey } });
-                    console.log('Deleted remote avatar', a.avatar_id, 'status', del.status);
-                  } catch (e) {
-                    console.log('Remote delete failed:', e);
-                  }
-                }
-                // retry upload once
-                const retry = await fetch('https://upload.heygen.com/v1/talking_photo', {
-                  method: 'POST',
-                  headers: { 'x-api-key': heygenKey, 'Content-Type': imageBlob.type || 'image/jpeg' },
-                  body: imageBlob,
-                });
-                const retryText = await retry.text();
-                console.log('Retry upload status:', retry.status, retryText);
-                if (retry.ok) {
-                  const retryData = JSON.parse(retryText);
-                  heygenTalkingPhotoId = retryData.data?.talking_photo_id || retryData.talking_photo_id;
-                } else {
-                  heygenError = `HeyGen retry failed: ${retry.status} ${retryText}`;
-                }
-              }
-            } catch (cleanupErr) {
-              console.error('Remote cleanup error:', cleanupErr);
-            }
-          } else {
-            heygenError = `HeyGen upload failed: ${heygenResponse.status} ${heygenResponseText}`;
-            console.error(heygenError);
-          }
-        }
-      } catch (error) {
-        heygenError = `HeyGen upload error: ${error.message}`;
-        console.error(heygenError);
-      }
+    if (heygenResponse.ok) {
+      const heygenData = JSON.parse(heygenResponseText);
+      heygenTalkingPhotoId = heygenData.data?.talking_photo_id || heygenData.talking_photo_id;
+      console.log('✅ HeyGen upload successful! Talking photo ID:', heygenTalkingPhotoId);
     } else {
-      console.log('HeyGen API key not configured, skipping HeyGen upload');
+      heygenError = `HeyGen upload failed: ${heygenResponse.status} ${heygenResponseText}`;
+      console.error('❌ HeyGen upload failed:', heygenError);
+      throw new Error(heygenError);
     }
 
-    // Prepare avatar data for database
+    // Step 3: Save to database
+    console.log('Step 3: Saving to database...');
     const avatarData = {
       user_id: user.id,
       original_image_url: photoUrl,
       heygen_talking_photo_id: heygenTalkingPhotoId,
-      openai_avatar_id: photoUrl, // Use URL as fallback ID for OpenAI
-      status: heygenTalkingPhotoId ? 'ready' : 'failed',
-      error_message: heygenError,
+      openai_avatar_id: photoUrl,
+      status: 'ready',
+      error_message: null,
       metadata: {
         uploaded_at: new Date().toISOString(),
-        heygen_upload: heygenTalkingPhotoId ? 'success' : 'failed',
-        heygen_error: heygenError || null
+        heygen_upload: 'success',
+        heygen_talking_photo_id: heygenTalkingPhotoId
       }
     };
-
-    console.log('Inserting avatar data:', avatarData);
 
     const { data, error } = await supabase
       .from('talking_avatars')
@@ -207,38 +140,32 @@ serve(async (req) => {
 
     if (error) {
       console.error('Database insertion error:', error);
-      return new Response(
-        JSON.stringify({ 
-          error: `Database error: ${error.message}`,
-          details: error
-        }),
-        { 
-          status: 500, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      );
+      throw new Error(`Database error: ${error.message}`);
     }
 
-    console.log('Avatar data inserted successfully:', data);
+    console.log('✅ Avatar saved to database successfully');
+    console.log('=== UPLOAD AVATAR FUNCTION SUCCESS ===');
 
     return new Response(
       JSON.stringify({ 
         success: true, 
         avatar: data,
-        heygen_available: !!heygenTalkingPhotoId,
-        heygen_error: heygenError
+        heygen_available: true,
+        message: 'Avatar uploaded and ready for video generation!'
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
       }
     );
 
-  } catch (error) {
-    console.error('Function error:', error);
+  } catch (error: any) {
+    console.error('=== UPLOAD AVATAR FUNCTION ERROR ===');
+    console.error('Error details:', error);
     return new Response(
       JSON.stringify({ 
-        error: error.message || 'Unknown error occurred',
-        success: false 
+        success: false,
+        error: error.message || 'Upload failed',
+        details: error
       }),
       { 
         status: 500, 

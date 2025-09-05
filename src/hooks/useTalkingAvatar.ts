@@ -64,14 +64,6 @@ export const useTalkingAvatar = (
     setIsProcessing(true);
 
     try {
-      // First cleanup old HeyGen avatars
-      try {
-        console.log('Cleaning up old HeyGen avatars...');
-        await supabase.functions.invoke('cleanup-heygen-avatars');
-      } catch (cleanupError) {
-        console.log('Cleanup warning:', cleanupError);
-      }
-
       // Upload to Supabase storage
       const fileName = `${Date.now()}-${file.name}`;
       const filePath = `${crypto.randomUUID()}/${fileName}`;
@@ -87,29 +79,27 @@ export const useTalkingAvatar = (
         .from('avatars')
         .getPublicUrl(filePath);
 
+      console.log('Uploading to HeyGen via backend...');
+
       // Upload to providers and save metadata
       const { data, error } = await supabase.functions.invoke('upload-avatar', {
         body: { photoUrl: publicUrl }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Upload function error:', error);
+        throw error;
+      }
+
+      console.log('Upload response:', data);
 
       if (data?.success) {
         setAvatarData(data.avatar);
         
-        // Show appropriate message based on HeyGen availability
-        if (data.heygen_available) {
-          toast({
-            title: "Avatar Ready for Video",
-            description: `${file.name} uploaded successfully with HeyGen support - ready for photorealistic video generation!`,
-          });
-        } else {
-          toast({
-            title: "Avatar Uploaded",
-            description: `${file.name} uploaded. HeyGen integration in progress... ${data.heygen_error || 'Processing avatar...'}`,
-            variant: "default",
-          });
-        }
+        toast({
+          title: "✅ Avatar Ready for Video!",
+          description: `${file.name} uploaded successfully and ready for photorealistic video generation!`,
+        });
       } else {
         throw new Error(data?.error || 'Failed to process avatar');
       }
