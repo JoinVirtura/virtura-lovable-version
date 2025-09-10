@@ -657,26 +657,28 @@ export const Hero = () => {
                         >
                           {uploadedImage ? 'Upload' : '+ Add Style'}
                         </Button>
-                        <label className="w-full cursor-pointer">
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={handleFileUpload}
-                          />
-                          <Button 
-                            type="button"
-                            variant="outline" 
-                            className="w-full border-primary/30 text-foreground hover:bg-primary/10 py-3 rounded-xl text-sm"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              (e.currentTarget.parentElement?.querySelector('input[type="file"]') as HTMLInputElement)?.click();
-                            }}
-                          >
-                            <Upload className="w-4 h-4 mr-2" />
-                            {uploadedImage ? 'Upload' : 'Upload Image'}
-                          </Button>
-                        </label>
+                        {!uploadedImage && (
+                          <label className="w-full cursor-pointer">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={handleFileUpload}
+                            />
+                            <Button 
+                              type="button"
+                              variant="outline" 
+                              className="w-full border-primary/30 text-foreground hover:bg-primary/10 py-3 rounded-xl text-sm"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                (e.currentTarget.parentElement?.querySelector('input[type="file"]') as HTMLInputElement)?.click();
+                              }}
+                            >
+                              <Upload className="w-4 h-4 mr-2" />
+                              Upload Image
+                            </Button>
+                          </label>
+                        )}
                       </div>
                     </div>
                   </div>
