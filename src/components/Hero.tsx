@@ -613,13 +613,13 @@ export const Hero = () => {
                   {/* Side Preview Panel */}
                   <div className="w-80 bg-muted/30 border-l border-border/30 p-4 overflow-hidden flex flex-col">
                     <div className="flex flex-col h-full">
-                      <div className="flex-1">
+                      <div className="flex-1 flex flex-col justify-center">
                         <h3 className="text-lg font-bold text-foreground mb-4">
                           {uploadedImage ? 'Custom Style' : selectedStylePreview ? selectedStylePreview.name : 'Select a style to preview'}
                         </h3>
                         {uploadedImage ? (
-                          <div className="mb-4">
-                            <div className="relative flex-1 bg-muted/50 rounded-xl overflow-hidden h-64">
+                          <div className="mb-6">
+                            <div className="relative bg-muted/50 rounded-xl overflow-hidden h-64">
                               <img 
                                 src={uploadedImage} 
                                 alt="Uploaded style"
@@ -628,8 +628,8 @@ export const Hero = () => {
                             </div>
                           </div>
                         ) : selectedStylePreview ? (
-                          <div className="mb-4">
-                            <div className="relative flex-1 bg-muted/50 rounded-xl overflow-hidden h-64">
+                          <div className="mb-6">
+                            <div className="relative bg-muted/50 rounded-xl overflow-hidden h-64">
                               <img 
                                 src={selectedStylePreview.image} 
                                 alt={selectedStylePreview.name}
@@ -640,7 +640,7 @@ export const Hero = () => {
                         ) : null}
                       </div>
                       
-                      <div className="space-y-3 flex-shrink-0 mt-4">
+                      <div className="space-y-3 flex-shrink-0">
                         <Button 
                           className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-3 rounded-xl text-sm"
                           onClick={() => {
