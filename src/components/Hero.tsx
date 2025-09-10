@@ -79,6 +79,16 @@ export const Hero = () => {
   const [showResolutionOptions, setShowResolutionOptions] = useState(false);
   const [showStyleModal, setShowStyleModal] = useState(false);
   const [showImageStylePopup, setShowImageStylePopup] = useState(false);
+  
+  // Handle file upload
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      console.log('File selected:', file.name);
+      // TODO: Implement file upload logic
+      setShowImageStylePopup(false);
+    }
+  };
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStylePreview, setSelectedStylePreview] = useState<{name: string, username: string, id: string, image: string} | null>(null);
 
@@ -319,11 +329,19 @@ export const Hero = () => {
                             <div 
                               key={style.id}
                               className="relative aspect-square rounded-lg overflow-hidden cursor-pointer hover:scale-105 transition-all duration-200 group"
+                              onClick={() => {
+                                console.log('Style selected:', style.name);
+                                setShowImageStylePopup(false);
+                              }}
                             >
                               <img 
                                 src={style.image} 
                                 alt={style.name} 
                                 className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  console.log('Image failed to load:', style.image);
+                                  e.currentTarget.src = 'https://via.placeholder.com/100x100/1a1a1a/ffffff?text=Style';
+                                }}
                               />
                               <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
                             </div>
@@ -332,11 +350,34 @@ export const Hero = () => {
 
                         {/* Action Buttons */}
                         <div className="flex gap-2">
-                          <Button className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-2 rounded-lg text-sm">
-                            <Upload className="w-4 h-4 mr-2" />
-                            Upload
-                          </Button>
-                          <Button variant="outline" className="flex-1 border-primary/30 text-foreground hover:bg-primary/10 py-2 rounded-lg text-sm">
+                          <label className="flex-1 cursor-pointer">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={handleFileUpload}
+                            />
+                            <Button 
+                              type="button"
+                              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-2 rounded-lg text-sm"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                (e.currentTarget.parentElement?.querySelector('input[type="file"]') as HTMLInputElement)?.click();
+                              }}
+                            >
+                              <Upload className="w-4 h-4 mr-2" />
+                              Upload
+                            </Button>
+                          </label>
+                          <Button 
+                            type="button"
+                            variant="outline" 
+                            className="flex-1 border-primary/30 text-foreground hover:bg-primary/10 py-2 rounded-lg text-sm"
+                            onClick={() => {
+                              console.log('Select asset clicked');
+                              setShowImageStylePopup(false);
+                            }}
+                          >
                             <ChevronDown className="w-4 h-4 mr-2" />
                             Select asset
                           </Button>
