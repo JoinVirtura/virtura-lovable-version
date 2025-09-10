@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Sparkles, Mic, Send, Crown, Lock, Zap, Camera, Shuffle, Star, X, Circle, Search, Target, Image, Palette, RectangleHorizontal, Diamond } from "lucide-react";
+import { Sparkles, Mic, Send, Crown, Lock, Zap, Camera, Shuffle, Star, X, Circle, Search, Target, Image, Palette, RectangleHorizontal, Diamond, Upload, ChevronDown } from "lucide-react";
 import { useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -78,6 +78,7 @@ export const Hero = () => {
   const [showAspectOptions, setShowAspectOptions] = useState(false);
   const [showResolutionOptions, setShowResolutionOptions] = useState(false);
   const [showStyleModal, setShowStyleModal] = useState(false);
+  const [showImageStylePopup, setShowImageStylePopup] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStylePreview, setSelectedStylePreview] = useState<{name: string, username: string, id: string, image: string} | null>(null);
 
@@ -294,15 +295,55 @@ export const Hero = () => {
                     Image prompt
                   </Button>
 
-                  {/* Image Style Button */}
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="bg-muted/60 border-border/50 hover:bg-muted/80 px-4 py-2 rounded-xl text-sm font-medium h-10"
+                  {/* Image Style Button with Hover Popup */}
+                  <div 
+                    className="relative"
+                    onMouseEnter={() => setShowImageStylePopup(true)}
+                    onMouseLeave={() => setShowImageStylePopup(false)}
                   >
-                    <Palette className="w-4 h-4 mr-2" />
-                    Image style
-                  </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="bg-muted/60 border-border/50 hover:bg-muted/80 px-4 py-2 rounded-xl text-sm font-medium h-10"
+                    >
+                      <Palette className="w-4 h-4 mr-2" />
+                      Image style
+                    </Button>
+
+                    {/* Image Style Popup */}
+                    {showImageStylePopup && (
+                      <div className="absolute bottom-full left-0 mb-2 bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-2xl z-50 p-4 min-w-[400px]">
+                        {/* Style Grid */}
+                        <div className="grid grid-cols-4 gap-2 mb-4">
+                          {styleData.slice(0, 12).map((style) => (
+                            <div 
+                              key={style.id}
+                              className="relative aspect-square rounded-lg overflow-hidden cursor-pointer hover:scale-105 transition-all duration-200 group"
+                            >
+                              <img 
+                                src={style.image} 
+                                alt={style.name} 
+                                className="w-full h-full object-cover"
+                              />
+                              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-2">
+                          <Button className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-2 rounded-lg text-sm">
+                            <Upload className="w-4 h-4 mr-2" />
+                            Upload
+                          </Button>
+                          <Button variant="outline" className="flex-1 border-primary/30 text-foreground hover:bg-primary/10 py-2 rounded-lg text-sm">
+                            <ChevronDown className="w-4 h-4 mr-2" />
+                            Select asset
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
 
                   {/* Aspect Ratio */}
                   <div className="relative">
