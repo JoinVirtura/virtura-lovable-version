@@ -307,7 +307,7 @@ export const Hero = () => {
 
                   {/* Image Style Button with Hover Popup */}
                   <div 
-                    className="relative"
+                    className="relative z-[100]"
                     onMouseEnter={() => setShowImageStylePopup(true)}
                     onMouseLeave={() => setShowImageStylePopup(false)}
                   >
@@ -322,7 +322,7 @@ export const Hero = () => {
 
                     {/* Image Style Popup */}
                     {showImageStylePopup && (
-                      <div className="absolute bottom-full left-0 mb-2 bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-2xl z-50 p-4 min-w-[400px]">
+                      <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-2xl z-[9999] p-4 min-w-[400px]">
                         {/* Style Grid */}
                         <div className="grid grid-cols-4 gap-2 mb-4">
                           {styleData.slice(0, 12).map((style) => (
