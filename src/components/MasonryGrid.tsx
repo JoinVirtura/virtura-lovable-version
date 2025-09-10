@@ -199,35 +199,37 @@ export const MasonryGrid: React.FC<MasonryGridProps> = ({ tiles, className }) =>
         </div>
       </motion.div>
 
-      {/* Pinterest-Style 5-Column Masonry Grid */}
-      <div className="relative max-w-7xl mx-auto px-4">
-        <div className="columns-5 gap-4 space-y-4">
-          {displayedTiles.map((tile, index) => (
-            <motion.div
-              key={`${tile.id}-${index}`}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ 
-                duration: 0.5, 
-                delay: (index % 25) * 0.03,
-                ease: "easeOut"
-              }}
-              className="break-inside-avoid mb-4 group"
-              whileHover={{ 
-                scale: 1.02,
-                zIndex: 10,
-                transition: { duration: 0.2 }
-              }}
-            >
-              <div className="rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
+      {/* Custom 5-Column Masonry Grid - No Gaps */}
+      <div className="relative w-full">
+        <div className="grid grid-cols-5 gap-0">
+          {displayedTiles.map((tile, index) => {
+            const heightClass = getItemHeight(index);
+            
+            return (
+              <motion.div
+                key={`${tile.id}-${index}`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ 
+                  duration: 0.5, 
+                  delay: (index % 25) * 0.03,
+                  ease: "easeOut"
+                }}
+                className={`relative group ${heightClass} w-full`}
+                whileHover={{ 
+                  scale: 1.02,
+                  zIndex: 10,
+                  transition: { duration: 0.2 }
+                }}
+              >
                 <ContentCard 
                   tile={tile} 
-                  className="w-full"
+                  className="w-full h-full"
                   size="sm"
                 />
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
         
         {/* Load More Section */}

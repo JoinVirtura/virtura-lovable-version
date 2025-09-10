@@ -54,19 +54,18 @@ export const ContentCard = ({ tile, className = "", size = 'md' }: ContentCardPr
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
-      className={`group relative w-full cursor-pointer rounded-2xl overflow-hidden bg-white shadow-md hover:shadow-xl transition-all duration-300 ${className}`}
+      className={`group relative w-full h-full cursor-pointer overflow-hidden ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Clean Pinterest-Style Card */}
-      <div className="relative w-full aspect-auto">
-        {/* Image Container */}
-
-        <div className="relative w-full overflow-hidden">
+      {/* Full Container - No Gaps */}
+      <div className="relative w-full h-full">
+        {/* Image fills entire container */}
+        <div className="relative w-full h-full overflow-hidden">
           <img
             src={tile.posterUrl}
             alt={tile.title}
-            className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             onLoad={() => setImageLoaded(true)}
             onError={(e) => {
               const target = e.currentTarget as HTMLImageElement;
@@ -77,18 +76,18 @@ export const ContentCard = ({ tile, className = "", size = 'md' }: ContentCardPr
           />
 
           {/* Overlay on hover */}
-          <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </div>
 
         {/* Category Badge */}
-        <div className="absolute top-3 left-3 z-10">
+        <div className="absolute top-3 left-3 z-20">
           <Badge className="bg-yellow-400 text-black font-bold text-xs px-3 py-1 rounded-full shadow-md">
             {tile.tag}
           </Badge>
         </div>
 
         {/* Content Overlay */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
+        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 via-black/50 to-transparent z-10">
           <h3 className="text-white font-semibold text-lg leading-tight mb-2 line-clamp-2">
             {tile.title}
           </h3>
