@@ -488,32 +488,36 @@ export const Hero = () => {
                   <div className="flex items-center gap-3 flex-shrink-0">
                     {/* Image Thumbnails Display */}
                     {(uploadedImagePrompt || uploadedImage || selectedImageStyle) && (
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-3">
                         {/* Image Prompt Thumbnail */}
                         {uploadedImagePrompt && (
-                          <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-border/50 bg-muted/30">
-                            <img 
-                              src={uploadedImagePrompt} 
-                              alt="Image prompt" 
-                              className="w-full h-full object-cover"
-                            />
+                          <div className="relative">
+                            <div className="w-10 h-10 rounded-lg overflow-hidden border border-border/50 bg-muted/30">
+                              <img 
+                                src={uploadedImagePrompt} 
+                                alt="Image prompt" 
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
                             <button
                               onClick={removeUploadedImagePrompt}
-                              className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 border border-white shadow-md"
+                              className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 border-2 border-white shadow-lg z-10"
                             >
-                              <X className="w-2.5 h-2.5" />
+                              <X className="w-3 h-3" />
                             </button>
                           </div>
                         )}
                         
                         {/* Image Style Thumbnail */}
                         {(uploadedImage || selectedImageStyle) && (
-                          <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-border/50 bg-muted/30">
-                            <img 
-                              src={uploadedImage || selectedImageStyle?.image} 
-                              alt="Image style" 
-                              className="w-full h-full object-cover"
-                            />
+                          <div className="relative">
+                            <div className="w-10 h-10 rounded-lg overflow-hidden border border-border/50 bg-muted/30">
+                              <img 
+                                src={uploadedImage || selectedImageStyle?.image} 
+                                alt="Image style" 
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
                             <button
                               onClick={() => {
                                 if (uploadedImage) {
@@ -522,9 +526,9 @@ export const Hero = () => {
                                   removeSelectedStyle();
                                 }
                               }}
-                              className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 border border-white shadow-md"
+                              className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 border-2 border-white shadow-lg z-10"
                             >
-                              <X className="w-2.5 h-2.5" />
+                              <X className="w-3 h-3" />
                             </button>
                           </div>
                         )}
