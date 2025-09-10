@@ -204,6 +204,27 @@ All colors MUST be HSL.
     50% { transform: translateY(-10px); }
   }
 
+  @keyframes scan-line-2 {
+    0% { transform: translateY(-100vh) translateX(-50px); opacity: 0; }
+    50% { opacity: 0.8; }
+    100% { transform: translateY(100vh) translateX(50px); opacity: 0; }
+  }
+
+  @keyframes rotate-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes rotate-reverse {
+    from { transform: rotate(360deg); }
+    to { transform: rotate(0deg); }
+  }
+
+  @keyframes gradient-flow {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
   /* Premium Animation Classes */
   .animate-gold-glow {
     animation: gold-glow 2s ease-in-out infinite;
@@ -231,6 +252,23 @@ All colors MUST be HSL.
 
   .animate-grid-float {
     animation: grid-float 4s ease-in-out infinite;
+  }
+
+  .animate-scan-line-2 {
+    animation: scan-line-2 4s ease-in-out infinite;
+  }
+
+  .animate-rotate-slow {
+    animation: rotate-slow 20s linear infinite;
+  }
+
+  .animate-rotate-reverse {
+    animation: rotate-reverse 15s linear infinite;
+  }
+
+  .animate-gradient-flow {
+    animation: gradient-flow 3s ease-in-out infinite;
+    background-size: 200% 200%;
   }
   
   /* Premium Hover Effects */
@@ -295,6 +333,11 @@ All colors MUST be HSL.
   .bg-grid-pattern {
     background-image: radial-gradient(circle at 1px 1px, hsl(var(--primary) / 0.15) 1px, transparent 0);
     background-size: 20px 20px;
+  }
+
+  /* Conic Gradient Utilities */
+  .bg-gradient-conic {
+    background: conic-gradient(var(--tw-gradient-stops));
   }
   
   /* Line Clamp Utilities */
