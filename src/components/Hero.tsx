@@ -348,7 +348,7 @@ export const Hero = () => {
                     <Button
                       type="button"
                       variant="outline"
-                      className="bg-muted/60 border-border/50 hover:bg-gradient-gold hover:text-primary-foreground hover:border-primary/50 px-4 py-2 rounded-xl text-sm font-medium h-10 transition-all duration-200"
+                      className="bg-muted/60 border-border/50 hover:bg-gradient-gold hover:text-primary-foreground hover:border-primary/50 px-4 py-2 rounded-xl text-sm font-medium h-10 transition-all duration-200 overflow-visible"
                       onClick={() => {
                         if (!uploadedImagePrompt) {
                           document.getElementById('image-prompt-upload')?.click();
@@ -368,9 +368,9 @@ export const Hero = () => {
                                 e.stopPropagation();
                                 removeUploadedImagePrompt();
                               }}
-                              className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 border border-white shadow-lg"
+                              className="absolute -top-3 -right-3 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 border-2 border-white shadow-lg z-10"
                             >
-                              <X className="w-2.5 h-2.5" />
+                              <X className="w-3 h-3" />
                             </button>
                           </div>
                           <span>Image prompt</span>
@@ -388,12 +388,20 @@ export const Hero = () => {
                   <div 
                     className="relative z-[100]"
                     onMouseEnter={() => setShowImageStylePopup(true)}
-                    onMouseLeave={() => setShowImageStylePopup(false)}
+                    onMouseLeave={(e) => {
+                      // Add delay to prevent flickering
+                      setTimeout(() => {
+                        const popup = document.querySelector('[data-image-style-popup]');
+                        if (!popup?.matches(':hover')) {
+                          setShowImageStylePopup(false);
+                        }
+                      }, 100);
+                    }}
                   >
                     <Button
                       type="button"
                       variant="outline"
-                      className="bg-muted/60 border-border/50 hover:bg-gradient-gold hover:text-primary-foreground hover:border-primary/50 px-4 py-2 rounded-xl text-sm font-medium h-10 transition-all duration-200 relative overflow-hidden"
+                      className="bg-muted/60 border-border/50 hover:bg-gradient-gold hover:text-primary-foreground hover:border-primary/50 px-4 py-2 rounded-xl text-sm font-medium h-10 transition-all duration-200 relative overflow-visible"
                     >
                       {uploadedImage ? (
                         <div className="flex items-center gap-2">
@@ -408,9 +416,9 @@ export const Hero = () => {
                                 e.stopPropagation();
                                 removeUploadedImage();
                               }}
-                              className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 border border-white shadow-lg"
+                              className="absolute -top-3 -right-3 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 border-2 border-white shadow-lg z-10"
                             >
-                              <X className="w-2.5 h-2.5" />
+                              <X className="w-3 h-3" />
                             </button>
                           </div>
                           <span>Image style</span>
@@ -428,9 +436,9 @@ export const Hero = () => {
                                 e.stopPropagation();
                                 removeSelectedStyle();
                               }}
-                              className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 border border-white shadow-lg"
+                              className="absolute -top-3 -right-3 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 border-2 border-white shadow-lg z-10"
                             >
-                              <X className="w-2.5 h-2.5" />
+                              <X className="w-3 h-3" />
                             </button>
                           </div>
                           <span>Image style</span>
@@ -462,18 +470,36 @@ export const Hero = () => {
                     {showAspectOptions && (
                       <div className="absolute bottom-full left-0 mb-2 bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-2xl z-50 p-2 min-w-[200px]">
                         <div className="grid grid-cols-4 gap-2">
-                          {['4:3', '3:2', '16:9', '2.35:1', '1:1', '4:5', '2:3', '9:16'].map((ratio) => (
+                          {[
+                            { ratio: '4:3', width: 16, height: 12 },
+                            { ratio: '3:2', width: 15, height: 10 },
+                            { ratio: '16:9', width: 16, height: 9 },
+                            { ratio: '2.35:1', width: 18, height: 8 },
+                            { ratio: '1:1', width: 12, height: 12 },
+                            { ratio: '4:5', width: 12, height: 15 },
+                            { ratio: '2:3', width: 10, height: 15 },
+                            { ratio: '9:16', width: 9, height: 16 }
+                          ].map(({ratio, width, height}) => (
                             <Button
                               key={ratio}
                               type="button"
                               variant={selectedAspect === ratio ? "default" : "ghost"}
-                              className="text-xs p-2 h-8"
+                              className="text-xs p-2 h-8 flex flex-col items-center justify-center gap-1"
                               onClick={() => {
                                 setSelectedAspect(ratio);
                                 setShowAspectOptions(false);
                               }}
                             >
-                              {ratio}
+                              <div 
+                                className="border border-current rounded-sm"
+                                style={{ 
+                                  width: `${width}px`, 
+                                  height: `${height}px`,
+                                  maxWidth: '20px',
+                                  maxHeight: '20px'
+                                }}
+                              />
+                              <span className="text-[10px]">{ratio}</span>
                             </Button>
                           ))}
                         </div>
@@ -712,6 +738,7 @@ export const Hero = () => {
               {/* Popup positioned above everything */}
               <div 
                 className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-2xl z-[9999] p-4 w-[400px]"
+                data-image-style-popup
                 onMouseEnter={() => setShowImageStylePopup(true)}
                 onMouseLeave={() => setShowImageStylePopup(false)}
               >
@@ -733,9 +760,9 @@ export const Hero = () => {
                         }}
                       />
                       <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                      {/* Selection indicator */}
+                      {/* Selection indicator with proper border radius */}
                       {selectedImageStyle?.id === style.id && (
-                        <div className="absolute inset-0 border-2 border-primary bg-primary/20" />
+                        <div className="absolute inset-0 border-2 border-primary bg-primary/20 rounded-lg" />
                       )}
                     </div>
                   ))}
