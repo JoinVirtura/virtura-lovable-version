@@ -391,19 +391,6 @@ export const Hero = () => {
                   </div>
 
 
-                  {/* Aspect Ratio */}
-                  <div className="relative z-[200]" data-aspect-container>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setShowAspectOptions(!showAspectOptions)}
-                      className="bg-muted/60 border-border/50 hover:bg-gradient-gold hover:text-primary-foreground hover:border-primary/50 px-4 py-2 rounded-xl text-sm font-medium h-10 transition-all duration-200"
-                    >
-                      <RectangleHorizontal className="w-4 h-4 mr-2" />
-                      {selectedAspect}
-                    </Button>
-                  </div>
-
                   </div>
                   
                   {/* Action Buttons Group - Fixed Width */}
