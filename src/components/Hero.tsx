@@ -411,35 +411,33 @@ export const Hero = () => {
                       <div className="absolute bottom-full left-0 mb-2 bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-2xl z-50 p-2 min-w-[200px]">
                         <div className="grid grid-cols-4 gap-2">
                           {[
-                            { ratio: '4:3', width: 16, height: 12 },
-                            { ratio: '3:2', width: 15, height: 10 },
-                            { ratio: '16:9', width: 16, height: 9 },
-                            { ratio: '2.35:1', width: 18, height: 8 },
-                            { ratio: '1:1', width: 12, height: 12 },
+                            { ratio: '4:3', width: 20, height: 15 },
+                            { ratio: '3:2', width: 18, height: 12 },
+                            { ratio: '16:9', width: 20, height: 11 },
+                            { ratio: '2.35:1', width: 20, height: 8 },
+                            { ratio: '1:1', width: 15, height: 15 },
                             { ratio: '4:5', width: 12, height: 15 },
                             { ratio: '2:3', width: 10, height: 15 },
-                            { ratio: '9:16', width: 9, height: 16 }
+                            { ratio: '9:16', width: 9, height: 18 }
                           ].map(({ratio, width, height}) => (
                             <Button
                               key={ratio}
                               type="button"
                               variant={selectedAspect === ratio ? "default" : "ghost"}
-                              className="text-xs p-2 h-8 flex flex-col items-center justify-center gap-1"
+                              className="p-3 h-auto flex flex-col items-center justify-center gap-2 hover:bg-muted transition-colors"
                               onClick={() => {
                                 setSelectedAspect(ratio);
                                 setShowAspectOptions(false);
                               }}
                             >
                               <div 
-                                className="border border-current rounded-sm"
+                                className={`border-2 rounded-sm ${selectedAspect === ratio ? 'border-primary bg-primary/20' : 'border-muted-foreground bg-muted/50'}`}
                                 style={{ 
                                   width: `${width}px`, 
-                                  height: `${height}px`,
-                                  maxWidth: '20px',
-                                  maxHeight: '20px'
+                                  height: `${height}px`
                                 }}
                               />
-                              <span className="text-[10px]">{ratio}</span>
+                              <span className="text-xs font-medium">{ratio}</span>
                             </Button>
                           ))}
                         </div>
@@ -461,7 +459,12 @@ export const Hero = () => {
                     
                     {/* Resolution Dropdown */}
                     {showResolutionOptions && (
-                      <div className="absolute bottom-full left-0 mb-2 bg-card border border-border rounded-xl shadow-2xl z-[160] p-2 min-w-[120px] backdrop-blur-xl">
+                      <div className="fixed bottom-auto top-auto left-auto right-auto z-[160] bg-card border border-border rounded-xl shadow-2xl p-2 min-w-[120px] backdrop-blur-xl"
+                           style={{
+                             position: 'fixed',
+                             bottom: '140px',
+                             right: '280px'
+                           }}>
                         {['1K', '1.2K', '1.5K', '4K'].map((res) => (
                           <Button
                             key={res}
