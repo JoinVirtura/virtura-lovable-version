@@ -558,14 +558,20 @@ export const mockTutorials: Tile[] = [
 
 // Helper to get mock data for different sections
 export const getMockTiles = (section: 'trending' | 'recent' | 'wall', limit?: number): Tile[] => {
-  let tiles = [...mockTiles];
+  let tiles: Tile[] = [];
   
   if (section === 'trending') {
+    // Create unique tiles by filtering out duplicates based on posterUrl
+    const uniqueTiles = mockTiles.filter((tile, index, self) => 
+      index === self.findIndex(t => t.posterUrl === tile.posterUrl)
+    );
+    
     // Sort by views for trending
-    tiles = tiles.sort((a, b) => (b.views || 0) - (a.views || 0));
+    tiles = uniqueTiles.sort((a, b) => (b.views || 0) - (a.views || 0));
   } else if (section === 'recent') {
-    // Return tutorials for recent section
-    return mockTutorials;
+    return limit ? mockTutorials.slice(0, limit) : mockTutorials;
+  } else {
+    tiles = [...mockTiles];
   }
   
   return limit ? tiles.slice(0, limit) : tiles;

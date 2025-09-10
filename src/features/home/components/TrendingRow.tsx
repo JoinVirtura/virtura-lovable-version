@@ -85,21 +85,25 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
     setShuffledTiles(tiles);
   }, [tiles]);
 
-  // Revolutionary masonry layout with dynamic sizing
+  // Improved masonry layout with better coverage
   const getCardSize = (index: number, tile: Tile) => {
     const patterns = [
-      { span: "col-span-2 row-span-2", size: "hero" }, // Hero card
-      { span: "col-span-1", size: "standard" },
-      { span: "col-span-1", size: "standard" },
-      { span: "col-span-2", size: "wide" },
-      { span: "col-span-1 row-span-2", size: "tall" },
-      { span: "col-span-1", size: "standard" },
-      { span: "col-span-1", size: "standard" },
-      { span: "col-span-2", size: "wide" },
-      { span: "col-span-1", size: "standard" },
-      { span: "col-span-1 row-span-2", size: "tall" },
-      { span: "col-span-2 row-span-2", size: "hero" },
-      { span: "col-span-1", size: "standard" },
+      { span: "col-span-2 row-span-2", size: "hero" }, // 0 - Large hero
+      { span: "col-span-1", size: "standard" }, // 1
+      { span: "col-span-1", size: "standard" }, // 2
+      { span: "col-span-1 row-span-2", size: "tall" }, // 3 - Tall card
+      { span: "col-span-1", size: "standard" }, // 4
+      { span: "col-span-2", size: "wide" }, // 5 - Wide card
+      { span: "col-span-1", size: "standard" }, // 6
+      { span: "col-span-1", size: "standard" }, // 7
+      { span: "col-span-1", size: "standard" }, // 8
+      { span: "col-span-1 row-span-2", size: "tall" }, // 9 - Tall card
+      { span: "col-span-1", size: "standard" }, // 10
+      { span: "col-span-2", size: "wide" }, // 11 - Wide card
+      { span: "col-span-2 row-span-2", size: "hero" }, // 12 - Large hero
+      { span: "col-span-1", size: "standard" }, // 13
+      { span: "col-span-1", size: "standard" }, // 14
+      { span: "col-span-1", size: "standard" }, // 15
     ];
     return patterns[index % patterns.length] || patterns[1];
   };
@@ -206,7 +210,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
           transition={{ type: "spring", damping: 20, stiffness: 100 }}
         />
         
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3 md:gap-4 auto-rows-auto relative z-10">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-2 md:gap-3 auto-rows-[200px] relative z-10">
           <AnimatePresence mode="wait">
             {shuffledTiles.map((tile, index) => {
               const cardSize = getCardSize(index, tile);
