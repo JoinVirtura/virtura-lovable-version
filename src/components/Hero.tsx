@@ -18,41 +18,76 @@ export const Hero = () => {
 
   return (
     <section className="relative min-h-screen bg-background overflow-hidden">
-      {/* Enhanced Futuristic Background Elements */}
-      <div className="absolute inset-0">
-        {/* Main Gradient Orbs */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/3 right-1/3 w-80 h-80 bg-primary/8 rounded-full blur-3xl animate-pulse delay-1000" />
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-primary/3 to-transparent rounded-full blur-3xl animate-pulse delay-500" />
+      {/* Revolutionary Futuristic Background System */}
+      <div className="absolute inset-0 overflow-hidden">
+        {/* Deep Space Gradient Foundation */}
+        <div className="absolute inset-0 bg-gradient-to-br from-background via-background/90 to-background" />
         
-        {/* Moving Gradient Waves */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute w-[200%] h-[200%] -top-1/2 -left-1/2 bg-gradient-conic from-primary/10 via-transparent to-primary/5 animate-rotate-slow" />
-          <div className="absolute w-[150%] h-[150%] -top-1/4 -left-1/4 bg-gradient-conic from-transparent via-primary/8 to-transparent animate-rotate-reverse" />
+        {/* Morphing Geometric Shapes */}
+        <div className="absolute top-1/4 left-1/6 w-64 h-64 opacity-30">
+          <div className="w-full h-full bg-gradient-to-br from-primary/20 to-transparent animate-morph-1 blur-xl" />
+        </div>
+        <div className="absolute bottom-1/3 right-1/6 w-80 h-80 opacity-25">
+          <div className="w-full h-full bg-gradient-to-tl from-primary/15 to-transparent animate-morph-2 blur-2xl" />
+        </div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 opacity-20">
+          <div className="w-full h-full bg-gradient-to-r from-primary/10 via-primary/5 to-transparent animate-morph-3 blur-3xl" />
         </div>
         
-        {/* Animated Grid Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0 bg-grid-pattern animate-grid-float"></div>
+        {/* Advanced Particle Trail System */}
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-20 w-1 h-1 bg-primary animate-particle-trail-1" />
+          <div className="absolute top-32 left-24 w-0.5 h-0.5 bg-primary/80 animate-particle-trail-2" />
+          <div className="absolute top-24 left-28 w-0.5 h-0.5 bg-primary/60 animate-particle-trail-3" />
+          
+          <div className="absolute top-40 right-32 w-1 h-1 bg-primary animate-particle-trail-4" />
+          <div className="absolute top-52 right-36 w-0.5 h-0.5 bg-primary/80 animate-particle-trail-5" />
+          
+          <div className="absolute bottom-32 left-1/3 w-1.5 h-1.5 bg-primary animate-particle-trail-6" />
+          <div className="absolute bottom-24 left-1/3 w-0.5 h-0.5 bg-primary/70 animate-particle-trail-7" />
+          
+          <div className="absolute bottom-20 right-20 w-1 h-1 bg-primary animate-particle-trail-8" />
         </div>
         
-        {/* Enhanced Floating Particles */}
-        <div className="absolute top-20 left-20 w-2 h-2 bg-primary/60 rounded-full animate-float-1" />
-        <div className="absolute top-40 right-32 w-1.5 h-1.5 bg-primary/40 rounded-full animate-float-2" />
-        <div className="absolute bottom-32 left-1/3 w-3 h-3 bg-primary/30 rounded-full animate-float-3" />
-        <div className="absolute bottom-20 right-20 w-2.5 h-2.5 bg-primary/50 rounded-full animate-float-1" style={{animationDelay: '2s'}} />
-        <div className="absolute top-1/3 left-1/4 w-1 h-1 bg-primary/70 rounded-full animate-float-2" style={{animationDelay: '1s'}} />
-        <div className="absolute top-2/3 right-1/4 w-2 h-2 bg-primary/45 rounded-full animate-float-3" style={{animationDelay: '3s'}} />
-        
-        {/* Multiple Scanning Lines */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent animate-scan-line" />
-          <div className="absolute w-full h-px bg-gradient-to-r from-transparent via-primary/15 to-transparent animate-scan-line-2" style={{animationDelay: '1.5s'}} />
+        {/* Holographic Grid System */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0 bg-grid-holographic animate-grid-pulse" />
         </div>
         
-        {/* Pulsing Corner Accents */}
-        <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-primary/20 to-transparent animate-pulse" />
-        <div className="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-tl from-primary/20 to-transparent animate-pulse delay-1000" />
+        {/* Revolutionary Rotating Energy Rings */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-[800px] h-[800px] border border-primary/10 rounded-full animate-ring-rotate-1" />
+          <div className="absolute w-[600px] h-[600px] border border-primary/8 rounded-full animate-ring-rotate-2" />
+          <div className="absolute w-[400px] h-[400px] border border-primary/6 rounded-full animate-ring-rotate-3" />
+        </div>
+        
+        {/* Advanced Scanning Matrix */}
+        <div className="absolute inset-0">
+          <div className="absolute w-full h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent animate-scan-matrix-1" />
+          <div className="absolute w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent animate-scan-matrix-2" />
+          <div className="absolute h-full w-px bg-gradient-to-b from-transparent via-primary/15 to-transparent animate-scan-vertical-1" />
+          <div className="absolute h-full w-px bg-gradient-to-b from-transparent via-primary/10 to-transparent animate-scan-vertical-2" />
+        </div>
+        
+        {/* Depth-Creating Parallax Layers */}
+        <div className="absolute inset-0">
+          <div className="absolute top-10 left-10 w-2 h-2 bg-primary/40 rounded-full animate-parallax-1" />
+          <div className="absolute top-20 right-16 w-1.5 h-1.5 bg-primary/50 rounded-full animate-parallax-2" />
+          <div className="absolute bottom-16 left-1/4 w-1 h-1 bg-primary/60 rounded-full animate-parallax-3" />
+          <div className="absolute bottom-10 right-1/3 w-2.5 h-2.5 bg-primary/30 rounded-full animate-parallax-4" />
+        </div>
+        
+        {/* Glitch Effect Overlays */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/20 to-transparent animate-glitch-1" />
+          <div className="absolute inset-0 bg-gradient-to-l from-transparent via-primary/15 to-transparent animate-glitch-2" />
+        </div>
+        
+        {/* Cinematic Corner Illumination */}
+        <div className="absolute top-0 left-0 w-48 h-48 bg-gradient-to-br from-primary/15 via-primary/5 to-transparent animate-corner-glow-1" />
+        <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-primary/12 via-primary/4 to-transparent animate-corner-glow-2" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-primary/15 via-primary/5 to-transparent animate-corner-glow-3" />
+        <div className="absolute bottom-0 right-0 w-48 h-48 bg-gradient-to-tl from-primary/12 via-primary/4 to-transparent animate-corner-glow-4" />
       </div>
       
       <div className="relative z-10 container mx-auto px-6 py-20 flex flex-col items-center justify-center min-h-screen text-center">
