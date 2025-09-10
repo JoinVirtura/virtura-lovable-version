@@ -415,6 +415,123 @@ export const Hero = () => {
                         </div>
                       </div>
 
+                      {/* long exposure emotion */}
+                      <div 
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
+                        onClick={() => setSelectedStylePreview({name: "long exposure emotion", username: "tenparisien", id: "longexposure"})}
+                      >
+                        <img src="/lovable-uploads/b1d029c9-7647-4877-aabc-4dff2174dd7c.png" alt="long exposure emotion" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
+                          <div className="text-white/70">tenparisien</div>
+                          <div className="font-semibold">long exposure emotion</div>
+                        </div>
+                      </div>
+
+                      {/* Illustrated Child with Animal */}
+                      <div 
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
+                        onClick={() => setSelectedStylePreview({name: "Illustrated Child with Animal", username: "neyroph", id: "childanimal"})}
+                      >
+                        <img src="/lovable-uploads/6b8516fa-9e86-4c1b-91aa-f5bd3e05a070.png" alt="Illustrated Child with Animal" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
+                          <div className="text-white/70">neyroph</div>
+                          <div className="font-semibold">Illustrated Child with Animal</div>
+                        </div>
+                      </div>
+
+                      {/* 90's anime */}
+                      <div 
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
+                        onClick={() => setSelectedStylePreview({name: "90's anime", username: "DERNIEREXILE", id: "90sanime"})}
+                      >
+                        <img src="/lovable-uploads/4004f869-38f6-4d09-829d-e879d74ea4e7.png" alt="90's anime" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
+                          <div className="text-white/70">DERNIEREXILE</div>
+                          <div className="font-semibold">90's anime</div>
+                        </div>
+                      </div>
+
+                      {/* Minimalist Architecture */}
+                      <div 
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
+                        onClick={() => setSelectedStylePreview({name: "Minimalist Architecture", username: "Bokn", id: "minimal"})}
+                      >
+                        <img src="/lovable-uploads/7f19875e-32db-4ad5-9948-12c506a5ecab.png" alt="Minimalist Architecture" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
+                          <div className="text-white/70">Bokn</div>
+                          <div className="font-semibold">Minimalist Architecture</div>
+                        </div>
+                      </div>
+
+                      {/* Fantasy Creature */}
+                      <div 
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
+                        onClick={() => setSelectedStylePreview({name: "Fantasy Creature", username: "neyroph", id: "fantasycreature"})}
+                      >
+                        <img src="/lovable-uploads/149f854a-d11f-49de-824d-48118e7bcc95.png" alt="Fantasy Creature" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
+                          <div className="text-white/70">neyroph</div>
+                          <div className="font-semibold">Fantasy Creature</div>
+                        </div>
+                      </div>
+
+                      {/* kontext.streetfashion */}
+                      <div 
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
+                        onClick={() => setSelectedStylePreview({name: "kontext.streetfashion", username: "superbdiplomaticwolf", id: "streetfashion"})}
+                      >
+                        <img src="/lovable-uploads/7f369249-5c17-48b2-a47f-5ec868fa98a1.png" alt="kontext.streetfashion" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
+                          <div className="text-white/70">superbdiplomaticwolf</div>
+                          <div className="font-semibold">kontext.streetfashion</div>
+                        </div>
+                      </div>
+
+                      {/* Moskvichka.AI */}
+                      <div 
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
+                        onClick={() => setSelectedStylePreview({name: "Moskvichka.AI", username: "KNezderova", id: "moskvichka"})}
+                      >
+                        <img src="/lovable-uploads/5cf43d66-ed63-4dd5-9e24-c80cc1c8daf9.png" alt="Moskvichka.AI" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
+                          <div className="text-white/70">KNezderova</div>
+                          <div className="font-semibold">Moskvichka.AI</div>
+                        </div>
+                      </div>
+
+                      {/* Fantasy Portraits */}
+                      <div 
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
+                        onClick={() => setSelectedStylePreview({name: "Fantasy Portraits", username: "unfettereddextrousdisciple", id: "fantasyportraits"})}
+                      >
+                        <img src="/lovable-uploads/10dc3485-5856-4a38-90e1-8c1ebe80ec70.png" alt="Fantasy Portraits" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
+                          <div className="text-white/70">unfettereddextrousdisciple</div>
+                          <div className="font-semibold">Fantasy Portraits</div>
+                        </div>
+                      </div>
+
+                      {/* kontext.photoset */}
+                      <div 
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
+                        onClick={() => setSelectedStylePreview({name: "kontext.photoset", username: "frugalpoisedwrasse", id: "photoset"})}
+                      >
+                        <img src="/lovable-uploads/ad9a4869-73b6-49e6-a0f8-99274778eb95.png" alt="kontext.photoset" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
+                          <div className="text-white/70">frugalpoisedwrasse</div>
+                          <div className="font-semibold">kontext.photoset</div>
+                        </div>
+                      </div>
+
                       {/* Frank Vibrant Oil Painting */}
                       <div 
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
@@ -425,19 +542,6 @@ export const Hero = () => {
                         <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
                           <div className="text-white/70">unlimitedpleasantalligator</div>
                           <div className="font-semibold">Frank Vibrant Oil Painting</div>
-                        </div>
-                      </div>
-
-                      {/* Illustrated Child with Animal */}
-                      <div 
-                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "Illustrated Child with Animal", username: "neyroph", id: "childanimal"})}
-                      >
-                        <img src="/lovable-uploads/f764d956-0a32-4789-b539-af22cb5d20c8.png" alt="Illustrated Child with Animal" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                          <div className="text-white/70">neyroph</div>
-                          <div className="font-semibold">Illustrated Child with Animal</div>
                         </div>
                       </div>
 
@@ -568,19 +672,6 @@ export const Hero = () => {
                         <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
                           <div className="text-white/70">enoughfortunateguppy</div>
                           <div className="font-semibold">Chinese Watercolor</div>
-                        </div>
-                      </div>
-
-                      {/* Minimalist Architecture */}
-                      <div 
-                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "Minimalist Architecture", username: "Bokn", id: "minimal"})}
-                      >
-                        <img src="/lovable-uploads/507c9785-5fc3-4834-a8e4-203676f54a21.png" alt="Minimalist Architecture" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                          <div className="text-white/70">Bokn</div>
-                          <div className="font-semibold">Minimalist Architecture</div>
                         </div>
                       </div>
 
