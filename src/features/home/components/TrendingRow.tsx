@@ -200,7 +200,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                 <motion.div 
                   className="w-2 bg-gradient-to-b from-primary via-secondary to-accent rounded-full shadow-lg shadow-primary/50"
                   animate={{ 
-                    height: [80, 120, 80],
+                    height: [60, 80, 60],
                     boxShadow: [
                       '0 0 20px rgba(255, 215, 0, 0.5)',
                       '0 0 40px rgba(255, 215, 0, 0.8)',
@@ -212,9 +212,9 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                 
                 {/* Revolutionary Typography */}
                 <div className="space-y-1">
-                  {/* "Trending" with Glass Morphism */}
+                  {/* "Trending" with Glass Morphism - Reduced Size */}
                   <motion.h2 
-                    className="text-7xl md:text-9xl font-black relative"
+                    className="text-5xl md:text-6xl font-black relative leading-[1.1] py-2"
                     style={{
                       background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF6B35 100%)',
                       WebkitBackgroundClip: 'text',
@@ -251,7 +251,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                   
                   {/* "Creations" with Sophisticated Styling */}
                   <motion.div 
-                    className="text-3xl md:text-4xl font-light tracking-[0.5em] text-muted-foreground/80 relative ml-2"
+                    className="text-2xl md:text-3xl font-light tracking-[0.5em] text-muted-foreground/80 relative ml-2"
                     initial={{ opacity: 0, letterSpacing: '0.2em' }}
                     animate={{ 
                       opacity: 1, 
@@ -269,68 +269,6 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                       transition={{ delay: 1.5, duration: 2 }}
                     />
                   </motion.div>
-                </div>
-                
-                {/* Revolutionary Floating Elements */}
-                <div className="relative ml-8">
-                  {/* Main Orb */}
-                  <motion.div 
-                    animate={{ 
-                      rotate: 360,
-                      scale: [1, 1.2, 1],
-                      boxShadow: [
-                        '0 0 30px rgba(255, 215, 0, 0.5)',
-                        '0 0 60px rgba(255, 215, 0, 0.8)',
-                        '0 0 30px rgba(255, 215, 0, 0.5)'
-                      ]
-                    }}
-                    transition={{ 
-                      rotate: { duration: 20, repeat: Infinity, ease: "linear" },
-                      scale: { duration: 3, repeat: Infinity },
-                      boxShadow: { duration: 2, repeat: Infinity }
-                    }}
-                    className="w-16 h-16 bg-gradient-to-br from-primary via-secondary to-accent rounded-full flex items-center justify-center shadow-2xl relative"
-                  >
-                    <Sparkles className="w-8 h-8 text-white drop-shadow-lg" />
-                    
-                    {/* Orbiting Particles */}
-                    {[...Array(3)].map((_, i) => (
-                      <motion.div
-                        key={i}
-                        className="absolute w-2 h-2 bg-primary/80 rounded-full"
-                        style={{
-                          transformOrigin: '40px',
-                        }}
-                        animate={{
-                          rotate: 360,
-                        }}
-                        transition={{
-                          duration: 4 + i,
-                          repeat: Infinity,
-                          ease: "linear",
-                          delay: i * 0.5
-                        }}
-                      />
-                    ))}
-                  </motion.div>
-                  
-                  {/* Secondary Floating Elements */}
-                  <motion.div
-                    className="absolute -top-4 -right-4 w-6 h-6 bg-secondary/60 rounded-full"
-                    animate={{
-                      y: [0, -20, 0],
-                      opacity: [0.6, 1, 0.6]
-                    }}
-                    transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-                  />
-                  <motion.div
-                    className="absolute -bottom-2 -left-6 w-4 h-4 bg-accent/40 rounded-full"
-                    animate={{
-                      y: [0, 15, 0],
-                      opacity: [0.4, 0.8, 0.4]
-                    }}
-                    transition={{ duration: 2.5, repeat: Infinity, delay: 1 }}
-                  />
                 </div>
               </div>
             </motion.div>
