@@ -90,7 +90,7 @@ export const Hero = () => {
         <div className="absolute bottom-0 right-0 w-48 h-48 bg-gradient-to-tl from-primary/12 via-primary/4 to-transparent animate-corner-glow-4" />
       </div>
       
-      <div className="relative z-10 container mx-auto px-6 py-20 flex flex-col items-center justify-center min-h-screen text-center">
+      <div className="relative z-10 container mx-auto px-8 py-20 flex flex-col items-center justify-center min-h-screen text-center max-w-7xl">{/* Increased padding and max-width */}
         {/* Header Badge */}
         <Badge className="bg-card/80 border-primary/20 text-foreground px-6 py-3 text-base font-semibold mb-8 animate-fade-in backdrop-blur-sm">
           <Crown className="w-5 h-5 mr-3 text-primary" />
@@ -99,7 +99,7 @@ export const Hero = () => {
 
         {/* Main Heading - Steve Jobs Level Sophistication */}
         <div className="mb-16 animate-fade-in">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-light leading-[0.95] mb-8 tracking-tight">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-light leading-[0.95] mb-8 tracking-tight max-w-6xl mx-auto">
             <span className="text-foreground font-light">Where Identity </span>
             <span className="bg-gradient-to-r from-primary via-primary to-primary-dark bg-clip-text text-transparent font-medium italic">Evolves</span>
           </h1>

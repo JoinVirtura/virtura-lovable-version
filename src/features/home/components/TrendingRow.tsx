@@ -305,7 +305,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
         />
         
         {/* Full-Screen Zero-Gap Masonry Grid */}
-        <div className="grid grid-cols-8 md:grid-cols-10 lg:grid-cols-12 xl:grid-cols-14 auto-rows-[100px] relative z-10">
+        <div className="grid grid-cols-8 md:grid-cols-10 lg:grid-cols-12 xl:grid-cols-14 auto-rows-[100px] gap-0 relative z-10">{/* Added gap-0 to ensure no gaps */}
           <AnimatePresence mode="wait">
             {shuffledTiles.slice(0, displayCount).map((tile, index) => {
               const cardSize = getCardSize(index, tile);
@@ -372,75 +372,12 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                       transition={{ duration: 0.3 }}
                     />
                     
-                     {/* Enhanced ContentCard */}
-                     <div className="relative h-full cursor-pointer" onClick={() => window.location.href = `/creation/${tile.id}`}>
-                        <ContentCard 
-                          tile={tile} 
-                          size={cardSize.size as any}
-                          className={cn(
-                            "h-full transform-gpu transition-all duration-500",
-                            "hover:shadow-2xl hover:shadow-primary/20",
-                            cardSize.size === "hero" && "min-h-[400px]",
-                            cardSize.size === "tall" && "min-h-[350px]",
-                            cardSize.size === "wide" && "min-h-[200px]",
-                            cardSize.size === "standard" && "min-h-[250px]"
-                          )}
-                        />
-                        
-                        {/* Interactive Overlay with Actions */}
-                        <motion.div
-                          className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-2xl"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: isHovered ? 1 : 0 }}
-                          transition={{ duration: 0.3 }}
-                        >
-                          {/* Top Actions */}
-                          <div className="absolute top-3 right-3 flex gap-2">
-                            <Button
-                              size="sm"
-                              variant="secondary"
-                              className={cn(
-                                "w-8 h-8 p-0 backdrop-blur-sm bg-white/20 border-white/20 hover:bg-white/30",
-                                likedItems.has(tile.id) && "bg-red-500/80 hover:bg-red-500/90"
-                              )}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleLike(tile.id);
-                              }}
-                            >
-                              <Heart className={cn(
-                                "w-4 h-4",
-                                likedItems.has(tile.id) ? "fill-white text-white" : "text-white"
-                              )} />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="secondary"
-                              className="w-8 h-8 p-0 backdrop-blur-sm bg-white/20 border-white/20 hover:bg-white/30"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleShare(tile);
-                              }}
-                            >
-                              <Share2 className="w-4 h-4 text-white" />
-                            </Button>
-                          </div>
-
-                          {/* Bottom Info */}
-                          <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white">
-                            <div className="flex items-center gap-2">
-                              <Eye className="w-4 h-4" />
-                              <span className="text-sm font-medium">{tile.views?.toLocaleString()}</span>
-                            </div>
-                            {tile.kind === 'video' && (
-                              <div className="flex items-center gap-1">
-                                <Play className="w-3 h-3" />
-                                <span className="text-xs">{tile.duration}</span>
-                              </div>
-                            )}
-                          </div>
-                        </motion.div>
-                      </div>
+                     {/* Single ContentCard - Clean Implementation */}
+                     <ContentCard 
+                       tile={tile} 
+                       size={cardSize.size as any}
+                       className="h-full transform-gpu transition-all duration-500 hover:shadow-2xl hover:shadow-primary/20"
+                     />
                    </motion.div>
                  </motion.div>
                );
