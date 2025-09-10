@@ -179,13 +179,13 @@ export const Hero = () => {
           <form onSubmit={handleSubmit} className="relative">
             {/* Main Input Container - Improved Width */}
             <div className="relative bg-card/90 border border-border/50 rounded-2xl backdrop-blur-xl shadow-2xl overflow-hidden">
-              {/* Text Input Area - Reduced Height */}
-              <div className="px-8 py-5">
+              {/* Text Input Area - Minimized Height */}
+              <div className="px-8 py-4">
                 <textarea
                   placeholder="Describe an image and click generate..."
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  className="w-full h-16 text-lg bg-transparent border-0 focus:ring-0 placeholder:text-muted-foreground/70 resize-none leading-relaxed p-0"
+                  className="w-full h-12 text-lg bg-transparent border-0 focus:ring-0 placeholder:text-muted-foreground/70 resize-none leading-relaxed p-0"
                   style={{ outline: 'none' }}
                 />
               </div>
@@ -336,25 +336,6 @@ export const Hero = () => {
               </div>
             </div>
           </form>
-        </div>
-
-        {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-12 animate-fade-in">
-          <Button 
-            size="lg" 
-            className="px-8 py-6 text-lg font-bold bg-gradient-gold hover:bg-gradient-gold-hover shadow-gold hover:shadow-gold-intense transition-all duration-300 hover:scale-105"
-          >
-            <Sparkles className="mr-3 h-6 w-6" />
-            START CREATING
-          </Button>
-          
-          <Button 
-            variant="outline" 
-            size="lg" 
-            className="px-8 py-6 text-lg font-semibold transition-all duration-300"
-          >
-            EXPLORE GALLERY
-          </Button>
         </div>
 
         {/* Feature Badges */}
