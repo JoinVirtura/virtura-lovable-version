@@ -405,44 +405,6 @@ export const Hero = () => {
                       <RectangleHorizontal className="w-4 h-4 mr-2" />
                       {selectedAspect}
                     </Button>
-                    
-                    {/* Aspect Ratio Dropdown */}
-                    {showAspectOptions && (
-                      <div className="absolute top-full left-0 mt-2 bg-card border border-border rounded-xl shadow-2xl z-[210] p-3 min-w-[320px] backdrop-blur-xl">
-                        <div className="grid grid-cols-4 gap-3">
-                          {[
-                            { ratio: '4:3', width: 24, height: 18 },
-                            { ratio: '3:2', width: 24, height: 16 },
-                            { ratio: '16:9', width: 28, height: 16 },
-                            { ratio: '2.35:1', width: 28, height: 12 },
-                            { ratio: '1:1', width: 20, height: 20 },
-                            { ratio: '4:5', width: 16, height: 20 },
-                            { ratio: '2:3', width: 16, height: 24 },
-                            { ratio: '9:16', width: 14, height: 24 }
-                          ].map(({ratio, width, height}) => (
-                            <Button
-                              key={ratio}
-                              type="button"
-                              variant={selectedAspect === ratio ? "default" : "ghost"}
-                              className="p-4 h-auto flex flex-col items-center justify-center gap-3 hover:bg-muted transition-colors rounded-lg"
-                              onClick={() => {
-                                setSelectedAspect(ratio);
-                                setShowAspectOptions(false);
-                              }}
-                            >
-                              <div 
-                                className={`border-2 rounded-md ${selectedAspect === ratio ? 'border-primary bg-primary/30' : 'border-muted-foreground bg-muted-foreground/20'}`}
-                                style={{ 
-                                  width: `${width}px`, 
-                                  height: `${height}px`
-                                }}
-                              />
-                              <span className="text-xs font-semibold">{ratio}</span>
-                            </Button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
                   </div>
 
                   {/* Resolution */}
@@ -456,26 +418,6 @@ export const Hero = () => {
                       <Diamond className="w-4 h-4 mr-2" />
                       {selectedResolution}
                     </Button>
-                    
-                    {/* Resolution Dropdown */}
-                    {showResolutionOptions && (
-                      <div className="absolute top-full left-0 mt-2 bg-card border border-border rounded-xl shadow-2xl z-[210] p-2 min-w-[120px] backdrop-blur-xl">
-                        {['1K', '1.2K', '1.5K', '4K'].map((res) => (
-                          <Button
-                            key={res}
-                            type="button"
-                            variant={selectedResolution === res ? "default" : "ghost"}
-                            className="w-full justify-start text-sm p-2 h-8 rounded-lg"
-                            onClick={() => {
-                              setSelectedResolution(res);
-                              setShowResolutionOptions(false);
-                            }}
-                          >
-                            {res}
-                          </Button>
-                        ))}
-                      </div>
-                    )}
                   </div>
                   </div>
                   
@@ -805,6 +747,76 @@ export const Hero = () => {
                 </div>
               </div>
             </>
+          )}
+
+          {/* Aspect Ratio Dropdown - Outside input container */}
+          {showAspectOptions && (
+            <div className="fixed z-[9999] bg-card border border-border rounded-xl shadow-2xl p-3 min-w-[320px] backdrop-blur-xl"
+                 style={{
+                   top: '570px',
+                   left: '50%',
+                   transform: 'translateX(-50%)',
+                   marginLeft: '-100px'
+                 }}>
+              <div className="grid grid-cols-4 gap-3">
+                {[
+                  { ratio: '4:3', width: 24, height: 18 },
+                  { ratio: '3:2', width: 24, height: 16 },
+                  { ratio: '16:9', width: 28, height: 16 },
+                  { ratio: '2.35:1', width: 28, height: 12 },
+                  { ratio: '1:1', width: 20, height: 20 },
+                  { ratio: '4:5', width: 16, height: 20 },
+                  { ratio: '2:3', width: 16, height: 24 },
+                  { ratio: '9:16', width: 14, height: 24 }
+                ].map(({ratio, width, height}) => (
+                  <Button
+                    key={ratio}
+                    type="button"
+                    variant={selectedAspect === ratio ? "default" : "ghost"}
+                    className="p-4 h-auto flex flex-col items-center justify-center gap-3 hover:bg-muted transition-colors rounded-lg"
+                    onClick={() => {
+                      setSelectedAspect(ratio);
+                      setShowAspectOptions(false);
+                    }}
+                  >
+                    <div 
+                      className={`border-2 rounded-md ${selectedAspect === ratio ? 'border-primary bg-primary/30' : 'border-muted-foreground bg-muted-foreground/20'}`}
+                      style={{ 
+                        width: `${width}px`, 
+                        height: `${height}px`
+                      }}
+                    />
+                    <span className="text-xs font-semibold">{ratio}</span>
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Resolution Dropdown - Outside input container */}
+          {showResolutionOptions && (
+            <div className="fixed z-[9999] bg-card border border-border rounded-xl shadow-2xl p-2 min-w-[120px] backdrop-blur-xl"
+                 style={{
+                   top: '570px',
+                   left: '50%',
+                   transform: 'translateX(-50%)',
+                   marginLeft: '100px'
+                 }}>
+              {['1K', '1.2K', '1.5K', '4K'].map((res) => (
+                <Button
+                  key={res}
+                  type="button"
+                  variant={selectedResolution === res ? "default" : "ghost"}
+                  className="w-full justify-start text-sm p-2 h-8 rounded-lg"
+                  onClick={() => {
+                    setSelectedResolution(res);
+                    setShowResolutionOptions(false);
+                  }}
+                >
+                  {res}
+                </Button>
+              ))}
+            </div>
           )}
 
         </div>
