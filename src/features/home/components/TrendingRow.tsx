@@ -85,59 +85,126 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
     setShuffledTiles(tiles);
   }, [tiles]);
 
-  // Improved masonry layout with better coverage
+  // Dynamic masonry with ultra variety and visual impact
   const getCardSize = (index: number, tile: Tile) => {
+    // Create dynamic patterns based on content type and position
+    const isHighImpact = ['WILDLIFE', 'ABSTRACT', 'SCI-FI', 'AUTOMOTIVE', 'AI TECH'].includes(tile.tag || '');
+    const isVideo = tile.kind === 'video';
+    
     const patterns = [
-      { span: "col-span-2 row-span-2", size: "hero" }, // 0 - Large hero
-      { span: "col-span-1", size: "standard" }, // 1
-      { span: "col-span-1", size: "standard" }, // 2
-      { span: "col-span-1 row-span-2", size: "tall" }, // 3 - Tall card
-      { span: "col-span-1", size: "standard" }, // 4
-      { span: "col-span-2", size: "wide" }, // 5 - Wide card
-      { span: "col-span-1", size: "standard" }, // 6
-      { span: "col-span-1", size: "standard" }, // 7
+      { span: "col-span-3 row-span-3", size: "hero" }, // 0 - Mega hero
+      { span: "col-span-1 row-span-2", size: "tall" }, // 1 - Tall
+      { span: "col-span-2", size: "wide" }, // 2 - Wide
+      { span: "col-span-1", size: "standard" }, // 3
+      { span: "col-span-2 row-span-2", size: "hero" }, // 4 - Hero
+      { span: "col-span-1", size: "standard" }, // 5
+      { span: "col-span-1 row-span-3", size: "tall" }, // 6 - Ultra tall
+      { span: "col-span-2", size: "wide" }, // 7 - Wide
       { span: "col-span-1", size: "standard" }, // 8
-      { span: "col-span-1 row-span-2", size: "tall" }, // 9 - Tall card
-      { span: "col-span-1", size: "standard" }, // 10
-      { span: "col-span-2", size: "wide" }, // 11 - Wide card
-      { span: "col-span-2 row-span-2", size: "hero" }, // 12 - Large hero
+      { span: "col-span-1", size: "standard" }, // 9
+      { span: "col-span-3", size: "wide" }, // 10 - Ultra wide
+      { span: "col-span-1 row-span-2", size: "tall" }, // 11
+      { span: "col-span-2 row-span-2", size: "hero" }, // 12 - Hero
       { span: "col-span-1", size: "standard" }, // 13
       { span: "col-span-1", size: "standard" }, // 14
-      { span: "col-span-1", size: "standard" }, // 15
+      { span: "col-span-2", size: "wide" }, // 15
+      { span: "col-span-1 row-span-2", size: "tall" }, // 16
+      { span: "col-span-1", size: "standard" }, // 17
+      { span: "col-span-1", size: "standard" }, // 18
+      { span: "col-span-4 row-span-2", size: "hero" }, // 19 - Ultra hero
     ];
-    return patterns[index % patterns.length] || patterns[1];
+    
+    let pattern = patterns[index % patterns.length];
+    
+    // Boost high-impact content
+    if (isHighImpact && index % 7 === 0) {
+      pattern = { span: "col-span-3 row-span-3", size: "hero" };
+    }
+    
+    // Give videos more prominence
+    if (isVideo && index % 5 === 0) {
+      pattern = { span: "col-span-2 row-span-2", size: "hero" };
+    }
+    
+    return pattern;
   };
 
   return (
     <section className={cn('space-y-8 relative overflow-hidden', className)} ref={containerRef}>
+      {/* Ultra-Disruptive Animated Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          className="absolute -top-32 -left-32 w-96 h-96 bg-gradient-radial from-primary/20 via-primary/5 to-transparent rounded-full blur-3xl"
+          animate={{
+            x: [0, 100, -50, 0],
+            y: [0, -50, 100, 0],
+            scale: [1, 1.2, 0.8, 1],
+          }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute -bottom-32 -right-32 w-96 h-96 bg-gradient-radial from-secondary/20 via-secondary/5 to-transparent rounded-full blur-3xl"
+          animate={{
+            x: [0, -100, 50, 0],
+            y: [0, 50, -100, 0],
+            scale: [0.8, 1.2, 1, 0.8],
+          }}
+          transition={{ duration: 25, repeat: Infinity, ease: "easeInOut", delay: 5 }}
+        />
+      </div>
+
       {/* Revolutionary Header Design */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="relative"
-      >
-        {/* Background Glow Effect */}
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 blur-3xl" />
-        
+        className="relative z-10"
+      >        
         <div className="relative flex items-end justify-between">
-          <div className="space-y-4">
+          <div className="space-y-6">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="flex items-center gap-3"
+              className="flex items-center gap-4"
             >
-              <div className="w-1 h-8 bg-gradient-to-b from-primary to-primary-dark rounded-full" />
-              <h2 className="text-4xl md:text-5xl font-bold text-foreground tracking-tight">
-                TRENDING CREATIONS
-              </h2>
               <motion.div 
-                animate={{ rotate: 360 }}
-                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                className="w-6 h-6 bg-primary/20 rounded-full flex items-center justify-center"
+                className="w-2 h-16 bg-gradient-to-b from-primary via-secondary to-accent rounded-full"
+                animate={{ height: [64, 80, 64] }}
+                transition={{ duration: 3, repeat: Infinity }}
+              />
+              <div className="space-y-2">
+                <motion.h2 
+                  className="text-6xl md:text-8xl font-black text-transparent bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text tracking-tighter"
+                  animate={{ 
+                    backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+                  }}
+                  transition={{ duration: 8, repeat: Infinity }}
+                  style={{ backgroundSize: '300% 300%' }}
+                >
+                  VIRAL
+                </motion.h2>
+                <motion.div 
+                  className="text-2xl md:text-3xl font-light text-muted-foreground uppercase tracking-[0.3em]"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.8 }}
+                >
+                  GALLERY
+                </motion.div>
+              </div>
+              <motion.div 
+                animate={{ 
+                  rotate: 360,
+                  scale: [1, 1.2, 1]
+                }}
+                transition={{ 
+                  rotate: { duration: 4, repeat: Infinity, ease: "linear" },
+                  scale: { duration: 2, repeat: Infinity }
+                }}
+                className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center shadow-lg"
               >
-                <Sparkles className="w-3 h-3 text-primary" />
+                <Sparkles className="w-6 h-6 text-white" />
               </motion.div>
             </motion.div>
             
@@ -145,55 +212,65 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="text-lg text-muted-foreground max-w-2xl leading-relaxed"
+              className="text-xl text-muted-foreground max-w-3xl leading-relaxed font-light"
             >
-              Discover what the community is creating across every dimension of visual expression
+              From abstract masterpieces to cutting-edge tech, wildlife photography to luxury products — 
+              <span className="text-primary font-semibold"> explore the most viral creations </span>
+              shaping digital culture today
             </motion.p>
           </div>
           
-          {/* Advanced Control Panel */}
+          {/* Ultra-Advanced Control Panel */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="flex items-center gap-3"
+            className="flex flex-col gap-4"
           >
             <Button 
               variant="outline" 
-              size="sm"
+              size="lg"
               className={`
-                relative overflow-hidden backdrop-blur-sm border-primary/20 bg-card/50 hover:bg-primary/10 
-                group transition-all duration-500 hover:scale-105 hover:shadow-lg hover:shadow-primary/20
-                ${isShuffling ? 'animate-pulse' : ''}
+                relative overflow-hidden backdrop-blur-xl border-2 border-primary/30 bg-gradient-to-r from-background/80 to-card/80 
+                hover:from-primary/20 hover:to-secondary/20 group transition-all duration-700 hover:scale-110 
+                hover:shadow-2xl hover:shadow-primary/30 hover:border-primary/60
+                ${isShuffling ? 'animate-pulse scale-105' : ''}
               `}
               onClick={handleShuffle}
               disabled={isShuffling}
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-              <Shuffle className={`mr-2 h-4 w-4 transition-all duration-300 ${isShuffling ? 'animate-spin' : 'group-hover:rotate-180'}`} />
-              <span className="relative z-10 font-semibold">
-                {isShuffling ? 'REGENERATING' : 'SURPRISE ME'}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1500" />
+              <motion.div
+                animate={isShuffling ? { rotate: 360 } : {}}
+                transition={{ duration: 0.5, repeat: isShuffling ? Infinity : 0 }}
+              >
+                <Shuffle className="mr-3 h-5 w-5" />
+              </motion.div>
+              <span className="relative z-10 font-bold text-lg">
+                {isShuffling ? 'MORPHING REALITY' : 'REGENERATE'}
               </span>
             </Button>
 
-            <Button 
-              variant="outline" 
-              size="sm"
-              className="backdrop-blur-sm border-primary/20 bg-card/50 hover:bg-primary/10 group"
-            >
-              <Filter className="mr-2 h-4 w-4" />
-              <span className="font-semibold">FILTER</span>
-            </Button>
-            
-            <Button 
-              variant="ghost" 
-              className="text-primary hover:text-primary-dark hover:bg-primary/10 group relative overflow-hidden"
-              onClick={() => window.location.href = '/library'}
-            >
-              <span className="relative z-10 font-semibold">VIEW ALL</span>
-              <ArrowRight className="ml-2 h-4 w-4 transition-all duration-300 group-hover:translate-x-2 group-hover:scale-110" />
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/0 to-primary/10 translate-x-full group-hover:translate-x-0 transition-transform duration-300" />
-            </Button>
+            <div className="flex gap-3">
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="backdrop-blur-xl border-primary/20 bg-card/60 hover:bg-primary/10 group hover:scale-105 transition-all duration-300"
+              >
+                <Filter className="mr-2 h-4 w-4" />
+                <span className="font-semibold">FILTER</span>
+              </Button>
+              
+              <Button 
+                variant="ghost" 
+                className="text-primary hover:text-primary-dark hover:bg-primary/10 group relative overflow-hidden hover:scale-105 transition-all duration-300"
+                onClick={() => window.location.href = '/library'}
+              >
+                <span className="relative z-10 font-semibold">EXPLORE ALL</span>
+                <ArrowRight className="ml-2 h-4 w-4 transition-all duration-300 group-hover:translate-x-2 group-hover:scale-110" />
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/0 to-primary/10 translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
+              </Button>
+            </div>
           </motion.div>
         </div>
       </motion.div>
@@ -210,7 +287,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
           transition={{ type: "spring", damping: 20, stiffness: 100 }}
         />
         
-        <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-1 auto-rows-[180px] relative z-10">
+        <div className="grid grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-1 auto-rows-[140px] relative z-10">
           <AnimatePresence mode="wait">
             {shuffledTiles.map((tile, index) => {
               const cardSize = getCardSize(index, tile);

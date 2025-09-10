@@ -21,25 +21,25 @@ export const ContentCard: React.FC<ContentCardProps> = ({
   const cardRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
-  // Revolutionary Size System for Dynamic Layouts
+  // Ultra-Dynamic Size System for Maximum Impact
   const sizeClasses = {
-    sm: 'h-48',
-    md: 'h-64',
-    lg: 'h-80',
-    hero: 'h-96 md:h-[500px]',
-    wide: 'h-48 md:h-56',
-    tall: 'h-80 md:h-96',
-    standard: 'h-64 md:h-72'
+    sm: 'h-full min-h-[160px]',
+    md: 'h-full min-h-[200px]',
+    lg: 'h-full min-h-[280px]',
+    hero: 'h-full min-h-[400px]',
+    wide: 'h-full min-h-[180px]',
+    tall: 'h-full min-h-[360px]',
+    standard: 'h-full min-h-[220px]'
   };
 
   const contentSizes = {
     sm: { title: 'text-sm', meta: 'text-xs', padding: 'p-3' },
     md: { title: 'text-base', meta: 'text-xs', padding: 'p-4' },
-    lg: { title: 'text-lg', meta: 'text-sm', padding: 'p-5' },
-    hero: { title: 'text-2xl md:text-3xl', meta: 'text-base', padding: 'p-6 md:p-8' },
-    wide: { title: 'text-base', meta: 'text-sm', padding: 'p-4' },
-    tall: { title: 'text-lg', meta: 'text-sm', padding: 'p-5' },
-    standard: { title: 'text-base', meta: 'text-sm', padding: 'p-4' }
+    lg: { title: 'text-xl', meta: 'text-sm', padding: 'p-5' },
+    hero: { title: 'text-3xl md:text-4xl', meta: 'text-lg', padding: 'p-6 md:p-8' },
+    wide: { title: 'text-lg', meta: 'text-sm', padding: 'p-4' },
+    tall: { title: 'text-xl', meta: 'text-sm', padding: 'p-5' },
+    standard: { title: 'text-lg', meta: 'text-sm', padding: 'p-4' }
   };
 
   // Mouse tracking for revolutionary effects

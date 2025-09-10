@@ -1,558 +1,380 @@
 import { Tile } from './types';
 
-// Import diverse, photorealistic avatar assets
-import diverseAvatar1 from "@/assets/avatar-diverse-1.jpg";
-import diverseAvatar2 from "@/assets/avatar-diverse-2.jpg";
-import diverseAvatar3 from "@/assets/avatar-diverse-3.jpg";
-import diverseAvatar4 from "@/assets/avatar-diverse-4.jpg";
-import diverseAvatar5 from "@/assets/avatar-diverse-5.jpg";
-import diverseAvatar6 from "@/assets/avatar-diverse-6.jpg";
-import diverseAvatar7 from "@/assets/avatar-diverse-7.jpg";
-import diverseAvatar8 from "@/assets/avatar-diverse-8.jpg";
-import diverseAvatar9 from "@/assets/avatar-diverse-9.jpg";
-import diverseAvatar10 from "@/assets/avatar-diverse-10.jpg";
-import diverseAvatar11 from "@/assets/avatar-diverse-11.jpg";
-import diverseAvatar12 from "@/assets/avatar-diverse-12.jpg";
-
-// Import existing assets for additional variety
-import heroModel1 from "@/assets/hero-model-1.jpg";
-import heroModel2 from "@/assets/hero-model-2.jpg";
-import heroModel3 from "@/assets/hero-model-3.jpg";
-import model1 from "@/assets/model-aria.jpg";
-import model2 from "@/assets/model-bella.jpg";
-import model3 from "@/assets/model-diana.jpg";
-import model4 from "@/assets/model-haley.jpg";
-import model5 from "@/assets/model-iris.jpg";
-import model6 from "@/assets/model-jade.jpg";
-import model7 from "@/assets/model-jenna.jpg";
-import model8 from "@/assets/model-lena.jpg";
-
-// Import brand and product assets
-import brandLogo from "@/assets/brand-logo-suite.jpg";
-import brandMarketing from "@/assets/brand-marketing-campaign.jpg";
-import brandSocial from "@/assets/brand-social-media.jpg";
-import brandPresentation from "@/assets/brand-presentation-kit.jpg";
-import brandSignature from "@/assets/brand-signature-kit.jpg";
-
+// Curated diverse content for maximum visual impact
 export const mockTiles: Tile[] = [
+  // TECH & LOGOS
   {
-    id: '1',
+    id: 'tech-1',
     kind: 'image',
-    posterUrl: brandLogo,
-    title: 'Brand Logo Suite',
-    tag: 'Logos',
-    views: 25400,
-    byline: 'Creative Studios'
+    posterUrl: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&h=600&fit=crop&crop=center',
+    title: 'Quantum Neural Logo',
+    tag: 'AI TECH',
+    views: 4847291,
+    byline: 'Neural Design Co'
   },
   {
-    id: '2',
+    id: 'tech-2',
     kind: 'video',
-    posterUrl: diverseAvatar2,
-    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-1.jpg',
-    title: 'Luxury Brand Identity',
-    tag: 'Logos',
-    duration: '1:05',
-    views: 24700,
-    byline: 'Luxury Design'
+    posterUrl: 'https://images.unsplash.com/photo-1535378917042-10a22c95931a?w=800&h=600&fit=crop&crop=center',
+    previewVideoUrl: 'https://player.vimeo.com/external/397335718.sd.mp4?s=c23e87ae6d8e0e3e6c24c0f39c7de2c8b9e78e9b',
+    title: 'Holographic Brand Identity',
+    tag: 'BRAND',
+    duration: '2:15',
+    views: 3923847,
+    byline: 'Future Brand Studio'
   },
+  
+  // ANIMALS & WILDLIFE
   {
-    id: '3',
+    id: 'animal-1',
     kind: 'image',
-    posterUrl: diverseAvatar1,
-    title: 'Tech Executive Portrait',
-    tag: 'Professional',
-    views: 23100,
-    byline: 'Dr. Miguel Rodriguez'
+    posterUrl: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=800&h=600&fit=crop&crop=center',
+    title: 'Majestic Siberian Tiger',
+    tag: 'WILDLIFE',
+    views: 5728394,
+    byline: 'Wild Lens Photography'
   },
   {
-    id: '4',
+    id: 'animal-2',
     kind: 'video',
-    posterUrl: diverseAvatar7,
-    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-2.jpg',
-    title: 'Startup Founder Story',
-    tag: 'Business',
-    duration: '0:39',
-    views: 23100,
-    byline: 'Entrepreneur Hub'
+    posterUrl: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&h=600&fit=crop&crop=center',
+    previewVideoUrl: 'https://player.vimeo.com/external/397335718.sd.mp4?s=c23e87ae6d8e0e3e6c24c0f39c7de2c8b9e78e9b',
+    title: 'Dolphins in Motion',
+    tag: 'MARINE',
+    duration: '3:45',
+    views: 4847291,
+    byline: 'Deep Blue Studios'
   },
   {
-    id: '5',
+    id: 'animal-3',
     kind: 'image',
-    posterUrl: brandSocial,
-    title: 'Social Media Kit',
-    tag: 'Products',
-    views: 21300,
-    byline: 'Social Studios'
+    posterUrl: 'https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?w=800&h=600&fit=crop&crop=center',
+    title: 'Arctic Wolf Pack',
+    tag: 'WILDLIFE',
+    views: 3938475,
+    byline: 'Wilderness Focus'
   },
   {
-    id: '6',
-    kind: 'image',
-    posterUrl: model8,
-    title: 'Abstract NFT Collection',
-    tag: 'Abstract Art',
-    views: 20700,
-    byline: 'NFT Collective'
-  },
-  {
-    id: '7',
+    id: 'animal-4',
     kind: 'video',
-    posterUrl: brandMarketing,
-    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-3.jpg',
-    title: 'Marketing Campaign Assets',
-    tag: 'Marketing',
-    duration: '0:44',
-    views: 19800,
-    byline: 'Brand Agency'
+    posterUrl: 'https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=800&h=600&fit=crop&crop=center',
+    previewVideoUrl: 'https://player.vimeo.com/external/397335718.sd.mp4?s=c23e87ae6d8e0e3e6c24c0f39c7de2c8b9e78e9b',
+    title: 'African Safari Giants',
+    tag: 'SAFARI',
+    duration: '4:20',
+    views: 4729384,
+    byline: 'Safari Chronicles'
+  },
+  
+  // PRODUCTS & LUXURY
+  {
+    id: 'product-1',
+    kind: 'image',
+    posterUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=600&fit=crop&crop=center',
+    title: 'Audiophile Headphones',
+    tag: 'LUXURY',
+    views: 2847392,
+    byline: 'Premium Audio Co'
   },
   {
-    id: '8',
+    id: 'product-2',
     kind: 'video',
-    posterUrl: diverseAvatar6,
-    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-1.jpg',
-    title: 'Food Brand Campaign',
-    tag: 'Food & Beverage',
-    duration: '0:52',
-    views: 19400,
-    byline: 'Food Creatives'
+    posterUrl: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&h=600&fit=crop&crop=center',
+    previewVideoUrl: 'https://player.vimeo.com/external/397335718.sd.mp4?s=c23e87ae6d8e0e3e6c24c0f39c7de2c8b9e78e9b',
+    title: 'Swiss Timepiece Mastery',
+    tag: 'LUXURY',
+    duration: '1:45',
+    views: 3847391,
+    byline: 'Timeless Craft'
   },
   {
-    id: '9',
+    id: 'product-3',
     kind: 'image',
-    posterUrl: model5,
-    title: 'Minimalist Logo Design',
-    tag: 'Logos',
-    views: 19200,
-    byline: 'Minimal Studios'
+    posterUrl: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=800&h=600&fit=crop&crop=center',
+    title: 'Designer Sunglasses',
+    tag: 'FASHION',
+    views: 1928374,
+    byline: 'Style Vision'
   },
   {
-    id: '10',
+    id: 'product-4',
     kind: 'video',
-    posterUrl: diverseAvatar5,
-    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-2.jpg',
-    title: 'Wildlife Documentary',
-    tag: 'Animals',
-    duration: '0:16',
-    views: 18900,
-    byline: 'Nature Studios'
+    posterUrl: 'https://images.unsplash.com/photo-1493238792000-8113da705763?w=800&h=600&fit=crop&crop=center',
+    previewVideoUrl: 'https://player.vimeo.com/external/397335718.sd.mp4?s=c23e87ae6d8e0e3e6c24c0f39c7de2c8b9e78e9b',
+    title: 'Hypercar Revelation',
+    tag: 'AUTOMOTIVE',
+    duration: '2:30',
+    views: 4728394,
+    byline: 'Speed Vision Co'
   },
+  
+  // ABSTRACT ART & DIGITAL
   {
-    id: '11',
+    id: 'abstract-1',
     kind: 'image',
-    posterUrl: heroModel2,
-    title: 'Tech Product Launch',
-    tag: 'Products',
-    views: 18800,
-    byline: 'Tech Visuals'
+    posterUrl: 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&h=600&fit=crop&crop=center',
+    title: 'Fluid Reality Dynamics',
+    tag: 'ABSTRACT',
+    views: 4749281,
+    byline: 'Digital Dreamscape'
   },
   {
-    id: '12',
-    kind: 'image',
-    posterUrl: brandPresentation,
-    title: 'Product Showcase',
-    tag: 'Products',
-    views: 17800,
-    byline: 'Product Design Co'
-  },
-  {
-    id: '13',
+    id: 'abstract-2',
     kind: 'video',
-    posterUrl: model7,
-    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-3.jpg',
-    title: 'Corporate Training Video',
-    tag: 'Business',
-    duration: '0:41',
-    views: 17500,
-    byline: 'Corp Learning'
+    posterUrl: 'https://images.unsplash.com/photo-1558051815-0f081e2e9cc2?w=800&h=600&fit=crop&crop=center',
+    previewVideoUrl: 'https://player.vimeo.com/external/397335718.sd.mp4?s=c23e87ae6d8e0e3e6c24c0f39c7de2c8b9e78e9b',
+    title: 'Geometric Metamorphosis',
+    tag: 'MOTION',
+    duration: '3:15',
+    views: 5827391,
+    byline: 'Fractal Studios'
   },
   {
-    id: '14',
+    id: 'abstract-3',
     kind: 'image',
-    posterUrl: diverseAvatar8,
-    title: 'Sci-Fi Character Design',
-    tag: 'Characters',
-    views: 17300,
-    byline: 'Sci-Fi Studios'
+    posterUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&h=600&fit=crop&crop=center',
+    title: 'Neon Cyberpunk Synthesis',
+    tag: 'DIGITAL',
+    views: 3847391,
+    byline: 'Cyber Arts Collective'
   },
   {
-    id: '15',
+    id: 'abstract-4',
     kind: 'video',
-    posterUrl: diverseAvatar2,
-    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-1.jpg',
-    title: 'Healthcare Innovation Ad',
-    tag: 'Professional',
-    duration: '0:35',
-    views: 16700,
-    byline: 'Health Media'
+    posterUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop&crop=center',
+    previewVideoUrl: 'https://player.vimeo.com/external/397335718.sd.mp4?s=c23e87ae6d8e0e3e6c24c0f39c7de2c8b9e78e9b',
+    title: 'Street Art Revolution',
+    tag: 'URBAN ART',
+    duration: '1:50',
+    views: 2847391,
+    byline: 'Street Canvas Co'
   },
+  
+  // ARCHITECTURE & SCI-FI
   {
-    id: '16',
+    id: 'arch-1',
     kind: 'image',
-    posterUrl: model1,
-    title: 'Fashion Brand Campaign',
-    tag: 'Fashion',
-    views: 16800,
-    byline: 'Fashion Forward'
+    posterUrl: 'https://images.unsplash.com/photo-1495433824815-65ab0d6e4f8a?w=800&h=600&fit=crop&crop=center',
+    title: 'Neo-Tokyo Cityscape',
+    tag: 'ARCHITECTURE',
+    views: 4847291,
+    byline: 'Urban Vision Studio'
   },
   {
-    id: '17',
-    kind: 'image',
-    posterUrl: diverseAvatar10,
-    title: 'Sports Mascot Design',
-    tag: 'Mascots',
-    views: 16300,
-    byline: 'Sports Branding'
-  },
-  {
-    id: '18',
-    kind: 'image',
-    posterUrl: model6,
-    title: 'Fantasy Character Art',
-    tag: 'Characters',
-    views: 15900,
-    byline: 'Fantasy Forge'
-  },
-  {
-    id: '19',
+    id: 'arch-2',
     kind: 'video',
-    posterUrl: heroModel3,
-    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-2.jpg',
-    title: 'Startup Logo Animation',
-    tag: 'Logos',
-    duration: '0:48',
-    views: 15900,
-    byline: 'Motion Graphics Co'
+    posterUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=600&fit=crop&crop=center',
+    previewVideoUrl: 'https://player.vimeo.com/external/397335718.sd.mp4?s=c23e87ae6d8e0e3e6c24c0f39c7de2c8b9e78e9b',
+    title: 'Orbital Space Station',
+    tag: 'SCI-FI',
+    duration: '4:20',
+    views: 6847291,
+    byline: 'Cosmic Renders'
   },
   {
-    id: '20',
+    id: 'arch-3',
     kind: 'image',
-    posterUrl: diverseAvatar4,
-    title: 'Abstract Art Collection',
-    tag: 'Abstract Art',
-    views: 15600,
-    byline: 'Digital Artists'
+    posterUrl: 'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=800&h=600&fit=crop&crop=center',
+    title: 'Sustainable Architecture',
+    tag: 'GREEN TECH',
+    views: 2847391,
+    byline: 'Eco Design Lab'
+  },
+  
+  // NATURE & LANDSCAPES
+  {
+    id: 'nature-1',
+    kind: 'image',
+    posterUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop&crop=center',
+    title: 'Aurora Borealis Symphony',
+    tag: 'NATURE',
+    views: 5729384,
+    byline: 'Nordic Light Co'
   },
   {
-    id: '21',
+    id: 'nature-2',
     kind: 'video',
-    posterUrl: heroModel1,
-    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-3.jpg',
-    title: 'Wildlife Conservation PSA',
-    tag: 'Animals',
-    duration: '0:27',
-    views: 14100,
-    byline: 'Conservation Media'
+    posterUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=600&fit=crop&crop=center',
+    previewVideoUrl: 'https://player.vimeo.com/external/397335718.sd.mp4?s=c23e87ae6d8e0e3e6c24c0f39c7de2c8b9e78e9b',
+    title: 'Mystical Forest Timelapse',
+    tag: 'LANDSCAPE',
+    duration: '3:30',
+    views: 4847291,
+    byline: 'Earth Scenes'
   },
   {
-    id: '22',
+    id: 'nature-3',
     kind: 'image',
-    posterUrl: diverseAvatar12,
-    title: 'Architectural Visualization',
-    tag: 'Architecture',
-    views: 14100,
-    byline: 'Arch Viz Studio'
+    posterUrl: 'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=800&h=600&fit=crop&crop=center',
+    title: 'Mountain Peak Majesty',
+    tag: 'ADVENTURE',
+    views: 3729384,
+    byline: 'Peak Seekers'
+  },
+  
+  // FASHION & LIFESTYLE
+  {
+    id: 'fashion-1',
+    kind: 'image',
+    posterUrl: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=800&h=600&fit=crop&crop=center',
+    title: 'Haute Couture Portrait',
+    tag: 'FASHION',
+    views: 3847391,
+    byline: 'Vogue Digital'
   },
   {
-    id: '23',
+    id: 'fashion-2',
     kind: 'video',
-    posterUrl: model3,
-    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-1.jpg',
-    title: 'Automotive Showcase',
-    tag: 'Products',
-    duration: '0:55',
-    views: 13600,
-    byline: 'Auto Design Lab'
+    posterUrl: 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=800&h=600&fit=crop&crop=center',
+    previewVideoUrl: 'https://player.vimeo.com/external/397335718.sd.mp4?s=c23e87ae6d8e0e3e6c24c0f39c7de2c8b9e78e9b',
+    title: 'Milan Runway Revolution',
+    tag: 'LIFESTYLE',
+    duration: '2:45',
+    views: 2847391,
+    byline: 'Style Motion'
   },
   {
-    id: '24',
+    id: 'fashion-3',
     kind: 'image',
-    posterUrl: diverseAvatar3,
-    title: 'Geometric Art Series',
-    tag: 'Abstract Art',
-    views: 13200,
-    byline: 'Geometric Arts'
+    posterUrl: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&h=600&fit=crop&crop=center',
+    title: 'Street Style Revolution',
+    tag: 'STREET',
+    views: 1847392,
+    byline: 'Urban Style Co'
   },
+  
+  // FOOD & CULINARY
   {
-    id: '25',
+    id: 'food-1',
     kind: 'image',
-    posterUrl: diverseAvatar1,
-    title: 'Educational Mascot',
-    tag: 'Mascots',
-    views: 12500,
-    byline: 'Edu Design'
+    posterUrl: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=800&h=600&fit=crop&crop=center',
+    title: 'Molecular Gastronomy Art',
+    tag: 'CULINARY',
+    views: 2928374,
+    byline: 'Chef Artistry'
   },
   {
-    id: '26',
-    kind: 'image',
-    posterUrl: model2,
-    title: 'Pet Portrait Studio',
-    tag: 'Animals',
-    views: 12400,
-    byline: 'Pet Art Studio'
-  },
-  {
-    id: '27',
+    id: 'food-2',
     kind: 'video',
-    posterUrl: brandSignature,
-    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-2.jpg',
-    title: 'E-commerce Product Demo',
-    tag: 'Products',
-    duration: '1:15',
-    views: 11900,
-    byline: 'Commerce Studios'
+    posterUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&h=600&fit=crop&crop=center',
+    previewVideoUrl: 'https://player.vimeo.com/external/397335718.sd.mp4?s=c23e87ae6d8e0e3e6c24c0f39c7de2c8b9e78e9b',
+    title: 'Sushi Master Precision',
+    tag: 'JAPANESE',
+    duration: '3:00',
+    views: 3847391,
+    byline: 'Taste Studio'
   },
   {
-    id: '28',
+    id: 'food-3',
     kind: 'image',
-    posterUrl: model4,
-    title: 'Restaurant Menu Design',
-    tag: 'Food & Beverage',
-    views: 10300,
-    byline: 'Culinary Visuals'
+    posterUrl: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&h=600&fit=crop&crop=center',
+    title: 'Artisan Coffee Culture',
+    tag: 'BEVERAGE',
+    views: 1847291,
+    byline: 'Brew Culture'
   },
+  
+  // SPORTS & ACTION
   {
-    id: '29',
+    id: 'sport-1',
     kind: 'video',
-    posterUrl: diverseAvatar9,
-    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-3.jpg',
-    title: 'Gaming Character Design',
-    tag: 'Characters',
-    duration: '0:29',
-    views: 18900,
-    byline: 'Game Studios'
+    posterUrl: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop&crop=center',
+    previewVideoUrl: 'https://player.vimeo.com/external/397335718.sd.mp4?s=c23e87ae6d8e0e3e6c24c0f39c7de2c8b9e78e9b',
+    title: 'Extreme Skateboarding',
+    tag: 'ACTION',
+    duration: '2:20',
+    views: 4847291,
+    byline: 'X-Sport Media'
   },
   {
-    id: '30',
+    id: 'sport-2',
     kind: 'image',
-    posterUrl: diverseAvatar11,
-    title: 'Marine Research Visualization',
-    tag: 'Science',
-    views: 14700,
-    byline: 'Dr. Leilani Nakamura'
+    posterUrl: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800&h=600&fit=crop&crop=center',
+    title: 'Marathon Champion',
+    tag: 'ATHLETICS',
+    views: 3847391,
+    byline: 'Sport Photography'
   },
   {
-    id: '31',
+    id: 'sport-3',
     kind: 'video',
-    posterUrl: model8,
-    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-1.jpg',
-    title: 'Smart Home Demo',
-    tag: 'Products',
-    duration: '0:43',
-    views: 13800,
-    byline: 'Smart Tech'
+    posterUrl: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=800&h=600&fit=crop&crop=center',
+    previewVideoUrl: 'https://player.vimeo.com/external/397335718.sd.mp4?s=c23e87ae6d8e0e3e6c24c0f39c7de2c8b9e78e9b',
+    title: 'Surfing Giant Waves',
+    tag: 'EXTREME',
+    duration: '1:55',
+    views: 4729384,
+    byline: 'Wave Riders'
   },
+  
+  // MUSIC & PERFORMANCE
   {
-    id: '32',
-    kind: 'image',
-    posterUrl: diverseAvatar12,
-    title: 'Urban Architecture',
-    tag: 'Architecture',
-    views: 13500,
-    byline: 'Urban Design Co'
-  },
-  {
-    id: '33',
+    id: 'music-1',
     kind: 'video',
-    posterUrl: model1,
-    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-2.jpg',
-    title: 'Coffee Brand Story',
-    tag: 'Food & Beverage',
-    duration: '1:02',
-    views: 13200,
-    byline: 'Brew Studios'
+    posterUrl: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop&crop=center',
+    previewVideoUrl: 'https://player.vimeo.com/external/397335718.sd.mp4?s=c23e87ae6d8e0e3e6c24c0f39c7de2c8b9e78e9b',
+    title: 'Electronic Symphony Live',
+    tag: 'MUSIC',
+    duration: '4:15',
+    views: 5827391,
+    byline: 'Sound Wave Studios'
   },
   {
-    id: '34',
+    id: 'music-2',
     kind: 'image',
-    posterUrl: heroModel1,
-    title: 'NFT Avatar Series',
-    tag: 'Abstract Art',
-    views: 12900,
-    byline: 'Crypto Artists'
+    posterUrl: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800&h=600&fit=crop&crop=center',
+    title: 'Concert Energy Wave',
+    tag: 'LIVE',
+    views: 4847291,
+    byline: 'Stage Light Co'
+  },
+  
+  // TRAVEL & ADVENTURE
+  {
+    id: 'travel-1',
+    kind: 'image',
+    posterUrl: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&h=600&fit=crop&crop=center',
+    title: 'Desert Dune Symphony',
+    tag: 'ADVENTURE',
+    views: 3729384,
+    byline: 'Desert Wanderers'
   },
   {
-    id: '35',
+    id: 'travel-2',
     kind: 'video',
-    posterUrl: diverseAvatar5,
-    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-3.jpg',
-    title: 'Dragon Character Reveal',
-    tag: 'Characters',
-    duration: '0:38',
-    views: 12600,
-    byline: 'Mythical Studios'
-  },
-  {
-    id: '36',
-    kind: 'image',
-    posterUrl: model2,
-    title: 'University Mascot',
-    tag: 'Mascots',
-    views: 12300,
-    byline: 'Campus Creative'
-  },
-  {
-    id: '37',
-    kind: 'video',
-    posterUrl: brandLogo,
-    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-1.jpg',
-    title: 'Luxury Watch Ad',
-    tag: 'Products',
-    duration: '0:51',
-    views: 12000,
-    byline: 'Luxury Media'
-  },
-  {
-    id: '38',
-    kind: 'image',
-    posterUrl: diverseAvatar3,
-    title: 'Modern Home Design',
-    tag: 'Architecture',
-    views: 11700,
-    byline: 'Modern Spaces'
-  },
-  {
-    id: '39',
-    kind: 'video',
-    posterUrl: model6,
-    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-2.jpg',
-    title: 'Ocean Conservation',
-    tag: 'Animals',
-    duration: '0:45',
-    views: 11400,
-    byline: 'Ocean Alliance'
-  },
-  {
-    id: '40',
-    kind: 'image',
-    posterUrl: heroModel3,
-    title: 'Pixel Art Character',
-    tag: 'Characters',
-    views: 11100,
-    byline: 'Pixel Masters'
-  },
-  {
-    id: '41',
-    kind: 'video',
-    posterUrl: diverseAvatar8,
-    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-3.jpg',
-    title: 'Wine Tasting Experience',
-    tag: 'Food & Beverage',
-    duration: '1:08',
-    views: 10800,
-    byline: 'Vineyard Stories'
-  },
-  {
-    id: '42',
-    kind: 'image',
-    posterUrl: model3,
-    title: 'Cyberpunk Logo',
-    tag: 'Logos',
-    views: 10500,
-    byline: 'Future Design'
-  },
-  {
-    id: '43',
-    kind: 'video',
-    posterUrl: diverseAvatar1,
-    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-1.jpg',
-    title: 'Electric Car Launch',
-    tag: 'Products',
-    duration: '0:57',
-    views: 10200,
-    byline: 'EV Studios'
-  },
-  {
-    id: '44',
-    kind: 'image',
-    posterUrl: model7,
-    title: 'Fractal Art Series',
-    tag: 'Abstract Art',
-    views: 9900,
-    byline: 'Math Art Collective'
-  },
-  {
-    id: '45',
-    kind: 'video',
-    posterUrl: diverseAvatar6,
-    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-2.jpg',
-    title: 'Forest Wildlife Documentary',
-    tag: 'Animals',
-    duration: '0:34',
-    views: 9600,
-    byline: 'Forest Films'
-  },
-  {
-    id: '46',
-    kind: 'image',
-    posterUrl: brandMarketing,
-    title: 'Skyscraper Project',
-    tag: 'Architecture',
-    views: 9300,
-    byline: 'Tower Design'
-  },
-  {
-    id: '47',
-    kind: 'video',
-    posterUrl: diverseAvatar4,
-    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-3.jpg',
-    title: 'Superhero Character',
-    tag: 'Characters',
-    duration: '0:42',
-    views: 9000,
-    byline: 'Hero Comics'
-  },
-  {
-    id: '48',
-    kind: 'image',
-    posterUrl: model4,
-    title: 'Team Mascot Design',
-    tag: 'Mascots',
-    views: 8700,
-    byline: 'Team Spirit'
-  },
-  {
-    id: '49',
-    kind: 'video',
-    posterUrl: brandSocial,
-    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-1.jpg',
-    title: 'Bakery Brand Campaign',
-    tag: 'Food & Beverage',
-    duration: '0:49',
-    views: 8400,
-    byline: 'Sweet Media'
-  },
-  {
-    id: '50',
-    kind: 'image',
-    posterUrl: diverseAvatar9,
-    title: 'Holographic Logo',
-    tag: 'Logos',
-    views: 8100,
-    byline: 'Holo Graphics'
+    posterUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop&crop=center',
+    previewVideoUrl: 'https://player.vimeo.com/external/397335718.sd.mp4?s=c23e87ae6d8e0e3e6c24c0f39c7de2c8b9e78e9b',
+    title: 'Island Paradise Discovery',
+    tag: 'TROPICAL',
+    duration: '3:40',
+    views: 4827391,
+    byline: 'Paradise Films'
   }
 ];
 
+// Mock tutorials data for recent section
 export const mockTutorials: Tile[] = [
   {
     id: 'tutorial-1',
     kind: 'video',
-    posterUrl: diverseAvatar3,
-    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-1.jpg',
-    title: 'AI Video Creation Tutorial',
-    tag: 'Tutorial',
-    duration: '5:23',
-    views: 45600,
-    byline: 'Learn professional video creation'
+    posterUrl: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=800&h=600&fit=crop&crop=center',
+    previewVideoUrl: 'https://player.vimeo.com/external/397335718.sd.mp4?s=c23e87ae6d8e0e3e6c24c0f39c7de2c8b9e78e9b',
+    title: 'Master Neural Logo Design',
+    tag: 'AI TUTORIAL',
+    duration: '12:30',
+    views: 2847293,
+    byline: 'Design Academy'
   },
   {
     id: 'tutorial-2',
     kind: 'video',
-    posterUrl: diverseAvatar7,
-    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-2.jpg',
-    title: 'Avatar Studio Mastery',
-    tag: 'Tutorial',
-    duration: '3:47',
-    views: 32100,
-    byline: 'Master AI avatar creation'
+    posterUrl: 'https://images.unsplash.com/photo-1561736778-92e52a7769ef?w=800&h=600&fit=crop&crop=center',
+    previewVideoUrl: 'https://player.vimeo.com/external/397335718.sd.mp4?s=c23e87ae6d8e0e3e6c24c0f39c7de2c8b9e78e9b',
+    title: 'Wildlife Photography Secrets',
+    tag: 'PHOTOGRAPHY',
+    duration: '8:45',
+    views: 3847391,
+    byline: 'Lens Masters'
   }
 ];
 
