@@ -303,7 +303,7 @@ export const Hero = () => {
         <div className="absolute bottom-0 right-0 w-48 h-48 bg-gradient-to-tl from-primary/12 via-primary/4 to-transparent animate-corner-glow-4" />
       </div>
       
-      <div className="relative z-10 container mx-auto px-12 py-20 flex flex-col items-center justify-center min-h-screen text-center max-w-6xl">{/* More padding */}
+      <div className="relative z-10 container mx-auto px-12 py-20 flex flex-col items-center justify-center min-h-screen text-center max-w-6xl">
         {/* Header Badge */}
         <Badge className="bg-card/80 border-primary/20 text-foreground px-6 py-3 text-base font-semibold mb-8 animate-fade-in backdrop-blur-sm">
           Revolutionary AI Technology
@@ -500,12 +500,12 @@ export const Hero = () => {
           
           {/* Large Styles Popup Window */}
           {showStyleModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-8">
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
               {/* Backdrop */}
               <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowStyleModal(false)} />
               
-              {/* Large Popup Box */}
-              <div className="relative bg-card/95 backdrop-blur-xl border border-border rounded-2xl shadow-2xl w-full max-w-7xl h-[85vh] overflow-hidden">
+              {/* Large Popup Box - Properly Centered */}
+              <div className="relative bg-card/95 backdrop-blur-xl border border-border rounded-2xl shadow-2xl w-full max-w-7xl h-[85vh] overflow-hidden mx-auto">
                 {/* Modal Header */}
                 <div className="flex items-center justify-between p-4 border-b border-border/30">
                   <div className="flex items-center gap-3">
@@ -604,46 +604,56 @@ export const Hero = () => {
                       ))}
                     </div>
                   </div>
-                  </div>
-                  </div>
 
                   {/* Side Preview Panel */}
-                  <div className="flex-1 bg-muted/30 border-l border-border/30 p-3 overflow-hidden flex flex-col">
+                  <div className="w-80 bg-muted/30 border-l border-border/30 p-4 overflow-hidden flex flex-col">
                     <div className="flex flex-col h-full">
                       <div className="flex-1">
-                        <h3 className="text-lg font-bold text-foreground mb-2">
-                          {selectedStylePreview ? selectedStylePreview.name : 'Preview'}
+                        <h3 className="text-lg font-bold text-foreground mb-4">
+                          {selectedStylePreview ? selectedStylePreview.name : 'Select a style to preview'}
                         </h3>
-                        <div className="grid grid-cols-2 gap-3 mb-3">
-                          {/* Four preview variations - Larger size */}
-                          {[1, 2, 3, 4].map((i) => (
-                            <div key={i} className="relative aspect-[4/3] bg-muted/50 rounded-xl overflow-hidden">
-                              <img 
-                                src={selectedStylePreview ? selectedStylePreview.image : "https://via.placeholder.com/200x150/1a1a1a/ffffff?text=Select+Style"} 
-                                alt={`${selectedStylePreview?.name || 'Style'} Variation ${i}`}
-                                className="w-full h-full object-cover"
-                              />
-                              {/* Variation label overlay with better visibility */}
-                              <div className="absolute top-2 left-2 bg-black/80 text-white text-sm font-bold px-2 py-1 rounded-md border border-white/20">
-                                {i}
+                        {selectedStylePreview && (
+                          <div className="grid grid-cols-2 gap-3 mb-4">
+                            {/* Four preview variations - Larger size */}
+                            {[1, 2, 3, 4].map((i) => (
+                              <div key={i} className="relative aspect-square bg-muted/50 rounded-xl overflow-hidden">
+                                <img 
+                                  src={selectedStylePreview.image} 
+                                  alt={`${selectedStylePreview.name} Variation ${i}`}
+                                  className="w-full h-full object-cover"
+                                />
+                                {/* Variation label overlay with better visibility */}
+                                <div className="absolute top-2 left-2 bg-black/80 text-white text-sm font-bold px-2 py-1 rounded-md border border-white/20">
+                                  {i}
+                                </div>
                               </div>
-                            </div>
-                          ))}
-                        </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                       
-                      <div className="space-y-2 flex-shrink-0">
-                        <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-2 rounded-xl text-sm">
+                      <div className="space-y-3 flex-shrink-0 mt-4">
+                        <Button 
+                          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-3 rounded-xl text-sm"
+                          onClick={() => {
+                            if (selectedStylePreview) {
+                              handleStyleSelect(selectedStylePreview);
+                              setShowStyleModal(false);
+                            }
+                          }}
+                          disabled={!selectedStylePreview}
+                        >
                           + Add Style
                         </Button>
-                        <Button variant="outline" className="w-full border-primary/30 text-foreground hover:bg-primary/10 py-2 rounded-xl text-sm">
+                        <Button variant="outline" className="w-full border-primary/30 text-foreground hover:bg-primary/10 py-3 rounded-xl text-sm">
                           📌 Pin
                         </Button>
                       </div>
                     </div>
                   </div>
-            </div>
-          )}
+                </div>
+              </div>
+            )}
 
           {/* Image Style Popup - Outside all containers */}
           {showImageStylePopup && (
@@ -799,6 +809,7 @@ export const Hero = () => {
           )}
 
         </div>
+      </div>
       </div>
     </section>
   );
