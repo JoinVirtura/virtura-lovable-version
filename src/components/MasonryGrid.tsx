@@ -103,7 +103,7 @@ export const MasonryGrid: React.FC<MasonryGridProps> = ({ tiles, className }) =>
                   <motion.h2 
                     className="text-5xl md:text-6xl font-black relative leading-[1.1] py-2"
                     style={{
-                      background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF6B35 100%)',
+                      background: 'linear-gradient(135deg, #FFD700 0%, #FFC107 100%)',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
                       backgroundClip: 'text',
@@ -112,18 +112,6 @@ export const MasonryGrid: React.FC<MasonryGridProps> = ({ tiles, className }) =>
                   >
                     Trending
                   </motion.h2>
-                  
-                  <motion.div 
-                    className="text-2xl md:text-3xl font-light tracking-[0.5em] text-muted-foreground/80 relative ml-2"
-                    initial={{ opacity: 0, letterSpacing: '0.2em' }}
-                    animate={{ 
-                      opacity: 1, 
-                      letterSpacing: '0.5em',
-                    }}
-                    transition={{ delay: 1, duration: 1.5 }}
-                  >
-                    Creations
-                  </motion.div>
                 </div>
               </div>
             </motion.div>
