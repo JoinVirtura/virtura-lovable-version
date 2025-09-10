@@ -394,7 +394,7 @@ export const Hero = () => {
                     </Button>
                   </div>
 
-                  {/* Aspect Ratio */}
+                   {/* Aspect Ratio */}
                   <div className="relative" data-aspect-container>
                     <Button
                       type="button"
@@ -406,43 +406,7 @@ export const Hero = () => {
                       {selectedAspect}
                     </Button>
                     
-                    {/* Aspect Ratio Dropdown */}
-                    {showAspectOptions && (
-                      <div className="absolute bottom-full left-0 mb-2 bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-2xl z-50 p-2 min-w-[200px]">
-                        <div className="grid grid-cols-4 gap-2">
-                          {[
-                            { ratio: '4:3', width: 20, height: 15 },
-                            { ratio: '3:2', width: 18, height: 12 },
-                            { ratio: '16:9', width: 20, height: 11 },
-                            { ratio: '2.35:1', width: 20, height: 8 },
-                            { ratio: '1:1', width: 15, height: 15 },
-                            { ratio: '4:5', width: 12, height: 15 },
-                            { ratio: '2:3', width: 10, height: 15 },
-                            { ratio: '9:16', width: 9, height: 18 }
-                          ].map(({ratio, width, height}) => (
-                            <Button
-                              key={ratio}
-                              type="button"
-                              variant={selectedAspect === ratio ? "default" : "ghost"}
-                              className="p-3 h-auto flex flex-col items-center justify-center gap-2 hover:bg-muted transition-colors"
-                              onClick={() => {
-                                setSelectedAspect(ratio);
-                                setShowAspectOptions(false);
-                              }}
-                            >
-                              <div 
-                                className={`border-2 rounded-sm ${selectedAspect === ratio ? 'border-primary bg-primary/20' : 'border-muted-foreground bg-muted/50'}`}
-                                style={{ 
-                                  width: `${width}px`, 
-                                  height: `${height}px`
-                                }}
-                              />
-                              <span className="text-xs font-medium">{ratio}</span>
-                            </Button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                    {/* Aspect Ratio Dropdown moved outside */}
                   </div>
 
                   {/* Resolution */}
@@ -797,9 +761,13 @@ export const Hero = () => {
                 className="fixed inset-0 z-[9998]" 
                 onClick={() => setShowResolutionOptions(false)} 
               />
-              {/* Resolution dropdown positioned as overlay */}
+              {/* Resolution dropdown positioned near button */}
               <div 
-                className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-card border border-border rounded-xl shadow-2xl z-[9999] p-2 min-w-[120px] backdrop-blur-xl"
+                className="fixed z-[9999] bg-card border border-border rounded-xl shadow-2xl p-2 min-w-[120px] backdrop-blur-xl"
+                style={{
+                  bottom: '120px',
+                  right: '320px'
+                }}
               >
                 {['1K', '1.2K', '1.5K', '4K'].map((res) => (
                   <Button
@@ -815,6 +783,58 @@ export const Hero = () => {
                     {res}
                   </Button>
                 ))}
+              </div>
+            </>
+          )}
+
+          {/* Aspect Ratio Dropdown Overlay - Outside all containers */}
+          {showAspectOptions && (
+            <>
+              {/* Backdrop overlay */}
+              <div 
+                className="fixed inset-0 z-[9998]" 
+                onClick={() => setShowAspectOptions(false)} 
+              />
+              {/* Aspect ratio dropdown positioned near button */}
+              <div 
+                className="fixed z-[9999] bg-card border border-border rounded-xl shadow-2xl p-3 min-w-[280px] backdrop-blur-xl"
+                style={{
+                  bottom: '120px',
+                  right: '450px'
+                }}
+              >
+                <div className="grid grid-cols-4 gap-2">
+                  {[
+                    { ratio: '4:3', width: 20, height: 15 },
+                    { ratio: '3:2', width: 18, height: 12 },
+                    { ratio: '16:9', width: 20, height: 11 },
+                    { ratio: '2.35:1', width: 20, height: 8 },
+                    { ratio: '1:1', width: 15, height: 15 },
+                    { ratio: '4:5', width: 12, height: 15 },
+                    { ratio: '2:3', width: 10, height: 15 },
+                    { ratio: '9:16', width: 9, height: 18 }
+                  ].map(({ratio, width, height}) => (
+                    <Button
+                      key={ratio}
+                      type="button"
+                      variant={selectedAspect === ratio ? "default" : "ghost"}
+                      className="p-3 h-auto flex flex-col items-center justify-center gap-2 hover:bg-muted transition-colors"
+                      onClick={() => {
+                        setSelectedAspect(ratio);
+                        setShowAspectOptions(false);
+                      }}
+                    >
+                      <div 
+                        className={`border-2 rounded-sm ${selectedAspect === ratio ? 'border-primary bg-primary/20' : 'border-muted-foreground bg-muted/50'}`}
+                        style={{ 
+                          width: `${width}px`, 
+                          height: `${height}px`
+                        }}
+                      />
+                      <span className="text-xs font-medium">{ratio}</span>
+                    </Button>
+                  ))}
+                </div>
               </div>
             </>
           )}
