@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Sparkles, Mic, Send, Crown, Lock, Zap, Camera, Shuffle } from "lucide-react";
+import { Sparkles, Mic, Send, Crown, Lock, Zap, Camera, Shuffle, Star, X } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -14,6 +14,7 @@ export const Hero = () => {
   const [showStyleOptions, setShowStyleOptions] = useState(false);
   const [showAspectOptions, setShowAspectOptions] = useState(false);
   const [showResolutionOptions, setShowResolutionOptions] = useState(false);
+  const [showStyleModal, setShowStyleModal] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   
@@ -195,15 +196,15 @@ export const Hero = () => {
                 <div className="flex items-center justify-between gap-4 w-full">
                   {/* Options Row - Flex Wrap for Responsiveness */}
                   <div className="flex items-center gap-3 flex-wrap flex-1 min-w-0">
-                  {/* Style Button */}
+                  {/* Style Button - Updated Icon */}
                   <div className="relative">
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={() => setShowStyleOptions(!showStyleOptions)}
+                      onClick={() => setShowStyleModal(true)}
                       className="bg-muted/60 border-border/50 hover:bg-muted/80 px-4 py-2 rounded-xl text-sm font-medium h-10"
                     >
-                      <Sparkles className="w-4 h-4 mr-2" />
+                      <Star className="w-4 h-4 mr-2" />
                       {selectedStyle}
                     </Button>
                   </div>
@@ -336,6 +337,129 @@ export const Hero = () => {
               </div>
             </div>
           </form>
+          
+          {/* Styles Modal */}
+          {showStyleModal && (
+            <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+              <div className="bg-card/95 backdrop-blur-xl border border-border rounded-2xl shadow-2xl w-full max-w-4xl max-h-[80vh] overflow-hidden">
+                {/* Modal Header */}
+                <div className="flex items-center justify-between p-6 border-b border-border/30">
+                  <div className="flex items-center gap-4">
+                    <h2 className="text-2xl font-bold text-foreground">Styles</h2>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="bg-background border-border/50 hover:bg-muted/50 text-sm px-3 py-1 h-8"
+                      >
+                        Community
+                      </Button>
+                      <Button
+                        variant="default"
+                        size="sm"
+                        className="bg-background text-foreground border border-border/50 text-sm px-3 py-1 h-8"
+                      >
+                        Krea
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="bg-background border-border/50 hover:bg-muted/50 text-sm px-3 py-1 h-8"
+                      >
+                        Private
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="bg-background border-border/50 hover:bg-muted/50 text-sm px-3 py-1 h-8"
+                      >
+                        Pinned
+                      </Button>
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowStyleModal(false)}
+                    className="hover:bg-muted/50 p-2 h-8 w-8"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+
+                {/* Modal Content */}
+                <div className="p-6 overflow-y-auto max-h-[60vh]">
+                  {/* Category Tabs */}
+                  <div className="flex items-center gap-4 mb-6">
+                    <Button variant="ghost" className="text-foreground font-semibold">All</Button>
+                    <Button variant="ghost" className="text-muted-foreground hover:text-foreground">Krea 1</Button>
+                    <Button variant="ghost" className="text-muted-foreground hover:text-foreground">Flux</Button>
+                  </div>
+
+                  {/* Styles Grid */}
+                  <div className="grid grid-cols-5 gap-4">
+                    {/* Create Style Card */}
+                    <div 
+                      className="aspect-square bg-muted/30 rounded-xl border-2 border-dashed border-border/50 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-all"
+                      onClick={() => {
+                        setSelectedStyle("Create style");
+                        setShowStyleModal(false);
+                      }}
+                    >
+                      <div className="text-2xl mb-2">+</div>
+                      <div className="text-xs text-center">
+                        <div className="text-muted-foreground">Train a style</div>
+                        <div className="font-semibold">Create style</div>
+                      </div>
+                    </div>
+
+                    {/* Style Thumbnails */}
+                    {[
+                      { name: "Gradient graphics", color: "bg-gradient-to-br from-pink-400 to-orange-400" },
+                      { name: "Long exposure emotion", color: "bg-gradient-to-br from-orange-300 to-amber-500" },
+                      { name: "Moebius I", color: "bg-gradient-to-br from-gray-200 to-gray-400" },
+                      { name: "Abstract Typography", color: "bg-gradient-to-br from-gray-300 to-gray-500" },
+                      { name: "Frank Vibrant Oil Painting", color: "bg-gradient-to-br from-blue-400 to-purple-600" },
+                      { name: "Illustrated Child with Animal", color: "bg-gradient-to-br from-yellow-400 to-orange-500" },
+                      { name: "Atlas silk style", color: "bg-gradient-to-br from-blue-600 to-purple-700" },
+                      { name: "Enamel Pin", color: "bg-gradient-to-br from-yellow-300 to-red-400" },
+                      { name: "Fantasy Sparkle Portrait", color: "bg-gradient-to-br from-purple-500 to-pink-600" },
+                    ].map((style, index) => (
+                      <div
+                        key={index}
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group"
+                        onClick={() => {
+                          setSelectedStyle(style.name);
+                          setShowStyleModal(false);
+                        }}
+                      >
+                        <div className={`w-full h-full ${style.color} relative`}>
+                          <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                        </div>
+                        <div className="mt-2 text-xs">
+                          <div className="text-muted-foreground truncate">{style.name.toLowerCase().replace(/\s+/g, '')}</div>
+                          <div className="font-semibold truncate">{style.name}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Modal Footer */}
+                <div className="p-6 border-t border-border/30 flex items-center justify-between">
+                  <div className="text-sm text-muted-foreground">
+                    Click to view a style. Generating with styles lets you explore new aesthetics.
+                  </div>
+                  <Button
+                    variant="outline"
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    Show examples
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Feature Badges */}
