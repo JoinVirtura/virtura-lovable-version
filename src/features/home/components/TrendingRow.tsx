@@ -304,8 +304,18 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
           transition={{ type: "spring", damping: 20, stiffness: 100 }}
         />
         
-        {/* Absolutely Zero-Gap Grid - Pure CSS Grid */}
-        <div className="grid grid-cols-8 md:grid-cols-10 lg:grid-cols-12 xl:grid-cols-14 auto-rows-[100px] gap-0 w-full h-auto" style={{ margin: 0, padding: 0 }}>
+        {/* ZERO-GAP PREMIUM MASONRY GRID */}
+        <div 
+          className="grid auto-rows-[100px] w-full h-auto relative z-10" 
+          style={{ 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '0px',
+            margin: '0px',
+            padding: '0px',
+            border: 'none',
+            outline: 'none'
+          }}
+        >
           <AnimatePresence mode="wait">
             {shuffledTiles.slice(0, displayCount).map((tile, index) => {
               const cardSize = getCardSize(index, tile);
@@ -319,67 +329,44 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                     opacity: 0, 
                     scale: 0.8, 
                     y: 60,
-                    rotateX: 45,
                   }}
                   animate={{ 
                     opacity: 1, 
                     scale: 1, 
                     y: 0,
-                    rotateX: 0,
                   }}
                   exit={{ 
                     opacity: 0, 
                     scale: 0.8, 
                     y: -60,
-                    rotateX: -45,
                   }}
                   transition={{ 
                     duration: 0.8, 
-                    delay: index * 0.1,
+                    delay: index * 0.05,
                     ease: [0.25, 0.25, 0, 1],
                     layout: { duration: 0.5 }
                   }}
                   className={cn(
-                    "group relative",
+                    "relative",
                     cardSize.span,
                     isHovered && "z-20"
                   )}
+                  style={{
+                    margin: '0px',
+                    padding: '0px',
+                    border: 'none',
+                    outline: 'none'
+                  }}
                   onHoverStart={() => setHoveredCard(tile.id)}
                   onHoverEnd={() => setHoveredCard(null)}
-                  style={{
-                    perspective: "1000px",
-                  }}
                 >
-                  {/* Advanced Card Container */}
-                  <motion.div
-                    className="relative h-full"
-                    whileHover={{ 
-                      scale: 1.03,
-                      rotateY: index % 2 === 0 ? 2 : -2,
-                      z: 50,
-                    }}
-                    transition={{ 
-                      type: "spring", 
-                      stiffness: 300, 
-                      damping: 20 
-                    }}
-                  >
-                    {/* Glow Effect on Hover */}
-                    <motion.div
-                      className="absolute -inset-2 bg-gradient-to-br from-primary/20 via-transparent to-primary/10 rounded-3xl blur-xl"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: isHovered ? 1 : 0 }}
-                      transition={{ duration: 0.3 }}
-                    />
-                    
-                     {/* Single ContentCard - Clean Implementation */}
-                     <ContentCard 
-                       tile={tile} 
-                       size={cardSize.size as any}
-                       className="h-full transform-gpu transition-all duration-500 hover:shadow-2xl hover:shadow-primary/20"
-                     />
-                   </motion.div>
-                 </motion.div>
+                  {/* SINGLE PREMIUM CARD - NO WRAPPER CONFLICTS */}
+                  <ContentCard 
+                    tile={tile} 
+                    size={cardSize.size as any}
+                    className="w-full h-full"
+                  />
+                </motion.div>
                );
              })}
            </AnimatePresence>
