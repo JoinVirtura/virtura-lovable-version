@@ -348,39 +348,13 @@ export const Hero = () => {
                     <Button
                       type="button"
                       variant="outline"
-                      className="bg-muted/60 border-border/50 hover:bg-gradient-gold hover:text-primary-foreground hover:border-primary/50 px-4 py-2 rounded-xl text-sm font-medium h-10 transition-all duration-200 overflow-visible"
+                      className="bg-muted/60 border-border/50 hover:bg-gradient-gold hover:text-primary-foreground hover:border-primary/50 px-4 py-2 rounded-xl text-sm font-medium h-10 transition-all duration-200"
                       onClick={() => {
-                        if (!uploadedImagePrompt) {
-                          document.getElementById('image-prompt-upload')?.click();
-                        }
+                        document.getElementById("image-prompt-upload")?.click();
                       }}
                     >
-                      {uploadedImagePrompt ? (
-                        <div className="flex items-center gap-2">
-                          <div className="relative w-6 h-6 rounded overflow-hidden border border-white/20">
-                            <img 
-                              src={uploadedImagePrompt} 
-                              alt="Uploaded prompt" 
-                              className="w-full h-full object-cover"
-                            />
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                removeUploadedImagePrompt();
-                              }}
-                              className="absolute -top-3 -right-3 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 border-2 border-white shadow-lg z-10"
-                            >
-                              <X className="w-3 h-3" />
-                            </button>
-                          </div>
-                          <span>Image prompt</span>
-                        </div>
-                      ) : (
-                        <>
-                          <Image className="w-4 h-4 mr-2" />
-                          Image prompt
-                        </>
-                      )}
+                      <Image className="w-4 h-4 mr-2" />
+                      Image prompt
                     </Button>
                   </div>
 
@@ -391,8 +365,8 @@ export const Hero = () => {
                     onMouseLeave={(e) => {
                       // Add delay to prevent flickering
                       setTimeout(() => {
-                        const popup = document.querySelector('[data-image-style-popup]');
-                        if (!popup?.matches(':hover')) {
+                        const popup = document.querySelector("[data-image-style-popup]");
+                        if (!popup?.matches(":hover")) {
                           setShowImageStylePopup(false);
                         }
                       }, 100);
@@ -401,53 +375,12 @@ export const Hero = () => {
                     <Button
                       type="button"
                       variant="outline"
-                      className="bg-muted/60 border-border/50 hover:bg-gradient-gold hover:text-primary-foreground hover:border-primary/50 px-4 py-2 rounded-xl text-sm font-medium h-10 transition-all duration-200 relative overflow-visible"
+                      className="bg-muted/60 border-border/50 hover:bg-gradient-gold hover:text-primary-foreground hover:border-primary/50 px-4 py-2 rounded-xl text-sm font-medium h-10 transition-all duration-200"
                     >
-                      {uploadedImage ? (
-                        <div className="flex items-center gap-2">
-                          <div className="relative w-6 h-6 rounded overflow-hidden border border-white/20">
-                            <img 
-                              src={uploadedImage} 
-                              alt="Uploaded style" 
-                              className="w-full h-full object-cover"
-                            />
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                removeUploadedImage();
-                              }}
-                              className="absolute -top-3 -right-3 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 border-2 border-white shadow-lg z-10"
-                            >
-                              <X className="w-3 h-3" />
-                            </button>
-                          </div>
-                          <span>Image style</span>
-                        </div>
-                      ) : selectedImageStyle ? (
-                        <div className="flex items-center gap-2">
-                          <div className="relative w-6 h-6 rounded overflow-hidden border border-white/20">
-                            <img 
-                              src={selectedImageStyle.image} 
-                              alt={selectedImageStyle.name} 
-                              className="w-full h-full object-cover"
-                            />
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                removeSelectedStyle();
-                              }}
-                              className="absolute -top-3 -right-3 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 border-2 border-white shadow-lg z-10"
-                            >
-                              <X className="w-3 h-3" />
-                            </button>
-                          </div>
-                          <span>Image style</span>
-                        </div>
-                      ) : (
-                        <>
-                          <Palette className="w-4 h-4 mr-2" />
-                          Image style
-                        </>
+                      <Palette className="w-4 h-4 mr-2" />
+                      Image style
+                      {(uploadedImage || selectedImageStyle) && (
+                        <span className="ml-1 text-xs opacity-70">1/1</span>
                       )}
                     </Button>
 
@@ -553,17 +486,62 @@ export const Hero = () => {
                   
                   {/* Action Buttons Group - Fixed Width */}
                   <div className="flex items-center gap-3 flex-shrink-0">
+                    {/* Image Thumbnails Display */}
+                    {(uploadedImagePrompt || uploadedImage || selectedImageStyle) && (
+                      <div className="flex items-center gap-2">
+                        {/* Image Prompt Thumbnail */}
+                        {uploadedImagePrompt && (
+                          <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-border/50 bg-muted/30">
+                            <img 
+                              src={uploadedImagePrompt} 
+                              alt="Image prompt" 
+                              className="w-full h-full object-cover"
+                            />
+                            <button
+                              onClick={removeUploadedImagePrompt}
+                              className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 border border-white shadow-md"
+                            >
+                              <X className="w-2.5 h-2.5" />
+                            </button>
+                          </div>
+                        )}
+                        
+                        {/* Image Style Thumbnail */}
+                        {(uploadedImage || selectedImageStyle) && (
+                          <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-border/50 bg-muted/30">
+                            <img 
+                              src={uploadedImage || selectedImageStyle?.image} 
+                              alt="Image style" 
+                              className="w-full h-full object-cover"
+                            />
+                            <button
+                              onClick={() => {
+                                if (uploadedImage) {
+                                  removeUploadedImage();
+                                } else {
+                                  removeSelectedStyle();
+                                }
+                              }}
+                              className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 border border-white shadow-md"
+                            >
+                              <X className="w-2.5 h-2.5" />
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
                     {/* Microphone Button */}
                     <Button
                       type="button"
                       onClick={handleVoiceInput}
                       className={`w-12 h-12 p-0 rounded-xl transition-all duration-300 ${
                         isRecording 
-                          ? 'bg-red-500 hover:bg-red-600 animate-pulse' 
-                          : 'bg-primary/10 border border-primary/30 hover:bg-primary/20'
+                          ? "bg-red-500 hover:bg-red-600 animate-pulse" 
+                          : "bg-primary/10 border border-primary/30 hover:bg-primary/20"
                       }`}
                     >
-                      <Mic className={`w-5 h-5 ${isRecording ? 'text-white' : 'text-primary'}`} />
+                      <Mic className={`w-5 h-5 ${isRecording ? "text-white" : "text-primary"}`} />
                     </Button>
                     
                     {/* Generate Button */}
