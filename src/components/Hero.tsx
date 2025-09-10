@@ -441,7 +441,7 @@ export const Hero = () => {
                   </div>
 
                   {/* Resolution */}
-                  <div className="relative">
+                  <div className="relative z-50">
                     <Button
                       type="button"
                       variant="outline"
@@ -454,7 +454,7 @@ export const Hero = () => {
                     
                     {/* Resolution Dropdown */}
                     {showResolutionOptions && (
-                      <div className="absolute bottom-full left-0 mb-2 bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-2xl z-50 p-2 min-w-[120px]">
+                      <div className="absolute bottom-full left-0 mb-2 bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-2xl z-[60] p-2 min-w-[120px]">
                         {['1K', '1.2K', '1.5K', '4K'].map((res) => (
                           <Button
                             key={res}
@@ -472,16 +472,6 @@ export const Hero = () => {
                       </div>
                     )}
                   </div>
-
-                  {/* Raw Option */}
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="bg-muted/60 border-border/50 hover:bg-gradient-gold hover:text-primary-foreground hover:border-primary/50 px-4 py-2 rounded-xl text-sm font-medium h-10 transition-all duration-200"
-                  >
-                    <Shuffle className="w-4 h-4 mr-2" />
-                    Raw
-                  </Button>
                   </div>
                   
                   {/* Action Buttons Group - Fixed Width */}
