@@ -210,7 +210,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
           transition={{ type: "spring", damping: 20, stiffness: 100 }}
         />
         
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-2 md:gap-3 auto-rows-[200px] relative z-10">
+        <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-1 auto-rows-[180px] relative z-10">
           <AnimatePresence mode="wait">
             {shuffledTiles.map((tile, index) => {
               const cardSize = getCardSize(index, tile);

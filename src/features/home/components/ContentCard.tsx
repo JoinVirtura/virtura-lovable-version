@@ -308,13 +308,12 @@ export const ContentCard: React.FC<ContentCardProps> = ({
             transition={{ delay: 0.3, duration: 0.4 }}
           >
             <Badge className={cn(
-              "bg-black/60 text-white border-primary/20 backdrop-blur-md",
-              "transition-all duration-500 group-hover:bg-primary/90 group-hover:scale-110",
-              "group-hover:shadow-lg group-hover:shadow-primary/30",
-              size === 'hero' ? 'px-4 py-2 text-sm' : 'px-3 py-1.5 text-xs'
-            )}>
-              <TrendingUp className="w-3 h-3 mr-1" />
-              {tile.tag}
+                  "bg-black/60 text-white border-primary/20 backdrop-blur-md",
+                  "transition-all duration-500 group-hover:bg-primary/90 group-hover:scale-110",
+                  "group-hover:shadow-lg group-hover:shadow-primary/30",
+                  size === 'hero' ? 'px-4 py-2 text-sm' : 'px-3 py-1.5 text-xs'
+                )}>
+                  {tile.tag}
             </Badge>
           </motion.div>
 
@@ -325,7 +324,6 @@ export const ContentCard: React.FC<ContentCardProps> = ({
               transition={{ delay: 0.4, duration: 0.4 }}
               className="flex items-center gap-1 bg-black/60 rounded-full px-3 py-1.5 backdrop-blur-md"
             >
-              <Clock className="w-3 h-3 text-primary" />
               <span className="text-white text-xs font-medium">{tile.duration}</span>
             </motion.div>
           )}
@@ -334,16 +332,16 @@ export const ContentCard: React.FC<ContentCardProps> = ({
         {/* Revolutionary Content Footer */}
         <motion.div 
           className={cn(
-            "absolute bottom-0 left-0 right-0 space-y-3",
+            "absolute bottom-0 left-0 right-0 space-y-2",
             contentSizes[size].padding
           )}
-          initial={{ y: 20, opacity: 0.7 }}
-          animate={isHovered ? { y: 0, opacity: 1 } : { y: 20, opacity: 0.7 }}
+          initial={{ y: 10, opacity: 0.8 }}
+          animate={isHovered ? { y: 0, opacity: 1 } : { y: 10, opacity: 0.8 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
-          <div className="space-y-2">
+          <div className="space-y-1">
             <h3 className={cn(
-              "text-white font-bold leading-tight line-clamp-2",
+              "text-white font-semibold leading-tight line-clamp-2 tracking-normal",
               "transition-all duration-500 group-hover:text-primary",
               contentSizes[size].title
             )}>
@@ -352,7 +350,7 @@ export const ContentCard: React.FC<ContentCardProps> = ({
             
             {tile.byline && (
               <p className={cn(
-                "text-white/70 group-hover:text-white/90 transition-colors duration-300",
+                "text-white/80 group-hover:text-white/95 transition-colors duration-300 leading-normal",
                 contentSizes[size].meta
               )}>
                 {tile.byline}
@@ -365,10 +363,9 @@ export const ContentCard: React.FC<ContentCardProps> = ({
             <div className="flex items-center gap-3">
               <motion.div 
                 className="flex items-center gap-1.5"
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.2 }}
               >
-                <Eye className="w-4 h-4 text-primary" />
                 <span className="text-white/90 text-sm font-medium">
                   {formatViews(tile.views)}
                 </span>
@@ -381,7 +378,6 @@ export const ContentCard: React.FC<ContentCardProps> = ({
                   animate={{ x: 0 }}
                   transition={{ delay: 0.2 }}
                 >
-                  <Play className="w-3 h-3 text-primary" />
                   <span className="text-primary text-xs font-medium">Watch</span>
                 </motion.div>
               )}
@@ -403,30 +399,30 @@ export const ContentCard: React.FC<ContentCardProps> = ({
                   // Add to favorites functionality
                   console.log('Added to favorites:', tile.id);
                 }}
-              >
-                <Heart className="w-3 h-3 text-white hover:text-primary transition-colors" />
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-8 w-8 p-0 bg-black/30 hover:bg-primary/20 border border-white/20 hover:border-primary/40 backdrop-blur-sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  // Share functionality
-                  if (navigator.share) {
-                    navigator.share({
-                      title: tile.title,
-                      text: `Check out this ${tile.tag} creation: ${tile.title}`,
-                      url: window.location.href
-                    });
-                  } else {
-                    // Fallback to copy link
-                    navigator.clipboard.writeText(window.location.href);
-                  }
-                }}
-              >
-                <Share2 className="w-3 h-3 text-white hover:text-primary transition-colors" />
-              </Button>
+                >
+                  <span className="text-xs text-white hover:text-primary transition-colors">♡</span>
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-8 w-8 p-0 bg-black/30 hover:bg-primary/20 border border-white/20 hover:border-primary/40 backdrop-blur-sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    // Share functionality
+                    if (navigator.share) {
+                      navigator.share({
+                        title: tile.title,
+                        text: `Check out this ${tile.tag} creation: ${tile.title}`,
+                        url: window.location.href
+                      });
+                    } else {
+                      // Fallback to copy link
+                      navigator.clipboard.writeText(window.location.href);
+                    }
+                  }}
+                >
+                  <span className="text-xs text-white hover:text-primary transition-colors">↗</span>
+                </Button>
             </motion.div>
           </div>
         </motion.div>
