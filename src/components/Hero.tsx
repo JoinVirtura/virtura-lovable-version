@@ -431,14 +431,14 @@ export const Hero = () => {
                         size="sm"
                         className="bg-background border-border/50 hover:bg-muted/50 text-xs px-2 py-1 h-7"
                       >
-                        Community
+                        Individual
                       </Button>
                       <Button
                         variant="default"
                         size="sm"
                         className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs px-2 py-1 h-7"
                       >
-                        Krea
+                        Brand
                       </Button>
                       <Button
                         variant="outline"
@@ -484,8 +484,10 @@ export const Hero = () => {
                     {/* Category Tabs */}
                     <div className="flex items-center gap-4 mb-4">
                       <Button variant="ghost" className="text-foreground font-semibold text-sm">All</Button>
-                      <Button variant="ghost" className="text-muted-foreground hover:text-foreground text-sm">Krea 1</Button>
-                      <Button variant="ghost" className="text-muted-foreground hover:text-foreground text-sm">Flux</Button>
+                      <Button variant="ghost" className="text-muted-foreground hover:text-foreground text-sm">Fantasy</Button>
+                      <Button variant="ghost" className="text-muted-foreground hover:text-foreground text-sm">Portrait</Button>
+                      <Button variant="ghost" className="text-muted-foreground hover:text-foreground text-sm">Abstract</Button>
+                      <Button variant="ghost" className="text-muted-foreground hover:text-foreground text-sm">Vintage</Button>
                     </div>
 
                     {/* Styles Grid - All Individual Styles */}
@@ -519,14 +521,14 @@ export const Hero = () => {
                   </div>
 
                   {/* Side Preview Panel */}
-                  <div className="flex-1 bg-muted/30 border-l border-border/30 p-4 overflow-hidden flex flex-col">
+                  <div className="flex-1 bg-muted/30 border-l border-border/30 p-3 overflow-hidden flex flex-col">
                     <div className="flex flex-col h-full">
                       <div className="flex-1">
-                        <h3 className="text-lg font-bold text-foreground mb-3">
+                        <h3 className="text-lg font-bold text-foreground mb-2">
                           {selectedStylePreview ? selectedStylePreview.name : 'Preview'}
                         </h3>
-                        <div className="grid grid-cols-2 gap-2 mb-4">
-                          {/* Compact preview images with 4:3 aspect ratio */}
+                        <div className="grid grid-cols-2 gap-1.5 mb-3">
+                          {/* Clean preview images without text overlay */}
                           {[1, 2, 3, 4].map((i) => (
                             <div key={i} className="relative aspect-[4/3] bg-muted/50 rounded-lg overflow-hidden">
                               <img 
@@ -534,21 +536,16 @@ export const Hero = () => {
                                 alt={`Preview ${i}`}
                                 className="w-full h-full object-cover"
                               />
-                              {selectedStylePreview && (
-                                <div className="absolute bottom-0 left-0 right-0 p-1 text-xs bg-gradient-to-t from-black/70 to-transparent text-white">
-                                  <span className="font-medium text-xs">{selectedStylePreview.name}</span>
-                                </div>
-                              )}
                             </div>
                           ))}
                         </div>
                       </div>
                       
                       <div className="space-y-2 flex-shrink-0">
-                        <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-2.5 rounded-xl text-sm">
+                        <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-2 rounded-xl text-sm">
                           + Add Style
                         </Button>
-                        <Button variant="outline" className="w-full border-primary/30 text-foreground hover:bg-primary/10 py-2.5 rounded-xl text-sm">
+                        <Button variant="outline" className="w-full border-primary/30 text-foreground hover:bg-primary/10 py-2 rounded-xl text-sm">
                           📌 Pin
                         </Button>
                       </div>
