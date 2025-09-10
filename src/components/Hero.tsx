@@ -97,14 +97,14 @@ export const Hero = () => {
           Revolutionary AI Technology
         </Badge>
 
-        {/* Main Heading - Elegant & Visually Appealing */}
-        <div className="mb-12 animate-fade-in">
-          <h1 className="text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-light leading-[0.9] mb-6">
-            <span className="text-foreground font-extralight tracking-wide">Where Identity </span>
-            <span className="bg-gradient-to-r from-primary via-amber-400 to-primary-dark bg-clip-text text-transparent animate-gradient-flow font-bold italic">Evolves</span>
+        {/* Main Heading - Steve Jobs Level Sophistication */}
+        <div className="mb-16 animate-fade-in">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-light leading-[0.95] mb-8 tracking-tight">
+            <span className="text-foreground font-light">Where Identity </span>
+            <span className="bg-gradient-to-r from-primary via-primary to-primary-dark bg-clip-text text-transparent font-medium italic">Evolves</span>
           </h1>
           
-          <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-4xl mx-auto font-light tracking-wide">
+          <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto font-light">
             Transform your vision into reality with hyper realistic AI avatars
           </p>
         </div>

@@ -12,7 +12,9 @@ export function OverviewPage({ onViewChange }: OverviewPageProps) {
   return (
     <div className="min-h-screen w-full bg-background">
       <Hero />
-      <TrendingRow tiles={getMockTiles('trending', 100)} className="px-0" />
+      <div className="pt-16">
+        <TrendingRow tiles={getMockTiles('trending', 100)} className="px-0" />
+      </div>
     </div>
   );
 }
