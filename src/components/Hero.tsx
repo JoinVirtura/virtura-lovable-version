@@ -613,21 +613,14 @@ export const Hero = () => {
                           {selectedStylePreview ? selectedStylePreview.name : 'Select a style to preview'}
                         </h3>
                         {selectedStylePreview && (
-                          <div className="grid grid-cols-2 gap-3 mb-4">
-                            {/* Four preview variations - Larger size */}
-                            {[1, 2, 3, 4].map((i) => (
-                              <div key={i} className="relative aspect-square bg-muted/50 rounded-xl overflow-hidden">
-                                <img 
-                                  src={selectedStylePreview.image} 
-                                  alt={`${selectedStylePreview.name} Variation ${i}`}
-                                  className="w-full h-full object-cover"
-                                />
-                                {/* Variation label overlay with better visibility */}
-                                <div className="absolute top-2 left-2 bg-black/80 text-white text-sm font-bold px-2 py-1 rounded-md border border-white/20">
-                                  {i}
-                                </div>
-                              </div>
-                            ))}
+                          <div className="mb-4">
+                            <div className="relative aspect-square bg-muted/50 rounded-xl overflow-hidden">
+                              <img 
+                                src={selectedStylePreview.image} 
+                                alt={selectedStylePreview.name}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
                           </div>
                         )}
                       </div>
@@ -653,7 +646,8 @@ export const Hero = () => {
                   </div>
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
           {/* Image Style Popup - Outside all containers */}
           {showImageStylePopup && (
@@ -810,8 +804,6 @@ export const Hero = () => {
 
         </div>
       </div>
-      </div>
-    </section>
     </section>
   );
 };
