@@ -579,9 +579,16 @@ export const Hero = () => {
           {showImageStylePopup && (
             <>
               {/* Backdrop overlay */}
-              <div className="fixed inset-0 z-[9998] bg-black/20" onClick={() => setShowImageStylePopup(false)} />
+              <div 
+                className="fixed inset-0 z-[9998] bg-black/20" 
+                onClick={() => setShowImageStylePopup(false)} 
+              />
               {/* Popup positioned above everything */}
-              <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-2xl z-[9999] p-4 min-w-[400px]">
+              <div 
+                className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-2xl z-[9999] p-4 min-w-[400px]"
+                onMouseEnter={() => setShowImageStylePopup(true)}
+                onMouseLeave={() => setShowImageStylePopup(false)}
+              >
                 {/* Style Grid */}
                 <div className="grid grid-cols-4 gap-2 mb-4">
                   {styleData.slice(0, 12).map((style) => (
