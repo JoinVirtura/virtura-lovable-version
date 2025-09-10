@@ -420,7 +420,7 @@ export const Hero = () => {
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
                         onClick={() => setSelectedStylePreview({name: "long exposure emotion", username: "tenparisien", id: "longexposure", image: "/lovable-uploads/b1d029c9-7647-4877-aabc-4dff2174dd7c.png"})}
                       >
-                        <img src="/lovable-uploads/b1d029c9-7647-4877-aabc-4dff2174dd7c.png" alt="long exposure emotion" className="w-full h-full object-cover object-center scale-150" />
+                        <img src="/lovable-uploads/b1d029c9-7647-4877-aabc-4dff2174dd7c.png" alt="long exposure emotion" className="w-full h-full object-cover object-top scale-[2]" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
                         <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-gradient-to-t from-black/70 to-transparent text-white">
                           <div className="font-semibold">long exposure emotion</div>
@@ -432,7 +432,7 @@ export const Hero = () => {
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
                         onClick={() => setSelectedStylePreview({name: "Illustrated Child with Animal", username: "neyroph", id: "childanimal", image: "/lovable-uploads/6b8516fa-9e86-4c1b-91aa-f5bd3e05a070.png"})}
                       >
-                        <img src="/lovable-uploads/6b8516fa-9e86-4c1b-91aa-f5bd3e05a070.png" alt="Illustrated Child with Animal" className="w-full h-full object-cover object-center scale-150" />
+                        <img src="/lovable-uploads/6b8516fa-9e86-4c1b-91aa-f5bd3e05a070.png" alt="Illustrated Child with Animal" className="w-full h-full object-cover object-top scale-[2]" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
                         <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
                           <div className="text-white/70">neyroph</div>
@@ -445,7 +445,7 @@ export const Hero = () => {
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
                         onClick={() => setSelectedStylePreview({name: "90's anime", username: "DERNIEREXILE", id: "90sanime", image: "/lovable-uploads/4004f869-38f6-4d09-829d-e879d74ea4e7.png"})}
                       >
-                        <img src="/lovable-uploads/4004f869-38f6-4d09-829d-e879d74ea4e7.png" alt="90's anime" className="w-full h-full object-cover object-center scale-150" />
+                        <img src="/lovable-uploads/4004f869-38f6-4d09-829d-e879d74ea4e7.png" alt="90's anime" className="w-full h-full object-cover object-top scale-[2]" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
                         <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
                           <div className="text-white/70">DERNIEREXILE</div>
@@ -458,7 +458,7 @@ export const Hero = () => {
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
                         onClick={() => setSelectedStylePreview({name: "Minimalist Architecture", username: "Bokn", id: "minimal", image: "/lovable-uploads/7f19875e-32db-4ad5-9948-12c506a5ecab.png"})}
                       >
-                        <img src="/lovable-uploads/7f19875e-32db-4ad5-9948-12c506a5ecab.png" alt="Minimalist Architecture" className="w-full h-full object-cover object-center scale-150" />
+                        <img src="/lovable-uploads/7f19875e-32db-4ad5-9948-12c506a5ecab.png" alt="Minimalist Architecture" className="w-full h-full object-cover object-top scale-[2]" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
                         <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
                           <div className="text-white/70">Bokn</div>
@@ -471,7 +471,7 @@ export const Hero = () => {
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
                         onClick={() => setSelectedStylePreview({name: "Fantasy Creature", username: "neyroph", id: "fantasycreature", image: "/lovable-uploads/149f854a-d11f-49de-824d-48118e7bcc95.png"})}
                       >
-                        <img src="/lovable-uploads/149f854a-d11f-49de-824d-48118e7bcc95.png" alt="Fantasy Creature" className="w-full h-full object-cover object-center scale-150" />
+                        <img src="/lovable-uploads/149f854a-d11f-49de-824d-48118e7bcc95.png" alt="Fantasy Creature" className="w-full h-full object-cover object-top scale-[2]" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
                         <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
                           <div className="text-white/70">neyroph</div>
@@ -484,7 +484,7 @@ export const Hero = () => {
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
                         onClick={() => setSelectedStylePreview({name: "kontext.streetfashion", username: "superbdiplomaticwolf", id: "streetfashion", image: "/lovable-uploads/7f369249-5c17-48b2-a47f-5ec868fa98a1.png"})}
                       >
-                        <img src="/lovable-uploads/7f369249-5c17-48b2-a47f-5ec868fa98a1.png" alt="kontext.streetfashion" className="w-full h-full object-cover object-center scale-150" />
+                        <img src="/lovable-uploads/7f369249-5c17-48b2-a47f-5ec868fa98a1.png" alt="kontext.streetfashion" className="w-full h-full object-cover object-top scale-[2]" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
                         <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
                           <div className="text-white/70">superbdiplomaticwolf</div>
@@ -497,7 +497,7 @@ export const Hero = () => {
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
                         onClick={() => setSelectedStylePreview({name: "Moskvichka.AI", username: "KNezderova", id: "moskvichka", image: "/lovable-uploads/5cf43d66-ed63-4dd5-9e24-c80cc1c8daf9.png"})}
                       >
-                        <img src="/lovable-uploads/5cf43d66-ed63-4dd5-9e24-c80cc1c8daf9.png" alt="Moskvichka.AI" className="w-full h-full object-cover object-center scale-150" />
+                        <img src="/lovable-uploads/5cf43d66-ed63-4dd5-9e24-c80cc1c8daf9.png" alt="Moskvichka.AI" className="w-full h-full object-cover object-top scale-[2]" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
                         <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
                           <div className="text-white/70">KNezderova</div>
@@ -510,7 +510,7 @@ export const Hero = () => {
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
                         onClick={() => setSelectedStylePreview({name: "Fantasy Portraits", username: "unfettereddextrousdisciple", id: "fantasyportraits", image: "/lovable-uploads/10dc3485-5856-4a38-90e1-8c1ebe80ec70.png"})}
                       >
-                        <img src="/lovable-uploads/10dc3485-5856-4a38-90e1-8c1ebe80ec70.png" alt="Fantasy Portraits" className="w-full h-full object-cover object-center scale-150" />
+                        <img src="/lovable-uploads/10dc3485-5856-4a38-90e1-8c1ebe80ec70.png" alt="Fantasy Portraits" className="w-full h-full object-cover object-top scale-[2]" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
                         <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
                           <div className="text-white/70">unfettereddextrousdisciple</div>
@@ -523,7 +523,7 @@ export const Hero = () => {
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
                         onClick={() => setSelectedStylePreview({name: "kontext.photoset", username: "frugalpoisedwrasse", id: "photoset", image: "/lovable-uploads/ad9a4869-73b6-49e6-a0f8-99274778eb95.png"})}
                       >
-                        <img src="/lovable-uploads/ad9a4869-73b6-49e6-a0f8-99274778eb95.png" alt="kontext.photoset" className="w-full h-full object-cover object-center scale-150" />
+                        <img src="/lovable-uploads/ad9a4869-73b6-49e6-a0f8-99274778eb95.png" alt="kontext.photoset" className="w-full h-full object-cover object-top scale-[2]" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
                         <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
                           <div className="text-white/70">frugalpoisedwrasse</div>
@@ -536,7 +536,7 @@ export const Hero = () => {
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
                         onClick={() => setSelectedStylePreview({name: "HOK (Technically S...", username: "Sup3r", id: "hoktech", image: "/lovable-uploads/7689964f-d484-4000-bd40-306eaa562dde.png"})}
                       >
-                        <img src="/lovable-uploads/7689964f-d484-4000-bd40-306eaa562dde.png" alt="HOK (Technically S..." className="w-full h-full object-cover object-center scale-150" />
+                        <img src="/lovable-uploads/7689964f-d484-4000-bd40-306eaa562dde.png" alt="HOK (Technically S..." className="w-full h-full object-cover object-center scale-110" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
                         <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
                           <div className="text-white/70">Sup3r</div>
@@ -549,7 +549,7 @@ export const Hero = () => {
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
                         onClick={() => setSelectedStylePreview({name: "Fluff World", username: "Beccu", id: "fluffworld", image: "/lovable-uploads/8a243d90-a54e-4be4-8c7e-83cb5bcebc20.png"})}
                       >
-                        <img src="/lovable-uploads/8a243d90-a54e-4be4-8c7e-83cb5bcebc20.png" alt="Fluff World" className="w-full h-full object-cover object-center scale-150" />
+                        <img src="/lovable-uploads/8a243d90-a54e-4be4-8c7e-83cb5bcebc20.png" alt="Fluff World" className="w-full h-full object-cover object-top scale-[2]" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
                         <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
                           <div className="text-white/70">Beccu</div>
@@ -562,7 +562,7 @@ export const Hero = () => {
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
                         onClick={() => setSelectedStylePreview({name: "Fantasy Landscape...", username: "usefulokapi", id: "fantasylandscape", image: "/lovable-uploads/3bfa9331-66cc-4449-bd79-9b5726da1ca4.png"})}
                       >
-                        <img src="/lovable-uploads/3bfa9331-66cc-4449-bd79-9b5726da1ca4.png" alt="Fantasy Landscape..." className="w-full h-full object-cover object-center scale-150" />
+                        <img src="/lovable-uploads/3bfa9331-66cc-4449-bd79-9b5726da1ca4.png" alt="Fantasy Landscape..." className="w-full h-full object-cover object-top scale-[2]" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
                         <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
                           <div className="text-white/70">usefulokapi</div>
@@ -575,7 +575,7 @@ export const Hero = () => {
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
                         onClick={() => setSelectedStylePreview({name: "Art Nouveau Portrait...", username: "splendidlyricalcamel", id: "artnouveau", image: "/lovable-uploads/45a5e5b7-2140-4493-8f6d-a6aa2cb5dd87.png"})}
                       >
-                        <img src="/lovable-uploads/45a5e5b7-2140-4493-8f6d-a6aa2cb5dd87.png" alt="Art Nouveau Portrait..." className="w-full h-full object-cover object-center scale-150" />
+                        <img src="/lovable-uploads/45a5e5b7-2140-4493-8f6d-a6aa2cb5dd87.png" alt="Art Nouveau Portrait..." className="w-full h-full object-cover object-center scale-110" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
                         <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
                           <div className="text-white/70">splendidlyricalcamel</div>
@@ -588,7 +588,7 @@ export const Hero = () => {
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
                         onClick={() => setSelectedStylePreview({name: "Nighttime Dreams, ...", username: "personalizedamiablecat", id: "nighttimedreams", image: "/lovable-uploads/eb0abdbc-eb99-4107-9710-405c893899e3.png"})}
                       >
-                        <img src="/lovable-uploads/eb0abdbc-eb99-4107-9710-405c893899e3.png" alt="Nighttime Dreams, ..." className="w-full h-full object-cover object-center scale-150" />
+                        <img src="/lovable-uploads/eb0abdbc-eb99-4107-9710-405c893899e3.png" alt="Nighttime Dreams, ..." className="w-full h-full object-cover object-center scale-110" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
                         <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
                           <div className="text-white/70">personalizedamiablecat</div>
@@ -605,14 +605,14 @@ export const Hero = () => {
                         <h3 className="text-lg font-bold text-foreground mb-4">
                           {selectedStylePreview ? selectedStylePreview.name : 'Preview'}
                         </h3>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 gap-3">
                           {/* Preview images showing 4 variations with style name overlay */}
                           {[1, 2, 3, 4].map((i) => (
-                            <div key={i} className="relative aspect-square bg-muted/50 rounded-xl overflow-hidden">
+                            <div key={i} className="relative aspect-[4/3] bg-muted/50 rounded-lg overflow-hidden">
                               <img 
                                 src={selectedStylePreview ? selectedStylePreview.image : "https://via.placeholder.com/200x200/1a1a1a/ffffff?text=Select+Style"} 
                                 alt={`Preview ${i}`}
-                                className="w-full h-full object-cover object-center scale-150"
+                                className="w-full h-full object-cover object-top scale-[2]"
                               />
                               {selectedStylePreview && (
                                 <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-gradient-to-t from-black/70 to-transparent text-white">
