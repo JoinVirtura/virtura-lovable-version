@@ -749,74 +749,173 @@ export const Hero = () => {
             </>
           )}
 
-          {/* Aspect Ratio Dropdown - Outside input container */}
+          {/* Aspect Ratio Dropdown - Outside input container but aligned with button */}
           {showAspectOptions && (
-            <div className="fixed z-[9999] bg-card border border-border rounded-xl shadow-2xl p-3 min-w-[320px] backdrop-blur-xl"
-                 style={{
-                   top: '570px',
-                   left: '50%',
-                   transform: 'translateX(-50%)',
-                   marginLeft: '-100px'
-                 }}>
-              <div className="grid grid-cols-4 gap-3">
-                {[
-                  { ratio: '4:3', width: 24, height: 18 },
-                  { ratio: '3:2', width: 24, height: 16 },
-                  { ratio: '16:9', width: 28, height: 16 },
-                  { ratio: '2.35:1', width: 28, height: 12 },
-                  { ratio: '1:1', width: 20, height: 20 },
-                  { ratio: '4:5', width: 16, height: 20 },
-                  { ratio: '2:3', width: 16, height: 24 },
-                  { ratio: '9:16', width: 14, height: 24 }
-                ].map(({ratio, width, height}) => (
+            <>
+              <div className="fixed inset-0 z-[9998]" onClick={() => setShowAspectOptions(false)} />
+              <div className="fixed z-[9999] bg-card border border-border rounded-xl shadow-2xl p-3 min-w-[320px] backdrop-blur-xl"
+                   style={{
+                     top: '530px',
+                     left: '700px'
+                   }}>
+                <div className="grid grid-cols-4 gap-3">
+                  {[
+                    { ratio: '4:3', width: 24, height: 18 },
+                    { ratio: '3:2', width: 24, height: 16 },
+                    { ratio: '16:9', width: 28, height: 16 },
+                    { ratio: '2.35:1', width: 28, height: 12 },
+                    { ratio: '1:1', width: 20, height: 20 },
+                    { ratio: '4:5', width: 16, height: 20 },
+                    { ratio: '2:3', width: 16, height: 24 },
+                    { ratio: '9:16', width: 14, height: 24 }
+                  ].map(({ratio, width, height}) => (
+                    <Button
+                      key={ratio}
+                      type="button"
+                      variant={selectedAspect === ratio ? "default" : "ghost"}
+                      className="p-4 h-auto flex flex-col items-center justify-center gap-3 hover:bg-muted transition-colors rounded-lg"
+                      onClick={() => {
+                        setSelectedAspect(ratio);
+                        setShowAspectOptions(false);
+                      }}
+                    >
+                      <div 
+                        className={`border-2 rounded-md ${selectedAspect === ratio ? 'border-primary bg-primary/30' : 'border-muted-foreground bg-muted-foreground/20'}`}
+                        style={{ 
+                          width: `${width}px`, 
+                          height: `${height}px`
+                        }}
+                      />
+                      <span className="text-xs font-semibold">{ratio}</span>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Resolution Dropdown - Outside input container but aligned with button */}
+          {showResolutionOptions && (
+            <>
+              <div className="fixed inset-0 z-[9998]" onClick={() => setShowResolutionOptions(false)} />
+              <div className="fixed z-[9999] bg-card border border-border rounded-xl shadow-2xl p-2 min-w-[120px] backdrop-blur-xl"
+                   style={{
+                     top: '530px',
+                     left: '850px'
+                   }}>
+                {['1K', '1.2K', '1.5K', '4K'].map((res) => (
                   <Button
-                    key={ratio}
+                    key={res}
                     type="button"
-                    variant={selectedAspect === ratio ? "default" : "ghost"}
-                    className="p-4 h-auto flex flex-col items-center justify-center gap-3 hover:bg-muted transition-colors rounded-lg"
+                    variant={selectedResolution === res ? "default" : "ghost"}
+                    className="w-full justify-start text-sm p-2 h-8 rounded-lg"
                     onClick={() => {
-                      setSelectedAspect(ratio);
-                      setShowAspectOptions(false);
+                      setSelectedResolution(res);
+                      setShowResolutionOptions(false);
                     }}
                   >
-                    <div 
-                      className={`border-2 rounded-md ${selectedAspect === ratio ? 'border-primary bg-primary/30' : 'border-muted-foreground bg-muted-foreground/20'}`}
-                      style={{ 
-                        width: `${width}px`, 
-                        height: `${height}px`
-                      }}
-                    />
-                    <span className="text-xs font-semibold">{ratio}</span>
+                    {res}
                   </Button>
                 ))}
               </div>
-            </div>
+            </>
           )}
 
-          {/* Resolution Dropdown - Outside input container */}
-          {showResolutionOptions && (
-            <div className="fixed z-[9999] bg-card border border-border rounded-xl shadow-2xl p-2 min-w-[120px] backdrop-blur-xl"
-                 style={{
-                   top: '570px',
-                   left: '50%',
-                   transform: 'translateX(-50%)',
-                   marginLeft: '100px'
-                 }}>
-              {['1K', '1.2K', '1.5K', '4K'].map((res) => (
-                <Button
-                  key={res}
-                  type="button"
-                  variant={selectedResolution === res ? "default" : "ghost"}
-                  className="w-full justify-start text-sm p-2 h-8 rounded-lg"
-                  onClick={() => {
-                    setSelectedResolution(res);
-                    setShowResolutionOptions(false);
-                  }}
-                >
-                  {res}
-                </Button>
-              ))}
-            </div>
+          {/* Image Style Popup - Repositioned below button */}
+          {showImageStylePopup && (
+            <>
+              <div className="fixed inset-0 z-[9998] bg-black/20" onClick={() => setShowImageStylePopup(false)} />
+              <div className="fixed z-[9999] bg-card border border-border rounded-xl shadow-2xl p-4 w-[400px] backdrop-blur-xl"
+                   style={{
+                     top: '530px',
+                     left: '600px'
+                   }}
+                   data-image-style-popup>
+                <div className="grid grid-cols-4 gap-2 mb-4">
+                  {styleData.slice(0, 12).map((style) => (
+                    <div 
+                      key={style.id}
+                      className="relative aspect-square rounded-lg overflow-hidden cursor-pointer hover:scale-105 transition-all duration-200 group"
+                      onClick={() => handleStyleSelect(style)}
+                    >
+                      <img 
+                        src={style.image} 
+                        alt={style.name} 
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          console.log('Image failed to load:', style.image);
+                          e.currentTarget.src = 'https://via.placeholder.com/100x100/1a1a1a/ffffff?text=Style';
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                      {selectedImageStyle?.id === style.id && (
+                        <div className="absolute inset-0 border-2 border-primary bg-primary/20 rounded-lg" />
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex gap-2">
+                  <label className="flex-1 cursor-pointer">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleFileUpload}
+                    />
+                    <Button 
+                      type="button"
+                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-2 rounded-lg text-sm"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        (e.currentTarget.parentElement?.querySelector('input[type="file"]') as HTMLInputElement)?.click();
+                      }}
+                    >
+                      <Upload className="w-4 h-4 mr-2" />
+                      Upload
+                    </Button>
+                  </label>
+                  <Button 
+                    type="button"
+                    variant="outline" 
+                    className="flex-1 border-primary/30 text-foreground hover:bg-gradient-gold hover:text-primary-foreground hover:border-primary/50 py-2 rounded-lg text-sm transition-all duration-200"
+                    onClick={() => {
+                      console.log('Select asset clicked');
+                      setShowImageStylePopup(false);
+                    }}
+                  >
+                    {uploadedImage ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 rounded overflow-hidden border border-white/20">
+                          <img 
+                            src={uploadedImage} 
+                            alt="Selected asset" 
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <span>Asset selected</span>
+                      </div>
+                    ) : selectedImageStyle ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 rounded overflow-hidden border border-white/20">
+                          <img 
+                            src={selectedImageStyle.image} 
+                            alt={selectedImageStyle.name} 
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <span>Style selected</span>
+                      </div>
+                    ) : (
+                      <>
+                        <ChevronDown className="w-4 h-4 mr-2" />
+                        Select asset
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </>
           )}
 
         </div>
