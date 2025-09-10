@@ -332,17 +332,17 @@ export const ContentCard: React.FC<ContentCardProps> = ({
         {/* Revolutionary Content Footer */}
         <motion.div 
           className={cn(
-            "absolute bottom-0 left-0 right-0 space-y-2",
+            "absolute bottom-0 left-0 right-0",
             contentSizes[size].padding
           )}
-          initial={{ y: 10, opacity: 0.8 }}
-          animate={isHovered ? { y: 0, opacity: 1 } : { y: 10, opacity: 0.8 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
+          initial={{ y: 0, opacity: 0.9 }}
+          animate={isHovered ? { y: -5, opacity: 1 } : { y: 0, opacity: 0.9 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
         >
           <div className="space-y-1">
             <h3 className={cn(
-              "text-white font-semibold leading-tight line-clamp-2 tracking-normal",
-              "transition-all duration-500 group-hover:text-primary",
+              "text-white font-semibold leading-tight line-clamp-2 tracking-normal text-left",
+              "transition-all duration-300 group-hover:text-primary drop-shadow-lg",
               contentSizes[size].title
             )}>
               {tile.title}
@@ -350,7 +350,7 @@ export const ContentCard: React.FC<ContentCardProps> = ({
             
             {tile.byline && (
               <p className={cn(
-                "text-white/80 group-hover:text-white/95 transition-colors duration-300 leading-normal",
+                "text-white/90 group-hover:text-white transition-colors duration-300 leading-normal text-left drop-shadow-md",
                 contentSizes[size].meta
               )}>
                 {tile.byline}
@@ -358,32 +358,24 @@ export const ContentCard: React.FC<ContentCardProps> = ({
             )}
           </div>
           
-          {/* Enhanced Metadata Row */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <motion.div 
-                className="flex items-center gap-1.5"
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.2 }}
-              >
-                <span className="text-white/90 text-sm font-medium">
-                  {formatViews(tile.views)}
+          {/* Simplified Metadata Row */}
+          <div className="flex items-center justify-between pt-2">
+            <motion.div 
+              className="flex items-center gap-1.5"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+            >
+              <span className="text-white/90 text-sm font-medium drop-shadow-md">
+                {formatViews(tile.views)}
+              </span>
+              {tile.kind === 'video' && tile.duration && (
+                <span className="text-white/70 text-xs font-medium ml-2 drop-shadow-md">
+                  {tile.duration}
                 </span>
-              </motion.div>
-              
-              {tile.kind === 'video' && (
-                <motion.div 
-                  className="flex items-center gap-1 opacity-0 group-hover:opacity-100"
-                  initial={{ x: -10 }}
-                  animate={{ x: 0 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  <span className="text-primary text-xs font-medium">Watch</span>
-                </motion.div>
               )}
-            </div>
+            </motion.div>
 
-            {/* Revolutionary Action Panel */}
+            {/* Simplified Action Panel */}
             <motion.div 
               className="flex items-center gap-2 opacity-0 group-hover:opacity-100"
               initial={{ scale: 0.8 }}
@@ -393,36 +385,33 @@ export const ContentCard: React.FC<ContentCardProps> = ({
               <Button
                 size="sm"
                 variant="ghost"
-                className="h-8 w-8 p-0 bg-black/30 hover:bg-primary/20 border border-white/20 hover:border-primary/40 backdrop-blur-sm"
+                className="h-7 w-7 p-0 bg-black/40 hover:bg-primary/30 border border-white/30 hover:border-primary/50 backdrop-blur-sm"
                 onClick={(e) => {
                   e.stopPropagation();
-                  // Add to favorites functionality
                   console.log('Added to favorites:', tile.id);
                 }}
-                >
-                  <span className="text-xs text-white hover:text-primary transition-colors">♡</span>
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-8 w-8 p-0 bg-black/30 hover:bg-primary/20 border border-white/20 hover:border-primary/40 backdrop-blur-sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    // Share functionality
-                    if (navigator.share) {
-                      navigator.share({
-                        title: tile.title,
-                        text: `Check out this ${tile.tag} creation: ${tile.title}`,
-                        url: window.location.href
-                      });
-                    } else {
-                      // Fallback to copy link
-                      navigator.clipboard.writeText(window.location.href);
-                    }
-                  }}
-                >
-                  <span className="text-xs text-white hover:text-primary transition-colors">↗</span>
-                </Button>
+              >
+                <span className="text-xs text-white hover:text-primary transition-colors">♡</span>
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-7 w-7 p-0 bg-black/40 hover:bg-primary/30 border border-white/30 hover:border-primary/50 backdrop-blur-sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (navigator.share) {
+                    navigator.share({
+                      title: tile.title,
+                      text: `Check out this ${tile.tag} creation: ${tile.title}`,
+                      url: window.location.href
+                    });
+                  } else {
+                    navigator.clipboard.writeText(window.location.href);
+                  }
+                }}
+              >
+                <span className="text-xs text-white hover:text-primary transition-colors">↗</span>
+              </Button>
             </motion.div>
           </div>
         </motion.div>

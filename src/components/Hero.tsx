@@ -97,14 +97,14 @@ export const Hero = () => {
           Revolutionary AI Technology
         </Badge>
 
-        {/* Main Heading - Sleeker Size & Gradient */}
+        {/* Main Heading - Elegant & Visually Appealing */}
         <div className="mb-12 animate-fade-in">
-          <h1 className="text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight mb-6">
-            <span className="text-foreground">WHERE IDENTITY </span>
-            <span className="bg-gradient-to-r from-primary via-amber-400 to-primary-dark bg-clip-text text-transparent animate-gradient-flow">EVOLVES</span>
+          <h1 className="text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-light leading-[0.9] mb-6">
+            <span className="text-foreground font-extralight tracking-wide">Where Identity </span>
+            <span className="bg-gradient-to-r from-primary via-amber-400 to-primary-dark bg-clip-text text-transparent animate-gradient-flow font-bold italic">Evolves</span>
           </h1>
           
-          <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto font-medium">
+          <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-4xl mx-auto font-light tracking-wide">
             Transform your vision into reality with hyper realistic AI avatars
           </p>
         </div>

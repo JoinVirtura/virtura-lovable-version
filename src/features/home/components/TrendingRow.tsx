@@ -197,7 +197,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                   transition={{ duration: 8, repeat: Infinity }}
                   style={{ backgroundSize: '300% 300%' }}
                 >
-                  VIRAL
+                  TRENDING
                 </motion.h2>
                 <motion.div 
                   className="text-2xl md:text-3xl font-light text-muted-foreground uppercase tracking-[0.3em]"
@@ -205,7 +205,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.8 }}
                 >
-                  GALLERY
+                  CREATIONS
                 </motion.div>
               </div>
               <motion.div 
