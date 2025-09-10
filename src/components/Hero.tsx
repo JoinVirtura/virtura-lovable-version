@@ -441,7 +441,7 @@ export const Hero = () => {
                   </div>
 
                   {/* Resolution */}
-                  <div className="relative z-50">
+                  <div className="relative z-[100]">
                     <Button
                       type="button"
                       variant="outline"
@@ -454,7 +454,7 @@ export const Hero = () => {
                     
                     {/* Resolution Dropdown */}
                     {showResolutionOptions && (
-                      <div className="absolute bottom-full left-0 mb-2 bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-2xl z-[60] p-2 min-w-[120px]">
+                      <div className="absolute bottom-full right-0 mb-2 bg-card border border-border rounded-xl shadow-2xl z-[110] p-2 min-w-[120px] backdrop-blur-xl">
                         {['1K', '1.2K', '1.5K', '4K'].map((res) => (
                           <Button
                             key={res}
