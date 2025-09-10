@@ -400,7 +400,7 @@ export const Hero = () => {
                       <Button variant="ghost" className="text-muted-foreground hover:text-foreground text-sm">Flux</Button>
                     </div>
 
-                    {/* Styles Grid */}
+                    {/* Styles Grid - All Available Styles */}
                     <div className="grid grid-cols-5 gap-3">
                       {/* Create Style Card */}
                       <div 
@@ -413,7 +413,7 @@ export const Hero = () => {
                         </div>
                       </div>
 
-                      {/* Style Cards */}
+                      {/* Row 1 */}
                       <div 
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-pink-400 via-purple-500 to-orange-400 relative border-2 border-transparent hover:border-primary"
                         onClick={() => setSelectedStylePreview({name: "Gradient graphics", username: "conscientiousbrotherly...", id: "gradient"})}
@@ -463,7 +463,7 @@ export const Hero = () => {
                         </div>
                       </div>
 
-                      {/* Additional rows for more styles */}
+                      {/* Row 2 */}
                       <div 
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-blue-400 via-purple-500 to-yellow-400 relative border-2 border-transparent hover:border-primary"
                         onClick={() => setSelectedStylePreview({name: "frank Vibrant Oil Painting", username: "unlimitedpleasantllig...", id: "oil"})}
@@ -477,9 +477,201 @@ export const Hero = () => {
                         </div>
                       </div>
 
-                      {/* Rest of the style cards... */}
-                      {Array.from({length: 15}).map((_, i) => (
-                        <div key={i} className="aspect-square rounded-xl bg-muted/20 border border-border/30" />
+                      <div 
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-yellow-400 to-orange-500 relative border-2 border-transparent hover:border-primary"
+                        onClick={() => setSelectedStylePreview({name: "Illustrated Child with Animal", username: "neyroph", id: "child"})}
+                      >
+                        <div className="absolute inset-4 bg-brown/30 rounded-full" />
+                        <div className="absolute inset-6 bg-orange/50 rounded-full" />
+                        <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-2 h-3 bg-blue-500 rounded" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
+                          <div className="text-white/70">neyroph</div>
+                          <div className="font-semibold">Illustrated Child wit...</div>
+                        </div>
+                      </div>
+
+                      <div 
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-blue-600 to-purple-700 relative border-2 border-transparent hover:border-primary"
+                        onClick={() => setSelectedStylePreview({name: "atlas silk style", username: "calmtriumphatbat", id: "silk"})}
+                      >
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-full h-2 bg-white/20 transform skew-y-12" />
+                          <div className="absolute w-full h-2 bg-white/30 transform -skew-y-12" />
+                        </div>
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
+                          <div className="text-white/70">calmtriumphatbat</div>
+                          <div className="font-semibold">atlas silk style</div>
+                        </div>
+                      </div>
+
+                      <div 
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-yellow-300 to-red-400 relative border-2 border-transparent hover:border-primary"
+                        onClick={() => setSelectedStylePreview({name: "Enamel Pin", username: "Sup3r", id: "enamel"})}
+                      >
+                        <div className="absolute inset-2 bg-yellow-400 rounded-full" />
+                        <div className="absolute top-1 left-1/2 transform -translate-x-1/2 w-1 h-2 bg-red-500 rounded" />
+                        <div className="absolute top-3 left-1/3 w-1 h-1 bg-green-500 rounded-full" />
+                        <div className="absolute top-3 right-1/3 w-1 h-1 bg-blue-500 rounded-full" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
+                          <div className="text-white/70">Sup3r</div>
+                          <div className="font-semibold">Enamel Pin</div>
+                        </div>
+                      </div>
+
+                      <div 
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-purple-500 to-pink-600 relative border-2 border-transparent hover:border-primary"
+                        onClick={() => setSelectedStylePreview({name: "Fantasy Sparkle Portrait", username: "flatteringgallantcougar", id: "fantasy"})}
+                      >
+                        <div className="absolute inset-2 bg-white/10 rounded-full blur-sm" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
+                          <div className="text-white/70">flatteringgallantcougar</div>
+                          <div className="font-semibold">Fantasy Sparkle Po...</div>
+                        </div>
+                      </div>
+
+                      {/* Row 3 - More Styles */}
+                      <div 
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-blue-400 to-red-500 relative border-2 border-transparent hover:border-primary"
+                        onClick={() => setSelectedStylePreview({name: "Buryad Nomad", username: "May_Day_19", id: "nomad"})}
+                      >
+                        <div className="absolute inset-2 bg-gradient-to-br from-blue-300 to-purple-400 rounded-lg" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
+                          <div className="text-white/70">May_Day_19</div>
+                          <div className="font-semibold">Buryad Nomad</div>
+                        </div>
+                      </div>
+
+                      <div 
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-red-400 to-yellow-500 relative border-2 border-transparent hover:border-primary"
+                        onClick={() => setSelectedStylePreview({name: "Mualla", username: "unbeatablevivaciousbu...", id: "mualla"})}
+                      >
+                        <div className="absolute inset-2 bg-gradient-to-br from-orange-300 to-red-400 rounded-lg" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
+                          <div className="text-white/70">unbeatablevivaciousbu...</div>
+                          <div className="font-semibold">Mualla</div>
+                        </div>
+                      </div>
+
+                      <div 
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-yellow-300 to-orange-400 relative border-2 border-transparent hover:border-primary"
+                        onClick={() => setSelectedStylePreview({name: "Culinary Art", username: "advancedaccessiblem...", id: "culinary"})}
+                      >
+                        <div className="absolute inset-3 bg-yellow-400 rounded-full" />
+                        <div className="absolute inset-4 bg-orange-300 rounded-full" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
+                          <div className="text-white/70">advancedaccessiblem...</div>
+                          <div className="font-semibold">Culinary Art</div>
+                        </div>
+                      </div>
+
+                      <div 
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-blue-300 to-purple-500 relative border-2 border-transparent hover:border-primary"
+                        onClick={() => setSelectedStylePreview({name: "Blue Flora", username: "thrivingmeticulouswall...", id: "flora"})}
+                      >
+                        <div className="absolute inset-2 bg-blue-400 rounded-lg opacity-70" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
+                          <div className="text-white/70">thrivingmeticulouswall...</div>
+                          <div className="font-semibold">Blue Flora</div>
+                        </div>
+                      </div>
+
+                      <div 
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-gray-300 to-blue-400 relative border-2 border-transparent hover:border-primary"
+                        onClick={() => setSelectedStylePreview({name: "Abstract Blue Architecture", username: "sharperkeenpenguin", id: "bluearch"})}
+                      >
+                        <div className="absolute inset-2 bg-gray-400 transform rotate-45" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
+                          <div className="text-white/70">sharperkeenpenguin</div>
+                          <div className="font-semibold">Abstract Blue Archi...</div>
+                        </div>
+                      </div>
+
+                      {/* Row 4 - Additional Styles */}
+                      <div 
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-blue-500 via-white to-purple-500 relative border-2 border-transparent hover:border-primary"
+                        onClick={() => setSelectedStylePreview({name: "Airbrush 2025", username: "psyikedout", id: "airbrush"})}
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-600" />
+                        <div className="absolute inset-2 bg-white/20 rounded-lg blur-md" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
+                          <div className="text-white/70">psyikedout</div>
+                          <div className="font-semibold">Airbrush 2025</div>
+                        </div>
+                      </div>
+
+                      <div 
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-pink-200 to-red-300 relative border-2 border-transparent hover:border-primary"
+                        onClick={() => setSelectedStylePreview({name: "Chinese Watercolor", username: "enoughfortunateguppy", id: "watercolor"})}
+                      >
+                        <div className="absolute inset-3 bg-pink-300 rounded-full opacity-50" />
+                        <div className="absolute inset-4 bg-red-200 rounded-full opacity-70" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
+                          <div className="text-white/70">enoughfortunateguppy</div>
+                          <div className="font-semibold">Chinese Watercolo...</div>
+                        </div>
+                      </div>
+
+                      <div 
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-white to-gray-200 relative border-2 border-transparent hover:border-primary"
+                        onClick={() => setSelectedStylePreview({name: "Minimalist Architecture", username: "Bokn", id: "minimal"})}
+                      >
+                        <div className="absolute inset-4 border border-gray-400" />
+                        <div className="absolute inset-6 bg-white" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
+                          <div className="text-white/70">Bokn</div>
+                          <div className="font-semibold">Minimalist Architec...</div>
+                        </div>
+                      </div>
+
+                      <div 
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-gray-800 to-black relative border-2 border-transparent hover:border-primary"
+                        onClick={() => setSelectedStylePreview({name: "liminality", username: "luxuryfuturisticutonagan", id: "liminal"})}
+                      >
+                        <div className="absolute inset-3 bg-gray-700 rounded-lg" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
+                          <div className="text-white/70">luxuryfuturisticutonagan</div>
+                          <div className="font-semibold">liminality</div>
+                        </div>
+                      </div>
+
+                      <div 
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-yellow-200 to-black relative border-2 border-transparent hover:border-primary"
+                        onClick={() => setSelectedStylePreview({name: "aBSTRACT tYPE", username: "maartenvangent", id: "abstracttype"})}
+                      >
+                        <div className="absolute inset-2 flex items-center justify-center text-lg font-bold text-black transform -rotate-12">aB</div>
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
+                          <div className="text-white/70">maartenvangent</div>
+                          <div className="font-semibold">aBSTRACT tYPE</div>
+                        </div>
+                      </div>
+
+                      {/* Continue with more rows... */}
+                      {Array.from({length: 35}).map((_, i) => (
+                        <div 
+                          key={`extra-${i}`} 
+                          className="aspect-square rounded-xl bg-muted/20 border border-border/30 cursor-pointer hover:scale-105 transition-all duration-300 relative"
+                          onClick={() => setSelectedStylePreview({name: `Style ${i + 6}`, username: `creator${i}`, id: `style${i}`})}
+                        >
+                          <div className="absolute inset-0 bg-gradient-to-br from-gray-300 to-gray-500 rounded-xl" />
+                          <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white rounded-b-xl">
+                            <div className="text-white/70">creator{i}</div>
+                            <div className="font-semibold">Style {i + 6}</div>
+                          </div>
+                        </div>
                       ))}
                     </div>
                   </div>
