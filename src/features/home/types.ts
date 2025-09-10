@@ -13,5 +13,5 @@ export type Tile = {
 export interface ContentCardProps {
   tile: Tile;
   className?: string;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'hero' | 'wide' | 'tall' | 'standard';
 }
