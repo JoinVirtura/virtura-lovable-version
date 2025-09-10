@@ -13,11 +13,21 @@ interface TrendingRowProps {
 
 export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) => {
   const [shuffledTiles, setShuffledTiles] = useState(tiles);
+  const [isShuffling, setIsShuffling] = useState(false);
   
   const handleShuffle = () => {
-    const shuffled = [...tiles].sort(() => Math.random() - 0.5);
-    setShuffledTiles(shuffled);
+    setIsShuffling(true);
+    setTimeout(() => {
+      const shuffled = [...tiles].sort(() => Math.random() - 0.5);
+      setShuffledTiles(shuffled);
+      setIsShuffling(false);
+    }, 300);
   };
+
+  // Update shuffled tiles when tiles prop changes
+  React.useEffect(() => {
+    setShuffledTiles(tiles);
+  }, [tiles]);
 
   return (
     <section className={cn('space-y-6', className)}>
@@ -41,11 +51,12 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
           <Button 
             variant="outline" 
             size="sm"
-            className="hover:bg-primary/10 group"
+            className={`hover:bg-primary/10 group transition-all duration-300 ${isShuffling ? 'animate-spin' : ''}`}
             onClick={handleShuffle}
+            disabled={isShuffling}
           >
-            <Shuffle className="mr-2 h-4 w-4 transition-transform group-hover:rotate-180" />
-            SURPRISE ME
+            <Shuffle className={`mr-2 h-4 w-4 transition-transform ${isShuffling ? 'animate-spin' : 'group-hover:rotate-180'}`} />
+            {isShuffling ? 'SHUFFLING...' : 'SURPRISE ME'}
           </Button>
           <Button 
             variant="ghost" 
@@ -60,11 +71,11 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
 
       {/* Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {shuffledTiles.slice(0, 6).map((tile, index) => (
+        {shuffledTiles.slice(0, 8).map((tile, index) => (
           <motion.div
-            key={`${tile.id}-${index}`}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
+            key={`${tile.id}-${shuffledTiles.length}`}
+            initial={{ opacity: 0, y: 30, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ 
               duration: 0.4, 
               delay: index * 0.1,

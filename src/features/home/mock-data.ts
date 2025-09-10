@@ -41,7 +41,7 @@ export const mockTiles: Tile[] = [
     posterUrl: brandLogo,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-1.jpg',
     title: 'Brand Logo Suite',
-    tag: 'Branding',
+    tag: 'Logos',
     duration: '0:29',
     views: 25400,
     byline: 'Creative Studios'
@@ -50,8 +50,8 @@ export const mockTiles: Tile[] = [
     id: '2',
     kind: 'image',
     posterUrl: diverseAvatar2,
-    title: 'Healthcare Professional',
-    tag: 'Medical',
+    title: 'Tech Executive Portrait',
+    tag: 'Professional',
     views: 23100,
     byline: 'Dr. Miguel Rodriguez'
   },
@@ -60,7 +60,7 @@ export const mockTiles: Tile[] = [
     kind: 'video',
     posterUrl: brandMarketing,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-2.jpg',
-    title: 'Marketing Campaign',
+    title: 'Marketing Campaign Assets',
     tag: 'Marketing',
     duration: '0:44',
     views: 19800,
@@ -71,7 +71,7 @@ export const mockTiles: Tile[] = [
     kind: 'image',
     posterUrl: diverseAvatar4,
     title: 'Abstract Art Collection',
-    tag: 'Art',
+    tag: 'Abstract Art',
     views: 15600,
     byline: 'Digital Artists'
   },
@@ -80,18 +80,18 @@ export const mockTiles: Tile[] = [
     kind: 'video',
     posterUrl: diverseAvatar5,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-3.jpg',
-    title: 'Creative Director',
-    tag: 'Design',
+    title: 'Wildlife Documentary',
+    tag: 'Animals',
     duration: '0:16',
     views: 18900,
-    byline: 'Maya Thompson'
+    byline: 'Nature Studios'
   },
   {
     id: '6',
     kind: 'image',
     posterUrl: brandSocial,
     title: 'Social Media Kit',
-    tag: 'Social',
+    tag: 'Products',
     views: 21300,
     byline: 'Social Studios'
   },
@@ -100,191 +100,220 @@ export const mockTiles: Tile[] = [
     kind: 'video',
     posterUrl: diverseAvatar7,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-1.jpg',
-    title: 'Startup Founder',
-    tag: 'Entrepreneurship',
+    title: 'Startup Founder Story',
+    tag: 'Business',
     duration: '0:39',
     views: 23100,
-    byline: 'Priya Patel'
+    byline: 'Entrepreneur Hub'
   },
   {
     id: '8',
     kind: 'image',
     posterUrl: brandPresentation,
-    title: 'Presentation Kit',
-    tag: 'Business',
+    title: 'Product Showcase',
+    tag: 'Products',
     views: 17800,
-    byline: 'Pro Design'
+    byline: 'Product Design Co'
   },
   {
     id: '9',
     kind: 'video',
     posterUrl: diverseAvatar9,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-2.jpg',
-    title: 'Business Consultant',
-    tag: 'Consulting',
+    title: 'Gaming Character Design',
+    tag: 'Characters',
     duration: '0:29',
     views: 18900,
-    byline: 'Grace Adomaa'
+    byline: 'Game Studios'
   },
   {
     id: '10',
     kind: 'image',
     posterUrl: diverseAvatar10,
-    title: 'Sports Professional',
-    tag: 'Athletics',
-    views: 7300,
-    byline: 'Carlos Mendez'
+    title: 'Sports Mascot Design',
+    tag: 'Mascots',
+    views: 16300,
+    byline: 'Sports Branding'
   },
   {
     id: '11',
     kind: 'video',
     posterUrl: brandSignature,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-3.jpg',
-    title: 'Signature Brand Kit',
-    tag: 'Branding',
+    title: 'Luxury Brand Identity',
+    tag: 'Logos',
     duration: '1:05',
     views: 24700,
-    byline: 'Signature Studios'
+    byline: 'Luxury Design'
   },
   {
     id: '12',
     kind: 'image',
     posterUrl: diverseAvatar12,
-    title: 'Architecture Vision',
-    tag: 'Design',
-    views: 9100,
-    byline: 'Marcus Williams'
+    title: 'Architectural Visualization',
+    tag: 'Architecture',
+    views: 14100,
+    byline: 'Arch Viz Studio'
   },
   {
     id: '13',
     kind: 'video',
     posterUrl: model1,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-1.jpg',
-    title: 'Fashion Forward',
+    title: 'Fashion Brand Campaign',
     tag: 'Fashion',
     duration: '0:22',
     views: 16800,
-    byline: 'Style Studios'
+    byline: 'Fashion Forward'
   },
   {
     id: '14',
     kind: 'image',
     posterUrl: model2,
-    title: 'Creative Expression',
-    tag: 'Art',
+    title: 'Pet Portrait Studio',
+    tag: 'Animals',
     views: 12400,
-    byline: 'Creative Labs'
+    byline: 'Pet Art Studio'
   },
   {
     id: '15',
     kind: 'video',
     posterUrl: model3,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-2.jpg',
-    title: 'Professional Portrait',
-    tag: 'Corporate',
+    title: 'Automotive Showcase',
+    tag: 'Products',
     duration: '0:55',
     views: 13600,
-    byline: 'Pro Media'
+    byline: 'Auto Design Lab'
   },
   {
     id: '16',
     kind: 'image',
     posterUrl: model4,
-    title: 'Lifestyle Brand',
-    tag: 'Lifestyle',
+    title: 'Restaurant Menu Design',
+    tag: 'Food & Beverage',
     views: 10300,
-    byline: 'Brand Vision'
+    byline: 'Culinary Visuals'
   },
   {
     id: '17',
     kind: 'video',
     posterUrl: model5,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-3.jpg',
-    title: 'Modern Portrait',
-    tag: 'Contemporary',
+    title: 'Minimalist Logo Design',
+    tag: 'Logos',
     duration: '0:33',
     views: 19200,
-    byline: 'Modern Studios'
+    byline: 'Minimal Studios'
   },
   {
     id: '18',
     kind: 'image',
     posterUrl: model6,
-    title: 'Professional Headshot',
-    tag: 'Corporate',
-    views: 8900,
-    byline: 'Executive Media'
+    title: 'Fantasy Character Art',
+    tag: 'Characters',
+    views: 15900,
+    byline: 'Fantasy Forge'
   },
   {
     id: '19',
     kind: 'video',
     posterUrl: model7,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-1.jpg',
-    title: 'Business Leader',
-    tag: 'Leadership',
+    title: 'Corporate Training Video',
+    tag: 'Business',
     duration: '0:41',
     views: 17500,
-    byline: 'Leadership Labs'
+    byline: 'Corp Learning'
   },
   {
     id: '20',
     kind: 'image',
     posterUrl: model8,
-    title: 'Professional Style',
-    tag: 'Professional',
-    views: 6700,
-    byline: 'Style AI'
+    title: 'Abstract NFT Collection',
+    tag: 'Abstract Art',
+    views: 20700,
+    byline: 'NFT Collective'
   },
   {
     id: '21',
     kind: 'video',
     posterUrl: heroModel1,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-2.jpg',
-    title: 'Corporate Vision',
-    tag: 'Business',
+    title: 'Wildlife Conservation PSA',
+    tag: 'Animals',
     duration: '0:27',
     views: 14100,
-    byline: 'Vision Studios'
+    byline: 'Conservation Media'
   },
   {
     id: '22',
     kind: 'image',
     posterUrl: heroModel2,
-    title: 'Executive Portrait',
-    tag: 'Executive',
-    views: 11800,
-    byline: 'Executive AI'
+    title: 'Tech Product Launch',
+    tag: 'Products',
+    views: 18800,
+    byline: 'Tech Visuals'
   },
   {
     id: '23',
     kind: 'video',
     posterUrl: heroModel3,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-3.jpg',
-    title: 'Professional Brand',
-    tag: 'Branding',
+    title: 'Startup Logo Animation',
+    tag: 'Logos',
     duration: '0:48',
     views: 15900,
-    byline: 'Brand Studios'
+    byline: 'Motion Graphics Co'
   },
   {
     id: '24',
     kind: 'image',
     posterUrl: diverseAvatar1,
-    title: 'Leadership Excellence',
-    tag: 'Leadership',
-    views: 9500,
-    byline: 'Excellence Media'
+    title: 'Educational Mascot',
+    tag: 'Mascots',
+    views: 12500,
+    byline: 'Edu Design'
   },
   {
     id: '25',
     kind: 'video',
     posterUrl: diverseAvatar2,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-1.jpg',
-    title: 'Healthcare Innovation',
-    tag: 'Medical',
+    title: 'Healthcare Innovation Ad',
+    tag: 'Professional',
     duration: '0:35',
-    views: 12700,
-    byline: 'Medical Innovation'
+    views: 16700,
+    byline: 'Health Media'
+  },
+  {
+    id: '26',
+    kind: 'image',
+    posterUrl: diverseAvatar3,
+    title: 'Geometric Art Series',
+    tag: 'Abstract Art',
+    views: 13200,
+    byline: 'Geometric Arts'
+  },
+  {
+    id: '27',
+    kind: 'video',
+    posterUrl: diverseAvatar6,
+    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-2.jpg',
+    title: 'Food Brand Campaign',
+    tag: 'Food & Beverage',
+    duration: '0:52',
+    views: 19400,
+    byline: 'Food Creatives'
+  },
+  {
+    id: '28',
+    kind: 'image',
+    posterUrl: diverseAvatar8,
+    title: 'Sci-Fi Character Design',
+    tag: 'Characters',
+    views: 17300,
+    byline: 'Sci-Fi Studios'
   }
 ];
 
