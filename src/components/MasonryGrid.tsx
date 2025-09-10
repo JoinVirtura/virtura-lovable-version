@@ -123,7 +123,7 @@ export const MasonryGrid: React.FC<MasonryGridProps> = ({ tiles, className }) =>
               className="text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-4xl font-light"
             >
               Discover the most 
-              <span className="text-primary font-semibold mx-2">viral creations</span>
+              <span className="text-primary font-semibold mx-2">viral content</span>
               shaping digital culture — from stunning visuals to groundbreaking concepts
             </motion.p>
           </div>
