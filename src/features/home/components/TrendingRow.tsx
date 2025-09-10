@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Shuffle, Play, Eye, Sparkles, Heart, Share2, Filter } from 'lucide-react';
+import { ArrowRight, Play, Eye, Sparkles, Heart, Share2, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ContentCard } from './ContentCard';
 import { Tile } from '../types';
@@ -359,7 +359,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                 }}
                 className="relative z-10"
               >
-                <Shuffle className="mr-3 h-6 w-6" />
+                
               </motion.div>
               
               <span className="relative z-10 font-bold text-lg">
