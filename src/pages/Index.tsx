@@ -8,10 +8,12 @@ const Index = () => {
   const trendingTiles = getMockTiles('trending', 50);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navigation />
       <Hero />
-      <TrendingRow tiles={trendingTiles} />
+      <div className="flex-1">
+        <TrendingRow tiles={trendingTiles} />
+      </div>
     </div>
   );
 };
