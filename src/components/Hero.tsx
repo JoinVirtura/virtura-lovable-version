@@ -394,8 +394,8 @@ export const Hero = () => {
                     </Button>
                   </div>
 
-                   {/* Aspect Ratio */}
-                  <div className="relative" data-aspect-container>
+                  {/* Aspect Ratio */}
+                  <div className="relative z-[200]" data-aspect-container>
                     <Button
                       type="button"
                       variant="outline"
@@ -406,11 +406,47 @@ export const Hero = () => {
                       {selectedAspect}
                     </Button>
                     
-                    {/* Aspect Ratio Dropdown moved outside */}
+                    {/* Aspect Ratio Dropdown */}
+                    {showAspectOptions && (
+                      <div className="absolute top-full left-0 mt-2 bg-card border border-border rounded-xl shadow-2xl z-[210] p-3 min-w-[320px] backdrop-blur-xl">
+                        <div className="grid grid-cols-4 gap-3">
+                          {[
+                            { ratio: '4:3', width: 24, height: 18 },
+                            { ratio: '3:2', width: 24, height: 16 },
+                            { ratio: '16:9', width: 28, height: 16 },
+                            { ratio: '2.35:1', width: 28, height: 12 },
+                            { ratio: '1:1', width: 20, height: 20 },
+                            { ratio: '4:5', width: 16, height: 20 },
+                            { ratio: '2:3', width: 16, height: 24 },
+                            { ratio: '9:16', width: 14, height: 24 }
+                          ].map(({ratio, width, height}) => (
+                            <Button
+                              key={ratio}
+                              type="button"
+                              variant={selectedAspect === ratio ? "default" : "ghost"}
+                              className="p-4 h-auto flex flex-col items-center justify-center gap-3 hover:bg-muted transition-colors rounded-lg"
+                              onClick={() => {
+                                setSelectedAspect(ratio);
+                                setShowAspectOptions(false);
+                              }}
+                            >
+                              <div 
+                                className={`border-2 rounded-md ${selectedAspect === ratio ? 'border-primary bg-primary/30' : 'border-muted-foreground bg-muted-foreground/20'}`}
+                                style={{ 
+                                  width: `${width}px`, 
+                                  height: `${height}px`
+                                }}
+                              />
+                              <span className="text-xs font-semibold">{ratio}</span>
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Resolution */}
-                  <div className="relative z-[150]" data-resolution-container>
+                  <div className="relative z-[200]" data-resolution-container>
                     <Button
                       type="button"
                       variant="outline"
@@ -421,7 +457,25 @@ export const Hero = () => {
                       {selectedResolution}
                     </Button>
                     
-                    {/* Resolution Dropdown moved outside */}
+                    {/* Resolution Dropdown */}
+                    {showResolutionOptions && (
+                      <div className="absolute top-full left-0 mt-2 bg-card border border-border rounded-xl shadow-2xl z-[210] p-2 min-w-[120px] backdrop-blur-xl">
+                        {['1K', '1.2K', '1.5K', '4K'].map((res) => (
+                          <Button
+                            key={res}
+                            type="button"
+                            variant={selectedResolution === res ? "default" : "ghost"}
+                            className="w-full justify-start text-sm p-2 h-8 rounded-lg"
+                            onClick={() => {
+                              setSelectedResolution(res);
+                              setShowResolutionOptions(false);
+                            }}
+                          >
+                            {res}
+                          </Button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   </div>
                   
@@ -753,95 +807,6 @@ export const Hero = () => {
             </>
           )}
 
-          {/* Resolution Dropdown Overlay - Outside all containers */}
-          {showResolutionOptions && (
-            <>
-              {/* Backdrop overlay */}
-              <div 
-                className="fixed inset-0 z-[9998]" 
-                onClick={() => setShowResolutionOptions(false)} 
-              />
-              {/* Resolution dropdown positioned below button */}
-              <div 
-                className="fixed z-[9999] bg-card border border-border rounded-xl shadow-2xl p-2 min-w-[120px] backdrop-blur-xl"
-                style={{
-                  top: '560px',
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  marginLeft: '120px'
-                }}
-              >
-                {['1K', '1.2K', '1.5K', '4K'].map((res) => (
-                  <Button
-                    key={res}
-                    type="button"
-                    variant={selectedResolution === res ? "default" : "ghost"}
-                    className="w-full justify-start text-sm p-2 h-8"
-                    onClick={() => {
-                      setSelectedResolution(res);
-                      setShowResolutionOptions(false);
-                    }}
-                  >
-                    {res}
-                  </Button>
-                ))}
-              </div>
-            </>
-          )}
-
-          {/* Aspect Ratio Dropdown Overlay - Outside all containers */}
-          {showAspectOptions && (
-            <>
-              {/* Backdrop overlay */}
-              <div 
-                className="fixed inset-0 z-[9998]" 
-                onClick={() => setShowAspectOptions(false)} 
-              />
-              {/* Aspect ratio dropdown positioned below button */}
-              <div 
-                className="fixed z-[9999] bg-card border border-border rounded-xl shadow-2xl p-3 min-w-[280px] backdrop-blur-xl"
-                style={{
-                  top: '560px',
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  marginLeft: '-80px'
-                }}
-              >
-                <div className="grid grid-cols-4 gap-2">
-                  {[
-                    { ratio: '4:3', width: 20, height: 15 },
-                    { ratio: '3:2', width: 18, height: 12 },
-                    { ratio: '16:9', width: 20, height: 11 },
-                    { ratio: '2.35:1', width: 20, height: 8 },
-                    { ratio: '1:1', width: 15, height: 15 },
-                    { ratio: '4:5', width: 12, height: 15 },
-                    { ratio: '2:3', width: 10, height: 15 },
-                    { ratio: '9:16', width: 9, height: 18 }
-                  ].map(({ratio, width, height}) => (
-                    <Button
-                      key={ratio}
-                      type="button"
-                      variant={selectedAspect === ratio ? "default" : "ghost"}
-                      className="p-3 h-auto flex flex-col items-center justify-center gap-2 hover:bg-muted transition-colors"
-                      onClick={() => {
-                        setSelectedAspect(ratio);
-                        setShowAspectOptions(false);
-                      }}
-                    >
-                      <div 
-                        className={`border-2 rounded-sm ${selectedAspect === ratio ? 'border-primary bg-primary/20' : 'border-muted-foreground bg-muted/50'}`}
-                        style={{ 
-                          width: `${width}px`, 
-                          height: `${height}px`
-                        }}
-                      />
-                      <span className="text-xs font-medium">{ratio}</span>
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </>
-          )}
         </div>
       </div>
     </section>
