@@ -23,7 +23,7 @@ export function OverviewPage({ onViewChange }: OverviewPageProps) {
         //   .order('created_at', { ascending: false });
 
         // For now, use mock data
-        const trending = getMockTiles('trending', 6);
+        const trending = getMockTiles('trending', 50); // Get more tiles for full page coverage
         const wall = getMockTiles('wall', 30);
         const tutorialData = getMockTiles('recent', 2);
 
@@ -33,7 +33,7 @@ export function OverviewPage({ onViewChange }: OverviewPageProps) {
       } catch (error) {
         console.error('Error loading gallery data:', error);
         // Fallback to mock data
-        setTrendingTiles(getMockTiles('trending', 6));
+        setTrendingTiles(getMockTiles('trending', 50));
         setWallTiles(getMockTiles('wall', 30));
         setTutorials(mockTutorials);
       } finally {
@@ -45,34 +45,18 @@ export function OverviewPage({ onViewChange }: OverviewPageProps) {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Existing Hero Section - DO NOT MODIFY */}
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* Hero Section */}
       <Hero />
       
-      {/* New Sections Below Hero */}
-      <div className="container mx-auto px-6 py-16 space-y-24">
-        {/* Trending Creations */}
-        <TrendingRow 
-          tiles={trendingTiles}
-          className="animate-fade-in"
-        />
-
-        {/* Feature Cards */}
-        <FeatureCards 
-          className="animate-fade-in"
-        />
-
-        {/* Recent Creations & Quick Actions */}
-        <RecentRow 
-          tutorials={tutorials}
-          className="animate-fade-in"
-        />
-
-        {/* Trending Wall */}
-        <TrendingWall 
-          tiles={wallTiles}
-          className="animate-fade-in"
-        />
+      {/* Trending Creations - Fill remaining space */}
+      <div className="flex-1">
+        <div className="container mx-auto px-6 py-16">
+          <TrendingRow 
+            tiles={trendingTiles}
+            className="animate-fade-in"
+          />
+        </div>
       </div>
     </div>
   );
