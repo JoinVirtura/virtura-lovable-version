@@ -92,10 +92,10 @@ export const Hero = () => {
         if (event.target?.result) {
           setUploadedImage(event.target.result as string);
           setSelectedImageStyle(null); // Clear style selection when uploading image
+          setShowImageStylePopup(false); // Close popup after upload
         }
       };
       reader.readAsDataURL(file);
-      setShowImageStylePopup(false);
     }
   };
 
@@ -441,7 +441,7 @@ export const Hero = () => {
                   </div>
 
                   {/* Resolution */}
-                  <div className="relative z-[100]">
+                  <div className="relative z-[150]">
                     <Button
                       type="button"
                       variant="outline"
@@ -454,7 +454,13 @@ export const Hero = () => {
                     
                     {/* Resolution Dropdown */}
                     {showResolutionOptions && (
-                      <div className="absolute bottom-full right-0 mb-2 bg-card border border-border rounded-xl shadow-2xl z-[110] p-2 min-w-[120px] backdrop-blur-xl">
+                      <div className="fixed top-auto bottom-auto left-auto right-auto z-[160] bg-card border border-border rounded-xl shadow-2xl p-2 min-w-[120px] backdrop-blur-xl"
+                           style={{
+                             position: 'fixed',
+                             top: 'auto',
+                             bottom: '100px',
+                             right: '300px'
+                           }}>
                         {['1K', '1.2K', '1.5K', '4K'].map((res) => (
                           <Button
                             key={res}
