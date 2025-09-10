@@ -304,19 +304,21 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
           transition={{ type: "spring", damping: 20, stiffness: 100 }}
         />
         
-        {/* ZERO-GAP PREMIUM MASONRY GRID */}
+        {/* ABSOLUTE ZERO-GAP MASONRY - FORCED SEAMLESS */}
         <div 
-          className="grid auto-rows-[100px] w-full h-auto relative z-10" 
+          className="w-full h-auto block"
           style={{ 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '0px',
-            margin: '0px',
-            padding: '0px',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(12, 1fr)',
+            gridAutoRows: '100px',
+            gap: '0',
+            margin: '0',
+            padding: '0',
             border: 'none',
-            outline: 'none'
+            outline: 'none',
+            boxSizing: 'border-box'
           }}
         >
-          <AnimatePresence mode="wait">
             {shuffledTiles.slice(0, displayCount).map((tile, index) => {
               const cardSize = getCardSize(index, tile);
               const isHovered = hoveredCard === tile.id;
@@ -346,32 +348,33 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                     ease: [0.25, 0.25, 0, 1],
                     layout: { duration: 0.5 }
                   }}
-                  className={cn(
-                    "relative",
-                    cardSize.span,
-                    isHovered && "z-20"
-                  )}
                   style={{
-                    margin: '0px',
-                    padding: '0px',
+                    gridColumn: cardSize.span.includes('col-span-2') ? 'span 2' : 
+                               cardSize.span.includes('col-span-3') ? 'span 3' : 
+                               cardSize.span.includes('col-span-4') ? 'span 4' : 'span 2',
+                    gridRow: cardSize.span.includes('row-span-2') ? 'span 2' : 
+                            cardSize.span.includes('row-span-3') ? 'span 3' : 
+                            cardSize.span.includes('row-span-4') ? 'span 4' : 'span 2',
+                    margin: '0',
+                    padding: '0',
                     border: 'none',
-                    outline: 'none'
+                    outline: 'none',
+                    boxSizing: 'border-box'
                   }}
                   onHoverStart={() => setHoveredCard(tile.id)}
                   onHoverEnd={() => setHoveredCard(null)}
                 >
-                  {/* SINGLE PREMIUM CARD - NO WRAPPER CONFLICTS */}
+                  {/* SINGLE PREMIUM CARD - SEAMLESS */}
                   <ContentCard 
                     tile={tile} 
                     size={cardSize.size as any}
                     className="w-full h-full"
                   />
                 </motion.div>
-               );
-             })}
-           </AnimatePresence>
-         </div>
-       </div>
-     </section>
-   );
- };
+              );
+            })}
+        </div>
+      </div>
+    </section>
+  );
+};

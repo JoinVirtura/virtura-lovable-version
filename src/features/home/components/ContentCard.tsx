@@ -7,6 +7,7 @@ import { Heart, Share2, Play, Eye, Sparkles } from "lucide-react";
 export const ContentCard = ({ tile, className = "", size = 'md' }: ContentCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [imageLoaded, setImageLoaded] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
   const formatViews = (views?: number) => {
@@ -38,6 +39,15 @@ export const ContentCard = ({ tile, className = "", size = 'md' }: ContentCardPr
     };
   };
 
+  // Generate reliable fallback image URL
+  const getFallbackImage = () => {
+    const hash = tile.id.split('').reduce((a, b) => {
+      a = ((a << 5) - a) + b.charCodeAt(0);
+      return a & a;
+    }, 0);
+    return `https://picsum.photos/800/600?random=${Math.abs(hash)}`;
+  };
+
   return (
     <motion.div
       ref={cardRef}
@@ -47,10 +57,11 @@ export const ContentCard = ({ tile, className = "", size = 'md' }: ContentCardPr
       className={`group relative w-full h-full overflow-hidden cursor-pointer ${className}`}
       style={{ 
         perspective: '1000px',
-        margin: 0,
-        padding: 0,
+        margin: '0',
+        padding: '0',
         border: 'none',
-        outline: 'none'
+        outline: 'none',
+        boxSizing: 'border-box'
       }}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
@@ -67,10 +78,17 @@ export const ContentCard = ({ tile, className = "", size = 'md' }: ContentCardPr
         transition={{ duration: 0.3 }}
       />
 
-      {/* Main Card Container - ZERO GAPS */}
+      {/* Main Card Container - ABSOLUTE ZERO GAPS */}
       <motion.div
-        className="relative w-full h-full overflow-hidden bg-gradient-to-br from-card/90 to-card/60 backdrop-blur-xl border border-border/20"
-        style={getTiltTransform()}
+        className="relative w-full h-full overflow-hidden bg-gradient-to-br from-card/90 to-card/60 backdrop-blur-xl border-0"
+        style={{
+          ...getTiltTransform(),
+          margin: '0',
+          padding: '0',
+          border: 'none',
+          outline: 'none',
+          boxSizing: 'border-box'
+        }}
         transition={{ duration: 0.3, ease: "easeOut" }}
       >
         {/* Advanced Background Mesh */}
@@ -87,6 +105,7 @@ export const ContentCard = ({ tile, className = "", size = 'md' }: ContentCardPr
 
         {/* Premium Image Container */}
         <div className="relative w-full h-full overflow-hidden">
+          {/* Primary Image */}
           <motion.img
             src={tile.posterUrl}
             alt={tile.title}
@@ -99,19 +118,26 @@ export const ContentCard = ({ tile, className = "", size = 'md' }: ContentCardPr
               filter: 'brightness(1) contrast(1) saturate(1)',
             }}
             transition={{ duration: 0.7, ease: "easeOut" }}
+            onLoad={() => setImageLoaded(true)}
             onError={(e) => {
-              const target = e.currentTarget;
-              target.style.display = 'none';
-              const fallback = document.createElement('div');
-              fallback.className = 'absolute inset-0 w-full h-full bg-gradient-to-br from-primary via-primary/80 to-primary-dark flex items-center justify-center';
-              fallback.innerHTML = `
-                <div class="text-center p-6">
-                  <div class="text-3xl font-bold text-black mb-2">${tile.tag || 'CONTENT'}</div>
-                  <div class="text-lg font-medium text-black/80">${tile.title}</div>
-                </div>
-              `;
-              if (target.parentElement) {
-                target.parentElement.appendChild(fallback);
+              // Try fallback image first
+              if (!e.currentTarget.src.includes('picsum')) {
+                e.currentTarget.src = getFallbackImage();
+              } else {
+                // If even fallback fails, create gradient
+                const target = e.currentTarget;
+                target.style.display = 'none';
+                const fallback = document.createElement('div');
+                fallback.className = 'absolute inset-0 w-full h-full bg-gradient-to-br from-primary via-primary/80 to-primary-dark flex items-center justify-center';
+                fallback.innerHTML = `
+                  <div class="text-center p-6">
+                    <div class="text-3xl font-bold text-black mb-2">${tile.tag || 'CONTENT'}</div>
+                    <div class="text-lg font-medium text-black/80 line-clamp-2">${tile.title}</div>
+                  </div>
+                `;
+                if (target.parentElement) {
+                  target.parentElement.appendChild(fallback);
+                }
               }
             }}
           />
@@ -205,73 +231,59 @@ export const ContentCard = ({ tile, className = "", size = 'md' }: ContentCardPr
           </motion.div>
         </div>
 
-        {/* Ultra-Sophisticated Content Footer */}
+        {/* Ultra-Sophisticated Content Footer - PERFECTLY ALIGNED */}
         <motion.div 
-          className="absolute bottom-0 left-0 right-0 p-6 z-20"
-          initial={{ y: 20, opacity: 0.8 }}
-          animate={isHovered ? { y: 0, opacity: 1 } : { y: 20, opacity: 0.8 }}
+          className="absolute bottom-0 left-0 right-0 p-4 z-20"
+          initial={{ y: 10, opacity: 0.9 }}
+          animate={isHovered ? { y: 0, opacity: 1 } : { y: 10, opacity: 0.9 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
         >
-          <div className="space-y-3">
-            {/* Premium Title Design */}
-            <motion.h3 
-              className="text-white font-bold text-xl leading-tight line-clamp-2 tracking-wide drop-shadow-2xl"
-              animate={isHovered ? { 
-                textShadow: '0 0 20px rgba(255, 215, 0, 0.5)',
-                color: '#ffffff'
-              } : {
-                textShadow: '0 4px 8px rgba(0, 0, 0, 0.8)',
-                color: '#ffffff'
-              }}
-              transition={{ duration: 0.3 }}
-            >
-              {tile.title}
-            </motion.h3>
-            
-            {/* Creator Badge */}
-            {tile.byline && (
-              <motion.p 
-                className="text-primary font-semibold text-sm tracking-wide drop-shadow-lg"
-                animate={isHovered ? { scale: 1.05 } : { scale: 1 }}
+          <div className="flex items-end justify-between">
+            {/* Left Side - Title & Stats */}
+            <div className="flex-1 min-w-0">
+              <motion.h3 
+                className="text-white font-bold text-lg leading-tight line-clamp-2 tracking-wide drop-shadow-2xl mb-2"
+                animate={isHovered ? { 
+                  textShadow: '0 0 20px rgba(255, 215, 0, 0.5)',
+                  color: '#ffffff'
+                } : {
+                  textShadow: '0 4px 8px rgba(0, 0, 0, 0.8)',
+                  color: '#ffffff'
+                }}
                 transition={{ duration: 0.3 }}
               >
-                by {tile.byline}
-              </motion.p>
-            )}
-            
-            {/* Advanced Stats Row */}
-            <div className="flex items-center justify-between">
-              <motion.div 
-                className="flex items-center gap-2"
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.2 }}
-              >
+                {tile.title}
+              </motion.h3>
+              
+              {/* Stats Row - Aligned Left */}
+              <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1 bg-black/30 backdrop-blur-sm rounded-full px-3 py-1">
-                  <Eye className="w-4 h-4 text-primary" />
+                  <Eye className="w-3 h-3 text-primary" />
                   <span className="text-white font-bold text-sm">{formatViews(tile.views)}</span>
                 </div>
                 {tile.duration && (
-                  <div className="flex items-center gap-1 bg-black/30 backdrop-blur-sm rounded-full px-3 py-1 ml-2">
-                    <Play className="w-4 h-4 text-primary" />
+                  <div className="flex items-center gap-1 bg-black/30 backdrop-blur-sm rounded-full px-3 py-1">
+                    <Play className="w-3 h-3 text-primary" />
                     <span className="text-white font-bold text-sm">{tile.duration}</span>
                   </div>
                 )}
-              </motion.div>
-
-              {/* Floating Sparkle Effect */}
-              <motion.div
-                animate={isHovered ? { 
-                  rotate: 360,
-                  scale: [1, 1.2, 1]
-                } : { rotate: 0, scale: 1 }}
-                transition={{ 
-                  rotate: { duration: 2, repeat: Infinity, ease: "linear" },
-                  scale: { duration: 1, repeat: Infinity }
-                }}
-              >
-                <Sparkles className="w-6 h-6 text-primary" />
-              </motion.div>
+              </div>
             </div>
+
+            {/* Right Side - Floating Sparkle Effect */}
+            <motion.div
+              className="ml-4 flex-shrink-0"
+              animate={isHovered ? { 
+                rotate: 360,
+                scale: [1, 1.2, 1]
+              } : { rotate: 0, scale: 1 }}
+              transition={{ 
+                rotate: { duration: 2, repeat: Infinity, ease: "linear" },
+                scale: { duration: 1, repeat: Infinity }
+              }}
+            >
+              <Sparkles className="w-6 h-6 text-primary" />
+            </motion.div>
           </div>
         </motion.div>
 
