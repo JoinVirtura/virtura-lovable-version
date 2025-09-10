@@ -392,7 +392,155 @@ export const mockTiles: Tile[] = [
     tag: 'WILDLIFE',
     views: 3938475,
     byline: 'Arctic Focus'
-  }
+  },
+  
+  // Adding 50+ more reliable images for variety
+  {
+    id: 'reliable-1',
+    kind: 'image',
+    posterUrl: 'https://picsum.photos/800/600?random=1',
+    title: 'Abstract Patterns',
+    tag: 'ABSTRACT',
+    views: 2847291,
+    byline: 'Digital Arts'
+  },
+  {
+    id: 'reliable-2',
+    kind: 'image',
+    posterUrl: 'https://picsum.photos/800/600?random=2',
+    title: 'Urban Photography',
+    tag: 'URBAN',
+    views: 3847291,
+    byline: 'City Lens'
+  },
+  {
+    id: 'reliable-3',
+    kind: 'image',
+    posterUrl: 'https://picsum.photos/800/600?random=3',
+    title: 'Nature Landscapes',
+    tag: 'NATURE',
+    views: 4847291,
+    byline: 'Earth Vision'
+  },
+  {
+    id: 'reliable-4',
+    kind: 'image',
+    posterUrl: 'https://picsum.photos/800/600?random=4',
+    title: 'Tech Innovation',
+    tag: 'TECHNOLOGY',
+    views: 5847291,
+    byline: 'Future Labs'
+  },
+  {
+    id: 'reliable-5',
+    kind: 'image',
+    posterUrl: 'https://picsum.photos/800/600?random=5',
+    title: 'Fashion Forward',
+    tag: 'FASHION',
+    views: 2947291,
+    byline: 'Style Studio'
+  },
+  {
+    id: 'reliable-6',
+    kind: 'image',
+    posterUrl: 'https://picsum.photos/800/600?random=6',
+    title: 'Architectural Marvel',
+    tag: 'ARCHITECTURE',
+    views: 3947291,
+    byline: 'Design Works'
+  },
+  {
+    id: 'reliable-7',
+    kind: 'image',
+    posterUrl: 'https://picsum.photos/800/600?random=7',
+    title: 'Food Artistry',
+    tag: 'CULINARY',
+    views: 2747291,
+    byline: 'Chef Studios'
+  },
+  {
+    id: 'reliable-8',
+    kind: 'image',
+    posterUrl: 'https://picsum.photos/800/600?random=8',
+    title: 'Sports Action',
+    tag: 'SPORTS',
+    views: 4747291,
+    byline: 'Action Sports'
+  },
+  {
+    id: 'reliable-9',
+    kind: 'image',
+    posterUrl: 'https://picsum.photos/800/600?random=9',
+    title: 'Music Vibes',
+    tag: 'MUSIC',
+    views: 3647291,
+    byline: 'Sound Wave'
+  },
+  {
+    id: 'reliable-10',
+    kind: 'image',
+    posterUrl: 'https://picsum.photos/800/600?random=10',
+    title: 'Travel Adventure',
+    tag: 'TRAVEL',
+    views: 5647291,
+    byline: 'Wanderlust'
+  },
+  // Continue with more reliable images...
+  {
+    id: 'reliable-11',
+    kind: 'image',
+    posterUrl: 'https://picsum.photos/800/600?random=11',
+    title: 'Cosmic Wonder',
+    tag: 'SPACE',
+    views: 6847291,
+    byline: 'Cosmic Renders'
+  },
+  {
+    id: 'reliable-12',
+    kind: 'image',
+    posterUrl: 'https://picsum.photos/800/600?random=12',
+    title: 'Digital Dreams',
+    tag: 'DIGITAL ART',
+    views: 4247291,
+    byline: 'Pixel Perfect'
+  },
+  {
+    id: 'reliable-13',
+    kind: 'image',
+    posterUrl: 'https://picsum.photos/800/600?random=13',
+    title: 'Ocean Depths',
+    tag: 'MARINE',
+    views: 3547291,
+    byline: 'Deep Blue'
+  },
+  {
+    id: 'reliable-14',
+    kind: 'image',
+    posterUrl: 'https://picsum.photos/800/600?random=14',
+    title: 'Mountain Peaks',
+    tag: 'LANDSCAPE',
+    views: 4347291,
+    byline: 'Peak Photos'
+  },
+  {
+    id: 'reliable-15',
+    kind: 'image',
+    posterUrl: 'https://picsum.photos/800/600?random=15',
+    title: 'City Nights',
+    tag: 'URBAN',
+    views: 2847291,
+    byline: 'Night Vision'
+  },
+  // More diverse content for full grid
+  ...Array.from({ length: 30 }, (_, i) => ({
+    id: `auto-${i + 16}`,
+    kind: 'image' as const,
+    posterUrl: `https://picsum.photos/800/600?random=${i + 16}`,
+    title: `Creative Vision ${i + 1}`,
+    tag: ['ABSTRACT', 'NATURE', 'TECH', 'ART', 'DESIGN', 'PHOTO'][i % 6],
+    views: Math.floor(Math.random() * 5000000) + 1000000,
+    byline: ['Studio Alpha', 'Creative Labs', 'Vision Works', 'Art House', 'Design Co'][i % 5]
+  }))
 ];
 
 // Mock tutorials data for recent section

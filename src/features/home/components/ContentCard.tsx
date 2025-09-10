@@ -1,5 +1,4 @@
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
 import { ContentCardProps } from "../types";
 import { Heart, Share2, Play, Eye } from "lucide-react";
 
@@ -12,17 +11,32 @@ export const ContentCard = ({ tile, className = "", size = 'md' }: ContentCardPr
   };
 
   return (
-    <Card className={`group relative overflow-hidden border-0 bg-transparent hover:scale-[1.01] transition-all duration-300 cursor-pointer ${className}`}>
-      {/* Image Container - FULL SIZE WITH NO GAPS */}
-      <div className="relative w-full h-full overflow-hidden bg-card/20">
+    <div className={`group relative w-full h-full overflow-hidden cursor-pointer ${className}`}>
+      {/* Image Container - ZERO GAPS, PURE DIV */}
+      <div className="relative w-full h-full bg-card/20 overflow-hidden">
         <img
           src={tile.posterUrl}
           alt={tile.title}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          loading="lazy"
           onError={(e) => {
-            // Fallback to a solid color background if image fails
-            e.currentTarget.style.display = 'none';
-            e.currentTarget.parentElement!.style.background = 'linear-gradient(135deg, #FFD700, #FFA500)';
+            // Multiple fallback strategies
+            const target = e.currentTarget;
+            target.style.display = 'none';
+            
+            // Create a fallback element
+            const fallback = document.createElement('div');
+            fallback.className = 'w-full h-full bg-gradient-to-br from-primary via-primary/80 to-primary-dark flex items-center justify-center';
+            fallback.innerHTML = `
+              <div class="text-center p-4">
+                <div class="text-2xl font-bold text-black mb-2">${tile.tag || 'CONTENT'}</div>
+                <div class="text-sm text-black/80">${tile.title}</div>
+              </div>
+            `;
+            
+            if (target.parentElement) {
+              target.parentElement.appendChild(fallback);
+            }
           }}
         />
         
@@ -30,7 +44,7 @@ export const ContentCard = ({ tile, className = "", size = 'md' }: ContentCardPr
         <div className="absolute top-3 left-3 z-10">
           <Badge 
             variant="secondary" 
-            className="bg-primary text-black font-semibold px-3 py-1 text-xs uppercase tracking-wide"
+            className="bg-primary text-black font-semibold px-3 py-1 text-xs uppercase tracking-wide shadow-lg"
           >
             {tile.tag || 'CONTENT'}
           </Badge>
@@ -75,6 +89,6 @@ export const ContentCard = ({ tile, className = "", size = 'md' }: ContentCardPr
           </div>
         </div>
       </div>
-    </Card>
+    </div>
   );
 };

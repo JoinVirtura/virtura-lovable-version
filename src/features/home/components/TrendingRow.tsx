@@ -304,8 +304,8 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
           transition={{ type: "spring", damping: 20, stiffness: 100 }}
         />
         
-        {/* Full-Screen Zero-Gap Masonry Grid */}
-        <div className="grid grid-cols-8 md:grid-cols-10 lg:grid-cols-12 xl:grid-cols-14 auto-rows-[100px] gap-0 relative z-10">{/* Added gap-0 to ensure no gaps */}
+        {/* Absolutely Zero-Gap Grid - Pure CSS Grid */}
+        <div className="grid grid-cols-8 md:grid-cols-10 lg:grid-cols-12 xl:grid-cols-14 auto-rows-[100px] gap-0 w-full h-auto" style={{ margin: 0, padding: 0 }}>
           <AnimatePresence mode="wait">
             {shuffledTiles.slice(0, displayCount).map((tile, index) => {
               const cardSize = getCardSize(index, tile);
