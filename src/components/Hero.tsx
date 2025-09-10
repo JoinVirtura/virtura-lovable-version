@@ -519,24 +519,24 @@ export const Hero = () => {
                   </div>
 
                   {/* Side Preview Panel */}
-                  <div className="flex-1 bg-muted/30 border-l border-border/30 p-6 overflow-y-auto">
-                    <div className="space-y-6">
-                      <div>
-                        <h3 className="text-lg font-bold text-foreground mb-4">
+                  <div className="flex-1 bg-muted/30 border-l border-border/30 p-4 overflow-hidden flex flex-col">
+                    <div className="flex flex-col h-full">
+                      <div className="flex-1">
+                        <h3 className="text-lg font-bold text-foreground mb-3">
                           {selectedStylePreview ? selectedStylePreview.name : 'Preview'}
                         </h3>
-                        <div className="grid grid-cols-2 gap-3">
-                          {/* Preview images showing 4 variations with style name overlay */}
+                        <div className="grid grid-cols-2 gap-2 mb-4">
+                          {/* Compact preview images with 4:3 aspect ratio */}
                           {[1, 2, 3, 4].map((i) => (
                             <div key={i} className="relative aspect-[4/3] bg-muted/50 rounded-lg overflow-hidden">
                               <img 
-                                src={selectedStylePreview ? selectedStylePreview.image : "https://via.placeholder.com/200x200/1a1a1a/ffffff?text=Select+Style"} 
+                                src={selectedStylePreview ? selectedStylePreview.image : "https://via.placeholder.com/200x150/1a1a1a/ffffff?text=Select+Style"} 
                                 alt={`Preview ${i}`}
                                 className="w-full h-full object-cover"
                               />
                               {selectedStylePreview && (
-                                <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-gradient-to-t from-black/70 to-transparent text-white">
-                                  <span className="font-medium">{selectedStylePreview.name}</span>
+                                <div className="absolute bottom-0 left-0 right-0 p-1 text-xs bg-gradient-to-t from-black/70 to-transparent text-white">
+                                  <span className="font-medium text-xs">{selectedStylePreview.name}</span>
                                 </div>
                               )}
                             </div>
@@ -544,11 +544,11 @@ export const Hero = () => {
                         </div>
                       </div>
                       
-                      <div className="space-y-3">
-                        <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-3 rounded-xl">
+                      <div className="space-y-2 flex-shrink-0">
+                        <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-2.5 rounded-xl text-sm">
                           + Add Style
                         </Button>
-                        <Button variant="outline" className="w-full border-primary/30 text-foreground hover:bg-primary/10 py-3 rounded-xl">
+                        <Button variant="outline" className="w-full border-primary/30 text-foreground hover:bg-primary/10 py-2.5 rounded-xl text-sm">
                           📌 Pin
                         </Button>
                       </div>
