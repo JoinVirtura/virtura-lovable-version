@@ -422,8 +422,7 @@ export const Hero = () => {
                       >
                         <img src="/lovable-uploads/b1d029c9-7647-4877-aabc-4dff2174dd7c.png" alt="long exposure emotion" className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                          <div className="text-white/70">tenparisien</div>
+                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-gradient-to-t from-black/70 to-transparent text-white">
                           <div className="font-semibold">long exposure emotion</div>
                         </div>
                       </div>
@@ -607,7 +606,7 @@ export const Hero = () => {
                           {selectedStylePreview ? selectedStylePreview.name : 'Preview'}
                         </h3>
                         <div className="grid grid-cols-2 gap-4">
-                          {/* Preview placeholder images with style name overlay */}
+                          {/* Preview images showing 4 variations with style name overlay */}
                           {[1, 2, 3, 4].map((i) => (
                             <div key={i} className="relative aspect-square bg-muted/50 rounded-xl overflow-hidden">
                               <img 
@@ -616,8 +615,8 @@ export const Hero = () => {
                                 className="w-full h-full object-cover"
                               />
                               {selectedStylePreview && (
-                                <div className="absolute inset-0 bg-black/40 flex items-end p-3">
-                                  <span className="text-white text-sm font-medium">{selectedStylePreview.name}</span>
+                                <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-gradient-to-t from-black/70 to-transparent text-white">
+                                  <span className="font-medium">{selectedStylePreview.name}</span>
                                 </div>
                               )}
                             </div>
