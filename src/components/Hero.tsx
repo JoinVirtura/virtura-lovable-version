@@ -81,8 +81,9 @@ export const Hero = () => {
   const [showImageStylePopup, setShowImageStylePopup] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [selectedImageStyle, setSelectedImageStyle] = useState<{name: string, username: string, id: string, image: string} | null>(null);
+  const [uploadedImagePrompt, setUploadedImagePrompt] = useState<string | null>(null);
   
-  // Handle file upload
+  // Handle file upload for Image Style
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -98,8 +99,26 @@ export const Hero = () => {
     }
   };
 
+  // Handle file upload for Image Prompt
+  const handleImagePromptUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setUploadedImagePrompt(event.target.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const removeUploadedImage = () => {
     setUploadedImage(null);
+  };
+
+  const removeUploadedImagePrompt = () => {
+    setUploadedImagePrompt(null);
   };
 
   const handleStyleSelect = (style: typeof styleData[0]) => {
@@ -317,15 +336,53 @@ export const Hero = () => {
                     </Button>
                   </div>
 
-                  {/* Image Prompt Button */}
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="bg-muted/60 border-border/50 hover:bg-gradient-gold hover:text-primary-foreground hover:border-primary/50 px-4 py-2 rounded-xl text-sm font-medium h-10 transition-all duration-200"
-                  >
-                    <Image className="w-4 h-4 mr-2" />
-                    Image prompt
-                  </Button>
+                  {/* Image Prompt Button with Upload Functionality */}
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      id="image-prompt-upload"
+                      onChange={handleImagePromptUpload}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="bg-muted/60 border-border/50 hover:bg-gradient-gold hover:text-primary-foreground hover:border-primary/50 px-4 py-2 rounded-xl text-sm font-medium h-10 transition-all duration-200"
+                      onClick={() => {
+                        if (!uploadedImagePrompt) {
+                          document.getElementById('image-prompt-upload')?.click();
+                        }
+                      }}
+                    >
+                      {uploadedImagePrompt ? (
+                        <div className="flex items-center gap-2">
+                          <div className="relative w-6 h-6 rounded overflow-hidden border border-white/20">
+                            <img 
+                              src={uploadedImagePrompt} 
+                              alt="Uploaded prompt" 
+                              className="w-full h-full object-cover"
+                            />
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeUploadedImagePrompt();
+                              }}
+                              className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 border border-white shadow-lg"
+                            >
+                              <X className="w-2.5 h-2.5" />
+                            </button>
+                          </div>
+                          <span>Image prompt</span>
+                        </div>
+                      ) : (
+                        <>
+                          <Image className="w-4 h-4 mr-2" />
+                          Image prompt
+                        </>
+                      )}
+                    </Button>
+                  </div>
 
                   {/* Image Style Button with Hover Popup */}
                   <div 
@@ -351,9 +408,9 @@ export const Hero = () => {
                                 e.stopPropagation();
                                 removeUploadedImage();
                               }}
-                              className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600"
+                              className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 border border-white shadow-lg"
                             >
-                              <X className="w-2 h-2" />
+                              <X className="w-2.5 h-2.5" />
                             </button>
                           </div>
                           <span>Image style</span>
@@ -371,9 +428,9 @@ export const Hero = () => {
                                 e.stopPropagation();
                                 removeSelectedStyle();
                               }}
-                              className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600"
+                              className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 border border-white shadow-lg"
                             >
-                              <X className="w-2 h-2" />
+                              <X className="w-2.5 h-2.5" />
                             </button>
                           </div>
                           <span>Image style</span>
