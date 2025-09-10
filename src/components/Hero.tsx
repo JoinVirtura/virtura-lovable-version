@@ -138,6 +138,7 @@ export const Hero = () => {
     setSelectedImageStyle(style);
     setUploadedImage(null); // Clear uploaded image when selecting style
     setShowImageStylePopup(false);
+    setShowStyleModal(false);
   };
 
   const removeSelectedStyle = () => {
@@ -613,14 +614,25 @@ export const Hero = () => {
                     <div className="flex flex-col h-full">
                       <div className="flex-1">
                         <h3 className="text-lg font-bold text-foreground mb-4">
-                          {selectedStylePreview ? selectedStylePreview.name : 'Select a style to preview'}
+                          {selectedStylePreview ? selectedStylePreview.name : uploadedImage ? 'Custom Style' : 'Select a style to preview'}
                         </h3>
                         {selectedStylePreview && (
                           <div className="mb-4">
-                            <div className="relative aspect-square bg-muted/50 rounded-xl overflow-hidden">
+                            <div className="relative flex-1 bg-muted/50 rounded-xl overflow-hidden h-64">
                               <img 
                                 src={selectedStylePreview.image} 
                                 alt={selectedStylePreview.name}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          </div>
+                        )}
+                        {uploadedImage && (
+                          <div className="mb-4">
+                            <div className="relative flex-1 bg-muted/50 rounded-xl overflow-hidden h-64">
+                              <img 
+                                src={uploadedImage} 
+                                alt="Uploaded style"
                                 className="w-full h-full object-cover"
                               />
                             </div>
@@ -635,18 +647,22 @@ export const Hero = () => {
                             if (selectedStylePreview) {
                               handleStyleSelect(selectedStylePreview);
                               setShowStyleModal(false);
+                            } else if (uploadedImage) {
+                              setShowStyleModal(false);
+                              setUploadedImagePrompt(uploadedImage);
+                              setUploadedImage(null);
                             }
                           }}
-                          disabled={!selectedStylePreview}
+                          disabled={!selectedStylePreview && !uploadedImage}
                         >
-                          + Add Style
+                          {uploadedImage ? 'Upload' : '+ Add Style'}
                         </Button>
                         <label className="w-full cursor-pointer">
                           <input
                             type="file"
                             accept="image/*"
                             className="hidden"
-                            onChange={handleGeneralImageUpload}
+                            onChange={handleFileUpload}
                           />
                           <Button 
                             type="button"
@@ -658,7 +674,7 @@ export const Hero = () => {
                             }}
                           >
                             <Upload className="w-4 h-4 mr-2" />
-                            Upload Image
+                            {uploadedImage ? 'Upload' : 'Upload Image'}
                           </Button>
                         </label>
                       </div>
