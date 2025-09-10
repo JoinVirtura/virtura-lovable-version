@@ -643,7 +643,7 @@ export const Hero = () => {
                         </Button>
                         {uploadedImage ? (
                           <Button 
-                            className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl text-sm"
+                            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-3 rounded-xl text-sm"
                             onClick={() => {
                               // Add uploaded image as thumbnail next to microphone
                               setUploadedGeneralImage(uploadedImage);
@@ -651,8 +651,8 @@ export const Hero = () => {
                               setShowStyleModal(false);
                             }}
                           >
-                            <Send className="w-4 h-4 mr-2" />
-                            Send
+                            <Upload className="w-4 h-4 mr-2" />
+                            Upload
                           </Button>
                         ) : (
                           <label className="w-full cursor-pointer">
