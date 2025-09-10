@@ -175,9 +175,9 @@ export const Hero = () => {
         </div>
 
         {/* Compact Image Generation Interface */}
-        <div className="w-full max-w-4xl mb-12 animate-fade-in">
+        <div className="w-full max-w-5xl mb-12 animate-fade-in">
           <form onSubmit={handleSubmit} className="relative">
-            {/* Main Input Container */}
+            {/* Main Input Container - Improved Width */}
             <div className="relative bg-card/90 border border-border/50 rounded-2xl backdrop-blur-xl shadow-2xl overflow-hidden">
               {/* Text Input Area - Reduced Height */}
               <div className="px-8 py-5">
@@ -190,10 +190,11 @@ export const Hero = () => {
                 />
               </div>
 
-              {/* Bottom Action Bar - Improved Layout */}
-              <div className="px-8 py-4 bg-muted/10 border-t border-border/30 flex items-center justify-between gap-4">
-                {/* Options Row */}
-                <div className="flex items-center gap-3">
+              {/* Bottom Action Bar - Full Width Layout */}
+              <div className="px-6 py-4 bg-muted/10 border-t border-border/30">
+                <div className="flex items-center justify-between gap-4 w-full">
+                  {/* Options Row - Flex Wrap for Responsiveness */}
+                  <div className="flex items-center gap-3 flex-wrap flex-1 min-w-0">
                   {/* Style Button */}
                   <div className="relative">
                     <Button
@@ -304,32 +305,33 @@ export const Hero = () => {
                     <Shuffle className="w-4 h-4 mr-2" />
                     Raw
                   </Button>
-                </div>
-                
-                {/* Action Buttons Group */}
-                <div className="flex items-center gap-3">
-                  {/* Microphone Button */}
-                  <Button
-                    type="button"
-                    onClick={handleVoiceInput}
-                    className={`w-12 h-12 p-0 rounded-xl transition-all duration-300 ${
-                      isRecording 
-                        ? 'bg-red-500 hover:bg-red-600 animate-pulse' 
-                        : 'bg-primary/10 border border-primary/30 hover:bg-primary/20'
-                    }`}
-                  >
-                    <Mic className={`w-5 h-5 ${isRecording ? 'text-white' : 'text-primary'}`} />
-                  </Button>
+                  </div>
                   
-                  {/* Generate Button */}
-                  <Button
-                    type="submit"
-                    disabled={!inputValue.trim()}
-                    className="bg-gradient-gold hover:bg-gradient-gold-hover shadow-gold px-6 py-3 rounded-xl font-bold text-base h-12"
-                  >
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    Generate
-                  </Button>
+                  {/* Action Buttons Group - Fixed Width */}
+                  <div className="flex items-center gap-3 flex-shrink-0">
+                    {/* Microphone Button */}
+                    <Button
+                      type="button"
+                      onClick={handleVoiceInput}
+                      className={`w-12 h-12 p-0 rounded-xl transition-all duration-300 ${
+                        isRecording 
+                          ? 'bg-red-500 hover:bg-red-600 animate-pulse' 
+                          : 'bg-primary/10 border border-primary/30 hover:bg-primary/20'
+                      }`}
+                    >
+                      <Mic className={`w-5 h-5 ${isRecording ? 'text-white' : 'text-primary'}`} />
+                    </Button>
+                    
+                    {/* Generate Button */}
+                    <Button
+                      type="submit"
+                      disabled={!inputValue.trim()}
+                      className="bg-gradient-gold hover:bg-gradient-gold-hover shadow-gold px-6 py-3 rounded-xl font-bold text-base h-12 whitespace-nowrap"
+                    >
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      Generate
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
