@@ -27,17 +27,24 @@ import model6 from "@/assets/model-jade.jpg";
 import model7 from "@/assets/model-jenna.jpg";
 import model8 from "@/assets/model-lena.jpg";
 
+// Import brand and product assets
+import brandLogo from "@/assets/brand-logo-suite.jpg";
+import brandMarketing from "@/assets/brand-marketing-campaign.jpg";
+import brandSocial from "@/assets/brand-social-media.jpg";
+import brandPresentation from "@/assets/brand-presentation-kit.jpg";
+import brandSignature from "@/assets/brand-signature-kit.jpg";
+
 export const mockTiles: Tile[] = [
   {
     id: '1',
     kind: 'video',
-    posterUrl: diverseAvatar1,
+    posterUrl: brandLogo,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-1.jpg',
-    title: 'Business Executive',
-    tag: 'Professional',
+    title: 'Brand Logo Suite',
+    tag: 'Branding',
     duration: '0:29',
-    views: 12500,
-    byline: 'Sarah Johnson, CEO'
+    views: 25400,
+    byline: 'Creative Studios'
   },
   {
     id: '2',
@@ -51,22 +58,22 @@ export const mockTiles: Tile[] = [
   {
     id: '3',
     kind: 'video',
-    posterUrl: diverseAvatar3,
+    posterUrl: brandMarketing,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-2.jpg',
-    title: 'Tech Innovation',
-    tag: 'Technology',
+    title: 'Marketing Campaign',
+    tag: 'Marketing',
     duration: '0:44',
-    views: 15200,
-    byline: 'Amy Chen, CTO'
+    views: 19800,
+    byline: 'Brand Agency'
   },
   {
     id: '4',
     kind: 'image',
     posterUrl: diverseAvatar4,
-    title: 'Medical Consultation',
-    tag: 'Healthcare',
-    views: 9800,
-    byline: 'Dr. Ahmad Hassan'
+    title: 'Abstract Art Collection',
+    tag: 'Art',
+    views: 15600,
+    byline: 'Digital Artists'
   },
   {
     id: '5',
@@ -82,11 +89,11 @@ export const mockTiles: Tile[] = [
   {
     id: '6',
     kind: 'image',
-    posterUrl: diverseAvatar6,
-    title: 'Business Leadership',
-    tag: 'Corporate',
-    views: 11200,
-    byline: 'Joseph Hawk'
+    posterUrl: brandSocial,
+    title: 'Social Media Kit',
+    tag: 'Social',
+    views: 21300,
+    byline: 'Social Studios'
   },
   {
     id: '7',
@@ -102,11 +109,11 @@ export const mockTiles: Tile[] = [
   {
     id: '8',
     kind: 'image',
-    posterUrl: diverseAvatar8,
-    title: 'Educational Leader',
-    tag: 'Education',
-    views: 8600,
-    byline: 'David Miller'
+    posterUrl: brandPresentation,
+    title: 'Presentation Kit',
+    tag: 'Business',
+    views: 17800,
+    byline: 'Pro Design'
   },
   {
     id: '9',
@@ -131,13 +138,13 @@ export const mockTiles: Tile[] = [
   {
     id: '11',
     kind: 'video',
-    posterUrl: diverseAvatar11,
+    posterUrl: brandSignature,
     previewVideoUrl: '/lovable-uploads/virtura-video-thumb-3.jpg',
-    title: 'Marine Research',
-    tag: 'Science',
+    title: 'Signature Brand Kit',
+    tag: 'Branding',
     duration: '1:05',
-    views: 14700,
-    byline: 'Dr. Leilani Nakamura'
+    views: 24700,
+    byline: 'Signature Studios'
   },
   {
     id: '12',
