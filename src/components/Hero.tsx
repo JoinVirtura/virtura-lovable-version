@@ -15,6 +15,7 @@ export const Hero = () => {
   const [showAspectOptions, setShowAspectOptions] = useState(false);
   const [showResolutionOptions, setShowResolutionOptions] = useState(false);
   const [showStyleModal, setShowStyleModal] = useState(false);
+  const [selectedStylePreview, setSelectedStylePreview] = useState<{name: string, username: string, id: string} | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   
@@ -338,11 +339,11 @@ export const Hero = () => {
             </div>
           </form>
           
-          {/* Styles Popup Window */}
+          {/* Large Styles Popup Window */}
           {showStyleModal && (
-            <div className="fixed inset-0 z-50 flex items-start justify-center pt-20">
-              {/* Popup Box - Not Full Screen */}
-              <div className="bg-card/95 backdrop-blur-xl border border-border rounded-2xl shadow-2xl w-full max-w-4xl max-h-[70vh] overflow-hidden mx-4">
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-8">
+              {/* Large Popup Box */}
+              <div className="bg-card/95 backdrop-blur-xl border border-border rounded-2xl shadow-2xl w-full max-w-7xl h-[85vh] overflow-hidden">
                 {/* Modal Header */}
                 <div className="flex items-center justify-between p-4 border-b border-border/30">
                   <div className="flex items-center gap-3">
@@ -388,120 +389,151 @@ export const Hero = () => {
                   </Button>
                 </div>
 
-                {/* Modal Content */}
-                <div className="p-4 overflow-y-auto max-h-[55vh]">
-                  {/* Category Tabs */}
-                  <div className="flex items-center gap-4 mb-4">
-                    <Button variant="ghost" className="text-foreground font-semibold text-sm">All</Button>
-                    <Button variant="ghost" className="text-muted-foreground hover:text-foreground text-sm">Krea 1</Button>
-                    <Button variant="ghost" className="text-muted-foreground hover:text-foreground text-sm">Flux</Button>
+                {/* Modal Content - Split Layout */}
+                <div className="flex h-[calc(85vh-80px)]">
+                  {/* Left Side - Styles Grid */}
+                  <div className="flex-1 p-4 overflow-y-auto">
+                    {/* Category Tabs */}
+                    <div className="flex items-center gap-4 mb-4">
+                      <Button variant="ghost" className="text-foreground font-semibold text-sm">All</Button>
+                      <Button variant="ghost" className="text-muted-foreground hover:text-foreground text-sm">Krea 1</Button>
+                      <Button variant="ghost" className="text-muted-foreground hover:text-foreground text-sm">Flux</Button>
+                    </div>
+
+                    {/* Styles Grid */}
+                    <div className="grid grid-cols-5 gap-3">
+                      {/* Create Style Card */}
+                      <div 
+                        className="aspect-square bg-muted/30 rounded-xl border-2 border-dashed border-border/50 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-all"
+                      >
+                        <div className="text-xl mb-1">+</div>
+                        <div className="text-xs text-center px-2">
+                          <div className="text-muted-foreground">Train a style</div>
+                          <div className="font-semibold">Create style</div>
+                        </div>
+                      </div>
+
+                      {/* Style Cards */}
+                      <div 
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-pink-400 via-purple-500 to-orange-400 relative border-2 border-transparent hover:border-primary"
+                        onClick={() => setSelectedStylePreview({name: "Gradient graphics", username: "conscientiousbrotherly...", id: "gradient"})}
+                      >
+                        <div className="absolute inset-2 bg-white/20 rounded-full blur-xl" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
+                          <div className="text-white/70">conscientiousbrotherly...</div>
+                          <div className="font-semibold">Gradient graphics</div>
+                        </div>
+                      </div>
+
+                      <div 
+                        className={`aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 ${selectedStylePreview?.id === "longexposure" ? "border-primary" : "border-transparent hover:border-primary"}`}
+                        onClick={() => setSelectedStylePreview({name: "long exposure emotion", username: "tenparislen", id: "longexposure"})}
+                      >
+                        <img src="/lovable-uploads/ae302689-cd9a-4495-8012-2ab562f424bb.png" alt="Long exposure" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
+                          <div className="text-white/70">tenparislen</div>
+                          <div className="font-semibold">long exposure emot...</div>
+                        </div>
+                      </div>
+
+                      <div 
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-gray-100 to-gray-300 relative border-2 border-transparent hover:border-primary"
+                        onClick={() => setSelectedStylePreview({name: "Moebius I", username: "compliantstatelysquirrel", id: "moebius"})}
+                      >
+                        <div className="absolute inset-4 border-2 border-gray-400 rounded-full" />
+                        <div className="absolute inset-6 border border-gray-500 rounded-full" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
+                          <div className="text-white/70">compliantstatelysquirrel</div>
+                          <div className="font-semibold">Moebius I</div>
+                        </div>
+                      </div>
+
+                      <div 
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-gray-200 to-gray-400 relative border-2 border-transparent hover:border-primary"
+                        onClick={() => setSelectedStylePreview({name: "Abstract Typography", username: "catchybelievablecaracal", id: "typography"})}
+                      >
+                        <div className="absolute inset-4 flex items-center justify-center text-2xl font-bold text-gray-700">Aa</div>
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
+                          <div className="text-white/70">catchybelievablecaracal</div>
+                          <div className="font-semibold">Abstract Typograp...</div>
+                        </div>
+                      </div>
+
+                      {/* Additional rows for more styles */}
+                      <div 
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-blue-400 via-purple-500 to-yellow-400 relative border-2 border-transparent hover:border-primary"
+                        onClick={() => setSelectedStylePreview({name: "frank Vibrant Oil Painting", username: "unlimitedpleasantllig...", id: "oil"})}
+                      >
+                        <div className="absolute inset-2 bg-white/10 rounded-lg transform rotate-12" />
+                        <div className="absolute inset-3 bg-red/20 rounded-lg transform -rotate-6" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
+                          <div className="text-white/70">unlimitedpleasantllig...</div>
+                          <div className="font-semibold">frank Vibrant Oil Pa...</div>
+                        </div>
+                      </div>
+
+                      {/* Rest of the style cards... */}
+                      {Array.from({length: 15}).map((_, i) => (
+                        <div key={i} className="aspect-square rounded-xl bg-muted/20 border border-border/30" />
+                      ))}
+                    </div>
                   </div>
 
-                  {/* Styles Grid */}
-                  <div className="grid grid-cols-5 gap-3">
-                    {/* Create Style Card */}
-                    <div 
-                      className="aspect-square bg-muted/30 rounded-xl border-2 border-dashed border-border/50 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-all"
-                      onClick={() => setShowStyleModal(false)}
-                    >
-                      <div className="text-xl mb-1">+</div>
-                      <div className="text-xs text-center px-2">
-                        <div className="text-muted-foreground">Train a style</div>
-                        <div className="font-semibold">Create style</div>
-                      </div>
-                    </div>
+                  {/* Right Side - Selected Style Preview */}
+                  <div className="w-80 border-l border-border/30 p-4 flex flex-col">
+                    {selectedStylePreview ? (
+                      <>
+                        {/* Style Header */}
+                        <div className="mb-4">
+                          <div className="text-sm text-muted-foreground mb-1">Flux</div>
+                          <h3 className="text-xl font-bold text-foreground mb-1">{selectedStylePreview.name}</h3>
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-white rounded-full" />
+                            <span className="text-sm text-muted-foreground">{selectedStylePreview.username}</span>
+                          </div>
+                        </div>
 
-                    {/* Actual Style Images */}
-                    <div className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-pink-400 via-purple-500 to-orange-400 relative">
-                      <div className="absolute inset-2 bg-white/20 rounded-full blur-xl" />
-                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                      <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                        <div className="text-white/70">conscientiousbrotherly...</div>
-                        <div className="font-semibold">Gradient graphics</div>
-                      </div>
-                    </div>
+                        {/* Example Images Grid */}
+                        <div className="grid grid-cols-2 gap-2 mb-6 flex-1">
+                          <div className="aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-orange-300 to-red-400" />
+                          <div className="aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-blue-400 to-purple-500" />
+                          <div className="aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-green-300 to-blue-400" />
+                          <div className="aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-pink-300 to-purple-400" />
+                        </div>
 
-                    <div className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative">
-                      <img src="/lovable-uploads/ae302689-cd9a-4495-8012-2ab562f424bb.png" alt="Long exposure" className="w-full h-full object-cover" />
-                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                      <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                        <div className="text-white/70">tenparislen</div>
-                        <div className="font-semibold">long exposure emot...</div>
+                        {/* Action Buttons */}
+                        <div className="space-y-3">
+                          <Button 
+                            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                            onClick={() => {
+                              setSelectedStyle(selectedStylePreview.name);
+                              setShowStyleModal(false);
+                            }}
+                          >
+                            + Add Style
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            className="w-full border-border/50 hover:bg-muted/50"
+                          >
+                            📌 Pin
+                          </Button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex-1 flex items-center justify-center text-center text-muted-foreground">
+                        <div>
+                          <div className="text-lg mb-2">🎨</div>
+                          <div className="text-sm">Click to view a style.</div>
+                          <div className="text-xs">Generating with styles lets you explore new aesthetics.</div>
+                        </div>
                       </div>
-                    </div>
-
-                    <div className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-gray-100 to-gray-300 relative">
-                      <div className="absolute inset-4 border-2 border-gray-400 rounded-full" />
-                      <div className="absolute inset-6 border border-gray-500 rounded-full" />
-                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                      <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                        <div className="text-white/70">compliantstatelysquirrel</div>
-                        <div className="font-semibold">Moebius I</div>
-                      </div>
-                    </div>
-
-                    <div className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-gray-200 to-gray-400 relative">
-                      <div className="absolute inset-4 flex items-center justify-center text-2xl font-bold text-gray-700">Aa</div>
-                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                      <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                        <div className="text-white/70">catchybelievablecaracal</div>
-                        <div className="font-semibold">Abstract Typograp...</div>
-                      </div>
-                    </div>
-
-                    <div className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-blue-400 via-purple-500 to-yellow-400 relative">
-                      <div className="absolute inset-2 bg-white/10 rounded-lg transform rotate-12" />
-                      <div className="absolute inset-3 bg-red/20 rounded-lg transform -rotate-6" />
-                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                      <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                        <div className="text-white/70">unlimitedpleasantllig...</div>
-                        <div className="font-semibold">frank Vibrant Oil Pa...</div>
-                      </div>
-                    </div>
-
-                    <div className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-yellow-400 to-orange-500 relative">
-                      <div className="absolute inset-4 bg-brown/30 rounded-full" />
-                      <div className="absolute inset-6 bg-orange/50 rounded-full" />
-                      <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-2 h-3 bg-blue-500 rounded" />
-                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                      <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                        <div className="text-white/70">neyroph</div>
-                        <div className="font-semibold">Illustrated Child wit...</div>
-                      </div>
-                    </div>
-
-                    <div className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-blue-600 to-purple-700 relative">
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-full h-2 bg-white/20 transform skew-y-12" />
-                        <div className="absolute w-full h-2 bg-white/30 transform -skew-y-12" />
-                      </div>
-                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                      <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                        <div className="text-white/70">calmtriumphatbat</div>
-                        <div className="font-semibold">atlas silk style</div>
-                      </div>
-                    </div>
-
-                    <div className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-yellow-300 to-red-400 relative">
-                      <div className="absolute inset-2 bg-yellow-400 rounded-full" />
-                      <div className="absolute top-1 left-1/2 transform -translate-x-1/2 w-1 h-2 bg-red-500 rounded" />
-                      <div className="absolute top-3 left-1/3 w-1 h-1 bg-green-500 rounded-full" />
-                      <div className="absolute top-3 right-1/3 w-1 h-1 bg-blue-500 rounded-full" />
-                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                      <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                        <div className="text-white/70">Sup3r</div>
-                        <div className="font-semibold">Enamel Pin</div>
-                      </div>
-                    </div>
-
-                    <div className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-purple-500 to-pink-600 relative">
-                      <div className="absolute inset-2 bg-white/10 rounded-full blur-sm" />
-                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                      <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                        <div className="text-white/70">flatteringgallantcougar</div>
-                        <div className="font-semibold">Fantasy Sparkle Po...</div>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               </div>
