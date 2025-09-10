@@ -765,8 +765,10 @@ export const Hero = () => {
               <div 
                 className="fixed z-[9999] bg-card border border-border rounded-xl shadow-2xl p-2 min-w-[120px] backdrop-blur-xl"
                 style={{
-                  bottom: '120px',
-                  right: '320px'
+                  bottom: '140px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  marginLeft: '120px'
                 }}
               >
                 {['1K', '1.2K', '1.5K', '4K'].map((res) => (
@@ -799,8 +801,10 @@ export const Hero = () => {
               <div 
                 className="fixed z-[9999] bg-card border border-border rounded-xl shadow-2xl p-3 min-w-[280px] backdrop-blur-xl"
                 style={{
-                  bottom: '120px',
-                  right: '450px'
+                  bottom: '140px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  marginLeft: '-80px'
                 }}
               >
                 <div className="grid grid-cols-4 gap-2">
