@@ -112,18 +112,6 @@ export const MasonryGrid: React.FC<MasonryGridProps> = ({ tiles, className }) =>
                   >
                     Trending
                   </motion.h2>
-                  
-                  <motion.div 
-                    className="text-2xl md:text-3xl font-light tracking-[0.5em] text-muted-foreground/80 relative ml-2"
-                    initial={{ opacity: 0, letterSpacing: '0.2em' }}
-                    animate={{ 
-                      opacity: 1, 
-                      letterSpacing: '0.5em',
-                    }}
-                    transition={{ delay: 1, duration: 1.5 }}
-                  >
-                    Creations
-                  </motion.div>
                 </div>
               </div>
             </motion.div>
@@ -145,7 +133,7 @@ export const MasonryGrid: React.FC<MasonryGridProps> = ({ tiles, className }) =>
             initial={{ opacity: 0, scale: 0.8, x: 50 }}
             animate={{ opacity: 1, scale: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
-            className="flex flex-col gap-4"
+            className="flex flex-col gap-4 mr-6"
           >
             <Button 
               variant="outline" 
@@ -154,21 +142,6 @@ export const MasonryGrid: React.FC<MasonryGridProps> = ({ tiles, className }) =>
               onClick={handleShuffle}
               disabled={isShuffling}
             >
-              <motion.div
-                animate={isShuffling ? { 
-                  rotate: [0, 180, 360],
-                  scale: [1, 1.2, 1]
-                } : {}}
-                transition={{ 
-                  duration: 1.5, 
-                  repeat: isShuffling ? Infinity : 0,
-                  ease: "easeInOut"
-                }}
-                className="relative z-10"
-              >
-                <Shuffle className="mr-3 h-6 w-6" />
-              </motion.div>
-              
               <span className="relative z-10 font-bold text-lg">
                 {isShuffling ? 'REGENERATE' : 'REGENERATE'}
               </span>
