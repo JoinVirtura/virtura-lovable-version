@@ -761,11 +761,11 @@ export const Hero = () => {
                 className="fixed inset-0 z-[9998]" 
                 onClick={() => setShowResolutionOptions(false)} 
               />
-              {/* Resolution dropdown positioned near button */}
+              {/* Resolution dropdown positioned below button */}
               <div 
                 className="fixed z-[9999] bg-card border border-border rounded-xl shadow-2xl p-2 min-w-[120px] backdrop-blur-xl"
                 style={{
-                  bottom: '140px',
+                  top: '560px',
                   left: '50%',
                   transform: 'translateX(-50%)',
                   marginLeft: '120px'
@@ -797,11 +797,11 @@ export const Hero = () => {
                 className="fixed inset-0 z-[9998]" 
                 onClick={() => setShowAspectOptions(false)} 
               />
-              {/* Aspect ratio dropdown positioned near button */}
+              {/* Aspect ratio dropdown positioned below button */}
               <div 
                 className="fixed z-[9999] bg-card border border-border rounded-xl shadow-2xl p-3 min-w-[280px] backdrop-blur-xl"
                 style={{
-                  bottom: '140px',
+                  top: '560px',
                   left: '50%',
                   transform: 'translateX(-50%)',
                   marginLeft: '-80px'
