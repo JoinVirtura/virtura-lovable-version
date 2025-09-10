@@ -613,14 +613,14 @@ export const Hero = () => {
                     <div className="flex flex-col h-full">
                       <div className="flex-1">
                         <h3 className="text-lg font-bold text-foreground mb-4">
-                          {selectedStylePreview ? selectedStylePreview.name : uploadedImage ? 'Uploaded Style Image' : 'Select a style to preview'}
+                          {selectedStylePreview ? selectedStylePreview.name : 'Select a style to preview'}
                         </h3>
-                        {(selectedStylePreview || uploadedImage) && (
-                          <div className="mb-4 flex-1">
-                            <div className="relative h-full bg-muted/50 rounded-xl overflow-hidden">
+                        {selectedStylePreview && (
+                          <div className="mb-4">
+                            <div className="relative aspect-square bg-muted/50 rounded-xl overflow-hidden">
                               <img 
-                                src={uploadedImage || selectedStylePreview?.image} 
-                                alt={uploadedImage ? 'Uploaded style' : selectedStylePreview?.name}
+                                src={selectedStylePreview.image} 
+                                alt={selectedStylePreview.name}
                                 className="w-full h-full object-cover"
                               />
                             </div>
@@ -641,41 +641,26 @@ export const Hero = () => {
                         >
                           + Add Style
                         </Button>
-                        {uploadedImage ? (
+                        <label className="w-full cursor-pointer">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleGeneralImageUpload}
+                          />
                           <Button 
-                            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-3 rounded-xl text-sm"
-                            onClick={() => {
-                              // Add uploaded image as thumbnail next to microphone
-                              setUploadedGeneralImage(uploadedImage);
-                              setUploadedImage(null);
-                              setShowStyleModal(false);
+                            type="button"
+                            variant="outline" 
+                            className="w-full border-primary/30 text-foreground hover:bg-primary/10 py-3 rounded-xl text-sm"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              (e.currentTarget.parentElement?.querySelector('input[type="file"]') as HTMLInputElement)?.click();
                             }}
                           >
                             <Upload className="w-4 h-4 mr-2" />
-                            Upload
+                            Upload Image
                           </Button>
-                        ) : (
-                          <label className="w-full cursor-pointer">
-                            <input
-                              type="file"
-                              accept="image/*"
-                              className="hidden"
-                              onChange={handleFileUpload}
-                            />
-                            <Button 
-                              type="button"
-                              variant="outline" 
-                              className="w-full border-primary/30 text-foreground hover:bg-primary/10 py-3 rounded-xl text-sm"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                (e.currentTarget.parentElement?.querySelector('input[type="file"]') as HTMLInputElement)?.click();
-                              }}
-                            >
-                              <Upload className="w-4 h-4 mr-2" />
-                              Upload Image
-                            </Button>
-                          </label>
-                        )}
+                        </label>
                       </div>
                     </div>
                   </div>
