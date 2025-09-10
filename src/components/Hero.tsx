@@ -463,27 +463,24 @@ export const Hero = () => {
                         </div>
                       </div>
 
-                      {/* Row 2 */}
+                       {/* Row 2 - Using actual provided images */}
                       <div 
-                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-blue-400 via-purple-500 to-yellow-400 relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "frank Vibrant Oil Painting", username: "unlimitedpleasantllig...", id: "oil"})}
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
+                        onClick={() => setSelectedStylePreview({name: "Frank Vibrant Oil Painting", username: "unlimitedpleasantllig...", id: "oil"})}
                       >
-                        <div className="absolute inset-2 bg-white/10 rounded-lg transform rotate-12" />
-                        <div className="absolute inset-3 bg-red/20 rounded-lg transform -rotate-6" />
+                        <img src="/lovable-uploads/aaf40797-dcd5-4e74-8ec5-3e2522fbd266.png" alt="Frank Vibrant Oil Painting" className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
                         <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
                           <div className="text-white/70">unlimitedpleasantllig...</div>
-                          <div className="font-semibold">frank Vibrant Oil Pa...</div>
+                          <div className="font-semibold">Frank Vibrant Oil Pa...</div>
                         </div>
                       </div>
 
                       <div 
-                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-yellow-400 to-orange-500 relative border-2 border-transparent hover:border-primary"
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
                         onClick={() => setSelectedStylePreview({name: "Illustrated Child with Animal", username: "neyroph", id: "child"})}
                       >
-                        <div className="absolute inset-4 bg-brown/30 rounded-full" />
-                        <div className="absolute inset-6 bg-orange/50 rounded-full" />
-                        <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-2 h-3 bg-blue-500 rounded" />
+                        <img src="/lovable-uploads/e9f3cb5e-50e2-4dce-90dd-1d7f788372a1.png" alt="Illustrated Child with Animal" className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
                         <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
                           <div className="text-white/70">neyroph</div>
@@ -492,13 +489,10 @@ export const Hero = () => {
                       </div>
 
                       <div 
-                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-blue-600 to-purple-700 relative border-2 border-transparent hover:border-primary"
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
                         onClick={() => setSelectedStylePreview({name: "atlas silk style", username: "calmtriumphatbat", id: "silk"})}
                       >
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-full h-2 bg-white/20 transform skew-y-12" />
-                          <div className="absolute w-full h-2 bg-white/30 transform -skew-y-12" />
-                        </div>
+                        <img src="/lovable-uploads/304b0a7d-15e7-43b0-a044-285bfe1d6599.png" alt="atlas silk style" className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
                         <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
                           <div className="text-white/70">calmtriumphatbat</div>
@@ -507,13 +501,10 @@ export const Hero = () => {
                       </div>
 
                       <div 
-                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-yellow-300 to-red-400 relative border-2 border-transparent hover:border-primary"
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
                         onClick={() => setSelectedStylePreview({name: "Enamel Pin", username: "Sup3r", id: "enamel"})}
                       >
-                        <div className="absolute inset-2 bg-yellow-400 rounded-full" />
-                        <div className="absolute top-1 left-1/2 transform -translate-x-1/2 w-1 h-2 bg-red-500 rounded" />
-                        <div className="absolute top-3 left-1/3 w-1 h-1 bg-green-500 rounded-full" />
-                        <div className="absolute top-3 right-1/3 w-1 h-1 bg-blue-500 rounded-full" />
+                        <img src="/lovable-uploads/6e9e66bc-f4e1-4180-8100-a5d530e304b8.png" alt="Enamel Pin" className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
                         <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
                           <div className="text-white/70">Sup3r</div>
@@ -522,10 +513,10 @@ export const Hero = () => {
                       </div>
 
                       <div 
-                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group bg-gradient-to-br from-purple-500 to-pink-600 relative border-2 border-transparent hover:border-primary"
+                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
                         onClick={() => setSelectedStylePreview({name: "Fantasy Sparkle Portrait", username: "flatteringgallantcougar", id: "fantasy"})}
                       >
-                        <div className="absolute inset-2 bg-white/10 rounded-full blur-sm" />
+                        <img src="/lovable-uploads/f264298f-2877-485b-affc-d705994fc848.png" alt="Fantasy Sparkle Portrait" className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
                         <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
                           <div className="text-white/70">flatteringgallantcougar</div>
