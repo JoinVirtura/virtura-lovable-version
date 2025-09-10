@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Sparkles, Mic, Send, Crown, Lock, Zap, Camera, Shuffle, Star, X, Circle, Search, Target, Image, Palette, RectangleHorizontal, Diamond, Upload, ChevronDown } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 // Import high-quality style images
@@ -144,6 +144,26 @@ export const Hero = () => {
   }, [searchQuery]);
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+  
+  // Handle click outside to close dropdowns
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      
+      // Close resolution dropdown if clicked outside
+      if (showResolutionOptions && !target.closest('[data-resolution-container]')) {
+        setShowResolutionOptions(false);
+      }
+      
+      // Close aspect dropdown if clicked outside
+      if (showAspectOptions && !target.closest('[data-aspect-container]')) {
+        setShowAspectOptions(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showResolutionOptions, showAspectOptions]);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -358,23 +378,12 @@ export const Hero = () => {
                     </Button>
                   </div>
 
-                  {/* Image Style Button with Hover Popup */}
-                  <div 
-                    className="relative z-[100]"
-                    onMouseEnter={() => setShowImageStylePopup(true)}
-                    onMouseLeave={(e) => {
-                      // Add delay to prevent flickering
-                      setTimeout(() => {
-                        const popup = document.querySelector("[data-image-style-popup]");
-                        if (!popup?.matches(":hover")) {
-                          setShowImageStylePopup(false);
-                        }
-                      }, 100);
-                    }}
-                  >
+                  {/* Image Style Button with Click Popup */}
+                  <div className="relative z-[100]">
                     <Button
                       type="button"
                       variant="outline"
+                      onClick={() => setShowImageStylePopup(!showImageStylePopup)}
                       className="bg-muted/60 border-border/50 hover:bg-gradient-gold hover:text-primary-foreground hover:border-primary/50 px-4 py-2 rounded-xl text-sm font-medium h-10 transition-all duration-200"
                     >
                       <Palette className="w-4 h-4 mr-2" />
@@ -383,12 +392,10 @@ export const Hero = () => {
                         <span className="ml-1 text-xs opacity-70">1/1</span>
                       )}
                     </Button>
-
-                    {/* No popup here - moved outside */}
                   </div>
 
                   {/* Aspect Ratio */}
-                  <div className="relative">
+                  <div className="relative" data-aspect-container>
                     <Button
                       type="button"
                       variant="outline"
@@ -441,7 +448,7 @@ export const Hero = () => {
                   </div>
 
                   {/* Resolution */}
-                  <div className="relative z-[150]">
+                  <div className="relative z-[150]" data-resolution-container>
                     <Button
                       type="button"
                       variant="outline"
@@ -454,13 +461,7 @@ export const Hero = () => {
                     
                     {/* Resolution Dropdown */}
                     {showResolutionOptions && (
-                      <div className="fixed top-auto bottom-auto left-auto right-auto z-[160] bg-card border border-border rounded-xl shadow-2xl p-2 min-w-[120px] backdrop-blur-xl"
-                           style={{
-                             position: 'fixed',
-                             top: 'auto',
-                             bottom: '100px',
-                             right: '300px'
-                           }}>
+                      <div className="absolute bottom-full left-0 mb-2 bg-card border border-border rounded-xl shadow-2xl z-[160] p-2 min-w-[120px] backdrop-blur-xl">
                         {['1K', '1.2K', '1.5K', '4K'].map((res) => (
                           <Button
                             key={res}
@@ -715,10 +716,8 @@ export const Hero = () => {
               />
               {/* Popup positioned above everything */}
               <div 
-                className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-2xl z-[9999] p-4 w-[400px]"
+                className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-card border border-border rounded-xl shadow-2xl z-[9999] p-4 w-[400px]"
                 data-image-style-popup
-                onMouseEnter={() => setShowImageStylePopup(true)}
-                onMouseLeave={() => setShowImageStylePopup(false)}
               >
                 {/* Style Grid */}
                 <div className="grid grid-cols-4 gap-2 mb-4">
