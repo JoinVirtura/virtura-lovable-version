@@ -80,6 +80,7 @@ export const Hero = () => {
   const [showStyleModal, setShowStyleModal] = useState(false);
   const [showImageStylePopup, setShowImageStylePopup] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [selectedImageStyle, setSelectedImageStyle] = useState<{name: string, username: string, id: string, image: string} | null>(null);
   
   // Handle file upload
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -89,6 +90,7 @@ export const Hero = () => {
       reader.onload = (event) => {
         if (event.target?.result) {
           setUploadedImage(event.target.result as string);
+          setSelectedImageStyle(null); // Clear style selection when uploading image
         }
       };
       reader.readAsDataURL(file);
@@ -98,6 +100,16 @@ export const Hero = () => {
 
   const removeUploadedImage = () => {
     setUploadedImage(null);
+  };
+
+  const handleStyleSelect = (style: typeof styleData[0]) => {
+    setSelectedImageStyle(style);
+    setUploadedImage(null); // Clear uploaded image when selecting style
+    setShowImageStylePopup(false);
+  };
+
+  const removeSelectedStyle = () => {
+    setSelectedImageStyle(null);
   };
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStylePreview, setSelectedStylePreview] = useState<{name: string, username: string, id: string, image: string} | null>(null);
@@ -338,6 +350,26 @@ export const Hero = () => {
                               onClick={(e) => {
                                 e.stopPropagation();
                                 removeUploadedImage();
+                              }}
+                              className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600"
+                            >
+                              <X className="w-2 h-2" />
+                            </button>
+                          </div>
+                          <span>Image style</span>
+                        </div>
+                      ) : selectedImageStyle ? (
+                        <div className="flex items-center gap-2">
+                          <div className="relative w-6 h-6 rounded overflow-hidden border border-white/20">
+                            <img 
+                              src={selectedImageStyle.image} 
+                              alt={selectedImageStyle.name} 
+                              className="w-full h-full object-cover"
+                            />
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeSelectedStyle();
                               }}
                               className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600"
                             >
@@ -632,10 +664,7 @@ export const Hero = () => {
                     <div 
                       key={style.id}
                       className="relative aspect-square rounded-lg overflow-hidden cursor-pointer hover:scale-105 transition-all duration-200 group"
-                      onClick={() => {
-                        console.log('Style selected:', style.name);
-                        setShowImageStylePopup(false);
-                      }}
+                      onClick={() => handleStyleSelect(style)}
                     >
                       <img 
                         src={style.image} 
@@ -647,6 +676,10 @@ export const Hero = () => {
                         }}
                       />
                       <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                      {/* Selection indicator */}
+                      {selectedImageStyle?.id === style.id && (
+                        <div className="absolute inset-0 border-2 border-primary bg-primary/20" />
+                      )}
                     </div>
                   ))}
                 </div>
@@ -675,14 +708,40 @@ export const Hero = () => {
                   <Button 
                     type="button"
                     variant="outline" 
-                    className="flex-1 border-primary/30 text-foreground hover:bg-primary/10 py-2 rounded-lg text-sm"
+                    className="flex-1 border-primary/30 text-foreground hover:bg-gradient-gold hover:text-primary-foreground hover:border-primary/50 py-2 rounded-lg text-sm transition-all duration-200"
                     onClick={() => {
                       console.log('Select asset clicked');
                       setShowImageStylePopup(false);
                     }}
                   >
-                    <ChevronDown className="w-4 h-4 mr-2" />
-                    Select asset
+                    {uploadedImage ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 rounded overflow-hidden border border-white/20">
+                          <img 
+                            src={uploadedImage} 
+                            alt="Selected asset" 
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <span>Asset selected</span>
+                      </div>
+                    ) : selectedImageStyle ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 rounded overflow-hidden border border-white/20">
+                          <img 
+                            src={selectedImageStyle.image} 
+                            alt={selectedImageStyle.name} 
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <span>Style selected</span>
+                      </div>
+                    ) : (
+                      <>
+                        <ChevronDown className="w-4 h-4 mr-2" />
+                        Select asset
+                      </>
+                    )}
                   </Button>
                 </div>
               </div>
