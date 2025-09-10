@@ -648,9 +648,15 @@ export const Hero = () => {
           {/* Image Style Popup - Outside all containers */}
           {showImageStylePopup && (
             <div 
-              className="absolute top-[calc(100%+8px)] left-[180px] bg-card border border-border rounded-xl shadow-2xl z-[9999] p-4 w-[400px] backdrop-blur-xl max-h-[500px] overflow-y-auto"
-                data-image-style-popup
-              >
+              className="fixed bg-card border border-border rounded-xl shadow-2xl z-[9999] p-4 w-[400px] backdrop-blur-xl max-h-[500px] overflow-y-auto"
+              style={{
+                left: 'calc(50% - 200px)',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                maxHeight: 'calc(100vh - 40px)'
+              }}
+              data-image-style-popup
+            >
                 {/* Style Grid */}
                 <div className="grid grid-cols-4 gap-2 mb-4">
                   {styleData.slice(0, 12).map((style) => (
@@ -742,7 +748,14 @@ export const Hero = () => {
           
           {/* Aspect Ratio Dropdown - Outside container */}
           {showAspectOptions && (
-            <div className="absolute top-[calc(100%+8px)] left-[260px] bg-card border border-border rounded-xl shadow-2xl z-[9999] p-3 min-w-[320px] backdrop-blur-xl max-h-[400px] overflow-y-auto">
+            <div 
+              className="fixed bg-card border border-border rounded-xl shadow-2xl z-[9999] p-3 min-w-[320px] backdrop-blur-xl max-h-[400px] overflow-y-auto"
+              style={{
+                left: 'calc(50% - 160px)',
+                bottom: '20px',
+                maxHeight: 'calc(100vh - 40px)'
+              }}
+            >
               <div className="grid grid-cols-4 gap-3">
                 {[
                   { ratio: '4:3', width: 24, height: 18 },
@@ -780,7 +793,14 @@ export const Hero = () => {
           
           {/* Resolution Dropdown - Outside container */}
           {showResolutionOptions && (
-            <div className="absolute top-[calc(100%+8px)] left-[370px] bg-card border border-border rounded-xl shadow-2xl z-[9999] p-2 min-w-[120px] backdrop-blur-xl max-h-[300px] overflow-y-auto">
+            <div 
+              className="fixed bg-card border border-border rounded-xl shadow-2xl z-[9999] p-2 min-w-[120px] backdrop-blur-xl max-h-[300px] overflow-y-auto"
+              style={{
+                right: 'calc(50% - 60px)',
+                bottom: '20px',
+                maxHeight: 'calc(100vh - 40px)'
+              }}
+            >
               {['1K', '1.2K', '1.5K', '4K'].map((res) => (
                 <Button
                   key={res}
