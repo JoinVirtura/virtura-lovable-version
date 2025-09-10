@@ -328,6 +328,206 @@ export const mockTiles: Tile[] = [
     tag: 'Science',
     views: 14700,
     byline: 'Dr. Leilani Nakamura'
+  },
+  {
+    id: '31',
+    kind: 'video',
+    posterUrl: model8,
+    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-1.jpg',
+    title: 'Smart Home Demo',
+    tag: 'Products',
+    duration: '0:43',
+    views: 13800,
+    byline: 'Smart Tech'
+  },
+  {
+    id: '32',
+    kind: 'image',
+    posterUrl: diverseAvatar12,
+    title: 'Urban Architecture',
+    tag: 'Architecture',
+    views: 13500,
+    byline: 'Urban Design Co'
+  },
+  {
+    id: '33',
+    kind: 'video',
+    posterUrl: model1,
+    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-2.jpg',
+    title: 'Coffee Brand Story',
+    tag: 'Food & Beverage',
+    duration: '1:02',
+    views: 13200,
+    byline: 'Brew Studios'
+  },
+  {
+    id: '34',
+    kind: 'image',
+    posterUrl: heroModel1,
+    title: 'NFT Avatar Series',
+    tag: 'Abstract Art',
+    views: 12900,
+    byline: 'Crypto Artists'
+  },
+  {
+    id: '35',
+    kind: 'video',
+    posterUrl: diverseAvatar5,
+    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-3.jpg',
+    title: 'Dragon Character Reveal',
+    tag: 'Characters',
+    duration: '0:38',
+    views: 12600,
+    byline: 'Mythical Studios'
+  },
+  {
+    id: '36',
+    kind: 'image',
+    posterUrl: model2,
+    title: 'University Mascot',
+    tag: 'Mascots',
+    views: 12300,
+    byline: 'Campus Creative'
+  },
+  {
+    id: '37',
+    kind: 'video',
+    posterUrl: brandLogo,
+    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-1.jpg',
+    title: 'Luxury Watch Ad',
+    tag: 'Products',
+    duration: '0:51',
+    views: 12000,
+    byline: 'Luxury Media'
+  },
+  {
+    id: '38',
+    kind: 'image',
+    posterUrl: diverseAvatar3,
+    title: 'Modern Home Design',
+    tag: 'Architecture',
+    views: 11700,
+    byline: 'Modern Spaces'
+  },
+  {
+    id: '39',
+    kind: 'video',
+    posterUrl: model6,
+    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-2.jpg',
+    title: 'Ocean Conservation',
+    tag: 'Animals',
+    duration: '0:45',
+    views: 11400,
+    byline: 'Ocean Alliance'
+  },
+  {
+    id: '40',
+    kind: 'image',
+    posterUrl: heroModel3,
+    title: 'Pixel Art Character',
+    tag: 'Characters',
+    views: 11100,
+    byline: 'Pixel Masters'
+  },
+  {
+    id: '41',
+    kind: 'video',
+    posterUrl: diverseAvatar8,
+    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-3.jpg',
+    title: 'Wine Tasting Experience',
+    tag: 'Food & Beverage',
+    duration: '1:08',
+    views: 10800,
+    byline: 'Vineyard Stories'
+  },
+  {
+    id: '42',
+    kind: 'image',
+    posterUrl: model3,
+    title: 'Cyberpunk Logo',
+    tag: 'Logos',
+    views: 10500,
+    byline: 'Future Design'
+  },
+  {
+    id: '43',
+    kind: 'video',
+    posterUrl: diverseAvatar1,
+    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-1.jpg',
+    title: 'Electric Car Launch',
+    tag: 'Products',
+    duration: '0:57',
+    views: 10200,
+    byline: 'EV Studios'
+  },
+  {
+    id: '44',
+    kind: 'image',
+    posterUrl: model7,
+    title: 'Fractal Art Series',
+    tag: 'Abstract Art',
+    views: 9900,
+    byline: 'Math Art Collective'
+  },
+  {
+    id: '45',
+    kind: 'video',
+    posterUrl: diverseAvatar6,
+    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-2.jpg',
+    title: 'Forest Wildlife Documentary',
+    tag: 'Animals',
+    duration: '0:34',
+    views: 9600,
+    byline: 'Forest Films'
+  },
+  {
+    id: '46',
+    kind: 'image',
+    posterUrl: brandMarketing,
+    title: 'Skyscraper Project',
+    tag: 'Architecture',
+    views: 9300,
+    byline: 'Tower Design'
+  },
+  {
+    id: '47',
+    kind: 'video',
+    posterUrl: diverseAvatar4,
+    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-3.jpg',
+    title: 'Superhero Character',
+    tag: 'Characters',
+    duration: '0:42',
+    views: 9000,
+    byline: 'Hero Comics'
+  },
+  {
+    id: '48',
+    kind: 'image',
+    posterUrl: model4,
+    title: 'Team Mascot Design',
+    tag: 'Mascots',
+    views: 8700,
+    byline: 'Team Spirit'
+  },
+  {
+    id: '49',
+    kind: 'video',
+    posterUrl: brandSocial,
+    previewVideoUrl: '/lovable-uploads/virtura-video-thumb-1.jpg',
+    title: 'Bakery Brand Campaign',
+    tag: 'Food & Beverage',
+    duration: '0:49',
+    views: 8400,
+    byline: 'Sweet Media'
+  },
+  {
+    id: '50',
+    kind: 'image',
+    posterUrl: diverseAvatar9,
+    title: 'Holographic Logo',
+    tag: 'Logos',
+    views: 8100,
+    byline: 'Holo Graphics'
   }
 ];
 
