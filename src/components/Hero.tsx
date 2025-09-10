@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Sparkles, Mic, Send, Crown, Lock, Zap, Camera, Shuffle, Star, X, Circle, Search } from "lucide-react";
+import { Sparkles, Mic, Send, Crown, Lock, Zap, Camera, Shuffle, Star, X, Circle, Search, Target, Image, Palette, RectangleHorizontal, Diamond } from "lucide-react";
 import { useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -279,7 +279,7 @@ export const Hero = () => {
                       onClick={() => setShowStyleModal(true)}
                       className="bg-muted/60 border-border/50 hover:bg-muted/80 px-4 py-2 rounded-xl text-sm font-medium h-10"
                     >
-                      <Circle className="w-4 h-4 mr-1" />
+                      <Target className="w-4 h-4 mr-1" />
                       Style
                     </Button>
                   </div>
@@ -290,7 +290,7 @@ export const Hero = () => {
                     variant="outline"
                     className="bg-muted/60 border-border/50 hover:bg-muted/80 px-4 py-2 rounded-xl text-sm font-medium h-10"
                   >
-                    <Camera className="w-4 h-4 mr-2" />
+                    <Image className="w-4 h-4 mr-2" />
                     Image prompt
                   </Button>
 
@@ -300,7 +300,7 @@ export const Hero = () => {
                     variant="outline"
                     className="bg-muted/60 border-border/50 hover:bg-muted/80 px-4 py-2 rounded-xl text-sm font-medium h-10"
                   >
-                    <Crown className="w-4 h-4 mr-2" />
+                    <Palette className="w-4 h-4 mr-2" />
                     Image style
                   </Button>
 
@@ -312,7 +312,7 @@ export const Hero = () => {
                       onClick={() => setShowAspectOptions(!showAspectOptions)}
                       className="bg-muted/60 border-border/50 hover:bg-muted/80 px-4 py-2 rounded-xl text-sm font-medium h-10"
                     >
-                      <div className="w-4 h-4 mr-2 border border-current rounded-sm" />
+                      <RectangleHorizontal className="w-4 h-4 mr-2" />
                       {selectedAspect}
                     </Button>
                     
@@ -347,7 +347,7 @@ export const Hero = () => {
                       onClick={() => setShowResolutionOptions(!showResolutionOptions)}
                       className="bg-muted/60 border-border/50 hover:bg-muted/80 px-4 py-2 rounded-xl text-sm font-medium h-10"
                     >
-                      <Zap className="w-4 h-4 mr-2" />
+                      <Diamond className="w-4 h-4 mr-2" />
                       {selectedResolution}
                     </Button>
                     
