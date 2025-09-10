@@ -457,30 +457,7 @@ export const Hero = () => {
                       {selectedResolution}
                     </Button>
                     
-                    {/* Resolution Dropdown */}
-                    {showResolutionOptions && (
-                      <div className="fixed bottom-auto top-auto left-auto right-auto z-[160] bg-card border border-border rounded-xl shadow-2xl p-2 min-w-[120px] backdrop-blur-xl"
-                           style={{
-                             position: 'fixed',
-                             bottom: '140px',
-                             right: '280px'
-                           }}>
-                        {['1K', '1.2K', '1.5K', '4K'].map((res) => (
-                          <Button
-                            key={res}
-                            type="button"
-                            variant={selectedResolution === res ? "default" : "ghost"}
-                            className="w-full justify-start text-sm p-2 h-8"
-                            onClick={() => {
-                              setSelectedResolution(res);
-                              setShowResolutionOptions(false);
-                            }}
-                          >
-                            {res}
-                          </Button>
-                        ))}
-                      </div>
-                    )}
+                    {/* Resolution Dropdown moved outside */}
                   </div>
                   </div>
                   
@@ -808,6 +785,36 @@ export const Hero = () => {
                     )}
                   </Button>
                 </div>
+              </div>
+            </>
+          )}
+
+          {/* Resolution Dropdown Overlay - Outside all containers */}
+          {showResolutionOptions && (
+            <>
+              {/* Backdrop overlay */}
+              <div 
+                className="fixed inset-0 z-[9998]" 
+                onClick={() => setShowResolutionOptions(false)} 
+              />
+              {/* Resolution dropdown positioned as overlay */}
+              <div 
+                className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-card border border-border rounded-xl shadow-2xl z-[9999] p-2 min-w-[120px] backdrop-blur-xl"
+              >
+                {['1K', '1.2K', '1.5K', '4K'].map((res) => (
+                  <Button
+                    key={res}
+                    type="button"
+                    variant={selectedResolution === res ? "default" : "ghost"}
+                    className="w-full justify-start text-sm p-2 h-8"
+                    onClick={() => {
+                      setSelectedResolution(res);
+                      setShowResolutionOptions(false);
+                    }}
+                  >
+                    {res}
+                  </Button>
+                ))}
               </div>
             </>
           )}
