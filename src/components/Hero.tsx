@@ -118,61 +118,33 @@ export const Hero = () => {
           </p>
         </div>
 
-        {/* Advanced Image Generation Interface */}
+        {/* Compact Image Generation Interface */}
         <div className="w-full max-w-4xl mb-12 animate-fade-in">
           <form onSubmit={handleSubmit} className="relative">
             {/* Main Input Container */}
-            <div className="relative bg-card/90 border border-border/50 rounded-3xl backdrop-blur-xl shadow-2xl overflow-hidden">
-              {/* Header Section */}
-              <div className="px-8 py-6 border-b border-border/30">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-muted/50 rounded-xl flex items-center justify-center">
-                    <Camera className="w-6 h-6 text-muted-foreground" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-foreground">Image</h3>
-                </div>
-                
-                {/* Upload Options */}
-                <div className="flex gap-3 mb-6">
-                  <Button 
-                    type="button" 
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 rounded-xl font-semibold"
-                  >
-                    <Camera className="w-4 h-4 mr-2" />
-                    Upload
-                  </Button>
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    className="border-border/50 bg-muted/30 hover:bg-muted/50 px-6 py-3 rounded-xl font-semibold"
-                  >
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    Select asset
-                  </Button>
-                </div>
-                
-                {/* Main Text Input */}
-                <div className="relative">
-                  <textarea
-                    placeholder="Describe an image and click generate..."
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    className="w-full min-h-[120px] text-lg bg-transparent border-0 focus:ring-0 placeholder:text-muted-foreground/70 resize-none leading-relaxed p-0"
-                    style={{ outline: 'none' }}
-                  />
-                </div>
+            <div className="relative bg-card/90 border border-border/50 rounded-2xl backdrop-blur-xl shadow-2xl overflow-hidden">
+              {/* Text Input Area */}
+              <div className="px-8 py-6">
+                <textarea
+                  placeholder="Describe an image and click generate..."
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  className="w-full min-h-[100px] text-lg bg-transparent border-0 focus:ring-0 placeholder:text-muted-foreground/70 resize-none leading-relaxed p-0"
+                  style={{ outline: 'none' }}
+                />
               </div>
 
-              {/* Options Bar */}
-              <div className="px-8 py-6 bg-muted/20 border-b border-border/30">
-                <div className="flex flex-wrap items-center gap-3">
+              {/* Bottom Action Bar */}
+              <div className="px-8 py-4 bg-muted/10 border-t border-border/30 flex items-center justify-between">
+                {/* Options Row */}
+                <div className="flex items-center gap-3">
                   {/* Style Button */}
                   <div className="relative">
                     <Button
                       type="button"
                       variant="outline"
                       onClick={() => setShowStyleOptions(!showStyleOptions)}
-                      className="bg-muted/50 border-border/50 hover:bg-muted/70 px-4 py-2 rounded-xl text-sm font-medium"
+                      className="bg-muted/60 border-border/50 hover:bg-muted/80 px-4 py-2 rounded-xl text-sm font-medium h-10"
                     >
                       <Sparkles className="w-4 h-4 mr-2" />
                       {selectedStyle}
@@ -183,7 +155,7 @@ export const Hero = () => {
                   <Button
                     type="button"
                     variant="outline"
-                    className="bg-muted/50 border-border/50 hover:bg-muted/70 px-4 py-2 rounded-xl text-sm font-medium"
+                    className="bg-muted/60 border-border/50 hover:bg-muted/80 px-4 py-2 rounded-xl text-sm font-medium h-10"
                   >
                     <Camera className="w-4 h-4 mr-2" />
                     Image prompt
@@ -193,7 +165,7 @@ export const Hero = () => {
                   <Button
                     type="button"
                     variant="outline"
-                    className="bg-muted/50 border-border/50 hover:bg-muted/70 px-4 py-2 rounded-xl text-sm font-medium"
+                    className="bg-muted/60 border-border/50 hover:bg-muted/80 px-4 py-2 rounded-xl text-sm font-medium h-10"
                   >
                     <Crown className="w-4 h-4 mr-2" />
                     Image style
@@ -205,7 +177,7 @@ export const Hero = () => {
                       type="button"
                       variant="outline"
                       onClick={() => setShowAspectOptions(!showAspectOptions)}
-                      className="bg-muted/50 border-border/50 hover:bg-muted/70 px-4 py-2 rounded-xl text-sm font-medium"
+                      className="bg-muted/60 border-border/50 hover:bg-muted/80 px-4 py-2 rounded-xl text-sm font-medium h-10"
                     >
                       <div className="w-4 h-4 mr-2 border border-current rounded-sm" />
                       {selectedAspect}
@@ -213,7 +185,7 @@ export const Hero = () => {
                     
                     {/* Aspect Ratio Dropdown */}
                     {showAspectOptions && (
-                      <div className="absolute top-full left-0 mt-2 bg-card border border-border rounded-xl shadow-xl z-50 p-2 min-w-[200px]">
+                      <div className="absolute bottom-full left-0 mb-2 bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-2xl z-50 p-2 min-w-[200px]">
                         <div className="grid grid-cols-4 gap-2">
                           {['4:3', '3:2', '16:9', '2.35:1', '1:1', '4:5', '2:3', '9:16'].map((ratio) => (
                             <Button
@@ -240,7 +212,7 @@ export const Hero = () => {
                       type="button"
                       variant="outline"
                       onClick={() => setShowResolutionOptions(!showResolutionOptions)}
-                      className="bg-muted/50 border-border/50 hover:bg-muted/70 px-4 py-2 rounded-xl text-sm font-medium"
+                      className="bg-muted/60 border-border/50 hover:bg-muted/80 px-4 py-2 rounded-xl text-sm font-medium h-10"
                     >
                       <Zap className="w-4 h-4 mr-2" />
                       {selectedResolution}
@@ -248,7 +220,7 @@ export const Hero = () => {
                     
                     {/* Resolution Dropdown */}
                     {showResolutionOptions && (
-                      <div className="absolute top-full left-0 mt-2 bg-card border border-border rounded-xl shadow-xl z-50 p-2 min-w-[120px]">
+                      <div className="absolute bottom-full left-0 mb-2 bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-2xl z-50 p-2 min-w-[120px]">
                         {['1K', '1.2K', '1.5K', '4K'].map((res) => (
                           <Button
                             key={res}
@@ -271,49 +243,22 @@ export const Hero = () => {
                   <Button
                     type="button"
                     variant="outline"
-                    className="bg-muted/50 border-border/50 hover:bg-muted/70 px-4 py-2 rounded-xl text-sm font-medium"
+                    className="bg-muted/60 border-border/50 hover:bg-muted/80 px-4 py-2 rounded-xl text-sm font-medium h-10"
                   >
                     <Shuffle className="w-4 h-4 mr-2" />
                     Raw
                   </Button>
                 </div>
-              </div>
-
-              {/* Action Bar */}
-              <div className="px-8 py-6 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="text-muted-foreground hover:text-foreground"
-                  >
-                    <Mic className="w-4 h-4 mr-2" />
-                    Speak
-                  </Button>
-                  <span className="text-xs text-muted-foreground">or type to begin</span>
-                </div>
                 
-                <div className="flex items-center gap-3">
-                  {/* Chain Icon Button */}
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-12 h-12 p-0 bg-primary/10 border-primary/30 hover:bg-primary/20 rounded-xl"
-                  >
-                    <div className="w-5 h-5 border border-current rounded-sm" />
-                  </Button>
-                  
-                  {/* Generate Button */}
-                  <Button
-                    type="submit"
-                    disabled={!inputValue.trim()}
-                    className="bg-gradient-gold hover:bg-gradient-gold-hover shadow-gold px-8 py-3 rounded-xl text-lg font-bold"
-                  >
-                    <Sparkles className="w-5 h-5 mr-2" />
-                    Generate
-                  </Button>
-                </div>
+                {/* Generate Button */}
+                <Button
+                  type="submit"
+                  disabled={!inputValue.trim()}
+                  className="bg-gradient-gold hover:bg-gradient-gold-hover shadow-gold px-8 py-3 rounded-xl text-lg font-bold ml-6"
+                >
+                  <Sparkles className="w-5 h-5 mr-2" />
+                  Generate
+                </Button>
               </div>
             </div>
           </form>
