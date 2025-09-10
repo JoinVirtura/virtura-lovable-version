@@ -342,18 +342,18 @@ export const Hero = () => {
                 <div className="flex items-center justify-between gap-4 w-full">
                   {/* Options Row - Flex Wrap for Responsiveness */}
                   <div className="flex items-center gap-3 flex-wrap flex-1 min-w-0">
-                  {/* Style Button - Correct Icon and Spacing */}
-                  <div className="relative">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setShowStyleModal(true)}
-                      className="bg-muted/60 border-border/50 hover:bg-gradient-gold hover:text-primary-foreground hover:border-primary/50 px-4 py-2 rounded-xl text-sm font-medium h-10 transition-all duration-200"
-                    >
-                      <Target className="w-4 h-4 mr-1" />
-                      Style
-                    </Button>
-                  </div>
+                   {/* Style Button - Updated Icon */}
+                   <div className="relative">
+                     <Button
+                       type="button"
+                       variant="outline"
+                       onClick={() => setShowStyleModal(true)}
+                       className="bg-muted/60 border-border/50 hover:bg-gradient-gold hover:text-primary-foreground hover:border-primary/50 px-4 py-2 rounded-xl text-sm font-medium h-10 transition-all duration-200"
+                     >
+                       <Image className="w-4 h-4 mr-1" />
+                       Style
+                     </Button>
+                   </div>
 
                   {/* Image Prompt Button with Upload Functionality */}
                   <div className="relative">
@@ -377,21 +377,6 @@ export const Hero = () => {
                     </Button>
                   </div>
 
-                  {/* Image Style Button with Click Popup */}
-                  <div className="relative z-[300]">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setShowImageStylePopup(!showImageStylePopup)}
-                      className="bg-muted/60 border-border/50 hover:bg-gradient-gold hover:text-primary-foreground hover:border-primary/50 px-4 py-2 rounded-xl text-sm font-medium h-10 transition-all duration-200"
-                    >
-                      <Palette className="w-4 h-4 mr-2" />
-                      Image style
-                      {(uploadedImage || selectedImageStyle) && (
-                        <span className="ml-1 text-xs opacity-70">1/1</span>
-                      )}
-                    </Button>
-                  </div>
 
                   {/* Aspect Ratio */}
                   <div className="relative z-[200]" data-aspect-container>
