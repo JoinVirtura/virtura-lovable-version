@@ -199,9 +199,9 @@ export const MasonryGrid: React.FC<MasonryGridProps> = ({ tiles, className }) =>
         </div>
       </motion.div>
 
-      {/* Custom 5-Column Masonry Grid - Full Width, No Gaps */}
-      <div className="relative w-full overflow-hidden">
-        <div className="grid grid-cols-5 gap-0 w-screen">
+      {/* Custom 5-Column Masonry Grid - No Gaps */}
+      <div className="relative w-full">
+        <div className="grid grid-cols-5 gap-0">
           {displayedTiles.map((tile, index) => {
             const heightClass = getItemHeight(index);
             
