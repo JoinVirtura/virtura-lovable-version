@@ -320,75 +320,7 @@ export const Hero = () => {
                       Image style
                     </Button>
 
-                    {/* Image Style Popup */}
-                    {showImageStylePopup && (
-                      <>
-                        {/* Backdrop overlay */}
-                        <div className="fixed inset-0 z-[9998]" />
-                        {/* Popup positioned above everything */}
-                        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-2xl z-[9999] p-4 min-w-[400px]">
-                          {/* Style Grid */}
-                          <div className="grid grid-cols-4 gap-2 mb-4">
-                            {styleData.slice(0, 12).map((style) => (
-                              <div 
-                                key={style.id}
-                                className="relative aspect-square rounded-lg overflow-hidden cursor-pointer hover:scale-105 transition-all duration-200 group"
-                                onClick={() => {
-                                  console.log('Style selected:', style.name);
-                                  setShowImageStylePopup(false);
-                                }}
-                              >
-                                <img 
-                                  src={style.image} 
-                                  alt={style.name} 
-                                  className="w-full h-full object-cover"
-                                  onError={(e) => {
-                                    console.log('Image failed to load:', style.image);
-                                    e.currentTarget.src = 'https://via.placeholder.com/100x100/1a1a1a/ffffff?text=Style';
-                                  }}
-                                />
-                                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                              </div>
-                            ))}
-                          </div>
-
-                          {/* Action Buttons */}
-                          <div className="flex gap-2">
-                            <label className="flex-1 cursor-pointer">
-                              <input
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                onChange={handleFileUpload}
-                              />
-                              <Button 
-                                type="button"
-                                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-2 rounded-lg text-sm"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  (e.currentTarget.parentElement?.querySelector('input[type="file"]') as HTMLInputElement)?.click();
-                                }}
-                              >
-                                <Upload className="w-4 h-4 mr-2" />
-                                Upload
-                              </Button>
-                            </label>
-                            <Button 
-                              type="button"
-                              variant="outline" 
-                              className="flex-1 border-primary/30 text-foreground hover:bg-primary/10 py-2 rounded-lg text-sm"
-                              onClick={() => {
-                                console.log('Select asset clicked');
-                                setShowImageStylePopup(false);
-                              }}
-                            >
-                              <ChevronDown className="w-4 h-4 mr-2" />
-                              Select asset
-                            </Button>
-                          </div>
-                        </div>
-                      </>
-                    )}
+                    {/* No popup here - moved outside */}
                   </div>
 
                   {/* Aspect Ratio */}
@@ -587,54 +519,83 @@ export const Hero = () => {
                         <div className="text-xs text-center px-2">
                           <div className="text-muted-foreground">Train a style</div>
                           <div className="font-semibold">Create style</div>
-                        </div>
-                      </div>
+        </div>
 
-                      {/* Render filtered styles */}
-                      {filteredStyles.map((style) => (
-                        <div 
-                          key={style.id}
-                          className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                          onClick={() => setSelectedStylePreview(style)}
-                        >
-                          <img src={style.image} alt={style.name} className="w-full h-full object-cover" />
-                          <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                          <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-gradient-to-t from-black/70 to-transparent text-white">
-                            <div className="font-semibold">{style.name}</div>
+        {/* Image Style Popup - Outside all containers */}
+        {showImageStylePopup && (
+          <>
+            {/* Backdrop overlay */}
+            <div className="fixed inset-0 z-[9998] bg-black/20" onClick={() => setShowImageStylePopup(false)} />
+            {/* Popup positioned above everything */}
+            <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-2xl z-[9999] p-4 min-w-[400px]">
+              {/* Style Grid */}
+              <div className="grid grid-cols-4 gap-2 mb-4">
+                {styleData.slice(0, 12).map((style) => (
+                  <div 
+                    key={style.id}
+                    className="relative aspect-square rounded-lg overflow-hidden cursor-pointer hover:scale-105 transition-all duration-200 group"
+                    onClick={() => {
+                      console.log('Style selected:', style.name);
+                      setShowImageStylePopup(false);
+                    }}
+                  >
+                    <img 
+                      src={style.image} 
+                      alt={style.name} 
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        console.log('Image failed to load:', style.image);
+                        e.currentTarget.src = 'https://via.placeholder.com/100x100/1a1a1a/ffffff?text=Style';
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                  </div>
+                ))}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-2">
+                <label className="flex-1 cursor-pointer">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleFileUpload}
+                  />
+                  <Button 
+                    type="button"
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-2 rounded-lg text-sm"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      (e.currentTarget.parentElement?.querySelector('input[type="file"]') as HTMLInputElement)?.click();
+                    }}
+                  >
+                    <Upload className="w-4 h-4 mr-2" />
+                    Upload
+                  </Button>
+                </label>
+                <Button 
+                  type="button"
+                  variant="outline" 
+                  className="flex-1 border-primary/30 text-foreground hover:bg-primary/10 py-2 rounded-lg text-sm"
+                  onClick={() => {
+                    console.log('Select asset clicked');
+                    setShowImageStylePopup(false);
+                  }}
+                >
+                  <ChevronDown className="w-4 h-4 mr-2" />
+                  Select asset
+                </Button>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Side Preview Panel */}
-                  <div className="flex-1 bg-muted/30 border-l border-border/30 p-3 overflow-hidden flex flex-col">
-                    <div className="flex flex-col h-full">
-                      <div className="flex-1">
-                        <h3 className="text-lg font-bold text-foreground mb-2">
-                          {selectedStylePreview ? selectedStylePreview.name : 'Preview'}
-                        </h3>
-                        <div className="grid grid-cols-2 gap-1.5 mb-3">
-                          {/* Clean preview images without text overlay */}
-                          {[1, 2, 3, 4].map((i) => (
-                            <div key={i} className="relative aspect-[4/3] bg-muted/50 rounded-lg overflow-hidden">
-                              <img 
-                                src={selectedStylePreview ? selectedStylePreview.image : "https://via.placeholder.com/200x150/1a1a1a/ffffff?text=Select+Style"} 
-                                alt={`Preview ${i}`}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-2 flex-shrink-0">
-                        <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-2 rounded-xl text-sm">
-                          + Add Style
-                        </Button>
-                        <Button variant="outline" className="w-full border-primary/30 text-foreground hover:bg-primary/10 py-2 rounded-xl text-sm">
-                          📌 Pin
-                        </Button>
                       </div>
                     </div>
                   </div>
@@ -647,3 +608,4 @@ export const Hero = () => {
     </section>
   );
 };
+
