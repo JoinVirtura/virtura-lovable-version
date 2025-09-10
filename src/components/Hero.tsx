@@ -91,6 +91,7 @@ export const Hero = () => {
         if (event.target?.result) {
           setUploadedImage(event.target.result as string);
           setSelectedImageStyle(null); // Clear style selection when uploading image
+          setSelectedStylePreview(null); // Clear style preview when uploading image
           setShowImageStylePopup(false); // Close popup after upload
         }
       };
@@ -614,20 +615,9 @@ export const Hero = () => {
                     <div className="flex flex-col h-full">
                       <div className="flex-1">
                         <h3 className="text-lg font-bold text-foreground mb-4">
-                          {selectedStylePreview ? selectedStylePreview.name : uploadedImage ? 'Custom Style' : 'Select a style to preview'}
+                          {uploadedImage ? 'Custom Style' : selectedStylePreview ? selectedStylePreview.name : 'Select a style to preview'}
                         </h3>
-                        {selectedStylePreview && (
-                          <div className="mb-4">
-                            <div className="relative flex-1 bg-muted/50 rounded-xl overflow-hidden h-64">
-                              <img 
-                                src={selectedStylePreview.image} 
-                                alt={selectedStylePreview.name}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                          </div>
-                        )}
-                        {uploadedImage && (
+                        {uploadedImage ? (
                           <div className="mb-4">
                             <div className="relative flex-1 bg-muted/50 rounded-xl overflow-hidden h-64">
                               <img 
@@ -637,7 +627,17 @@ export const Hero = () => {
                               />
                             </div>
                           </div>
-                        )}
+                        ) : selectedStylePreview ? (
+                          <div className="mb-4">
+                            <div className="relative flex-1 bg-muted/50 rounded-xl overflow-hidden h-64">
+                              <img 
+                                src={selectedStylePreview.image} 
+                                alt={selectedStylePreview.name}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          </div>
+                        ) : null}
                       </div>
                       
                       <div className="space-y-3 flex-shrink-0 mt-4">
