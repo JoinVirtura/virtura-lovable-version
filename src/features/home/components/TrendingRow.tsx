@@ -18,6 +18,8 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [likedItems, setLikedItems] = useState<Set<string>>(new Set());
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [displayCount, setDisplayCount] = useState(50);
   const containerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   
@@ -61,6 +63,18 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
     }
   };
 
+  const handleViewAll = () => {
+    if (isExpanded) {
+      setDisplayCount(50);
+      setIsExpanded(false);
+      toast({ title: "Showing curated selection" });
+    } else {
+      setDisplayCount(tiles.length);
+      setIsExpanded(true);
+      toast({ title: "Showing complete gallery" });
+    }
+  };
+
   // Track mouse movement for advanced interactions
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -85,52 +99,53 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
     setShuffledTiles(tiles);
   }, [tiles]);
 
-  // Dynamic masonry with ultra variety and visual impact
+  // Pinterest-style masonry layout with ultra variety and zero gaps
   const getCardSize = (index: number, tile: Tile) => {
-    // Create dynamic patterns based on content type and position
-    const isHighImpact = ['WILDLIFE', 'ABSTRACT', 'SCI-FI', 'AUTOMOTIVE', 'AI TECH'].includes(tile.tag || '');
+    // Create dynamic patterns based on content type and position for maximum visual impact
+    const isHighImpact = ['WILDLIFE', 'ABSTRACT', 'SCI-FI', 'AUTOMOTIVE', 'AI TECH', 'ARCHITECTURE'].includes(tile.tag || '');
     const isVideo = tile.kind === 'video';
     
+    // Ultra-varied patterns for Pinterest-style masonry
     const patterns = [
-      { span: "col-span-3 row-span-3", size: "hero" }, // 0 - Mega hero
-      { span: "col-span-1 row-span-2", size: "tall" }, // 1 - Tall
-      { span: "col-span-2", size: "wide" }, // 2 - Wide
-      { span: "col-span-1", size: "standard" }, // 3
-      { span: "col-span-2 row-span-2", size: "hero" }, // 4 - Hero
-      { span: "col-span-1", size: "standard" }, // 5
-      { span: "col-span-1 row-span-3", size: "tall" }, // 6 - Ultra tall
-      { span: "col-span-2", size: "wide" }, // 7 - Wide
-      { span: "col-span-1", size: "standard" }, // 8
-      { span: "col-span-1", size: "standard" }, // 9
-      { span: "col-span-3", size: "wide" }, // 10 - Ultra wide
-      { span: "col-span-1 row-span-2", size: "tall" }, // 11
-      { span: "col-span-2 row-span-2", size: "hero" }, // 12 - Hero
-      { span: "col-span-1", size: "standard" }, // 13
-      { span: "col-span-1", size: "standard" }, // 14
-      { span: "col-span-2", size: "wide" }, // 15
-      { span: "col-span-1 row-span-2", size: "tall" }, // 16
-      { span: "col-span-1", size: "standard" }, // 17
-      { span: "col-span-1", size: "standard" }, // 18
-      { span: "col-span-4 row-span-2", size: "hero" }, // 19 - Ultra hero
+      { span: "col-span-4 row-span-4", size: "hero" }, // 0 - Ultra hero
+      { span: "col-span-2 row-span-3", size: "tall" }, // 1 - Tall
+      { span: "col-span-2 row-span-2", size: "standard" }, // 2
+      { span: "col-span-2 row-span-2", size: "standard" }, // 3
+      { span: "col-span-3 row-span-2", size: "wide" }, // 4 - Wide
+      { span: "col-span-2 row-span-3", size: "tall" }, // 5 - Tall
+      { span: "col-span-2 row-span-2", size: "standard" }, // 6
+      { span: "col-span-2 row-span-2", size: "standard" }, // 7
+      { span: "col-span-3 row-span-3", size: "hero" }, // 8 - Medium hero
+      { span: "col-span-2 row-span-2", size: "standard" }, // 9
+      { span: "col-span-2 row-span-4", size: "tall" }, // 10 - Ultra tall
+      { span: "col-span-3 row-span-2", size: "wide" }, // 11 - Wide
+      { span: "col-span-2 row-span-2", size: "standard" }, // 12
+      { span: "col-span-2 row-span-2", size: "standard" }, // 13
+      { span: "col-span-4 row-span-3", size: "hero" }, // 14 - Wide hero
+      { span: "col-span-2 row-span-3", size: "tall" }, // 15
+      { span: "col-span-2 row-span-2", size: "standard" }, // 16
+      { span: "col-span-2 row-span-2", size: "standard" }, // 17
+      { span: "col-span-3 row-span-2", size: "wide" }, // 18
+      { span: "col-span-2 row-span-2", size: "standard" }, // 19
     ];
     
     let pattern = patterns[index % patterns.length];
     
-    // Boost high-impact content
-    if (isHighImpact && index % 7 === 0) {
-      pattern = { span: "col-span-3 row-span-3", size: "hero" };
+    // Boost high-impact content with bigger sizes
+    if (isHighImpact && index % 8 === 0) {
+      pattern = { span: "col-span-4 row-span-4", size: "hero" };
     }
     
     // Give videos more prominence
-    if (isVideo && index % 5 === 0) {
-      pattern = { span: "col-span-2 row-span-2", size: "hero" };
+    if (isVideo && index % 6 === 0) {
+      pattern = { span: "col-span-3 row-span-3", size: "hero" };
     }
     
     return pattern;
   };
 
   return (
-    <section className={cn('space-y-8 relative overflow-hidden', className)} ref={containerRef}>
+    <section className={cn('relative overflow-hidden min-h-screen', className)} ref={containerRef}>
       {/* Ultra-Disruptive Animated Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
@@ -264,9 +279,11 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
               <Button 
                 variant="ghost" 
                 className="text-primary hover:text-primary-dark hover:bg-primary/10 group relative overflow-hidden hover:scale-105 transition-all duration-300"
-                onClick={() => window.location.href = '/library'}
+                onClick={handleViewAll}
               >
-                <span className="relative z-10 font-semibold">EXPLORE ALL</span>
+                <span className="relative z-10 font-semibold">
+                  {isExpanded ? 'SHOW LESS' : 'VIEW ALL'}
+                </span>
                 <ArrowRight className="ml-2 h-4 w-4 transition-all duration-300 group-hover:translate-x-2 group-hover:scale-110" />
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/0 to-primary/10 translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
               </Button>
@@ -275,8 +292,8 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
         </div>
       </motion.div>
 
-      {/* Revolutionary Dynamic Grid Layout */}
-      <div className="relative">
+      {/* Zero-Gap Pinterest Masonry Grid */}
+      <div className="relative min-h-screen">
         {/* Mouse Follower Effect */}
         <motion.div
           className="absolute w-32 h-32 bg-primary/5 rounded-full blur-3xl pointer-events-none z-0"
@@ -287,9 +304,10 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
           transition={{ type: "spring", damping: 20, stiffness: 100 }}
         />
         
-        <div className="grid grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-1 auto-rows-[140px] relative z-10">
+        {/* Full-Screen Zero-Gap Masonry Grid */}
+        <div className="grid grid-cols-8 md:grid-cols-10 lg:grid-cols-12 xl:grid-cols-14 auto-rows-[100px] relative z-10">
           <AnimatePresence mode="wait">
-            {shuffledTiles.map((tile, index) => {
+            {shuffledTiles.slice(0, displayCount).map((tile, index) => {
               const cardSize = getCardSize(index, tile);
               const isHovered = hoveredCard === tile.id;
               
@@ -356,80 +374,80 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                     
                      {/* Enhanced ContentCard */}
                      <div className="relative h-full cursor-pointer" onClick={() => window.location.href = `/creation/${tile.id}`}>
-                       <ContentCard 
-                         tile={tile} 
-                         size={cardSize.size as any}
-                         className={cn(
-                           "h-full transform-gpu transition-all duration-500",
-                           "hover:shadow-2xl hover:shadow-primary/20",
-                           cardSize.size === "hero" && "min-h-[400px]",
-                           cardSize.size === "tall" && "min-h-[350px]",
-                           cardSize.size === "wide" && "min-h-[200px]",
-                           cardSize.size === "standard" && "min-h-[250px]"
-                         )}
-                       />
-                       
-                       {/* Interactive Overlay with Actions */}
-                       <motion.div
-                         className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-2xl"
-                         initial={{ opacity: 0 }}
-                         animate={{ opacity: isHovered ? 1 : 0 }}
-                         transition={{ duration: 0.3 }}
-                       >
-                         {/* Top Actions */}
-                         <div className="absolute top-3 right-3 flex gap-2">
-                           <Button
-                             size="sm"
-                             variant="secondary"
-                             className={cn(
-                               "w-8 h-8 p-0 backdrop-blur-sm bg-white/20 border-white/20 hover:bg-white/30",
-                               likedItems.has(tile.id) && "bg-red-500/80 hover:bg-red-500/90"
-                             )}
-                             onClick={(e) => {
-                               e.stopPropagation();
-                               handleLike(tile.id);
-                             }}
-                           >
-                             <Heart className={cn(
-                               "w-4 h-4",
-                               likedItems.has(tile.id) ? "fill-white text-white" : "text-white"
-                             )} />
-                           </Button>
-                           <Button
-                             size="sm"
-                             variant="secondary"
-                             className="w-8 h-8 p-0 backdrop-blur-sm bg-white/20 border-white/20 hover:bg-white/30"
-                             onClick={(e) => {
-                               e.stopPropagation();
-                               handleShare(tile);
-                             }}
-                           >
-                             <Share2 className="w-4 h-4 text-white" />
-                           </Button>
-                         </div>
+                        <ContentCard 
+                          tile={tile} 
+                          size={cardSize.size as any}
+                          className={cn(
+                            "h-full transform-gpu transition-all duration-500",
+                            "hover:shadow-2xl hover:shadow-primary/20",
+                            cardSize.size === "hero" && "min-h-[400px]",
+                            cardSize.size === "tall" && "min-h-[350px]",
+                            cardSize.size === "wide" && "min-h-[200px]",
+                            cardSize.size === "standard" && "min-h-[250px]"
+                          )}
+                        />
+                        
+                        {/* Interactive Overlay with Actions */}
+                        <motion.div
+                          className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-2xl"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: isHovered ? 1 : 0 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          {/* Top Actions */}
+                          <div className="absolute top-3 right-3 flex gap-2">
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              className={cn(
+                                "w-8 h-8 p-0 backdrop-blur-sm bg-white/20 border-white/20 hover:bg-white/30",
+                                likedItems.has(tile.id) && "bg-red-500/80 hover:bg-red-500/90"
+                              )}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleLike(tile.id);
+                              }}
+                            >
+                              <Heart className={cn(
+                                "w-4 h-4",
+                                likedItems.has(tile.id) ? "fill-white text-white" : "text-white"
+                              )} />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              className="w-8 h-8 p-0 backdrop-blur-sm bg-white/20 border-white/20 hover:bg-white/30"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleShare(tile);
+                              }}
+                            >
+                              <Share2 className="w-4 h-4 text-white" />
+                            </Button>
+                          </div>
 
-                         {/* Bottom Info */}
-                         <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white">
-                           <div className="flex items-center gap-2">
-                             <Eye className="w-4 h-4" />
-                             <span className="text-sm font-medium">{tile.views?.toLocaleString()}</span>
-                           </div>
-                           {tile.kind === 'video' && (
-                             <div className="flex items-center gap-1">
-                               <Play className="w-3 h-3" />
-                               <span className="text-xs">{tile.duration}</span>
-                             </div>
-                           )}
-                         </div>
-                       </motion.div>
-                     </div>
-                  </motion.div>
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
-        </div>
-      </div>
-    </section>
-  );
-};
+                          {/* Bottom Info */}
+                          <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white">
+                            <div className="flex items-center gap-2">
+                              <Eye className="w-4 h-4" />
+                              <span className="text-sm font-medium">{tile.views?.toLocaleString()}</span>
+                            </div>
+                            {tile.kind === 'video' && (
+                              <div className="flex items-center gap-1">
+                                <Play className="w-3 h-3" />
+                                <span className="text-xs">{tile.duration}</span>
+                              </div>
+                            )}
+                          </div>
+                        </motion.div>
+                      </div>
+                   </motion.div>
+                 </motion.div>
+               );
+             })}
+           </AnimatePresence>
+         </div>
+       </div>
+     </section>
+   );
+ };
