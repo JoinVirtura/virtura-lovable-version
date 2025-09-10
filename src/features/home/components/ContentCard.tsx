@@ -120,19 +120,24 @@ export const ContentCard = ({ tile, className = "", size = 'md' }: ContentCardPr
             transition={{ duration: 0.7, ease: "easeOut" }}
             onLoad={() => setImageLoaded(true)}
             onError={(e) => {
-              // Try fallback image first
-              if (!e.currentTarget.src.includes('picsum')) {
-                e.currentTarget.src = getFallbackImage();
+              const target = e.currentTarget as HTMLImageElement;
+              // Triple fallback system for guaranteed image rendering
+              if (!target.src.includes('picsum.photos')) {
+                // First fallback: Picsum
+                target.src = getFallbackImage();
+              } else if (!target.src.includes('placeholder.pics')) {
+                // Second fallback: Alternative service
+                const hash = Math.abs(tile.id.split('').reduce((a, b) => ((a << 5) - a) + b.charCodeAt(0), 0));
+                target.src = `https://placeholder.pics/svg/800x600/DEDEDE/555555/${encodeURIComponent(tile.tag || 'CONTENT')}`;
               } else {
-                // If even fallback fails, create gradient
-                const target = e.currentTarget;
+                // Final fallback: Guaranteed gradient background
                 target.style.display = 'none';
                 const fallback = document.createElement('div');
-                fallback.className = 'absolute inset-0 w-full h-full bg-gradient-to-br from-primary via-primary/80 to-primary-dark flex items-center justify-center';
+                fallback.className = 'absolute inset-0 w-full h-full bg-gradient-to-br from-primary via-primary/80 to-primary/60 flex items-center justify-center';
                 fallback.innerHTML = `
                   <div class="text-center p-6">
-                    <div class="text-3xl font-bold text-black mb-2">${tile.tag || 'CONTENT'}</div>
-                    <div class="text-lg font-medium text-black/80 line-clamp-2">${tile.title}</div>
+                    <div class="text-3xl font-bold text-white mb-2">${tile.tag || 'CONTENT'}</div>
+                    <div class="text-lg font-medium text-white/90 line-clamp-2">${tile.title}</div>
                   </div>
                 `;
                 if (target.parentElement) {

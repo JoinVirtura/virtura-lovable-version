@@ -197,15 +197,15 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                   transition={{ duration: 8, repeat: Infinity }}
                   style={{ backgroundSize: '300% 300%' }}
                 >
-                  TRENDING
+                  Trending
                 </motion.h2>
                 <motion.div 
-                  className="text-2xl md:text-3xl font-light text-muted-foreground uppercase tracking-[0.3em]"
+                  className="text-2xl md:text-3xl font-light text-muted-foreground tracking-[0.3em]"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.8 }}
                 >
-                  CREATIONS
+                  Creations
                 </motion.div>
               </div>
               <motion.div 
@@ -306,17 +306,21 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
         
         {/* ABSOLUTE ZERO-GAP MASONRY - FORCED SEAMLESS */}
         <div 
-          className="w-full h-auto block"
           style={{ 
             display: 'grid',
             gridTemplateColumns: 'repeat(12, 1fr)',
             gridAutoRows: '100px',
-            gap: '0',
-            margin: '0',
-            padding: '0',
+            gap: '0px',
+            rowGap: '0px',
+            columnGap: '0px',
+            gridGap: '0px',
+            margin: '0px',
+            padding: '0px',
             border: 'none',
             outline: 'none',
-            boxSizing: 'border-box'
+            boxSizing: 'border-box',
+            width: '100%',
+            height: 'auto'
           }}
         >
             {shuffledTiles.slice(0, displayCount).map((tile, index) => {
