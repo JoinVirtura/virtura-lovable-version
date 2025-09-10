@@ -41,13 +41,14 @@ export const MasonryGrid: React.FC<MasonryGridProps> = ({ tiles, className }) =>
     }
   };
 
-  // Dynamic height calculation for 5-column masonry with no gaps
+  // Pinterest-style 5-column dynamic heights
   const getItemHeight = (index: number) => {
     const heights = [
-      'h-64', 'h-80', 'h-72', 'h-96', 'h-60',  // Row 1
-      'h-72', 'h-88', 'h-64', 'h-80', 'h-68',  // Row 2
-      'h-80', 'h-60', 'h-92', 'h-72', 'h-84',  // Row 3
-      'h-68', 'h-76', 'h-80', 'h-64', 'h-88',  // Row 4
+      'h-72', 'h-80', 'h-64', 'h-96', 'h-68',   // Row 1
+      'h-80', 'h-64', 'h-88', 'h-72', 'h-84',   // Row 2
+      'h-64', 'h-92', 'h-68', 'h-80', 'h-76',   // Row 3
+      'h-88', 'h-72', 'h-84', 'h-64', 'h-80',   // Row 4
+      'h-72', 'h-84', 'h-68', 'h-88', 'h-80',   // Row 5
     ];
     return heights[index % heights.length];
   };
@@ -198,40 +199,35 @@ export const MasonryGrid: React.FC<MasonryGridProps> = ({ tiles, className }) =>
         </div>
       </motion.div>
 
-      {/* 5-Column Masonry Grid - No Gaps */}
-      <div className="relative">
-        <div className="grid grid-cols-5 gap-0 auto-rows-auto">
-          {displayedTiles.map((tile, index) => {
-            const heightClass = getItemHeight(index);
-            
-            return (
-              <motion.div
-                key={`${tile.id}-${index}`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ 
-                  duration: 0.5, 
-                  delay: (index % 20) * 0.02,
-                  ease: "easeOut"
-                }}
-                className={cn(
-                  'relative group',
-                  heightClass
-                )}
-                whileHover={{ 
-                  scale: 1.02,
-                  zIndex: 10,
-                  transition: { duration: 0.2 }
-                }}
-              >
+      {/* Pinterest-Style 5-Column Masonry Grid */}
+      <div className="relative max-w-7xl mx-auto px-4">
+        <div className="columns-5 gap-4 space-y-4">
+          {displayedTiles.map((tile, index) => (
+            <motion.div
+              key={`${tile.id}-${index}`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ 
+                duration: 0.5, 
+                delay: (index % 25) * 0.03,
+                ease: "easeOut"
+              }}
+              className="break-inside-avoid mb-4 group"
+              whileHover={{ 
+                scale: 1.02,
+                zIndex: 10,
+                transition: { duration: 0.2 }
+              }}
+            >
+              <div className="rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
                 <ContentCard 
                   tile={tile} 
-                  className="h-full w-full border-0"
+                  className="w-full"
                   size="sm"
                 />
-              </motion.div>
-            );
-          })}
+              </div>
+            </motion.div>
+          ))}
         </div>
         
         {/* Load More Section */}
