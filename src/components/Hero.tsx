@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Sparkles, Mic, Send, Crown, Lock, Zap, Camera, Shuffle } from "lucide-react";
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Hero = () => {
   const [inputValue, setInputValue] = useState("");
@@ -13,6 +14,8 @@ export const Hero = () => {
   const [showStyleOptions, setShowStyleOptions] = useState(false);
   const [showAspectOptions, setShowAspectOptions] = useState(false);
   const [showResolutionOptions, setShowResolutionOptions] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,6 +25,59 @@ export const Hero = () => {
       console.log("Aspect ratio:", selectedAspect);
       console.log("Resolution:", selectedResolution);
       // TODO: Implement actual generation logic
+    }
+  };
+
+  const handleVoiceInput = async () => {
+    if (isRecording) {
+      // Stop recording
+      if (mediaRecorder) {
+        mediaRecorder.stop();
+        setIsRecording(false);
+      }
+    } else {
+      // Start recording
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const recorder = new MediaRecorder(stream);
+        const audioChunks: Blob[] = [];
+
+        recorder.ondataavailable = (event) => {
+          audioChunks.push(event.data);
+        };
+
+        recorder.onstop = async () => {
+          const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+          const reader = new FileReader();
+          
+          reader.onloadend = async () => {
+            const base64Audio = (reader.result as string).split(',')[1];
+            
+            try {
+              // Call Supabase Edge Function for transcription
+              const { data, error } = await supabase.functions.invoke('voice-transcribe', {
+                body: { audio: base64Audio },
+              });
+              
+              if (error) throw error;
+              
+              if (data?.transcript) {
+                setInputValue(data.transcript);
+              }
+            } catch (error) {
+              console.error('Transcription error:', error);
+            }
+          };
+          
+          reader.readAsDataURL(audioBlob);
+        };
+
+        recorder.start();
+        setMediaRecorder(recorder);
+        setIsRecording(true);
+      } catch (error) {
+        console.error('Error accessing microphone:', error);
+      }
     }
   };
 
@@ -123,19 +179,19 @@ export const Hero = () => {
           <form onSubmit={handleSubmit} className="relative">
             {/* Main Input Container */}
             <div className="relative bg-card/90 border border-border/50 rounded-2xl backdrop-blur-xl shadow-2xl overflow-hidden">
-              {/* Text Input Area */}
-              <div className="px-8 py-6">
+              {/* Text Input Area - Reduced Height */}
+              <div className="px-8 py-5">
                 <textarea
                   placeholder="Describe an image and click generate..."
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  className="w-full min-h-[100px] text-lg bg-transparent border-0 focus:ring-0 placeholder:text-muted-foreground/70 resize-none leading-relaxed p-0"
+                  className="w-full h-16 text-lg bg-transparent border-0 focus:ring-0 placeholder:text-muted-foreground/70 resize-none leading-relaxed p-0"
                   style={{ outline: 'none' }}
                 />
               </div>
 
-              {/* Bottom Action Bar */}
-              <div className="px-8 py-4 bg-muted/10 border-t border-border/30 flex items-center justify-between">
+              {/* Bottom Action Bar - Improved Layout */}
+              <div className="px-8 py-4 bg-muted/10 border-t border-border/30 flex items-center justify-between gap-4">
                 {/* Options Row */}
                 <div className="flex items-center gap-3">
                   {/* Style Button */}
@@ -250,15 +306,31 @@ export const Hero = () => {
                   </Button>
                 </div>
                 
-                {/* Generate Button */}
-                <Button
-                  type="submit"
-                  disabled={!inputValue.trim()}
-                  className="bg-gradient-gold hover:bg-gradient-gold-hover shadow-gold px-8 py-3 rounded-xl text-lg font-bold ml-6"
-                >
-                  <Sparkles className="w-5 h-5 mr-2" />
-                  Generate
-                </Button>
+                {/* Action Buttons Group */}
+                <div className="flex items-center gap-3">
+                  {/* Microphone Button */}
+                  <Button
+                    type="button"
+                    onClick={handleVoiceInput}
+                    className={`w-12 h-12 p-0 rounded-xl transition-all duration-300 ${
+                      isRecording 
+                        ? 'bg-red-500 hover:bg-red-600 animate-pulse' 
+                        : 'bg-primary/10 border border-primary/30 hover:bg-primary/20'
+                    }`}
+                  >
+                    <Mic className={`w-5 h-5 ${isRecording ? 'text-white' : 'text-primary'}`} />
+                  </Button>
+                  
+                  {/* Generate Button */}
+                  <Button
+                    type="submit"
+                    disabled={!inputValue.trim()}
+                    className="bg-gradient-gold hover:bg-gradient-gold-hover shadow-gold px-6 py-3 rounded-xl font-bold text-base h-12"
+                  >
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Generate
+                  </Button>
+                </div>
               </div>
             </div>
           </form>
