@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Shuffle, Play, Eye, Sparkles, Zap } from 'lucide-react';
+import { ArrowRight, Shuffle, Play, Eye, Sparkles, Heart, Share2, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ContentCard } from './ContentCard';
 import { Tile } from '../types';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 interface TrendingRowProps {
   tiles: Tile[];
@@ -15,16 +16,49 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
   const [shuffledTiles, setShuffledTiles] = useState(tiles);
   const [isShuffling, setIsShuffling] = useState(false);
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const [likedItems, setLikedItems] = useState<Set<string>>(new Set());
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
   
   const handleShuffle = () => {
     setIsShuffling(true);
+    toast({
+      title: "Regenerating Gallery",
+      description: "Discovering new creative possibilities...",
+    });
     setTimeout(() => {
       const shuffled = [...tiles].sort(() => Math.random() - 0.5);
       setShuffledTiles(shuffled);
       setIsShuffling(false);
     }, 600);
+  };
+
+  const handleLike = (tileId: string) => {
+    setLikedItems(prev => {
+      const newLiked = new Set(prev);
+      if (newLiked.has(tileId)) {
+        newLiked.delete(tileId);
+        toast({ title: "Removed from favorites" });
+      } else {
+        newLiked.add(tileId);
+        toast({ title: "Added to favorites" });
+      }
+      return newLiked;
+    });
+  };
+
+  const handleShare = async (tile: Tile) => {
+    if (navigator.share) {
+      await navigator.share({
+        title: tile.title,
+        text: `Check out this amazing ${tile.tag} creation by ${tile.byline}`,
+        url: window.location.href,
+      });
+    } else {
+      await navigator.clipboard.writeText(window.location.href);
+      toast({ title: "Link copied to clipboard!" });
+    }
   };
 
   // Track mouse movement for advanced interactions
@@ -51,17 +85,21 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
     setShuffledTiles(tiles);
   }, [tiles]);
 
-  // Dynamic card sizing logic for innovative layout
+  // Revolutionary masonry layout with dynamic sizing
   const getCardSize = (index: number, tile: Tile) => {
     const patterns = [
-      { span: "md:col-span-2 md:row-span-2", size: "hero" }, // Hero card
-      { span: "md:col-span-1", size: "standard" }, // Standard
-      { span: "md:col-span-1", size: "standard" }, // Standard
-      { span: "md:col-span-2", size: "wide" }, // Wide card
-      { span: "md:col-span-1", size: "standard" }, // Standard
-      { span: "md:col-span-1 md:row-span-2", size: "tall" }, // Tall card
-      { span: "md:col-span-1", size: "standard" }, // Standard
-      { span: "md:col-span-2", size: "wide" }, // Wide card
+      { span: "col-span-2 row-span-2", size: "hero" }, // Hero card
+      { span: "col-span-1", size: "standard" },
+      { span: "col-span-1", size: "standard" },
+      { span: "col-span-2", size: "wide" },
+      { span: "col-span-1 row-span-2", size: "tall" },
+      { span: "col-span-1", size: "standard" },
+      { span: "col-span-1", size: "standard" },
+      { span: "col-span-2", size: "wide" },
+      { span: "col-span-1", size: "standard" },
+      { span: "col-span-1 row-span-2", size: "tall" },
+      { span: "col-span-2 row-span-2", size: "hero" },
+      { span: "col-span-1", size: "standard" },
     ];
     return patterns[index % patterns.length] || patterns[1];
   };
@@ -133,6 +171,15 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                 {isShuffling ? 'REGENERATING' : 'SURPRISE ME'}
               </span>
             </Button>
+
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="backdrop-blur-sm border-primary/20 bg-card/50 hover:bg-primary/10 group"
+            >
+              <Filter className="mr-2 h-4 w-4" />
+              <span className="font-semibold">FILTER</span>
+            </Button>
             
             <Button 
               variant="ghost" 
@@ -159,9 +206,9 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
           transition={{ type: "spring", damping: 20, stiffness: 100 }}
         />
         
-        <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6 auto-rows-auto relative z-10">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3 md:gap-4 auto-rows-auto relative z-10">
           <AnimatePresence mode="wait">
-            {shuffledTiles.slice(0, 24).map((tile, index) => {
+            {shuffledTiles.map((tile, index) => {
               const cardSize = getCardSize(index, tile);
               const isHovered = hoveredCard === tile.id;
               
@@ -226,42 +273,75 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                       transition={{ duration: 0.3 }}
                     />
                     
-                    {/* Enhanced ContentCard */}
-                    <div className="relative h-full">
-                      <ContentCard 
-                        tile={tile} 
-                        size={cardSize.size as any}
-                        className={cn(
-                          "h-full transform-gpu transition-all duration-500",
-                          "hover:shadow-2xl hover:shadow-primary/20",
-                          cardSize.size === "hero" && "min-h-[400px]",
-                          cardSize.size === "tall" && "min-h-[350px]",
-                          cardSize.size === "wide" && "min-h-[200px]",
-                          cardSize.size === "standard" && "min-h-[250px]"
-                        )}
-                      />
-                      
-                      {/* Interactive Overlay */}
-                      <motion.div
-                        className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent rounded-2xl pointer-events-none"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: isHovered ? 1 : 0 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white">
-                          <div className="flex items-center gap-2">
-                            <Eye className="w-4 h-4" />
-                            <span className="text-sm font-medium">{tile.views?.toLocaleString()}</span>
-                          </div>
-                          {tile.kind === 'video' && (
-                            <div className="flex items-center gap-1">
-                              <Play className="w-3 h-3" />
-                              <span className="text-xs">{tile.duration}</span>
-                            </div>
-                          )}
-                        </div>
-                      </motion.div>
-                    </div>
+                     {/* Enhanced ContentCard */}
+                     <div className="relative h-full cursor-pointer" onClick={() => window.location.href = `/creation/${tile.id}`}>
+                       <ContentCard 
+                         tile={tile} 
+                         size={cardSize.size as any}
+                         className={cn(
+                           "h-full transform-gpu transition-all duration-500",
+                           "hover:shadow-2xl hover:shadow-primary/20",
+                           cardSize.size === "hero" && "min-h-[400px]",
+                           cardSize.size === "tall" && "min-h-[350px]",
+                           cardSize.size === "wide" && "min-h-[200px]",
+                           cardSize.size === "standard" && "min-h-[250px]"
+                         )}
+                       />
+                       
+                       {/* Interactive Overlay with Actions */}
+                       <motion.div
+                         className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-2xl"
+                         initial={{ opacity: 0 }}
+                         animate={{ opacity: isHovered ? 1 : 0 }}
+                         transition={{ duration: 0.3 }}
+                       >
+                         {/* Top Actions */}
+                         <div className="absolute top-3 right-3 flex gap-2">
+                           <Button
+                             size="sm"
+                             variant="secondary"
+                             className={cn(
+                               "w-8 h-8 p-0 backdrop-blur-sm bg-white/20 border-white/20 hover:bg-white/30",
+                               likedItems.has(tile.id) && "bg-red-500/80 hover:bg-red-500/90"
+                             )}
+                             onClick={(e) => {
+                               e.stopPropagation();
+                               handleLike(tile.id);
+                             }}
+                           >
+                             <Heart className={cn(
+                               "w-4 h-4",
+                               likedItems.has(tile.id) ? "fill-white text-white" : "text-white"
+                             )} />
+                           </Button>
+                           <Button
+                             size="sm"
+                             variant="secondary"
+                             className="w-8 h-8 p-0 backdrop-blur-sm bg-white/20 border-white/20 hover:bg-white/30"
+                             onClick={(e) => {
+                               e.stopPropagation();
+                               handleShare(tile);
+                             }}
+                           >
+                             <Share2 className="w-4 h-4 text-white" />
+                           </Button>
+                         </div>
+
+                         {/* Bottom Info */}
+                         <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white">
+                           <div className="flex items-center gap-2">
+                             <Eye className="w-4 h-4" />
+                             <span className="text-sm font-medium">{tile.views?.toLocaleString()}</span>
+                           </div>
+                           {tile.kind === 'video' && (
+                             <div className="flex items-center gap-1">
+                               <Play className="w-3 h-3" />
+                               <span className="text-xs">{tile.duration}</span>
+                             </div>
+                           )}
+                         </div>
+                       </motion.div>
+                     </div>
                   </motion.div>
                 </motion.div>
               );
