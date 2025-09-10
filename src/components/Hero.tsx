@@ -575,8 +575,8 @@ export const Hero = () => {
                       <Button variant="ghost" className="text-muted-foreground hover:text-foreground text-sm">Vintage</Button>
                     </div>
 
-                    {/* Styles Grid - All Individual Styles */}
-                    <div className="grid grid-cols-5 gap-3">
+                    {/* Styles Grid - Smaller thumbnails */}
+                    <div className="grid grid-cols-6 gap-2">
                       {/* Create Style Card */}
                       <div 
                         className="aspect-square bg-muted/30 rounded-xl border-2 border-dashed border-border/50 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-all"
@@ -614,10 +614,10 @@ export const Hero = () => {
                         <h3 className="text-lg font-bold text-foreground mb-2">
                           {selectedStylePreview ? selectedStylePreview.name : 'Preview'}
                         </h3>
-                        <div className="grid grid-cols-2 gap-1.5 mb-3">
-                          {/* Four preview variations of the selected style */}
+                        <div className="grid grid-cols-2 gap-3 mb-3">
+                          {/* Four preview variations - Larger size */}
                           {[1, 2, 3, 4].map((i) => (
-                            <div key={i} className="relative aspect-[4/3] bg-muted/50 rounded-lg overflow-hidden">
+                            <div key={i} className="relative aspect-[4/3] bg-muted/50 rounded-xl overflow-hidden">
                               <img 
                                 src={selectedStylePreview ? selectedStylePreview.image : "https://via.placeholder.com/200x150/1a1a1a/ffffff?text=Select+Style"} 
                                 alt={`${selectedStylePreview?.name || 'Style'} Variation ${i}`}
