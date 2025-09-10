@@ -549,14 +549,18 @@ export const Hero = () => {
                           {selectedStylePreview ? selectedStylePreview.name : 'Preview'}
                         </h3>
                         <div className="grid grid-cols-2 gap-1.5 mb-3">
-                          {/* Clean preview images without text overlay */}
+                          {/* Four preview variations of the selected style */}
                           {[1, 2, 3, 4].map((i) => (
                             <div key={i} className="relative aspect-[4/3] bg-muted/50 rounded-lg overflow-hidden">
                               <img 
                                 src={selectedStylePreview ? selectedStylePreview.image : "https://via.placeholder.com/200x150/1a1a1a/ffffff?text=Select+Style"} 
-                                alt={`Preview ${i}`}
+                                alt={`${selectedStylePreview?.name || 'Style'} Variation ${i}`}
                                 className="w-full h-full object-cover"
                               />
+                              {/* Variation label overlay */}
+                              <div className="absolute top-1 left-1 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded">
+                                {i}
+                              </div>
                             </div>
                           ))}
                         </div>
@@ -585,7 +589,7 @@ export const Hero = () => {
               />
               {/* Popup positioned above everything */}
               <div 
-                className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-2xl z-[9999] p-4 min-w-[400px]"
+                className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-card/95 backdrop-blur-xl border border-border rounded-xl shadow-2xl z-[9999] p-4 w-[400px]"
                 onMouseEnter={() => setShowImageStylePopup(true)}
                 onMouseLeave={() => setShowImageStylePopup(false)}
               >
