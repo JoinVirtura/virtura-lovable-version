@@ -557,8 +557,8 @@ export const Hero = () => {
                                 alt={`${selectedStylePreview?.name || 'Style'} Variation ${i}`}
                                 className="w-full h-full object-cover"
                               />
-                              {/* Variation label overlay */}
-                              <div className="absolute top-1 left-1 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded">
+                              {/* Variation label overlay with better visibility */}
+                              <div className="absolute top-2 left-2 bg-black/80 text-white text-sm font-bold px-2 py-1 rounded-md border border-white/20">
                                 {i}
                               </div>
                             </div>
