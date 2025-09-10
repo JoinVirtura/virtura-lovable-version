@@ -79,15 +79,25 @@ export const Hero = () => {
   const [showResolutionOptions, setShowResolutionOptions] = useState(false);
   const [showStyleModal, setShowStyleModal] = useState(false);
   const [showImageStylePopup, setShowImageStylePopup] = useState(false);
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   
   // Handle file upload
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      console.log('File selected:', file.name);
-      // TODO: Implement file upload logic
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setUploadedImage(event.target.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
       setShowImageStylePopup(false);
     }
+  };
+
+  const removeUploadedImage = () => {
+    setUploadedImage(null);
   };
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStylePreview, setSelectedStylePreview] = useState<{name: string, username: string, id: string, image: string} | null>(null);
@@ -288,7 +298,7 @@ export const Hero = () => {
                       type="button"
                       variant="outline"
                       onClick={() => setShowStyleModal(true)}
-                      className="bg-muted/60 border-border/50 hover:bg-muted/80 px-4 py-2 rounded-xl text-sm font-medium h-10"
+                      className="bg-muted/60 border-border/50 hover:bg-gradient-gold hover:text-primary-foreground hover:border-primary/50 px-4 py-2 rounded-xl text-sm font-medium h-10 transition-all duration-200"
                     >
                       <Target className="w-4 h-4 mr-1" />
                       Style
@@ -299,7 +309,7 @@ export const Hero = () => {
                   <Button
                     type="button"
                     variant="outline"
-                    className="bg-muted/60 border-border/50 hover:bg-muted/80 px-4 py-2 rounded-xl text-sm font-medium h-10"
+                    className="bg-muted/60 border-border/50 hover:bg-gradient-gold hover:text-primary-foreground hover:border-primary/50 px-4 py-2 rounded-xl text-sm font-medium h-10 transition-all duration-200"
                   >
                     <Image className="w-4 h-4 mr-2" />
                     Image prompt
@@ -314,10 +324,34 @@ export const Hero = () => {
                     <Button
                       type="button"
                       variant="outline"
-                      className="bg-muted/60 border-border/50 hover:bg-muted/80 px-4 py-2 rounded-xl text-sm font-medium h-10"
+                      className="bg-muted/60 border-border/50 hover:bg-gradient-gold hover:text-primary-foreground hover:border-primary/50 px-4 py-2 rounded-xl text-sm font-medium h-10 transition-all duration-200 relative overflow-hidden"
                     >
-                      <Palette className="w-4 h-4 mr-2" />
-                      Image style
+                      {uploadedImage ? (
+                        <div className="flex items-center gap-2">
+                          <div className="relative w-6 h-6 rounded overflow-hidden border border-white/20">
+                            <img 
+                              src={uploadedImage} 
+                              alt="Uploaded style" 
+                              className="w-full h-full object-cover"
+                            />
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeUploadedImage();
+                              }}
+                              className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600"
+                            >
+                              <X className="w-2 h-2" />
+                            </button>
+                          </div>
+                          <span>Image style</span>
+                        </div>
+                      ) : (
+                        <>
+                          <Palette className="w-4 h-4 mr-2" />
+                          Image style
+                        </>
+                      )}
                     </Button>
 
                     {/* No popup here - moved outside */}
@@ -329,7 +363,7 @@ export const Hero = () => {
                       type="button"
                       variant="outline"
                       onClick={() => setShowAspectOptions(!showAspectOptions)}
-                      className="bg-muted/60 border-border/50 hover:bg-muted/80 px-4 py-2 rounded-xl text-sm font-medium h-10"
+                      className="bg-muted/60 border-border/50 hover:bg-gradient-gold hover:text-primary-foreground hover:border-primary/50 px-4 py-2 rounded-xl text-sm font-medium h-10 transition-all duration-200"
                     >
                       <RectangleHorizontal className="w-4 h-4 mr-2" />
                       {selectedAspect}
@@ -364,7 +398,7 @@ export const Hero = () => {
                       type="button"
                       variant="outline"
                       onClick={() => setShowResolutionOptions(!showResolutionOptions)}
-                      className="bg-muted/60 border-border/50 hover:bg-muted/80 px-4 py-2 rounded-xl text-sm font-medium h-10"
+                      className="bg-muted/60 border-border/50 hover:bg-gradient-gold hover:text-primary-foreground hover:border-primary/50 px-4 py-2 rounded-xl text-sm font-medium h-10 transition-all duration-200"
                     >
                       <Diamond className="w-4 h-4 mr-2" />
                       {selectedResolution}
@@ -395,7 +429,7 @@ export const Hero = () => {
                   <Button
                     type="button"
                     variant="outline"
-                    className="bg-muted/60 border-border/50 hover:bg-muted/80 px-4 py-2 rounded-xl text-sm font-medium h-10"
+                    className="bg-muted/60 border-border/50 hover:bg-gradient-gold hover:text-primary-foreground hover:border-primary/50 px-4 py-2 rounded-xl text-sm font-medium h-10 transition-all duration-200"
                   >
                     <Shuffle className="w-4 h-4 mr-2" />
                     Raw
@@ -423,7 +457,6 @@ export const Hero = () => {
                       disabled={!inputValue.trim()}
                       className="bg-gradient-gold hover:bg-gradient-gold-hover shadow-gold px-6 py-3 rounded-xl font-bold text-base h-12 whitespace-nowrap"
                     >
-                      <Sparkles className="w-4 h-4 mr-2" />
                       Generate
                     </Button>
                   </div>
