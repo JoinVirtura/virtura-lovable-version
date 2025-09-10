@@ -648,12 +648,10 @@ export const Hero = () => {
           {/* Image Style Popup - Outside all containers */}
           {showImageStylePopup && (
             <div 
-              className="fixed bg-card border border-border rounded-xl shadow-2xl z-[9999] p-4 w-[400px] backdrop-blur-xl max-h-[500px] overflow-y-auto"
+              className="absolute top-[calc(100%+8px)] left-[180px] bg-card border border-border rounded-xl shadow-2xl z-[9999] p-4 w-[400px] backdrop-blur-xl overflow-y-auto"
               style={{
-                left: 'calc(50% - 200px)',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                maxHeight: 'calc(100vh - 40px)'
+                maxHeight: 'min(500px, calc(100vh - 120px))',
+                transform: 'translateX(-50%)'
               }}
               data-image-style-popup
             >
@@ -749,11 +747,10 @@ export const Hero = () => {
           {/* Aspect Ratio Dropdown - Outside container */}
           {showAspectOptions && (
             <div 
-              className="fixed bg-card border border-border rounded-xl shadow-2xl z-[9999] p-3 min-w-[320px] backdrop-blur-xl max-h-[400px] overflow-y-auto"
+              className="absolute bottom-[calc(100%+8px)] left-[260px] bg-card border border-border rounded-xl shadow-2xl z-[9999] p-3 min-w-[320px] backdrop-blur-xl overflow-y-auto"
               style={{
-                left: 'calc(50% - 160px)',
-                bottom: '20px',
-                maxHeight: 'calc(100vh - 40px)'
+                maxHeight: 'min(400px, calc(100vh - 120px))',
+                transform: 'translateX(-50%)'
               }}
             >
               <div className="grid grid-cols-4 gap-3">
@@ -794,11 +791,10 @@ export const Hero = () => {
           {/* Resolution Dropdown - Outside container */}
           {showResolutionOptions && (
             <div 
-              className="fixed bg-card border border-border rounded-xl shadow-2xl z-[9999] p-2 min-w-[120px] backdrop-blur-xl max-h-[300px] overflow-y-auto"
+              className="absolute bottom-[calc(100%+8px)] left-[370px] bg-card border border-border rounded-xl shadow-2xl z-[9999] p-2 min-w-[120px] backdrop-blur-xl overflow-y-auto"
               style={{
-                right: 'calc(50% - 60px)',
-                bottom: '20px',
-                maxHeight: 'calc(100vh - 40px)'
+                maxHeight: 'min(300px, calc(100vh - 120px))',
+                transform: 'translateX(-50%)'
               }}
             >
               {['1K', '1.2K', '1.5K', '4K'].map((res) => (
