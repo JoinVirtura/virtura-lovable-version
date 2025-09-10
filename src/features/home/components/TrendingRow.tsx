@@ -137,7 +137,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
             <Button 
               variant="ghost" 
               className="text-primary hover:text-primary-dark hover:bg-primary/10 group relative overflow-hidden"
-              onClick={() => window.location.href = '/studio'}
+              onClick={() => window.location.href = '/library'}
             >
               <span className="relative z-10 font-semibold">VIEW ALL</span>
               <ArrowRight className="ml-2 h-4 w-4 transition-all duration-300 group-hover:translate-x-2 group-hover:scale-110" />
@@ -161,7 +161,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
         
         <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6 auto-rows-auto relative z-10">
           <AnimatePresence mode="wait">
-            {shuffledTiles.slice(0, 8).map((tile, index) => {
+            {shuffledTiles.slice(0, 24).map((tile, index) => {
               const cardSize = getCardSize(index, tile);
               const isHovered = hoveredCard === tile.id;
               

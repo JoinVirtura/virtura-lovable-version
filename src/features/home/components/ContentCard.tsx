@@ -181,6 +181,14 @@ export const ContentCard: React.FC<ContentCardProps> = ({
         style={getTiltTransform()}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        onClick={() => {
+          // Navigate to detail view or trigger action based on tile type
+          if (tile.kind === 'video') {
+            window.location.href = `/video/${tile.id}`;
+          } else {
+            window.location.href = `/image/${tile.id}`;
+          }
+        }}
       >
         {/* Revolutionary Media Container */}
         <div className="relative w-full h-full overflow-hidden rounded-2xl">
@@ -390,6 +398,11 @@ export const ContentCard: React.FC<ContentCardProps> = ({
                 size="sm"
                 variant="ghost"
                 className="h-8 w-8 p-0 bg-black/30 hover:bg-primary/20 border border-white/20 hover:border-primary/40 backdrop-blur-sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // Add to favorites functionality
+                  console.log('Added to favorites:', tile.id);
+                }}
               >
                 <Heart className="w-3 h-3 text-white hover:text-primary transition-colors" />
               </Button>
@@ -397,6 +410,20 @@ export const ContentCard: React.FC<ContentCardProps> = ({
                 size="sm"
                 variant="ghost"
                 className="h-8 w-8 p-0 bg-black/30 hover:bg-primary/20 border border-white/20 hover:border-primary/40 backdrop-blur-sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // Share functionality
+                  if (navigator.share) {
+                    navigator.share({
+                      title: tile.title,
+                      text: `Check out this ${tile.tag} creation: ${tile.title}`,
+                      url: window.location.href
+                    });
+                  } else {
+                    // Fallback to copy link
+                    navigator.clipboard.writeText(window.location.href);
+                  }
+                }}
               >
                 <Share2 className="w-3 h-3 text-white hover:text-primary transition-colors" />
               </Button>
