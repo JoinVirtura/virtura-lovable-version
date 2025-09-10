@@ -56,7 +56,7 @@ export const MasonryGrid: React.FC<MasonryGridProps> = ({ tiles, className }) =>
   const displayedTiles = shuffledTiles.slice(0, displayCount);
 
   return (
-    <section className={cn('relative overflow-hidden min-h-screen', className)}>
+    <section className={cn('relative overflow-hidden min-h-screen w-full', className)}>
       {/* Background effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
@@ -75,9 +75,9 @@ export const MasonryGrid: React.FC<MasonryGridProps> = ({ tiles, className }) =>
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="relative z-10 mb-16"
+        className="relative z-10 mb-16 px-6"
       >        
-        <div className="relative flex items-end justify-between">
+        <div className="relative flex items-end justify-between max-w-none w-full">
           <div className="space-y-6">
             <motion.div
               initial={{ opacity: 0, x: -50 }}
@@ -199,9 +199,9 @@ export const MasonryGrid: React.FC<MasonryGridProps> = ({ tiles, className }) =>
         </div>
       </motion.div>
 
-      {/* Custom 5-Column Masonry Grid - No Gaps */}
-      <div className="relative w-full">
-        <div className="grid grid-cols-5 gap-0">
+      {/* Custom 5-Column Masonry Grid - Full Width */}
+      <div className="relative w-full px-0">
+        <div className="grid grid-cols-5 gap-0 w-full min-h-screen">
           {displayedTiles.map((tile, index) => {
             const heightClass = getItemHeight(index);
             
