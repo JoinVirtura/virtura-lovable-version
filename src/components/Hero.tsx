@@ -73,15 +73,14 @@ export const Hero = () => {
   const [inputValue, setInputValue] = useState("");
   const [selectedStyle, setSelectedStyle] = useState("Style");
   const [selectedAspect, setSelectedAspect] = useState("2:3");
-  const [selectedResolution, setSelectedResolution] = useState("1K");
   const [showStyleOptions, setShowStyleOptions] = useState(false);
   const [showAspectOptions, setShowAspectOptions] = useState(false);
-  const [showResolutionOptions, setShowResolutionOptions] = useState(false);
   const [showStyleModal, setShowStyleModal] = useState(false);
   const [showImageStylePopup, setShowImageStylePopup] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [selectedImageStyle, setSelectedImageStyle] = useState<{name: string, username: string, id: string, image: string} | null>(null);
   const [uploadedImagePrompt, setUploadedImagePrompt] = useState<string | null>(null);
+  const [uploadedGeneralImage, setUploadedGeneralImage] = useState<string | null>(null);
   
   // Handle file upload for Image Style
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -93,6 +92,20 @@ export const Hero = () => {
           setUploadedImage(event.target.result as string);
           setSelectedImageStyle(null); // Clear style selection when uploading image
           setShowImageStylePopup(false); // Close popup after upload
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Handle file upload for General Image Upload (Pin button replacement)
+  const handleGeneralImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setUploadedGeneralImage(event.target.result as string);
         }
       };
       reader.readAsDataURL(file);
@@ -130,6 +143,10 @@ export const Hero = () => {
   const removeSelectedStyle = () => {
     setSelectedImageStyle(null);
   };
+
+  const removeUploadedGeneralImage = () => {
+    setUploadedGeneralImage(null);
+  };
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStylePreview, setSelectedStylePreview] = useState<{name: string, username: string, id: string, image: string} | null>(null);
 
@@ -150,11 +167,6 @@ export const Hero = () => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Element;
       
-      // Close resolution dropdown if clicked outside
-      if (showResolutionOptions && !target.closest('[data-resolution-container]')) {
-        setShowResolutionOptions(false);
-      }
-      
       // Close aspect dropdown if clicked outside
       if (showAspectOptions && !target.closest('[data-aspect-container]')) {
         setShowAspectOptions(false);
@@ -163,7 +175,7 @@ export const Hero = () => {
     
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showResolutionOptions, showAspectOptions]);
+  }, [showAspectOptions]);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -171,7 +183,6 @@ export const Hero = () => {
       console.log("User input:", inputValue);
       console.log("Style:", selectedStyle);
       console.log("Aspect ratio:", selectedAspect);
-      console.log("Resolution:", selectedResolution);
       // TODO: Implement actual generation logic
     }
   };
@@ -350,7 +361,7 @@ export const Hero = () => {
                        onClick={() => setShowStyleModal(true)}
                        className="bg-muted/60 border-border/50 hover:bg-gradient-gold hover:text-primary-foreground hover:border-primary/50 px-4 py-2 rounded-xl text-sm font-medium h-10 transition-all duration-200"
                      >
-                       <Image className="w-4 h-4 mr-1" />
+                       <Palette className="w-4 h-4 mr-1" />
                        Style
                      </Button>
                    </div>
@@ -391,18 +402,6 @@ export const Hero = () => {
                     </Button>
                   </div>
 
-                  {/* Resolution */}
-                  <div className="relative z-[200]" data-resolution-container>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setShowResolutionOptions(!showResolutionOptions)}
-                      className="bg-muted/60 border-border/50 hover:bg-gradient-gold hover:text-primary-foreground hover:border-primary/50 px-4 py-2 rounded-xl text-sm font-medium h-10 transition-all duration-200"
-                    >
-                      <Diamond className="w-4 h-4 mr-2" />
-                      {selectedResolution}
-                    </Button>
-                  </div>
                   </div>
                   
                   {/* Action Buttons Group - Fixed Width */}
@@ -456,6 +455,25 @@ export const Hero = () => {
                       </div>
                     )}
                     
+                    {/* General Uploaded Image Thumbnail */}
+                    {uploadedGeneralImage && (
+                      <div className="relative">
+                        <div className="w-10 h-10 rounded-lg overflow-hidden border border-border/50 bg-muted/30">
+                          <img 
+                            src={uploadedGeneralImage} 
+                            alt="Uploaded image" 
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <button
+                          onClick={removeUploadedGeneralImage}
+                          className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 border-2 border-white shadow-lg z-10"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    )}
+
                     {/* Microphone Button */}
                     <Button
                       type="button"
@@ -623,9 +641,26 @@ export const Hero = () => {
                         >
                           + Add Style
                         </Button>
-                        <Button variant="outline" className="w-full border-primary/30 text-foreground hover:bg-primary/10 py-3 rounded-xl text-sm">
-                          📌 Pin
-                        </Button>
+                        <label className="w-full cursor-pointer">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleGeneralImageUpload}
+                          />
+                          <Button 
+                            type="button"
+                            variant="outline" 
+                            className="w-full border-primary/30 text-foreground hover:bg-primary/10 py-3 rounded-xl text-sm"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              (e.currentTarget.parentElement?.querySelector('input[type="file"]') as HTMLInputElement)?.click();
+                            }}
+                          >
+                            <Upload className="w-4 h-4 mr-2" />
+                            Upload Image
+                          </Button>
+                        </label>
                       </div>
                     </div>
                   </div>
@@ -767,25 +802,6 @@ export const Hero = () => {
             </div>
           )}
           
-          {/* Resolution Dropdown - Outside container */}
-          {showResolutionOptions && (
-            <div className="absolute top-[calc(100%+8px)] left-[370px] bg-card border border-border rounded-xl shadow-2xl z-[9999] p-2 min-w-[120px] backdrop-blur-xl max-h-[300px] overflow-y-auto">
-              {['1K', '1.2K', '1.5K', '4K'].map((res) => (
-                <Button
-                  key={res}
-                  type="button"
-                  variant={selectedResolution === res ? "default" : "ghost"}
-                  className="w-full justify-start text-sm p-2 h-8 rounded-lg"
-                  onClick={() => {
-                    setSelectedResolution(res);
-                    setShowResolutionOptions(false);
-                  }}
-                >
-                  {res}
-                </Button>
-              ))}
-            </div>
-          )}
 
         </div>
       </div>
