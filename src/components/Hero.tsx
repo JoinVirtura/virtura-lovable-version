@@ -14,7 +14,7 @@ export const Hero = () => {
   const [showAspectOptions, setShowAspectOptions] = useState(false);
   const [showResolutionOptions, setShowResolutionOptions] = useState(false);
   const [showStyleModal, setShowStyleModal] = useState(false);
-  const [selectedStylePreview, setSelectedStylePreview] = useState<{name: string, username: string, id: string} | null>(null);
+  const [selectedStylePreview, setSelectedStylePreview] = useState<{name: string, username: string, id: string, image: string} | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   
@@ -418,7 +418,7 @@ export const Hero = () => {
                       {/* long exposure emotion */}
                       <div 
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "long exposure emotion", username: "tenparisien", id: "longexposure"})}
+                        onClick={() => setSelectedStylePreview({name: "long exposure emotion", username: "tenparisien", id: "longexposure", image: "/lovable-uploads/b1d029c9-7647-4877-aabc-4dff2174dd7c.png"})}
                       >
                         <img src="/lovable-uploads/b1d029c9-7647-4877-aabc-4dff2174dd7c.png" alt="long exposure emotion" className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
@@ -431,7 +431,7 @@ export const Hero = () => {
                       {/* Illustrated Child with Animal */}
                       <div 
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "Illustrated Child with Animal", username: "neyroph", id: "childanimal"})}
+                        onClick={() => setSelectedStylePreview({name: "Illustrated Child with Animal", username: "neyroph", id: "childanimal", image: "/lovable-uploads/6b8516fa-9e86-4c1b-91aa-f5bd3e05a070.png"})}
                       >
                         <img src="/lovable-uploads/6b8516fa-9e86-4c1b-91aa-f5bd3e05a070.png" alt="Illustrated Child with Animal" className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
@@ -444,7 +444,7 @@ export const Hero = () => {
                       {/* 90's anime */}
                       <div 
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "90's anime", username: "DERNIEREXILE", id: "90sanime"})}
+                        onClick={() => setSelectedStylePreview({name: "90's anime", username: "DERNIEREXILE", id: "90sanime", image: "/lovable-uploads/4004f869-38f6-4d09-829d-e879d74ea4e7.png"})}
                       >
                         <img src="/lovable-uploads/4004f869-38f6-4d09-829d-e879d74ea4e7.png" alt="90's anime" className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
@@ -457,7 +457,7 @@ export const Hero = () => {
                       {/* Minimalist Architecture */}
                       <div 
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "Minimalist Architecture", username: "Bokn", id: "minimal"})}
+                        onClick={() => setSelectedStylePreview({name: "Minimalist Architecture", username: "Bokn", id: "minimal", image: "/lovable-uploads/7f19875e-32db-4ad5-9948-12c506a5ecab.png"})}
                       >
                         <img src="/lovable-uploads/7f19875e-32db-4ad5-9948-12c506a5ecab.png" alt="Minimalist Architecture" className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
@@ -470,7 +470,7 @@ export const Hero = () => {
                       {/* Fantasy Creature */}
                       <div 
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "Fantasy Creature", username: "neyroph", id: "fantasycreature"})}
+                        onClick={() => setSelectedStylePreview({name: "Fantasy Creature", username: "neyroph", id: "fantasycreature", image: "/lovable-uploads/149f854a-d11f-49de-824d-48118e7bcc95.png"})}
                       >
                         <img src="/lovable-uploads/149f854a-d11f-49de-824d-48118e7bcc95.png" alt="Fantasy Creature" className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
@@ -483,7 +483,7 @@ export const Hero = () => {
                       {/* kontext.streetfashion */}
                       <div 
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "kontext.streetfashion", username: "superbdiplomaticwolf", id: "streetfashion"})}
+                        onClick={() => setSelectedStylePreview({name: "kontext.streetfashion", username: "superbdiplomaticwolf", id: "streetfashion", image: "/lovable-uploads/7f369249-5c17-48b2-a47f-5ec868fa98a1.png"})}
                       >
                         <img src="/lovable-uploads/7f369249-5c17-48b2-a47f-5ec868fa98a1.png" alt="kontext.streetfashion" className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
@@ -496,7 +496,7 @@ export const Hero = () => {
                       {/* Moskvichka.AI */}
                       <div 
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "Moskvichka.AI", username: "KNezderova", id: "moskvichka"})}
+                        onClick={() => setSelectedStylePreview({name: "Moskvichka.AI", username: "KNezderova", id: "moskvichka", image: "/lovable-uploads/5cf43d66-ed63-4dd5-9e24-c80cc1c8daf9.png"})}
                       >
                         <img src="/lovable-uploads/5cf43d66-ed63-4dd5-9e24-c80cc1c8daf9.png" alt="Moskvichka.AI" className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
@@ -509,7 +509,7 @@ export const Hero = () => {
                       {/* Fantasy Portraits */}
                       <div 
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "Fantasy Portraits", username: "unfettereddextrousdisciple", id: "fantasyportraits"})}
+                        onClick={() => setSelectedStylePreview({name: "Fantasy Portraits", username: "unfettereddextrousdisciple", id: "fantasyportraits", image: "/lovable-uploads/10dc3485-5856-4a38-90e1-8c1ebe80ec70.png"})}
                       >
                         <img src="/lovable-uploads/10dc3485-5856-4a38-90e1-8c1ebe80ec70.png" alt="Fantasy Portraits" className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
@@ -522,7 +522,7 @@ export const Hero = () => {
                       {/* kontext.photoset */}
                       <div 
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "kontext.photoset", username: "frugalpoisedwrasse", id: "photoset"})}
+                        onClick={() => setSelectedStylePreview({name: "kontext.photoset", username: "frugalpoisedwrasse", id: "photoset", image: "/lovable-uploads/ad9a4869-73b6-49e6-a0f8-99274778eb95.png"})}
                       >
                         <img src="/lovable-uploads/ad9a4869-73b6-49e6-a0f8-99274778eb95.png" alt="kontext.photoset" className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
@@ -532,406 +532,118 @@ export const Hero = () => {
                         </div>
                       </div>
 
-                      {/* Frank Vibrant Oil Painting */}
+                      {/* HOK (Technically S... */}
                       <div 
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "Frank Vibrant Oil Painting", username: "unlimitedpleasantalligator", id: "frank"})}
+                        onClick={() => setSelectedStylePreview({name: "HOK (Technically S...", username: "Sup3r", id: "hoktech", image: "/lovable-uploads/7689964f-d484-4000-bd40-306eaa562dde.png"})}
                       >
-                        <img src="/lovable-uploads/f764d956-0a32-4789-b539-af22cb5d20c8.png" alt="Frank Vibrant Oil Painting" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                          <div className="text-white/70">unlimitedpleasantalligator</div>
-                          <div className="font-semibold">Frank Vibrant Oil Painting</div>
-                        </div>
-                      </div>
-
-                      {/* atlas silk style */}
-                      <div 
-                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "atlas silk style", username: "calmtriumphalbat", id: "atlassilk"})}
-                      >
-                        <img src="/lovable-uploads/f764d956-0a32-4789-b539-af22cb5d20c8.png" alt="atlas silk style" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                          <div className="text-white/70">calmtriumphalbat</div>
-                          <div className="font-semibold">atlas silk style</div>
-                        </div>
-                      </div>
-
-                      {/* Enamel Pin */}
-                      <div 
-                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "Enamel Pin", username: "Sup3r", id: "enamel"})}
-                      >
-                        <img src="/lovable-uploads/f764d956-0a32-4789-b539-af22cb5d20c8.png" alt="Enamel Pin" className="w-full h-full object-cover" />
+                        <img src="/lovable-uploads/7689964f-d484-4000-bd40-306eaa562dde.png" alt="HOK (Technically S..." className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
                         <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
                           <div className="text-white/70">Sup3r</div>
-                          <div className="font-semibold">Enamel Pin</div>
+                          <div className="font-semibold">HOK (Technically S...</div>
                         </div>
                       </div>
 
-                      {/* Fantasy Sparkle Portrait */}
+                      {/* Fluff World */}
                       <div 
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "Fantasy Sparkle Portrait", username: "flatteringgallantcougar", id: "fantasy"})}
+                        onClick={() => setSelectedStylePreview({name: "Fluff World", username: "Beccu", id: "fluffworld", image: "/lovable-uploads/8a243d90-a54e-4be4-8c7e-83cb5bcebc20.png"})}
                       >
-                        <img src="/lovable-uploads/f764d956-0a32-4789-b539-af22cb5d20c8.png" alt="Fantasy Sparkle Portrait" className="w-full h-full object-cover" />
+                        <img src="/lovable-uploads/8a243d90-a54e-4be4-8c7e-83cb5bcebc20.png" alt="Fluff World" className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
                         <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                          <div className="text-white/70">flatteringgallantcougar</div>
-                          <div className="font-semibold">Fantasy Sparkle Portrait</div>
+                          <div className="text-white/70">Beccu</div>
+                          <div className="font-semibold">Fluff World</div>
                         </div>
                       </div>
 
-                      {/* Buryad Nomad */}
+                      {/* Fantasy Landscape... */}
                       <div 
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "Buryad Nomad", username: "May_Day_19", id: "nomad"})}
+                        onClick={() => setSelectedStylePreview({name: "Fantasy Landscape...", username: "usefulokapi", id: "fantasylandscape", image: "/lovable-uploads/3bfa9331-66cc-4449-bd79-9b5726da1ca4.png"})}
                       >
-                        <img src="/lovable-uploads/42bfcd45-c1b2-4e4e-8f95-c3174def439e.png" alt="Buryad Nomad" className="w-full h-full object-cover" />
+                        <img src="/lovable-uploads/3bfa9331-66cc-4449-bd79-9b5726da1ca4.png" alt="Fantasy Landscape..." className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
                         <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                          <div className="text-white/70">May_Day_19</div>
-                          <div className="font-semibold">Buryad Nomad</div>
+                          <div className="text-white/70">usefulokapi</div>
+                          <div className="font-semibold">Fantasy Landscape...</div>
                         </div>
                       </div>
 
-                      {/* Mualla */}
+                      {/* Art Nouveau Portrait... */}
                       <div 
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "Mualla", username: "unbeatablevivaciousbu...", id: "mualla"})}
+                        onClick={() => setSelectedStylePreview({name: "Art Nouveau Portrait...", username: "splendidlyricalcamel", id: "artnouveau", image: "/lovable-uploads/45a5e5b7-2140-4493-8f6d-a6aa2cb5dd87.png"})}
                       >
-                        <img src="/lovable-uploads/42bfcd45-c1b2-4e4e-8f95-c3174def439e.png" alt="Mualla" className="w-full h-full object-cover" />
+                        <img src="/lovable-uploads/45a5e5b7-2140-4493-8f6d-a6aa2cb5dd87.png" alt="Art Nouveau Portrait..." className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
                         <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                          <div className="text-white/70">unbeatablevivaciousbu...</div>
-                          <div className="font-semibold">Mualla</div>
+                          <div className="text-white/70">splendidlyricalcamel</div>
+                          <div className="font-semibold">Art Nouveau Portrait...</div>
                         </div>
                       </div>
 
-                      {/* Culinary Art */}
+                      {/* Nighttime Dreams, ... */}
                       <div 
                         className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "Culinary Art", username: "advancedaccessiblem...", id: "culinary"})}
+                        onClick={() => setSelectedStylePreview({name: "Nighttime Dreams, ...", username: "personalizedamiablecat", id: "nighttimedreams", image: "/lovable-uploads/eb0abdbc-eb99-4107-9710-405c893899e3.png"})}
                       >
-                        <img src="/lovable-uploads/42bfcd45-c1b2-4e4e-8f95-c3174def439e.png" alt="Culinary Art" className="w-full h-full object-cover" />
+                        <img src="/lovable-uploads/eb0abdbc-eb99-4107-9710-405c893899e3.png" alt="Nighttime Dreams, ..." className="w-full h-full object-cover" />
                         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
                         <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                          <div className="text-white/70">advancedaccessiblem...</div>
-                          <div className="font-semibold">Culinary Art</div>
+                          <div className="text-white/70">personalizedamiablecat</div>
+                          <div className="font-semibold">Nighttime Dreams, ...</div>
                         </div>
                       </div>
-
-                      {/* Blue Flora */}
-                      <div 
-                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "Blue Flora", username: "thrivingmeticulouswall...", id: "flora"})}
-                      >
-                        <img src="/lovable-uploads/42bfcd45-c1b2-4e4e-8f95-c3174def439e.png" alt="Blue Flora" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                          <div className="text-white/70">thrivingmeticulouswall...</div>
-                          <div className="font-semibold">Blue Flora</div>
-                        </div>
-                      </div>
-
-                      {/* Abstract Blue Architecture */}
-                      <div 
-                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "Abstract Blue Architecture", username: "sharperkeenpenguin", id: "bluearch"})}
-                      >
-                        <img src="/lovable-uploads/42bfcd45-c1b2-4e4e-8f95-c3174def439e.png" alt="Abstract Blue Architecture" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                          <div className="text-white/70">sharperkeenpenguin</div>
-                          <div className="font-semibold">Abstract Blue Architecture</div>
-                        </div>
-                      </div>
-
-                      {/* Airbrush 2025 */}
-                      <div 
-                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "Airbrush 2025", username: "psyikedout", id: "airbrush"})}
-                      >
-                        <img src="/lovable-uploads/507c9785-5fc3-4834-a8e4-203676f54a21.png" alt="Airbrush 2025" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                          <div className="text-white/70">psyikedout</div>
-                          <div className="font-semibold">Airbrush 2025</div>
-                        </div>
-                      </div>
-
-                      {/* Chinese Watercolor */}
-                      <div 
-                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "Chinese Watercolor", username: "enoughfortunateguppy", id: "watercolor"})}
-                      >
-                        <img src="/lovable-uploads/507c9785-5fc3-4834-a8e4-203676f54a21.png" alt="Chinese Watercolor" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                          <div className="text-white/70">enoughfortunateguppy</div>
-                          <div className="font-semibold">Chinese Watercolor</div>
-                        </div>
-                      </div>
-
-                      {/* liminality */}
-                      <div 
-                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "liminality", username: "luxuryfuturisticutonagan", id: "liminal"})}
-                      >
-                        <img src="/lovable-uploads/507c9785-5fc3-4834-a8e4-203676f54a21.png" alt="liminality" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                          <div className="text-white/70">luxuryfuturisticutonagan</div>
-                          <div className="font-semibold">liminality</div>
-                        </div>
-                      </div>
-
-                      {/* aBSTRACT tYPE */}
-                      <div 
-                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "aBSTRACT tYPE", username: "maartenvangent", id: "abstracttype"})}
-                      >
-                        <img src="/lovable-uploads/507c9785-5fc3-4834-a8e4-203676f54a21.png" alt="aBSTRACT tYPE" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                          <div className="text-white/70">maartenvangent</div>
-                          <div className="font-semibold">aBSTRACT tYPE</div>
-                        </div>
-                      </div>
-
-                      {/* All remaining styles from your uploaded images */}
-                      {/* Glazed tile, 90's anime, kontext.photoset, databend, whispy woods */}
-                      {/* Scorn landscape, distortion, Santorini Whitewash, 360, pxlsrt 2 */}
-                      {/* Natural Fantasy Painting, Game Character, DRAW, Fantasy Creature, Modern Architecture */}
-                      {/* ghibli, Anime Expressions, Impressionism, Indie Sleaze, Architectural Sketch */}
-                      {/* Cubist Cats, Hayao, sber chat, Urban Crayon, Melagrappa */}
-                      {/* Kaan, Cartoon Character, Abstract Geometry, 2001: A Space Odyssey, Medieval */}
-                      {/* Ph-Style2, Blank Billboards, Hypergel, kontext.streetfashion, Syd Hoff */}
-                      {/* kontext.metalicfuturistic, Food island, Hyperrealistic Character, Gothic Typography, Fantasy Portraits */}
-                      {/* Dark and Mysterious, Plushy dogs, Moskvichka.AI, Abstract Sculpture, Child Playing Farmscape */}
-                      {/* Van Gogh Style, Kawaii Fantasy Food, Minecraft, Vintage watercolor, AeroFlux */}
-                      
-                      {/* Expressionist Portrait */}
-                      <div 
-                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "Expressionist Portrait", username: "personalizedamiablecrab", id: "expressionist"})}
-                      >
-                        <img src="/lovable-uploads/89aedccd-f441-4b12-ab2a-d0c78c534851.png" alt="Expressionist Portrait" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                          <div className="text-white/70">personalizedamiablecrab</div>
-                          <div className="font-semibold">Expressionist Portrait</div>
-                        </div>
-                      </div>
-
-                      {/* Caricatura */}
-                      <div 
-                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "Caricatura", username: "MarcoPiromali", id: "caricatura"})}
-                      >
-                        <img src="/lovable-uploads/941be8ba-58aa-4c45-90db-6ab22db3b003.png" alt="Caricatura" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                          <div className="text-white/70">MarcoPiromali</div>
-                          <div className="font-semibold">Caricatura</div>
-                        </div>
-                      </div>
-
-                      {/* Vincent Van Gogh */}
-                      <div 
-                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "Vincent Van Gogh", username: "frowenz", id: "vincentvangogh"})}
-                      >
-                        <img src="/lovable-uploads/46125793-06cb-463b-9e66-422bfc55fb30.png" alt="Vincent Van Gogh" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                          <div className="text-white/70">frowenz</div>
-                          <div className="font-semibold">Vincent Van Gogh</div>
-                        </div>
-                      </div>
-
-                      {/* Cyanotypical */}
-                      <div 
-                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "Cyanotypical", username: "liam", id: "cyanotypical"})}
-                      >
-                        <img src="/lovable-uploads/4f531691-87be-4d8a-9cc3-74ca12c92f77.png" alt="Cyanotypical" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                          <div className="text-white/70">liam</div>
-                          <div className="font-semibold">Cyanotypical</div>
-                        </div>
-                      </div>
-
-                      {/* disco elysium */}
-                      <div 
-                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "disco elysium", username: "pamperedfavoriteporp...", id: "discoelysium"})}
-                      >
-                        <img src="/lovable-uploads/90908c20-2109-4c07-a3a2-2a750b3b9a4b.png" alt="disco elysium" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                          <div className="text-white/70">pamperedfavoriteporp...</div>
-                          <div className="font-semibold">disco elysium</div>
-                        </div>
-                      </div>
-
-                      {/* Vintage watercolor */}
-                      <div 
-                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "Vintage watercolor", username: "unwaveringyouthfulcoral", id: "vintagewatercolor"})}
-                      >
-                        <img src="/lovable-uploads/7efd8251-8c14-4643-9e99-44a51e615c41.png" alt="Vintage watercolor" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                          <div className="text-white/70">unwaveringyouthfulcoral</div>
-                          <div className="font-semibold">Vintage watercolor</div>
-                        </div>
-                      </div>
-
-                      {/* Child Playing, Farmscape */}
-                      <div 
-                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "Child Playing, Farmscape", username: "freedsmarterharrier", id: "childplaying"})}
-                      >
-                        <img src="/lovable-uploads/bc62748e-96c9-4568-8c03-306f34ba85a5.png" alt="Child Playing, Farmscape" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                          <div className="text-white/70">freedsmarterharrier</div>
-                          <div className="font-semibold">Child Playing, Farmscape</div>
-                        </div>
-                      </div>
-
-                      {/* Dark and Mysterious */}
-                      <div 
-                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "Dark and Mysterious", username: "AIDALEV", id: "darkmysterious"})}
-                      >
-                        <img src="/lovable-uploads/25c42184-5dae-4c49-ba6c-62f626f7fe74.png" alt="Dark and Mysterious" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                          <div className="text-white/70">AIDALEV</div>
-                          <div className="font-semibold">Dark and Mysterious</div>
-                        </div>
-                      </div>
-
-                      {/* Van Gogh Style (vsdsgn) */}
-                      <div 
-                        className="aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-all duration-300 group relative border-2 border-transparent hover:border-primary"
-                        onClick={() => setSelectedStylePreview({name: "Van Gogh Style", username: "vsdsgn", id: "vangoghstyle"})}
-                      >
-                        <img src="/lovable-uploads/6faa77d1-5620-4c4f-92cd-9b1dd9e7a9c0.png" alt="Van Gogh Style" className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
-                        <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-black/50 text-white">
-                          <div className="text-white/70">vsdsgn</div>
-                          <div className="font-semibold">Van Gogh Style</div>
-                        </div>
-                      </div>
-
-                      {/* Continue with more styles... */}
-                      
                     </div>
                   </div>
 
-                  {/* Right Side - Selected Style Preview */}
-                  <div className="w-80 border-l border-border/30 p-4 flex flex-col">
-                    {selectedStylePreview ? (
-                      <>
-                        {/* Style Header */}
-                        <div className="mb-4">
-                          <div className="text-sm text-muted-foreground mb-1">Flux</div>
-                          <h3 className="text-xl font-bold text-foreground mb-1">{selectedStylePreview.name}</h3>
-                          <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-white rounded-full" />
-                            <span className="text-sm text-muted-foreground">{selectedStylePreview.username}</span>
-                          </div>
-                        </div>
-
-                        {/* Example Images Grid with Style Name Overlay */}
-                        <div className="grid grid-cols-2 gap-2 mb-6 flex-1">
-                          <div className="aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-orange-300 to-red-400 relative">
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <div className="text-center text-white font-bold text-sm drop-shadow-lg">
-                                {selectedStylePreview.name}
-                              </div>
+                  {/* Side Preview Panel */}
+                  <div className="flex-1 bg-muted/30 border-l border-border/30 p-6 overflow-y-auto">
+                    <div className="space-y-6">
+                      <div>
+                        <h3 className="text-lg font-bold text-foreground mb-4">
+                          {selectedStylePreview ? selectedStylePreview.name : 'Preview'}
+                        </h3>
+                        <div className="grid grid-cols-2 gap-4">
+                          {/* Preview placeholder images with style name overlay */}
+                          {[1, 2, 3, 4].map((i) => (
+                            <div key={i} className="relative aspect-square bg-muted/50 rounded-xl overflow-hidden">
+                              <img 
+                                src={selectedStylePreview ? selectedStylePreview.image : "https://via.placeholder.com/200x200/1a1a1a/ffffff?text=Select+Style"} 
+                                alt={`Preview ${i}`}
+                                className="w-full h-full object-cover"
+                              />
+                              {selectedStylePreview && (
+                                <div className="absolute inset-0 bg-black/40 flex items-end p-3">
+                                  <span className="text-white text-sm font-medium">{selectedStylePreview.name}</span>
+                                </div>
+                              )}
                             </div>
-                          </div>
-                          <div className="aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-blue-400 to-purple-500 relative">
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <div className="text-center text-white font-bold text-sm drop-shadow-lg">
-                                {selectedStylePreview.name}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-green-300 to-blue-400 relative">
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <div className="text-center text-white font-bold text-sm drop-shadow-lg">
-                                {selectedStylePreview.name}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-pink-300 to-purple-400 relative">
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <div className="text-center text-white font-bold text-sm drop-shadow-lg">
-                                {selectedStylePreview.name}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Action Buttons */}
-                        <div className="space-y-3">
-                          <Button 
-                            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-                            onClick={() => {
-                              setSelectedStyle(selectedStylePreview.name);
-                              setShowStyleModal(false);
-                            }}
-                          >
-                            + Add Style
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            className="w-full border-border/50 hover:bg-muted/50"
-                          >
-                            📌 Pin
-                          </Button>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="flex-1 flex items-center justify-center text-center text-muted-foreground">
-                        <div>
-                          <div className="text-lg mb-2">🎨</div>
-                          <div className="text-sm">Click to view a style.</div>
-                          <div className="text-xs">Generating with styles lets you explore new aesthetics.</div>
+                          ))}
                         </div>
                       </div>
-                    )}
+                      
+                      <div className="space-y-3">
+                        <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-3 rounded-xl">
+                          + Add Style
+                        </Button>
+                        <Button variant="outline" className="w-full border-primary/30 text-foreground hover:bg-primary/10 py-3 rounded-xl">
+                          📌 Pin
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           )}
         </div>
-
-        {/* Feature Badges */}
-        <div className="flex flex-wrap justify-center gap-4 animate-fade-in">
-          <Badge variant="secondary" className="px-4 py-2 bg-card/80 border-primary/20 text-foreground backdrop-blur-sm">
-            <Lock className="w-4 h-4 mr-2 text-primary" />
-            PRIVATE & SECURE
-          </Badge>
-          <Badge variant="secondary" className="px-4 py-2 bg-card/80 border-primary/20 text-foreground backdrop-blur-sm">
-            <Zap className="w-4 h-4 mr-2 text-primary" />
-            INSTANT GENERATION
-          </Badge>
-          <Badge variant="secondary" className="px-4 py-2 bg-card/80 border-primary/20 text-foreground backdrop-blur-sm">
-            <Camera className="w-4 h-4 mr-2 text-primary" />
-            STUDIO QUALITY
-          </Badge>
-        </div>
       </div>
+    </section>
+  );
+};
 
     </section>
   );
