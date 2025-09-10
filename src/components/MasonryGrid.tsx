@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Shuffle, Filter, ArrowRight } from 'lucide-react';
+import { Filter, ArrowRight } from 'lucide-react';
 import { ContentCard } from '@/features/home/components/ContentCard';
 import { Tile } from '@/features/home/types';
 import { cn } from '@/lib/utils';
@@ -142,23 +142,8 @@ export const MasonryGrid: React.FC<MasonryGridProps> = ({ tiles, className }) =>
               onClick={handleShuffle}
               disabled={isShuffling}
             >
-              <motion.div
-                animate={isShuffling ? { 
-                  rotate: [0, 180, 360],
-                  scale: [1, 1.2, 1]
-                } : {}}
-                transition={{ 
-                  duration: 1.5, 
-                  repeat: isShuffling ? Infinity : 0,
-                  ease: "easeInOut"
-                }}
-                className="relative z-10"
-              >
-                <Shuffle className="mr-3 h-6 w-6" />
-              </motion.div>
-              
               <span className="relative z-10 font-bold text-lg">
-                {isShuffling ? 'REGENERATE' : 'REGENERATE'}
+                {isShuffling ? 'Regenerate' : 'Regenerate'}
               </span>
             </Button>
 
