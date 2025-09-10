@@ -99,7 +99,7 @@ export const Hero = () => {
 
         {/* Main Heading - Steve Jobs Level Sophistication */}
         <div className="mb-16 animate-fade-in">
-          <h1 className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-light leading-[0.95] mb-8 tracking-tight">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-light leading-[0.95] mb-8 tracking-tight">
             <span className="text-foreground font-light">Where Identity </span>
             <span className="bg-gradient-to-r from-primary via-primary to-primary-dark bg-clip-text text-transparent font-medium italic">Evolves</span>
           </h1>

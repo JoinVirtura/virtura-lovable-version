@@ -292,8 +292,8 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
         </div>
       </motion.div>
 
-      {/* Zero-Gap Pinterest Masonry Grid */}
-      <div className="relative min-h-screen">
+      {/* Zero-Gap Pinterest Masonry Grid with Proper Spacing */}
+      <div className="relative min-h-screen mt-16">{/* Added mt-16 for spacing */}
         {/* Mouse Follower Effect */}
         <motion.div
           className="absolute w-32 h-32 bg-primary/5 rounded-full blur-3xl pointer-events-none z-0"
