@@ -168,7 +168,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
         />
       </div>
 
-      {/* Revolutionary Header Design */}
+      {/* Steve Jobs Inspired Header Design */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -176,244 +176,97 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
         className="relative z-10 mb-20"
       >        
         <div className="relative flex items-end justify-between">
-          <div className="space-y-8">
-            {/* Ultra-Modern Title with 3D Effects */}
+          <div className="space-y-12">
+            {/* Minimalist Title Section */}
             <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative"
+              className="space-y-6"
             >
-              {/* Background Glow Effect */}
-              <motion.div
-                className="absolute -inset-8 bg-gradient-to-r from-primary/20 via-primary/10 to-transparent blur-3xl"
-                animate={{ 
-                  scale: [1, 1.1, 1],
-                  opacity: [0.3, 0.6, 0.3]
-                }}
-                transition={{ duration: 4, repeat: Infinity }}
-              />
+              {/* Primary Heading - Apple Style */}
+              <motion.h1 
+                className="text-6xl md:text-7xl lg:text-8xl font-thin tracking-tight leading-[0.85]"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 1, delay: 0.3 }}
+              >
+                <span className="text-foreground">Trending</span>
+              </motion.h1>
               
-              {/* Main Title Container */}
-              <div className="relative flex items-center gap-6">
-                {/* Dynamic Accent Bar */}
-                <motion.div 
-                  className="w-2 bg-gradient-to-b from-primary via-secondary to-accent rounded-full shadow-lg shadow-primary/50"
-                  animate={{ 
-                    height: [60, 80, 60],
-                    boxShadow: [
-                      '0 0 20px rgba(255, 215, 0, 0.5)',
-                      '0 0 40px rgba(255, 215, 0, 0.8)',
-                      '0 0 20px rgba(255, 215, 0, 0.5)'
-                    ]
-                  }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                />
-                
-                {/* Revolutionary Typography */}
-                <div className="space-y-1">
-                  {/* "Trending" with Glass Morphism - Reduced Size */}
-                  <motion.h2 
-                    className="text-5xl md:text-6xl font-black relative leading-[1.1] py-2"
-                    style={{
-                      background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF6B35 100%)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text',
-                      filter: 'drop-shadow(0 8px 16px rgba(255, 215, 0, 0.3))'
-                    }}
-                    animate={{ 
-                      backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
-                    }}
-                    transition={{ duration: 6, repeat: Infinity }}
-                  >
-                    Trending
-                    
-                    {/* Glass Reflection Effect */}
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                      animate={{
-                        x: ['-200%', '200%'],
-                        opacity: [0, 0.8, 0]
-                      }}
-                      transition={{
-                        duration: 3,
-                        repeat: Infinity,
-                        repeatDelay: 2,
-                        ease: "easeInOut"
-                      }}
-                      style={{
-                        maskImage: 'linear-gradient(45deg, transparent 30%, black 50%, transparent 70%)',
-                        WebkitMaskImage: 'linear-gradient(45deg, transparent 30%, black 50%, transparent 70%)'
-                      }}
-                    />
-                  </motion.h2>
-                  
-                  {/* "Creations" with Sophisticated Styling */}
-                  <motion.div 
-                    className="text-2xl md:text-3xl font-light tracking-[0.5em] text-muted-foreground/80 relative ml-2"
-                    initial={{ opacity: 0, letterSpacing: '0.2em' }}
-                    animate={{ 
-                      opacity: 1, 
-                      letterSpacing: '0.5em',
-                    }}
-                    transition={{ delay: 1, duration: 1.5 }}
-                  >
-                    Creations
-                    
-                    {/* Subtle Underline Animation */}
-                    <motion.div
-                      className="absolute -bottom-2 left-0 h-0.5 bg-gradient-to-r from-primary/60 to-transparent"
-                      initial={{ width: '0%' }}
-                      animate={{ width: '100%' }}
-                      transition={{ delay: 1.5, duration: 2 }}
-                    />
-                  </motion.div>
-                </div>
-              </div>
+              {/* Secondary Line - Refined */}
+              <motion.div 
+                className="text-2xl md:text-3xl lg:text-4xl font-extralight tracking-[0.2em] text-muted-foreground/90 ml-1"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 1, delay: 0.5 }}
+              >
+                Creations
+              </motion.div>
             </motion.div>
             
-            {/* Enhanced Description */}
-            <motion.p 
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.6 }}
-              className="text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-4xl font-light relative"
+            {/* Elegant Description */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.7 }}
+              className="max-w-4xl space-y-4"
             >
-              <span className="relative">
-                Discover the most 
-                <motion.span 
-                  className="text-primary font-semibold mx-2 relative"
-                  animate={{ 
-                    textShadow: [
-                      '0 0 10px rgba(255, 215, 0, 0.5)',
-                      '0 0 20px rgba(255, 215, 0, 0.8)',
-                      '0 0 10px rgba(255, 215, 0, 0.5)'
-                    ]
-                  }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  viral creations
-                  
-                  {/* Animated Highlight */}
-                  <motion.div
-                    className="absolute -bottom-1 left-0 h-1 bg-gradient-to-r from-primary/80 to-transparent rounded-full"
-                    initial={{ width: '0%' }}
-                    animate={{ width: '100%' }}
-                    transition={{ delay: 2, duration: 1.5 }}
-                  />
-                </motion.span>
-                shaping digital culture — from stunning visuals to groundbreaking concepts
-              </span>
+              <p className="text-xl md:text-2xl font-light leading-relaxed text-muted-foreground">
+                Discover the most {' '}
+                <span className="text-foreground font-normal">viral creations</span>
+                {' '} shaping digital culture
+              </p>
               
-              {/* Floating Accent Dots */}
-              <motion.div
-                className="absolute -right-8 top-2 w-2 h-2 bg-primary/60 rounded-full"
-                animate={{
-                  scale: [1, 1.5, 1],
-                  opacity: [0.6, 1, 0.6]
-                }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-              />
-            </motion.p>
+              <p className="text-lg md:text-xl font-light leading-relaxed text-muted-foreground/80">
+                From stunning visuals to groundbreaking concepts
+              </p>
+            </motion.div>
           </div>
           
-          {/* Ultra-Advanced Control Panel */}
+          {/* Refined Control Panel */}
           <motion.div 
-            initial={{ opacity: 0, scale: 0.8, x: 50 }}
-            animate={{ opacity: 1, scale: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
-            className="flex flex-col gap-4"
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.9 }}
+            className="flex flex-col gap-3"
           >
             <Button 
               variant="outline" 
               size="lg"
-              className="relative overflow-hidden backdrop-blur-xl border-2 border-primary/30 bg-gradient-to-r from-background/80 to-card/80 hover:from-primary/20 hover:to-secondary/20 group transition-all duration-700 hover:scale-110 hover:shadow-2xl hover:shadow-primary/30 hover:border-primary/60 px-8 py-4"
+              className="backdrop-blur-xl border border-border/40 bg-card/60 hover:bg-card/80 hover:border-foreground/20 group transition-all duration-300 px-6 py-3 font-medium"
               onClick={handleShuffle}
               disabled={isShuffling}
             >
-              {/* Dynamic Background Sweep */}
-              <motion.div 
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/30 to-transparent"
-                animate={{
-                  x: ['-200%', '200%']
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  repeatDelay: 3,
-                  ease: "easeInOut"
-                }}
-              />
-              
-              {/* Shuffle Icon with Advanced Animation */}
               <motion.div
-                animate={isShuffling ? { 
-                  rotate: [0, 180, 360],
-                  scale: [1, 1.2, 1]
-                } : {}}
-                transition={{ 
-                  duration: 1.5, 
-                  repeat: isShuffling ? Infinity : 0,
-                  ease: "easeInOut"
-                }}
-                className="relative z-10"
-              >
-                <Shuffle className="mr-3 h-6 w-6" />
-              </motion.div>
-              
-              <span className="relative z-10 font-bold text-lg">
-                {isShuffling ? 'MORPHING REALITY' : 'REGENERATE'}
-              </span>
-              
-              {/* Pulsing Border Effect */}
-              <motion.div
-                className="absolute inset-0 border-2 border-primary/20 rounded-lg"
-                animate={{
-                  borderColor: isShuffling ? 
-                    ['rgba(255, 215, 0, 0.2)', 'rgba(255, 215, 0, 0.8)', 'rgba(255, 215, 0, 0.2)'] :
-                    'rgba(255, 215, 0, 0.2)'
-                }}
+                animate={isShuffling ? { rotate: 360 } : {}}
                 transition={{ duration: 1, repeat: isShuffling ? Infinity : 0 }}
-              />
+              >
+                <Shuffle className="mr-2 h-4 w-4" />
+              </motion.div>
+              <span className="text-sm font-medium tracking-wide">
+                {isShuffling ? 'REGENERATING' : 'REGENERATE'}
+              </span>
             </Button>
 
-            <div className="flex gap-3">
+            <div className="flex gap-2">
               <Button 
-                variant="outline" 
+                variant="ghost" 
                 size="sm"
-                className="relative backdrop-blur-xl border-primary/20 bg-card/60 hover:bg-primary/10 group hover:scale-105 transition-all duration-300 overflow-hidden"
+                className="text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-300 text-xs font-medium tracking-wide"
               >
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100"
-                  transition={{ duration: 0.3 }}
-                />
-                <Filter className="mr-2 h-4 w-4 relative z-10" />
-                <span className="font-semibold relative z-10">FILTER</span>
+                <Filter className="mr-1.5 h-3.5 w-3.5" />
+                FILTER
               </Button>
               
               <Button 
                 variant="ghost" 
-                className="text-primary hover:text-primary-dark hover:bg-primary/10 group relative overflow-hidden hover:scale-105 transition-all duration-300"
+                size="sm"
+                className="text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-300 text-xs font-medium tracking-wide group"
                 onClick={handleViewAll}
               >
-                <span className="relative z-10 font-semibold">
-                  {isExpanded ? 'SHOW LESS' : 'VIEW ALL'}
-                </span>
-                <motion.div
-                  animate={{ x: isExpanded ? 0 : [0, 5, 0] }}
-                  transition={{ duration: 0.5, repeat: isExpanded ? 0 : Infinity }}
-                >
-                  <ArrowRight className="ml-2 h-4 w-4 relative z-10 transition-all duration-300 group-hover:translate-x-2 group-hover:scale-110" />
-                </motion.div>
-                
-                {/* Sliding Background */}
-                <motion.div 
-                  className="absolute inset-0 bg-gradient-to-r from-primary/0 to-primary/20"
-                  initial={{ x: '100%' }}
-                  whileHover={{ x: '0%' }}
-                  transition={{ duration: 0.5 }}
-                />
+                <span>{isExpanded ? 'SHOW LESS' : 'VIEW ALL'}</span>
+                <ArrowRight className="ml-1.5 h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
               </Button>
             </div>
           </motion.div>
