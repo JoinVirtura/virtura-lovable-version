@@ -7,14 +7,37 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Loader2, Eye, EyeOff } from "lucide-react";
+import { Loader2, Eye, EyeOff, AlertCircle, CheckCircle } from "lucide-react";
 
 export default function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState({
+    hasMinLength: false,
+    hasNumber: false,
+    hasLetter: false,
+    isValid: false
+  });
   const navigate = useNavigate();
+
+  // Enhanced password validation
+  const validatePassword = (password: string) => {
+    const hasMinLength = password.length >= 8;
+    const hasNumber = /[0-9]/.test(password);
+    const hasLetter = /[a-zA-Z]/.test(password);
+    const isValid = hasMinLength && hasNumber && hasLetter;
+    
+    setPasswordStrength({
+      hasMinLength,
+      hasNumber,
+      hasLetter,
+      isValid
+    });
+    
+    return isValid;
+  };
 
   useEffect(() => {
     // Check if user is already logged in
@@ -29,6 +52,13 @@ export default function AuthPage() {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate password strength before proceeding
+    if (!validatePassword(password)) {
+      toast.error("Password does not meet security requirements");
+      return;
+    }
+    
     setLoading(true);
 
     try {
@@ -42,11 +72,24 @@ export default function AuthPage() {
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        // Enhanced error handling with security context
+        if (error.message.includes("Password")) {
+          toast.error("Password requirements not met. Please use a stronger password.");
+        } else if (error.message.includes("already registered")) {
+          toast.error("This email is already registered. Please sign in instead.");
+        } else {
+          toast.error(error.message || "Failed to sign up");
+        }
+        throw error;
+      }
       
       toast.success("Check your email for the confirmation link!");
+      
+      // Clear sensitive data
+      setPassword("");
     } catch (error: any) {
-      toast.error(error.message || "Failed to sign up");
+      // Error already handled above
     } finally {
       setLoading(false);
     }
@@ -62,12 +105,25 @@ export default function AuthPage() {
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        // Enhanced error handling for security
+        if (error.message.includes("Invalid login credentials")) {
+          toast.error("Invalid email or password. Please check your credentials.");
+        } else if (error.message.includes("Email not confirmed")) {
+          toast.error("Please check your email and click the confirmation link before signing in.");
+        } else {
+          toast.error(error.message || "Failed to sign in");
+        }
+        throw error;
+      }
       
       toast.success("Welcome back!");
       navigate("/dashboard");
+      
+      // Clear sensitive data
+      setPassword("");
     } catch (error: any) {
-      toast.error(error.message || "Failed to sign in");
+      // Error already handled above
     } finally {
       setLoading(false);
     }
@@ -152,11 +208,15 @@ export default function AuthPage() {
                     <Input
                       id="password-signup"
                       type={showPassword ? "text" : "password"}
-                      placeholder="Create a password"
+                      placeholder="Create a secure password"
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                        validatePassword(e.target.value);
+                      }}
                       required
-                      minLength={6}
+                      minLength={8}
+                      className={`pr-10 ${password && !passwordStrength.isValid ? 'border-destructive' : password && passwordStrength.isValid ? 'border-green-500' : ''}`}
                     />
                     <Button
                       type="button"
@@ -168,8 +228,48 @@ export default function AuthPage() {
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </Button>
                   </div>
+                  
+                  {/* Password Strength Indicator */}
+                  {password && (
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-center gap-2">
+                        {passwordStrength.hasMinLength ? (
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                        ) : (
+                          <AlertCircle className="h-4 w-4 text-destructive" />
+                        )}
+                        <span className={passwordStrength.hasMinLength ? "text-green-600" : "text-destructive"}>
+                          At least 8 characters
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {passwordStrength.hasNumber ? (
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                        ) : (
+                          <AlertCircle className="h-4 w-4 text-destructive" />
+                        )}
+                        <span className={passwordStrength.hasNumber ? "text-green-600" : "text-destructive"}>
+                          Contains at least one number
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {passwordStrength.hasLetter ? (
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                        ) : (
+                          <AlertCircle className="h-4 w-4 text-destructive" />
+                        )}
+                        <span className={passwordStrength.hasLetter ? "text-green-600" : "text-destructive"}>
+                          Contains at least one letter
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button 
+                  type="submit" 
+                  className="w-full" 
+                  disabled={loading || (password && !passwordStrength.isValid)}
+                >
                   {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Sign Up
                 </Button>
