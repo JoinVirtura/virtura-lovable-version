@@ -71,6 +71,20 @@ serve(async (req) => {
 
     const generateWithOpenAI = async (): Promise<Uint8Array> => {
       console.log('Trying OpenAI TTS (tts-1)...');
+      
+      // Map ElevenLabs voice IDs to OpenAI voices
+      const voiceMapping: Record<string, string> = {
+        '9BWtsMINqrJLrRacOk9x': 'nova',     // Aria -> Nova (expressive female)
+        'IKne3meq5aSn9XLyUdCD': 'shimmer',  // Freya -> Shimmer (conversational female)
+        'EXAVITQu4vr4xnSDxMaL': 'alloy',    // Sarah -> Alloy (professional female)
+        'pNInz6obpgDQGcFmaJgB': 'onyx',     // Adam -> Onyx (confident male)
+        'TxGEqnHWrfWFTfGW9XjX': 'echo',     // Josh -> Echo (deep male)
+        'VR6AewLTigWG4xSOukaG': 'fable',    // Arnold -> Fable (authoritative male)
+      };
+      
+      const openaiVoice = voiceMapping[selectedVoiceId] || 'alloy';
+      console.log(`Using OpenAI voice: ${openaiVoice} (mapped from ${selectedVoiceId})`);
+      
       const res = await fetch('https://api.openai.com/v1/audio/speech', {
         method: 'POST',
         headers: {
@@ -80,7 +94,7 @@ serve(async (req) => {
         body: JSON.stringify({
           model: 'tts-1',
           input: normalizedScript,
-          voice: 'alloy',
+          voice: openaiVoice,
           response_format: 'mp3',
         }),
       });

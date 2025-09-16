@@ -38,3 +38,12 @@ verify_jwt = true
 
 [functions.cleanup-heygen-avatars]
 verify_jwt = true
+
+[functions.video-generate-direct]
+verify_jwt = false
+
+[functions.voice-tts]
+verify_jwt = false
+
+[functions.webhook-stripe]
+verify_jwt = false
