@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Download, Package, Shield, Sparkles } from "lucide-react";
 import { toast } from "sonner";
+import { MotionBackground } from "@/components/MotionBackground";
 
 const exportPacks = {
   social: {
@@ -69,8 +70,9 @@ export default function ExportPage() {
   };
 
   return (
-    <div className="flex-1 p-6 bg-background">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <div className="flex-1 p-6 bg-background relative overflow-hidden">
+      <MotionBackground />
+      <div className="max-w-4xl mx-auto space-y-6 relative z-10">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-2">Export Content</h1>
           <p className="text-muted-foreground">Choose your export pack and customize your content</p>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { VirturaNavigation } from "@/components/VirturaNavigation";
+import { MotionBackground } from "@/components/MotionBackground";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -148,10 +149,11 @@ export default function LibraryPage() {
   }, 0);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      <MotionBackground />
       <VirturaNavigation />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         {/* Innovative Header with AI Stats */}
         <div className="relative mb-8">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5 rounded-2xl blur-xl"></div>

@@ -20,6 +20,7 @@ import {
   Lightbulb,
   Video
 } from "lucide-react";
+import { MotionBackground } from "@/components/MotionBackground";
 
 interface TodoItem {
   id: string;
@@ -209,7 +210,8 @@ export default function GuidePage() {
   const isFullyComplete = completedCount === todos.length;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      <MotionBackground />
       <VirturaNavigation />
       
       {/* Confetti Effect */}
@@ -219,7 +221,7 @@ export default function GuidePage() {
         </div>
       )}
       
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-display font-bold text-foreground mb-2">

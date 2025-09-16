@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Upload, Sparkles, Download, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
+import { MotionBackground } from "@/components/MotionBackground";
 
 export default function UploadPage() {
   const [isDragging, setIsDragging] = useState(false);
@@ -53,8 +54,9 @@ export default function UploadPage() {
   };
 
   return (
-    <div className="flex-1 p-6 bg-background">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <div className="flex-1 p-6 bg-background relative overflow-hidden">
+      <MotionBackground />
+      <div className="max-w-4xl mx-auto space-y-6 relative z-10">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-2">Upload Content</h1>
           <p className="text-muted-foreground">Transform your photos and videos with AI</p>

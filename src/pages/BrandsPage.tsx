@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { VirturaNavigation } from "@/components/VirturaNavigation";
+import { MotionBackground } from "@/components/MotionBackground";
 import { ChatInterface } from "@/components/ChatInterface";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -123,10 +124,11 @@ export default function BrandsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      <MotionBackground />
       <VirturaNavigation />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         {/* Welcome Banner */}
         <Card className="mb-8 p-6 bg-gradient-card border-primary/20">
           <div className="flex items-center justify-between">
