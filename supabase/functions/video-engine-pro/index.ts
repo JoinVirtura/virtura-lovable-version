@@ -374,30 +374,18 @@ async function createStudioGradeComposition(videoUrl: string, audioUrl: string, 
   }
 }
 
-async function applyCinematicEffects(videoUrl: string, settings: any) {
+async function enhanceWithCinematicEffects(videoUrl: string, settings: any) {
   console.log('🎬 Applying cinematic effects and enhancement...');
   
   try {
     // Apply cinematic enhancements
     const enhancedVideoUrl = await applyVideoEnhancements(videoUrl, settings);
     
-    return {
-      videoUrl: enhancedVideoUrl,
-      effects: [
-        'Depth of Field Control',
-        'Professional Color Grading', 
-        'Dynamic Lighting Adjustment',
-        'Motion Blur Optimization',
-        'Film-Grade Post-Processing'
-      ]
-    };
+    return enhancedVideoUrl;
   } catch (error) {
     console.error('Cinematic effects failed:', error);
     // Return original video as fallback
-    return {
-      videoUrl: videoUrl,
-      effects: ['Basic Processing']
-    };
+    return videoUrl;
   }
 }
 
