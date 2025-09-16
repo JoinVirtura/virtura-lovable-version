@@ -1,45 +1,239 @@
 import { Tile } from './types';
 
-// Ultra-diverse content for Pinterest-style gallery
+// Import new style images
+import style90sAnime from '../../../assets/style-90s-anime-new.jpg';
+import styleMinimalist from '../../../assets/style-minimalist-new.jpg';
+import styleFantasyCreature from '../../../assets/style-fantasy-creature-new.jpg';
+import styleChildAnimal from '../../../assets/style-child-animal-new.jpg';
+import styleLongExposure from '../../../assets/style-long-exposure-new.jpg';
+import styleStreetFashion from '../../../assets/style-street-fashion-new.jpg';
+import styleMoskvichka from '../../../assets/style-moskvichka-new.jpg';
+import styleFantasyPortraits from '../../../assets/style-fantasy-portraits-new.jpg';
+import styleHokTech from '../../../assets/style-hok-tech-new.jpg';
+import stylePhotoset from '../../../assets/style-photoset-new.jpg';
+import styleFluffWorld from '../../../assets/style-fluff-world-new.jpg';
+import styleFantasyLandscape from '../../../assets/style-fantasy-landscape-new.jpg';
+import styleArtNouveau from '../../../assets/style-art-nouveau-new.jpg';
+import styleNighttimeDreams from '../../../assets/style-nighttime-dreams-new.jpg';
+import styleCyberpunk from '../../../assets/style-cyberpunk-new.jpg';
+import styleWatercolor from '../../../assets/style-watercolor-new.jpg';
+import styleFilmNoir from '../../../assets/style-film-noir-new.jpg';
+import styleSteampunk from '../../../assets/style-steampunk-new.jpg';
+import stylePopArt from '../../../assets/style-pop-art-new.jpg';
+import styleGothic from '../../../assets/style-gothic-new.jpg';
+import styleSurreal from '../../../assets/style-surreal-new.jpg';
+import styleDigitalGlitch from '../../../assets/style-digital-glitch-new.jpg';
+import styleOilPainting from '../../../assets/style-oil-painting-new.jpg';
+
+// Ultra-diverse style showcase for creative inspiration
 export const mockTiles: Tile[] = [
-  // ARCHITECTURE & DESIGN
+  // AI STYLE SHOWCASE - Different artistic styles
   {
-    id: 'arch-1',
+    id: 'style-90s-anime',
     kind: 'image',
-    posterUrl: 'https://images.unsplash.com/photo-1495433824815-65ab0d6e4f8a?w=800&h=600&fit=crop&crop=center',
-    title: 'Futuristic Glass House',
-    tag: 'ARCHITECTURE',
-    views: 4847291,
-    byline: 'Urban Vision Studio'
+    posterUrl: style90sAnime,
+    title: "90's Anime",
+    tag: 'ANIME',
+    views: 8947291,
+    byline: 'Retro Animation Studio'
   },
   {
-    id: 'arch-2',
+    id: 'style-minimalist',
     kind: 'image',
-    posterUrl: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=800&h=600&fit=crop&crop=center',
-    title: 'Minimalist Interior',
-    tag: 'INTERIOR',
-    views: 3729384,
+    posterUrl: styleMinimalist,
+    title: 'Minimalist Architecture',
+    tag: 'ARCHITECTURE',
+    views: 7629384,
     byline: 'Clean Design Co'
   },
   {
-    id: 'arch-3',
+    id: 'style-fantasy-creature',
     kind: 'image',
-    posterUrl: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&h=600&fit=crop&crop=center',
-    title: 'Art Deco Staircase',
-    tag: 'DESIGN',
-    views: 2847391,
-    byline: 'Heritage Architecture'
+    posterUrl: styleFantasyCreature,
+    title: 'Fantasy Creature',
+    tag: 'FANTASY',
+    views: 9847391,
+    byline: 'Mythical Studios'
   },
-
-  // CHARACTERS & 3D ART
   {
-    id: 'char-1',
+    id: 'style-child-animal',
     kind: 'image',
-    posterUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop&crop=center',
-    title: 'Cyberpunk Character',
-    tag: '3D ART',
-    views: 5827391,
-    byline: 'Future Studios'
+    posterUrl: styleChildAnimal,
+    title: 'Illustrated Child with Animal',
+    tag: 'ILLUSTRATION',
+    views: 6527391,
+    byline: 'Storybook Arts'
+  },
+  {
+    id: 'style-long-exposure',
+    kind: 'image',
+    posterUrl: styleLongExposure,
+    title: 'Long Exposure Emotion',
+    tag: 'PHOTOGRAPHY',
+    views: 5847291,
+    byline: 'Motion Blur Studio'
+  },
+  {
+    id: 'style-street-fashion',
+    kind: 'image',
+    posterUrl: styleStreetFashion,
+    title: 'Kontext Street',
+    tag: 'STREET FASHION',
+    views: 7329384,
+    byline: 'Urban Style Co'
+  },
+  {
+    id: 'style-moskvichka',
+    kind: 'image',
+    posterUrl: styleMoskvichka,
+    title: 'Moskvichka Aesthetic',
+    tag: 'VINTAGE',
+    views: 4847291,
+    byline: 'Soviet Era Films'
+  },
+  {
+    id: 'style-fantasy-portraits',
+    kind: 'image',
+    posterUrl: styleFantasyPortraits,
+    title: 'Fantasy Portraits',
+    tag: 'FANTASY',
+    views: 8647391,
+    byline: 'Ethereal Studios'
+  },
+  {
+    id: 'style-hok-tech',
+    kind: 'image',
+    posterUrl: styleHokTech,
+    title: 'HOK (Technically Superior)',
+    tag: 'ARCHITECTURE',
+    views: 6947291,
+    byline: 'Tech Architecture'
+  },
+  {
+    id: 'style-photoset',
+    kind: 'image',
+    posterUrl: stylePhotoset,
+    title: 'Kontext Photoset',
+    tag: 'PHOTOGRAPHY',
+    views: 5729384,
+    byline: 'Professional Studio'
+  },
+  {
+    id: 'style-fluff-world',
+    kind: 'image',
+    posterUrl: styleFluffWorld,
+    title: 'Fluff World',
+    tag: 'KAWAII',
+    views: 7847291,
+    byline: 'Fluffy Dreams Co'
+  },
+  {
+    id: 'style-fantasy-landscape',
+    kind: 'image',
+    posterUrl: styleFantasyLandscape,
+    title: 'Fantasy Landscape Epic',
+    tag: 'LANDSCAPE',
+    views: 9527391,
+    byline: 'Epic Worlds Studio'
+  },
+  {
+    id: 'style-art-nouveau',
+    kind: 'image',
+    posterUrl: styleArtNouveau,
+    title: 'Art Nouveau Portraits',
+    tag: 'ART NOUVEAU',
+    views: 6847291,
+    byline: 'Classical Arts'
+  },
+  {
+    id: 'style-nighttime-dreams',
+    kind: 'image',
+    posterUrl: styleNighttimeDreams,
+    title: 'Nighttime Dreams, Moon',
+    tag: 'SURREAL',
+    views: 8329384,
+    byline: 'Dream Weavers'
+  },
+  {
+    id: 'style-cyberpunk',
+    kind: 'image',
+    posterUrl: styleCyberpunk,
+    title: 'Cyberpunk Neon',
+    tag: 'CYBERPUNK',
+    views: 9647291,
+    byline: 'Neon Future Labs'
+  },
+  {
+    id: 'style-watercolor',
+    kind: 'image',
+    posterUrl: styleWatercolor,
+    title: 'Watercolor Dreams',
+    tag: 'WATERCOLOR',
+    views: 5947291,
+    byline: 'Aqua Art Studio'
+  },
+  {
+    id: 'style-film-noir',
+    kind: 'image',
+    posterUrl: styleFilmNoir,
+    title: 'Film Noir Classic',
+    tag: 'NOIR',
+    views: 7147291,
+    byline: 'Classic Cinema Co'
+  },
+  {
+    id: 'style-steampunk',
+    kind: 'image',
+    posterUrl: styleSteampunk,
+    title: 'Steampunk Mechanical',
+    tag: 'STEAMPUNK',
+    views: 6647291,
+    byline: 'Brass Gear Studios'
+  },
+  {
+    id: 'style-pop-art',
+    kind: 'image',
+    posterUrl: stylePopArt,
+    title: 'Pop Art Vibrant',
+    tag: 'POP ART',
+    views: 8747291,
+    byline: 'Pop Culture Arts'
+  },
+  {
+    id: 'style-gothic',
+    kind: 'image',
+    posterUrl: styleGothic,
+    title: 'Gothic Architecture',
+    tag: 'GOTHIC',
+    views: 6347291,
+    byline: 'Dark Cathedral Co'
+  },
+  {
+    id: 'style-surreal',
+    kind: 'image',
+    posterUrl: styleSurreal,
+    title: 'Surreal Dreamscape',
+    tag: 'SURREAL',
+    views: 9247291,
+    byline: 'Dream Logic Studio'
+  },
+  {
+    id: 'style-digital-glitch',
+    kind: 'image',
+    posterUrl: styleDigitalGlitch,
+    title: 'Digital Glitch',
+    tag: 'GLITCH ART',
+    views: 7547291,
+    byline: 'Pixel Corruption Co'
+  },
+  {
+    id: 'style-oil-painting',
+    kind: 'image',
+    posterUrl: styleOilPainting,
+    title: 'Oil Painting Master',
+    tag: 'CLASSICAL',
+    views: 8147291,
+    byline: 'Renaissance Studios'
   },
   {
     id: 'char-2',

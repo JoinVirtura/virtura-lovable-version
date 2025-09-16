@@ -239,36 +239,52 @@ export const useTalkingAvatar = (
     }
 
     setIsProcessing(true);
-    setJob(prev => prev ? {
-      ...prev,
-      progress: 75,
-      steps: { ...prev.steps, 'lip-sync': 'running' },
-      logs: [...prev.logs, 'Generating video...']
-    } : {
+    
+    // Initialize comprehensive job tracking
+    setJob({
       id: Date.now().toString(),
       status: 'processing',
-      progress: 50,
+      progress: 10,
       steps: {
-        voice: 'done',
+        voice: generatedAudio ? 'done' : 'pending',
         'lip-sync': 'running',
         style: 'pending',
         render: 'pending',
         export: 'pending'
       },
-      logs: ['Generating video...']
+      logs: ['🚀 Starting video generation...', 'Validating avatar and configuration...']
     });
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      // Try multi-model approach first for better reliability
-      let data, error;
+      
+      // Progressive job updates for better UX
+      setJob(prev => prev ? {
+        ...prev,
+        progress: 25,
+        steps: { ...prev.steps, 'lip-sync': 'running' },
+        logs: [...prev.logs, '🎭 Initializing avatar processing pipeline...']
+      } : null);
+
+      // Enhanced error handling with multiple fallback strategies
+      let data, error, finalAttempt = false;
+      
+      // Strategy 1: Try HeyGen-optimized multi-provider approach
       try {
+        console.log('🎬 Attempting video generation with multi-provider approach...');
+        
+        setJob(prev => prev ? {
+          ...prev,
+          progress: 40,
+          logs: [...prev.logs, '🎬 Connecting to HeyGen API...']
+        } : null);
+
         const multiResponse = await supabase.functions.invoke('video-generate-multi', {
           body: {
             avatarId: avatarData.id,
             prompt: prompt || 'Generate a natural talking video',
             audioUrl: generatedAudio || undefined,
-            provider: 'auto' // Let it choose the best provider
+            provider: 'heygen' // Force HeyGen for best quality
           },
           headers: {
             Authorization: `Bearer ${session?.access_token}`,
@@ -278,29 +294,65 @@ export const useTalkingAvatar = (
         if (multiResponse.error) throw multiResponse.error;
         data = multiResponse.data;
         error = null;
+        
+        setJob(prev => prev ? {
+          ...prev,
+          progress: 65,
+          steps: { ...prev.steps, style: 'running' },
+          logs: [...prev.logs, '✨ HeyGen processing avatar...']
+        } : null);
+        
       } catch (multiError) {
-        console.log('Multi-model failed, trying simple approach:', multiError);
-        // Fallback to simple approach
-        const simpleResponse = await supabase.functions.invoke('video-generate-simple', {
-          body: {
-            avatarId: avatarData.id,
-            prompt: prompt || 'Generate a natural talking video',
-            audioUrl: generatedAudio || undefined
-          },
-          headers: {
-            Authorization: `Bearer ${session?.access_token}`,
-          }
-        });
-        data = simpleResponse.data;
-        error = simpleResponse.error;
+        console.log('🔄 Multi-provider failed, trying simplified approach:', multiError);
+        
+        setJob(prev => prev ? {
+          ...prev,
+          logs: [...prev.logs, '🔄 Retrying with alternative method...']
+        } : null);
+        
+        // Strategy 2: Fallback to direct HeyGen API
+        try {
+          const simpleResponse = await supabase.functions.invoke('video-generate-simple', {
+            body: {
+              avatarId: avatarData.id,
+              prompt: prompt || 'Generate a natural talking video',
+              audioUrl: generatedAudio || undefined
+            },
+            headers: {
+              Authorization: `Bearer ${session?.access_token}`,
+            }
+          });
+          
+          data = simpleResponse.data;
+          error = simpleResponse.error;
+          
+          setJob(prev => prev ? {
+            ...prev,
+            progress: 70,
+            steps: { ...prev.steps, style: 'running', render: 'running' },
+            logs: [...prev.logs, '🎯 Processing with direct HeyGen API...']
+          } : null);
+          
+        } catch (simpleError) {
+          console.log('⚠️ Simple approach also failed:', simpleError);
+          finalAttempt = true;
+          throw simpleError;
+        }
       }
+
+      setJob(prev => prev ? {
+        ...prev,
+        progress: 85,
+        steps: { ...prev.steps, render: 'running' },
+        logs: [...prev.logs, '🎨 Applying final touches and rendering...']
+      } : null);
 
       if (error) throw error;
 
-      if (data?.success) {
+      if (data?.success && data?.videoUrl) {
         setGeneratedVideo(data.videoUrl);
         
-        // Set job status based on provider used
+        // Success with complete job tracking
         setJob(prev => prev ? {
           ...prev,
           progress: 100,
@@ -312,40 +364,63 @@ export const useTalkingAvatar = (
             render: 'done',
             export: 'done'
           },
-          logs: [...prev.logs, 'Video generated successfully']
+          logs: [...prev.logs, '🎉 Video generation completed successfully!', `📹 Video URL: ${data.videoUrl.substring(0, 50)}...`]
         } : null);
         
+        // Provider-specific success messages
         if (data.provider === 'heygen') {
           toast({
-            title: "✅ HeyGen Video Generated",
-            description: "High-quality talking avatar video created successfully!",
+            title: "🎬 HeyGen Video Generated!",
+            description: "Your high-quality talking avatar video is ready!",
           });
-        } else if (data.provider === 'fallback') {
+        } else if (data.provider === 'fallback' || data.provider === 'openai') {
           toast({
             title: "✅ Video Created",
-            description: "Avatar video generated with fallback method. For premium quality, configure HeyGen API.",
+            description: "Avatar video generated successfully. For premium quality, ensure HeyGen API is configured.",
           });
         } else {
           toast({
-            title: "✅ Avatar Video Ready",
-            description: data.note || "Avatar processed successfully.",
+            title: "🎉 Avatar Video Ready!",
+            description: data.note || "Your avatar video has been generated successfully.",
           });
         }
       } else {
-        throw new Error(data?.error || 'Failed to generate video');
+        throw new Error(data?.error || data?.message || 'Unknown error during video generation');
       }
+      
     } catch (error: any) {
-      console.error('Video generation error:', error);
+      console.error('❌ Video generation error:', error);
+      
+      // Detailed error handling and recovery suggestions
+      let errorMessage = error.message || 'Failed to generate video';
+      let recoveryTip = '';
+      
+      // Analyze error type and provide specific guidance
+      if (errorMessage.includes('HeyGen') || errorMessage.includes('heygen')) {
+        recoveryTip = ' Try checking your HeyGen API configuration or contact support.';
+      } else if (errorMessage.includes('quota') || errorMessage.includes('limit')) {
+        recoveryTip = ' You may have reached your API quota. Please try again later.';
+      } else if (errorMessage.includes('timeout')) {
+        recoveryTip = ' The generation took too long. Please try with a shorter script.';
+      } else if (errorMessage.includes('avatar') || errorMessage.includes('photo')) {
+        recoveryTip = ' Try re-uploading your avatar image.';
+      }
+      
       setJob(prev => prev ? {
         ...prev,
         status: 'error',
-        steps: { ...prev.steps, 'lip-sync': 'error' },
-        logs: [...prev.logs, `Error: ${error.message}`]
+        steps: { 
+          ...prev.steps, 
+          'lip-sync': error.message.includes('lip') ? 'error' : prev.steps['lip-sync'],
+          style: error.message.includes('style') ? 'error' : prev.steps.style,
+          render: error.message.includes('render') ? 'error' : prev.steps.render
+        },
+        logs: [...prev.logs, `❌ Error: ${errorMessage}`, `💡 Tip: ${recoveryTip || 'Please try again or contact support.'}`]
       } : null);
       
       toast({
         title: "Generation Failed",
-        description: error.message || "Failed to generate video",
+        description: errorMessage + recoveryTip,
         variant: "destructive",
       });
     } finally {
