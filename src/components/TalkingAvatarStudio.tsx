@@ -168,13 +168,7 @@ export const TalkingAvatarStudio = () => {
             {/* Step 1: Avatar Selection */}
             {currentStep === 1 && (
               <Card className="border-primary/20">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-3">
-                    <User className="h-6 w-6 text-primary" />
-                    Avatar Selection
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent className="space-y-6 pt-6">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Button
                       variant="outline"
