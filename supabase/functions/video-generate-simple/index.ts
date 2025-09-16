@@ -29,22 +29,9 @@ serve(async (req) => {
     const heygenKey = Deno.env.get('HEYGEN_API_KEY');
     console.log('HeyGen API Key available:', !!heygenKey);
     
-    // If we don't have HeyGen API, return a fallback response instead of erroring
     if (!heygenKey) {
-      console.log('No HeyGen API key, returning fallback response');
-      
-      return new Response(
-        JSON.stringify({
-          success: true,
-          provider: 'fallback',
-          videoUrl: `data:text/plain;base64,${btoa('Demo video - configure HeyGen API for full functionality')}`,
-          note: 'Demo mode: Configure HeyGen API key in project settings for full video generation',
-          fallback: true
-        }),
-        { 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      );
+      console.error('HEYGEN_API_KEY not found in environment variables');
+      throw new Error('HeyGen API key is not configured. Please check your project settings.');
     }
 
     const authHeader = req.headers.get('Authorization');
