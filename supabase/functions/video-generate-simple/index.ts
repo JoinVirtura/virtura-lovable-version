@@ -79,8 +79,7 @@ serve(async (req) => {
         character: {
           type: "talking_photo",
           talking_photo_id: avatarData.heygen_talking_photo_id,
-          scale: 1.0,
-          talking_photo_style: "closeup_body"
+          scale: 1.0
         },
         voice: audioUrl ? {
           type: "audio",
