@@ -111,13 +111,14 @@ export const AvatarStudioNavigation: React.FC<AvatarStudioNavigationProps> = ({
                       )}
                       <span className="hidden sm:inline font-medium">
                         {step.shortTitle}
-                        {status === 'current' && (
-                          <span className="ml-1 text-xs opacity-80">
-                            - Step {step.id} of {WORKFLOW_STEPS.length}
-                          </span>
-                        )}
                       </span>
                     </div>
+                    
+                    {status === 'current' && (
+                      <Badge variant="secondary" className="ml-2 text-xs">
+                        Step {step.id} of {WORKFLOW_STEPS.length}
+                      </Badge>
+                    )}
                   </button>
                   
                   {index < WORKFLOW_STEPS.length - 1 && (

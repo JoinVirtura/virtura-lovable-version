@@ -40,14 +40,6 @@ import { AudioPlayerWithControls } from './AudioPlayerWithControls';
 import { ProjectStatusPanel } from './ProjectStatusPanel';
 import { AvatarStudioNavigation } from './AvatarStudioNavigation';
 
-const WORKFLOW_STEPS = [
-  { id: 1, title: 'Avatar Selection', shortTitle: 'Avatar' },
-  { id: 2, title: 'Voice Configuration', shortTitle: 'Voice' },
-  { id: 3, title: 'Style & Effects', shortTitle: 'Style' },
-  { id: 4, title: 'Video Generation', shortTitle: 'Video' },
-  { id: 5, title: 'Preview & Export', shortTitle: 'Export' },
-];
-
 export const TalkingAvatarStudio = () => {
   const [script, setScript] = useState('');
   const [videoPrompt, setVideoPrompt] = useState('Create a natural talking video with professional presentation style');
@@ -147,32 +139,23 @@ export const TalkingAvatarStudio = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-6xl mx-auto p-6">
-        {/* Page Title */}
-        <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-primary mb-2">
-            {WORKFLOW_STEPS[currentStep - 1]?.title}
-          </h1>
-          <p className="text-muted-foreground">
-            Configure your talking avatar step by step
-          </p>
-        </div>
+      {/* Top Navigation */}
+      <AvatarStudioNavigation
+        currentStep={currentStep}
+        onNext={handleNext}
+        onPrevious={handlePrevious}
+        onStepChange={setCurrentStep}
+        canProceed={canProceedToNext()}
+        isProcessing={isProcessing}
+        avatarData={avatarData}
+        generatedAudio={generatedAudio}
+        generatedVideo={generatedVideo}
+      />
 
-        {/* Navigation */}
-        <AvatarStudioNavigation
-          currentStep={currentStep}
-          onNext={handleNext}
-          onPrevious={handlePrevious}
-          onStepChange={setCurrentStep}
-          canProceed={canProceedToNext()}
-          isProcessing={isProcessing}
-          avatarData={avatarData}
-          generatedAudio={generatedAudio}
-          generatedVideo={generatedVideo}
-        />
+      <div className="max-w-6xl mx-auto p-6">
 
         {/* Main Content */}
-        <div className="grid lg:grid-cols-4 gap-6 mt-6">
+        <div className="grid lg:grid-cols-4 gap-6">
           <div className="lg:col-span-3">
             {/* Step 1: Avatar Selection */}
             {currentStep === 1 && (
