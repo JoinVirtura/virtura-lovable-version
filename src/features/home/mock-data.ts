@@ -1,29 +1,29 @@
 import { Tile } from './types';
 
 // Import new style images
-import style90sAnime from '../../../assets/style-90s-anime-new.jpg';
-import styleMinimalist from '../../../assets/style-minimalist-new.jpg';
-import styleFantasyCreature from '../../../assets/style-fantasy-creature-new.jpg';
-import styleChildAnimal from '../../../assets/style-child-animal-new.jpg';
-import styleLongExposure from '../../../assets/style-long-exposure-new.jpg';
-import styleStreetFashion from '../../../assets/style-street-fashion-new.jpg';
-import styleMoskvichka from '../../../assets/style-moskvichka-new.jpg';
-import styleFantasyPortraits from '../../../assets/style-fantasy-portraits-new.jpg';
-import styleHokTech from '../../../assets/style-hok-tech-new.jpg';
-import stylePhotoset from '../../../assets/style-photoset-new.jpg';
-import styleFluffWorld from '../../../assets/style-fluff-world-new.jpg';
-import styleFantasyLandscape from '../../../assets/style-fantasy-landscape-new.jpg';
-import styleArtNouveau from '../../../assets/style-art-nouveau-new.jpg';
-import styleNighttimeDreams from '../../../assets/style-nighttime-dreams-new.jpg';
-import styleCyberpunk from '../../../assets/style-cyberpunk-new.jpg';
-import styleWatercolor from '../../../assets/style-watercolor-new.jpg';
-import styleFilmNoir from '../../../assets/style-film-noir-new.jpg';
-import styleSteampunk from '../../../assets/style-steampunk-new.jpg';
-import stylePopArt from '../../../assets/style-pop-art-new.jpg';
-import styleGothic from '../../../assets/style-gothic-new.jpg';
-import styleSurreal from '../../../assets/style-surreal-new.jpg';
-import styleDigitalGlitch from '../../../assets/style-digital-glitch-new.jpg';
-import styleOilPainting from '../../../assets/style-oil-painting-new.jpg';
+import style90sAnime from '../../assets/style-90s-anime-new.jpg';
+import styleMinimalist from '../../assets/style-minimalist-new.jpg';
+import styleFantasyCreature from '../../assets/style-fantasy-creature-new.jpg';
+import styleChildAnimal from '../../assets/style-child-animal-new.jpg';
+import styleLongExposure from '../../assets/style-long-exposure-new.jpg';
+import styleStreetFashion from '../../assets/style-street-fashion-new.jpg';
+import styleMoskvichka from '../../assets/style-moskvichka-new.jpg';
+import styleFantasyPortraits from '../../assets/style-fantasy-portraits-new.jpg';
+import styleHokTech from '../../assets/style-hok-tech-new.jpg';
+import stylePhotoset from '../../assets/style-photoset-new.jpg';
+import styleFluffWorld from '../../assets/style-fluff-world-new.jpg';
+import styleFantasyLandscape from '../../assets/style-fantasy-landscape-new.jpg';
+import styleArtNouveau from '../../assets/style-art-nouveau-new.jpg';
+import styleNighttimeDreams from '../../assets/style-nighttime-dreams-new.jpg';
+import styleCyberpunk from '../../assets/style-cyberpunk-new.jpg';
+import styleWatercolor from '../../assets/style-watercolor-new.jpg';
+import styleFilmNoir from '../../assets/style-film-noir-new.jpg';
+import styleSteampunk from '../../assets/style-steampunk-new.jpg';
+import stylePopArt from '../../assets/style-pop-art-new.jpg';
+import styleGothic from '../../assets/style-gothic-new.jpg';
+import styleSurreal from '../../assets/style-surreal-new.jpg';
+import styleDigitalGlitch from '../../assets/style-digital-glitch-new.jpg';
+import styleOilPainting from '../../assets/style-oil-painting-new.jpg';
 
 // Ultra-diverse style showcase for creative inspiration
 export const mockTiles: Tile[] = [
