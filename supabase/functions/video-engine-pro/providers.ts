@@ -1,6 +1,8 @@
 // Next-Gen Talking Avatar Video Engine - Custom Implementation
 // Implements comprehensive pipeline beyond HeyGen/Kling/Krea capabilities
 
+import { generateRealVideoBlob } from './video-generator.ts';
+
 interface StyleProfile {
   visual_mode: 'cinematic_realism' | 'corporate_clean' | 'neon_cyberpunk' | 'creator_vlog' | 'pixar3d' | 'anime';
   lighting: string;
@@ -409,19 +411,47 @@ export async function createProfessionalVideoComposition(avatarImageUrl: string,
 }
 
 async function createEnhancedStaticComposition(avatarImageUrl: string, audioUrl: string, prompt: string, settings: any) {
-  console.log('📹 Creating enhanced static composition...');
+  console.log('📹 Creating enhanced static composition with real video output...');
   
-  // Simulate professional video composition with enhanced effects
-  const timestamp = Date.now();
-  const videoId = `virtura_${timestamp}`;
-  
-  // Apply cinematic enhancements based on style profile
-  const styleProfile = settings.styleProfile || { visual_mode: 'cinematic_realism' };
-  
-  // Generate a realistic video URL (this would be actual video generation in production)
-  const platformOptimized = optimizeForPlatformSettings(settings);
-  
-  return `https://storage.virtura.ai/generated/${videoId}_${platformOptimized.preset}.mp4`;
+  const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2.7.1');
+  const supabase = createClient(
+    Deno.env.get('SUPABASE_URL') ?? '',
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+  );
+
+  try {
+    // Create actual video blob
+    const videoBlob = await generateRealVideoBlob(avatarImageUrl, audioUrl, settings);
+    
+    // Upload to Supabase storage
+    const timestamp = Date.now();
+    const videoId = `virtura_${timestamp}`;
+    const fileName = `${videoId}.mp4`;
+    
+    const { data, error } = await supabase.storage
+      .from('virtura-media')
+      .upload(`videos/${fileName}`, videoBlob, {
+        contentType: 'video/mp4',
+        upsert: true
+      });
+
+    if (error) {
+      console.error('Video upload failed:', error);
+      throw new Error('Failed to upload generated video');
+    }
+
+    // Get public URL
+    const { data: urlData } = supabase.storage
+      .from('virtura-media')
+      .getPublicUrl(`videos/${fileName}`);
+
+    console.log('✅ Video successfully created and uploaded:', urlData.publicUrl);
+    return urlData.publicUrl;
+    
+  } catch (error) {
+    console.error('Enhanced composition failed:', error);
+    throw error;
+  }
 }
 
 function optimizeForPlatformSettings(settings: any) {
@@ -957,4 +987,24 @@ async function remediateAndRerender(video: any, qcResults: QualityMetrics, setti
     remediationApplied: remediationStrategies,
     processingTime: '45-90 seconds'
   };
+}
+
+// Exports for edge function
+export { generateWithSadTalker, generateWithWav2Lip };
+
+// Placeholder implementations for missing functions
+export async function generateWithSadTalker(avatarImageUrl: string, audioUrl: string, settings: any) {
+  console.log('🎭 SadTalker: Creating talking avatar...');
+  
+  // In production, this would integrate with SadTalker API
+  // For now, create professional composition
+  return await createEnhancedStaticComposition(avatarImageUrl, audioUrl, 'SadTalker generation', settings);
+}
+
+export async function generateWithWav2Lip(avatarImageUrl: string, audioUrl: string, settings: any) {
+  console.log('👄 Wav2Lip: Creating lip-sync video...');
+  
+  // In production, this would integrate with Wav2Lip
+  // For now, create professional composition
+  return await createEnhancedStaticComposition(avatarImageUrl, audioUrl, 'Wav2Lip generation', settings);
 }
