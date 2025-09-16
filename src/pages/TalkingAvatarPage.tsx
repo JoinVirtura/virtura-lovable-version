@@ -595,9 +595,29 @@ export default function TalkingAvatarStudio() {
   };
 
   return (
-    <div className="min-h-screen w-full" style={{ backgroundColor: '#0B0B0F' }}>
+    <div className="min-h-screen w-full relative overflow-hidden" style={{ backgroundColor: '#0B0B0F' }}>
+      {/* Background Graphics */}
+      <div className="absolute inset-0 z-0">
+        {/* Circular patterns */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 border border-primary/10 rounded-full animate-gentle-sway"></div>
+        <div className="absolute top-1/3 right-1/3 w-64 h-64 border border-primary/15 rounded-full animate-gentle-sway" style={{animationDelay: '1s'}}></div>
+        <div className="absolute bottom-1/4 left-1/2 w-80 h-80 border border-primary/8 rounded-full animate-gentle-sway" style={{animationDelay: '2s'}}></div>
+        <div className="absolute top-1/2 left-1/6 w-32 h-32 border border-primary/20 rounded-full animate-gentle-sway" style={{animationDelay: '0.5s'}}></div>
+        <div className="absolute bottom-1/3 right-1/4 w-48 h-48 border border-primary/12 rounded-full animate-gentle-sway" style={{animationDelay: '1.5s'}}></div>
+        
+        {/* Scattered yellow dots */}
+        <div className="absolute top-1/4 left-1/3 w-2 h-2 bg-yellow-400/60 rounded-full animate-pulse"></div>
+        <div className="absolute top-1/2 right-1/4 w-1.5 h-1.5 bg-yellow-400/40 rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
+        <div className="absolute bottom-1/3 left-1/5 w-3 h-3 bg-yellow-400/50 rounded-full animate-pulse" style={{animationDelay: '2s'}}></div>
+        <div className="absolute top-3/4 right-1/3 w-1 h-1 bg-yellow-400/70 rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
+        <div className="absolute top-1/6 right-1/6 w-2.5 h-2.5 bg-yellow-400/45 rounded-full animate-pulse" style={{animationDelay: '1.5s'}}></div>
+        <div className="absolute bottom-1/4 left-3/4 w-1.5 h-1.5 bg-yellow-400/55 rounded-full animate-pulse" style={{animationDelay: '0.8s'}}></div>
+        <div className="absolute top-2/3 left-1/4 w-2 h-2 bg-yellow-400/35 rounded-full animate-pulse" style={{animationDelay: '2.2s'}}></div>
+        <div className="absolute bottom-1/6 right-1/2 w-1 h-1 bg-yellow-400/60 rounded-full animate-pulse" style={{animationDelay: '1.8s'}}></div>
+      </div>
+      
       <SidebarProvider>
-        <div className="flex min-h-screen w-full">
+        <div className="flex min-h-screen w-full relative z-10">
           <AppSidebar />
           
           <main className="flex-1 flex flex-col min-h-screen">
