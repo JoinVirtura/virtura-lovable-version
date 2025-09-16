@@ -15,7 +15,7 @@ interface UsageLimits {
 }
 
 interface SubscriptionPlan {
-  name: string;
+  plan_name: string;
   status: 'active' | 'inactive' | 'canceled';
   current_period_end?: string;
 }
@@ -52,7 +52,7 @@ const PREMIUM_FEATURES = {
   storage: ['free', 'pro', 'enterprise']
 };
 
-export function FeatureGate({ feature, children, fallback }: FeatureGateProps) {
+function FeatureGate({ feature, children, fallback }: FeatureGateProps) {
   const { toast } = useToast();
   const [usage, setUsage] = useState<UsageLimits | null>(null);
   const [subscription, setSubscription] = useState<SubscriptionPlan | null>(null);
@@ -78,7 +78,11 @@ export function FeatureGate({ feature, children, fallback }: FeatureGateProps) {
         .eq('status', 'active')
         .single();
 
-      setSubscription(subData || { name: 'free', status: 'inactive' });
+      setSubscription(subData ? {
+        plan_name: subData.plan_name || 'free',
+        status: (subData.status as 'active' | 'inactive' | 'canceled') || 'inactive',
+        current_period_end: subData.current_period_end
+      } : { plan_name: 'free', status: 'inactive' });
 
       // Check today's usage
       const today = new Date().toISOString().split('T')[0];
