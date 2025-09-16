@@ -92,9 +92,16 @@ export const ProjectWizard = () => {
     }
 
     try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('Not authenticated');
+      }
+
       const { data, error } = await supabase
         .from('projects')
         .insert({
+          user_id: user.id,
           title: projectTitle,
           description: projectDescription,
           status: 'draft',
@@ -254,10 +261,17 @@ export const ProjectWizard = () => {
     setIsProcessing(true);
 
     try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('Not authenticated');
+      }
+
       // Create video job
       const { data: jobData, error: jobError } = await supabase
         .from('jobs')
         .insert({
+          user_id: user.id,
           project_id: project.id,
           type: 'video',
           status: 'processing',
@@ -316,9 +330,16 @@ export const ProjectWizard = () => {
     if (!generatedVideo || !project) return;
 
     try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('Not authenticated');
+      }
+
       const { data, error } = await supabase
         .from('renders')
         .insert({
+          user_id: user.id,
           project_id: project.id,
           title: project.title,
           description: project.description,
