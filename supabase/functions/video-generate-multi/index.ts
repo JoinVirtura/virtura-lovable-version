@@ -200,33 +200,79 @@ async function generateWithHeyGen(talkingPhotoId: string, prompt: string, audioU
 
   const data = await response.json();
   
+  if (!data.data?.video_id) {
+    throw new Error('HeyGen did not return a valid video ID');
+  }
+
+  // Poll for video completion
+  const videoId = data.data.video_id;
+  let videoUrl = null;
+  let attempts = 0;
+  const maxAttempts = 60; // 5 minutes max
+  const pollInterval = 5000; // 5 seconds
+
+  while (attempts < maxAttempts) {
+    await new Promise(resolve => setTimeout(resolve, pollInterval));
+    attempts++;
+    
+    try {
+      const statusResponse = await fetch(`https://api.heygen.com/v1/video_status/${videoId}`, {
+        headers: { 'Authorization': `Bearer ${heygenKey}` }
+      });
+
+      if (!statusResponse.ok) {
+        console.error(`HeyGen status check failed: ${statusResponse.status}`);
+        continue;
+      }
+
+      const statusData = await statusResponse.json();
+      console.log(`HeyGen status attempt ${attempts}:`, statusData);
+      
+      if (statusData.data?.status === 'completed' && statusData.data?.video_url) {
+        videoUrl = statusData.data.video_url;
+        break;
+      } else if (statusData.data?.status === 'failed') {
+        throw new Error(`HeyGen video generation failed: ${statusData.data?.error || 'Unknown error'}`);
+      }
+    } catch (statusError) {
+      console.error(`Status check error:`, statusError);
+      if (attempts >= maxAttempts - 5) { // Give up if only 5 attempts left
+        throw new Error(`HeyGen status polling failed: ${statusError.message}`);
+      }
+    }
+  }
+
+  if (!videoUrl) {
+    throw new Error(`HeyGen video generation timed out after ${maxAttempts} attempts`);
+  }
+  
   return {
-    videoUrl: data.data?.video_url || `/demo/heygen-video-${Date.now()}.mp4`,
+    videoUrl,
     provider: 'heygen',
-    video_id: data.data?.video_id,
+    video_id: videoId,
     duration: 30
   };
 }
 
 async function generateWithOpenAI(avatarImageUrl: string, prompt: string, audioUrl?: string) {
-  console.log('OpenAI fallback - creating static talking avatar presentation');
+  console.log('OpenAI fallback - using avatar image as static video');
   
-  // For OpenAI fallback, we'll create a simple animated presentation
-  // This is a functional fallback when HeyGen is not available
+  // For OpenAI fallback, we'll return the avatar image itself as a "video"
+  // The frontend can handle this by showing the image with audio
   
-  // Use the original avatar image as the base
-  const videoId = `openai_${Date.now()}`;
+  if (!avatarImageUrl) {
+    throw new Error('No avatar image URL provided for OpenAI fallback');
+  }
   
-  // Create a demo video URL that would work for testing
-  // In production, this could call a different video generation service
-  const videoUrl = `/demo/talking-avatar-${videoId}.mp4`;
+  // Return the avatar image URL as the video URL
+  // The frontend should detect this and handle it appropriately
   
-  console.log(`Generated OpenAI fallback video: ${videoUrl}`);
+  console.log(`Using avatar image as fallback video: ${avatarImageUrl}`);
 
   return {
     videoUrl: avatarImageUrl, // Return the avatar image as fallback
     provider: 'openai-fallback',
-    video_id: videoId,
+    video_id: `openai_${Date.now()}`,
     duration: 30,
     note: 'Static avatar image returned - HeyGen recommended for full video generation'
   };

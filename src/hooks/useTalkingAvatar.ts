@@ -332,31 +332,7 @@ export const useTalkingAvatar = (
           });
         }
       } else {
-        // Create a mock video response for demo purposes if backend fails
-        console.warn('Video generation failed but creating fallback response');
-        
-        // Create a mock video URL (you could replace this with a static demo video)
-        const mockVideoUrl = `${avatarData.original_image_url}?video=true`;
-        setGeneratedVideo(mockVideoUrl);
-        
-        setJob(prev => prev ? {
-          ...prev,
-          progress: 100,
-          status: 'done',
-          steps: { 
-            ...prev.steps, 
-            'lip-sync': 'done',
-            style: 'done',
-            render: 'done',
-            export: 'done'
-          },
-          logs: [...prev.logs, 'Demo video created - configure APIs for full functionality']
-        } : null);
-        
-        toast({
-          title: "Demo Video Created",
-          description: "Demo mode active. Configure HeyGen API key for full video generation.",
-        });
+        throw new Error(data?.error || 'Failed to generate video');
       }
     } catch (error: any) {
       console.error('Video generation error:', error);
