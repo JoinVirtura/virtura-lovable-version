@@ -9,6 +9,7 @@ import { UploadSection } from "@/components/UploadSection";
 import { ExportSection } from "@/components/ExportSection";
 import { ChatInterface } from "@/components/ChatInterface";
 import { TalkingAvatarStudio } from "@/components/TalkingAvatarStudio";
+import { MotionBackground } from "@/components/MotionBackground";
 import UpgradePage from "./UpgradePage";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -3407,10 +3408,11 @@ export default function Dashboard() {
 
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="min-h-screen flex w-full bg-background">
+      <div className="min-h-screen flex w-full bg-background relative overflow-hidden">
+        <MotionBackground />
         <VirturaSidebar activeView={activeView} onViewChange={setActiveView} />
         
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col relative z-10">
           {/* Main Content */}
           <main className="flex-1 p-6">
             {renderContent()}
