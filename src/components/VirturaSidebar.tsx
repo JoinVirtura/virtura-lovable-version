@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
   Home,
-  BrainCircuit,
+  Wand2,
   Video,
   Plus, 
   Settings as SettingsIcon, 
@@ -52,7 +52,7 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
   
   const mainItems = [
     { id: "overview", label: "Home", icon: Home },
-    { id: "studio", label: "Copilot", icon: BrainCircuit },
+    { id: "studio", label: "Copilot", icon: Wand2 },
     { id: "talking-avatar", label: "Video", icon: Video },
   ];
 
@@ -195,35 +195,28 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
       <SidebarFooter className="p-0">
         <SidebarSeparator className={isCollapsed ? "mx-1" : "mx-3"} />
         
-        <SidebarGroup className="py-0">
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <div className={`flex items-center gap-3 ${isCollapsed ? "px-2 py-3 justify-center" : "px-3 py-3"}`}>
-                  <Avatar className="w-4 h-4 shrink-0">
-                    <AvatarImage src="/lovable-uploads/517f5d9c-c223-4625-9aa5-5f2ef255f576.png" />
-                    <AvatarFallback>J</AvatarFallback>
-                  </Avatar>
-                  {!isCollapsed && (
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm">Jeff Krammer</p>
-                      <p className="text-xs text-muted-foreground">Pro Plan</p>
-                    </div>
-                  )}
-                </div>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  onClick={handleLogout}
-                  className={`w-full ${isCollapsed ? "justify-center px-2" : "justify-start gap-3"} text-destructive hover:bg-destructive/10 h-auto py-2`}
-                >
-                  <LogOut className="w-4 h-4 shrink-0" />
-                  {!isCollapsed && <span className="font-medium">Logout</span>}
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <div className={`flex items-center gap-3 ${isCollapsed ? "px-2 py-3 justify-center" : "px-3 py-3"}`}>
+          <Avatar className="w-8 h-8">
+            <AvatarImage src="/lovable-uploads/517f5d9c-c223-4625-9aa5-5f2ef255f576.png" />
+            <AvatarFallback>J</AvatarFallback>
+          </Avatar>
+          {!isCollapsed && (
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-sm">Jeff Krammer</p>
+              <p className="text-xs text-muted-foreground">Pro Plan</p>
+            </div>
+          )}
+        </div>
+        
+        <div className={isCollapsed ? "px-2 pb-3" : "px-3 pb-3"}>
+          <SidebarMenuButton 
+            onClick={handleLogout}
+            className={`w-full ${isCollapsed ? "justify-center px-2" : "justify-start gap-3"} text-destructive hover:bg-destructive/10 h-auto py-2`}
+          >
+            <LogOut className="w-4 h-4 shrink-0" />
+            {!isCollapsed && <span className="font-medium">Logout</span>}
+          </SidebarMenuButton>
+        </div>
       </SidebarFooter>
     </Sidebar>
   );
