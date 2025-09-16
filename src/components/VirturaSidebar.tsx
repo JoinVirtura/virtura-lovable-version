@@ -19,7 +19,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
-  Activity, 
+  Home,
+  Bot,
+  Video,
   Plus, 
   Settings as SettingsIcon, 
   Zap, 
@@ -49,9 +51,9 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
   const isCollapsed = state === "collapsed";
   
   const mainItems = [
-    { id: "overview", label: "Home", icon: Activity },
-    { id: "studio", label: "Copilot", icon: SettingsIcon },
-    { id: "talking-avatar", label: "Video", icon: Sparkles },
+    { id: "overview", label: "Home", icon: Home },
+    { id: "studio", label: "Copilot", icon: Bot },
+    { id: "talking-avatar", label: "Video", icon: Video },
   ];
 
   const navigationTabs = [
