@@ -147,7 +147,7 @@ export const TalkingAvatarStudio: React.FC<TalkingAvatarStudioProps> = ({ onView
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-2">
-            Avatar Studio
+            AI Video Studio
           </h1>
           <p className="text-muted-foreground text-lg">
             Create professional talking avatar videos with AI

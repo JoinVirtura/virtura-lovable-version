@@ -50,8 +50,8 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
   
   const mainItems = [
     { id: "overview", label: "Home", icon: Activity },
-    { id: "talking-avatar", label: "Avatar", icon: Sparkles },
-    { id: "studio", label: "Studio", icon: SettingsIcon },
+    { id: "studio", label: "Copilot", icon: SettingsIcon },
+    { id: "talking-avatar", label: "Video", icon: Sparkles },
   ];
 
   const navigationTabs = [
