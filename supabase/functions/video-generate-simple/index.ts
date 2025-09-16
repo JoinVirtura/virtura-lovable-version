@@ -145,7 +145,7 @@ serve(async (req) => {
           const statusData = JSON.parse(statusText);
           console.log('Video status:', statusData.data?.status);
           
-          if (statusData.data?.status === 'success' && statusData.data?.video_url) {
+          if (statusData.data?.status === 'completed' && statusData.data?.video_url) {
             finalUrl = statusData.data.video_url;
             console.log('✅ Video generation completed! URL:', finalUrl);
           } else if (statusData.data?.status === 'failed') {
