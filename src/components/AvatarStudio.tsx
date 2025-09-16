@@ -662,9 +662,11 @@ export const AvatarStudio = () => {
           {/* Header */}
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-2 mb-6">
-              <h1 className="text-4xl font-display font-bold text-foreground">AI Copilot Studio</h1>
+              <h1 className="text-4xl font-display font-bold text-foreground">
+                Where Creativity <span className="bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent">Evolves</span>
+              </h1>
             </div>
-            <p className="text-lg text-muted-foreground mb-8">Your ChatGPT-powered creative assistant</p>
+            <p className="text-lg text-muted-foreground mb-8">Transform your ideas into reality with intelligent AI assistance</p>
             
             {/* Main Search Bar */}
             <Card className="w-full max-w-3xl mx-auto p-3 bg-gradient-card border-border/50 shadow-lg">
