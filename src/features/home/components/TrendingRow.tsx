@@ -51,15 +51,19 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
   };
 
   const handleShare = async (tile: Tile) => {
-    if (navigator.share) {
-      await navigator.share({
-        title: tile.title,
-        text: `Check out this amazing ${tile.tag} creation by ${tile.byline}`,
-        url: window.location.href,
-      });
-    } else {
-      await navigator.clipboard.writeText(window.location.href);
-      toast({ title: "Link copied to clipboard!" });
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: tile.title,
+          text: `Check out this amazing ${tile.tag} creation by ${tile.byline}`,
+          url: window.location.href,
+        });
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        toast({ title: "Link copied to clipboard!" });
+      }
+    } catch (error) {
+      console.error('Share failed:', error);
     }
   };
 
@@ -75,437 +79,202 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
     }
   };
 
-  // Track mouse movement for advanced interactions
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect();
-        setMousePosition({
-          x: e.clientX - rect.left,
-          y: e.clientY - rect.top,
-        });
-      }
-    };
-
-    const container = containerRef.current;
-    if (container) {
-      container.addEventListener('mousemove', handleMouseMove);
-      return () => container.removeEventListener('mousemove', handleMouseMove);
-    }
-  }, []);
-
   // Update shuffled tiles when tiles prop changes
   React.useEffect(() => {
     setShuffledTiles(tiles);
   }, [tiles]);
 
-  // Pinterest-style masonry layout with ultra variety and zero gaps
-  const getCardSize = (index: number, tile: Tile) => {
-    // Create dynamic patterns based on content type and position for maximum visual impact
-    const isHighImpact = ['WILDLIFE', 'ABSTRACT', 'SCI-FI', 'AUTOMOTIVE', 'AI TECH', 'ARCHITECTURE'].includes(tile.tag || '');
-    const isVideo = tile.kind === 'video';
-    
-    // Ultra-varied patterns for Pinterest-style masonry
-    const patterns = [
-      { span: "col-span-4 row-span-4", size: "hero" }, // 0 - Ultra hero
-      { span: "col-span-2 row-span-3", size: "tall" }, // 1 - Tall
-      { span: "col-span-2 row-span-2", size: "standard" }, // 2
-      { span: "col-span-2 row-span-2", size: "standard" }, // 3
-      { span: "col-span-3 row-span-2", size: "wide" }, // 4 - Wide
-      { span: "col-span-2 row-span-3", size: "tall" }, // 5 - Tall
-      { span: "col-span-2 row-span-2", size: "standard" }, // 6
-      { span: "col-span-2 row-span-2", size: "standard" }, // 7
-      { span: "col-span-3 row-span-3", size: "hero" }, // 8 - Medium hero
-      { span: "col-span-2 row-span-2", size: "standard" }, // 9
-      { span: "col-span-2 row-span-4", size: "tall" }, // 10 - Ultra tall
-      { span: "col-span-3 row-span-2", size: "wide" }, // 11 - Wide
-      { span: "col-span-2 row-span-2", size: "standard" }, // 12
-      { span: "col-span-2 row-span-2", size: "standard" }, // 13
-      { span: "col-span-4 row-span-3", size: "hero" }, // 14 - Wide hero
-      { span: "col-span-2 row-span-3", size: "tall" }, // 15
-      { span: "col-span-2 row-span-2", size: "standard" }, // 16
-      { span: "col-span-2 row-span-2", size: "standard" }, // 17
-      { span: "col-span-3 row-span-2", size: "wide" }, // 18
-      { span: "col-span-2 row-span-2", size: "standard" }, // 19
-    ];
-    
-    let pattern = patterns[index % patterns.length];
-    
-    // Boost high-impact content with bigger sizes
-    if (isHighImpact && index % 8 === 0) {
-      pattern = { span: "col-span-4 row-span-4", size: "hero" };
-    }
-    
-    // Give videos more prominence
-    if (isVideo && index % 6 === 0) {
-      pattern = { span: "col-span-3 row-span-3", size: "hero" };
-    }
-    
-    return pattern;
-  };
+  const displayedTiles = shuffledTiles.slice(0, displayCount);
 
   return (
-    <section className={cn('relative overflow-hidden min-h-screen', className)} ref={containerRef}>
-      {/* Ultra-Disruptive Animated Background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          className="absolute -top-32 -left-32 w-96 h-96 bg-gradient-radial from-primary/20 via-primary/5 to-transparent rounded-full blur-3xl"
-          animate={{
-            x: [0, 100, -50, 0],
-            y: [0, -50, 100, 0],
-            scale: [1, 1.2, 0.8, 1],
-          }}
-          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute -bottom-32 -right-32 w-96 h-96 bg-gradient-radial from-secondary/20 via-secondary/5 to-transparent rounded-full blur-3xl"
-          animate={{
-            x: [0, -100, 50, 0],
-            y: [0, 50, -100, 0],
-            scale: [0.8, 1.2, 1, 0.8],
-          }}
-          transition={{ duration: 25, repeat: Infinity, ease: "easeInOut", delay: 5 }}
-        />
+    <section className={cn('relative py-8 px-4 md:px-6 lg:px-8', className)} ref={containerRef}>
+      {/* Background Pattern */}
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-background/95">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(120,119,198,0.1),transparent),radial-gradient(circle_at_80%_20%,rgba(255,206,84,0.1),transparent),radial-gradient(circle_at_40%_40%,rgba(120,119,198,0.05),transparent)]" />
+        <div className="absolute inset-0 opacity-30" style={{backgroundImage: "url('data:image/svg+xml;utf8,<svg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"><g fill=\"none\" fill-rule=\"evenodd\"><g fill=\"%23ffffff\" fill-opacity=\"0.02\"><circle cx=\"30\" cy=\"30\" r=\"1\"/></g></g></svg>')"}} />
       </div>
 
-      {/* Revolutionary Header Design */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="relative z-10 mb-20"
-      >        
-        <div className="relative flex items-end justify-between">
-          <div className="space-y-8">
-            {/* Ultra-Modern Title with 3D Effects */}
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative"
-            >
-              {/* Background Glow Effect */}
-              <motion.div
-                className="absolute -inset-8 bg-gradient-to-r from-primary/20 via-primary/10 to-transparent blur-3xl"
-                animate={{ 
-                  scale: [1, 1.1, 1],
-                  opacity: [0.3, 0.6, 0.3]
-                }}
-                transition={{ duration: 4, repeat: Infinity }}
-              />
-              
-              {/* Main Title Container */}
-              <div className="relative flex items-center gap-6">
-                {/* Dynamic Accent Bar */}
-                <motion.div 
-                  className="w-2 bg-gradient-to-b from-primary via-secondary to-accent rounded-full shadow-lg shadow-primary/50"
-                  animate={{ 
-                    height: [60, 80, 60],
-                    boxShadow: [
-                      '0 0 20px rgba(255, 215, 0, 0.5)',
-                      '0 0 40px rgba(255, 215, 0, 0.8)',
-                      '0 0 20px rgba(255, 215, 0, 0.5)'
-                    ]
-                  }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                />
-                
-                {/* Revolutionary Typography */}
-                <div className="space-y-1">
-                  {/* "Trending" with Glass Morphism - Reduced Size */}
-                  <motion.h2 
-                    className="text-5xl md:text-6xl font-black relative leading-[1.1] py-2"
-                    style={{
-                      background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF6B35 100%)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text',
-                      filter: 'drop-shadow(0 8px 16px rgba(255, 215, 0, 0.3))'
-                    }}
-                    animate={{ 
-                      backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
-                    }}
-                    transition={{ duration: 6, repeat: Infinity }}
-                  >
-                    Trending
-                    
-                    {/* Glass Reflection Effect */}
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                      animate={{
-                        x: ['-200%', '200%'],
-                        opacity: [0, 0.8, 0]
-                      }}
-                      transition={{
-                        duration: 3,
-                        repeat: Infinity,
-                        repeatDelay: 2,
-                        ease: "easeInOut"
-                      }}
-                      style={{
-                        maskImage: 'linear-gradient(45deg, transparent 30%, black 50%, transparent 70%)',
-                        WebkitMaskImage: 'linear-gradient(45deg, transparent 30%, black 50%, transparent 70%)'
-                      }}
-                    />
-                  </motion.h2>
-                  
-                  {/* "Creations" with Sophisticated Styling */}
-                  <motion.div 
-                    className="text-2xl md:text-3xl font-light tracking-[0.5em] text-muted-foreground/80 relative ml-2"
-                    initial={{ opacity: 0, letterSpacing: '0.2em' }}
-                    animate={{ 
-                      opacity: 1, 
-                      letterSpacing: '0.5em',
-                    }}
-                    transition={{ delay: 1, duration: 1.5 }}
-                  >
-                    Creations
-                    
-                    {/* Subtle Underline Animation */}
-                    <motion.div
-                      className="absolute -bottom-2 left-0 h-0.5 bg-gradient-to-r from-primary/60 to-transparent"
-                      initial={{ width: '0%' }}
-                      animate={{ width: '100%' }}
-                      transition={{ delay: 1.5, duration: 2 }}
-                    />
-                  </motion.div>
-                </div>
+      <div className="relative max-w-7xl mx-auto">
+        {/* Enhanced Header Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="mb-8 space-y-6"
+        >
+          {/* Main Title with Gradient and Accent */}
+          <div className="relative">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-1 h-16 bg-gradient-to-b from-amber-400 via-orange-500 to-amber-600 rounded-full shadow-lg shadow-amber-500/20" />
+              <div>
+                <h2 className="text-5xl md:text-6xl lg:text-7xl font-black bg-gradient-to-r from-amber-400 via-orange-500 to-amber-600 bg-clip-text text-transparent leading-tight tracking-tight">
+                  Trending
+                </h2>
+                <p className="text-2xl md:text-3xl font-light text-muted-foreground/80 tracking-[0.2em] uppercase mt-2">
+                  Creations
+                </p>
               </div>
-            </motion.div>
+            </div>
             
-            {/* Enhanced Description */}
-            <motion.p 
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.6 }}
-              className="text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-4xl font-light relative"
-            >
-              <span className="relative">
-                Discover the most 
-                <motion.span 
-                  className="text-primary font-semibold mx-2 relative"
-                  animate={{ 
-                    textShadow: [
-                      '0 0 10px rgba(255, 215, 0, 0.5)',
-                      '0 0 20px rgba(255, 215, 0, 0.8)',
-                      '0 0 10px rgba(255, 215, 0, 0.5)'
-                    ]
-                  }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  viral creations
-                  
-                  {/* Animated Highlight */}
-                  <motion.div
-                    className="absolute -bottom-1 left-0 h-1 bg-gradient-to-r from-primary/80 to-transparent rounded-full"
-                    initial={{ width: '0%' }}
-                    animate={{ width: '100%' }}
-                    transition={{ delay: 2, duration: 1.5 }}
-                  />
-                </motion.span>
-                shaping digital culture — from stunning visuals to groundbreaking concepts
-              </span>
-              
-              {/* Floating Accent Dots */}
-              <motion.div
-                className="absolute -right-8 top-2 w-2 h-2 bg-primary/60 rounded-full"
-                animate={{
-                  scale: [1, 1.5, 1],
-                  opacity: [0.6, 1, 0.6]
-                }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-              />
-            </motion.p>
+            {/* Description */}
+            <div className="max-w-4xl">
+              <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
+                Discover the most <span className="font-semibold bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">viral creations</span> shaping digital culture — from stunning visuals to groundbreaking concepts
+              </p>
+            </div>
           </div>
-          
-          {/* Ultra-Advanced Control Panel */}
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.8, x: 50 }}
-            animate={{ opacity: 1, scale: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
-            className="flex flex-col gap-4"
-          >
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="relative overflow-hidden backdrop-blur-xl border-2 border-primary/30 bg-gradient-to-r from-background/80 to-card/80 hover:from-primary/20 hover:to-secondary/20 group transition-all duration-700 hover:scale-110 hover:shadow-2xl hover:shadow-primary/30 hover:border-primary/60 px-8 py-4"
+
+          {/* Action Buttons */}
+          <div className="flex flex-wrap items-center gap-4 pt-4">
+            <Button
               onClick={handleShuffle}
               disabled={isShuffling}
+              size="lg"
+              className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold px-8 py-4 h-auto border-2 border-amber-400/20 shadow-lg hover:shadow-amber-500/25 transition-all duration-300"
             >
-              {/* Dynamic Background Sweep */}
-              <motion.div 
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/30 to-transparent"
-                animate={{
-                  x: ['-200%', '200%']
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  repeatDelay: 3,
-                  ease: "easeInOut"
-                }}
-              />
-              
-              {/* Shuffle Icon with Advanced Animation */}
-              <motion.div
-                animate={isShuffling ? { 
-                  rotate: [0, 180, 360],
-                  scale: [1, 1.2, 1]
-                } : {}}
-                transition={{ 
-                  duration: 1.5, 
-                  repeat: isShuffling ? Infinity : 0,
-                  ease: "easeInOut"
-                }}
-                className="relative z-10"
-              >
-                
-              </motion.div>
-              
-              <span className="relative z-10 font-bold text-lg">
-                {isShuffling ? 'MORPHING REALITY' : 'REGENERATE'}
-              </span>
-              
-              {/* Pulsing Border Effect */}
-              <motion.div
-                className="absolute inset-0 border-2 border-primary/20 rounded-lg"
-                animate={{
-                  borderColor: isShuffling ? 
-                    ['rgba(255, 215, 0, 0.2)', 'rgba(255, 215, 0, 0.8)', 'rgba(255, 215, 0, 0.2)'] :
-                    'rgba(255, 215, 0, 0.2)'
-                }}
-                transition={{ duration: 1, repeat: isShuffling ? Infinity : 0 }}
-              />
+              {isShuffling ? 'REGENERATING...' : 'REGENERATE'}
             </Button>
+            
+            <Button
+              variant="outline"
+              size="lg"
+              className="border-2 border-muted-foreground/20 hover:border-amber-400/50 px-6 py-4 h-auto font-semibold text-foreground hover:text-amber-400 transition-all duration-300"
+            >
+              <Filter className="w-5 h-5 mr-2" />
+              FILTER
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="lg"
+              className="text-amber-400 hover:text-amber-300 font-semibold px-6 py-4 h-auto hover:bg-amber-400/10 transition-all duration-300 group"
+              onClick={handleViewAll}
+            >
+              {isExpanded ? 'SHOW LESS' : 'VIEW ALL'}
+              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
+            </Button>
+          </div>
+        </motion.div>
 
-            <div className="flex gap-3">
-              <Button 
-                variant="outline" 
-                size="sm"
-                className="relative backdrop-blur-xl border-primary/20 bg-card/60 hover:bg-primary/10 group hover:scale-105 transition-all duration-300 overflow-hidden"
+        {/* Innovative Masonry Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-1 auto-rows-[200px] md:auto-rows-[240px] lg:auto-rows-[280px]">
+          {displayedTiles.map((tile, index) => {
+            // Dynamic sizing for visual interest
+            const getCardSize = (index: number) => {
+              const pattern = index % 20;
+              if (pattern === 0) return 'col-span-2 row-span-2'; // Large featured
+              if (pattern === 7 || pattern === 14) return 'col-span-2'; // Wide
+              if (pattern === 3 || pattern === 10 || pattern === 17) return 'row-span-2'; // Tall
+              return ''; // Standard 1x1
+            };
+
+            return (
+              <motion.div
+                key={`${tile.id}-${index}`}
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ 
+                  duration: 0.6, 
+                  delay: (index % 12) * 0.05,
+                  ease: "easeOut"
+                }}
+                className={cn(
+                  'relative group cursor-pointer overflow-hidden',
+                  getCardSize(index)
+                )}
+                whileHover={{ 
+                  scale: 1.02,
+                  transition: { duration: 0.2 }
+                }}
+                onHoverStart={() => {
+                  setHoveredCard(tile.id);
+                }}
+                onHoverEnd={() => setHoveredCard(null)}
+                onMouseMove={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  setMousePosition({
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top
+                  });
+                }}
               >
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100"
-                  transition={{ duration: 0.3 }}
+                <ContentCard 
+                  tile={tile} 
+                  className="h-full w-full border-0 rounded-2xl overflow-hidden bg-card/80 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300"
+                  size="md"
                 />
-                <Filter className="mr-2 h-4 w-4 relative z-10" />
-                <span className="font-semibold relative z-10">FILTER</span>
-              </Button>
-              
-              <Button 
-                variant="ghost" 
-                className="text-primary hover:text-primary-dark hover:bg-primary/10 group relative overflow-hidden hover:scale-105 transition-all duration-300"
-                onClick={handleViewAll}
-              >
-                <span className="relative z-10 font-semibold">
-                  {isExpanded ? 'SHOW LESS' : 'VIEW ALL'}
-                </span>
-                <motion.div
-                  animate={{ x: isExpanded ? 0 : [0, 5, 0] }}
-                  transition={{ duration: 0.5, repeat: isExpanded ? 0 : Infinity }}
-                >
-                  <ArrowRight className="ml-2 h-4 w-4 relative z-10 transition-all duration-300 group-hover:translate-x-2 group-hover:scale-110" />
-                </motion.div>
                 
-                {/* Sliding Background */}
-                <motion.div 
-                  className="absolute inset-0 bg-gradient-to-r from-primary/0 to-primary/20"
-                  initial={{ x: '100%' }}
-                  whileHover={{ x: '0%' }}
-                  transition={{ duration: 0.5 }}
-                />
-              </Button>
-            </div>
-          </motion.div>
+                {/* Enhanced Hover Overlay */}
+                <AnimatePresence>
+                  {hoveredCard === tile.id && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-2xl flex items-end p-4"
+                    >
+                      <div className="w-full space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 text-white">
+                            <Eye className="w-4 h-4" />
+                            <span className="text-sm font-medium">{tile.views.toLocaleString()}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white border-0 h-8 w-8 p-0"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleLike(tile.id);
+                              }}
+                            >
+                              <Heart className={cn(
+                                "w-4 h-4",
+                                likedItems.has(tile.id) ? "fill-red-500 text-red-500" : ""
+                              )} />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white border-0 h-8 w-8 p-0"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleShare(tile);
+                              }}
+                            >
+                              <Share2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            );
+          })}
         </div>
-      </motion.div>
 
-      {/* Zero-Gap Pinterest Masonry Grid with Proper Spacing */}
-      <div className="relative min-h-screen mt-16">{/* Added mt-16 for spacing */}
-        {/* Mouse Follower Effect */}
-        <motion.div
-          className="absolute w-32 h-32 bg-primary/5 rounded-full blur-3xl pointer-events-none z-0"
-          animate={{
-            x: mousePosition.x - 64,
-            y: mousePosition.y - 64,
-          }}
-          transition={{ type: "spring", damping: 20, stiffness: 100 }}
-        />
-        
-        {/* ABSOLUTE ZERO-GAP MASONRY - FORCED SEAMLESS */}
-        <div 
-          style={{ 
-            display: 'grid',
-            gridTemplateColumns: 'repeat(12, 1fr)',
-            gridAutoRows: '100px',
-            gap: '0px',
-            rowGap: '0px',
-            columnGap: '0px',
-            gridGap: '0px',
-            margin: '0px',
-            padding: '0px',
-            border: 'none',
-            outline: 'none',
-            boxSizing: 'border-box',
-            width: '100%',
-            height: 'auto'
-          }}
-        >
-            {shuffledTiles.slice(0, displayCount).map((tile, index) => {
-              const cardSize = getCardSize(index, tile);
-              const isHovered = hoveredCard === tile.id;
-              
-              return (
-                <motion.div
-                  key={`${tile.id}-${shuffledTiles.length}`}
-                  layout
-                  initial={{ 
-                    opacity: 0, 
-                    scale: 0.8, 
-                    y: 60,
-                  }}
-                  animate={{ 
-                    opacity: 1, 
-                    scale: 1, 
-                    y: 0,
-                  }}
-                  exit={{ 
-                    opacity: 0, 
-                    scale: 0.8, 
-                    y: -60,
-                  }}
-                  transition={{ 
-                    duration: 0.8, 
-                    delay: index * 0.05,
-                    ease: [0.25, 0.25, 0, 1],
-                    layout: { duration: 0.5 }
-                  }}
-                  style={{
-                    gridColumn: cardSize.span.includes('col-span-2') ? 'span 2' : 
-                               cardSize.span.includes('col-span-3') ? 'span 3' : 
-                               cardSize.span.includes('col-span-4') ? 'span 4' : 'span 2',
-                    gridRow: cardSize.span.includes('row-span-2') ? 'span 2' : 
-                            cardSize.span.includes('row-span-3') ? 'span 3' : 
-                            cardSize.span.includes('row-span-4') ? 'span 4' : 'span 2',
-                    margin: '0',
-                    padding: '0',
-                    border: 'none',
-                    outline: 'none',
-                    boxSizing: 'border-box'
-                  }}
-                  onHoverStart={() => setHoveredCard(tile.id)}
-                  onHoverEnd={() => setHoveredCard(null)}
-                >
-                  {/* SINGLE PREMIUM CARD - SEAMLESS */}
-                  <ContentCard 
-                    tile={tile} 
-                    size={cardSize.size as any}
-                    className="w-full h-full"
-                  />
-                </motion.div>
-              );
-            })}
-        </div>
+        {/* Load More Section */}
+        {!isExpanded && displayedTiles.length < tiles.length && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+            className="text-center pt-8"
+          >
+            <Button
+              onClick={() => setDisplayCount(prev => prev + 50)}
+              size="lg"
+              variant="outline"
+              className="px-8 py-6 text-lg font-semibold hover:bg-amber-400 hover:text-white transition-all duration-300 border-2 border-amber-400/30 hover:border-amber-400"
+            >
+              Load More Creations
+            </Button>
+          </motion.div>
+        )}
       </div>
     </section>
   );
