@@ -9,7 +9,7 @@ interface OverviewPageProps {
 
 export function OverviewPage({ onViewChange }: OverviewPageProps) {
   return (
-    <div className="min-h-screen w-full bg-background">
+    <div className="min-h-screen w-full">
       <Hero />
       <div className="pt-8">
         <TrendingRow tiles={getMockTiles('trending', 100)} className="px-0" />

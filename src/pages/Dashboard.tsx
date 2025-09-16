@@ -997,7 +997,7 @@ export default function Dashboard() {
         return <AvatarStudio />;
       case "individuals":
         return (
-          <div className="space-y-6">
+          <div className="space-y-6 min-h-screen">
             {/* Welcome Banner */}
             <Card className="p-6 bg-gradient-card border-primary/20">
               <div className="flex items-center justify-between">
@@ -1467,7 +1467,7 @@ export default function Dashboard() {
         );
       case "brands":
         return (
-          <div className="space-y-6">
+          <div className="space-y-6 min-h-screen">
             {/* Welcome Banner */}
             <Card className="p-6 bg-gradient-card border-primary/20">
               <div className="flex items-center justify-between">
@@ -2422,7 +2422,7 @@ export default function Dashboard() {
         );
       case "library":
         return (
-          <div className="space-y-6">
+          <div className="space-y-6 min-h-screen">
             {/* Innovative Header with AI Stats */}
             <div className="relative mb-8">
               <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5 rounded-2xl blur-xl"></div>
@@ -2946,7 +2946,7 @@ export default function Dashboard() {
         );
       case "guide":
         return (
-          <div className="space-y-6">
+          <div className="space-y-6 min-h-screen">
             {/* Confetti Effect */}
             {showConfetti && (
               <div className="fixed inset-0 pointer-events-none z-50 flex items-center justify-center">
@@ -3296,7 +3296,7 @@ export default function Dashboard() {
         );
       case "settings":
         return (
-          <div className="space-y-8">
+          <div className="space-y-8 min-h-screen">
             {/* Header */}
             <div>
               <h1 className="text-3xl font-display font-bold text-foreground mb-2">Settings</h1>
