@@ -20,7 +20,6 @@ import NotFound from "./pages/NotFound";
 import UpgradePage from "./pages/UpgradePage";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCanceled from "./pages/PaymentCanceled";
-import ProjectsPage from "./pages/ProjectsPage";
 
 const queryClient = new QueryClient();
 
@@ -66,7 +65,6 @@ const AppRoutes = () => {
       <Route path="/gallery" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       <Route path="/upload" element={<ProtectedRoute><UploadPage /></ProtectedRoute>} />
       <Route path="/export" element={<ProtectedRoute><ExportPage /></ProtectedRoute>} />
-      <Route path="/projects" element={<ProtectedRoute><ProjectsPage /></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       
       {/* Payment Routes */}
