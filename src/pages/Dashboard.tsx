@@ -989,7 +989,7 @@ export default function Dashboard() {
       case "overview":
         return <OverviewPage onViewChange={setActiveView} />;
       case "talking-avatar":
-        return <TalkingAvatarStudio />;
+        return <TalkingAvatarStudio onViewChange={setActiveView} />;
       case "create":
         return <CreateAvatar />;
       case "studio":
