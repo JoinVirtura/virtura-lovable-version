@@ -195,7 +195,7 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
       <SidebarFooter className="p-0">
         <SidebarSeparator className={isCollapsed ? "mx-1" : "mx-3"} />
         
-        <div className={`flex items-center gap-3 ${isCollapsed ? "px-2 py-3 justify-center" : "px-3 py-3"}`}>
+        <div className={`flex items-center gap-3 ${isCollapsed ? "px-2 py-3 justify-center" : "px-4 py-3"}`}>
           <Avatar className="w-8 h-8">
             <AvatarImage src="/lovable-uploads/517f5d9c-c223-4625-9aa5-5f2ef255f576.png" />
             <AvatarFallback>J</AvatarFallback>
@@ -208,7 +208,7 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
           )}
         </div>
         
-        <div className={isCollapsed ? "px-2 pb-3" : "px-3 pb-3"}>
+        <div className={isCollapsed ? "px-2 pb-3" : "px-4 pb-3"}>
           <SidebarMenuButton 
             onClick={handleLogout}
             className={`w-full ${isCollapsed ? "justify-center px-2" : "justify-start gap-3"} text-destructive hover:bg-destructive/10 h-auto py-2`}
