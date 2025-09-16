@@ -148,15 +148,6 @@ export const TalkingAvatarStudio = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-6xl mx-auto p-6">
-        {/* Page Title */}
-        <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-primary mb-2">
-            {WORKFLOW_STEPS[currentStep - 1]?.title}
-          </h1>
-          <p className="text-muted-foreground">
-            Configure your talking avatar step by step
-          </p>
-        </div>
 
         {/* Navigation */}
         <AvatarStudioNavigation
