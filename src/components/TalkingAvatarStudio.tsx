@@ -173,6 +173,9 @@ export const TalkingAvatarStudio = () => {
                   <CardTitle className="flex items-center gap-3">
                     <User className="h-6 w-6 text-primary" />
                     Avatar Selection
+                    <span className="text-sm text-muted-foreground font-normal ml-2">
+                      Configure your talking avatar step by step
+                    </span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -265,6 +268,9 @@ export const TalkingAvatarStudio = () => {
                   <CardTitle className="flex items-center gap-3">
                     <Mic className="h-6 w-6 text-primary" />
                     Voice Configuration
+                    <span className="text-sm text-muted-foreground font-normal ml-2">
+                      Configure your talking avatar step by step
+                    </span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -397,6 +403,9 @@ export const TalkingAvatarStudio = () => {
                   <CardTitle className="flex items-center gap-3">
                     <Palette className="h-6 w-6 text-primary" />
                     Style & Effects
+                    <span className="text-sm text-muted-foreground font-normal ml-2">
+                      Configure your talking avatar step by step
+                    </span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -447,6 +456,9 @@ export const TalkingAvatarStudio = () => {
                   <CardTitle className="flex items-center gap-3">
                     <Video className="h-6 w-6 text-primary" />
                     Video Generation
+                    <span className="text-sm text-muted-foreground font-normal ml-2">
+                      Configure your talking avatar step by step
+                    </span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -578,6 +590,9 @@ export const TalkingAvatarStudio = () => {
                   <CardTitle className="flex items-center gap-3">
                     <Eye className="h-6 w-6 text-primary" />
                     Preview & Export
+                    <span className="text-sm text-muted-foreground font-normal ml-2">
+                      Configure your talking avatar step by step
+                    </span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">

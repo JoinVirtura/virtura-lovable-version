@@ -145,16 +145,6 @@ export const AvatarStudioNavigation: React.FC<AvatarStudioNavigationProps> = ({
             )}
           </Button>
         </div>
-
-        {/* Current Step Title */}
-        <div className="mt-4 text-center">
-          <h2 className="text-xl font-semibold text-primary">
-            {WORKFLOW_STEPS[currentStep - 1]?.title}
-          </h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Configure your talking avatar step by step
-          </p>
-        </div>
       </div>
     </div>
   );
