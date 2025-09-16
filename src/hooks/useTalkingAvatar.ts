@@ -260,16 +260,40 @@ export const useTalkingAvatar = (
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      const { data, error } = await supabase.functions.invoke('video-generate-simple', {
-        body: {
-          avatarId: avatarData.id,
-          prompt: prompt || 'Generate a natural talking video',
-          audioUrl: generatedAudio || undefined
-        },
-        headers: {
-          Authorization: `Bearer ${session?.access_token}`,
-        }
-      });
+      // Try multi-model approach first for better reliability
+      let data, error;
+      try {
+        const multiResponse = await supabase.functions.invoke('video-generate-multi', {
+          body: {
+            avatarId: avatarData.id,
+            prompt: prompt || 'Generate a natural talking video',
+            audioUrl: generatedAudio || undefined,
+            provider: 'auto' // Let it choose the best provider
+          },
+          headers: {
+            Authorization: `Bearer ${session?.access_token}`,
+          }
+        });
+        
+        if (multiResponse.error) throw multiResponse.error;
+        data = multiResponse.data;
+        error = null;
+      } catch (multiError) {
+        console.log('Multi-model failed, trying simple approach:', multiError);
+        // Fallback to simple approach
+        const simpleResponse = await supabase.functions.invoke('video-generate-simple', {
+          body: {
+            avatarId: avatarData.id,
+            prompt: prompt || 'Generate a natural talking video',
+            audioUrl: generatedAudio || undefined
+          },
+          headers: {
+            Authorization: `Bearer ${session?.access_token}`,
+          }
+        });
+        data = simpleResponse.data;
+        error = simpleResponse.error;
+      }
 
       if (error) throw error;
 

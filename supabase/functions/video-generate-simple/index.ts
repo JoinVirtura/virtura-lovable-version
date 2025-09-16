@@ -134,7 +134,7 @@ serve(async (req) => {
       await new Promise(resolve => setTimeout(resolve, pollInterval));
       
       try {
-        const statusResponse = await fetch(`https://api.heygen.com/v1/video/status?video_id=${videoId}`, {
+        const statusResponse = await fetch(`https://api.heygen.com/v1/video_status/${videoId}`, {
           headers: { 'Authorization': `Bearer ${heygenKey}` }
         });
 

@@ -160,8 +160,7 @@ async function generateWithHeyGen(talkingPhotoId: string, prompt: string, audioU
       character: {
         type: "talking_photo",
         talking_photo_id: talkingPhotoId,
-        scale: 1.0,
-        talking_photo_style: "closeup_body"
+        scale: 1.0
       },
       background: {
         type: "color",
