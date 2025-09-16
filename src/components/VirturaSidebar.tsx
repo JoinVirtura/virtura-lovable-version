@@ -52,7 +52,7 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
   
   const mainItems = [
     { id: "overview", label: "Home", icon: Home },
-    { id: "studio", label: "Copilot", icon: Wand2 },
+    { id: "studio", label: "Image", icon: Wand2 },
     { id: "talking-avatar", label: "Video", icon: Video },
   ];
 

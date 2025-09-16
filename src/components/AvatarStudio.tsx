@@ -663,7 +663,7 @@ export const AvatarStudio = () => {
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-2 mb-6">
               <h1 className="text-4xl font-display font-bold text-foreground">
-                AI <span className="bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent">Copilot</span> Studio
+                AI <span className="bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent">Image</span> Studio
               </h1>
             </div>
             <p className="text-lg text-muted-foreground mb-8">Your ChatGPT-powered creative assistant</p>
