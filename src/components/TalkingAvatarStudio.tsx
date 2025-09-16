@@ -597,23 +597,33 @@ export const TalkingAvatarStudio = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Switch 
-                      id="captions" 
-                      checked={exports.captions}
-                      onCheckedChange={(checked) => updateExports({ captions: checked })}
-                    />
-                    <Label htmlFor="captions">Burn-in captions</Label>
-                  </div>
-                  
-                  <div className="flex items-center space-x-2">
-                    <Switch 
-                      id="transparent" 
-                      checked={exports.transparent}
-                      onCheckedChange={(checked) => updateExports({ transparent: checked })}
-                    />
-                    <Label htmlFor="transparent">Transparent background</Label>
+                {/* Advanced Controls - More Accessible */}
+                <div className="border rounded-lg p-4 space-y-4">
+                  <h4 className="font-medium text-sm">Advanced Controls</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex items-center justify-between p-3 border rounded-lg">
+                      <div>
+                        <Label htmlFor="captions" className="font-medium">Burn-in Captions</Label>
+                        <p className="text-xs text-muted-foreground">Add permanent captions to video</p>
+                      </div>
+                      <Switch 
+                        id="captions" 
+                        checked={exports.captions}
+                        onCheckedChange={(checked) => updateExports({ captions: checked })}
+                      />
+                    </div>
+                    
+                    <div className="flex items-center justify-between p-3 border rounded-lg">
+                      <div>
+                        <Label htmlFor="transparent" className="font-medium">Transparent Background</Label>
+                        <p className="text-xs text-muted-foreground">Remove background for overlay</p>
+                      </div>
+                      <Switch 
+                        id="transparent" 
+                        checked={exports.transparent}
+                        onCheckedChange={(checked) => updateExports({ transparent: checked })}
+                      />
+                    </div>
                   </div>
                 </div>
 
