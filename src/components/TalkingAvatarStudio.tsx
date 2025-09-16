@@ -148,6 +148,15 @@ export const TalkingAvatarStudio = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-6xl mx-auto p-6">
+        {/* Page Title */}
+        <div className="text-center mb-6">
+          <h1 className="text-3xl font-bold text-primary mb-2">
+            {WORKFLOW_STEPS[currentStep - 1]?.title}
+          </h1>
+          <p className="text-muted-foreground">
+            Configure your talking avatar step by step
+          </p>
+        </div>
 
         {/* Navigation */}
         <AvatarStudioNavigation
@@ -168,7 +177,13 @@ export const TalkingAvatarStudio = () => {
             {/* Step 1: Avatar Selection */}
             {currentStep === 1 && (
               <Card className="border-primary/20">
-                <CardContent className="space-y-6 pt-6">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-3">
+                    <User className="h-6 w-6 text-primary" />
+                    Avatar Selection
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Button
                       variant="outline"
