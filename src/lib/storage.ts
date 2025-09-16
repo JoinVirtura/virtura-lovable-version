@@ -92,10 +92,95 @@ export class StorageService {
   getAvatarPath(filename: string): string {
     return `assets/input/avatars/${filename}`;
   }
+
+  // Generate shareable link with expiration
+  async generateShareLink(path: string, expiresIn = 3600): Promise<string> {
+    if (this.config.provider === 'supabase') {
+      const { data, error } = await supabase.storage
+        .from(this.config.bucket)
+        .createSignedUrl(path, expiresIn);
+
+      if (error) {
+        throw new Error(`Share link generation failed: ${error.message}`);
+      }
+
+      return data.signedUrl;
+    } else {
+      // For local storage, return the direct path
+      return path;
+    }
+  }
+
+  // Enhanced CDN support
+  getCdnUrl(path: string): string {
+    if (this.config.provider === 'supabase') {
+      // Supabase handles CDN automatically
+      const { data } = supabase.storage
+        .from(this.config.bucket)
+        .getPublicUrl(path);
+
+      return data.publicUrl;
+    }
+    return path;
+  }
+
+  // Storage analytics
+  async getStorageUsage(userId: string): Promise<{ totalSize: number; fileCount: number }> {
+    if (this.config.provider === 'supabase') {
+      const { data, error } = await supabase.storage
+        .from(this.config.bucket)
+        .list(`users/${userId}`, {
+          limit: 1000,
+          sortBy: { column: 'created_at', order: 'desc' }
+        });
+
+      if (error) {
+        throw new Error(`Storage usage check failed: ${error.message}`);
+      }
+
+      const totalSize = data.reduce((sum, file) => sum + (file.metadata?.size || 0), 0);
+      return { totalSize, fileCount: data.length };
+    }
+
+    return { totalSize: 0, fileCount: 0 };
+  }
+
+  // Clean up old files
+  async cleanupOldFiles(userId: string, olderThanDays = 30): Promise<void> {
+    if (this.config.provider === 'supabase') {
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - olderThanDays);
+
+      const { data, error } = await supabase.storage
+        .from(this.config.bucket)
+        .list(`users/${userId}`, {
+          limit: 1000,
+          sortBy: { column: 'created_at', order: 'asc' }
+        });
+
+      if (error) {
+        throw new Error(`Cleanup listing failed: ${error.message}`);
+      }
+
+      const filesToDelete = data
+        .filter(file => new Date(file.created_at) < cutoffDate)
+        .map(file => `users/${userId}/${file.name}`);
+
+      if (filesToDelete.length > 0) {
+        const { error: deleteError } = await supabase.storage
+          .from(this.config.bucket)
+          .remove(filesToDelete);
+
+        if (deleteError) {
+          throw new Error(`Cleanup deletion failed: ${deleteError.message}`);
+        }
+      }
+    }
+  }
 }
 
-// Default storage service instance
+// Enhanced storage service with CDN and analytics
 export const storage = new StorageService({
-  provider: 'local', // Will be configurable via settings
+  provider: 'supabase',
   bucket: 'virtura-media'
 });
