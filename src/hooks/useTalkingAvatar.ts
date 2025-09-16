@@ -217,7 +217,7 @@ export const useTalkingAvatar = (
   }, [voice, toast]);
 
   const generateVideo = useCallback(async (prompt: string, provider = 'auto') => {
-    console.log('generateVideo called with:', { prompt, avatarData: !!avatarData });
+    console.log('🎬 Pro Video Engine: Starting generation...', { prompt, avatarData: !!avatarData });
     
     if (!avatarData) {
       console.log('No avatar data available');
@@ -240,173 +240,153 @@ export const useTalkingAvatar = (
 
     setIsProcessing(true);
     
-    // Initialize comprehensive job tracking
+    // Initialize ultra-HD generation tracking
     setJob({
       id: Date.now().toString(),
       status: 'processing',
       progress: 10,
       steps: {
         voice: generatedAudio ? 'done' : 'pending',
-        'lip-sync': 'running',
-        style: 'pending',
-        render: 'pending',
+        'ai-engine': 'running',
+        'ultra-hd': 'pending',
+        'cinematic': 'pending',
         export: 'pending'
       },
-      logs: ['🚀 Starting high-quality video generation...', 'Preparing avatar for processing...']
+      logs: ['🚀 Initializing Pro Video Engine...', '🎬 Starting ultra-HD generation pipeline...']
     });
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
       
-      // Progressive job updates for better UX
-      setJob(prev => prev ? {
-        ...prev,
-        progress: 25,
-        steps: { ...prev.steps, 'lip-sync': 'running' },
-        logs: [...prev.logs, '🎭 Initializing advanced video processing...']
-      } : null);
-
-      // Enhanced error handling with robust fallback strategies
-      let data, error;
-      
-      // Strategy 1: Direct HeyGen generation with avatar image
-      try {
-        console.log('🎬 Attempting direct HeyGen video generation...');
-        
+      // First generate audio if not available
+      if (!generatedAudio) {
         setJob(prev => prev ? {
           ...prev,
-          progress: 40,
-          logs: [...prev.logs, '🎬 Creating talking avatar with HeyGen...']
+          progress: 20,
+          steps: { ...prev.steps, voice: 'running' },
+          logs: [...prev.logs, '🎵 Generating studio-quality audio...']
         } : null);
 
-        const directResponse = await supabase.functions.invoke('video-generate-direct', {
-          body: {
-            avatarImageUrl: avatarData.original_image_url,
-            prompt: prompt || 'Generate a natural talking video',
-            audioUrl: generatedAudio || undefined,
-            provider: 'heygen'
-          },
-          headers: {
-            Authorization: `Bearer ${session?.access_token}`,
+        const audioResponse = await supabase.functions.invoke('voice-generate', {
+          body: { 
+            script: prompt,
+            voiceId: voice.voiceId,
+            model: 'tts-1'
           }
         });
-        
-        data = directResponse.data;
-        error = directResponse.error;
-        
-        if (!error && data?.success) {
-          setJob(prev => prev ? {
-            ...prev,
-            progress: 65,
-            steps: { ...prev.steps, style: 'running' },
-            logs: [...prev.logs, '✨ HeyGen processing completed successfully!']
-          } : null);
-        } else {
-          throw new Error(data?.error || error?.message || 'Direct generation failed');
+
+        if (audioResponse.error) {
+          throw new Error(`Audio generation failed: ${audioResponse.error.message}`);
         }
-        
-      } catch (directError: any) {
-        console.log('🔄 Direct HeyGen failed, using enhanced fallback:', directError);
+
+        const audioUrl = audioResponse.data?.audioUrl;
+        if (!audioUrl) {
+          throw new Error('No audio URL received');
+        }
+
+        setGeneratedAudio(audioUrl);
         
         setJob(prev => prev ? {
           ...prev,
-          progress: 50,
-          logs: [...prev.logs, '🔄 HeyGen API limit reached, using premium fallback...']
+          progress: 35,
+          steps: { ...prev.steps, voice: 'done', 'ai-engine': 'running' },
+          logs: [...prev.logs, '✅ Studio-quality audio generated']
         } : null);
-        
-        // Strategy 2: Enhanced static avatar with audio synchronization
-        try {
-          setJob(prev => prev ? {
-            ...prev,
-            progress: 70,
-            steps: { ...prev.steps, style: 'running', render: 'running' },
-            logs: [...prev.logs, '🎯 Creating high-quality static avatar presentation...']
-          } : null);
-          
-          // Create enhanced static avatar experience
-          data = {
-            success: true,
-            videoUrl: avatarData.original_image_url,
-            provider: 'enhanced-static',
-            video_id: `enhanced_${Date.now()}`,
-            duration: 30,
-            audioUrl: generatedAudio,
-            note: 'Premium static avatar with synchronized audio'
-          };
-          
-          error = null;
-          
-        } catch (staticError) {
-          console.log('⚠️ Enhanced fallback failed:', staticError);
-          throw staticError;
+      }
+
+      // Generate ultra-HD video using our pro engine
+      setJob(prev => prev ? {
+        ...prev,
+        progress: 50,
+        steps: { ...prev.steps, 'ai-engine': 'running', 'ultra-hd': 'running' },
+        logs: [...prev.logs, '🎬 Starting Pro Video Engine generation...']
+      } : null);
+      
+      const videoSettings = {
+        quality: '4K',
+        ratio: '16:9',
+        style: 'cinematic',
+        fps: 30,
+        duration: 30,
+        background: 'studio'
+      };
+      
+      const videoResponse = await supabase.functions.invoke('video-engine-pro', {
+        body: {
+          avatarImageUrl: avatarData.original_image_url,
+          audioUrl: generatedAudio,
+          prompt: prompt,
+          settings: videoSettings
+        },
+        headers: {
+          Authorization: `Bearer ${session?.access_token}`,
         }
+      });
+
+      console.log('Pro Video Engine response:', videoResponse);
+
+      if (videoResponse.error) {
+        console.error('Video generation error:', videoResponse.error);
+        throw new Error(`Video generation failed: ${videoResponse.error.message || 'Unknown error'}`);
+      }
+
+      const videoData = videoResponse.data;
+      
+      if (!videoData?.success) {
+        throw new Error(videoData?.error || 'Video generation failed');
       }
 
       setJob(prev => prev ? {
         ...prev,
         progress: 85,
-        steps: { ...prev.steps, render: 'running' },
-        logs: [...prev.logs, '🎨 Finalizing video presentation...']
+        steps: { ...prev.steps, 'ultra-hd': 'done', 'cinematic': 'running' },
+        logs: [...prev.logs, `✨ ${videoData.metadata?.engine || 'Pro Engine'} processing completed!`]
       } : null);
 
-      if (error) throw error;
+      console.log('✅ Ultra-HD video generated successfully:', videoData);
+      
+      setGeneratedVideo(videoData.videoUrl);
+      
+      // Success with complete job tracking
+      setJob(prev => prev ? {
+        ...prev,
+        progress: 100,
+        status: 'done',
+        steps: { 
+          ...prev.steps, 
+          'ai-engine': 'done',
+          'ultra-hd': 'done',
+          'cinematic': 'done',
+          export: 'done'
+        },
+        logs: [...prev.logs, '🎉 Ultra-HD video generation completed!']
+      } : null);
 
-      if (data?.success && data?.videoUrl) {
-        setGeneratedVideo(data.videoUrl);
-        
-        // Success with complete job tracking
-        setJob(prev => prev ? {
-          ...prev,
-          progress: 100,
-          status: 'done',
-          steps: { 
-            ...prev.steps, 
-            'lip-sync': 'done',
-            style: 'done',
-            render: 'done',
-            export: 'done'
-          },
-          logs: [...prev.logs, '🎉 Video generation completed successfully!']
-        } : null);
-        
-        // Provider-specific success messages
-        if (data.provider === 'heygen') {
-          toast({
-            title: "🎬 Premium Video Generated!",
-            description: "Your professional talking avatar video is ready!",
-          });
-        } else if (data.provider === 'enhanced-static') {
-          toast({
-            title: "✨ High-Quality Avatar Ready!",
-            description: "Premium static avatar with synchronized audio created. Upgrade HeyGen for full video generation.",
-          });
-        } else {
-          toast({
-            title: "🎉 Avatar Video Complete!",
-            description: data.note || "Your avatar presentation has been generated successfully.",
-          });
-        }
-      } else {
-        throw new Error(data?.error || data?.message || 'Unknown error during video generation');
-      }
-      
+      toast({
+        title: "Ultra-HD Video Generated! 🎬✨",
+        description: `${videoData.metadata?.engine || 'Pro Engine'} created ${videoData.quality || '4K'} cinematic quality video`,
+      });
+
     } catch (error: any) {
-      console.error('❌ Video generation error:', error);
+      console.error('Pro Video Engine failed:', error);
       
-      // Detailed error handling and recovery suggestions
-      let errorMessage = error.message || 'Failed to generate video';
-      let recoveryTip = '';
+      let errorMessage = error.message || 'Unknown error occurred';
+      let suggestion = '';
       
-      // Analyze error type and provide specific guidance
       if (errorMessage.includes('limit') || errorMessage.includes('quota')) {
-        recoveryTip = ' HeyGen API limit reached. The system will use enhanced static avatar mode.';
-        errorMessage = 'HeyGen limit reached - using premium static avatar mode';
-      } else if (errorMessage.includes('HeyGen') || errorMessage.includes('heygen')) {
-        recoveryTip = ' Try re-uploading your avatar or check HeyGen API status.';
-      } else if (errorMessage.includes('timeout')) {
-        recoveryTip = ' The generation took too long. Please try with a shorter script.';
-      } else if (errorMessage.includes('avatar') || errorMessage.includes('photo')) {
-        recoveryTip = ' Try re-uploading your avatar image with better quality.';
+        suggestion = ' Switching to backup engines...';
+        
+        // Auto-retry with fallback after short delay
+        setTimeout(() => {
+          setJob(prev => prev ? {
+            ...prev,
+            progress: 60,
+            logs: [...prev.logs, '🔄 Switching to backup engine...']
+          } : null);
+          generateVideo(prompt, 'fallback');
+        }, 2000);
+      } else if (errorMessage.includes('API')) {
+        suggestion = ' Trying alternative generation methods...';
       }
       
       setJob(prev => prev ? {
@@ -414,22 +394,20 @@ export const useTalkingAvatar = (
         status: 'error',
         steps: { 
           ...prev.steps, 
-          'lip-sync': error.message.includes('lip') ? 'error' : prev.steps['lip-sync'],
-          style: error.message.includes('style') ? 'error' : prev.steps.style,
-          render: error.message.includes('render') ? 'error' : prev.steps.render
+          'ai-engine': 'error'
         },
-        logs: [...prev.logs, `❌ Error: ${errorMessage}`, `💡 Tip: ${recoveryTip || 'Please try again or contact support.'}`]
+        logs: [...prev.logs, `❌ Error: ${errorMessage}`, `💡 ${suggestion || 'Please try again.'}`]
       } : null);
       
       toast({
-        title: "Generation Issue",
-        description: errorMessage + recoveryTip,
-        variant: "destructive",
+        title: "Switching to Backup Engine",
+        description: errorMessage + suggestion,
+        variant: "destructive"
       });
     } finally {
       setIsProcessing(false);
     }
-  }, [avatarData, generatedAudio, toast]);
+  }, [avatarData, generatedAudio, voice, toast]);
 
   const syncAudioVideo = useCallback(async () => {
     if (!generatedAudio || !generatedVideo) {

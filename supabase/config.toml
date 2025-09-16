@@ -42,6 +42,9 @@ verify_jwt = true
 [functions.video-generate-direct]
 verify_jwt = false
 
+[functions.video-engine-pro]
+verify_jwt = false
+
 [functions.voice-tts]
 verify_jwt = false
 
