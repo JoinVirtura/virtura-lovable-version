@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -41,6 +42,7 @@ import { ProjectStatusPanel } from './ProjectStatusPanel';
 import { AvatarStudioNavigation } from './AvatarStudioNavigation';
 
 export const TalkingAvatarStudio = () => {
+  const navigate = useNavigate();
   const [script, setScript] = useState('');
   const [videoPrompt, setVideoPrompt] = useState('Create a natural talking video with professional presentation style');
   const [showLibrary, setShowLibrary] = useState(false);
@@ -206,13 +208,13 @@ export const TalkingAvatarStudio = () => {
                     
                     <Button
                       variant="outline"
-                      className="h-32 flex flex-col items-center gap-3 opacity-50"
-                      disabled
+                      className="h-32 flex flex-col items-center gap-3 hover:border-primary hover:bg-primary/5 transition-all duration-300"
+                      onClick={() => navigate('/studio')}
                     >
-                      <Camera className="h-8 w-8" />
+                      <Camera className="h-8 w-8 text-primary" />
                       <span className="font-medium">Generate AI Avatar</span>
                       <span className="text-xs text-muted-foreground text-center">
-                        Coming soon
+                        AI-powered creation
                       </span>
                     </Button>
                   </div>
