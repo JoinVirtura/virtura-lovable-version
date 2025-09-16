@@ -17,6 +17,7 @@ interface Style {
   preset: string;
   lookMode?: 'realistic' | 'pixar' | 'vintage' | 'cyberpunk' | 'anime';
   bg: 'blur' | 'solid' | 'upload' | 'green';
+  animation?: string;
   lighting: {
     key: number;
     fill: number;

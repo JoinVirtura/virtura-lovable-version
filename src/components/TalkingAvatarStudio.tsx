@@ -466,7 +466,7 @@ export const TalkingAvatarStudio = () => {
                       <Label className="text-base font-medium">Aspect Ratio</Label>
                       <Select 
                         value={exports.ratio} 
-                        onValueChange={(value) => updateExports({ ratio: value })}
+                        onValueChange={(value) => updateExports({ ratio: value as '9:16' | '1:1' | '16:9' })}
                       >
                         <SelectTrigger className="mt-2">
                           <SelectValue />
