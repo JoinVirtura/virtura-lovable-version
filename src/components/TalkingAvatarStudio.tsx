@@ -139,19 +139,6 @@ export const TalkingAvatarStudio = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Top Navigation */}
-      <AvatarStudioNavigation
-        currentStep={currentStep}
-        onNext={handleNext}
-        onPrevious={handlePrevious}
-        onStepChange={setCurrentStep}
-        canProceed={canProceedToNext()}
-        isProcessing={isProcessing}
-        avatarData={avatarData}
-        generatedAudio={generatedAudio}
-        generatedVideo={generatedVideo}
-      />
-
       <div className="max-w-6xl mx-auto p-6">
         {/* Header */}
         <div className="text-center mb-8">
@@ -162,6 +149,19 @@ export const TalkingAvatarStudio = () => {
             Create professional talking avatar videos with AI
           </p>
         </div>
+        
+        {/* Navigation */}
+        <AvatarStudioNavigation
+          currentStep={currentStep}
+          onNext={handleNext}
+          onPrevious={handlePrevious}
+          onStepChange={setCurrentStep}
+          canProceed={canProceedToNext()}
+          isProcessing={isProcessing}
+          avatarData={avatarData}
+          generatedAudio={generatedAudio}
+          generatedVideo={generatedVideo}
+        />
 
         {/* Main Content */}
         <div className="grid lg:grid-cols-4 gap-6">

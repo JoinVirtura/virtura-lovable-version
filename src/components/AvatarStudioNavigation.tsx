@@ -62,8 +62,8 @@ export const AvatarStudioNavigation: React.FC<AvatarStudioNavigationProps> = ({
   };
 
   return (
-    <div className="bg-background border-b border-border">
-      <div className="max-w-6xl mx-auto px-6 py-4">
+    <div className="bg-background border border-border rounded-lg mb-6">
+      <div className="px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Previous Button */}
           <Button
@@ -110,15 +110,9 @@ export const AvatarStudioNavigation: React.FC<AvatarStudioNavigationProps> = ({
                         <StepIcon className="h-4 w-4" />
                       )}
                       <span className="hidden sm:inline font-medium">
-                        {step.shortTitle}
+                        {status === 'current' ? `${step.shortTitle} (${step.id}/${WORKFLOW_STEPS.length})` : step.shortTitle}
                       </span>
                     </div>
-                    
-                    {status === 'current' && (
-                      <Badge variant="secondary" className="ml-2 text-xs">
-                        Step {step.id} of {WORKFLOW_STEPS.length}
-                      </Badge>
-                    )}
                   </button>
                   
                   {index < WORKFLOW_STEPS.length - 1 && (
