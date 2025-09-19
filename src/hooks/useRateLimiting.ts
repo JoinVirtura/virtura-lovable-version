@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 
 interface RateLimitConfig {
   maxAttempts: number;
@@ -29,7 +29,7 @@ export const useRateLimiting = (key: string, config: RateLimitConfig) => {
     return { attempts: 0, lastAttempt: 0 };
   });
 
-  const isBlocked = useCallback(() => {
+  const isBlocked = useMemo(() => {
     const now = Date.now();
     
     // Check if currently blocked
@@ -37,31 +37,35 @@ export const useRateLimiting = (key: string, config: RateLimitConfig) => {
       return true;
     }
 
-    // Reset attempts if window has passed
-    if (now - state.lastAttempt > config.windowMs) {
-      setState(prev => ({ ...prev, attempts: 0 }));
-      return false;
+    // Check if max attempts reached in current window
+    if (now - state.lastAttempt <= config.windowMs && state.attempts >= config.maxAttempts) {
+      return true;
     }
 
-    // Check if max attempts reached
-    return state.attempts >= config.maxAttempts;
+    return false;
   }, [state, config]);
 
   const recordAttempt = useCallback(() => {
     const now = Date.now();
-    const newState: RateLimitState = {
-      attempts: state.attempts + 1,
-      lastAttempt: now,
-    };
+    
+    setState(prev => {
+      // Reset attempts if window has passed
+      const currentAttempts = now - prev.lastAttempt > config.windowMs ? 0 : prev.attempts;
+      
+      const newState: RateLimitState = {
+        attempts: currentAttempts + 1,
+        lastAttempt: now,
+      };
 
-    // If max attempts reached, set block duration
-    if (newState.attempts >= config.maxAttempts && config.blockDurationMs) {
-      newState.blockedUntil = now + config.blockDurationMs;
-    }
+      // If max attempts reached, set block duration
+      if (newState.attempts >= config.maxAttempts && config.blockDurationMs) {
+        newState.blockedUntil = now + config.blockDurationMs;
+      }
 
-    setState(newState);
-    localStorage.setItem(`rate_limit_${key}`, JSON.stringify(newState));
-  }, [state, config, key]);
+      localStorage.setItem(`rate_limit_${key}`, JSON.stringify(newState));
+      return newState;
+    });
+  }, [config, key]);
 
   const reset = useCallback(() => {
     const newState: RateLimitState = { attempts: 0, lastAttempt: 0 };
@@ -78,7 +82,7 @@ export const useRateLimiting = (key: string, config: RateLimitConfig) => {
   }, [state.blockedUntil]);
 
   return {
-    isBlocked: isBlocked(),
+    isBlocked,
     recordAttempt,
     reset,
     remainingTime: getRemainingTime(),
