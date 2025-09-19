@@ -7,7 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Loader2, Eye, EyeOff, AlertCircle, CheckCircle } from "lucide-react";
+import { Loader2, Eye, EyeOff, AlertCircle, CheckCircle, Shield } from "lucide-react";
+import { useRateLimiting } from "@/hooks/useRateLimiting";
+import { useSecurityHeaders } from "@/hooks/useSecurityHeaders";
 
 export default function AuthPage() {
   const [email, setEmail] = useState("");
@@ -21,6 +23,22 @@ export default function AuthPage() {
     isValid: false
   });
   const navigate = useNavigate();
+
+  // Security enhancements
+  useSecurityHeaders();
+  
+  // Rate limiting for authentication attempts
+  const signInRateLimit = useRateLimiting('signin', {
+    maxAttempts: 5,
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    blockDurationMs: 30 * 60 * 1000, // 30 minutes block
+  });
+
+  const signUpRateLimit = useRateLimiting('signup', {
+    maxAttempts: 3,
+    windowMs: 60 * 60 * 1000, // 1 hour
+    blockDurationMs: 60 * 60 * 1000, // 1 hour block
+  });
 
   // Enhanced password validation
   const validatePassword = (password: string) => {
@@ -53,6 +71,13 @@ export default function AuthPage() {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Check rate limiting
+    if (signUpRateLimit.isBlocked) {
+      const minutes = Math.ceil(signUpRateLimit.remainingTime / (60 * 1000));
+      toast.error(`Too many signup attempts. Please try again in ${minutes} minutes.`);
+      return;
+    }
+    
     // Validate password strength before proceeding
     if (!validatePassword(password)) {
       toast.error("Password does not meet security requirements");
@@ -60,6 +85,7 @@ export default function AuthPage() {
     }
     
     setLoading(true);
+    signUpRateLimit.recordAttempt();
 
     try {
       const redirectUrl = `${window.location.origin}/dashboard`;
@@ -86,6 +112,9 @@ export default function AuthPage() {
       
       toast.success("Check your email for the confirmation link!");
       
+      // Reset rate limiting on successful signup
+      signUpRateLimit.reset();
+      
       // Clear sensitive data
       setPassword("");
     } catch (error: any) {
@@ -97,7 +126,16 @@ export default function AuthPage() {
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check rate limiting
+    if (signInRateLimit.isBlocked) {
+      const minutes = Math.ceil(signInRateLimit.remainingTime / (60 * 1000));
+      toast.error(`Too many signin attempts. Please try again in ${minutes} minutes.`);
+      return;
+    }
+    
     setLoading(true);
+    signInRateLimit.recordAttempt();
 
     try {
       const { error } = await supabase.auth.signInWithPassword({
@@ -118,6 +156,10 @@ export default function AuthPage() {
       }
       
       toast.success("Welcome back!");
+      
+      // Reset rate limiting on successful signin
+      signInRateLimit.reset();
+      
       navigate("/dashboard");
       
       // Clear sensitive data
@@ -133,9 +175,12 @@ export default function AuthPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-            Virtura AI
-          </CardTitle>
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <Shield className="h-6 w-6 text-primary" />
+            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+              Virtura AI
+            </CardTitle>
+          </div>
           <CardDescription>
             Create professional talking avatar videos with AI
           </CardDescription>
@@ -182,10 +227,15 @@ export default function AuthPage() {
                     </Button>
                   </div>
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button type="submit" className="w-full" disabled={loading || signInRateLimit.isBlocked}>
                   {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Sign In
                 </Button>
+                {signInRateLimit.isBlocked && (
+                  <p className="text-sm text-destructive text-center mt-2">
+                    Too many attempts. Try again in {Math.ceil(signInRateLimit.remainingTime / (60 * 1000))} minutes.
+                  </p>
+                )}
               </form>
             </TabsContent>
             
@@ -268,11 +318,16 @@ export default function AuthPage() {
                 <Button 
                   type="submit" 
                   className="w-full" 
-                  disabled={loading || (password && !passwordStrength.isValid)}
+                  disabled={loading || (password && !passwordStrength.isValid) || signUpRateLimit.isBlocked}
                 >
                   {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Sign Up
                 </Button>
+                {signUpRateLimit.isBlocked && (
+                  <p className="text-sm text-destructive text-center mt-2">
+                    Too many attempts. Try again in {Math.ceil(signUpRateLimit.remainingTime / (60 * 1000))} minutes.
+                  </p>
+                )}
               </form>
             </TabsContent>
           </Tabs>
