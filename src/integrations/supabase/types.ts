@@ -474,6 +474,15 @@ export type Database = {
         Args: { user_uuid: string }
         Returns: Database["public"]["Enums"]["user_role"]
       }
+      get_user_subscription_status: {
+        Args: { user_uuid?: string }
+        Returns: {
+          current_period_end: string
+          has_active_subscription: boolean
+          plan_name: string
+          status: string
+        }[]
+      }
       validate_password_strength: {
         Args: { password_text: string }
         Returns: boolean
