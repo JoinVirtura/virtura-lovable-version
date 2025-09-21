@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { VirturaSidebar } from "@/components/VirturaSidebar";
 import { OverviewPage } from "@/components/OverviewPage";
@@ -96,6 +97,7 @@ import avatarBrandConsultantImg from "@/assets/avatar-brand-consultant-realistic
 
 export default function Dashboard() {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [activeView, setActiveView] = useState("overview");
   
   // Copilot Flow state
@@ -985,15 +987,24 @@ export default function Dashboard() {
     setShareModalOpen(false);
   };
 
+  const handleViewChange = (view: string) => {
+    if (view === "studio") {
+      navigate("/studio-pro");
+      return;
+    }
+    setActiveView(view);
+  };
+
   const renderContent = () => {
     switch (activeView) {
       case "overview":
-        return <OverviewPage onViewChange={setActiveView} />;
+        return <OverviewPage onViewChange={handleViewChange} />;
       case "talking-avatar":
-        return <TalkingAvatarStudio onViewChange={setActiveView} />;
+        return <TalkingAvatarStudio onViewChange={handleViewChange} />;
       case "create":
         return <CreateAvatar />;
       case "studio":
+        // This case should not be reached since we navigate away, but keep as fallback
         return <AvatarStudio />;
       case "individuals":
         return (
@@ -3402,7 +3413,7 @@ export default function Dashboard() {
       case "upgrade":
         return <UpgradePage />;
       default:
-        return <OverviewPage onViewChange={setActiveView} />;
+        return <OverviewPage onViewChange={handleViewChange} />;
     }
   };
 
@@ -3410,7 +3421,7 @@ export default function Dashboard() {
     <SidebarProvider defaultOpen={true}>
       <div className="min-h-screen flex w-full bg-background relative overflow-hidden">
         <MotionBackground />
-        <VirturaSidebar activeView={activeView} onViewChange={setActiveView} />
+        <VirturaSidebar activeView={activeView} onViewChange={handleViewChange} />
         
         <div className="flex-1 flex flex-col relative z-10">
           {/* Main Content */}
