@@ -62,7 +62,7 @@ interface AvatarStudioProps {
 }
 
 export const AvatarStudio = ({ editImage, onBackToLibrary }: AvatarStudioProps) => {
-  const [prompt, setPrompt] = useState(editImage?.prompt || "");
+  const [prompt, setPrompt] = useState("");
   const [negativePrompt, setNegativePrompt] = useState("blurry fingers, extra limbs, distorted faces, unrealistic body proportions, text, watermark, low quality");
   const [adherence, setAdherence] = useState(8.5); // Ultra-high adherence
   const [steps, setSteps] = useState(75); // Ultra-high quality steps
@@ -77,7 +77,7 @@ export const AvatarStudio = ({ editImage, onBackToLibrary }: AvatarStudioProps) 
   
   const [watermarkEnabled, setWatermarkEnabled] = useState(true);
   const [aiProofEnabled, setAiProofEnabled] = useState(false);
-  const [referenceImage, setReferenceImage] = useState<string | null>(null);
+  const [referenceImage, setReferenceImage] = useState<string | null>(editImage?.imageUrl || null);
   const [isUploading, setIsUploading] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState<string | null>(null);
   const [savingToLibrary, setSavingToLibrary] = useState<string | null>(null);
@@ -727,8 +727,16 @@ export const AvatarStudio = ({ editImage, onBackToLibrary }: AvatarStudioProps) 
           
           {/* Header */}
           <div className="text-center mb-12">
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <h1 className="text-4xl font-display font-bold text-foreground">
+                AI <span className="bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent">Image</span> Studio
+              </h1>
+            </div>
+            <p className="text-lg text-muted-foreground mb-8">Your ChatGPT-powered creative assistant</p>
+            
+            {/* Back to Library button for edit mode */}
             {editImage && onBackToLibrary && (
-              <div className="flex items-center justify-between mb-6">
+              <div className="mb-6">
                 <Button
                   variant="outline"
                   onClick={onBackToLibrary}
@@ -739,40 +747,9 @@ export const AvatarStudio = ({ editImage, onBackToLibrary }: AvatarStudioProps) 
                   </svg>
                   Back to Library
                 </Button>
-                <div className="text-center">
-                  <h1 className="text-2xl font-display font-bold text-foreground">
-                    Editing: <span className="text-primary">{editImage.title}</span>
-                  </h1>
-                </div>
-                <div className="w-[140px]"></div>
               </div>
-            )}
-            {!editImage && (
-              <>
-                <div className="flex items-center justify-center gap-2 mb-6">
-                  <h1 className="text-4xl font-display font-bold text-foreground">
-                    AI <span className="bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent">Image</span> Studio
-                  </h1>
-                </div>
-                <p className="text-lg text-muted-foreground mb-8">Your ChatGPT-powered creative assistant</p>
-              </>
             )}
 
-            {/* Edit Mode - Single Image Display */}
-            {editImage && (
-              <div className="mb-8">
-                <Card className="max-w-md mx-auto p-4 bg-gradient-card border-primary/20">
-                  <img 
-                    src={editImage.imageUrl} 
-                    alt={editImage.title}
-                    className="w-full h-auto rounded-lg shadow-lg"
-                  />
-                  <p className="text-sm text-muted-foreground mt-3 text-center">
-                    Original: {editImage.prompt}
-                  </p>
-                </Card>
-              </div>
-            )}
             
             {/* Main Search Bar - Show only when showInputCard is true */}
             {showInputCard && (
