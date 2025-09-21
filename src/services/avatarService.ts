@@ -33,23 +33,40 @@ export interface GeneratedAvatar {
 export class AvatarService {
   static async generateAvatar(params: AvatarGenerationParams): Promise<GeneratedAvatar> {
     try {
-      console.log('Calling generate-avatar-hf function with params:', params);
+      console.log('Calling generate-avatar-real function with params:', params);
 
-      // Primary: Hugging Face (FLUX)
-      const hfResp = await supabase.functions.invoke('generate-avatar-hf', {
-        body: params,
+      // Primary: Real Avatar Generation (FLUX)
+      const realResp = await supabase.functions.invoke('generate-avatar-real', {
+        body: {
+          prompt: params.prompt,
+          style: params.style || 'realistic',
+          quality: params.resolution === '1024x1024' ? '4K' : '8K',
+          faceConsistency: 85,
+          negativePrompt: params.negativePrompt,
+          adherence: params.adherence,
+          steps: params.steps,
+          enhance: params.enhance,
+          selectedPreset: params.selectedPreset,
+          resolution: params.resolution,
+          photoMode: params.photoMode,
+          referenceImage: params.referenceImage
+        },
       });
 
-      if (!hfResp.error && hfResp.data?.success) {
-        console.log('Avatar generated via HF successfully');
-        return hfResp.data as GeneratedAvatar;
+      if (!realResp.error && realResp.data?.success) {
+        console.log('Avatar generated via Real function successfully');
+        return {
+          success: true,
+          image: realResp.data.imageUrl,
+          prompt: params.prompt
+        };
       }
 
-      // If HF failed, log and try OpenAI (DALL·E / gpt-image-1) function
-      if (hfResp.error) {
-        console.warn('HF function error, falling back to OpenAI function:', hfResp.error?.message || hfResp.error);
-      } else if (!hfResp.data?.success) {
-        console.warn('HF function returned unsuccessful response, falling back:', hfResp.data?.error);
+      // If Real failed, log and try OpenAI (DALL·E / gpt-image-1) function
+      if (realResp.error) {
+        console.warn('Real function error, falling back to OpenAI function:', realResp.error?.message || realResp.error);
+      } else if (!realResp.data?.success) {
+        console.warn('Real function returned unsuccessful response, falling back:', realResp.data?.error);
       }
 
       console.log('Calling generate-avatar (OpenAI) fallback with params:', params);

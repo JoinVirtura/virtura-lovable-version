@@ -336,16 +336,19 @@ export const AvatarStudio = () => {
         if (result.success && result.image) {
           setPreviewCards(prev => prev.map(card => 
             card.id === newCards[i].id 
-              ? { ...card, imageUrl: result.image!, isGenerating: false }
+              ? { ...card, imageUrl: result.image!, isGenerating: false, safetyPassed: true }
               : card
           ));
+          console.log(`Variant ${i + 1} generated successfully`);
         } else {
+          const errorMessage = result.error || 'Unknown error occurred';
           setPreviewCards(prev => prev.map(card => 
             card.id === newCards[i].id 
-              ? { ...card, isGenerating: false }
+              ? { ...card, isGenerating: false, safetyPassed: false }
               : card
           ));
-          toast.error(`Generation failed for variant ${i + 1}: ${result.error}`);
+          console.error(`Generation failed for variant ${i + 1}:`, errorMessage);
+          toast.error(`Generation failed for variant ${i + 1}: ${errorMessage}`);
         }
       }
       
@@ -421,12 +424,15 @@ export const AvatarStudio = () => {
 
           if (result.success && result.image) {
             setPreviewCards(prev => prev.map((card, idx) => 
-              idx === i ? { ...card, imageUrl: result.image!, isGenerating: false } : card
+              idx === i ? { ...card, imageUrl: result.image!, isGenerating: false, safetyPassed: true } : card
             ));
           } else {
+            const errorMessage = result.error || 'Edit failed';
             setPreviewCards(prev => prev.map((card, idx) => 
-              idx === i ? { ...card, isGenerating: false } : card
+              idx === i ? { ...card, isGenerating: false, safetyPassed: false } : card
             ));
+            console.error(`Edit failed for variant ${i + 1}:`, errorMessage);
+            toast.error(`Edit failed for variant ${i + 1}: ${errorMessage}`);
           }
         }
         

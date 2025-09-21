@@ -14,7 +14,20 @@ serve(async (req) => {
   }
 
   try {
-    const { prompt, style, quality, faceConsistency } = await req.json();
+    const { 
+      prompt, 
+      style, 
+      quality, 
+      faceConsistency,
+      negativePrompt,
+      adherence,
+      steps,
+      enhance,
+      selectedPreset,
+      resolution,
+      photoMode,
+      referenceImage
+    } = await req.json();
     
     console.log('🎨 Real Avatar Generation Starting...');
     console.log('Prompt:', prompt);
@@ -24,10 +37,13 @@ serve(async (req) => {
     // Initialize Hugging Face
     const hf = new HfInference(Deno.env.get('HUGGING_FACE_ACCESS_TOKEN'));
 
-    // Enhance prompt based on style
+    // Enhance prompt based on style and parameters
     let enhancedPrompt = prompt;
+    
+    // Apply style enhancements
     switch (style) {
       case 'realistic':
+      case 'photorealistic':
         enhancedPrompt = `Ultra realistic professional portrait, ${prompt}, highly detailed, 8K resolution, studio lighting, perfect face, photorealistic`;
         break;
       case 'pixar':
@@ -45,18 +61,42 @@ serve(async (req) => {
       default:
         enhancedPrompt = `Professional portrait, ${prompt}, high quality, detailed`;
     }
+    
+    // Add photo mode specificity if enabled
+    if (photoMode) {
+      enhancedPrompt += ', professional headshot, studio photography, clean background';
+    }
+    
+    // Add enhancement if requested
+    if (enhance) {
+      enhancedPrompt += ', enhanced details, perfect skin, professional retouching';
+    }
 
     console.log('Enhanced prompt:', enhancedPrompt);
 
-    // Generate image using Flux model
+    // Generate image using Flux model with enhanced parameters
+    const finalSteps = steps || (quality === '8K' ? 50 : 20);
+    const guidanceScale = adherence || 7.5;
+    const dimensions = resolution === '1536x1536' ? { width: 1536, height: 1536 } :
+                     resolution === '512x512' ? { width: 512, height: 512 } :
+                     { width: 1024, height: 1024 };
+    
+    // Add negative prompt handling
+    const finalPrompt = negativePrompt ? 
+      `${enhancedPrompt} [NEGATIVE: ${negativePrompt}]` : 
+      enhancedPrompt;
+    
+    console.log('Final enhanced prompt:', finalPrompt);
+    console.log('Generation parameters:', { finalSteps, guidanceScale, dimensions });
+
     const image = await hf.textToImage({
-      inputs: enhancedPrompt,
+      inputs: finalPrompt,
       model: quality === '8K' ? 'black-forest-labs/FLUX.1-dev' : 'black-forest-labs/FLUX.1-schnell',
       parameters: {
-        num_inference_steps: quality === '8K' ? 50 : 20,
-        guidance_scale: 7.5,
-        width: quality === '8K' ? 1024 : 768,
-        height: quality === '8K' ? 1024 : 768,
+        num_inference_steps: finalSteps,
+        guidance_scale: guidanceScale,
+        width: dimensions.width,
+        height: dimensions.height,
       }
     });
 
