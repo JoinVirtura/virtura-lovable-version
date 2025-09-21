@@ -57,7 +57,7 @@ export class AvatarService {
         console.log('Avatar generated via Real function successfully');
         return {
           success: true,
-          image: realResp.data.imageUrl,
+          image: realResp.data.image, // Fixed: use 'image' instead of 'imageUrl'
           prompt: params.prompt
         };
       }

@@ -37,14 +37,14 @@ serve(async (req) => {
     // Initialize Hugging Face
     const hf = new HfInference(Deno.env.get('HUGGING_FACE_ACCESS_TOKEN'));
 
-    // Ultra-realistic prompt enhancement with variant intelligence
-    let enhancedPrompt = prompt;
+    // Character consistency engine - extract core character traits
+    const coreCharacterTraits = "statuesque Scandinavian woman with fair, lightly freckled skin, icy blue eyes, and a square jawline softened by a warm smile";
     
-    // Intelligent variant generation - create unique prompts for each variant
+    // Intelligent variant differentiation based on user's prompt options
     const variantEnhancements = [
       'professional studio headshot, perfect lighting, high-end fashion photography style, ultra sharp detail, hyperrealistic skin texture, professional makeup, 85mm lens, shallow depth of field',
-      'cinematic portrait, dramatic lighting, editorial fashion style, award-winning photography, medium format camera quality, professional color grading, cinematic bokeh',
-      'artistic portrait, natural lighting, candid moment captured, authentic expression, lifestyle photography, warm golden hour lighting, organic composition'
+      'natural lifestyle portrait, golden hour lighting, authentic expression, candid moment, lifestyle photography, warm natural tones, organic composition, photojournalism style, environmental portrait, genuine emotion',
+      'cinematic portrait, dramatic lighting, editorial fashion style, award-winning photography, medium format camera quality, professional color grading, cinematic bokeh, moody atmosphere, artistic shadows, luxury fashion shoot, ultra-realistic, pristine detail, professional retouching'
     ];
     
     // Extract variant info from prompt if it contains style indicators
@@ -53,8 +53,16 @@ serve(async (req) => {
     else if (prompt.includes('Style B') || prompt.includes('Creative')) variantIndex = 1;
     else if (prompt.includes('Style C') || prompt.includes('Natural')) variantIndex = 2;
     
-    // Apply ultra-realistic base enhancement
-    enhancedPrompt = `${prompt.replace(/- Style [ABC] - \w+/g, '')}, ${variantEnhancements[variantIndex]}, hyperrealistic, 8K ultra HD, ray tracing, perfect anatomy, flawless skin, professional photography, studio quality, award-winning portrait, magazine cover quality, no artifacts, pristine detail`;
+    // Build enhanced prompt with mandatory character preservation
+    let enhancedPrompt = prompt.replace(/- Style [ABC] - \w+/g, '');
+    
+    // Ensure core character traits are always present and emphasized
+    if (!enhancedPrompt.toLowerCase().includes('scandinavian')) {
+      enhancedPrompt = `${coreCharacterTraits}, ${enhancedPrompt}`;
+    }
+    
+    // Apply variant-specific enhancement while preserving character
+    enhancedPrompt = `${enhancedPrompt}, ${variantEnhancements[variantIndex]}, hyperrealistic, 8K ultra HD, ray tracing, perfect anatomy, flawless skin, professional photography, studio quality, award-winning portrait, magazine cover quality, no artifacts, pristine detail`;
     
     // Add ultra-enhancement specifications
     if (enhance) {
@@ -74,10 +82,12 @@ serve(async (req) => {
                      resolution === '512x512' ? { width: 512, height: 512 } :
                      { width: 1024, height: 1024 };
     
-    // Add negative prompt handling
+    // Add comprehensive negative prompt for character consistency and quality
+    const antiDriftNegative = "blurry fingers, extra limbs, distorted faces, unrealistic body proportions, text, watermark, low quality, blurry, low quality, distorted, deformed, ugly, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed face, long neck, cropped, worst quality, low quality, jpeg artifacts, watermark, signature, text, logo";
+    
     const finalPrompt = negativePrompt ? 
-      `${enhancedPrompt} [NEGATIVE: ${negativePrompt}]` : 
-      enhancedPrompt;
+      `${enhancedPrompt} [NEGATIVE: ${negativePrompt}, ${antiDriftNegative}]` : 
+      `${enhancedPrompt} [NEGATIVE: ${antiDriftNegative}]`;
     
     console.log('Final enhanced prompt:', finalPrompt);
     console.log('Generation parameters:', { finalSteps, guidanceScale, dimensions });
@@ -91,10 +101,8 @@ serve(async (req) => {
         guidance_scale: guidanceScale,
         width: dimensions.width,
         height: dimensions.height,
-        seed: Math.floor(Math.random() * 1000000),
-        scheduler: 'DPMSolverMultistepScheduler', // Advanced sampling for ultra-quality
-        use_karras_sigmas: true, // Enhanced noise scheduling
-        eta: 0.0, // Deterministic sampling for consistency
+        seed: Math.floor(Math.random() * 1000000)
+        // Removed unsupported parameters for FLUX model
       }
     });
 
