@@ -20,9 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
   Home,
-  Wand2,
   Video,
-  Clapperboard,
   Plus, 
   Settings as SettingsIcon, 
   Zap, 
@@ -54,9 +52,8 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
   
   const mainItems = [
     { id: "overview", label: "Home", icon: Home },
-    { id: "studio", label: "Image", icon: Wand2 },
+    { id: "studio", label: "Copilot", icon: Sparkles },
     { id: "talking-avatar", label: "Video", icon: Video },
-    { id: "studio-pro", label: "Studio", icon: Clapperboard },
   ];
 
   const navigationTabs = [
@@ -103,15 +100,11 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                 <SidebarMenuItem key={item.id}>
                   <SidebarMenuButton 
                     onClick={() => {
-                      if (item.id === "studio-pro") {
-                        navigate("/studio-pro");
-                      } else {
-                        // Clear edit state when navigating to studio normally
-                        if (item.id === "studio" && onClearEditState) {
-                          onClearEditState();
-                        }
-                        onViewChange(item.id);
+                      // Clear edit state when navigating to studio normally
+                      if (item.id === "studio" && onClearEditState) {
+                        onClearEditState();
                       }
+                      onViewChange(item.id);
                     }}
                     isActive={activeView === item.id}
                     className={`w-full ${isCollapsed ? "justify-center px-2" : "justify-start gap-3"} ${
