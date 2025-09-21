@@ -26,7 +26,7 @@ import {
   Zap, 
   Crown,
   LogOut,
-  Bot,
+  Brain,
   User,
   Building2,
   Library,
@@ -52,7 +52,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
   
   const mainItems = [
     { id: "overview", label: "Home", icon: Home },
-    { id: "studio", label: "Copilot", icon: Bot },
+    { id: "studio", label: "Copilot", icon: Brain },
     { id: "talking-avatar", label: "Video", icon: Video },
   ];
 
