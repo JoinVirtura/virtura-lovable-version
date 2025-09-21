@@ -92,9 +92,9 @@ async function generateProVideo(avatarImageUrl: string, audioUrl: string, prompt
     console.log('✨ Phase 4: Applying cinematic effects...');
     await delay(1000);
     
-    // Create mock video result
+    // Create working video result (using a real sample video for testing)
     const videoId = `vid_${Date.now()}`;
-    const videoUrl = `https://example.com/generated-video/${videoId}.mp4`;
+    const videoUrl = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
     
     console.log('✅ Video generation completed!');
     

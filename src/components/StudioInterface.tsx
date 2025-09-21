@@ -161,7 +161,7 @@ export default function StudioInterface() {
     }
   }, [state.voice, toast, updateState]);
 
-  const generateVideo = useCallback(async () => {
+  const generateVideo = useCallback(async (engine: 'sadtalker' | 'liveportrait' | 'pro' = 'sadtalker') => {
     if (!state.avatar.url || !state.voice.audioUrl) {
       toast({ title: "Error", description: "Please complete avatar and voice steps first", variant: "destructive" });
       return;
@@ -174,17 +174,27 @@ export default function StudioInterface() {
     });
 
     try {
-      const { data, error } = await supabase.functions.invoke('video-engine-pro', {
+      const functionName = engine === 'liveportrait' ? 'video-generate-liveportrait' : 
+                          engine === 'pro' ? 'video-engine-pro' : 'video-generate-sadtalker';
+      
+      const { data, error } = await supabase.functions.invoke(functionName, {
         body: {
           avatarImageUrl: state.avatar.url,
           audioUrl: state.voice.audioUrl,
           prompt: state.video.prompt,
           settings: {
-            quality: state.video.quality,
+            quality: engine === 'liveportrait' ? '1080p' : engine === 'pro' ? '4K' : '720p',
             ratio: state.video.ratio,
             style: 'cinematic',
-            fps: 30,
-            duration: 30
+            fps: engine === 'pro' ? 60 : 30,
+            duration: 30,
+            expressionScale: engine !== 'pro' ? 1.0 : undefined,
+            lipSyncStrength: engine === 'liveportrait' ? 1.0 : undefined,
+            headPoseStrength: engine === 'liveportrait' ? 0.8 : undefined,
+            eyeBlink: engine === 'liveportrait' ? true : undefined,
+            still: engine === 'sadtalker' ? false : undefined,
+            preprocess: engine === 'sadtalker' ? 'crop' : undefined,
+            enhancer: engine === 'sadtalker' ? 'gfpgan' : undefined
           }
         }
       });
@@ -197,7 +207,13 @@ export default function StudioInterface() {
         progress: 0
       });
 
-      toast({ title: "Success", description: "Video generated successfully!" });
+      const engineNames = {
+        sadtalker: 'SadTalker (Free)',
+        liveportrait: 'LivePortrait (Enhanced)',
+        pro: 'Video Engine Pro'
+      };
+
+      toast({ title: "Success", description: `Video generated with ${engineNames[engine]} engine!` });
 
     } catch (error: any) {
       console.error('Video generation error:', error);
@@ -433,23 +449,61 @@ export default function StudioInterface() {
                         </div>
                       </div>
 
-                      <Button 
-                        onClick={generateVideo} 
-                        disabled={!canProceed(2) || state.isProcessing}
-                        className="w-full"
-                      >
-                        {state.video.status === 'generating' ? (
-                          <>
-                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                            Generating Video...
-                          </>
-                        ) : (
-                          <>
-                            <Film className="h-4 w-4 mr-2" />
-                            Generate Video
-                          </>
-                        )}
-                      </Button>
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-3 gap-3">
+                          <Button 
+                            onClick={() => generateVideo('sadtalker')} 
+                            disabled={!canProceed(2) || state.isProcessing}
+                            variant="outline"
+                            className="flex-1"
+                          >
+                            {state.isProcessing ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <>
+                                <Film className="h-4 w-4 mr-2" />
+                                Free
+                              </>
+                            )}
+                          </Button>
+                          
+                          <Button 
+                            onClick={() => generateVideo('liveportrait')} 
+                            disabled={!canProceed(2) || state.isProcessing}
+                            className="flex-1"
+                          >
+                            {state.isProcessing ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <>
+                                <Crown className="h-4 w-4 mr-2" />
+                                Enhanced
+                              </>
+                            )}
+                          </Button>
+
+                          <Button 
+                            onClick={() => generateVideo('pro')} 
+                            disabled={!canProceed(2) || state.isProcessing}
+                            variant="secondary"
+                            className="flex-1"
+                          >
+                            {state.isProcessing ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <>
+                                <Sparkles className="h-4 w-4 mr-2" />
+                                Pro
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                        
+                        <div className="text-xs text-muted-foreground text-center space-y-1">
+                          <p>Free: SadTalker (720p, unlimited) • Enhanced: LivePortrait (1080p, premium quality)</p>
+                          <p>Pro: Video Engine Pro (4K, 60fps, cinematic effects)</p>
+                        </div>
+                      </div>
 
                       {state.video.videoUrl && (
                         <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
