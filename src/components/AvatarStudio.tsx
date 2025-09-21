@@ -372,10 +372,14 @@ export const AvatarStudio = () => {
   const handleSendMessage = async () => {
     if (!prompt.trim()) return;
 
+    // Clear the input immediately
+    const currentPrompt = prompt;
+    setPrompt("");
+
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
       type: "user",
-      content: prompt,
+      content: currentPrompt,
       timestamp: new Date()
     };
 
@@ -383,19 +387,19 @@ export const AvatarStudio = () => {
     setShowInputCard(false); // Hide input card immediately when generation starts
     
     // Check if it's a refinement or new generation
-    if (previewCards.length > 0 && (prompt.toLowerCase().includes('change') || prompt.toLowerCase().includes('make') || prompt.toLowerCase().includes('add') || prompt.toLowerCase().includes('remove'))) {
+    if (previewCards.length > 0 && (currentPrompt.toLowerCase().includes('change') || currentPrompt.toLowerCase().includes('make') || currentPrompt.toLowerCase().includes('add') || currentPrompt.toLowerCase().includes('remove'))) {
       // Handle refinements - apply to all variants
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         type: "assistant", 
-        content: `Applying "${prompt}" to all variants. Regenerating now...`,
+        content: `Applying "${currentPrompt}" to all variants. Regenerating now...`,
         timestamp: new Date()
       };
       setMessages(prev => [...prev, assistantMessage]);
       
       // Update and regenerate all existing cards with the edit
       setIsGenerating(true);
-      const updatedPrompt = prompt;
+      const updatedPrompt = currentPrompt;
       
       try {
         for (let i = 0; i < previewCards.length; i++) {
@@ -450,7 +454,7 @@ export const AvatarStudio = () => {
       
     } else {
       // Generate new previews
-      await generatePreviews(prompt);
+      await generatePreviews(currentPrompt);
       
       // Smooth scroll to Generated Previews section
       setTimeout(() => {
@@ -468,8 +472,6 @@ export const AvatarStudio = () => {
         }
       }, 500);
     }
-    
-    setPrompt("");
   };
 
   // Voice input functionality
