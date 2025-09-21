@@ -260,29 +260,26 @@ export const AvatarStudio = () => {
     const finalPrompt = safetyCheck.reframedPrompt || userPrompt;
     setIsGenerating(true);
 
-    // Enhanced prompts following OpenArt workflow
-    const enhancedPositive = `${finalPrompt}, detailed clothing, realistic natural lighting, high quality, professional photography, 8k resolution, sharp focus, realistic skin texture, detailed hair, photorealistic`;
-    
-    // Intelligent variant generation with unique prompts
+    // Ultra-realistic enhancement following professional photography standards
     const cardCount = isMultiGeneration ? 10 : 3;
     
     const intelligentVariants = isMultiGeneration 
       ? [
-          "professional corporate headshot, confident expression, business attire",
-          "artistic portrait, soft natural lighting, creative composition", 
-          "editorial fashion shot, dramatic lighting, high-end styling",
-          "lifestyle portrait, candid expression, warm lighting",
-          "glamour shot, perfect makeup, studio lighting",
-          "classic portrait, timeless elegance, refined styling", 
-          "modern portrait, contemporary style, urban background",
-          "artistic close-up, emotional expression, moody lighting",
-          "commercial headshot, approachable smile, professional setting",
-          "creative portrait, unique angle, artistic interpretation"
+          "professional studio headshot, perfect lighting, high-end fashion photography style, ultra sharp detail, hyperrealistic skin texture, professional makeup, 85mm lens, shallow depth of field, award-winning portrait photography, 8K ultra HD, magazine cover quality, commercial photography, flawless composition",
+          "cinematic portrait, dramatic lighting, editorial fashion style, award-winning photography, medium format camera quality, professional color grading, cinematic bokeh, moody atmosphere, artistic shadows, luxury fashion shoot, ultra-realistic, pristine detail, professional retouching",
+          "natural lifestyle portrait, golden hour lighting, authentic expression, candid moment, lifestyle photography, warm natural tones, organic composition, photojournalism style, environmental portrait, genuine emotion, professional quality, ultra-sharp focus, perfect exposure",
+          "glamour photography, studio perfection, high-end beauty shoot, flawless lighting setup, professional makeup artistry, luxury fashion styling, ultra-high resolution, pristine detail, magazine quality, commercial beauty photography",
+          "artistic portrait, creative lighting, avant-garde composition, editorial excellence, fashion photography mastery, dramatic shadows, professional artistry, ultra-realistic detail, museum quality photography",
+          "classic portrait, timeless elegance, refined styling, traditional photography excellence, perfect composition, professional lighting mastery, heritage quality, pristine craftsmanship, archival standard",
+          "contemporary portrait, modern aesthetic, urban sophistication, cutting-edge photography, innovative lighting, professional excellence, ultra-modern quality, pristine execution",
+          "intimate close-up, emotional depth, psychological portrait, masterful lighting, professional artistry, ultra-detailed, soul-capturing quality, exhibition standard",
+          "corporate executive portrait, boardroom excellence, professional authority, commanding presence, luxury business photography, ultra-sharp detail, executive quality standards",
+          "creative artistic interpretation, innovative perspective, avant-garde excellence, artistic mastery, professional creativity, ultra-high quality, gallery exhibition standard"
         ]
       : [
-          "Style A - Professional, executive corporate headshot, confident business attire, studio lighting",
-          "Style B - Creative, artistic editorial portrait, dramatic cinematic lighting, fashion photography", 
-          "Style C - Natural, authentic lifestyle shot, soft natural lighting, genuine expression"
+          "professional studio headshot, perfect lighting, high-end fashion photography style, ultra sharp detail, hyperrealistic skin texture, professional makeup, 85mm lens, shallow depth of field, award-winning portrait photography, 8K ultra HD, magazine cover quality, commercial photography, flawless composition",
+          "cinematic portrait, dramatic lighting, editorial fashion style, award-winning photography, medium format camera quality, professional color grading, cinematic bokeh, moody atmosphere, artistic shadows, luxury fashion shoot, ultra-realistic, pristine detail, professional retouching",
+          "natural lifestyle portrait, golden hour lighting, authentic expression, candid moment, lifestyle photography, warm natural tones, organic composition, photojournalism style, environmental portrait, genuine emotion, professional quality, ultra-sharp focus, perfect exposure"
         ];
 
     const newCards: PreviewCard[] = Array.from({ length: cardCount }, (_, i) => ({
@@ -301,35 +298,53 @@ export const AvatarStudio = () => {
       // Call actual avatar generation service
       const { AvatarService } = await import("@/services/avatarService");
       
+      // Sequential generation with enhanced error handling and ultra-quality settings
       for (let i = 0; i < newCards.length; i++) {
-        const result = await AvatarService.generateAvatar({
-          prompt: newCards[i].prompt,
-          negativePrompt,
-          adherence,
-          steps,
-          enhance: enhanceEnabled,
-          selectedPreset,
-          resolution: "1024x1024",
-          photoMode: true,
-          referenceImage
-        });
+        try {
+          const result = await AvatarService.generateAvatar({
+            prompt: newCards[i].prompt,
+            negativePrompt: `${negativePrompt}, blurry, low quality, distorted, deformed, ugly, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed face, long neck, cropped, worst quality, low quality, jpeg artifacts, watermark, signature, text, logo`,
+            adherence: 12.0, // Ultra-high adherence for professional quality
+            steps: 100, // Maximum inference steps for ultra-realistic results
+            enhance: true, // Always enhance for maximum quality
+            selectedPreset,
+            resolution: "1024x1024",
+            photoMode: true, // Always use photo mode for realism
+            referenceImage
+          });
 
-        if (result.success && result.image) {
-          setPreviewCards(prev => prev.map(card => 
-            card.id === newCards[i].id 
-              ? { ...card, imageUrl: result.image!, isGenerating: false, safetyPassed: true }
-              : card
-          ));
-          console.log(`Variant ${i + 1} generated successfully`);
-        } else {
-          const errorMessage = result.error || 'Unknown error occurred';
+          if (result.success && result.image) {
+            setPreviewCards(prev => prev.map(card => 
+              card.id === newCards[i].id 
+                ? { ...card, imageUrl: result.image!, isGenerating: false, safetyPassed: true }
+                : card
+            ));
+            console.log(`Ultra-realistic variant ${i + 1} generated successfully`);
+            
+            if (i === 0) {
+              toast.success("Ultra-realistic avatar generated!");
+            }
+          } else {
+            const errorMessage = result.error || 'Unknown error occurred';
+            setPreviewCards(prev => prev.map(card => 
+              card.id === newCards[i].id 
+                ? { ...card, isGenerating: false, safetyPassed: false }
+                : card
+            ));
+            console.error(`Generation failed for variant ${i + 1}:`, errorMessage);
+          }
+        } catch (error) {
+          console.error(`Generation failed for variant ${i + 1}:`, error);
           setPreviewCards(prev => prev.map(card => 
             card.id === newCards[i].id 
               ? { ...card, isGenerating: false, safetyPassed: false }
               : card
           ));
-          console.error(`Generation failed for variant ${i + 1}:`, errorMessage);
-          toast.error(`Generation failed for variant ${i + 1}: ${errorMessage}`);
+        }
+
+        // Strategic delay between variants to prevent API rate limiting
+        if (i < newCards.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 3000));
         }
       }
       

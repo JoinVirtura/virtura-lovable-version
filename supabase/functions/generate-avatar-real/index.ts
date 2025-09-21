@@ -67,9 +67,9 @@ serve(async (req) => {
 
     console.log('Enhanced prompt:', enhancedPrompt);
 
-    // Ultra-high quality generation parameters
-    const finalSteps = steps || 75; // Always use high step count for maximum quality
-    const guidanceScale = adherence || 8.5; // Increased for better prompt adherence
+    // Ultra-realistic professional photography parameters
+    const finalSteps = steps || 100; // Maximum quality with 100 inference steps
+    const guidanceScale = adherence || 12.0; // High guidance for ultra-realistic results
     const dimensions = resolution === '1536x1536' ? { width: 1536, height: 1536 } :
                      resolution === '512x512' ? { width: 512, height: 512 } :
                      { width: 1024, height: 1024 };
@@ -82,7 +82,7 @@ serve(async (req) => {
     console.log('Final enhanced prompt:', finalPrompt);
     console.log('Generation parameters:', { finalSteps, guidanceScale, dimensions });
 
-    // Always use FLUX.1-dev for maximum quality - never compromise
+    // Ultra-realistic generation with professional photography quality
     const image = await hf.textToImage({
       inputs: finalPrompt,
       model: 'black-forest-labs/FLUX.1-dev',
@@ -91,7 +91,10 @@ serve(async (req) => {
         guidance_scale: guidanceScale,
         width: dimensions.width,
         height: dimensions.height,
-        seed: Math.floor(Math.random() * 1000000), // Ensure unique results for variants
+        seed: Math.floor(Math.random() * 1000000),
+        scheduler: 'DPMSolverMultistepScheduler', // Advanced sampling for ultra-quality
+        use_karras_sigmas: true, // Enhanced noise scheduling
+        eta: 0.0, // Deterministic sampling for consistency
       }
     });
 
