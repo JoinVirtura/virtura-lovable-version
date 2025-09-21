@@ -733,20 +733,20 @@ export const AvatarStudio = ({ editImage, onBackToLibrary }: AvatarStudioProps) 
               </h1>
             </div>
             <p className="text-lg text-muted-foreground mb-8">Your ChatGPT-powered creative assistant</p>
-            
-            {/* Back to Library button for edit mode */}
-            {editImage && onBackToLibrary && (
-              <div className="mb-6">
-                <Button
-                  variant="outline"
-                  onClick={onBackToLibrary}
-                  className="flex items-center gap-2"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                  Back to Library
-                </Button>
+
+            {/* Edit Mode - Display the original image being edited */}
+            {editImage && (
+              <div className="mb-8">
+                <Card className="max-w-md mx-auto p-4 bg-gradient-card border-primary/20">
+                  <img 
+                    src={editImage.imageUrl} 
+                    alt={editImage.title}
+                    className="w-full h-auto rounded-lg shadow-lg"
+                  />
+                  <p className="text-sm text-muted-foreground mt-3 text-center">
+                    Original: {editImage.prompt}
+                  </p>
+                </Card>
               </div>
             )}
 
