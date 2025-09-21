@@ -63,6 +63,7 @@ export const AvatarStudio = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [previewCards, setPreviewCards] = useState<PreviewCard[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showInputCard, setShowInputCard] = useState(true);
   
   const [watermarkEnabled, setWatermarkEnabled] = useState(true);
   const [aiProofEnabled, setAiProofEnabled] = useState(false);
@@ -379,6 +380,7 @@ export const AvatarStudio = () => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    setShowInputCard(false); // Hide input card immediately when generation starts
     
     // Check if it's a refinement or new generation
     if (previewCards.length > 0 && (prompt.toLowerCase().includes('change') || prompt.toLowerCase().includes('make') || prompt.toLowerCase().includes('add') || prompt.toLowerCase().includes('remove'))) {
@@ -690,180 +692,196 @@ export const AvatarStudio = () => {
             </div>
             <p className="text-lg text-muted-foreground mb-8">Your ChatGPT-powered creative assistant</p>
             
-            {/* Main Search Bar */}
-            <Card className="w-full max-w-3xl mx-auto p-3 bg-gradient-card border-border/50 shadow-lg">
-              <div className="space-y-3 w-full">
-                {/* Positive Prompt */}
-                <div className="flex gap-2 w-full">
-                  <Textarea
-                    placeholder="Describe your avatar idea... e.g., 'Tall young woman walking down the street in high heels, detailed clothing, realistic natural lighting'"
-                    value={prompt}
-                    onChange={(e) => setPrompt(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        handleSendMessage();
-                      }
-                    }}
-                    className="flex-1 min-h-[60px] resize-none bg-background/50 border-0 focus-visible:ring-0 text-base min-w-0"
-                  />
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                  />
-                  <Button 
-                    variant="outline"
-                    size="lg"
-                    className="px-3 py-4 border-border/50 hover:border-primary/50 flex-shrink-0"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={isUploading}
-                  >
-                    {isUploading ? (
-                      <div className="animate-spin w-5 h-5 border-2 border-primary border-t-transparent rounded-full" />
-                    ) : (
-                      <Upload className="w-5 h-5" />
-                    )}
-                  </Button>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button 
-                          variant="outline"
-                          size="lg"
-                          className={`px-3 py-4 border-border/50 hover:border-primary/50 flex-shrink-0 ${
-                            isRecording ? 'animate-pulse bg-red-500/20 border-red-500/50' : ''
-                          }`}
-                          onClick={toggleVoiceInput}
-                          disabled={isGenerating}
-                        >
-                          {isRecording ? (
-                            <MicOff className="w-5 h-5 text-red-500" />
-                          ) : (
-                            <Mic className="w-5 h-5" />
-                          )}
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Speak your prompt</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                  <Button 
-                    onClick={handleSendMessage}
-                    disabled={!prompt.trim() || isGenerating}
-                    className="px-6 py-4 bg-primary hover:bg-primary/90"
-                    size="lg"
-                  >
-                    {isGenerating ? (
-                      <div className="animate-spin w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full" />
-                    ) : (
-                      <Send className="w-5 h-5" />
-                    )}
-                  </Button>
-                </div>
-
-                {/* Reference Image Preview */}
-                {referenceImage && (
-                  <div className="flex items-center gap-3 p-3 bg-background/30 rounded-lg border border-border/30">
-                    <div className="w-16 h-16 rounded-lg overflow-hidden bg-background/50">
-                      <img 
-                        src={referenceImage} 
-                        alt="Reference" 
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-foreground">Reference Image</p>
-                      <p className="text-xs text-muted-foreground">This image will guide the generation</p>
-                    </div>
-                    <Button
+            {/* Main Search Bar - Show only when showInputCard is true */}
+            {showInputCard && (
+              <Card className="w-full max-w-3xl mx-auto p-3 bg-gradient-card border-border/50 shadow-lg">
+                <div className="space-y-3 w-full">
+                  {/* Positive Prompt */}
+                  <div className="flex gap-2 w-full">
+                    <Textarea
+                      placeholder="Describe your avatar idea... e.g., 'Tall young woman walking down the street in high heels, detailed clothing, realistic natural lighting'"
+                      value={prompt}
+                      onChange={(e) => setPrompt(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          handleSendMessage();
+                        }
+                      }}
+                      className="flex-1 min-h-[60px] resize-none bg-background/50 border-0 focus-visible:ring-0 text-base min-w-0"
+                    />
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                    <Button 
                       variant="outline"
-                      size="sm"
-                      onClick={removeReferenceImage}
-                      className="border-border/50 hover:border-red-500/50 hover:text-red-500"
+                      size="lg"
+                      className="px-3 py-4 border-border/50 hover:border-primary/50 flex-shrink-0"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isUploading}
                     >
-                      Remove
+                      {isUploading ? (
+                        <div className="animate-spin w-5 h-5 border-2 border-primary border-t-transparent rounded-full" />
+                      ) : (
+                        <Upload className="w-5 h-5" />
+                      )}
+                    </Button>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button 
+                            variant="outline"
+                            size="lg"
+                            className={`px-3 py-4 border-border/50 hover:border-primary/50 flex-shrink-0 ${
+                              isRecording ? 'animate-pulse bg-red-500/20 border-red-500/50' : ''
+                            }`}
+                            onClick={toggleVoiceInput}
+                            disabled={isGenerating}
+                          >
+                            {isRecording ? (
+                              <MicOff className="w-5 h-5 text-red-500" />
+                            ) : (
+                              <Mic className="w-5 h-5" />
+                            )}
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Speak your prompt</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <Button 
+                      onClick={handleSendMessage}
+                      disabled={!prompt.trim() || isGenerating}
+                      className="px-6 py-4 bg-primary hover:bg-primary/90"
+                      size="lg"
+                    >
+                      {isGenerating ? (
+                        <div className="animate-spin w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full" />
+                      ) : (
+                        <Send className="w-5 h-5" />
+                      )}
                     </Button>
                   </div>
-                )}
 
-                {/* Negative Prompt */}
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground mb-2 block">Negative Prompt</label>
-                  <Textarea
-                    placeholder="What to avoid: blurry fingers, extra limbs, distorted faces..."
-                    value={negativePrompt}
-                    onChange={(e) => setNegativePrompt(e.target.value)}
-                    className="min-h-[60px] resize-none bg-background/30 border-border/30 text-sm"
-                  />
-                </div>
+                  {/* Reference Image Preview */}
+                  {referenceImage && (
+                    <div className="flex items-center gap-3 p-3 bg-background/30 rounded-lg border border-border/30">
+                      <div className="w-16 h-16 rounded-lg overflow-hidden bg-background/50">
+                        <img 
+                          src={referenceImage} 
+                          alt="Reference" 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-foreground">Reference Image</p>
+                        <p className="text-xs text-muted-foreground">This image will guide the generation</p>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={removeReferenceImage}
+                        className="border-border/50 hover:border-red-500/50 hover:text-red-500"
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  )}
 
-                {/* Settings Row */}
-                <div className="flex flex-wrap items-center gap-4 pt-2">
-                  <div className="flex items-center gap-2">
-                    <label className="text-sm text-muted-foreground">Adherence:</label>
-                    <select 
-                      value={adherence} 
-                      onChange={(e) => setAdherence(Number(e.target.value))}
-                      className="px-2 py-1 rounded border border-border/30 bg-background/50 text-sm"
-                    >
-                      {[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18].map(n => (
-                        <option key={n} value={n}>{n}</option>
-                      ))}
-                    </select>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <label className="text-sm text-muted-foreground">Steps:</label>
-                    <select 
-                      value={steps} 
-                      onChange={(e) => setSteps(Number(e.target.value))}
-                      className="px-2 py-1 rounded border border-border/30 bg-background/50 text-sm"
-                    >
-                      <option value={20}>20</option>
-                      <option value={30}>30</option>
-                      <option value={49}>49 (Recommended)</option>
-                      <option value={100}>100</option>
-                    </select>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <Switch 
-                      checked={enhanceEnabled}
-                      onCheckedChange={setEnhanceEnabled}
+                  {/* Negative Prompt */}
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground mb-2 block">Negative Prompt</label>
+                    <Textarea
+                      placeholder="What to avoid: blurry fingers, extra limbs, distorted faces..."
+                      value={negativePrompt}
+                      onChange={(e) => setNegativePrompt(e.target.value)}
+                      className="min-h-[60px] resize-none bg-background/30 border-border/30 text-sm"
                     />
-                    <label className="text-sm text-muted-foreground">Enhance</label>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <Switch 
-                      checked={isMultiGeneration}
-                      onCheckedChange={setIsMultiGeneration}
-                    />
-                    <label className="text-sm text-muted-foreground">Generate 10+ variants</label>
-                  </div>
-
-                  {characterPresets.length > 0 && (
+                  {/* Settings Row */}
+                  <div className="flex flex-wrap items-center gap-4 pt-2">
                     <div className="flex items-center gap-2">
-                      <label className="text-sm text-muted-foreground">Character:</label>
+                      <label className="text-sm text-muted-foreground">Adherence:</label>
                       <select 
-                        value={selectedPreset || ''} 
-                        onChange={(e) => setSelectedPreset(e.target.value || null)}
+                        value={adherence} 
+                        onChange={(e) => setAdherence(Number(e.target.value))}
                         className="px-2 py-1 rounded border border-border/30 bg-background/50 text-sm"
                       >
-                        <option value="">None</option>
-                        {characterPresets.map(preset => (
-                          <option key={preset.id} value={preset.name}>@{preset.name}</option>
+                        {[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18].map(n => (
+                          <option key={n} value={n}>{n}</option>
                         ))}
                       </select>
                     </div>
-                  )}
+                    
+                    <div className="flex items-center gap-2">
+                      <label className="text-sm text-muted-foreground">Steps:</label>
+                      <select 
+                        value={steps} 
+                        onChange={(e) => setSteps(Number(e.target.value))}
+                        className="px-2 py-1 rounded border border-border/30 bg-background/50 text-sm"
+                      >
+                        <option value={20}>20</option>
+                        <option value={30}>30</option>
+                        <option value={49}>49 (Recommended)</option>
+                        <option value={100}>100</option>
+                      </select>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Switch 
+                        checked={enhanceEnabled}
+                        onCheckedChange={setEnhanceEnabled}
+                      />
+                      <label className="text-sm text-muted-foreground">Enhance</label>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Switch 
+                        checked={isMultiGeneration}
+                        onCheckedChange={setIsMultiGeneration}
+                      />
+                      <label className="text-sm text-muted-foreground">Generate 10+ variants</label>
+                    </div>
+
+                    {characterPresets.length > 0 && (
+                      <div className="flex items-center gap-2">
+                        <label className="text-sm text-muted-foreground">Character:</label>
+                        <select 
+                          value={selectedPreset || ''} 
+                          onChange={(e) => setSelectedPreset(e.target.value || null)}
+                          className="px-2 py-1 rounded border border-border/30 bg-background/50 text-sm"
+                        >
+                          <option value="">None</option>
+                          {characterPresets.map(preset => (
+                            <option key={preset.id} value={preset.name}>@{preset.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </Card>
+              </Card>
+            )}
+
+            {/* New Generation Button - Show when input card is hidden */}
+            {!showInputCard && (
+              <Card className="w-full max-w-md mx-auto p-4 bg-gradient-card border-border/50 shadow-lg">
+                <Button 
+                  onClick={() => setShowInputCard(true)}
+                  className="w-full bg-primary hover:bg-primary/90"
+                  size="lg"
+                >
+                  <Sparkles className="w-5 h-5 mr-2" />
+                  New Generation
+                </Button>
+              </Card>
+            )}
 
             {/* Quick Suggestions */}
             <div className="flex flex-wrap justify-center gap-2 mt-6">
@@ -936,31 +954,7 @@ export const AvatarStudio = () => {
                         )}
                       </div>
                       
-                      <div className="space-y-3">
-                        <p className="text-sm text-muted-foreground line-clamp-2">{card.prompt}</p>
-                        
-                        <div className="grid grid-cols-2 gap-2">
-                          <Button 
-                            size="sm" 
-                            variant="outline" 
-                            onClick={() => handleQuickEdit(card.id, 'more stylized')}
-                            disabled={card.isGenerating}
-                            className="border-border/50"
-                          >
-                            <Edit3 className="w-3 h-3 mr-1" />
-                            Style
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="outline" 
-                            onClick={() => handleQuickEdit(card.id, 'better lighting')}
-                            disabled={card.isGenerating}
-                            className="border-border/50"
-                          >
-                            <Zap className="w-3 h-3 mr-1" />
-                            Light
-                          </Button>
-                        </div>
+                       <div className="space-y-3">
 
                         <div className="grid grid-cols-4 gap-1">
                           <Button 
@@ -1035,72 +1029,6 @@ export const AvatarStudio = () => {
                   ))}
                 </div>
               </Card>
-
-              {/* Settings - Horizontal */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
-                {/* Format Settings */}
-                <Card className="p-4 bg-gradient-card border-border/50 w-full">
-                  <h3 className="font-semibold text-foreground mb-3">Format Options</h3>
-                  <div className="space-y-3">
-                    <div className="grid grid-cols-2 gap-3">
-                      <Button variant="outline" className="border-border/50">
-                        <FileImage className="w-4 h-4 mr-2" />
-                        PNG
-                      </Button>
-                      <Button variant="outline" className="border-border/50">
-                        <FileImage className="w-4 h-4 mr-2" />
-                        JPG
-                      </Button>
-                    </div>
-                    
-                    <Button variant="outline" className="w-full border-border/50">
-                      <Video className="w-4 h-4 mr-2" />
-                      MP4 Video
-                      <Crown className="w-4 h-4 ml-2 text-yellow-500" />
-                    </Button>
-                  </div>
-                </Card>
-
-                {/* Safety & Settings */}
-                <Card className="p-4 bg-gradient-card border-border/50 w-full">
-                  <h3 className="font-semibold text-foreground mb-3">Safety & Settings</h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        {watermarkEnabled ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                        <span className="text-sm">Watermark</span>
-                      </div>
-                      <Switch 
-                        checked={watermarkEnabled}
-                        onCheckedChange={setWatermarkEnabled}
-                      />
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Shield className="w-4 h-4" />
-                        <span className="text-sm">AI Proof Content</span>
-                      </div>
-                      <Switch 
-                        checked={aiProofEnabled}
-                        onCheckedChange={setAiProofEnabled}
-                      />
-                    </div>
-                    
-                    <div className="pt-3 border-t border-border/50">
-                      <div className="flex items-center gap-2 text-xs text-green-600">
-                        <CheckCircle className="w-3 h-3" />
-                        <span>Content scanning active</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-xs text-green-600 mt-1">
-                        <Shield className="w-3 h-3" />
-                        <span>Unsafe prompt blocking enabled</span>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              </div>
 
               {/* Studio Chat - Horizontal Interface */}
               <Card className="mt-6 p-4 bg-gradient-card border-border/50 w-full">
@@ -1191,6 +1119,72 @@ export const AvatarStudio = () => {
                   </div>
                 </div>
               </Card>
+
+              {/* Settings - Horizontal */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                
+                {/* Format Settings */}
+                <Card className="p-4 bg-gradient-card border-border/50 w-full">
+                  <h3 className="font-semibold text-foreground mb-3">Format Options</h3>
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <Button variant="outline" className="border-border/50">
+                        <FileImage className="w-4 h-4 mr-2" />
+                        PNG
+                      </Button>
+                      <Button variant="outline" className="border-border/50">
+                        <FileImage className="w-4 h-4 mr-2" />
+                        JPG
+                      </Button>
+                    </div>
+                    
+                    <Button variant="outline" className="w-full border-border/50">
+                      <Video className="w-4 h-4 mr-2" />
+                      MP4 Video
+                      <Crown className="w-4 h-4 ml-2 text-yellow-500" />
+                    </Button>
+                  </div>
+                </Card>
+
+                {/* Safety & Settings */}
+                <Card className="p-4 bg-gradient-card border-border/50 w-full">
+                  <h3 className="font-semibold text-foreground mb-3">Safety & Settings</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {watermarkEnabled ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                        <span className="text-sm">Watermark</span>
+                      </div>
+                      <Switch 
+                        checked={watermarkEnabled}
+                        onCheckedChange={setWatermarkEnabled}
+                      />
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Shield className="w-4 h-4" />
+                        <span className="text-sm">AI Proof Content</span>
+                      </div>
+                      <Switch 
+                        checked={aiProofEnabled}
+                        onCheckedChange={setAiProofEnabled}
+                      />
+                    </div>
+                    
+                    <div className="pt-3 border-t border-border/50">
+                      <div className="flex items-center gap-2 text-xs text-green-600">
+                        <CheckCircle className="w-3 h-3" />
+                        <span>Content scanning active</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-green-600 mt-1">
+                        <Shield className="w-3 h-3" />
+                        <span>Unsafe prompt blocking enabled</span>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              </div>
             </div>
           )}
         </div>
