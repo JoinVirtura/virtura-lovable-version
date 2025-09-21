@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import DashboardPage from "./pages/DashboardPage";
 import TalkingAvatarPage from "./pages/TalkingAvatarPage";
 import StudioPage from "./pages/StudioPage";
+import StudioInterface from "./components/StudioInterface";
 import IndividualsPage from "./pages/IndividualsPage";
 import BrandsPage from "./pages/BrandsPage";
 import LibraryPage from "./pages/LibraryPage";
@@ -61,7 +62,8 @@ const AppRoutes = () => {
       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       
       <Route path="/talking-avatar" element={<ProtectedRoute><TalkingAvatarPage /></ProtectedRoute>} />
-      <Route path="/studio" element={<ProtectedRoute><StudioPage /></ProtectedRoute>} />
+      <Route path="/studio" element={<ProtectedRoute><StudioInterface /></ProtectedRoute>} />
+      <Route path="/studio-pro" element={<ProtectedRoute><StudioPage /></ProtectedRoute>} />
       <Route path="/create" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       <Route path="/old-dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
       <Route path="/chat" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
