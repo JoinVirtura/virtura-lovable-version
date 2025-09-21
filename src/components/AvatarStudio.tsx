@@ -96,6 +96,17 @@ export const AvatarStudio = ({ editImage, onBackToLibrary }: AvatarStudioProps) 
     prompt: string;
   }>>([]);
 
+  // Clear reference image when editImage becomes null (normal mode)
+  useEffect(() => {
+    if (editImage === null) {
+      setReferenceImage(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    } else if (editImage?.imageUrl) {
+      setReferenceImage(editImage.imageUrl);
+    }
+  }, [editImage]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
