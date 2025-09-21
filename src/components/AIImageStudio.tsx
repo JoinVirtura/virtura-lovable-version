@@ -74,6 +74,9 @@ export const AIImageStudio = () => {
   const [recognition, setRecognition] = useState<any>(null);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   const [audioChunks, setAudioChunks] = useState<Blob[]>([]);
+  const [showInputCard, setShowInputCard] = useState(true);
+  const [chatMessages, setChatMessages] = useState<Array<{role: 'user' | 'assistant', content: string}>>([]);
+  const [chatInput, setChatInput] = useState("");
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -190,6 +193,7 @@ export const AIImageStudio = () => {
       );
 
       toast.success("Images generated successfully!");
+      setShowInputCard(false); // Hide input card after successful generation
       
     } catch (error) {
       console.error('Generation error:', error);
@@ -358,282 +362,299 @@ export const AIImageStudio = () => {
           </p>
         </div>
 
-        {/* Main Input Card */}
-        <Card className="mb-8 backdrop-blur-sm bg-background/80 border-primary/20 shadow-xl">
-          <div className="p-6">
-            <div className="space-y-6">
-              {/* Prompt Input */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium">Describe your image</label>
-                  <div className="flex gap-2">
-                    <Dialog open={showPromptLibrary} onOpenChange={setShowPromptLibrary}>
-                      <DialogTrigger asChild>
-                        <Button variant="outline" size="sm">
-                          <BookOpen className="h-4 w-4 mr-2" />
-                          Prompt Library
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden">
-                        <PromptLibrary 
-                          onUsePrompt={handleUsePromptFromLibrary}
-                          onClose={() => setShowPromptLibrary(false)}
-                        />
-                      </DialogContent>
-                    </Dialog>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={toggleVoiceInput}
-                            className={isRecording ? "bg-red-500 text-white" : ""}
-                          >
-                            {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+        {/* Main Input Card - Hide after generation */}
+        {showInputCard && (
+          <Card className="mb-8 backdrop-blur-sm bg-background/80 border-primary/20 shadow-xl">
+            <div className="p-6">
+              <div className="space-y-6">
+                {/* Prompt Input */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-medium">Describe your image</label>
+                    <div className="flex gap-2">
+                      <Dialog open={showPromptLibrary} onOpenChange={setShowPromptLibrary}>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" size="sm">
+                            <BookOpen className="h-4 w-4 mr-2" />
+                            Prompt Library
                           </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          {isRecording ? "Stop recording" : "Voice input"}
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden">
+                          <PromptLibrary 
+                            onUsePrompt={handleUsePromptFromLibrary}
+                            onClose={() => setShowPromptLibrary(false)}
+                          />
+                        </DialogContent>
+                      </Dialog>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={toggleVoiceInput}
+                              className={isRecording ? "bg-red-500 text-white" : ""}
+                            >
+                              {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {isRecording ? "Stop recording" : "Voice input"}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                  </div>
+                  
+                  <div className="relative">
+                    <Textarea
+                      placeholder="A majestic mountain landscape at sunset, snow-capped peaks, dramatic clouds, photorealistic, 8K quality..."
+                      value={prompt}
+                      onChange={(e) => setPrompt(e.target.value)}
+                      className="min-h-[100px] pr-12 resize-none"
+                    />
+                    <Button
+                      onClick={generatePreviews}
+                      disabled={isGenerating || !prompt.trim()}
+                      className="absolute bottom-3 right-3"
+                      size="sm"
+                    >
+                      {isGenerating ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="h-4 w-4 mr-2" />
+                          Generate
+                        </>
+                      )}
+                    </Button>
                   </div>
                 </div>
-                
-                <div className="relative">
-                  <Textarea
-                    placeholder="A majestic mountain landscape at sunset, snow-capped peaks, dramatic clouds, photorealistic, 8K quality..."
-                    value={prompt}
-                    onChange={(e) => setPrompt(e.target.value)}
-                    className="min-h-[100px] pr-12 resize-none"
-                  />
+
+                {/* Content Type & Style Selectors */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Content Type</label>
+                    <Select value={contentType} onValueChange={setContentType}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {contentTypes.map((type) => (
+                          <SelectItem key={type.value} value={type.value}>
+                            <div className="flex items-center gap-2">
+                              <type.icon className="h-4 w-4" />
+                              {type.label}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Style</label>
+                    <Select value={style} onValueChange={setStyle}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {styles.map((styleOption) => (
+                          <SelectItem key={styleOption} value={styleOption}>
+                            {styleOption}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Quality</label>
+                    <Select value={quality} onValueChange={setQuality}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {qualityPresets.map((preset) => (
+                          <SelectItem key={preset.value} value={preset.value}>
+                            <div className="flex flex-col">
+                              <span>{preset.label}</span>
+                              <span className="text-xs text-muted-foreground">{preset.description}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Advanced Settings Toggle */}
+                <div className="flex items-center justify-between pt-4 border-t">
+                  <div className="flex items-center gap-2">
+                    <Settings className="h-4 w-4" />
+                    <span className="text-sm font-medium">Advanced Settings</span>
+                  </div>
                   <Button
-                    onClick={generatePreviews}
-                    disabled={isGenerating || !prompt.trim()}
-                    className="absolute bottom-3 right-3"
+                    variant="ghost"
                     size="sm"
+                    onClick={() => setShowAdvanced(!showAdvanced)}
                   >
-                    {isGenerating ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                        Generating...
-                      </>
-                    ) : (
-                      <>
-                        <Send className="h-4 w-4 mr-2" />
-                        Generate
-                      </>
-                    )}
+                    {showAdvanced ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </Button>
                 </div>
-              </div>
 
-              {/* Content Type & Style Selectors */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Content Type</label>
-                  <Select value={contentType} onValueChange={setContentType}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {contentTypes.map((type) => (
-                        <SelectItem key={type.value} value={type.value}>
-                          <div className="flex items-center gap-2">
-                            <type.icon className="h-4 w-4" />
-                            {type.label}
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                {/* Advanced Settings */}
+                {showAdvanced && (
+                  <div className="space-y-6 pt-4 border-t">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">Aspect Ratio</label>
+                          <Select value={aspectRatio} onValueChange={setAspectRatio}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="1:1">Square (1:1)</SelectItem>
+                              <SelectItem value="16:9">Landscape (16:9)</SelectItem>
+                              <SelectItem value="9:16">Portrait (9:16)</SelectItem>
+                              <SelectItem value="4:3">Classic (4:3)</SelectItem>
+                              <SelectItem value="3:4">Classic Portrait (3:4)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Style</label>
-                  <Select value={style} onValueChange={setStyle}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {styles.map((styleOption) => (
-                        <SelectItem key={styleOption} value={styleOption}>
-                          {styleOption}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Quality</label>
-                  <Select value={quality} onValueChange={setQuality}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {qualityPresets.map((preset) => (
-                        <SelectItem key={preset.value} value={preset.value}>
-                          <div className="flex flex-col">
-                            <span>{preset.label}</span>
-                            <span className="text-xs text-muted-foreground">{preset.description}</span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              {/* Advanced Settings Toggle */}
-              <div className="flex items-center justify-between pt-4 border-t">
-                <div className="flex items-center gap-2">
-                  <Settings className="h-4 w-4" />
-                  <span className="text-sm font-medium">Advanced Settings</span>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowAdvanced(!showAdvanced)}
-                >
-                  {showAdvanced ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </Button>
-              </div>
-
-              {/* Advanced Settings */}
-              {showAdvanced && (
-                <div className="space-y-6 pt-4 border-t">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">Aspect Ratio</label>
-                        <Select value={aspectRatio} onValueChange={setAspectRatio}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="1:1">Square (1:1)</SelectItem>
-                            <SelectItem value="16:9">Landscape (16:9)</SelectItem>
-                            <SelectItem value="9:16">Portrait (9:16)</SelectItem>
-                            <SelectItem value="4:3">Classic (4:3)</SelectItem>
-                            <SelectItem value="3:4">Classic Portrait (3:4)</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">Resolution</label>
+                          <Select value={resolution} onValueChange={setResolution}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="512x512">512×512 (Fast)</SelectItem>
+                              <SelectItem value="1024x1024">1024×1024 (Standard)</SelectItem>
+                              <SelectItem value="1536x1536">1536×1536 (High Quality)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
 
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">Resolution</label>
-                        <Select value={resolution} onValueChange={setResolution}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="512x512">512×512 (Fast)</SelectItem>
-                            <SelectItem value="1024x1024">1024×1024 (Standard)</SelectItem>
-                            <SelectItem value="1536x1536">1536×1536 (High Quality)</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">Prompt Adherence: {adherence[0]}</label>
-                        <Slider
-                          value={adherence}
-                          onValueChange={setAdherence}
-                          max={12}
-                          min={1}
-                          step={0.5}
-                          className="w-full"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">Quality Steps: {steps[0]}</label>
-                        <Slider
-                          value={steps}
-                          onValueChange={setSteps}
-                          max={100}
-                          min={20}
-                          step={5}
-                          className="w-full"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Negative Prompt</label>
-                      <Textarea
-                        placeholder="What you don't want in the image..."
-                        value={negativePrompt}
-                        onChange={(e) => setNegativePrompt(e.target.value)}
-                        className="min-h-[60px]"
-                      />
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <Switch
-                          id="enhance"
-                          checked={enhanceEnabled}
-                          onCheckedChange={setEnhanceEnabled}
-                        />
-                        <label htmlFor="enhance" className="text-sm font-medium">
-                          AI Enhancement
-                        </label>
-                      </div>
-                    </div>
-
-                    {/* Reference Image Upload */}
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Reference Image (Optional)</label>
-                      <div className="flex gap-4">
-                        <Button
-                          variant="outline"
-                          onClick={() => fileInputRef.current?.click()}
-                          disabled={isUploading}
-                          className="flex items-center gap-2"
-                        >
-                          <Upload className="h-4 w-4" />
-                          {isUploading ? "Uploading..." : "Upload Reference"}
-                        </Button>
-                        {referenceImage && (
-                          <Button
-                            variant="outline"
-                            onClick={removeReferenceImage}
-                            className="text-red-600 hover:text-red-700"
-                          >
-                            Remove
-                          </Button>
-                        )}
-                      </div>
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        className="hidden"
-                      />
-                      {referenceImage && (
-                        <div className="mt-2">
-                          <img
-                            src={referenceImage}
-                            alt="Reference"
-                            className="h-20 w-20 object-cover rounded-md border"
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">Prompt Adherence: {adherence[0]}</label>
+                          <Slider
+                            value={adherence}
+                            onValueChange={setAdherence}
+                            max={12}
+                            min={1}
+                            step={0.5}
+                            className="w-full"
                           />
                         </div>
-                      )}
+
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">Quality Steps: {steps[0]}</label>
+                          <Slider
+                            value={steps}
+                            onValueChange={setSteps}
+                            max={100}
+                            min={20}
+                            step={5}
+                            className="w-full"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Negative Prompt</label>
+                        <Textarea
+                          placeholder="What you don't want in the image..."
+                          value={negativePrompt}
+                          onChange={(e) => setNegativePrompt(e.target.value)}
+                          className="min-h-[60px]"
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <Switch
+                            id="enhance"
+                            checked={enhanceEnabled}
+                            onCheckedChange={setEnhanceEnabled}
+                          />
+                          <label htmlFor="enhance" className="text-sm font-medium">
+                            AI Enhancement
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* Reference Image Upload */}
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Reference Image (Optional)</label>
+                        <div className="flex gap-4">
+                          <Button
+                            variant="outline"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={isUploading}
+                            className="flex items-center gap-2"
+                          >
+                            <Upload className="h-4 w-4" />
+                            {isUploading ? "Uploading..." : "Upload Reference"}
+                          </Button>
+                          {referenceImage && (
+                            <Button
+                              variant="outline"
+                              onClick={removeReferenceImage}
+                              className="text-red-600 hover:text-red-700"
+                            >
+                              Remove
+                            </Button>
+                          )}
+                        </div>
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          className="hidden"
+                        />
+                        {referenceImage && (
+                          <div className="mt-2">
+                            <img
+                              src={referenceImage}
+                              alt="Reference"
+                              className="h-20 w-20 object-cover rounded-md border"
+                            />
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
+          </Card>
+        )}
+
+        {/* New Generation Button - Show after input is hidden */}
+        {!showInputCard && (
+          <div className="mb-8 text-center">
+            <Button
+              onClick={() => setShowInputCard(true)}
+              variant="outline"
+              size="lg"
+              className="backdrop-blur-sm bg-background/80 border-primary/20"
+            >
+              <Sparkles className="h-4 w-4 mr-2" />
+              New Generation
+            </Button>
           </div>
-        </Card>
+        )}
 
         {/* Results Section */}
         {previewCards.length > 0 && (
@@ -725,10 +746,6 @@ export const AIImageStudio = () => {
                       </div>
                       
                       <div className="p-4">
-                        <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
-                          {card.prompt}
-                        </p>
-                        
                         <div className="flex items-center justify-between">
                           <div className="flex gap-1">
                             {card.metadata && (
@@ -758,6 +775,208 @@ export const AIImageStudio = () => {
             </div>
           </Card>
         )}
+
+        {/* Studio Chat - Show below Generated Previews */}
+        {previewCards.length > 0 && (
+          <Card className="mb-8 backdrop-blur-sm bg-background/80 border-primary/20 shadow-xl">
+            <div className="p-6">
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <MessageCircle className="h-5 w-5" />
+                Studio Chat
+              </h3>
+              
+              <div className="space-y-4">
+                {/* Quick Edit Suggestions */}
+                <div className="flex flex-wrap gap-2">
+                  <Button variant="outline" size="sm" onClick={() => setChatInput("Change the lighting to golden hour")}>
+                    <Wand2 className="h-3 w-3 mr-1" />
+                    Golden Hour
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => setChatInput("Make it more dramatic")}>
+                    <Camera className="h-3 w-3 mr-1" />
+                    More Dramatic
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => setChatInput("Change the camera angle")}>
+                    <Eye className="h-3 w-3 mr-1" />
+                    Different Angle
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => setChatInput("Enhance the colors")}>
+                    <Palette className="h-3 w-3 mr-1" />
+                    Enhance Colors
+                  </Button>
+                </div>
+
+                {/* Chat Messages */}
+                {chatMessages.length > 0 && (
+                  <ScrollArea className="h-32 border rounded-md p-2">
+                    {chatMessages.map((message, index) => (
+                      <div key={index} className={`mb-2 ${message.role === 'user' ? 'text-right' : 'text-left'}`}>
+                        <span className={`inline-block px-2 py-1 rounded text-sm ${
+                          message.role === 'user' 
+                            ? 'bg-primary text-primary-foreground' 
+                            : 'bg-muted text-muted-foreground'
+                        }`}>
+                          {message.content}
+                        </span>
+                      </div>
+                    ))}
+                  </ScrollArea>
+                )}
+
+                {/* Chat Input */}
+                <div className="relative">
+                  <Textarea
+                    placeholder="Ask for refinements: 'Make it more cinematic', 'Change the mood', 'Different composition'..."
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    className="min-h-[60px] pr-12 resize-none"
+                  />
+                  <Button
+                    onClick={() => {
+                      if (chatInput.trim()) {
+                        setChatMessages(prev => [...prev, { role: 'user', content: chatInput }]);
+                        setChatInput("");
+                        toast.info("Chat refinement coming soon!");
+                      }
+                    }}
+                    disabled={!chatInput.trim()}
+                    className="absolute bottom-2 right-2"
+                    size="sm"
+                  >
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
+
+        {/* Format Options and Safety Settings - Bottom Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Format Options */}
+          <Card className="backdrop-blur-sm bg-background/80 border-primary/20 shadow-xl">
+            <div className="p-6">
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <FileImage className="h-5 w-5" />
+                Format Options
+              </h3>
+              
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Aspect Ratio</label>
+                    <Select value={aspectRatio} onValueChange={setAspectRatio}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1:1">Square (1:1)</SelectItem>
+                        <SelectItem value="16:9">Landscape (16:9)</SelectItem>
+                        <SelectItem value="9:16">Portrait (9:16)</SelectItem>
+                        <SelectItem value="4:3">Classic (4:3)</SelectItem>
+                        <SelectItem value="3:4">Classic Portrait (3:4)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Resolution</label>
+                    <Select value={resolution} onValueChange={setResolution}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="512x512">512×512 (Fast)</SelectItem>
+                        <SelectItem value="1024x1024">1024×1024 (Standard)</SelectItem>
+                        <SelectItem value="1536x1536">1536×1536 (High Quality)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Prompt Adherence: {adherence[0]}</label>
+                    <Slider
+                      value={adherence}
+                      onValueChange={setAdherence}
+                      max={12}
+                      min={1}
+                      step={0.5}
+                      className="w-full"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Quality Steps: {steps[0]}</label>
+                    <Slider
+                      value={steps}
+                      onValueChange={setSteps}
+                      max={100}
+                      min={20}
+                      step={5}
+                      className="w-full"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          {/* Safety Settings */}
+          <Card className="backdrop-blur-sm bg-background/80 border-primary/20 shadow-xl">
+            <div className="p-6">
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <Shield className="h-5 w-5" />
+                Safety Settings
+              </h3>
+              
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="enhance-bottom"
+                      checked={enhanceEnabled}
+                      onCheckedChange={setEnhanceEnabled}
+                    />
+                    <label htmlFor="enhance-bottom" className="text-sm font-medium">
+                      AI Enhancement
+                    </label>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Negative Prompt</label>
+                  <Textarea
+                    placeholder="What you don't want in the image..."
+                    value={negativePrompt}
+                    onChange={(e) => setNegativePrompt(e.target.value)}
+                    className="min-h-[80px]"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Quality Preset</label>
+                  <Select value={quality} onValueChange={setQuality}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {qualityPresets.map((preset) => (
+                        <SelectItem key={preset.value} value={preset.value}>
+                          <div className="flex flex-col">
+                            <span>{preset.label}</span>
+                            <span className="text-xs text-muted-foreground">{preset.description}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
         
         <div ref={messagesEndRef} />
       </div>
