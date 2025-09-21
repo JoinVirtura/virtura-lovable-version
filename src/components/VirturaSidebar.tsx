@@ -22,6 +22,7 @@ import {
   Home,
   Wand2,
   Video,
+  Clapperboard,
   Plus, 
   Settings as SettingsIcon, 
   Zap, 
@@ -54,6 +55,7 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
     { id: "overview", label: "Home", icon: Home },
     { id: "studio", label: "Image", icon: Wand2 },
     { id: "talking-avatar", label: "Video", icon: Video },
+    { id: "studio-pro", label: "Studio", icon: Clapperboard },
   ];
 
   const navigationTabs = [
@@ -99,7 +101,13 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
               {mainItems.map((item) => (
                 <SidebarMenuItem key={item.id}>
                   <SidebarMenuButton 
-                    onClick={() => onViewChange(item.id)}
+                    onClick={() => {
+                      if (item.id === "studio-pro") {
+                        navigate("/studio-pro");
+                      } else {
+                        onViewChange(item.id);
+                      }
+                    }}
                     isActive={activeView === item.id}
                     className={`w-full ${isCollapsed ? "justify-center px-2" : "justify-start gap-3"} ${
                       activeView === item.id 
