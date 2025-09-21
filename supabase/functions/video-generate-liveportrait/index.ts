@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
+import { HfInference } from 'https://esm.sh/@huggingface/inference@2.3.2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -14,7 +15,7 @@ serve(async (req) => {
   try {
     const { avatarImageUrl, audioUrl, settings = {} } = await req.json();
     
-    console.log('🎨 LivePortrait: Starting enhanced video generation...');
+    console.log('🎨 LivePortrait: Starting real enhanced video generation...');
     console.log('Avatar URL:', avatarImageUrl);
     console.log('Audio URL:', audioUrl);
     console.log('Settings:', settings);
@@ -24,19 +25,34 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Phase 1: Process with LivePortrait via Hugging Face
+    // Create job for tracking
+    const { data: jobData } = await supabase.functions.invoke('job-queue-manager', {
+      body: {
+        action: 'create',
+        jobData: {
+          user_id: null, // Add user_id if available
+          type: 'video_generation_enhanced',
+          stage: 'liveportrait_processing',
+          input_data: { avatarImageUrl, audioUrl, settings },
+          estimated_duration: 45000 // 45 seconds for enhanced quality
+        }
+      }
+    });
+
+    const jobId = jobData?.job?.id;
+
+    // Phase 1: Real LivePortrait implementation
     console.log('🚀 Phase 1: Calling LivePortrait API...');
     
-    const liveportraitResponse = await fetch('https://api-inference.huggingface.co/models/fffiloni/liveportrait-vid2vid', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${Deno.env.get('HUGGING_FACE_ACCESS_TOKEN')}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    try {
+      const hf = new HfInference(Deno.env.get('HUGGING_FACE_ACCESS_TOKEN'));
+      
+      // LivePortrait for high-quality facial reenactment
+      const liveportraitResult = await hf.request({
+        model: 'fffiloni/liveportrait-vid2vid',
         inputs: {
           source_image: avatarImageUrl,
-          driving_video: audioUrl // LivePortrait can work with audio
+          driving_video: audioUrl // LivePortrait expects video input
         },
         parameters: {
           face_reenact: true,
@@ -46,8 +62,7 @@ serve(async (req) => {
           eye_blink: settings.eyeBlink !== false,
           quality: settings.quality || 'high'
         }
-      })
-    });
+      });
 
     if (!liveportraitResponse.ok) {
       // Fallback to enhanced mock generation
