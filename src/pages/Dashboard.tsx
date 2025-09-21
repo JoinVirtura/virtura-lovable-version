@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { VirturaSidebar } from "@/components/VirturaSidebar";
 import { OverviewPage } from "@/components/OverviewPage";
@@ -21,10 +22,12 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { AvatarService } from "@/services/avatarService";
+import { EditTitleDialog } from "@/components/EditTitleDialog";
 import { 
   Play, 
   Sparkles, 
@@ -97,6 +100,7 @@ import avatarBrandConsultantImg from "@/assets/avatar-brand-consultant-realistic
 
 export default function Dashboard() {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [activeView, setActiveView] = useState("overview");
 
   // Fetch saved avatars from Supabase for Library view
@@ -117,7 +121,8 @@ export default function Dashboard() {
       }
 
       const formattedAssets = data?.map((item, index) => ({
-        id: index + 1,
+        id: item.id,
+        dbId: item.id, // Keep reference to database ID
         type: "Avatar",
         title: item.title || `Generated Avatar ${new Date(item.created_at).toLocaleDateString()}`,
         date: new Date(item.created_at).toLocaleDateString('en-US', { 
@@ -130,6 +135,9 @@ export default function Dashboard() {
         format: "PNG",
         tags: item.tags || ["ai-generated"],
         thumbnail: item.image_url,
+        imageUrl: item.image_url,
+        prompt: item.prompt,
+        isFavorite: item.tags?.includes("favorite") || false,
         quality: Math.floor(Math.random() * 10 + 90), // 90-99%
         generationTime: `${(Math.random() * 2 + 1.5).toFixed(1)}s`,
         fileSize: `${(Math.random() * 1.5 + 1.5).toFixed(1)} MB`,
@@ -216,6 +224,8 @@ export default function Dashboard() {
   const [libraryAssets, setLibraryAssets] = useState<any[]>([]);
   const [libraryLoading, setLibraryLoading] = useState(true);
   const [libraryError, setLibraryError] = useState<string | null>(null);
+  const [editTitleDialog, setEditTitleDialog] = useState<{ open: boolean; asset: any } | null>(null);
+  const [deletingAssetId, setDeletingAssetId] = useState<string | null>(null);
   
   // AI Suggestions state
   const [promptSearch, setPromptSearch] = useState("");
@@ -985,40 +995,201 @@ export default function Dashboard() {
     }
   };
 
-  // Button handlers for library
+  // Enhanced button handlers for library
   const handleEdit = (asset: any) => {
-    setSelectedAsset(asset);
-    setEditPrompt(`Update this ${asset.type.toLowerCase()}: ${asset.title}`);
-    setEditModalOpen(true);
+    // Navigate to AI Image Studio with the image selected
+    if (asset.imageUrl) {
+      // Store the image data in localStorage for the AI Image Studio to pick up
+      localStorage.setItem('editImageData', JSON.stringify({
+        imageUrl: asset.imageUrl,
+        prompt: asset.prompt || '',
+        title: asset.title
+      }));
+      navigate('/studio');
+    }
   };
 
-  const handleShare = (asset: any) => {
-    setSelectedAsset(asset);
-    setShareModalOpen(true);
+  const handleShare = async (asset: any) => {
+    try {
+      // Check if Web Share API is available (native sharing)
+      if (navigator.share && navigator.canShare) {
+        const shareData = {
+          title: asset.title,
+          text: `Check out this AI-generated avatar: ${asset.title}`,
+          url: asset.imageUrl
+        };
+
+        if (navigator.canShare(shareData)) {
+          await navigator.share(shareData);
+          toast({
+            title: "Shared Successfully",
+            description: "Avatar shared via native sharing.",
+          });
+          return;
+        }
+      }
+
+      // Fallback: Copy to clipboard
+      await navigator.clipboard.writeText(asset.imageUrl);
+      toast({
+        title: "Link Copied",
+        description: "Avatar link copied to clipboard. You can now share it anywhere!",
+      });
+    } catch (error) {
+      console.error('Error sharing:', error);
+      // Secondary fallback - show share modal
+      setSelectedAsset(asset);
+      setShareModalOpen(true);
+    }
   };
 
-  const handleDownload = (asset: any) => {
-    // Create a temporary link element for download
-    const link = document.createElement('a');
-    link.href = asset.thumbnail;
-    link.download = `${asset.title.replace(/\s+/g, '_')}.${asset.format.toLowerCase()}`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    toast({
-      title: "Download Started",
-      description: `${asset.title} is being downloaded.`,
-    });
+  const handleDownload = async (asset: any) => {
+    try {
+      // Fetch the image as blob for proper download
+      const response = await fetch(asset.imageUrl);
+      if (!response.ok) throw new Error('Failed to fetch image');
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${asset.title.replace(/\s+/g, '_')}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Clean up the blob URL
+      window.URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Download Complete",
+        description: `${asset.title} has been saved to your device.`,
+      });
+    } catch (error) {
+      console.error('Download error:', error);
+      toast({
+        title: "Download Failed",
+        description: "Unable to download the image. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
-  const handleDelete = (assetId: number) => {
-    // In a real app, this would call an API to delete the asset
-    toast({
-      title: "Asset Deleted",
-      description: "The asset has been removed from your library.",
-      variant: "destructive"
-    });
+  const handleFavorite = async (asset: any) => {
+    try {
+      const newTags = asset.isFavorite 
+        ? asset.tags.filter((tag: string) => tag !== "favorite")
+        : [...asset.tags, "favorite"];
+
+      const { error } = await supabase
+        .from('avatar_library')
+        .update({ tags: newTags })
+        .eq('id', asset.dbId);
+
+      if (error) throw error;
+
+      // Update local state
+      setLibraryAssets(prev => prev.map(a => 
+        a.dbId === asset.dbId 
+          ? { ...a, tags: newTags, isFavorite: !asset.isFavorite }
+          : a
+      ));
+
+      toast({
+        title: asset.isFavorite ? "Removed from Favorites" : "Added to Favorites",
+        description: `${asset.title} ${asset.isFavorite ? 'removed from' : 'added to'} your favorites.`,
+      });
+    } catch (error) {
+      console.error('Error updating favorites:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update favorites. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleDelete = async (asset: any) => {
+    setDeletingAssetId(asset.dbId);
+    try {
+      // Delete from Supabase database
+      const { error: dbError } = await supabase
+        .from('avatar_library')
+        .delete()
+        .eq('id', asset.dbId);
+
+      if (dbError) throw dbError;
+
+      // Extract the file path from the URL for storage deletion
+      const url = new URL(asset.imageUrl);
+      const pathParts = url.pathname.split('/');
+      const fileName = pathParts[pathParts.length - 1];
+      
+      // Delete from Supabase storage
+      const { error: storageError } = await supabase.storage
+        .from('avatars')
+        .remove([fileName]);
+
+      if (storageError) {
+        console.warn('Storage deletion warning:', storageError);
+        // Don't throw here as the database deletion was successful
+      }
+
+      // Update local state
+      setLibraryAssets(prev => prev.filter(a => a.dbId !== asset.dbId));
+
+      toast({
+        title: "Avatar Deleted",
+        description: `${asset.title} has been permanently deleted.`,
+      });
+    } catch (error) {
+      console.error('Delete error:', error);
+      toast({
+        title: "Delete Failed",
+        description: "Unable to delete the avatar. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setDeletingAssetId(null);
+    }
+  };
+
+  const handleEditTitle = async (asset: any) => {
+    setEditTitleDialog({ open: true, asset });
+  };
+
+  const handleSaveTitle = async (newTitle: string) => {
+    if (!editTitleDialog?.asset) return;
+
+    try {
+      const { error } = await supabase
+        .from('avatar_library')
+        .update({ title: newTitle })
+        .eq('id', editTitleDialog.asset.dbId);
+
+      if (error) throw error;
+
+      // Update local state
+      setLibraryAssets(prev => prev.map(a => 
+        a.dbId === editTitleDialog.asset.dbId 
+          ? { ...a, title: newTitle }
+          : a
+      ));
+
+      toast({
+        title: "Title Updated",
+        description: "Avatar title has been successfully updated.",
+      });
+    } catch (error) {
+      console.error('Error updating title:', error);
+      toast({
+        title: "Update Failed",
+        description: "Failed to update title. Please try again.",
+        variant: "destructive"
+      });
+      throw error; // Re-throw to let dialog handle it
+    }
   };
 
   const handleSaveEdit = () => {
@@ -2786,17 +2957,44 @@ export default function Dashboard() {
                                    >
                                      <Share2 className="w-3 h-3" />
                                    </Button>
-                                   <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
-                                     <Star className="w-3 h-3" />
-                                   </Button>
-                                   <Button 
-                                     size="sm" 
-                                     variant="ghost"
-                                     className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                                     onClick={() => handleDelete(asset.id)}
-                                   >
-                                     <Trash2 className="w-3 h-3" />
-                                   </Button>
+                                    <Button 
+                                      size="sm" 
+                                      variant="ghost"
+                                      className={`h-8 w-8 p-0 ${asset.isFavorite ? 'text-yellow-500' : 'text-muted-foreground'}`}
+                                      onClick={() => handleFavorite(asset)}
+                                    >
+                                      <Star className={`w-3 h-3 ${asset.isFavorite ? 'fill-current' : ''}`} />
+                                    </Button>
+                                    <AlertDialog>
+                                      <AlertDialogTrigger asChild>
+                                        <Button 
+                                          size="sm" 
+                                          variant="ghost"
+                                          className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                                          disabled={deletingAssetId === asset.dbId}
+                                        >
+                                          {deletingAssetId === asset.dbId ? (
+                                            <Loader2 className="w-3 h-3 animate-spin" />
+                                          ) : (
+                                            <Trash2 className="w-3 h-3" />
+                                          )}
+                                        </Button>
+                                      </AlertDialogTrigger>
+                                      <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                          <AlertDialogTitle>Delete Avatar</AlertDialogTitle>
+                                          <AlertDialogDescription>
+                                            Are you sure you want to delete "{asset.title}"? This action cannot be undone.
+                                          </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                          <AlertDialogAction onClick={() => handleDelete(asset)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                            Delete
+                                          </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                      </AlertDialogContent>
+                                    </AlertDialog>
                                  </div>
                                </div>
                               
@@ -2868,22 +3066,60 @@ export default function Dashboard() {
                                     >
                                       <Download className="w-4 h-4" />
                                     </Button>
-                                    <Button 
-                                      size="sm" 
-                                      variant="ghost" 
-                                      className="hover:bg-accent/10"
-                                      onClick={() => handleShare(asset)}
-                                    >
-                                      <Share2 className="w-4 h-4" />
-                                    </Button>
-                                    <Button 
-                                      size="sm" 
-                                      variant="ghost" 
-                                      className="hover:bg-destructive/10 text-destructive"
-                                      onClick={() => handleDelete(asset.id)}
-                                    >
-                                      <Trash2 className="w-4 h-4" />
-                                    </Button>
+                                     <Button 
+                                       size="sm" 
+                                       variant="ghost" 
+                                       className="hover:bg-accent/10"
+                                       onClick={() => handleShare(asset)}
+                                     >
+                                       <Share2 className="w-4 h-4" />
+                                     </Button>
+                                     <Button 
+                                       size="sm" 
+                                       variant="ghost"
+                                       className={`hover:bg-yellow-500/10 ${asset.isFavorite ? 'text-yellow-500' : 'text-muted-foreground'}`}
+                                       onClick={() => handleFavorite(asset)}
+                                     >
+                                       <Star className={`w-4 h-4 ${asset.isFavorite ? 'fill-current' : ''}`} />
+                                     </Button>
+                                     <Button 
+                                       size="sm" 
+                                       variant="ghost" 
+                                       className="hover:bg-secondary/10"
+                                       onClick={() => handleEditTitle(asset)}
+                                     >
+                                       <Edit className="w-4 h-4" />
+                                     </Button>
+                                     <AlertDialog>
+                                       <AlertDialogTrigger asChild>
+                                         <Button 
+                                           size="sm" 
+                                           variant="ghost" 
+                                           className="hover:bg-destructive/10 text-destructive"
+                                           disabled={deletingAssetId === asset.dbId}
+                                         >
+                                           {deletingAssetId === asset.dbId ? (
+                                             <Loader2 className="w-4 h-4 animate-spin" />
+                                           ) : (
+                                             <Trash2 className="w-4 h-4" />
+                                           )}
+                                         </Button>
+                                       </AlertDialogTrigger>
+                                       <AlertDialogContent>
+                                         <AlertDialogHeader>
+                                           <AlertDialogTitle>Delete Avatar</AlertDialogTitle>
+                                           <AlertDialogDescription>
+                                             Are you sure you want to delete "{asset.title}"? This action cannot be undone.
+                                           </AlertDialogDescription>
+                                         </AlertDialogHeader>
+                                         <AlertDialogFooter>
+                                           <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                           <AlertDialogAction onClick={() => handleDelete(asset)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                             Delete
+                                           </AlertDialogAction>
+                                         </AlertDialogFooter>
+                                       </AlertDialogContent>
+                                     </AlertDialog>
                                   </div>
                                 </div>
                               </div>
@@ -3800,6 +4036,16 @@ export default function Dashboard() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Edit Title Dialog */}
+      {editTitleDialog && (
+        <EditTitleDialog
+          open={editTitleDialog.open}
+          onOpenChange={(open) => setEditTitleDialog(open ? editTitleDialog : null)}
+          currentTitle={editTitleDialog.asset?.title || ''}
+          onSave={handleSaveTitle}
+        />
+      )}
     </SidebarProvider>
   );
 }
