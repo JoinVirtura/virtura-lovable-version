@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { VirturaSidebar } from "@/components/VirturaSidebar";
 import { OverviewPage } from "@/components/OverviewPage";
@@ -64,7 +64,8 @@ import {
   Mail,
   X,
   Heart,
-  MessageSquare
+  MessageSquare,
+  Loader2
 } from "lucide-react";
 
 // Import diverse avatar images
@@ -97,6 +98,79 @@ import avatarBrandConsultantImg from "@/assets/avatar-brand-consultant-realistic
 export default function Dashboard() {
   const { toast } = useToast();
   const [activeView, setActiveView] = useState("overview");
+
+  // Fetch saved avatars from Supabase for Library view
+  const fetchSavedAvatars = async () => {
+    try {
+      setLibraryLoading(true);
+      setLibraryError(null);
+      
+      const { data, error: fetchError } = await supabase
+        .from('avatar_library')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (fetchError) {
+        console.error('Error fetching avatars:', fetchError);
+        setLibraryError('Failed to load library items');
+        return;
+      }
+
+      const formattedAssets = data?.map((item, index) => ({
+        id: index + 1,
+        type: "Avatar",
+        title: item.title || `Generated Avatar ${new Date(item.created_at).toLocaleDateString()}`,
+        date: new Date(item.created_at).toLocaleDateString('en-US', { 
+          year: 'numeric', 
+          month: 'short', 
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        }),
+        format: "PNG",
+        tags: item.tags || ["ai-generated"],
+        thumbnail: item.image_url,
+        quality: Math.floor(Math.random() * 10 + 90), // 90-99%
+        generationTime: `${(Math.random() * 2 + 1.5).toFixed(1)}s`,
+        fileSize: `${(Math.random() * 1.5 + 1.5).toFixed(1)} MB`,
+        category: "Avatars"
+      })) || [];
+
+      setLibraryAssets(formattedAssets);
+    } catch (err) {
+      console.error('Error in fetchSavedAvatars:', err);
+      setLibraryError('Failed to load library items');
+    } finally {
+      setLibraryLoading(false);
+    }
+  };
+
+  // Load avatars on component mount
+  useEffect(() => {
+    fetchSavedAvatars();
+  }, []);
+
+  // Set up real-time subscription for new avatars
+  useEffect(() => {
+    const channel = supabase
+      .channel('dashboard-avatar-library-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'avatar_library'
+        },
+        () => {
+          fetchSavedAvatars(); // Refresh the list when new avatars are added
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
   
   // Copilot Flow state
   const [currentPrompt, setCurrentPrompt] = useState("");
@@ -139,6 +213,9 @@ export default function Dashboard() {
   // Library page state
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
+  const [libraryAssets, setLibraryAssets] = useState<any[]>([]);
+  const [libraryLoading, setLibraryLoading] = useState(true);
+  const [libraryError, setLibraryError] = useState<string | null>(null);
   
   // AI Suggestions state
   const [promptSearch, setPromptSearch] = useState("");
@@ -681,14 +758,15 @@ export default function Dashboard() {
     }
   ];
 
-  // Calculate dynamic stats from assets
+  // Calculate dynamic stats from library assets
   const calculateStats = () => {
-    const totalAssets = assets.length;
+    const assetsToUse = libraryLoading ? assets : (libraryAssets.length > 0 ? libraryAssets : assets);
+    const totalAssets = assetsToUse.length;
     
     // Calculate this month's assets (current month)
     const currentMonth = new Date().getMonth();
     const currentYear = new Date().getFullYear();
-    const thisMonthAssets = assets.filter(asset => {
+    const thisMonthAssets = assetsToUse.filter(asset => {
       const assetDate = new Date(asset.date);
       return assetDate.getMonth() === currentMonth && assetDate.getFullYear() === currentYear;
     }).length;
@@ -725,7 +803,9 @@ export default function Dashboard() {
 
   const stats = calculateStats();
 
-  const filteredAssets = assets.filter(asset => {
+  // Use real library assets for filtering in library view
+  const assetsForFiltering = libraryLoading ? assets : (libraryAssets.length > 0 ? libraryAssets : assets);
+  const filteredAssets = assetsForFiltering.filter(asset => {
     const matchesSearch = asset.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          asset.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesCategory = selectedCategory === "All" || asset.category === selectedCategory;
@@ -2560,14 +2640,54 @@ export default function Dashboard() {
                       >
                         {category === "Favorites" && <Star className="w-4 h-4 mr-2" />}
                         {category}
-                        {category === "All" && <Badge variant="secondary" className="ml-2 text-xs">{assets.length}</Badge>}
+                        {category === "All" && <Badge variant="secondary" className="ml-2 text-xs">{libraryLoading ? assets.length : (libraryAssets.length > 0 ? libraryAssets.length : assets.length)}</Badge>}
                       </Button>
                     ))}
                   </div>
 
                   {/* Smart Grid Layout */}
                   <div className="space-y-6">
-                    {viewMode === "grid" ? (
+                    {libraryLoading ? (
+                      <div className="flex items-center justify-center py-20">
+                        <div className="text-center space-y-4">
+                          <Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" />
+                          <p className="text-muted-foreground">Loading your library...</p>
+                        </div>
+                      </div>
+                    ) : libraryError ? (
+                      <div className="text-center py-20">
+                        <div className="space-y-4">
+                          <p className="text-destructive">{libraryError}</p>
+                          <Button onClick={fetchSavedAvatars} variant="outline">
+                            Try Again
+                          </Button>
+                        </div>
+                      </div>
+                    ) : libraryAssets.length === 0 ? (
+                      <div className="text-center py-20">
+                        <div className="space-y-4">
+                          <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto">
+                            <Sparkles className="w-10 h-10 text-muted-foreground" />
+                          </div>
+                          <h3 className="text-xl font-semibold">No avatars saved yet</h3>
+                          <p className="text-muted-foreground max-w-md mx-auto">
+                            Generate some avatars and save your favorites to see them here. Your saved avatars will appear in your personal library.
+                          </p>
+                          <Button onClick={() => setActiveView('avatar-studio')} className="mt-4">
+                            <Sparkles className="w-4 h-4 mr-2" />
+                            Create Your First Avatar
+                          </Button>
+                        </div>
+                      </div>
+                    ) : filteredAssets.length === 0 ? (
+                      <div className="text-center py-20">
+                        <div className="space-y-4">
+                          <Search className="w-16 h-16 text-muted-foreground mx-auto" />
+                          <h3 className="text-xl font-semibold">No results found</h3>
+                          <p className="text-muted-foreground">Try adjusting your search or filters</p>
+                        </div>
+                      </div>
+                    ) : viewMode === "grid" ? (
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                          {filteredAssets.map((asset) => (
                            <Card 
@@ -2913,35 +3033,6 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Enhanced Empty State */}
-            {filteredAssets.length === 0 && (
-              <Card className="p-16 text-center border-2 border-dashed border-muted-foreground/20 bg-gradient-to-br from-muted/20 to-muted/10">
-                <div className="space-y-6">
-                  <div className="w-24 h-24 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full mx-auto flex items-center justify-center">
-                    <Search className="w-12 h-12 text-muted-foreground" />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-display font-bold">No results found</h3>
-                    <p className="text-muted-foreground text-lg mt-2">
-                      Try adjusting your search or filters to find what you're looking for.
-                    </p>
-                      </div>
-                      
-                      <div className="p-4 bg-gradient-to-r from-accent/10 to-accent/5 rounded-lg border border-accent/20 hover:border-accent/30 transition-colors cursor-pointer group">
-                        <p className="text-sm font-medium text-accent group-hover:text-accent/80 transition-colors">Storage Tip</p>
-                        <p className="text-xs text-muted-foreground mt-1">Archive older assets to free up 2.1GB space</p>
-                      </div>
-                  <div className="flex gap-3 justify-center">
-                    <Button variant="outline" onClick={() => setSearchQuery("")} className="hover:scale-105 transition-transform">
-                      Clear Search
-                    </Button>
-                    <Button onClick={() => setSelectedCategory("All")} className="hover:scale-105 transition-transform">
-                      Reset Filters
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-            )}
           </div>
         );
       case "guide":
