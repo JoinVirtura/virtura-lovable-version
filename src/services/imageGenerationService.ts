@@ -214,34 +214,65 @@ export class ImageGenerationService {
       ? this.detectContentType(basePrompt) 
       : params.contentType;
 
-    const variantTypes: ('composition' | 'style' | 'lighting')[] = ['composition', 'style', 'lighting'];
-    const promises = [];
+    // Quality anchor - core elements that must be preserved
+    const qualityAnchor = 'ultra-realistic, professional photography, sharp focus, high quality, detailed, 8K resolution';
+    
+    // Sequential generation with strategic delays for quality preservation
+    const results: GeneratedImage[] = [];
+    
+    // Variant configurations for Urban fashion scenario
+    const variantConfigs = [
+      {
+        name: 'Original Enhanced',
+        modifier: `${qualityAnchor}, cinematic lighting, editorial style`,
+        delay: 0
+      },
+      {
+        name: 'Different Angle',
+        modifier: `${qualityAnchor}, low angle shot, dramatic perspective, urban atmosphere`,
+        delay: 2000
+      },
+      {
+        name: 'Different Lighting',
+        modifier: `${qualityAnchor}, golden hour lighting, warm tones, atmospheric mood`,
+        delay: 4000
+      }
+    ];
 
-    for (let i = 0; i < count; i++) {
-      const variantType = variantTypes[i % variantTypes.length];
-      const variantPrompt = this.generateVariantPrompt(basePrompt, contentType, variantType, i);
+    for (let i = 0; i < Math.min(count, variantConfigs.length); i++) {
+      const config = variantConfigs[i];
       
-      promises.push(this.generateImage({
-        ...params,
-        prompt: variantPrompt,
-        contentType: contentType as any,
-        variantType
-      }));
+      // Add strategic delay to prevent server overload
+      if (config.delay > 0) {
+        await new Promise(resolve => setTimeout(resolve, config.delay));
+      }
+      
+      const variantPrompt = `${basePrompt}, ${config.modifier}`;
+      
+      try {
+        console.log(`Generating variant ${i + 1}: ${config.name}`);
+        const result = await this.generateImage({
+          ...params,
+          prompt: variantPrompt,
+          contentType: contentType as any,
+          enhance: true, // Force enhancement for quality
+          quality: 'ultra' // Force ultra quality
+        });
+        
+        results.push(result);
+        
+        if (!result.success) {
+          console.warn(`Variant ${i + 1} failed, but continuing...`);
+        }
+      } catch (error) {
+        console.error(`Error generating variant ${i + 1}:`, error);
+        results.push({
+          success: false,
+          error: `Variant ${i + 1} generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+        });
+      }
     }
 
-    try {
-      const results = await Promise.all(promises);
-      return results;
-    } catch (error) {
-      console.error('Variant generation error:', error);
-      // Return successful results and errors
-      return await Promise.allSettled(promises).then(results =>
-        results.map(result => 
-          result.status === 'fulfilled' 
-            ? result.value 
-            : { success: false, error: 'Variant generation failed' }
-        )
-      );
-    }
+    return results;
   }
 }

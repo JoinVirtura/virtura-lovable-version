@@ -74,13 +74,7 @@ serve(async (req) => {
       ? `${prompt}, ${contentEnhancement}, ${selectedStyleEnhancement}, ${qualityBoost}`
       : prompt;
     
-    // Ensure core character traits are always present and emphasized
-    if (!enhancedPrompt.toLowerCase().includes('scandinavian')) {
-      enhancedPrompt = `${coreCharacterTraits}, ${enhancedPrompt}`;
-    }
-    
-    // Apply variant-specific enhancement while preserving character
-    enhancedPrompt = `${enhancedPrompt}, ${variantEnhancements[variantIndex]}, hyperrealistic, 8K ultra HD, ray tracing, perfect anatomy, flawless skin, professional photography, studio quality, award-winning portrait, magazine cover quality, no artifacts, pristine detail`;
+    // Remove undefined references and clean up prompt enhancement
     
     // Add ultra-enhancement specifications
     if (enhance) {
