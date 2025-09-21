@@ -236,6 +236,7 @@ export default function Dashboard() {
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<any>(null);
   const [editPrompt, setEditPrompt] = useState("");
+  const [selectedEditImage, setSelectedEditImage] = useState<any>(null);
   
   // Avatar selection state
   const [selectedAvatarIds, setSelectedAvatarIds] = useState<Set<number>>(new Set());
@@ -997,15 +998,15 @@ export default function Dashboard() {
 
   // Enhanced button handlers for library
   const handleEdit = (asset: any) => {
-    // Navigate to AI Image Studio with the image selected
+    // Switch to studio view with the selected image for editing
     if (asset.imageUrl) {
-      // Store the image data in localStorage for the AI Image Studio to pick up
-      localStorage.setItem('editImageData', JSON.stringify({
+      setSelectedEditImage({
         imageUrl: asset.imageUrl,
         prompt: asset.prompt || '',
-        title: asset.title
-      }));
-      navigate('/studio');
+        title: asset.title,
+        dbId: asset.dbId
+      });
+      setActiveView('studio');
     }
   };
 
@@ -1245,7 +1246,7 @@ export default function Dashboard() {
       case "create":
         return <CreateAvatar />;
       case "studio":
-        return <AvatarStudio />;
+        return <AvatarStudio editImage={selectedEditImage} onBackToLibrary={() => { setSelectedEditImage(null); setActiveView('library'); }} />;
       case "individuals":
         return (
           <div className="space-y-6 min-h-screen">

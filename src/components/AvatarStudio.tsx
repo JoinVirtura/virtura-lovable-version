@@ -51,8 +51,18 @@ interface PreviewCard {
 }
 
 
-export const AvatarStudio = () => {
-  const [prompt, setPrompt] = useState("");
+interface AvatarStudioProps {
+  editImage?: {
+    imageUrl: string;
+    prompt: string;
+    title: string;
+    dbId?: string;
+  } | null;
+  onBackToLibrary?: () => void;
+}
+
+export const AvatarStudio = ({ editImage, onBackToLibrary }: AvatarStudioProps) => {
+  const [prompt, setPrompt] = useState(editImage?.prompt || "");
   const [negativePrompt, setNegativePrompt] = useState("blurry fingers, extra limbs, distorted faces, unrealistic body proportions, text, watermark, low quality");
   const [adherence, setAdherence] = useState(8.5); // Ultra-high adherence
   const [steps, setSteps] = useState(75); // Ultra-high quality steps
@@ -172,20 +182,42 @@ export const AvatarStudio = () => {
     try {
       const { supabase } = await import("@/integrations/supabase/client");
       
-      // Save to avatar library
-      const { error } = await supabase
-        .from('avatar_library')
-        .insert({
-          image_url: card.imageUrl,
-          prompt: card.prompt,
-          title: `Generated Avatar ${new Date().toLocaleDateString()}`,
-          user_id: (await supabase.auth.getUser()).data.user?.id
-        });
+      if (editImage?.dbId) {
+        // Update existing library item when in edit mode
+        const { error } = await supabase
+          .from('avatar_library')
+          .update({
+            image_url: card.imageUrl,
+            prompt: card.prompt,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', editImage.dbId);
 
-      if (error) {
-        console.error('Error saving to library:', error);
-        toast.error("Failed to save to library. Please try again.");
-        return;
+        if (error) {
+          console.error('Error updating library item:', error);
+          toast.error("Failed to update library item. Please try again.");
+          return;
+        }
+
+        toast.success("Avatar updated in library!");
+      } else {
+        // Save new item to avatar library
+        const { error } = await supabase
+          .from('avatar_library')
+          .insert({
+            image_url: card.imageUrl,
+            prompt: card.prompt,
+            title: `Generated Avatar ${new Date().toLocaleDateString()}`,
+            user_id: (await supabase.auth.getUser()).data.user?.id
+          });
+
+        if (error) {
+          console.error('Error saving to library:', error);
+          toast.error("Failed to save to library. Please try again.");
+          return;
+        }
+
+        toast.success("Avatar saved to library!");
       }
 
       // Update card state to show it's favorited
@@ -193,7 +225,6 @@ export const AvatarStudio = () => {
         c.id === card.id ? { ...c, isFavorited: true } : c
       ));
 
-      toast.success("Avatar saved to library!");
     } catch (error) {
       console.error('Save to library error:', error);
       toast.error("Failed to save to library. Please try again.");
@@ -262,7 +293,8 @@ export const AvatarStudio = () => {
     setIsGenerating(true);
 
     // Ultra-realistic enhancement following professional photography standards
-    const cardCount = isMultiGeneration ? 10 : 3;
+    // In edit mode, generate only 1 image, otherwise use normal counts
+    const cardCount = editImage ? 1 : (isMultiGeneration ? 10 : 3);
     
     const intelligentVariants = isMultiGeneration 
       ? [
@@ -587,6 +619,14 @@ export const AvatarStudio = () => {
     }
   };
 
+  // Set reference image when in edit mode
+  useEffect(() => {
+    if (editImage) {
+      setReferenceImage(editImage.imageUrl);
+      setShowInputCard(true); // Show input card to allow modifications
+    }
+  }, [editImage]);
+
   // Initialize speech recognition
   useEffect(() => {
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
@@ -687,12 +727,52 @@ export const AvatarStudio = () => {
           
           {/* Header */}
           <div className="text-center mb-12">
-            <div className="flex items-center justify-center gap-2 mb-6">
-              <h1 className="text-4xl font-display font-bold text-foreground">
-                AI <span className="bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent">Image</span> Studio
-              </h1>
-            </div>
-            <p className="text-lg text-muted-foreground mb-8">Your ChatGPT-powered creative assistant</p>
+            {editImage && onBackToLibrary && (
+              <div className="flex items-center justify-between mb-6">
+                <Button
+                  variant="outline"
+                  onClick={onBackToLibrary}
+                  className="flex items-center gap-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                  Back to Library
+                </Button>
+                <div className="text-center">
+                  <h1 className="text-2xl font-display font-bold text-foreground">
+                    Editing: <span className="text-primary">{editImage.title}</span>
+                  </h1>
+                </div>
+                <div className="w-[140px]"></div>
+              </div>
+            )}
+            {!editImage && (
+              <>
+                <div className="flex items-center justify-center gap-2 mb-6">
+                  <h1 className="text-4xl font-display font-bold text-foreground">
+                    AI <span className="bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent">Image</span> Studio
+                  </h1>
+                </div>
+                <p className="text-lg text-muted-foreground mb-8">Your ChatGPT-powered creative assistant</p>
+              </>
+            )}
+
+            {/* Edit Mode - Single Image Display */}
+            {editImage && (
+              <div className="mb-8">
+                <Card className="max-w-md mx-auto p-4 bg-gradient-card border-primary/20">
+                  <img 
+                    src={editImage.imageUrl} 
+                    alt={editImage.title}
+                    className="w-full h-auto rounded-lg shadow-lg"
+                  />
+                  <p className="text-sm text-muted-foreground mt-3 text-center">
+                    Original: {editImage.prompt}
+                  </p>
+                </Card>
+              </div>
+            )}
             
             {/* Main Search Bar - Show only when showInputCard is true */}
             {showInputCard && (
