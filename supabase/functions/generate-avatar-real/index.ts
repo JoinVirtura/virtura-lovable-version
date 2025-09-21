@@ -26,7 +26,10 @@ serve(async (req) => {
       selectedPreset,
       resolution,
       photoMode,
-      referenceImage
+      referenceImage,
+      contentType,
+      width,
+      height
     } = await req.json();
     
     console.log('🎨 Real Avatar Generation Starting...');
@@ -37,24 +40,39 @@ serve(async (req) => {
     // Initialize Hugging Face
     const hf = new HfInference(Deno.env.get('HUGGING_FACE_ACCESS_TOKEN'));
 
-    // Character consistency engine - extract core character traits
-    const coreCharacterTraits = "statuesque Scandinavian woman with fair, lightly freckled skin, icy blue eyes, and a square jawline softened by a warm smile";
+    // Content-aware prompt enhancement
+    const contentEnhancements = {
+      'portrait': 'professional portrait, perfect facial features, detailed skin texture, studio lighting, sharp eyes',
+      'landscape': 'expansive view, atmospheric perspective, detailed environment, natural lighting, scenic composition',
+      'object': 'product photography, precise details, clean composition, studio lighting, commercial quality',
+      'abstract': 'creative composition, artistic interpretation, dynamic colors, abstract art style',
+      'scene': 'cinematic composition, environmental storytelling, atmospheric lighting, narrative depth',
+      'auto': 'detailed composition, professional quality, sharp focus'
+    };
+
+    const styleEnhancements = {
+      'photorealistic': 'hyperrealistic, photorealistic, ultra-detailed, lifelike, professional photography',
+      'cinematic': 'cinematic lighting, dramatic composition, film quality, professional cinematography',
+      'artistic': 'artistic interpretation, creative composition, masterful technique',
+      'anime': 'anime style, cel-shaded, vibrant colors, Japanese animation style',
+      'sketch': 'pencil sketch, hand-drawn, artistic linework, traditional art',
+      'oil painting': 'oil painting technique, painterly brushstrokes, classical art style',
+      'watercolor': 'watercolor painting, flowing colors, artistic medium, traditional painting',
+      'digital art': 'digital artwork, modern illustration, computer graphics, contemporary art',
+      'fantasy': 'fantasy art, magical atmosphere, ethereal lighting, mystical composition',
+      'sci-fi': 'science fiction, futuristic, technological, advanced concept',
+      'vintage': 'vintage style, retro aesthetic, classic photography, aged quality',
+      'minimalist': 'minimalist composition, clean design, simple elegance, refined aesthetic'
+    };
+
+    const qualityBoost = quality === '8K' ? 'ultra-sharp focus, 8K resolution, masterpiece quality, professional grade' : 'sharp focus, high quality, detailed';
+    const contentEnhancement = contentEnhancements[contentType as keyof typeof contentEnhancements] || contentEnhancements.auto;
+    const selectedStyleEnhancement = styleEnhancements[style as keyof typeof styleEnhancements] || styleEnhancements.photorealistic;
     
-    // Intelligent variant differentiation based on user's prompt options
-    const variantEnhancements = [
-      'professional studio headshot, perfect lighting, high-end fashion photography style, ultra sharp detail, hyperrealistic skin texture, professional makeup, 85mm lens, shallow depth of field',
-      'natural lifestyle portrait, golden hour lighting, authentic expression, candid moment, lifestyle photography, warm natural tones, organic composition, photojournalism style, environmental portrait, genuine emotion',
-      'cinematic portrait, dramatic lighting, editorial fashion style, award-winning photography, medium format camera quality, professional color grading, cinematic bokeh, moody atmosphere, artistic shadows, luxury fashion shoot, ultra-realistic, pristine detail, professional retouching'
-    ];
-    
-    // Extract variant info from prompt if it contains style indicators
-    let variantIndex = 0;
-    if (prompt.includes('Style A') || prompt.includes('Professional')) variantIndex = 0;
-    else if (prompt.includes('Style B') || prompt.includes('Creative')) variantIndex = 1;
-    else if (prompt.includes('Style C') || prompt.includes('Natural')) variantIndex = 2;
-    
-    // Build enhanced prompt with mandatory character preservation
-    let enhancedPrompt = prompt.replace(/- Style [ABC] - \w+/g, '');
+    // Build enhanced prompt with content-aware enhancements
+    let enhancedPrompt = enhance 
+      ? `${prompt}, ${contentEnhancement}, ${selectedStyleEnhancement}, ${qualityBoost}`
+      : prompt;
     
     // Ensure core character traits are always present and emphasized
     if (!enhancedPrompt.toLowerCase().includes('scandinavian')) {
