@@ -47,6 +47,42 @@ export type Database = {
         }
         Relationships: []
       }
+      avatar_loras: {
+        Row: {
+          avatar_name: string
+          consistency_score: number | null
+          created_at: string | null
+          id: string
+          lora_model_path: string | null
+          status: string | null
+          training_images: string[] | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          avatar_name: string
+          consistency_score?: number | null
+          created_at?: string | null
+          id?: string
+          lora_model_path?: string | null
+          status?: string | null
+          training_images?: string[] | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          avatar_name?: string
+          consistency_score?: number | null
+          created_at?: string | null
+          id?: string
+          lora_model_path?: string | null
+          status?: string | null
+          training_images?: string[] | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       error_logs: {
         Row: {
           context: Json | null
@@ -80,14 +116,64 @@ export type Database = {
         }
         Relationships: []
       }
+      gpu_workers: {
+        Row: {
+          created_at: string | null
+          current_job_id: string | null
+          gpu_type: string
+          id: string
+          last_heartbeat: string | null
+          status: string | null
+          updated_at: string | null
+          vram_available: number
+          vram_total: number
+          worker_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          current_job_id?: string | null
+          gpu_type: string
+          id?: string
+          last_heartbeat?: string | null
+          status?: string | null
+          updated_at?: string | null
+          vram_available: number
+          vram_total: number
+          worker_id: string
+        }
+        Update: {
+          created_at?: string | null
+          current_job_id?: string | null
+          gpu_type?: string
+          id?: string
+          last_heartbeat?: string | null
+          status?: string | null
+          updated_at?: string | null
+          vram_available?: number
+          vram_total?: number
+          worker_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gpu_workers_current_job_id_fkey"
+            columns: ["current_job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       jobs: {
         Row: {
           completed_at: string | null
           created_at: string
           error_message: string | null
+          estimated_completion: string | null
+          gpu_requirements: Json | null
           id: string
           input_data: Json | null
           output_data: Json | null
+          processing_phases: string[] | null
           progress: number
           project_id: string | null
           retry_count: number | null
@@ -97,14 +183,18 @@ export type Database = {
           type: string
           updated_at: string
           user_id: string
+          worker_id: string | null
         }
         Insert: {
           completed_at?: string | null
           created_at?: string
           error_message?: string | null
+          estimated_completion?: string | null
+          gpu_requirements?: Json | null
           id?: string
           input_data?: Json | null
           output_data?: Json | null
+          processing_phases?: string[] | null
           progress?: number
           project_id?: string | null
           retry_count?: number | null
@@ -114,14 +204,18 @@ export type Database = {
           type: string
           updated_at?: string
           user_id: string
+          worker_id?: string | null
         }
         Update: {
           completed_at?: string | null
           created_at?: string
           error_message?: string | null
+          estimated_completion?: string | null
+          gpu_requirements?: Json | null
           id?: string
           input_data?: Json | null
           output_data?: Json | null
+          processing_phases?: string[] | null
           progress?: number
           project_id?: string | null
           retry_count?: number | null
@@ -131,6 +225,7 @@ export type Database = {
           type?: string
           updated_at?: string
           user_id?: string
+          worker_id?: string | null
         }
         Relationships: [
           {
@@ -139,6 +234,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jobs_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "gpu_workers"
+            referencedColumns: ["worker_id"]
           },
         ]
       }
@@ -177,6 +279,53 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      render_analytics: {
+        Row: {
+          created_at: string | null
+          error_count: number | null
+          gpu_utilization: number | null
+          id: string
+          job_id: string | null
+          pipeline_stage: string | null
+          processing_time_seconds: number | null
+          quality_score: number | null
+          user_satisfaction: number | null
+          vram_peak_usage: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          error_count?: number | null
+          gpu_utilization?: number | null
+          id?: string
+          job_id?: string | null
+          pipeline_stage?: string | null
+          processing_time_seconds?: number | null
+          quality_score?: number | null
+          user_satisfaction?: number | null
+          vram_peak_usage?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          error_count?: number | null
+          gpu_utilization?: number | null
+          id?: string
+          job_id?: string | null
+          pipeline_stage?: string | null
+          processing_time_seconds?: number | null
+          quality_score?: number | null
+          user_satisfaction?: number | null
+          vram_peak_usage?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "render_analytics_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       renders: {
         Row: {
@@ -255,6 +404,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      style_templates: {
+        Row: {
+          brand_colors: string[] | null
+          camera_settings: Json | null
+          created_at: string | null
+          id: string
+          is_public: boolean | null
+          lighting_preset: string | null
+          lut_settings: Json | null
+          template_name: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          brand_colors?: string[] | null
+          camera_settings?: Json | null
+          created_at?: string | null
+          id?: string
+          is_public?: boolean | null
+          lighting_preset?: string | null
+          lut_settings?: Json | null
+          template_name: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          brand_colors?: string[] | null
+          camera_settings?: Json | null
+          created_at?: string | null
+          id?: string
+          is_public?: boolean | null
+          lighting_preset?: string | null
+          lut_settings?: Json | null
+          template_name?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       subscriptions: {
         Row: {
@@ -462,6 +650,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      assign_job_to_gpu: {
+        Args: { job_id_param: string; required_vram?: number }
+        Returns: string
+      }
       check_usage_limit: {
         Args: {
           daily_limit: number
@@ -482,6 +674,10 @@ export type Database = {
           plan_name: string
           status: string
         }[]
+      }
+      update_gpu_worker_heartbeat: {
+        Args: { worker_id_param: string }
+        Returns: undefined
       }
       validate_password_strength: {
         Args: { password_text: string }
