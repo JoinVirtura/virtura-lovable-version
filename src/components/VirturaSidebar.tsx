@@ -43,9 +43,10 @@ import { useAuth } from "@/hooks/useAuth";
 interface VirturaSidebarProps {
   activeView: string;
   onViewChange: (view: string) => void;
+  onClearEditState?: () => void;
 }
 
-export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps) {
+export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: VirturaSidebarProps) {
   const { state } = useSidebar();
   const { signOut } = useAuth();
   const navigate = useNavigate();
@@ -105,6 +106,10 @@ export function VirturaSidebar({ activeView, onViewChange }: VirturaSidebarProps
                       if (item.id === "studio-pro") {
                         navigate("/studio-pro");
                       } else {
+                        // Clear edit state when navigating to studio normally
+                        if (item.id === "studio" && onClearEditState) {
+                          onClearEditState();
+                        }
                         onViewChange(item.id);
                       }
                     }}

@@ -3738,7 +3738,11 @@ export default function Dashboard() {
     <SidebarProvider defaultOpen={true}>
       <div className="min-h-screen flex w-full bg-background relative overflow-hidden">
         <MotionBackground />
-        <VirturaSidebar activeView={activeView} onViewChange={setActiveView} />
+          <VirturaSidebar 
+            activeView={activeView} 
+            onViewChange={setActiveView}
+            onClearEditState={() => setSelectedEditImage(null)}
+          />
         
         <div className="flex-1 flex flex-col relative z-10">
           {/* Main Content */}
