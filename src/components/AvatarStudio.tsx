@@ -50,28 +50,20 @@ interface PreviewCard {
   isFavorited?: boolean;
 }
 
-interface ExportPack {
-  id: string;
-  name: string;
-  description: string;
-  formats: string[];
-  icon: any;
-  premium?: boolean;
-}
 
 export const AvatarStudio = () => {
   const [prompt, setPrompt] = useState("");
   const [negativePrompt, setNegativePrompt] = useState("blurry fingers, extra limbs, distorted faces, unrealistic body proportions, text, watermark, low quality");
-  const [adherence, setAdherence] = useState(7);
-  const [steps, setSteps] = useState(49);
-  const [enhanceEnabled, setEnhanceEnabled] = useState(false);
+  const [adherence, setAdherence] = useState(8.5); // Ultra-high adherence
+  const [steps, setSteps] = useState(75); // Ultra-high quality steps
+  const [enhanceEnabled, setEnhanceEnabled] = useState(true); // Always enhanced
   const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isMultiGeneration, setIsMultiGeneration] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [previewCards, setPreviewCards] = useState<PreviewCard[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [selectedExportPack, setSelectedExportPack] = useState<string | null>(null);
+  
   const [watermarkEnabled, setWatermarkEnabled] = useState(true);
   const [aiProofEnabled, setAiProofEnabled] = useState(false);
   const [referenceImage, setReferenceImage] = useState<string | null>(null);
@@ -93,31 +85,6 @@ export const AvatarStudio = () => {
     prompt: string;
   }>>([]);
 
-  const exportPacks: ExportPack[] = [
-    {
-      id: "social",
-      name: "Social Pack",
-      description: "IG Post, TikTok Reel, Story",
-      formats: ["1080x1080", "1080x1920", "1080x1920"],
-      icon: Instagram
-    },
-    {
-      id: "professional",
-      name: "Professional Pack", 
-      description: "LinkedIn headshot + banner",
-      formats: ["400x400", "1584x396"],
-      icon: Linkedin,
-      premium: true
-    },
-    {
-      id: "ad",
-      name: "Ad Pack",
-      description: "TikTok + LinkedIn + Meta ads",
-      formats: ["1080x1920", "1200x628", "1080x1080"],
-      icon: PlayCircle,
-      premium: true
-    }
-  ];
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -296,18 +263,32 @@ export const AvatarStudio = () => {
     // Enhanced prompts following OpenArt workflow
     const enhancedPositive = `${finalPrompt}, detailed clothing, realistic natural lighting, high quality, professional photography, 8k resolution, sharp focus, realistic skin texture, detailed hair, photorealistic`;
     
-    // Generate cards based on multi-generation setting
+    // Intelligent variant generation with unique prompts
     const cardCount = isMultiGeneration ? 10 : 3;
-    const poses = isMultiGeneration 
-      ? ["front facing close-up", "full body portrait", "three-quarter view", "profile view", "sitting pose", "standing pose", "professional pose", "casual pose", "dynamic angle", "elegant stance"]
-      : ["Style A - Professional", "Style B - Creative", "Style C - Natural"];
+    
+    const intelligentVariants = isMultiGeneration 
+      ? [
+          "professional corporate headshot, confident expression, business attire",
+          "artistic portrait, soft natural lighting, creative composition", 
+          "editorial fashion shot, dramatic lighting, high-end styling",
+          "lifestyle portrait, candid expression, warm lighting",
+          "glamour shot, perfect makeup, studio lighting",
+          "classic portrait, timeless elegance, refined styling", 
+          "modern portrait, contemporary style, urban background",
+          "artistic close-up, emotional expression, moody lighting",
+          "commercial headshot, approachable smile, professional setting",
+          "creative portrait, unique angle, artistic interpretation"
+        ]
+      : [
+          "Style A - Professional, executive corporate headshot, confident business attire, studio lighting",
+          "Style B - Creative, artistic editorial portrait, dramatic cinematic lighting, fashion photography", 
+          "Style C - Natural, authentic lifestyle shot, soft natural lighting, genuine expression"
+        ];
 
     const newCards: PreviewCard[] = Array.from({ length: cardCount }, (_, i) => ({
       id: Date.now() + "_" + (i + 1),
       imageUrl: "/placeholder.svg",
-      prompt: isMultiGeneration 
-        ? `${enhancedPositive}, ${poses[i]}` 
-        : `${enhancedPositive} - ${poses[i]}`,
+      prompt: `${finalPrompt}, ${intelligentVariants[i]}`,
       isGenerating: true,
       safetyPassed: true,
       isSelected: false,
@@ -893,40 +874,6 @@ export const AvatarStudio = () => {
           {/* Results Section */}
           {previewCards.length > 0 && (
             <div className="space-y-8 w-full">
-              
-              {/* Export Packs - Horizontal */}
-              <Card className="p-4 bg-gradient-card border-border/50 w-full">
-                <h3 className="font-semibold text-foreground mb-3 text-center">Choose Export Pack</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full">
-                  {exportPacks.map((pack) => {
-                    const IconComponent = pack.icon;
-                    return (
-                      <Button
-                        key={pack.id}
-                        variant={selectedExportPack === pack.id ? "default" : "outline"}
-                        className={`h-auto p-4 ${
-                          selectedExportPack === pack.id
-                            ? 'bg-primary hover:bg-primary/90'
-                            : 'border-border/50 hover:border-primary/30'
-                        }`}
-                        onClick={() => setSelectedExportPack(pack.id)}
-                      >
-                        <div className="text-center">
-                          <IconComponent className="w-8 h-8 mx-auto mb-2" />
-                          <div className="flex items-center justify-center gap-2 mb-1">
-                            <span className="font-medium">{pack.name}</span>
-                            {pack.premium && <Crown className="w-4 h-4 text-yellow-500" />}
-                          </div>
-                          <p className="text-xs text-muted-foreground">{pack.description}</p>
-                          <div className="text-xs text-muted-foreground mt-1">
-                            {pack.formats.join(', ')}
-                          </div>
-                        </div>
-                      </Button>
-                    );
-                  })}
-                </div>
-              </Card>
 
               {/* Preview Results - Horizontal Grid */}
               <Card className="p-4 bg-gradient-card border-border/50 w-full">
