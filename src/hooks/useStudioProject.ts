@@ -170,9 +170,9 @@ export const useStudioProject = () => {
                 metadata: project as any,
                 updated_at: new Date().toISOString()
               });
+              
+            if (error) throw error;
           }
-          
-          if (error) throw error;
         } catch (error) {
           console.error('Auto-save failed:', error);
         }
