@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Progress } from "@/components/ui/progress";
+import { CircularProgress } from "@/components/ui/circular-progress";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { 
@@ -1016,18 +1016,9 @@ export const AvatarStudio = ({ editImage, onBackToLibrary }: AvatarStudioProps) 
                         {card.isGenerating ? (
                           <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/5 to-primary/10">
                             <div className="text-center space-y-4 p-4 w-full">
-                              <div className="relative">
-                                <div className="animate-spin w-12 h-12 border-3 border-primary/30 border-t-primary rounded-full mx-auto" />
-                                <div className="absolute inset-0 animate-pulse">
-                                  <div className="w-12 h-12 border-2 border-primary/20 rounded-full mx-auto" />
-                                </div>
-                              </div>
-                              <div className="space-y-2">
-                                <p className="text-lg font-medium text-foreground animate-pulse">Generating Avatar...</p>
-                                <div className="w-full bg-background/30 rounded-full h-3 overflow-hidden">
-                                  <Progress value={card.progress} className="h-full" />
-                                </div>
-                                <p className="text-sm font-semibold text-primary">{card.progress}%</p>
+                              <div className="flex flex-col items-center space-y-4 animate-pulse">
+                                <CircularProgress value={card.progress} size={80} strokeWidth={6} />
+                                <p className="text-lg font-medium text-foreground">Processing</p>
                               </div>
                             </div>
                           </div>
