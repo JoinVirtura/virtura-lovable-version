@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { VirturaNavigation } from "@/components/VirturaNavigation";
 import { MotionBackground } from "@/components/MotionBackground";
 import { Card } from "@/components/ui/card";
@@ -20,7 +21,8 @@ import {
   Filter,
   Trash2,
   Play,
-  TrendingUp
+  TrendingUp,
+  Loader2
 } from "lucide-react";
 
 // Import new avatar images
@@ -45,9 +47,78 @@ export default function LibraryPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [assets, setAssets] = useState<Asset[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Enhanced mock data for library with new high-quality images
-  const assets: Asset[] = [
+  // Fetch saved avatars from Supabase
+  const fetchSavedAvatars = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const { data, error: fetchError } = await supabase
+        .from('avatar_library')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (fetchError) {
+        console.error('Error fetching avatars:', fetchError);
+        setError('Failed to load library items');
+        return;
+      }
+
+      const formattedAssets: Asset[] = data?.map((item, index) => ({
+        id: index + 1,
+        type: "avatar" as const,
+        title: item.title || `Generated Avatar ${new Date(item.created_at).toLocaleDateString()}`,
+        date: new Date(item.created_at).toISOString().split('T')[0],
+        format: "PNG",
+        tags: item.tags || ["ai-generated"],
+        thumbnail: item.image_url,
+        quality: Math.random() * 2 + 8, // Placeholder until we have real quality metrics
+        generationTime: "~2.3s",
+        fileSize: "2.1MB"
+      })) || [];
+
+      setAssets(formattedAssets);
+    } catch (err) {
+      console.error('Error in fetchSavedAvatars:', err);
+      setError('Failed to load library items');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load avatars on component mount
+  useEffect(() => {
+    fetchSavedAvatars();
+  }, []);
+
+  // Set up real-time subscription for new avatars
+  useEffect(() => {
+    const channel = supabase
+      .channel('avatar-library-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'avatar_library'
+        },
+        () => {
+          fetchSavedAvatars(); // Refresh the list when new avatars are added
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  // Mock data for fallback or empty state demonstration
+  const mockAssets: Asset[] = [
     {
       id: 1,
       type: "avatar",
@@ -122,7 +193,10 @@ export default function LibraryPage() {
     }
   ];
 
-  const filteredAssets = assets.filter(asset => {
+  // Use real assets or show empty state
+  const displayAssets = loading ? [] : assets.length > 0 ? assets : mockAssets;
+
+  const filteredAssets = displayAssets.filter(asset => {
     const matchesSearch = asset.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       asset.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
     
@@ -135,11 +209,11 @@ export default function LibraryPage() {
     return matchesSearch && matchesCategory;
   });
 
-  const totalAssets = assets.length;
-  const thisMonthAssets = assets.filter(asset => 
+  const totalAssets = displayAssets.length;
+  const thisMonthAssets = displayAssets.filter(asset => 
     new Date(asset.date).getMonth() === new Date().getMonth()
   ).length;
-  const totalFileSize = assets.reduce((total, asset) => {
+  const totalFileSize = displayAssets.reduce((total, asset) => {
     const size = asset.fileSize || "0KB";
     const value = parseFloat(size);
     const unit = size.slice(-2);
@@ -274,7 +348,47 @@ export default function LibraryPage() {
 
               {/* Smart Grid Layout */}
               <div className="space-y-6">
-                {viewMode === "grid" ? (
+                {loading ? (
+                  <div className="flex items-center justify-center py-20">
+                    <div className="text-center space-y-4">
+                      <Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" />
+                      <p className="text-muted-foreground">Loading your library...</p>
+                    </div>
+                  </div>
+                ) : error ? (
+                  <div className="text-center py-20">
+                    <div className="space-y-4">
+                      <p className="text-destructive">{error}</p>
+                      <Button onClick={fetchSavedAvatars} variant="outline">
+                        Try Again
+                      </Button>
+                    </div>
+                  </div>
+                ) : assets.length === 0 ? (
+                  <div className="text-center py-20">
+                    <div className="space-y-4">
+                      <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto">
+                        <Sparkles className="w-10 h-10 text-muted-foreground" />
+                      </div>
+                      <h3 className="text-xl font-semibold">No avatars saved yet</h3>
+                      <p className="text-muted-foreground max-w-md mx-auto">
+                        Generate some avatars and save your favorites to see them here. Your saved avatars will appear in your personal library.
+                      </p>
+                      <Button onClick={() => window.location.href = '/avatar-studio'} className="mt-4">
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        Create Your First Avatar
+                      </Button>
+                    </div>
+                  </div>
+                ) : filteredAssets.length === 0 ? (
+                  <div className="text-center py-20">
+                    <div className="space-y-4">
+                      <Search className="w-16 h-16 text-muted-foreground mx-auto" />
+                      <h3 className="text-xl font-semibold">No results found</h3>
+                      <p className="text-muted-foreground">Try adjusting your search or filters</p>
+                    </div>
+                  </div>
+                ) : viewMode === "grid" ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredAssets.map((asset) => (
                       <Card key={asset.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border-2 hover:border-primary/30 bg-gradient-to-br from-card to-card/95">

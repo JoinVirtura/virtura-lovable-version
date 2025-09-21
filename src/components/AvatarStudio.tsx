@@ -912,7 +912,21 @@ export const AvatarStudio = () => {
               <Card className="p-4 bg-gradient-card border-border/50 w-full">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="font-semibold text-foreground text-xl">Generated Previews</h3>
-                  <Badge variant="outline" className="text-sm">3 Variants</Badge>
+                  <Button
+                    onClick={() => {
+                      setShowInputCard(true);
+                      setPreviewCards([]);
+                      setPrompt("");
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    variant="default"
+                    size="sm"
+                    className="h-8 px-4"
+                    title="Start a new generation"
+                  >
+                    <Sparkles className="w-4 h-4 mr-1" />
+                    New Generation
+                  </Button>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
