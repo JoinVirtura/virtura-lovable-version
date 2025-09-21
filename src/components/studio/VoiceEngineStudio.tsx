@@ -26,6 +26,7 @@ import {
   Settings,
   CheckCircle
 } from 'lucide-react';
+import { WaveformVisualizer } from './WaveformVisualizer';
 import type { StudioProject } from '@/hooks/useStudioProject';
 
 interface VoiceEngineStudioProps {
@@ -457,37 +458,59 @@ export const VoiceEngineStudio: React.FC<VoiceEngineStudioProps> = ({
 
       {/* Voice Generation Result */}
       {project.voice?.status === 'completed' && (
-        <Card className="border-green-200 bg-green-50/50 dark:bg-green-950/20">
+        <Card className="border-primary/30 bg-gradient-to-br from-primary/10 to-primary/5">
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
-              <CheckCircle className="h-5 w-5 text-green-500" />
+              <CheckCircle className="h-5 w-5 text-primary" />
               Voice Generated
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">Duration: {project.voice.metadata?.duration || 'Unknown'}</p>
-                <p className="text-sm text-muted-foreground">
-                  Language: {LANGUAGES.find(l => l.code === project.voice?.language)?.name}
-                </p>
+            <div className="space-y-4">
+              {/* Voice Details */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-primary">Voice Model: {PREMIUM_VOICES.find(v => v.id === selectedVoice)?.name}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Language: {LANGUAGES.find(l => l.code === selectedLanguage)?.name}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" className="border-primary/20 hover:bg-primary/10">
+                    <Play className="h-4 w-4 mr-1" />
+                    Play
+                  </Button>
+                  <Button size="sm" variant="outline" className="border-primary/20 hover:bg-primary/10">
+                    <Settings className="h-4 w-4 mr-1" />
+                    Adjust
+                  </Button>
+                </div>
               </div>
-              <div className="flex gap-2">
-                <Button size="sm" variant="outline">
-                  <Play className="h-4 w-4 mr-1" />
-                  Play
-                </Button>
-                <Button size="sm" variant="outline">
-                  <Settings className="h-4 w-4 mr-1" />
-                  Adjust
-                </Button>
+
+              {/* Waveform Visualization */}
+              <div className="bg-card/50 rounded-lg p-4">
+                <div className="flex items-center gap-3 mb-3">
+                  <Volume2 className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium text-primary">Voice Waveform</span>
+                </div>
+                <WaveformVisualizer
+                  audioData={project.voice.audioUrl}
+                  isPlaying={false}
+                  width={300}
+                  height={60}
+                  className="w-full"
+                />
               </div>
+
+              {/* Audio Player */}
+              {project.voice.audioUrl && (
+                <div className="bg-card/30 rounded-lg p-3">
+                  <audio controls className="w-full">
+                    <source src={project.voice.audioUrl} type="audio/mpeg" />
+                  </audio>
+                </div>
+              )}
             </div>
-            {project.voice.audioUrl && (
-              <audio controls className="w-full">
-                <source src={project.voice.audioUrl} type="audio/mpeg" />
-              </audio>
-            )}
           </CardContent>
         </Card>
       )}

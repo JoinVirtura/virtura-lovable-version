@@ -38,6 +38,10 @@ export interface StudioProject {
   
   style: {
     preset: string;
+    strength?: number;
+    preserveOriginal?: number;
+    enhanceDetails?: number;
+    resultUrl?: string;
     lookMode: 'realistic' | 'pixar' | 'anime' | 'cinematic' | 'vintage';
     background: 'studio' | 'office' | 'custom' | 'transparent' | 'virtual';
     lighting: {
@@ -58,6 +62,12 @@ export interface StudioProject {
       vignette?: number;
     };
     status: 'pending' | 'processing' | 'completed' | 'error';
+    metadata?: {
+      styleName?: string;
+      styleType?: string;
+      category?: string;
+      processingTime?: string;
+    };
   } | null;
   
   video: {

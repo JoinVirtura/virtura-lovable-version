@@ -24,6 +24,7 @@ import {
   Crown,
   Star
 } from 'lucide-react';
+import { AvatarLibrary } from './AvatarLibrary';
 import type { StudioProject } from '@/hooks/useStudioProject';
 
 interface AvatarGenerationStudioProps {
@@ -345,43 +346,46 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
 
         {/* Library Tab */}
         <TabsContent value="library" className="space-y-6">
-          <div className="text-center py-12">
-            <Library className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Avatar Library</h3>
-            <p className="text-muted-foreground mb-4">
-              Browse pre-made professional avatars
-            </p>
-            <Button variant="outline">
-              <Library className="h-4 w-4 mr-2" />
-              Browse Library
-            </Button>
-          </div>
+          <AvatarLibrary
+            onSelectAvatar={(avatarUrl, metadata) => {
+              onUpdate({
+                avatar: {
+                  type: 'library',
+                  originalUrl: avatarUrl,
+                  status: 'completed',
+                  quality: '4K' as any,
+                  metadata
+                }
+              });
+            }}
+            isProcessing={isProcessing}
+          />
         </TabsContent>
       </Tabs>
 
       {/* Avatar Preview & Settings */}
       {project.avatar && (
-        <Card className="border-green-200 bg-green-50/50 dark:bg-green-950/20">
+        <Card className="border-primary/30 bg-gradient-to-br from-primary/10 to-primary/5">
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
-              <CheckCircle className="h-5 w-5 text-green-500" />
+              <CheckCircle className="h-5 w-5 text-primary" />
               Avatar Ready
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium">Quality: {project.avatar.quality}</p>
+                <p className="font-medium text-primary">Quality: {project.avatar.quality}</p>
                 <p className="text-sm text-muted-foreground">
                   Face Alignment: {project.avatar.metadata?.faceAlignment}%
                 </p>
               </div>
               <div className="flex gap-2">
-                <Button size="sm" variant="outline">
+                <Button size="sm" variant="outline" className="border-primary/20 hover:bg-primary/10">
                   <Settings className="h-4 w-4 mr-1" />
                   Adjust
                 </Button>
-                <Button size="sm" variant="outline">
+                <Button size="sm" variant="outline" className="border-primary/20 hover:bg-primary/10">
                   <RefreshCw className="h-4 w-4 mr-1" />
                   Replace
                 </Button>
