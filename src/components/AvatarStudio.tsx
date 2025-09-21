@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { 
@@ -48,6 +49,7 @@ interface PreviewCard {
   safetyPassed: boolean;
   isSelected?: boolean;
   isFavorited?: boolean;
+  progress: number;
 }
 
 
@@ -333,7 +335,8 @@ export const AvatarStudio = ({ editImage, onBackToLibrary }: AvatarStudioProps) 
       isGenerating: true,
       safetyPassed: true,
       isSelected: false,
-      isFavorited: false
+      isFavorited: false,
+      progress: 0
     }));
 
     setPreviewCards(newCards);
@@ -344,6 +347,15 @@ export const AvatarStudio = ({ editImage, onBackToLibrary }: AvatarStudioProps) 
       
       // Sequential generation with enhanced error handling and ultra-quality settings
       for (let i = 0; i < newCards.length; i++) {
+        // Start progress simulation for current card
+        const progressInterval = setInterval(() => {
+          setPreviewCards(prev => prev.map(card => 
+            card.id === newCards[i].id && card.progress < 95
+              ? { ...card, progress: Math.min(card.progress + Math.random() * 8 + 2, 95) }
+              : card
+          ));
+        }, 1000);
+
         try {
           const result = await AvatarService.generateAvatar({
             prompt: newCards[i].prompt,
@@ -357,10 +369,12 @@ export const AvatarStudio = ({ editImage, onBackToLibrary }: AvatarStudioProps) 
             referenceImage
           });
 
+          clearInterval(progressInterval);
+          
           if (result.success && result.image) {
             setPreviewCards(prev => prev.map(card => 
               card.id === newCards[i].id 
-                ? { ...card, imageUrl: result.image!, isGenerating: false, safetyPassed: true }
+                ? { ...card, imageUrl: result.image!, isGenerating: false, safetyPassed: true, progress: 100 }
                 : card
             ));
             console.log(`Ultra-realistic variant ${i + 1} generated successfully`);
@@ -372,16 +386,17 @@ export const AvatarStudio = ({ editImage, onBackToLibrary }: AvatarStudioProps) 
             const errorMessage = result.error || 'Unknown error occurred';
             setPreviewCards(prev => prev.map(card => 
               card.id === newCards[i].id 
-                ? { ...card, isGenerating: false, safetyPassed: false }
+                ? { ...card, isGenerating: false, safetyPassed: false, progress: 0 }
                 : card
             ));
             console.error(`Generation failed for variant ${i + 1}:`, errorMessage);
           }
         } catch (error) {
+          clearInterval(progressInterval);
           console.error(`Generation failed for variant ${i + 1}:`, error);
           setPreviewCards(prev => prev.map(card => 
             card.id === newCards[i].id 
-              ? { ...card, isGenerating: false, safetyPassed: false }
+              ? { ...card, isGenerating: false, safetyPassed: false, progress: 0 }
               : card
           ));
         }
@@ -940,25 +955,27 @@ export const AvatarStudio = ({ editImage, onBackToLibrary }: AvatarStudioProps) 
             )}
 
 
-            {/* Quick Suggestions */}
-            <div className="flex flex-wrap justify-center gap-2 mt-6">
-              {[
-                "Professional headshot",
-                "LinkedIn banner", 
-                "Social media avatar",
-                "Creative portrait"
-              ].map((suggestion) => (
-                <Button
-                  key={suggestion}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPrompt(suggestion)}
-                  className="border-border/50 hover:border-primary/50"
-                >
-                  {suggestion}
-                </Button>
-              ))}
-            </div>
+            {/* Quick Suggestions - Hidden during generation */}
+            {showInputCard && !isGenerating && (
+              <div className="flex flex-wrap justify-center gap-2 mt-6">
+                {[
+                  "Professional headshot",
+                  "LinkedIn banner", 
+                  "Social media avatar",
+                  "Creative portrait"
+                ].map((suggestion) => (
+                  <Button
+                    key={suggestion}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPrompt(suggestion)}
+                    className="border-border/50 hover:border-primary/50"
+                  >
+                    {suggestion}
+                  </Button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Results Section */}
@@ -997,10 +1014,21 @@ export const AvatarStudio = ({ editImage, onBackToLibrary }: AvatarStudioProps) 
                     >
                       <div className="aspect-[3/4] bg-background/50 rounded-lg border border-border/30 mb-4 relative overflow-hidden">
                         {card.isGenerating ? (
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="text-center">
-                              <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-3" />
-                              <p className="text-sm text-muted-foreground">Generating...</p>
+                          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/5 to-primary/10">
+                            <div className="text-center space-y-4 p-4 w-full">
+                              <div className="relative">
+                                <div className="animate-spin w-12 h-12 border-3 border-primary/30 border-t-primary rounded-full mx-auto" />
+                                <div className="absolute inset-0 animate-pulse">
+                                  <div className="w-12 h-12 border-2 border-primary/20 rounded-full mx-auto" />
+                                </div>
+                              </div>
+                              <div className="space-y-2">
+                                <p className="text-lg font-medium text-foreground animate-pulse">Generating Avatar...</p>
+                                <div className="w-full bg-background/30 rounded-full h-3 overflow-hidden">
+                                  <Progress value={card.progress} className="h-full" />
+                                </div>
+                                <p className="text-sm font-semibold text-primary">{card.progress}%</p>
+                              </div>
                             </div>
                           </div>
                         ) : card.imageUrl && card.imageUrl !== "/placeholder.svg" ? (
