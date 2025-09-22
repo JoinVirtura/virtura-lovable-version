@@ -277,4 +277,94 @@ export class ImageGenerationService {
 
     return results;
   }
+
+  static async generateThreeVariants(
+    basePrompt: string, 
+    params: ImageGenerationParams,
+    onProgress?: (variantIndex: number, progress: number, stage: string) => void
+  ): Promise<GeneratedImage[]> {
+    const results: GeneratedImage[] = [];
+    
+    // Parse the prompt to extract different elements
+    const { parsedElements, focusedPrompts } = this.parseComplexPrompt(basePrompt);
+    
+    for (let i = 0; i < 3; i++) {
+      try {
+        onProgress?.(i, 10, 'Starting generation...');
+        
+        // Use focused prompts to avoid grid generation
+        const focusedPrompt = focusedPrompts[i] || parsedElements.baseDescription;
+        
+        onProgress?.(i, 50, 'Generating image...');
+        
+        const result = await this.generateImage({
+          ...params,
+          prompt: focusedPrompt,
+          enhance: true,
+          quality: 'ultra'
+        });
+        
+        onProgress?.(i, 100, 'Complete!');
+        results.push(result);
+        
+      } catch (error) {
+        console.error(`Error generating variant ${i + 1}:`, error);
+        results.push({
+          success: false,
+          error: `Variant ${i + 1} failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+        });
+        onProgress?.(i, 100, 'Failed');
+      }
+    }
+    
+    return results;
+  }
+
+  private static parseComplexPrompt(prompt: string): { parsedElements: any; focusedPrompts: string[] } {
+    // Extract base description (everything before the first list or option)
+    const baseMatch = prompt.match(/^([^*•\n]+?)(?=\n|\*|•|either|both)/i);
+    const baseDescription = baseMatch ? baseMatch[1].trim() : prompt.split('.')[0];
+    
+    // Extract hairstyles
+    const hairstyleMatches = prompt.match(/\* ([^,\n]+(?:braids|hair|afro|curls|updo)[^,\n]*)/gi) || [];
+    const hairstyles = hairstyleMatches.map(m => m.replace(/^\* /, '').trim());
+    
+    // Extract outfits
+    const outfitMatches = prompt.match(/\* ([^,\n]*(?:dress|gown|outfit|top)[^,\n]*)/gi) || [];
+    const outfits = outfitMatches.map(m => m.replace(/^\* /, '').trim());
+    
+    // Extract backgrounds
+    const backgroundMatches = prompt.match(/\* ([^,\n]*(?:backdrop|background|stage|wall)[^,\n]*)/gi) || [];
+    const backgrounds = backgroundMatches.map(m => m.replace(/^\* /, '').trim());
+    
+    // Create 3 focused prompts by combining one element from each category
+    const focusedPrompts = [];
+    
+    for (let i = 0; i < 3; i++) {
+      let focused = baseDescription;
+      
+      if (hairstyles.length > 0) {
+        const hairstyle = hairstyles[i % hairstyles.length];
+        focused += `, ${hairstyle}`;
+      }
+      
+      if (outfits.length > 0) {
+        const outfit = outfits[i % outfits.length];
+        focused += `, wearing ${outfit}`;
+      }
+      
+      if (backgrounds.length > 0) {
+        const background = backgrounds[i % backgrounds.length];
+        focused += `, ${background}`;
+      }
+      
+      focused += ', professional portrait photography, ultra-realistic, single person, individual headshot, no grid, no collage';
+      focusedPrompts.push(focused);
+    }
+    
+    return {
+      parsedElements: { baseDescription, hairstyles, outfits, backgrounds },
+      focusedPrompts
+    };
+  }
 }

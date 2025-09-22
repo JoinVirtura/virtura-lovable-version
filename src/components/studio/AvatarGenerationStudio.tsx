@@ -63,6 +63,8 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
   const [processingStage, setProcessingStage] = useState<string>('');
   const [processingProgress, setProcessingProgress] = useState(0);
   const [estimatedTime, setEstimatedTime] = useState(0);
+  const [generatedVariants, setGeneratedVariants] = useState<any[]>([]);
+  const [variantProgress, setVariantProgress] = useState<number[]>([0, 0, 0]);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -114,36 +116,19 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
     }
   }, [handleFileUpload]);
 
-  const handleGenerateAvatar = async () => {
+  const handleGenerateThreeVariants = async () => {
     if (!generationPrompt.trim()) return;
 
     try {
-      // Initialize processing stages with real-time feedback
-      setProcessingStage('Initializing AI Engine...');
-      setProcessingProgress(0);
-      setEstimatedTime(25); // seconds
+      // Reset states
+      setGeneratedVariants([]);
+      setVariantProgress([0, 0, 0]);
+      setProcessingStage('Generating 3 High-Quality Variations...');
+      setEstimatedTime(45);
 
-      // Simulate progressive stages
-      const stages = [
-        { stage: 'Analyzing prompt...', progress: 10, delay: 1000 },
-        { stage: 'Loading neural models...', progress: 25, delay: 2000 },
-        { stage: 'Generating high-resolution image...', progress: 50, delay: 8000 },
-        { stage: 'Applying ultra-quality enhancements...', progress: 75, delay: 3000 },
-        { stage: 'Finalizing professional output...', progress: 90, delay: 2000 }
-      ];
-
-      // Start processing stages
-      for (const { stage, progress, delay } of stages) {
-        setProcessingStage(stage);
-        setProcessingProgress(progress);
-        setEstimatedTime(prev => Math.max(0, prev - delay / 1000));
-        await new Promise(resolve => setTimeout(resolve, delay));
-      }
-
-      // Use enhanced ImageGenerationService with professional parameters
       const { ImageGenerationService } = await import('@/services/imageGenerationService');
       
-      const params = {
+      const baseParams = {
         prompt: generationPrompt,
         contentType: 'portrait' as const,
         style: selectedStyle === 'realistic' ? 'photorealistic' : selectedStyle,
@@ -156,63 +141,71 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
         adherence: quality === '8K' ? 15.0 : quality === '4K' ? 12.0 : 8.0
       };
 
-      setProcessingStage('Generating ultra-HD image...');
-      const result = await ImageGenerationService.generateImage(params);
-      
-      if (result.success && result.image) {
-        setProcessingStage('Saving to library...');
-        setProcessingProgress(95);
-        
-        // Save to avatar library
-        try {
-          const { supabase } = await import('@/integrations/supabase/client');
-          await supabase.from('avatar_library').insert({
-            image_url: result.image,
-            prompt: generationPrompt,
-            title: `${selectedStyle} Avatar - ${quality}`,
-            tags: [selectedStyle, quality, 'AI Generated', 'Ultra-HD']
+      // Generate 3 variants with progress tracking
+      const variants = await ImageGenerationService.generateThreeVariants(
+        generationPrompt, 
+        baseParams,
+        (variantIndex: number, progress: number, stage: string) => {
+          setVariantProgress(prev => {
+            const newProgress = [...prev];
+            newProgress[variantIndex] = progress;
+            return newProgress;
           });
-        } catch (error) {
-          console.warn('Failed to save to library:', error);
+          setProcessingStage(`Variant ${variantIndex + 1}: ${stage}`);
         }
+      );
 
-        setProcessingStage('Complete!');
-        setProcessingProgress(100);
-
-        onUpdate({
-          avatar: {
-            type: 'generate',
-            originalUrl: result.image,
-            status: 'completed',
-            quality: quality as any,
-            metadata: {
-              resolution: result.metadata?.resolution || `${quality} (Generated)`,
-              faceAlignment: 98,
-              consistency: faceConsistency,
-              processingTime: result.metadata?.processingTime || '25s'
-            }
-          }
-        });
-
-        // Reset processing indicators after a brief delay
-        setTimeout(() => {
-          setProcessingStage('');
-          setProcessingProgress(0);
-          setEstimatedTime(0);
-        }, 2000);
-      } else {
-        throw new Error(result.error || 'Generation failed');
-      }
-    } catch (error) {
-      console.error('Avatar generation failed:', error);
-      setProcessingStage('Generation failed');
-      setProcessingProgress(0);
+      setGeneratedVariants(variants);
       
-      // Reset after showing error
+      // Save successful variants to library
+      try {
+        const { supabase } = await import('@/integrations/supabase/client');
+        for (let i = 0; i < variants.length; i++) {
+          if (variants[i].success && variants[i].image) {
+            await supabase.from('avatar_library').insert({
+              image_url: variants[i].image,
+              prompt: generationPrompt,
+              title: `${selectedStyle} Avatar Variation ${i + 1} - ${quality}`,
+              tags: [selectedStyle, quality, 'AI Generated', 'Ultra-HD', 'Variation']
+            });
+          }
+        }
+      } catch (error) {
+        console.warn('Failed to save to library:', error);
+      }
+
+      setProcessingStage('All 3 Variations Complete!');
+      setTimeout(() => {
+        setProcessingStage('');
+        setEstimatedTime(0);
+      }, 2000);
+
+    } catch (error) {
+      console.error('Variant generation failed:', error);
+      setProcessingStage('Generation failed');
       setTimeout(() => {
         setProcessingStage('');
         setEstimatedTime(0);
       }, 3000);
+    }
+  };
+
+  const selectVariant = (variant: any) => {
+    if (variant.success && variant.image) {
+      onUpdate({
+        avatar: {
+          type: 'generate',
+          originalUrl: variant.image,
+          status: 'completed',
+          quality: quality as any,
+          metadata: {
+            resolution: variant.metadata?.resolution || `${quality} (Generated)`,
+            faceAlignment: 98,
+            consistency: faceConsistency,
+            processingTime: variant.metadata?.processingTime || '15s'
+          }
+        }
+      });
     }
   };
 
@@ -404,22 +397,21 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
               </div>
 
               <Button
-                onClick={handleGenerateAvatar}
-                disabled={!generationPrompt.trim() || isProcessing || processingProgress > 0}
+                onClick={handleGenerateThreeVariants}
+                disabled={!generationPrompt.trim() || isProcessing || processingStage !== ''}
                 className="w-full h-12 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
                 size="lg"
               >
-                {isProcessing || processingProgress > 0 ? (
+                {isProcessing || processingStage !== '' ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                     <div className="flex flex-col items-start">
                       <span className="text-sm">
-                        {processingStage || 'Generating Ultra-HD Avatar...'}
+                        {processingStage || 'Generating 3 Variations...'}
                       </span>
                       <div className="flex items-center gap-2 text-xs opacity-90">
-                        <span>{processingProgress}%</span>
                         {estimatedTime > 0 && (
-                          <span>• {estimatedTime}s remaining</span>
+                          <span>{estimatedTime}s remaining</span>
                         )}
                       </div>
                     </div>
@@ -427,29 +419,70 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                 ) : (
                   <>
                     <Sparkles className="h-4 w-4 mr-2" />
-                    Generate {quality} Avatar
+                    Generate 3 {quality} Variations
                   </>
                 )}
               </Button>
 
-              {/* Processing Progress Bar */}
-              {processingProgress > 0 && (
-                <div className="w-full mt-4">
-                  <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                    <span>Generation Progress</span>
-                    <span>{processingProgress}%</span>
+              {/* Variant Progress Bars */}
+              {variantProgress.some(p => p > 0) && (
+                <div className="space-y-3 mt-4">
+                  <div className="text-sm font-medium text-center">{processingStage}</div>
+                  <div className="grid grid-cols-3 gap-4">
+                    {variantProgress.map((progress, index) => (
+                      <div key={index} className="space-y-2">
+                        <div className="flex justify-between text-xs text-muted-foreground">
+                          <span>Variant {index + 1}</span>
+                          <span>{progress}%</span>
+                        </div>
+                        <div className="w-full bg-muted rounded-full h-2">
+                          <div 
+                            className="bg-gradient-to-r from-primary to-primary/80 h-2 rounded-full transition-all duration-500"
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <div className="w-full bg-muted rounded-full h-2">
-                    <div 
-                      className="bg-gradient-to-r from-primary to-primary/80 h-2 rounded-full transition-all duration-500"
-                      style={{ width: `${processingProgress}%` }}
-                    />
-                  </div>
-                  <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                    <span>{processingStage}</span>
-                    {estimatedTime > 0 && (
-                      <span>~{estimatedTime}s remaining</span>
-                    )}
+                  {estimatedTime > 0 && (
+                    <div className="text-xs text-muted-foreground text-center">
+                      ~{estimatedTime}s remaining
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Generated Variants Display */}
+              {generatedVariants.length > 0 && (
+                <div className="space-y-4 mt-6">
+                  <div className="text-sm font-medium">Choose Your Favorite:</div>
+                  <div className="grid grid-cols-3 gap-4">
+                    {generatedVariants.map((variant, index) => (
+                      <Card 
+                        key={index} 
+                        className="cursor-pointer hover:ring-2 hover:ring-primary transition-all"
+                        onClick={() => selectVariant(variant)}
+                      >
+                        <CardContent className="p-3">
+                          {variant.success && variant.image ? (
+                            <div className="space-y-2">
+                              <img 
+                                src={variant.image} 
+                                alt={`Variation ${index + 1}`}
+                                className="w-full aspect-square object-cover rounded"
+                              />
+                              <Button variant="outline" size="sm" className="w-full">
+                                Use This One
+                              </Button>
+                            </div>
+                          ) : (
+                            <div className="aspect-square flex items-center justify-center bg-muted rounded">
+                              <span className="text-xs text-muted-foreground">Failed</span>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    ))}
                   </div>
                 </div>
               )}
