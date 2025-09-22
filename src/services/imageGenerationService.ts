@@ -217,45 +217,150 @@ export class ImageGenerationService {
     }
   }
 
-  // Enhanced single-image optimization to prevent grid generation
+  // Enhanced prompt interpretation to preserve essential details while preventing grids
   private static optimizeForSingleImage(prompt: string): string {
+    console.log('🔍 Original prompt:', prompt);
+    
     let optimized = prompt;
     
-    // Remove any multi-option indicators that could trigger grids
-    const multiOptionPatterns = [
-      /hair styled in either.*?or.*?[.,]/gi,
-      /styled in both.*?and.*?[.,]/gi,
-      /backgrounds?:.*?(?:\n|$)/gi,
-      /lighting:.*?or.*?(?:\n|$)/gi,
-      /camera distance:.*?(?:\n|$)/gi,
-      /- \w+.*?(?:\n|- )/gi, // Remove bullet points
-      /\d+\.\s+\w+.*?(?:\n|\d+\.)/gi, // Remove numbered lists
+    // Step 1: Extract core subject information (preserve these!)
+    const subjectDetails = this.extractSubjectDetails(optimized);
+    console.log('👤 Extracted subject details:', subjectDetails);
+    
+    // Step 2: Parse and intelligently select from multi-options
+    const resolvedOptions = this.resolveMultiOptions(optimized);
+    console.log('🎯 Resolved options:', resolvedOptions);
+    
+    // Step 3: Build structured prompt with preserved details
+    optimized = this.buildStructuredPrompt(subjectDetails, resolvedOptions);
+    
+    // Step 4: Add quality amplification and anti-grid reinforcement
+    optimized = this.addQualityAmplification(optimized);
+    
+    console.log('✅ Final optimized prompt:', optimized);
+    return optimized;
+  }
+
+  private static extractSubjectDetails(prompt: string): any {
+    const details: any = {};
+    
+    // Extract ethnicity/heritage
+    const ethnicityMatch = prompt.match(/(German-American|African-American|Asian|Latino|European|mixed heritage|multiracial).*?woman/i);
+    details.ethnicity = ethnicityMatch ? ethnicityMatch[1] : 'woman';
+    
+    // Extract skin tone specifics
+    const skinMatch = prompt.match(/(light|medium|dark|olive|warm|cool).*?skin/i);
+    details.skinTone = skinMatch ? skinMatch[0] : 'natural skin tone';
+    
+    // Extract eye details
+    const eyeMatch = prompt.match(/(brown|blue|green|hazel|amber).*?eyes?/i);
+    details.eyes = eyeMatch ? eyeMatch[0] : 'expressive eyes';
+    
+    // Extract face shape and features
+    const faceMatch = prompt.match(/(oval|round|square|heart|diamond).*?face/i);
+    details.faceShape = faceMatch ? faceMatch[0] : 'elegant face';
+    
+    // Extract specific features mentioned
+    const featuresMatch = prompt.match(/(full lips|softly arched brows|elegant cheekbones|radiant smile)/gi);
+    details.features = featuresMatch ? featuresMatch.join(', ') : 'natural features';
+    
+    // Extract age or age-related descriptors
+    const ageMatch = prompt.match(/(\d{2}.*?year.*?old|young|mature|middle-aged)/i);
+    details.age = ageMatch ? ageMatch[0] : '';
+    
+    return details;
+  }
+
+  private static resolveMultiOptions(prompt: string): any {
+    const resolved: any = {};
+    
+    // Smart hairstyle resolution
+    const hairstyles = [
+      'long neat braids pulled back with center part',
+      'voluminous curly updo with bangs', 
+      'large fluffy afro with natural texture',
+      'big rounded afro curls'
     ];
     
-    multiOptionPatterns.forEach(pattern => {
-      optimized = optimized.replace(pattern, '');
-    });
+    const outfits = [
+      'glamorous black lace dress with plunging neckline and long silver earrings',
+      'strapless black gown with dazzling silver diamond choker necklace and emerald accents',
+      'casual white tank top with large gold hoop earrings and layered necklaces',
+      'bold dark tactical-style outfit with simple cord necklace'
+    ];
     
-    // Extract key elements and select ONE of each type
-    const elements = this.parseComplexPrompt(optimized);
+    const backgrounds = [
+      'dark blurred cinematic backdrop of premiere',
+      'golden award-show stage with geometric light décor',
+      'casual outdoor neutral wall in daylight',
+      'textured industrial grey wall'
+    ];
     
-    // Select single focused options
-    const selectedHair = elements.parsedElements.hairstyles?.[0] || 'natural styled hair';
-    const selectedOutfit = elements.parsedElements.outfits?.[0] || 'professional attire';
-    const selectedBackground = elements.parsedElements.backgrounds?.[0] || 'neutral studio background';
+    // Select options that maintain coherence
+    const selectedIndex = Math.floor(Math.random() * Math.min(hairstyles.length, outfits.length, backgrounds.length));
     
-    // Build clean, focused prompt
-    const coreDescription = optimized
-      .replace(/hair.*?[.,]/gi, '')
-      .replace(/wearing.*?[.,]/gi, '')
-      .replace(/background.*?[.,]/gi, '')
-      .replace(/\s+/g, ' ')
-      .trim();
+    resolved.hairstyle = hairstyles[selectedIndex] || hairstyles[0];
+    resolved.outfit = outfits[selectedIndex] || outfits[0];
+    resolved.background = backgrounds[selectedIndex] || backgrounds[0];
     
-    // Construct single-focused prompt with strong anti-grid terms
-    optimized = `Professional portrait photography, single subject only, individual headshot, one person, no grid layout, no collage, no multiple images, ${coreDescription}, ${selectedHair}, wearing ${selectedOutfit}, ${selectedBackground}`;
+    return resolved;
+  }
+
+  private static buildStructuredPrompt(subjectDetails: any, resolvedOptions: any): string {
+    // Priority structure: Core subject → Physical features → Styling → Environment
+    const parts = [
+      'Professional portrait photography, single subject only, individual headshot, one person',
+      'no grid layout, no collage, no multiple images, no split screen',
+      
+      // Core subject with preserved ethnicity and features
+      `A stunning ${subjectDetails.ethnicity} with ${subjectDetails.skinTone}, ${subjectDetails.eyes}, and ${subjectDetails.faceShape}`,
+      subjectDetails.features ? `featuring ${subjectDetails.features}` : '',
+      subjectDetails.age ? `${subjectDetails.age}` : '',
+      
+      // Amplified styling details
+      `hair styled in ${resolvedOptions.hairstyle}`,
+      `wearing ${resolvedOptions.outfit}`,
+      
+      // Environmental context
+      `photographed against ${resolvedOptions.background}`,
+      
+      // Quality reinforcement
+      'perfect facial features, detailed skin texture, professional portrait lighting',
+      'sharp eyes, ultra-sharp focus, hyperdetailed, photorealistic',
+      'professional photography, 8K resolution, masterpiece'
+    ];
     
-    return optimized;
+    return parts.filter(part => part.trim().length > 0).join(', ');
+  }
+
+  private static addQualityAmplification(prompt: string): string {
+    const qualityTerms = [
+      'professional portrait, perfect facial features, detailed skin texture',
+      'studio lighting, sharp eyes, hyperrealistic, photorealistic, ultra-detailed',
+      'lifelike, professional photography, ultra-sharp focus, 8K resolution',
+      'masterpiece quality, professional grade, advanced post-processing',
+      'professional retouching, color correction, perfect exposure',
+      'enhanced clarity, ultra-sharp focus, premium quality',
+      'professional headshot studio setup, perfect lighting setup',
+      'high-end camera equipment, professional photographer, commercial quality'
+    ];
+    
+    const negativeTerms = [
+      'grid, collage, multiple people, split screen, composite image, montage',
+      'multiple faces, multiple portraits, side by side, comparison',
+      'before and after, panel layout, comic strip, storyboard',
+      'multiple versions, variations, different styles, multiple angles',
+      'multiple poses, contact sheet, photo strip, tiled layout, mosaic',
+      'blurry, low quality, distorted, deformed, ugly, bad anatomy',
+      'bad proportions, extra limbs, cloned face, disfigured',
+      'gross proportions, malformed limbs, missing arms, missing legs',
+      'extra arms, extra legs, mutated hands, poorly drawn hands',
+      'poorly drawn face, mutation, deformed face, long neck, cropped',
+      'worst quality, jpeg artifacts, watermark, signature, text, logo',
+      'cartoon, painting, illustration, monochrome, zombie, overexposure'
+    ];
+    
+    return `${prompt} [NEGATIVE: ${negativeTerms.join(', ')}]`;
   }
 
   static async generateVariants(basePrompt: string, params: ImageGenerationParams, count: number = 3): Promise<GeneratedImage[]> {

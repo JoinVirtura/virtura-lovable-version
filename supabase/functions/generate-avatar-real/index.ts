@@ -78,46 +78,24 @@ serve(async (req) => {
       // Stronger single-subject enforcement with anti-grid terms
       focused = `professional portrait photography, single subject only, individual headshot, one person, no grid layout, no collage, no multiple images, no variations, focused composition, ${focused}`;
       
-      // More aggressive option detection and selection
+      // Enhanced prompt processing - the imageGenerationService now handles most optimization
+      // This function now focuses on final cleanup and model-specific adjustments
       
-      // 1. Handle "either...or" hairstyle constructions
-      if (focused.includes('either') || focused.includes('or ')) {
-        const hairOptions = ['neat long braids', 'voluminous curly updo with bangs', 'large fluffy afro', 'rounded curls'];
-        const selectedHair = hairOptions[Math.floor(Math.random() * hairOptions.length)];
-        focused = focused.replace(/hair styled in either.*?or.*?eye\./gi, `hair styled in ${selectedHair}.`);
-        focused = focused.replace(/hair styled in.*?either.*?or.*?,/gi, `hair styled in ${selectedHair},`);
-        console.log('🎯 Selected hairstyle:', selectedHair);
-      }
+      console.log('🔧 Edge function prompt preprocessing...');
       
-      // 2. Handle multiple outfit listings with bullets or "both...and"
-      if (focused.includes('She is styled in both') || focused.includes('styled in both') || focused.includes('- glamorous') || focused.includes('- strapless') || focused.includes('- casual') || focused.includes('- bold')) {
-        const outfitOptions = [
-          'glamorous black lace dress with plunging neckline and long silver earrings',
-          'strapless black gown with a dazzling silver diamond choker necklace and emerald accents',
-          'casual white tank top with large gold hoop earrings and layered necklaces',
-          'bold tactical dark outfit with a simple cord necklace'
-        ];
-        const selectedOutfit = outfitOptions[Math.floor(Math.random() * outfitOptions.length)];
-        
-        // Remove entire styling section and replace with single choice
-        focused = focused.replace(/She is styled in both.*?simple cord necklace\./gi, `She wears a ${selectedOutfit}.`);
-        focused = focused.replace(/styled in both.*?simple cord necklace\./gi, `wearing a ${selectedOutfit}.`);
-        focused = focused.replace(/- glamorous.*?- bold tactical.*?necklace\./gi, `wearing a ${selectedOutfit}.`);
-        console.log('👗 Selected outfit:', selectedOutfit);
-      }
+      // Remove any remaining multi-option artifacts that might have slipped through
+      focused = focused.replace(/(\*\s*|•\s*|-\s*)/g, ''); // Remove bullet markers
+      focused = focused.replace(/\s*vary between:.*?(?=\.|,|$)/gi, ''); // Remove "vary between" phrases
+      focused = focused.replace(/\s*shift between:.*?(?=\.|,|$)/gi, ''); // Remove "shift between" phrases
+      focused = focused.replace(/\s*either.*?or.*?(?=\.|,)/gi, ''); // Remove any remaining either/or
       
-      // 3. Handle multiple background options
-      if (focused.includes('Backgrounds:') || focused.includes('- dark blurred') || focused.includes('- golden award') || focused.includes('- casual daylight') || focused.includes('- textured industrial')) {
-        const backgroundOptions = [
-          'dark blurred cinematic backdrop',
-          'golden award-show stage with geometric décor',
-          'casual daylight neutral wall',
-          'textured industrial grey wall'
-        ];
-        const selectedBackground = backgroundOptions[Math.floor(Math.random() * backgroundOptions.length)];
-        
-        // Remove backgrounds section and replace with single choice
-        focused = focused.replace(/Backgrounds:.*?grey wall\./gi, `Background: ${selectedBackground}.`);
+      // Clean up redundant spacing and formatting
+      focused = focused.replace(/\s*,\s*,/g, ','); // Remove double commas
+      focused = focused.replace(/\s+/g, ' '); // Normalize whitespace
+      focused = focused.replace(/,\s*\./g, '.'); // Fix comma-period combinations
+      focused = focused.trim();
+      
+      console.log('🧹 Cleaned prompt:', focused.substring(0, 200) + '...');
         focused = focused.replace(/- dark blurred.*?- textured industrial.*?wall\./gi, `Background: ${selectedBackground}.`);
         console.log('🎨 Selected background:', selectedBackground);
       }
