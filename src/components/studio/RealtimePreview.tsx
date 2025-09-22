@@ -251,42 +251,42 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
         <div className="pt-2 border-t space-y-3">
           <h4 className="text-sm font-medium">Project Metadata</h4>
           
-          <div className="grid grid-cols-2 gap-4 text-xs">
-            <div className="space-y-2">
+          <div className="grid grid-cols-1 gap-3 text-xs">
+            <div className="grid grid-cols-2 gap-x-8 gap-y-2">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Engine:</span>
-                <span className="font-medium">{project.video?.engine || 'Not selected'}</span>
+                <span className="text-muted-foreground w-20">Engine:</span>
+                <span className="font-medium text-right">{project.video?.engine || 'Not selected'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Quality:</span>
-                <span className="font-medium">{project.video?.quality || project.avatar?.quality || 'Standard'}</span>
+                <span className="text-muted-foreground w-24">Face Alignment:</span>
+                <span className="font-medium text-right">{project.avatar?.metadata?.faceAlignment || 0}%</span>
+              </div>
+              
+              <div className="flex justify-between">
+                <span className="text-muted-foreground w-20">Quality:</span>
+                <span className="font-medium text-right">{project.video?.quality || project.avatar?.quality || 'Standard'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Format:</span>
-                <span className="font-medium">{project.video?.ratio || '16:9'}</span>
+                <span className="text-muted-foreground w-24">Consistency:</span>
+                <span className="font-medium text-right">{project.avatar?.metadata?.consistency || 0}%</span>
+              </div>
+              
+              <div className="flex justify-between">
+                <span className="text-muted-foreground w-20">Format:</span>
+                <span className="font-medium text-right">{project.video?.ratio || '16:9'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Resolution:</span>
-                <span className="font-medium">{project.avatar?.metadata?.resolution || 'Auto'}</span>
+                <span className="text-muted-foreground w-24">Voice Duration:</span>
+                <span className="font-medium text-right">{project.voice?.metadata?.duration || '0'}s</span>
               </div>
-            </div>
-            
-            <div className="space-y-2">
+              
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Face Alignment:</span>
-                <span className="font-medium">{project.avatar?.metadata?.faceAlignment || 0}%</span>
+                <span className="text-muted-foreground w-20">Resolution:</span>
+                <span className="font-medium text-right">{project.avatar?.metadata?.resolution || 'Auto'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Consistency:</span>
-                <span className="font-medium">{project.avatar?.metadata?.consistency || 0}%</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Voice Duration:</span>
-                <span className="font-medium">{project.voice?.metadata?.duration || '0'}s</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Processing Time:</span>
-                <span className="font-medium">{(project.avatar?.metadata as any)?.processingTime || '0'}s</span>
+                <span className="text-muted-foreground w-24">Processing Time:</span>
+                <span className="font-medium text-right">{(project.avatar?.metadata as any)?.processingTime || '0'}s</span>
               </div>
             </div>
           </div>

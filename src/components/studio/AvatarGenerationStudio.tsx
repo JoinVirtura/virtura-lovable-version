@@ -419,28 +419,6 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                   </Badge>
                 </div>
               </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <p className="font-medium text-foreground">Quality: {project.avatar.quality}</p>
-                  <p className="text-sm text-muted-foreground">
-                    Face Alignment: {project.avatar.metadata?.faceAlignment}%
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Consistency: {project.avatar.metadata?.consistency}%
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  <Button size="sm" variant="outline" className="border-primary/20 hover:bg-primary/10 hover:border-primary/40">
-                    <Settings className="h-4 w-4 mr-1" />
-                    Adjust
-                  </Button>
-                  <Button size="sm" variant="outline" className="border-primary/20 hover:bg-primary/10 hover:border-primary/40">
-                    <RefreshCw className="h-4 w-4 mr-1" />
-                    Replace
-                  </Button>
-                </div>
-              </div>
             </div>
           ) : (
             <div className="aspect-square max-w-md mx-auto rounded-lg border-2 border-dashed border-muted-foreground/30 flex items-center justify-center">
