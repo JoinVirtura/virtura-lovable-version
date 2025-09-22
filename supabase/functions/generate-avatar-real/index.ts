@@ -96,41 +96,6 @@ serve(async (req) => {
       focused = focused.trim();
       
       console.log('🧹 Cleaned prompt:', focused.substring(0, 200) + '...');
-        focused = focused.replace(/- dark blurred.*?- textured industrial.*?wall\./gi, `Background: ${selectedBackground}.`);
-        console.log('🎨 Selected background:', selectedBackground);
-      }
-      
-      // 4. Handle multiple lighting scenarios
-      if (focused.includes('Lighting: golden spotlight or natural daylight')) {
-        const lightingOptions = ['golden spotlight lighting', 'natural daylight lighting'];
-        const selectedLighting = lightingOptions[Math.floor(Math.random() * lightingOptions.length)];
-        focused = focused.replace(/Lighting: golden spotlight or natural daylight depending on scene\./gi, `Lighting: ${selectedLighting}.`);
-        console.log('💡 Selected lighting:', selectedLighting);
-      }
-      
-      // 5. Handle multiple camera distances
-      if (focused.includes('Camera Distance: mostly medium shot with some close-up')) {
-        const cameraOptions = ['medium shot portrait', 'close-up portrait'];
-        const selectedCamera = cameraOptions[Math.floor(Math.random() * cameraOptions.length)];
-        focused = focused.replace(/Camera Distance: mostly medium shot with some close-up portraits\./gi, `Camera angle: ${selectedCamera}.`);
-        console.log('📷 Selected camera angle:', selectedCamera);
-      }
-      
-      // 6. Remove any remaining multiple option indicators
-      focused = focused.replace(/both.*?and/gi, '');
-      focused = focused.replace(/either.*?or/gi, '');
-      focused = focused.replace(/multiple.*?options/gi, '');
-      focused = focused.replace(/variations/gi, '');
-      focused = focused.replace(/shift between/gi, '');
-      focused = focused.replace(/depending on scene/gi, '');
-      
-      // 7. Clean up formatting
-      focused = focused.replace(/\s+/g, ' ');
-      focused = focused.replace(/\.\s*\./g, '.');
-      focused = focused.replace(/,\s*,/g, ',');
-      focused = focused.trim();
-      
-      console.log('✅ Focused prompt after processing:', focused);
       
       return focused;
     };
