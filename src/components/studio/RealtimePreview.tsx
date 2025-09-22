@@ -282,26 +282,25 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
               
               <div className="flex justify-between">
                 <span className="text-muted-foreground w-20">Resolution:</span>
-                <span className="font-medium text-right">{project.avatar?.metadata?.resolution || 'Auto'}</span>
+                <span className="font-medium text-right">{
+                  (() => {
+                    const res = project.avatar?.metadata?.resolution || 'Auto';
+                    if (res.includes('3840x2160')) return '4K';
+                    if (res.includes('1920x1080')) return '1080p';
+                    if (res.includes('1280x720')) return '720p';
+                    if (res.includes('4K')) return '4K';
+                    if (res.includes('HD')) return '1080p';
+                    return 'Auto';
+                  })()
+                }</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground w-24">Processing Time:</span>
+                <span className="text-muted-foreground w-24">Processing:</span>
                 <span className="font-medium text-right">{(project.avatar?.metadata as any)?.processingTime || '0'}s</span>
               </div>
             </div>
           </div>
           
-          {project.avatar?.status === 'completed' && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-2">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-600" />
-                <span className="text-sm font-medium text-green-800">Avatar Ready</span>
-              </div>
-              <p className="text-xs text-green-700 mt-1">
-                High-quality avatar generated with {project.avatar.metadata?.faceAlignment || 0}% face alignment accuracy
-              </p>
-            </div>
-          )}
         </div>
       </CardContent>
     </Card>

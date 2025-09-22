@@ -16,9 +16,7 @@ import {
   Image as ImageIcon,
   Library,
   Zap,
-  Eye,
   Settings,
-  CheckCircle,
   Loader2,
   RefreshCw,
   Crown,
@@ -36,7 +34,7 @@ interface AvatarGenerationStudioProps {
 }
 
 const STYLE_PRESETS = [
-  { id: 'realistic', name: 'Hyper Realistic', icon: Eye, description: 'Photo-realistic quality' },
+  { id: 'realistic', name: 'Hyper Realistic', icon: Camera, description: 'Photo-realistic quality' },
   { id: 'pixar', name: 'Pixar Style', icon: Sparkles, description: '3D animated look' },
   { id: 'cinematic', name: 'Cinematic', icon: Star, description: 'Film-grade quality' },
   { id: 'anime', name: 'Anime Style', icon: Wand2, description: 'Japanese animation' },
@@ -393,44 +391,6 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
         </TabsContent>
       </Tabs>
 
-      {/* Live Preview */}
-      <Card className="border-primary/30 bg-gradient-to-br from-primary/5 via-primary/3 to-background/50 backdrop-blur-sm">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Eye className="h-5 w-5 text-primary" />
-            <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent font-bold">
-              Live Preview
-            </span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {project.avatar?.originalUrl ? (
-            <div className="space-y-4">
-              <div className="relative aspect-square max-w-md mx-auto rounded-lg overflow-hidden border-2 border-primary/20">
-                <img 
-                  src={project.avatar.originalUrl} 
-                  alt="Avatar Preview" 
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-2 right-2">
-                  <Badge className="bg-green-500">
-                    <CheckCircle className="h-3 w-3 mr-1" />
-                    Processing Complete
-                  </Badge>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="aspect-square max-w-md mx-auto rounded-lg border-2 border-dashed border-muted-foreground/30 flex items-center justify-center">
-              <div className="text-center space-y-2">
-                <Eye className="h-12 w-12 text-muted-foreground mx-auto" />
-                <p className="text-muted-foreground">Avatar preview will appear here</p>
-                <p className="text-xs text-muted-foreground">Upload, generate, or select from library</p>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
     </div>
   );
 };
