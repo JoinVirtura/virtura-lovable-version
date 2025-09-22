@@ -187,7 +187,7 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
                       AI Generated
                     </Badge>
                   </div>
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                     <Button size="sm" className="bg-primary hover:bg-primary/90">
                       <CheckCircle className="h-4 w-4 mr-2" />
                       Select Avatar

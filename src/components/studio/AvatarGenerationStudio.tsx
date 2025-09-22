@@ -299,14 +299,6 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                     Drop image here or click to upload • PNG, JPG, WebP up to 10MB
                   </p>
                 </div>
-                <Button
-                  onClick={() => fileInputRef.current?.click()}
-                  variant="outline"
-                  className="mt-4"
-                >
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload Image
-                </Button>
               </div>
             </CardContent>
             
