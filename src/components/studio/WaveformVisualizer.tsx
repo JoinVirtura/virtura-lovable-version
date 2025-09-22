@@ -64,25 +64,32 @@ export const WaveformVisualizer: React.FC<WaveformVisualizerProps> = ({
         // Create gradient for each bar
         const gradient = ctx.createLinearGradient(0, centerY - barHeight/2, 0, centerY + barHeight/2);
         
-        if (isPlaying) {
-          // Animated playing state
-          const playPosition = (animationFrame * 0.02) % 1;
-          const distance = Math.abs((index / waveformData.length) - playPosition);
-          const intensity = Math.max(0, 1 - distance * 5);
-          
-          // Fix color format - use proper HSL values
-          gradient.addColorStop(0, `hsl(51, 100%, ${Math.min(100, 50 + intensity * 20)}%)`);
-          gradient.addColorStop(0.5, `hsl(51, 100%, ${Math.min(100, 40 + intensity * 30)}%)`);
-          gradient.addColorStop(1, `hsl(51, 100%, ${Math.min(100, 30 + intensity * 20)}%)`);
-        } else {
-          // Static state - use theme-consistent colors
-          gradient.addColorStop(0, 'hsl(var(--primary))');
-          gradient.addColorStop(0.5, 'hsl(var(--primary) / 0.7)');
-          gradient.addColorStop(1, 'hsl(var(--primary) / 0.4)');
+        try {
+          if (isPlaying) {
+            // Animated playing state
+            const playPosition = (animationFrame * 0.02) % 1;
+            const distance = Math.abs((index / waveformData.length) - playPosition);
+            const intensity = Math.max(0, 1 - distance * 5);
+            
+            // Use Canvas-compatible color values
+            gradient.addColorStop(0, `hsl(51, 100%, ${Math.min(100, 50 + intensity * 20)}%)`);
+            gradient.addColorStop(0.5, `hsl(51, 100%, ${Math.min(100, 40 + intensity * 30)}%)`);
+            gradient.addColorStop(1, `hsl(51, 100%, ${Math.min(100, 30 + intensity * 20)}%)`);
+          } else {
+            // Static state - use Canvas-compatible colors (yellow theme)
+            gradient.addColorStop(0, '#eab308'); // yellow-500
+            gradient.addColorStop(0.5, '#facc15'); // yellow-400  
+            gradient.addColorStop(1, '#fde047'); // yellow-300
+          }
+
+          ctx.fillStyle = gradient;
+          ctx.fillRect(x, centerY - barHeight/2, barWidth - 1, barHeight);
+        } catch (error) {
+          // Fallback to simple solid color if gradient fails
+          ctx.fillStyle = '#eab308';
+          ctx.fillRect(x, centerY - barHeight/2, barWidth - 1, barHeight);
         }
 
-        ctx.fillStyle = gradient;
-        ctx.fillRect(x, centerY - barHeight/2, barWidth - 1, barHeight);
       });
 
       if (isPlaying) {
