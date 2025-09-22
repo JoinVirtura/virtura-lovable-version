@@ -43,9 +43,9 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
 
   const getPreviewDimensions = () => {
     switch (previewMode) {
-      case 'mobile': return 'w-full h-[400px]';
+      case 'mobile': return 'w-full h-[600px]';
       case 'tablet': return 'w-full h-[500px]';
-      default: return 'w-full h-[600px]';
+      default: return 'w-full h-[400px]';
     }
   };
 
