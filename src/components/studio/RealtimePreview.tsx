@@ -43,9 +43,9 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
 
   const getPreviewDimensions = () => {
     switch (previewMode) {
-      case 'mobile': return 'w-full max-w-sm aspect-[9/16] min-h-[400px]';
-      case 'tablet': return 'w-full max-w-2xl aspect-[4/3] min-h-[300px]';
-      default: return 'w-full max-w-4xl aspect-video min-h-[300px]';
+      case 'mobile': return 'w-full max-w-sm min-h-[400px] max-h-[600px]';
+      case 'tablet': return 'w-full max-w-2xl min-h-[300px] max-h-[500px]';
+      default: return 'w-full max-w-4xl min-h-[300px] max-h-[600px]';
     }
   };
 
@@ -211,86 +211,100 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
         </div>
 
         {/* Preview Area */}
-        <div className={`mx-auto ${getPreviewDimensions()} bg-black rounded-lg overflow-hidden relative group`}>
-          {project.video?.videoUrl ? (
-            <video
-              src={project.video.videoUrl}
-              controls
-              className="w-full h-full object-cover"
-              poster={project.avatar?.processedUrl || project.avatar?.originalUrl}
-            >
-              Your browser does not support the video tag.
-            </video>
-          ) : project.style?.resultUrl ? (
-            <div className="relative">
-              <img
-                src={project.style.resultUrl}
-                alt="Styled Avatar"
-                className="w-full h-full object-cover"
-              />
-              {/* Heart save button overlay */}
-              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                <Button
-                  size="icon"
-                  variant="secondary"
-                  className={`h-8 w-8 rounded-full backdrop-blur-sm ${
-                    savedAvatars.has(project.style.resultUrl) 
-                      ? 'bg-red-500/80 hover:bg-red-600/80 text-white' 
-                      : 'bg-white/80 hover:bg-white/90 text-gray-700'
-                  }`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleSaveToLibrary(project.style.resultUrl);
-                  }}
+        <div className={`${getPreviewDimensions()} bg-black rounded-lg overflow-hidden relative group flex items-center justify-center`}>
+          {(() => {
+            // Priority: Video > Style Transfer > Original Avatar
+            if (project.video?.videoUrl) {
+              return (
+                <video
+                  src={project.video.videoUrl}
+                  controls
+                  className="w-full h-full object-contain"
+                  poster={project.avatar?.processedUrl || project.avatar?.originalUrl}
                 >
-                  <Heart 
-                    className={`h-4 w-4 ${
-                      savedAvatars.has(project.style.resultUrl) ? 'fill-current' : ''
-                    }`} 
+                  Your browser does not support the video tag.
+                </video>
+              );
+            }
+            
+            if (project.style?.resultUrl) {
+              return (
+                <div className="relative w-full h-full flex items-center justify-center">
+                  <img
+                    src={project.style.resultUrl}
+                    alt="Styled Avatar"
+                    className="max-w-full max-h-full object-contain"
                   />
-                </Button>
-              </div>
-            </div>
-          ) : project.avatar?.processedUrl || project.avatar?.originalUrl ? (
-            <div className="relative">
-              <img
-                src={project.avatar.processedUrl || project.avatar.originalUrl}
-                alt="Avatar Preview"
-                className="w-full h-full object-cover"
-              />
-              {/* Heart save button overlay */}
-              {(project.avatar?.processedUrl || project.avatar?.originalUrl) && (
-                <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                  <Button
-                    size="icon"
-                    variant="secondary"
-                    className={`h-8 w-8 rounded-full backdrop-blur-sm ${
-                      savedAvatars.has(project.avatar?.processedUrl || project.avatar?.originalUrl || '') 
-                        ? 'bg-red-500/80 hover:bg-red-600/80 text-white' 
-                        : 'bg-white/80 hover:bg-white/90 text-gray-700'
-                    }`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleSaveToLibrary(project.avatar?.processedUrl || project.avatar?.originalUrl || '');
-                    }}
-                  >
-                    <Heart 
-                      className={`h-4 w-4 ${
-                        savedAvatars.has(project.avatar?.processedUrl || project.avatar?.originalUrl || '') ? 'fill-current' : ''
-                      }`} 
-                    />
-                  </Button>
+                  {/* Heart save button overlay */}
+                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                    <Button
+                      size="icon"
+                      variant="secondary"
+                      className={`h-8 w-8 rounded-full backdrop-blur-sm ${
+                        savedAvatars.has(project.style.resultUrl) 
+                          ? 'bg-red-500/80 hover:bg-red-600/80 text-white' 
+                          : 'bg-white/80 hover:bg-white/90 text-gray-700'
+                      }`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSaveToLibrary(project.style.resultUrl);
+                      }}
+                    >
+                      <Heart 
+                        className={`h-4 w-4 ${
+                          savedAvatars.has(project.style.resultUrl) ? 'fill-current' : ''
+                        }`} 
+                      />
+                    </Button>
+                  </div>
                 </div>
-              )}
-            </div>
-          ) : (
-            <div className="flex items-center justify-center h-full text-muted-foreground">
-              <div className="text-center">
-                <Film className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">Preview will appear here</p>
+              );
+            }
+            
+            if (project.avatar?.processedUrl || project.avatar?.originalUrl) {
+              const imageUrl = project.avatar.processedUrl || project.avatar.originalUrl;
+              return (
+                <div className="relative w-full h-full flex items-center justify-center">
+                  <img
+                    src={imageUrl}
+                    alt="Avatar Preview"
+                    className="max-w-full max-h-full object-contain"
+                  />
+                  {/* Heart save button overlay */}
+                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                    <Button
+                      size="icon"
+                      variant="secondary"
+                      className={`h-8 w-8 rounded-full backdrop-blur-sm ${
+                        savedAvatars.has(imageUrl || '') 
+                          ? 'bg-red-500/80 hover:bg-red-600/80 text-white' 
+                          : 'bg-white/80 hover:bg-white/90 text-gray-700'
+                      }`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSaveToLibrary(imageUrl || '');
+                      }}
+                    >
+                      <Heart 
+                        className={`h-4 w-4 ${
+                          savedAvatars.has(imageUrl || '') ? 'fill-current' : ''
+                        }`} 
+                      />
+                    </Button>
+                  </div>
+                </div>
+              );
+            }
+            
+            return (
+              <div className="flex items-center justify-center h-full text-muted-foreground">
+                <div className="text-center">
+                  <Film className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm">Preview will appear here</p>
+                </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* Processing Overlay */}
           {isProcessing && (
