@@ -104,19 +104,38 @@ serve(async (req) => {
     console.log('Final enhanced prompt:', finalPrompt);
     console.log('Generation parameters:', { finalSteps, guidanceScale, dimensions });
 
+    // Initialize Hugging Face client
+    const hf = new HfInference(hfToken);
+    
     // Ultra-realistic generation with professional photography quality
-    const image = await hf.textToImage({
-      inputs: finalPrompt,
-      model: 'black-forest-labs/FLUX.1-dev',
-      parameters: {
-        num_inference_steps: finalSteps,
-        guidance_scale: guidanceScale,
-        width: dimensions.width,
-        height: dimensions.height,
-        seed: Math.floor(Math.random() * 1000000)
-        // Removed unsupported parameters for FLUX model
-      }
-    });
+    console.log('Calling Hugging Face FLUX.1-dev...');
+    
+    let image;
+    try {
+      image = await hf.textToImage({
+        inputs: finalPrompt,
+        model: 'black-forest-labs/FLUX.1-dev',
+        parameters: {
+          num_inference_steps: finalSteps,
+          guidance_scale: guidanceScale,
+          width: dimensions.width,
+          height: dimensions.height,
+        }
+      });
+    } catch (hfError: any) {
+      console.error('FLUX.1-dev failed, trying schnell:', hfError);
+      // Fallback to schnell model
+      image = await hf.textToImage({
+        inputs: finalPrompt,
+        model: 'black-forest-labs/FLUX.1-schnell',
+        parameters: {
+          num_inference_steps: Math.min(finalSteps, 8),
+          guidance_scale: guidanceScale,
+          width: dimensions.width,
+          height: dimensions.height,
+        }
+      });
+    }
 
     // Convert blob to array buffer
     const arrayBuffer = await image.arrayBuffer();

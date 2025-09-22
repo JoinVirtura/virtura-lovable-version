@@ -25,6 +25,7 @@ import {
   Star
 } from 'lucide-react';
 import { AvatarLibrary } from './AvatarLibrary';
+import { RealAvatarLibrary } from './RealAvatarLibrary';
 import type { StudioProject } from '@/hooks/useStudioProject';
 
 interface AvatarGenerationStudioProps {
@@ -116,13 +117,51 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
     if (!generationPrompt.trim()) return;
 
     try {
-      await onGenerate({
+      // Use ImageGenerationService to mirror AI Image Studio functionality
+      const { ImageGenerationService } = await import('@/services/imageGenerationService');
+      
+      const params = {
         prompt: generationPrompt,
-        style: selectedStyle,
-        quality,
-        faceConsistency: faceConsistency / 100,
-        enhancementLevel: 'maximum'
-      });
+        contentType: 'portrait' as const,
+        style: selectedStyle === 'realistic' ? 'photorealistic' : selectedStyle,
+        aspectRatio: '1:1' as const,
+        resolution: quality === '4K' ? '1024x1024' as const : '512x512' as const,
+        quality: 'ultra' as const,
+        enhance: true
+      };
+
+      const result = await ImageGenerationService.generateImage(params);
+      
+      if (result.success && result.image) {
+        // Save to avatar library
+        try {
+          const { supabase } = await import('@/integrations/supabase/client');
+          await supabase.from('avatar_library').insert({
+            image_url: result.image,
+            prompt: generationPrompt,
+            title: `${selectedStyle} Avatar`,
+            tags: [selectedStyle, quality, 'AI Generated']
+          });
+        } catch (error) {
+          console.warn('Failed to save to library:', error);
+        }
+
+        onUpdate({
+          avatar: {
+            type: 'generate',
+            originalUrl: result.image,
+            status: 'completed',
+            quality: quality as any,
+            metadata: {
+              resolution: `${quality} (Generated)`,
+              faceAlignment: 95,
+              consistency: faceConsistency
+            }
+          }
+        });
+      } else {
+        console.error('Generation failed:', result.error);
+      }
     } catch (error) {
       console.error('Avatar generation failed:', error);
     }
@@ -186,35 +225,19 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
             onClick={() => fileInputRef.current?.click()}
           >
             <CardContent className="h-full flex items-center justify-center">
-              {project.avatar?.originalUrl ? (
-                <div className="relative w-full h-full">
-                  <img 
-                    src={project.avatar.originalUrl} 
-                    alt="Avatar" 
-                    className="w-full h-full object-contain rounded-lg"
-                  />
-                  <div className="absolute top-2 right-2">
-                    <Badge className="bg-green-500">
-                      <CheckCircle className="h-3 w-3 mr-1" />
-                      Ready
-                    </Badge>
-                  </div>
+              <div className="text-center space-y-4">
+                <div className={`p-4 rounded-full border-2 border-dashed transition-all ${
+                  isDragOver ? 'border-primary bg-primary/10 scale-110' : 'border-muted-foreground/30'
+                }`}>
+                  <Upload className="h-8 w-8 text-muted-foreground" />
                 </div>
-              ) : (
-                <div className="text-center space-y-4">
-                  <div className={`p-4 rounded-full border-2 border-dashed transition-all ${
-                    isDragOver ? 'border-primary bg-primary/10 scale-110' : 'border-muted-foreground/30'
-                  }`}>
-                    <Upload className="h-8 w-8 text-muted-foreground" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold mb-1">Upload Avatar Image</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Drop image here or click to upload • PNG, JPG, WebP up to 10MB
-                    </p>
-                  </div>
+                <div>
+                  <h3 className="font-semibold mb-1">Upload Avatar Image</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Drop image here or click to upload • PNG, JPG, WebP up to 10MB
+                  </p>
                 </div>
-              )}
+              </div>
             </CardContent>
             
             <input
@@ -241,6 +264,15 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                   style={{ width: `${uploadProgress}%` }}
                 />
               </div>
+            </div>
+          )}
+
+          {project.avatar?.originalUrl && (
+            <div className="flex justify-center">
+              <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Change Image
+              </Button>
             </div>
           )}
         </TabsContent>
@@ -353,7 +385,7 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
 
         {/* Library Tab */}
         <TabsContent value="library" className="space-y-6">
-          <AvatarLibrary
+          <RealAvatarLibrary
             onSelectAvatar={(avatarUrl, metadata) => {
               onUpdate({
                 avatar: {
@@ -370,43 +402,66 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
         </TabsContent>
       </Tabs>
 
-      {/* Avatar Preview & Settings */}
-      {project.avatar && (
-        <Card className="border-primary/30 bg-gradient-to-br from-primary/5 via-primary/3 to-background/50 backdrop-blur-sm">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <CheckCircle className="h-5 w-5 text-primary" />
-              <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent font-bold">
-                Avatar Ready
-              </span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="font-medium text-foreground">Quality: {project.avatar.quality}</p>
-                <p className="text-sm text-muted-foreground">
-                  Face Alignment: {project.avatar.metadata?.faceAlignment}%
-                </p>
-                <div className="flex items-center gap-2">
-                  <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-xs text-green-600 dark:text-green-400 font-medium">Processing Complete</span>
+      {/* Live Preview */}
+      <Card className="border-primary/30 bg-gradient-to-br from-primary/5 via-primary/3 to-background/50 backdrop-blur-sm">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Eye className="h-5 w-5 text-primary" />
+            <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent font-bold">
+              Live Preview
+            </span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {project.avatar?.originalUrl ? (
+            <div className="space-y-4">
+              <div className="relative aspect-square max-w-md mx-auto rounded-lg overflow-hidden border-2 border-primary/20">
+                <img 
+                  src={project.avatar.originalUrl} 
+                  alt="Avatar Preview" 
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute top-2 right-2">
+                  <Badge className="bg-green-500">
+                    <CheckCircle className="h-3 w-3 mr-1" />
+                    Processing Complete
+                  </Badge>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <Button size="sm" variant="outline" className="border-primary/20 hover:bg-primary/10 hover:border-primary/40">
-                  <Settings className="h-4 w-4 mr-1" />
-                  Adjust
-                </Button>
-                <Button size="sm" variant="outline" className="border-primary/20 hover:bg-primary/10 hover:border-primary/40">
-                  <RefreshCw className="h-4 w-4 mr-1" />
-                  Replace
-                </Button>
+              
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <p className="font-medium text-foreground">Quality: {project.avatar.quality}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Face Alignment: {project.avatar.metadata?.faceAlignment}%
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Consistency: {project.avatar.metadata?.consistency}%
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" className="border-primary/20 hover:bg-primary/10 hover:border-primary/40">
+                    <Settings className="h-4 w-4 mr-1" />
+                    Adjust
+                  </Button>
+                  <Button size="sm" variant="outline" className="border-primary/20 hover:bg-primary/10 hover:border-primary/40">
+                    <RefreshCw className="h-4 w-4 mr-1" />
+                    Replace
+                  </Button>
+                </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      )}
+          ) : (
+            <div className="aspect-square max-w-md mx-auto rounded-lg border-2 border-dashed border-muted-foreground/30 flex items-center justify-center">
+              <div className="text-center space-y-2">
+                <Eye className="h-12 w-12 text-muted-foreground mx-auto" />
+                <p className="text-muted-foreground">Avatar preview will appear here</p>
+                <p className="text-xs text-muted-foreground">Upload, generate, or select from library</p>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
