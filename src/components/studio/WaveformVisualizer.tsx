@@ -65,14 +65,15 @@ export const WaveformVisualizer: React.FC<WaveformVisualizerProps> = ({
           const distance = Math.abs((index / waveformData.length) - playPosition);
           const intensity = Math.max(0, 1 - distance * 5);
           
-          gradient.addColorStop(0, `hsl(51 100% ${50 + intensity * 20}%)`);
-          gradient.addColorStop(0.5, `hsl(51 100% ${40 + intensity * 30}%)`);
-          gradient.addColorStop(1, `hsl(51 100% ${30 + intensity * 20}%)`);
+          // Fix color format - use proper HSL values
+          gradient.addColorStop(0, `hsl(51, 100%, ${Math.min(100, 50 + intensity * 20)}%)`);
+          gradient.addColorStop(0.5, `hsl(51, 100%, ${Math.min(100, 40 + intensity * 30)}%)`);
+          gradient.addColorStop(1, `hsl(51, 100%, ${Math.min(100, 30 + intensity * 20)}%)`);
         } else {
-          // Static state
-          gradient.addColorStop(0, color);
-          gradient.addColorStop(0.5, `${color}80`);
-          gradient.addColorStop(1, `${color}40`);
+          // Static state - use theme-consistent colors
+          gradient.addColorStop(0, 'hsl(var(--primary))');
+          gradient.addColorStop(0.5, 'hsl(var(--primary) / 0.7)');
+          gradient.addColorStop(1, 'hsl(var(--primary) / 0.4)');
         }
 
         ctx.fillStyle = gradient;
@@ -99,8 +100,7 @@ export const WaveformVisualizer: React.FC<WaveformVisualizerProps> = ({
       ref={canvasRef}
       width={width}
       height={height}
-      className={`rounded ${className}`}
-      style={{ background: 'hsl(0 0% 15%)' }}
+      className={`rounded bg-muted/20 ${className}`}
     />
   );
 };

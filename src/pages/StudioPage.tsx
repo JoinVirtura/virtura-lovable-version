@@ -33,6 +33,7 @@ import { RealtimePreview } from '@/components/studio/RealtimePreview';
 import { useStudioProject } from '@/hooks/useStudioProject';
 import { StudioNavigation } from '@/components/studio/StudioNavigation';
 import { QualitySettings } from '@/components/studio/QualitySettings';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 const STUDIO_STEPS = [
   { id: 'avatar', title: 'Avatar', icon: Upload, color: 'bg-blue-500' },
@@ -152,47 +153,57 @@ export default function StudioPage() {
               <CardContent className="p-0">
                 <Tabs value={currentStep} onValueChange={setCurrentStep}>
                   <TabsContent value="avatar" className="p-6 space-y-6">
-                    <AvatarGenerationStudio
-                      project={project}
-                      onUpdate={updateProject}
-                      onGenerate={generateAvatar}
-                      isProcessing={isProcessing}
-                    />
+                    <ErrorBoundary fallbackTitle="Avatar Generation Error" fallbackMessage="There was an issue with the avatar generation component.">
+                      <AvatarGenerationStudio
+                        project={project}
+                        onUpdate={updateProject}
+                        onGenerate={generateAvatar}
+                        isProcessing={isProcessing}
+                      />
+                    </ErrorBoundary>
                   </TabsContent>
 
                   <TabsContent value="voice" className="p-6 space-y-6">
-                    <VoiceEngineStudio
-                      project={project}
-                      onUpdate={updateProject}
-                      onGenerate={generateVoice}
-                      isProcessing={isProcessing}
-                    />
+                    <ErrorBoundary fallbackTitle="Voice Engine Error" fallbackMessage="There was an issue with the voice generation component.">
+                      <VoiceEngineStudio
+                        project={project}
+                        onUpdate={updateProject}
+                        onGenerate={generateVoice}
+                        isProcessing={isProcessing}
+                      />
+                    </ErrorBoundary>
                   </TabsContent>
 
                   <TabsContent value="style" className="p-6 space-y-6">
-                    <StyleTransferStudio
-                      project={project}
-                      onUpdate={updateProject}
-                      isProcessing={isProcessing}
-                    />
+                    <ErrorBoundary fallbackTitle="Style Transfer Error" fallbackMessage="There was an issue with the style transfer component.">
+                      <StyleTransferStudio
+                        project={project}
+                        onUpdate={updateProject}
+                        isProcessing={isProcessing}
+                      />
+                    </ErrorBoundary>
                   </TabsContent>
 
                   <TabsContent value="video" className="p-6 space-y-6">
-                    <VideoEngineStudio
-                      project={project}
-                      onUpdate={updateProject}
-                      onGenerate={generateVideo}
-                      isProcessing={isProcessing}
-                    />
+                    <ErrorBoundary fallbackTitle="Video Engine Error" fallbackMessage="There was an issue with the video generation component.">
+                      <VideoEngineStudio
+                        project={project}
+                        onUpdate={updateProject}
+                        onGenerate={generateVideo}
+                        isProcessing={isProcessing}
+                      />
+                    </ErrorBoundary>
                   </TabsContent>
 
                   <TabsContent value="export" className="p-6 space-y-6">
-                    <ExportDeliveryStudio
-                      project={project}
-                      onUpdate={updateProject}
-                      onExport={exportProject}
-                      isProcessing={isProcessing}
-                    />
+                    <ErrorBoundary fallbackTitle="Export Studio Error" fallbackMessage="There was an issue with the export component.">
+                      <ExportDeliveryStudio
+                        project={project}
+                        onUpdate={updateProject}
+                        onExport={exportProject}
+                        isProcessing={isProcessing}
+                      />
+                    </ErrorBoundary>
                   </TabsContent>
                 </Tabs>
               </CardContent>

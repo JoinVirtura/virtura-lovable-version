@@ -325,13 +325,16 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
               <Button
                 onClick={handleGenerateAvatar}
                 disabled={!generationPrompt.trim() || isProcessing}
-                className="w-full h-12"
+                className="w-full h-12 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
                 size="lg"
               >
                 {isProcessing ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Generating Ultra-HD Avatar...
+                    <span className="flex flex-col items-start">
+                      <span>Generating Ultra-HD Avatar...</span>
+                      <span className="text-xs opacity-90">Neural processing in progress</span>
+                    </span>
                   </>
                 ) : (
                   <>
@@ -365,27 +368,33 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
 
       {/* Avatar Preview & Settings */}
       {project.avatar && (
-        <Card className="border-primary/30 bg-gradient-to-br from-primary/10 to-primary/5">
-          <CardHeader>
+        <Card className="border-primary/30 bg-gradient-to-br from-primary/5 via-primary/3 to-background/50 backdrop-blur-sm">
+          <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2">
               <CheckCircle className="h-5 w-5 text-primary" />
-              Avatar Ready
+              <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent font-bold">
+                Avatar Ready
+              </span>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium text-primary">Quality: {project.avatar.quality}</p>
+              <div className="space-y-1">
+                <p className="font-medium text-foreground">Quality: {project.avatar.quality}</p>
                 <p className="text-sm text-muted-foreground">
                   Face Alignment: {project.avatar.metadata?.faceAlignment}%
                 </p>
+                <div className="flex items-center gap-2">
+                  <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-xs text-green-600 dark:text-green-400 font-medium">Processing Complete</span>
+                </div>
               </div>
               <div className="flex gap-2">
-                <Button size="sm" variant="outline" className="border-primary/20 hover:bg-primary/10">
+                <Button size="sm" variant="outline" className="border-primary/20 hover:bg-primary/10 hover:border-primary/40">
                   <Settings className="h-4 w-4 mr-1" />
                   Adjust
                 </Button>
-                <Button size="sm" variant="outline" className="border-primary/20 hover:bg-primary/10">
+                <Button size="sm" variant="outline" className="border-primary/20 hover:bg-primary/10 hover:border-primary/40">
                   <RefreshCw className="h-4 w-4 mr-1" />
                   Replace
                 </Button>

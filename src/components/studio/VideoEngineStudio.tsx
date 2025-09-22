@@ -456,13 +456,16 @@ export const VideoEngineStudio: React.FC<VideoEngineStudioProps> = ({
           <Button
             onClick={handleGenerateVideo}
             disabled={!canGenerate || isProcessing}
-            className="w-full h-12"
+            className="w-full h-12 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
             size="lg"
           >
             {isProcessing ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Generating Ultra-HD Video...
+                <span className="flex flex-col items-start">
+                  <span>Generating Ultra-HD Video...</span>
+                  <span className="text-xs opacity-90">Combining avatar and voice</span>
+                </span>
               </>
             ) : (
               <>
@@ -476,36 +479,44 @@ export const VideoEngineStudio: React.FC<VideoEngineStudioProps> = ({
 
       {/* Video Generation Result */}
       {project.video?.status === 'completed' && (
-        <Card className="border-green-200 bg-green-50/50 dark:bg-green-950/20">
-          <CardHeader>
+        <Card className="border-primary/30 bg-gradient-to-br from-primary/5 via-primary/3 to-background/50 backdrop-blur-sm">
+          <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2">
-              <CheckCircle className="h-5 w-5 text-green-500" />
-              Video Generated
+              <CheckCircle className="h-5 w-5 text-primary" />
+              <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent font-bold">
+                Video Generated
+              </span>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">Quality: {project.video.quality}</p>
+              <div className="space-y-1">
+                <p className="font-medium text-foreground">Quality: {project.video.quality}</p>
                 <p className="text-sm text-muted-foreground">
                   Engine: {VIDEO_ENGINES.find(e => e.id === project.video?.engine)?.name}
                 </p>
+                <div className="flex items-center gap-2">
+                  <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-xs text-green-600 dark:text-green-400 font-medium">Video Ready</span>
+                </div>
               </div>
               <div className="flex gap-2">
-                <Button size="sm" variant="outline">
+                <Button size="sm" variant="outline" className="border-primary/20 hover:bg-primary/10 hover:border-primary/40">
                   <Play className="h-4 w-4 mr-1" />
                   Preview
                 </Button>
-                <Button size="sm" variant="outline">
+                <Button size="sm" variant="outline" className="border-primary/20 hover:bg-primary/10 hover:border-primary/40">
                   <Settings className="h-4 w-4 mr-1" />
                   Adjust
                 </Button>
               </div>
             </div>
             {project.video.videoUrl && (
-              <video controls className="w-full rounded-lg">
-                <source src={project.video.videoUrl} type="video/mp4" />
-              </video>
+              <div className="bg-muted/10 rounded-lg p-2 border border-border/30">
+                <video controls className="w-full rounded-lg">
+                  <source src={project.video.videoUrl} type="video/mp4" />
+                </video>
+              </div>
             )}
           </CardContent>
         </Card>

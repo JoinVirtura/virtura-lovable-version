@@ -400,13 +400,16 @@ export const VoiceEngineStudio: React.FC<VoiceEngineStudioProps> = ({
               <Button
                 onClick={handleGenerateVoice}
                 disabled={!script.trim() || isProcessing}
-                className="w-full h-12"
+                className="w-full h-12 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
                 size="lg"
               >
                 {isProcessing ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Generating Ultra-HD Voice...
+                    <span className="flex flex-col items-start">
+                      <span>Generating Ultra-HD Voice...</span>
+                      <span className="text-xs opacity-90">AI speech synthesis in progress</span>
+                    </span>
                   </>
                 ) : (
                   <>
@@ -458,29 +461,35 @@ export const VoiceEngineStudio: React.FC<VoiceEngineStudioProps> = ({
 
       {/* Voice Generation Result */}
       {project.voice?.status === 'completed' && (
-        <Card className="border-primary/30 bg-gradient-to-br from-primary/10 to-primary/5">
-          <CardHeader>
+        <Card className="border-primary/30 bg-gradient-to-br from-primary/5 via-primary/3 to-background/50 backdrop-blur-sm">
+          <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2">
               <CheckCircle className="h-5 w-5 text-primary" />
-              Voice Generated
+              <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent font-bold">
+                Voice Generated
+              </span>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-4">
               {/* Voice Details */}
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-primary">Voice Model: {PREMIUM_VOICES.find(v => v.id === selectedVoice)?.name}</p>
+                <div className="space-y-1">
+                  <p className="font-medium text-foreground">Voice Model: {PREMIUM_VOICES.find(v => v.id === selectedVoice)?.name}</p>
                   <p className="text-sm text-muted-foreground">
                     Language: {LANGUAGES.find(l => l.code === selectedLanguage)?.name}
                   </p>
+                  <div className="flex items-center gap-2">
+                    <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span className="text-xs text-green-600 dark:text-green-400 font-medium">Generation Complete</span>
+                  </div>
                 </div>
                 <div className="flex gap-2">
-                  <Button size="sm" variant="outline" className="border-primary/20 hover:bg-primary/10">
+                  <Button size="sm" variant="outline" className="border-primary/20 hover:bg-primary/10 hover:border-primary/40">
                     <Play className="h-4 w-4 mr-1" />
                     Play
                   </Button>
-                  <Button size="sm" variant="outline" className="border-primary/20 hover:bg-primary/10">
+                  <Button size="sm" variant="outline" className="border-primary/20 hover:bg-primary/10 hover:border-primary/40">
                     <Settings className="h-4 w-4 mr-1" />
                     Adjust
                   </Button>
@@ -488,24 +497,24 @@ export const VoiceEngineStudio: React.FC<VoiceEngineStudioProps> = ({
               </div>
 
               {/* Waveform Visualization */}
-              <div className="bg-card/50 rounded-lg p-4">
+              <div className="bg-muted/20 rounded-lg p-4 border border-border/50">
                 <div className="flex items-center gap-3 mb-3">
                   <Volume2 className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium text-primary">Voice Waveform</span>
+                  <span className="text-sm font-medium text-foreground">Voice Waveform</span>
                 </div>
                 <WaveformVisualizer
                   audioData={project.voice.audioUrl}
-                  isPlaying={false}
-                  width={300}
-                  height={60}
+                  isPlaying={isPlaying}
+                  width={400}
+                  height={80}
                   className="w-full"
                 />
               </div>
 
               {/* Audio Player */}
               {project.voice.audioUrl && (
-                <div className="bg-card/30 rounded-lg p-3">
-                  <audio controls className="w-full">
+                <div className="bg-muted/10 rounded-lg p-3 border border-border/30">
+                  <audio controls className="w-full" ref={audioRef}>
                     <source src={project.voice.audioUrl} type="audio/mpeg" />
                   </audio>
                 </div>
