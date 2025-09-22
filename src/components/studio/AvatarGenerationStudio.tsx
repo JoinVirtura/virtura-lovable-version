@@ -115,13 +115,17 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
   const handleGenerateAvatar = async () => {
     if (!generationPrompt.trim()) return;
 
-    await onGenerate({
-      prompt: generationPrompt,
-      style: selectedStyle,
-      quality,
-      faceConsistency: faceConsistency / 100,
-      enhancementLevel: 'maximum'
-    });
+    try {
+      await onGenerate({
+        prompt: generationPrompt,
+        style: selectedStyle,
+        quality,
+        faceConsistency: faceConsistency / 100,
+        enhancementLevel: 'maximum'
+      });
+    } catch (error) {
+      console.error('Avatar generation failed:', error);
+    }
   };
 
   return (

@@ -37,8 +37,8 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 const STUDIO_STEPS = [
   { id: 'avatar', title: 'Avatar', icon: Upload, color: 'bg-blue-500' },
-  { id: 'voice', title: 'Voice', icon: Mic, color: 'bg-green-500' },
   { id: 'style', title: 'Style', icon: Palette, color: 'bg-purple-500' },
+  { id: 'voice', title: 'Voice', icon: Mic, color: 'bg-green-500' },
   { id: 'video', title: 'Video', icon: Film, color: 'bg-orange-500' },
   { id: 'export', title: 'Export', icon: Download, color: 'bg-pink-500' }
 ];
@@ -213,12 +213,10 @@ export default function StudioPage() {
           {/* Sidebar - Preview & Controls */}
           <div className="lg:col-span-4 space-y-6">
             {/* Real-time Preview */}
-            <RealtimePreview
-              project={project}
-              currentStep={currentStep}
-              isProcessing={isProcessing}
-              processingPhase={processingPhase}
-            />
+              <RealtimePreview 
+                project={project}
+                isProcessing={isProcessing}
+              />
 
             {/* Project Timeline */}
             <ProjectTimeline

@@ -1,27 +1,233 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Eye } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { 
+  Eye, 
+  Play, 
+  Volume2, 
+  Palette, 
+  Film, 
+  CheckCircle, 
+  AlertCircle,
+  Loader2,
+  Monitor,
+  Smartphone,
+  Tablet,
+  Download
+} from 'lucide-react';
+import { PremiumAudioPlayer } from './PremiumAudioPlayer';
 import type { StudioProject } from '@/hooks/useStudioProject';
 
 interface RealtimePreviewProps {
   project: StudioProject;
-  currentStep: string;
-  isProcessing: boolean;
-  processingPhase: string;
+  isProcessing?: boolean;
 }
 
-export const RealtimePreview: React.FC<RealtimePreviewProps> = ({ project, currentStep, isProcessing, processingPhase }) => (
-  <Card>
-    <CardHeader>
-      <CardTitle className="flex items-center gap-2 text-sm">
-        <Eye className="h-4 w-4" />
-        Live Preview
-      </CardTitle>
-    </CardHeader>
-    <CardContent>
-      <div className="aspect-video bg-muted/20 rounded border-2 border-dashed border-muted-foreground/30 flex items-center justify-center">
-        <p className="text-sm text-muted-foreground">Preview will appear here</p>
-      </div>
-    </CardContent>
-  </Card>
-);
+const PREVIEW_MODES = [
+  { id: 'desktop', icon: Monitor, label: 'Desktop' },
+  { id: 'tablet', icon: Tablet, label: 'Tablet' },
+  { id: 'mobile', icon: Smartphone, label: 'Mobile' }
+];
+
+export const RealtimePreview: React.FC<RealtimePreviewProps> = ({ 
+  project, 
+  isProcessing = false 
+}) => {
+  const [previewMode, setPreviewMode] = useState('desktop');
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const getPreviewDimensions = () => {
+    switch (previewMode) {
+      case 'mobile': return 'max-w-xs aspect-[9/16]';
+      case 'tablet': return 'max-w-sm aspect-[4/3]';
+      default: return 'aspect-video';
+    }
+  };
+
+  const handlePlayPreview = () => {
+    if (project.voice?.audioUrl) {
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  return (
+    <Card className="h-full">
+      <CardHeader className="pb-4">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Eye className="h-5 w-5" />
+            Live Preview
+          </CardTitle>
+          
+          <div className="flex items-center gap-1">
+            {PREVIEW_MODES.map((mode) => (
+              <Button
+                key={mode.id}
+                size="sm"
+                variant={previewMode === mode.id ? "default" : "outline"}
+                onClick={() => setPreviewMode(mode.id)}
+                className="h-7 px-2"
+              >
+                <mode.icon className="h-3 w-3" />
+              </Button>
+            ))}
+          </div>
+        </div>
+      </CardHeader>
+      
+      <CardContent className="space-y-4">
+        {/* Project Status */}
+        <div className="grid grid-cols-2 gap-2">
+          <div className="flex items-center gap-2">
+            <div className={`h-2 w-2 rounded-full ${
+              project.avatar?.status === 'completed' ? 'bg-green-500' : 
+              project.avatar?.status === 'processing' ? 'bg-yellow-500 animate-pulse' : 
+              'bg-gray-300'
+            }`} />
+            <span className="text-xs text-muted-foreground">Avatar</span>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <div className={`h-2 w-2 rounded-full ${
+              project.voice?.status === 'completed' ? 'bg-green-500' : 
+              project.voice?.status === 'processing' ? 'bg-yellow-500 animate-pulse' : 
+              'bg-gray-300'
+            }`} />
+            <span className="text-xs text-muted-foreground">Voice</span>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <div className={`h-2 w-2 rounded-full ${
+              project.style?.status === 'completed' ? 'bg-green-500' : 
+              project.style?.status === 'processing' ? 'bg-yellow-500 animate-pulse' : 
+              'bg-gray-300'
+            }`} />
+            <span className="text-xs text-muted-foreground">Style</span>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <div className={`h-2 w-2 rounded-full ${
+              project.video?.status === 'completed' ? 'bg-green-500' : 
+              project.video?.status === 'processing' ? 'bg-yellow-500 animate-pulse' : 
+              'bg-gray-300'
+            }`} />
+            <span className="text-xs text-muted-foreground">Video</span>
+          </div>
+        </div>
+
+        {/* Preview Area */}
+        <div className={`mx-auto ${getPreviewDimensions()} bg-black rounded-lg overflow-hidden relative`}>
+          {project.video?.videoUrl ? (
+            <video
+              src={project.video.videoUrl}
+              controls
+              className="w-full h-full object-cover"
+              poster={project.avatar?.processedUrl || project.avatar?.originalUrl}
+            >
+              Your browser does not support the video tag.
+            </video>
+          ) : project.style?.resultUrl ? (
+            <img
+              src={project.style.resultUrl}
+              alt="Styled Avatar"
+              className="w-full h-full object-cover"
+            />
+          ) : project.avatar?.processedUrl || project.avatar?.originalUrl ? (
+            <img
+              src={project.avatar.processedUrl || project.avatar.originalUrl}
+              alt="Avatar Preview"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="flex items-center justify-center h-full text-muted-foreground">
+              <div className="text-center">
+                <Film className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                <p className="text-sm">Preview will appear here</p>
+              </div>
+            </div>
+          )}
+
+          {/* Processing Overlay */}
+          {isProcessing && (
+            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+              <div className="text-center text-white">
+                <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2" />
+                <p className="text-sm">Processing...</p>
+              </div>
+            </div>
+          )}
+
+          {/* Quality Badge */}
+          {project.video?.quality && (
+            <Badge className="absolute top-2 right-2 bg-black/50 text-white">
+              {project.video.quality}
+            </Badge>
+          )}
+        </div>
+
+        {/* Audio Player */}
+        {project.voice?.audioUrl && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Voice Preview</span>
+              <Button
+                size="sm"
+                onClick={handlePlayPreview}
+                className="h-8"
+              >
+                <Play className="h-3 w-3 mr-1" />
+                Play Preview
+              </Button>
+            </div>
+            
+            <PremiumAudioPlayer
+              audioUrl={project.voice.audioUrl}
+              isPlaying={isPlaying}
+              onPlayPause={handlePlayPreview}
+              waveformData={project.voice.metadata?.waveform}
+              className="border-0 bg-muted/50"
+            />
+          </div>
+        )}
+
+        {/* Preview Controls */}
+        <div className="flex gap-2">
+          {project.avatar?.originalUrl && (
+            <Button size="sm" variant="outline" className="flex-1">
+              <Eye className="h-3 w-3 mr-1" />
+              View Avatar
+            </Button>
+          )}
+          
+          {project.video?.videoUrl && (
+            <Button size="sm" variant="outline" className="flex-1" asChild>
+              <a href={project.video.videoUrl} download="generated-video.mp4">
+                <Download className="h-3 w-3 mr-1" />
+                Download
+              </a>
+            </Button>
+          )}
+        </div>
+
+        {/* Project Summary */}
+        <div className="pt-2 border-t space-y-2">
+          <div className="text-xs text-muted-foreground">
+            <div className="flex justify-between">
+              <span>Engine:</span>
+              <span>{project.video?.engine || 'Not selected'}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Quality:</span>
+              <span>{project.video?.quality || project.avatar?.quality || 'Standard'}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Format:</span>
+              <span>{project.video?.ratio || '16:9'}</span>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};

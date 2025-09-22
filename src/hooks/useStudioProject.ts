@@ -287,14 +287,17 @@ export const useStudioProject = () => {
         voice: { ...prev.voice, status: 'processing' } as any
       }));
 
-      const { data, error } = await supabase.functions.invoke('voice-generate', {
+      const { data, error } = await supabase.functions.invoke('voice-generate-elevenlabs', {
         body: {
           script: config.script,
           voiceId: config.voiceId,
-          model: 'eleven_multilingual_v2',
-          emotions: config.emotions,
           language: config.language || 'en',
-          qualityMode: 'ultra-hd'
+          voiceSettings: config.voiceSettings || {
+            stability: 0.75,
+            similarity_boost: 0.75,
+            style: 0.0,
+            use_speaker_boost: true
+          }
         }
       });
 
