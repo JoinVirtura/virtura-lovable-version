@@ -135,83 +135,8 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
       </CardHeader>
       
       <CardContent className="space-y-4">
-        {/* Processing Status Bar */}
-        <div className="bg-muted/50 rounded-lg p-3 space-y-3">
-          <div className="flex items-center justify-between">
-            <h4 className="text-sm font-medium">Processing Status</h4>
-            {project.avatar?.status === 'completed' && project.voice?.status === 'completed' && (
-              <Badge className="bg-green-500 text-white">
-                <CheckCircle className="h-3 w-3 mr-1" />
-                Processing Complete
-              </Badge>
-            )}
-          </div>
-          
-          <div className="grid grid-cols-2 gap-3">
-            <div className="flex items-center gap-2">
-              <div className={`h-3 w-3 rounded-full ${
-                project.avatar?.status === 'completed' ? 'bg-green-500' : 
-                project.avatar?.status === 'processing' ? 'bg-yellow-500 animate-pulse' : 
-                'bg-gray-300'
-              }`} />
-              <span className="text-sm font-medium">Avatar</span>
-              {project.avatar?.status === 'completed' && (
-                <CheckCircle className="h-3 w-3 text-green-500" />
-              )}
-              {project.avatar?.status === 'processing' && (
-                <Loader2 className="h-3 w-3 text-yellow-500 animate-spin" />
-              )}
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <div className={`h-3 w-3 rounded-full ${
-                project.voice?.status === 'completed' ? 'bg-green-500' : 
-                project.voice?.status === 'processing' ? 'bg-yellow-500 animate-pulse' : 
-                'bg-gray-300'
-              }`} />
-              <span className="text-sm font-medium">Voice</span>
-              {project.voice?.status === 'completed' && (
-                <CheckCircle className="h-3 w-3 text-green-500" />
-              )}
-              {project.voice?.status === 'processing' && (
-                <Loader2 className="h-3 w-3 text-yellow-500 animate-spin" />
-              )}
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <div className={`h-3 w-3 rounded-full ${
-                project.style?.status === 'completed' ? 'bg-green-500' : 
-                project.style?.status === 'processing' ? 'bg-yellow-500 animate-pulse' : 
-                'bg-gray-300'
-              }`} />
-              <span className="text-sm font-medium">Style</span>
-              {project.style?.status === 'completed' && (
-                <CheckCircle className="h-3 w-3 text-green-500" />
-              )}
-              {project.style?.status === 'processing' && (
-                <Loader2 className="h-3 w-3 text-yellow-500 animate-spin" />
-              )}
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <div className={`h-3 w-3 rounded-full ${
-                project.video?.status === 'completed' ? 'bg-green-500' : 
-                project.video?.status === 'processing' ? 'bg-yellow-500 animate-pulse' : 
-                'bg-gray-300'
-              }`} />
-              <span className="text-sm font-medium">Video</span>
-              {project.video?.status === 'completed' && (
-                <CheckCircle className="h-3 w-3 text-green-500" />
-              )}
-              {project.video?.status === 'processing' && (
-                <Loader2 className="h-3 w-3 text-yellow-500 animate-spin" />
-              )}
-            </div>
-          </div>
-        </div>
-
         {/* Preview Area */}
-        <div className={`${getPreviewDimensions()} bg-black rounded-lg overflow-hidden relative group flex items-center justify-center`}>
+        <div className={`${getPreviewDimensions()} bg-black rounded-lg overflow-hidden relative group`}>
           {(() => {
             // Priority: Video > Style Transfer > Original Avatar
             if (project.video?.videoUrl) {
@@ -219,7 +144,7 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                 <video
                   src={project.video.videoUrl}
                   controls
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-cover"
                   poster={project.avatar?.processedUrl || project.avatar?.originalUrl}
                 >
                   Your browser does not support the video tag.
@@ -229,11 +154,11 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
             
             if (project.style?.resultUrl) {
               return (
-                <div className="relative w-full h-full flex items-center justify-center">
+                <div className="relative w-full h-full">
                   <img
                     src={project.style.resultUrl}
                     alt="Styled Avatar"
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-cover"
                   />
                   {/* Heart save button overlay */}
                   <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
@@ -264,11 +189,11 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
             if (project.avatar?.processedUrl || project.avatar?.originalUrl) {
               const imageUrl = project.avatar.processedUrl || project.avatar.originalUrl;
               return (
-                <div className="relative w-full h-full flex items-center justify-center">
+                <div className="relative w-full h-full">
                   <img
                     src={imageUrl}
                     alt="Avatar Preview"
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-cover"
                   />
                   {/* Heart save button overlay */}
                   <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
