@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -14,8 +14,11 @@ import {
   Monitor,
   Smartphone,
   Tablet,
-  Download
+  Download,
+  Heart
 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import { PremiumAudioPlayer } from './PremiumAudioPlayer';
 import type { StudioProject } from '@/hooks/useStudioProject';
 
@@ -36,12 +39,13 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
 }) => {
   const [previewMode, setPreviewMode] = useState('desktop');
   const [isPlaying, setIsPlaying] = useState(false);
+  const [savedAvatars, setSavedAvatars] = useState<Set<string>>(new Set());
 
   const getPreviewDimensions = () => {
     switch (previewMode) {
-      case 'mobile': return 'max-w-xs aspect-[9/16]';
-      case 'tablet': return 'max-w-sm aspect-[4/3]';
-      default: return 'aspect-video';
+      case 'mobile': return 'w-full max-w-sm aspect-[9/16]';
+      case 'tablet': return 'w-full max-w-md aspect-[4/3]';
+      default: return 'w-full aspect-video';
     }
   };
 
@@ -50,6 +54,62 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
       setIsPlaying(!isPlaying);
     }
   };
+
+  const handleSaveToLibrary = async (imageUrl: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('Please sign in to save avatars');
+        return;
+      }
+
+      const avatarId = `avatar-${Date.now()}`;
+      const { error } = await supabase
+        .from('avatar_library')
+        .insert({
+          id: avatarId,
+          user_id: user.id,
+          image_url: imageUrl,
+          prompt: 'Live Preview Avatar',
+          title: 'Generated Avatar',
+          tags: ['live-preview']
+        });
+
+      if (error) {
+        console.error('Error saving avatar:', error);
+        toast.error('Failed to save avatar to library');
+        return;
+      }
+
+      setSavedAvatars(prev => new Set([...prev, imageUrl]));
+      toast.success('Avatar saved to library!');
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Failed to save avatar');
+    }
+  };
+
+  useEffect(() => {
+    const loadSavedAvatars = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data: avatars } = await supabase
+          .from('avatar_library')
+          .select('image_url')
+          .eq('user_id', user.id);
+
+        if (avatars) {
+          setSavedAvatars(new Set(avatars.map(a => a.image_url)));
+        }
+      } catch (error) {
+        console.error('Error loading saved avatars:', error);
+      }
+    };
+
+    loadSavedAvatars();
+  }, []);
 
   return (
     <Card className="h-full">
@@ -153,7 +213,7 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
         </div>
 
         {/* Preview Area */}
-        <div className={`mx-auto ${getPreviewDimensions()} bg-black rounded-lg overflow-hidden relative`}>
+        <div className={`mx-auto ${getPreviewDimensions()} bg-black rounded-lg overflow-hidden relative group`}>
           {project.video?.videoUrl ? (
             <video
               src={project.video.videoUrl}
@@ -164,17 +224,67 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
               Your browser does not support the video tag.
             </video>
           ) : project.style?.resultUrl ? (
-            <img
-              src={project.style.resultUrl}
-              alt="Styled Avatar"
-              className="w-full h-full object-cover"
-            />
+            <div className="relative">
+              <img
+                src={project.style.resultUrl}
+                alt="Styled Avatar"
+                className="w-full h-full object-cover"
+              />
+              {/* Heart save button overlay */}
+              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                <Button
+                  size="icon"
+                  variant="secondary"
+                  className={`h-8 w-8 rounded-full backdrop-blur-sm ${
+                    savedAvatars.has(project.style.resultUrl) 
+                      ? 'bg-red-500/80 hover:bg-red-600/80 text-white' 
+                      : 'bg-white/80 hover:bg-white/90 text-gray-700'
+                  }`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSaveToLibrary(project.style.resultUrl);
+                  }}
+                >
+                  <Heart 
+                    className={`h-4 w-4 ${
+                      savedAvatars.has(project.style.resultUrl) ? 'fill-current' : ''
+                    }`} 
+                  />
+                </Button>
+              </div>
+            </div>
           ) : project.avatar?.processedUrl || project.avatar?.originalUrl ? (
-            <img
-              src={project.avatar.processedUrl || project.avatar.originalUrl}
-              alt="Avatar Preview"
-              className="w-full h-full object-cover"
-            />
+            <div className="relative">
+              <img
+                src={project.avatar.processedUrl || project.avatar.originalUrl}
+                alt="Avatar Preview"
+                className="w-full h-full object-cover"
+              />
+              {/* Heart save button overlay */}
+              {(project.avatar?.processedUrl || project.avatar?.originalUrl) && (
+                <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                  <Button
+                    size="icon"
+                    variant="secondary"
+                    className={`h-8 w-8 rounded-full backdrop-blur-sm ${
+                      savedAvatars.has(project.avatar?.processedUrl || project.avatar?.originalUrl || '') 
+                        ? 'bg-red-500/80 hover:bg-red-600/80 text-white' 
+                        : 'bg-white/80 hover:bg-white/90 text-gray-700'
+                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSaveToLibrary(project.avatar?.processedUrl || project.avatar?.originalUrl || '');
+                    }}
+                  >
+                    <Heart 
+                      className={`h-4 w-4 ${
+                        savedAvatars.has(project.avatar?.processedUrl || project.avatar?.originalUrl || '') ? 'fill-current' : ''
+                      }`} 
+                    />
+                  </Button>
+                </div>
+              )}
+            </div>
           ) : (
             <div className="flex items-center justify-center h-full text-muted-foreground">
               <div className="text-center">
@@ -228,24 +338,16 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
         )}
 
         {/* Preview Controls */}
-        <div className="flex gap-2">
-          <Button size="sm" variant="outline" className="flex-1" onClick={() => {
-            const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-            fileInput?.click();
-          }}>
-            <Eye className="h-3 w-3 mr-1" />
-            Upload Image
-          </Button>
-          
-          {project.video?.videoUrl && (
+        {project.video?.videoUrl && (
+          <div className="flex gap-2">
             <Button size="sm" variant="outline" className="flex-1" asChild>
               <a href={project.video.videoUrl} download="generated-video.mp4">
                 <Download className="h-3 w-3 mr-1" />
                 Download
               </a>
             </Button>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Expanded Metadata */}
         <div className="pt-2 border-t space-y-3">

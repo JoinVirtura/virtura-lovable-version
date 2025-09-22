@@ -487,28 +487,6 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                             alt="Generated Avatar"
                             className="w-full h-full object-cover"
                           />
-                          {/* Heart save button overlay */}
-                          <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                            <Button
-                              size="icon"
-                              variant="secondary"
-                              className={`h-8 w-8 rounded-full backdrop-blur-sm ${
-                                savedAvatars.has(generatedResult.image) 
-                                  ? 'bg-red-500/80 hover:bg-red-600/80 text-white' 
-                                  : 'bg-white/80 hover:bg-white/90 text-gray-700'
-                              }`}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleSaveToLibrary(generatedResult.image);
-                              }}
-                            >
-                              <Heart 
-                                className={`h-4 w-4 ${
-                                  savedAvatars.has(generatedResult.image) ? 'fill-current' : ''
-                                }`} 
-                              />
-                            </Button>
-                          </div>
                           {/* Click to use overlay */}
                           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
                             <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 text-white font-medium bg-black/50 px-4 py-2 rounded-lg backdrop-blur-sm">
