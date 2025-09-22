@@ -87,15 +87,25 @@ serve(async (req) => {
 
     console.log('Enhanced prompt:', enhancedPrompt);
 
-    // Ultra-realistic professional photography parameters
-    const finalSteps = steps || 100; // Maximum quality with 100 inference steps
-    const guidanceScale = adherence || 12.0; // High guidance for ultra-realistic results
-    const dimensions = resolution === '1536x1536' ? { width: 1536, height: 1536 } :
-                     resolution === '512x512' ? { width: 512, height: 512 } :
-                     { width: 1024, height: 1024 };
+    // Ultra-realistic professional photography parameters with dynamic optimization
+    const finalSteps = steps || (quality === '8K' ? 100 : quality === '4K' ? 50 : 20);
+    const guidanceScale = adherence || (quality === '8K' ? 15.0 : quality === '4K' ? 12.0 : 8.0);
     
-    // Add comprehensive negative prompt for character consistency and quality
-    const antiDriftNegative = "blurry fingers, extra limbs, distorted faces, unrealistic body proportions, text, watermark, low quality, blurry, low quality, distorted, deformed, ugly, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed face, long neck, cropped, worst quality, low quality, jpeg artifacts, watermark, signature, text, logo";
+    // Enhanced resolution mapping with higher quality options
+    const resolutionMap = {
+      '512x512': { width: 512, height: 512 },
+      '1024x1024': { width: 1024, height: 1024 },
+      '1536x1536': { width: 1536, height: 1536 },
+      '2048x2048': { width: 2048, height: 2048 }
+    };
+    
+    const targetResolution = quality === '8K' ? '2048x2048' : 
+                           quality === '4K' ? '1536x1536' : 
+                           resolution || '1024x1024';
+    const dimensions = resolutionMap[targetResolution as keyof typeof resolutionMap] || resolutionMap['1024x1024'];
+    
+    // Professional-grade comprehensive negative prompt for maximum quality
+    const antiDriftNegative = "blurry, low quality, distorted, deformed, ugly, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed face, long neck, cropped, worst quality, jpeg artifacts, watermark, signature, text, logo, cartoon, painting, illustration, (worst quality, low quality:1.4), monochrome, zombie, overexposure, watermark, text, bad anatomy, bad hand, extra hands, extra fingers, too many fingers, fused fingers, bad arm, distorted arm, extra arms, fused arms, extra legs, missing leg, disembodied leg, extra nipples, detached arm, liquid hand, inverted hand, disembodied limb, small breasts, loli, oversized head, extra body, completely nude, extra navel, easynegative, (hair between eyes), sketch, duplicate, ugly, huge eyes, text, logo, worst face, (bad and mutated hands:1.3), (blurry:2.0), horror, geometry, bad_prompt, (bad hands), (missing fingers), multiple limbs, bad anatomy, (interlocked fingers:1.2), Ugly Fingers, (extra digit and hands and fingers and legs and arms:1.4), ((2girl)), (deformed fingers:1.2), (long fingers:1.2), (bad-artist-anime), bad-artist, bad hand, extra legs, nipples, nsfw";
     
     const finalPrompt = negativePrompt ? 
       `${enhancedPrompt} [NEGATIVE: ${negativePrompt}, ${antiDriftNegative}]` : 
@@ -104,8 +114,8 @@ serve(async (req) => {
     console.log('Final enhanced prompt:', finalPrompt);
     console.log('Generation parameters:', { finalSteps, guidanceScale, dimensions });
 
-    // Initialize Hugging Face client
-    const hf = new HfInference(hfToken);
+    // Use the already initialized Hugging Face client
+    console.log('Using existing Hugging Face client instance');
     
     // Ultra-realistic generation with professional photography quality
     console.log('Calling Hugging Face FLUX.1-dev...');
@@ -170,17 +180,21 @@ serve(async (req) => {
           JSON.stringify({
             success: true,
             image: urlData.publicUrl, // Use 'image' key for consistency
+            imageUrl: urlData.publicUrl, // Also provide imageUrl for compatibility
             avatar_id: `generated_${Date.now()}`,
-            quality: 'Ultra-HD',
-            resolution: '1024x1024',
+            quality: quality || 'Ultra-HD',
+            resolution: `${dimensions.width}x${dimensions.height}`,
             faceAlignment: 98.5,
             consistency: 95,
             metadata: {
-              style: 'hyperrealistic',
+              style: style || 'hyperrealistic',
               prompt: enhancedPrompt,
               processingTime: '4.8s',
               model: 'FLUX.1-dev',
-              enhancement: 'ultra-quality'
+              enhancement: 'ultra-quality',
+              dimensions: dimensions,
+              steps: finalSteps,
+              guidance: guidanceScale
             }
           }),
           { 
@@ -197,17 +211,21 @@ serve(async (req) => {
       JSON.stringify({
         success: true,
         image: `data:image/png;base64,${base64}`, // Use 'image' key for consistency
+        imageUrl: `data:image/png;base64,${base64}`, // Also provide imageUrl for compatibility
         avatar_id: `generated_${Date.now()}`,
-        quality: 'Ultra-HD',
-        resolution: '1024x1024',
+        quality: quality || 'Ultra-HD',
+        resolution: `${dimensions.width}x${dimensions.height}`,
         faceAlignment: 98.5,
         consistency: 95,
         metadata: {
-          style: 'hyperrealistic',
+          style: style || 'hyperrealistic',
           prompt: enhancedPrompt,
           processingTime: '4.8s',
           model: 'FLUX.1-dev',
-          enhancement: 'ultra-quality'
+          enhancement: 'ultra-quality',
+          dimensions: dimensions,
+          steps: finalSteps,
+          guidance: guidanceScale
         }
       }),
       { 

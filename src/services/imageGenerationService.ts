@@ -138,21 +138,23 @@ export class ImageGenerationService {
       const resolution = params.resolution || '1024x1024';
       const dimensions = resolutionMap[resolution as keyof typeof resolutionMap];
 
-      // Primary: Real Image Generation (FLUX)
+      // Primary: Real Image Generation (FLUX) with enhanced quality parameters
       const realResp = await supabase.functions.invoke('generate-avatar-real', {
         body: {
           prompt: enhancedPrompt,
-          negativePrompt: params.negativePrompt,
+          negativePrompt: params.negativePrompt || "blurry, low quality, distorted, deformed, ugly, bad anatomy",
           contentType,
           style: params.style || 'photorealistic',
-          quality: quality === 'ultra' ? '8K' : '4K',
+          quality: quality === 'ultra' ? '8K' : quality === 'balanced' ? '4K' : 'HD',
           resolution,
           width: dimensions.width,
           height: dimensions.height,
-          adherence: params.adherence,
-          steps: params.steps,
-          enhance: params.enhance,
-          referenceImage: params.referenceImage
+          adherence: params.adherence || (quality === 'ultra' ? 15.0 : 12.0),
+          steps: params.steps || (quality === 'ultra' ? 100 : 50),
+          enhance: params.enhance !== false, // Default to true for quality
+          referenceImage: params.referenceImage,
+          photoMode: true, // Enable professional photo mode
+          selectedPreset: params.style || 'photorealistic'
         },
       });
 

@@ -17,6 +17,7 @@ export interface StudioProject {
       resolution?: string;
       faceAlignment?: number;
       consistency?: number;
+      processingTime?: string;
     };
   } | null;
   
