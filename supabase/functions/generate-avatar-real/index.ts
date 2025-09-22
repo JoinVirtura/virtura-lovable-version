@@ -69,39 +69,90 @@ serve(async (req) => {
     const contentEnhancement = contentEnhancements[contentType as keyof typeof contentEnhancements] || contentEnhancements.auto;
     const selectedStyleEnhancement = styleEnhancements[style as keyof typeof styleEnhancements] || styleEnhancements.photorealistic;
     
-    // Focus prompt to prevent collages (select single combinations from multiple options)
+    // Enhanced prompt focusing to prevent collages and enforce single-subject generation
     const focusPrompt = (inputPrompt: string): string => {
       let focused = inputPrompt;
       
-      // Single-subject enforcement prefix
-      focused = `single portrait, one person only, individual headshot, focused composition, ${focused}`;
+      console.log('🔍 Original prompt before focusing:', focused);
       
-      // Detect and focus multiple hairstyle options
-      if (focused.includes('either') && focused.includes('hair')) {
-        // Extract and use first hairstyle option
-        const hairMatch = focused.match(/hair styled in either (.*?),/i);
-        if (hairMatch) {
-          const firstOption = hairMatch[1].split(',')[0].trim();
-          focused = focused.replace(/hair styled in either.*?,/, `hair styled in ${firstOption},`);
-        }
+      // Single-subject enforcement prefix with stronger anti-collage terms
+      focused = `single portrait, one person only, individual headshot, focused composition, no variations, no multiple versions, ${focused}`;
+      
+      // Comprehensive option detection and selection
+      
+      // 1. Handle "either...or" hairstyle constructions
+      if (focused.includes('either') || focused.includes('or ')) {
+        const hairOptions = ['neat long braids', 'voluminous curly updo with bangs', 'large fluffy afro', 'rounded curls'];
+        const selectedHair = hairOptions[Math.floor(Math.random() * hairOptions.length)];
+        focused = focused.replace(/hair styled in either.*?or.*?eye\./gi, `hair styled in ${selectedHair}.`);
+        focused = focused.replace(/hair styled in.*?either.*?or.*?,/gi, `hair styled in ${selectedHair},`);
+        console.log('🎯 Selected hairstyle:', selectedHair);
       }
       
-      // Focus multiple outfit options
-      if (focused.includes('styled in both') || focused.includes('She is styled in both')) {
-        // Select first outfit option only
-        const outfitMatch = focused.match(/styled in both.*?dress with.*?,/i);
-        if (outfitMatch) {
-          focused = focused.replace(/styled in both.*?outfit with a simple cord necklace\./gi, 
-            'wearing a glamorous black lace dress with plunging neckline and long silver earrings.');
-        }
+      // 2. Handle multiple outfit listings with bullets or "both...and"
+      if (focused.includes('She is styled in both') || focused.includes('styled in both') || focused.includes('- glamorous') || focused.includes('- strapless') || focused.includes('- casual') || focused.includes('- bold')) {
+        const outfitOptions = [
+          'glamorous black lace dress with plunging neckline and long silver earrings',
+          'strapless black gown with a dazzling silver diamond choker necklace and emerald accents',
+          'casual white tank top with large gold hoop earrings and layered necklaces',
+          'bold tactical dark outfit with a simple cord necklace'
+        ];
+        const selectedOutfit = outfitOptions[Math.floor(Math.random() * outfitOptions.length)];
+        
+        // Remove entire styling section and replace with single choice
+        focused = focused.replace(/She is styled in both.*?simple cord necklace\./gi, `She wears a ${selectedOutfit}.`);
+        focused = focused.replace(/styled in both.*?simple cord necklace\./gi, `wearing a ${selectedOutfit}.`);
+        focused = focused.replace(/- glamorous.*?- bold tactical.*?necklace\./gi, `wearing a ${selectedOutfit}.`);
+        console.log('👗 Selected outfit:', selectedOutfit);
       }
       
-      // Focus multiple background options
-      if (focused.includes('Backgrounds:')) {
-        // Select first background option
-        focused = focused.replace(/Backgrounds:.*?wall\./gi, 
-          'Background: dark blurred cinematic backdrop.');
+      // 3. Handle multiple background options
+      if (focused.includes('Backgrounds:') || focused.includes('- dark blurred') || focused.includes('- golden award') || focused.includes('- casual daylight') || focused.includes('- textured industrial')) {
+        const backgroundOptions = [
+          'dark blurred cinematic backdrop',
+          'golden award-show stage with geometric décor',
+          'casual daylight neutral wall',
+          'textured industrial grey wall'
+        ];
+        const selectedBackground = backgroundOptions[Math.floor(Math.random() * backgroundOptions.length)];
+        
+        // Remove backgrounds section and replace with single choice
+        focused = focused.replace(/Backgrounds:.*?grey wall\./gi, `Background: ${selectedBackground}.`);
+        focused = focused.replace(/- dark blurred.*?- textured industrial.*?wall\./gi, `Background: ${selectedBackground}.`);
+        console.log('🎨 Selected background:', selectedBackground);
       }
+      
+      // 4. Handle multiple lighting scenarios
+      if (focused.includes('Lighting: golden spotlight or natural daylight')) {
+        const lightingOptions = ['golden spotlight lighting', 'natural daylight lighting'];
+        const selectedLighting = lightingOptions[Math.floor(Math.random() * lightingOptions.length)];
+        focused = focused.replace(/Lighting: golden spotlight or natural daylight depending on scene\./gi, `Lighting: ${selectedLighting}.`);
+        console.log('💡 Selected lighting:', selectedLighting);
+      }
+      
+      // 5. Handle multiple camera distances
+      if (focused.includes('Camera Distance: mostly medium shot with some close-up')) {
+        const cameraOptions = ['medium shot portrait', 'close-up portrait'];
+        const selectedCamera = cameraOptions[Math.floor(Math.random() * cameraOptions.length)];
+        focused = focused.replace(/Camera Distance: mostly medium shot with some close-up portraits\./gi, `Camera angle: ${selectedCamera}.`);
+        console.log('📷 Selected camera angle:', selectedCamera);
+      }
+      
+      // 6. Remove any remaining multiple option indicators
+      focused = focused.replace(/both.*?and/gi, '');
+      focused = focused.replace(/either.*?or/gi, '');
+      focused = focused.replace(/multiple.*?options/gi, '');
+      focused = focused.replace(/variations/gi, '');
+      focused = focused.replace(/shift between/gi, '');
+      focused = focused.replace(/depending on scene/gi, '');
+      
+      // 7. Clean up formatting
+      focused = focused.replace(/\s+/g, ' ');
+      focused = focused.replace(/\.\s*\./g, '.');
+      focused = focused.replace(/,\s*,/g, ',');
+      focused = focused.trim();
+      
+      console.log('✅ Focused prompt after processing:', focused);
       
       return focused;
     };
