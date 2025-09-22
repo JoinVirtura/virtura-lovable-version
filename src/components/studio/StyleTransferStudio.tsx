@@ -20,15 +20,59 @@ import type { StudioProject } from '@/hooks/useStudioProject';
 import { applyStyleTransfer } from './StyleTransferEdge';
 import { useToast } from '@/components/ui/use-toast';
 
-// Import style assets
+// Import ALL style assets - 27+ styles
 import style90sAnime from '@/assets/style-90s-anime.jpg';
+import style90sAnimeNew from '@/assets/style-90s-anime-new.jpg';
+import styleAbstractGeo from '@/assets/style-abstract-geo.jpg';
+import styleArtNouveau from '@/assets/style-art-nouveau.jpg';
+import styleArtNouveauNew from '@/assets/style-art-nouveau-new.jpg';
+import styleBiomechanical from '@/assets/style-biomechanical.jpg';
+import styleBotanical from '@/assets/style-botanical.jpg';
+import styleChildAnimal from '@/assets/style-child-animal.jpg';
+import styleChildAnimalNew from '@/assets/style-child-animal-new.jpg';
 import styleCyberpunk from '@/assets/style-cyberpunk.jpg';
-import styleOilPainting from '@/assets/style-oil-painting.jpg';
-import styleWatercolor from '@/assets/style-watercolor.jpg';
-import stylePopArt from '@/assets/style-pop-art.jpg';
+import styleCyberpunkNew from '@/assets/style-cyberpunk-new.jpg';
+import styleDigitalGlitchNew from '@/assets/style-digital-glitch-new.jpg';
+import styleFantasyCreature from '@/assets/style-fantasy-creature.jpg';
+import styleFantasyCreatureNew from '@/assets/style-fantasy-creature-new.jpg';
+import styleFantasyLandscape from '@/assets/style-fantasy-landscape.jpg';
+import styleFantasyLandscapeNew from '@/assets/style-fantasy-landscape-new.jpg';
+import styleFantasyPortraits from '@/assets/style-fantasy-portraits.jpg';
+import styleFantasyPortraitsNew from '@/assets/style-fantasy-portraits-new.jpg';
 import styleFilmNoir from '@/assets/style-film-noir.jpg';
-import styleSteampunk from '@/assets/style-steampunk.jpg';
+import styleFilmNoirNew from '@/assets/style-film-noir-new.jpg';
+import styleFluffWorld from '@/assets/style-fluff-world.jpg';
+import styleFluffWorldNew from '@/assets/style-fluff-world-new.jpg';
+import styleGlitch from '@/assets/style-glitch.jpg';
+import styleGothic from '@/assets/style-gothic.jpg';
+import styleGothicNew from '@/assets/style-gothic-new.jpg';
+import styleHokTech from '@/assets/style-hok-tech.jpg';
+import styleHokTechNew from '@/assets/style-hok-tech-new.jpg';
+import styleImpressionist from '@/assets/style-impressionist.jpg';
+import styleLongExposure from '@/assets/style-long-exposure.jpg';
+import styleLongExposureNew from '@/assets/style-long-exposure-new.jpg';
+import styleMinimalistArch from '@/assets/style-minimalist-arch.jpg';
 import styleMinimalist from '@/assets/style-minimalist-new.jpg';
+import styleMoskvichka from '@/assets/style-moskvichka.jpg';
+import styleMoskvichkaNew from '@/assets/style-moskvichka-new.jpg';
+import styleNighttimeDreams from '@/assets/style-nighttime-dreams.jpg';
+import styleNighttimeDreamsNew from '@/assets/style-nighttime-dreams-new.jpg';
+import styleOilPainting from '@/assets/style-oil-painting.jpg';
+import styleOilPaintingNew from '@/assets/style-oil-painting-new.jpg';
+import stylePhotoset from '@/assets/style-photoset.jpg';
+import stylePhotosetNew from '@/assets/style-photoset-new.jpg';
+import stylePixelArt from '@/assets/style-pixel-art.jpg';
+import stylePopArt from '@/assets/style-pop-art.jpg';
+import stylePopArtNew from '@/assets/style-pop-art-new.jpg';
+import styleSteampunk from '@/assets/style-steampunk.jpg';
+import styleSteampunkNew from '@/assets/style-steampunk-new.jpg';
+import styleStreetFashion from '@/assets/style-street-fashion.jpg';
+import styleStreetFashionNew from '@/assets/style-street-fashion-new.jpg';
+import styleSurreal from '@/assets/style-surreal.jpg';
+import styleSurrealNew from '@/assets/style-surreal-new.jpg';
+import styleSynthwave from '@/assets/style-synthwave.jpg';
+import styleWatercolor from '@/assets/style-watercolor.jpg';
+import styleWatercolorNew from '@/assets/style-watercolor-new.jpg';
 
 interface StyleTransferStudioProps {
   project: StudioProject;
@@ -37,78 +81,73 @@ interface StyleTransferStudioProps {
 }
 
 const STYLE_PRESETS = [
-  {
-    id: 'oil-painting',
-    name: 'Oil Painting',
-    description: 'Classical oil painting style',
-    image: styleOilPainting,
-    type: 'Premium',
-    strength: 85,
-    category: 'artistic'
-  },
-  {
-    id: 'watercolor',
-    name: 'Watercolor',
-    description: 'Soft watercolor painting effect',
-    image: styleWatercolor,
-    type: 'Standard',
-    strength: 70,
-    category: 'artistic'
-  },
-  {
-    id: 'cyberpunk',
-    name: 'Cyberpunk',
-    description: 'Futuristic neon cyberpunk style',
-    image: styleCyberpunk,
-    type: 'Premium',
-    strength: 90,
-    category: 'futuristic'
-  },
-  {
-    id: '90s-anime',
-    name: '90s Anime',
-    description: 'Classic Japanese animation style',
-    image: style90sAnime,
-    type: 'Premium',
-    strength: 80,
-    category: 'animation'
-  },
-  {
-    id: 'pop-art',
-    name: 'Pop Art',
-    description: 'Bold pop art style',
-    image: stylePopArt,
-    type: 'Standard',
-    strength: 75,
-    category: 'modern'
-  },
-  {
-    id: 'film-noir',
-    name: 'Film Noir',
-    description: 'Classic black and white cinema',
-    image: styleFilmNoir,
-    type: 'Premium',
-    strength: 85,
-    category: 'vintage'
-  },
-  {
-    id: 'steampunk',
-    name: 'Steampunk',
-    description: 'Victorian-era industrial aesthetic',
-    image: styleSteampunk,
-    type: 'Standard',
-    strength: 80,
-    category: 'vintage'
-  },
-  {
-    id: 'minimalist',
-    name: 'Minimalist',
-    description: 'Clean, minimal design',
-    image: styleMinimalist,
-    type: 'Standard',
-    strength: 60,
-    category: 'modern'
-  }
+  // Artistic Styles
+  { id: 'oil-painting', name: 'Oil Painting', description: 'Classical oil painting style', image: styleOilPainting, type: 'Premium', strength: 85, category: 'artistic' },
+  { id: 'oil-painting-new', name: 'Modern Oil', description: 'Contemporary oil painting', image: styleOilPaintingNew, type: 'Premium', strength: 82, category: 'artistic' },
+  { id: 'watercolor', name: 'Watercolor', description: 'Soft watercolor painting effect', image: styleWatercolor, type: 'Standard', strength: 70, category: 'artistic' },
+  { id: 'watercolor-new', name: 'Vibrant Watercolor', description: 'Enhanced watercolor technique', image: styleWatercolorNew, type: 'Premium', strength: 75, category: 'artistic' },
+  { id: 'impressionist', name: 'Impressionist', description: 'Impressionist painting style', image: styleImpressionist, type: 'Premium', strength: 78, category: 'artistic' },
+  { id: 'art-nouveau', name: 'Art Nouveau', description: 'Decorative Art Nouveau style', image: styleArtNouveau, type: 'Premium', strength: 80, category: 'artistic' },
+  { id: 'art-nouveau-new', name: 'Modern Art Nouveau', description: 'Contemporary Art Nouveau', image: styleArtNouveauNew, type: 'Premium', strength: 83, category: 'artistic' },
+
+  // Futuristic & Sci-Fi
+  { id: 'cyberpunk', name: 'Cyberpunk', description: 'Futuristic neon cyberpunk style', image: styleCyberpunk, type: 'Premium', strength: 90, category: 'futuristic' },
+  { id: 'cyberpunk-new', name: 'Cyberpunk 2077', description: 'Enhanced cyberpunk aesthetic', image: styleCyberpunkNew, type: 'Premium', strength: 92, category: 'futuristic' },
+  { id: 'biomechanical', name: 'Biomechanical', description: 'H.R. Giger inspired organic-tech fusion', image: styleBiomechanical, type: 'Premium', strength: 88, category: 'futuristic' },
+  { id: 'synthwave', name: 'Synthwave', description: 'Retro-futuristic 80s aesthetic', image: styleSynthwave, type: 'Premium', strength: 85, category: 'futuristic' },
+  { id: 'hok-tech', name: 'Hok Tech', description: 'Advanced technological aesthetic', image: styleHokTech, type: 'Premium', strength: 87, category: 'futuristic' },
+  { id: 'hok-tech-new', name: 'Neo Tech', description: 'Next-gen technology style', image: styleHokTechNew, type: 'Premium', strength: 89, category: 'futuristic' },
+  { id: 'digital-glitch', name: 'Digital Glitch', description: 'Digital corruption and glitch effects', image: styleDigitalGlitchNew, type: 'Premium', strength: 86, category: 'futuristic' },
+
+  // Animation & Cartoon
+  { id: '90s-anime', name: '90s Anime', description: 'Classic Japanese animation style', image: style90sAnime, type: 'Premium', strength: 80, category: 'animation' },
+  { id: '90s-anime-new', name: 'Modern Anime', description: 'Contemporary anime style', image: style90sAnimeNew, type: 'Premium', strength: 82, category: 'animation' },
+  { id: 'child-animal', name: 'Child Animal', description: 'Cute animal character style', image: styleChildAnimal, type: 'Standard', strength: 75, category: 'animation' },
+  { id: 'child-animal-new', name: 'Kawaii Animals', description: 'Enhanced cute animal style', image: styleChildAnimalNew, type: 'Premium', strength: 77, category: 'animation' },
+  { id: 'pixel-art', name: 'Pixel Art', description: '8-bit retro gaming aesthetic', image: stylePixelArt, type: 'Standard', strength: 78, category: 'animation' },
+  { id: 'fluff-world', name: 'Fluff World', description: 'Soft, fluffy cartoon world', image: styleFluffWorld, type: 'Standard', strength: 72, category: 'animation' },
+  { id: 'fluff-world-new', name: 'Dreamy Fluff', description: 'Enhanced fluffy dreamscape', image: styleFluffWorldNew, type: 'Premium', strength: 74, category: 'animation' },
+
+  // Modern & Contemporary
+  { id: 'pop-art', name: 'Pop Art', description: 'Bold pop art style', image: stylePopArt, type: 'Standard', strength: 75, category: 'modern' },
+  { id: 'pop-art-new', name: 'Neo Pop Art', description: 'Contemporary pop art', image: stylePopArtNew, type: 'Premium', strength: 78, category: 'modern' },
+  { id: 'minimalist', name: 'Minimalist', description: 'Clean, minimal design', image: styleMinimalist, type: 'Standard', strength: 60, category: 'modern' },
+  { id: 'minimalist-arch', name: 'Architectural', description: 'Architectural minimalism', image: styleMinimalistArch, type: 'Premium', strength: 65, category: 'modern' },
+  { id: 'street-fashion', name: 'Street Fashion', description: 'Urban street style photography', image: styleStreetFashion, type: 'Premium', strength: 80, category: 'modern' },
+  { id: 'street-fashion-new', name: 'Urban Chic', description: 'Enhanced street fashion', image: styleStreetFashionNew, type: 'Premium', strength: 83, category: 'modern' },
+  { id: 'abstract-geo', name: 'Abstract Geometric', description: 'Geometric abstract patterns', image: styleAbstractGeo, type: 'Premium', strength: 76, category: 'modern' },
+  { id: 'glitch', name: 'Glitch Art', description: 'Digital glitch aesthetic', image: styleGlitch, type: 'Premium', strength: 84, category: 'modern' },
+
+  // Vintage & Classic
+  { id: 'film-noir', name: 'Film Noir', description: 'Classic black and white cinema', image: styleFilmNoir, type: 'Premium', strength: 85, category: 'vintage' },
+  { id: 'film-noir-new', name: 'Neo Noir', description: 'Modern film noir style', image: styleFilmNoirNew, type: 'Premium', strength: 87, category: 'vintage' },
+  { id: 'steampunk', name: 'Steampunk', description: 'Victorian-era industrial aesthetic', image: styleSteampunk, type: 'Standard', strength: 80, category: 'vintage' },
+  { id: 'steampunk-new', name: 'Neo Steampunk', description: 'Enhanced steampunk design', image: styleSteampunkNew, type: 'Premium', strength: 83, category: 'vintage' },
+  { id: 'gothic', name: 'Gothic', description: 'Dark gothic aesthetic', image: styleGothic, type: 'Premium', strength: 82, category: 'vintage' },
+  { id: 'gothic-new', name: 'Modern Gothic', description: 'Contemporary gothic style', image: styleGothicNew, type: 'Premium', strength: 84, category: 'vintage' },
+  { id: 'long-exposure', name: 'Long Exposure', description: 'Long exposure photography effect', image: styleLongExposure, type: 'Premium', strength: 78, category: 'vintage' },
+  { id: 'long-exposure-new', name: 'Light Trails', description: 'Enhanced light trail effects', image: styleLongExposureNew, type: 'Premium', strength: 81, category: 'vintage' },
+
+  // Fantasy & Surreal
+  { id: 'fantasy-creature', name: 'Fantasy Creature', description: 'Mythical creature design', image: styleFantasyCreature, type: 'Premium', strength: 85, category: 'fantasy' },
+  { id: 'fantasy-creature-new', name: 'Epic Fantasy', description: 'Enhanced fantasy creatures', image: styleFantasyCreatureNew, type: 'Premium', strength: 88, category: 'fantasy' },
+  { id: 'fantasy-landscape', name: 'Fantasy Landscape', description: 'Magical landscape scenes', image: styleFantasyLandscape, type: 'Premium', strength: 83, category: 'fantasy' },
+  { id: 'fantasy-landscape-new', name: 'Mystical Realm', description: 'Enhanced fantasy worlds', image: styleFantasyLandscapeNew, type: 'Premium', strength: 86, category: 'fantasy' },
+  { id: 'fantasy-portraits', name: 'Fantasy Portrait', description: 'Magical portrait style', image: styleFantasyPortraits, type: 'Premium', strength: 81, category: 'fantasy' },
+  { id: 'fantasy-portraits-new', name: 'Heroic Portrait', description: 'Enhanced fantasy portraits', image: styleFantasyPortraitsNew, type: 'Premium', strength: 84, category: 'fantasy' },
+  { id: 'surreal', name: 'Surreal', description: 'Surrealistic art style', image: styleSurreal, type: 'Premium', strength: 87, category: 'fantasy' },
+  { id: 'surreal-new', name: 'Dreamscape', description: 'Enhanced surreal imagery', image: styleSurrealNew, type: 'Premium', strength: 89, category: 'fantasy' },
+  { id: 'nighttime-dreams', name: 'Nighttime Dreams', description: 'Dreamy nighttime scenes', image: styleNighttimeDreams, type: 'Premium', strength: 79, category: 'fantasy' },
+  { id: 'nighttime-dreams-new', name: 'Lucid Dreams', description: 'Enhanced dream imagery', image: styleNighttimeDreamsNew, type: 'Premium', strength: 82, category: 'fantasy' },
+
+  // Nature & Organic
+  { id: 'botanical', name: 'Botanical', description: 'Natural botanical illustration', image: styleBotanical, type: 'Standard', strength: 73, category: 'nature' },
+  { id: 'moskvichka', name: 'Moskvichka', description: 'Russian folk art style', image: styleMoskvichka, type: 'Premium', strength: 77, category: 'nature' },
+  { id: 'moskvichka-new', name: 'Neo Folk', description: 'Contemporary folk art', image: styleMoskvichkaNew, type: 'Premium', strength: 79, category: 'nature' },
+
+  // Photography Styles
+  { id: 'photoset', name: 'Photoset', description: 'Professional photo series style', image: stylePhotoset, type: 'Standard', strength: 70, category: 'photography' },
+  { id: 'photoset-new', name: 'Studio Photoset', description: 'Enhanced photo series', image: stylePhotosetNew, type: 'Premium', strength: 73, category: 'photography' }
 ];
 
 const STYLE_CATEGORIES = [
@@ -117,7 +156,10 @@ const STYLE_CATEGORIES = [
   { id: 'futuristic', name: 'Futuristic', icon: Sparkles },
   { id: 'animation', name: 'Animation', icon: Star },
   { id: 'modern', name: 'Modern', icon: Wand2 },
-  { id: 'vintage', name: 'Vintage', icon: Camera }
+  { id: 'vintage', name: 'Vintage', icon: Camera },
+  { id: 'fantasy', name: 'Fantasy', icon: Crown },
+  { id: 'nature', name: 'Nature', icon: ImageIcon },
+  { id: 'photography', name: 'Photography', icon: CheckCircle }
 ];
 
 export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({ 
@@ -292,19 +334,17 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
               <CardTitle className="text-lg">Style Categories</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-3 gap-1">
                 {STYLE_CATEGORIES.map((category) => (
                   <Button
                     key={category.id}
                     variant={selectedCategory === category.id ? "default" : "outline"}
                     size="sm"
                     onClick={() => setSelectedCategory(category.id)}
-                    className="justify-start h-auto p-3"
+                    className="h-8 text-xs"
                   >
-                    <category.icon className="h-4 w-4 mr-2" />
-                    <div className="text-left">
-                      <div className="font-medium text-xs">{category.name}</div>
-                    </div>
+                    <category.icon className="h-3 w-3 mr-1" />
+                    {category.name}
                   </Button>
                 ))}
               </div>
@@ -317,7 +357,7 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
               <CardTitle className="text-lg">Style Presets</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-3 max-h-64 overflow-y-auto">
+              <div className="grid grid-cols-3 gap-2 max-h-80 overflow-y-auto">
                 {filteredStyles.map((style) => (
                   <div
                     key={style.id}
