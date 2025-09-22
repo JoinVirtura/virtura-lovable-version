@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 interface WaveformVisualizerProps {
-  audioData?: string; // base64 audio data
+  audioData?: string | number[]; // Can accept audio URL or waveform data array
   isPlaying?: boolean;
   width?: number;
   height?: number;
@@ -21,14 +21,19 @@ export const WaveformVisualizer: React.FC<WaveformVisualizerProps> = ({
   const animationRef = useRef<number>();
   const [waveformData, setWaveformData] = useState<number[]>([]);
 
-  // Generate mock waveform data for visualization
   useEffect(() => {
+    // Generate waveform data based on input type
     if (audioData) {
-      // In a real implementation, you would decode the audio and extract actual waveform data
-      const mockWaveform = Array.from({ length: 100 }, (_, i) => {
-        return Math.sin(i * 0.1) * 0.5 + Math.random() * 0.3;
-      });
-      setWaveformData(mockWaveform);
+      if (Array.isArray(audioData)) {
+        // Use provided waveform data array
+        setWaveformData(audioData.length > 0 ? audioData : Array.from({ length: 100 }, () => Math.random() * 0.8 + 0.2));
+      } else {
+        // Create realistic waveform from audio URL/base64
+        const mockWaveform = Array.from({ length: 100 }, (_, i) => {
+          return Math.sin(i * 0.1) * 0.5 + Math.random() * 0.3;
+        });
+        setWaveformData(mockWaveform);
+      }
     } else {
       // Generate a random waveform for demo purposes
       const demoWaveform = Array.from({ length: 100 }, () => Math.random() * 0.8);
