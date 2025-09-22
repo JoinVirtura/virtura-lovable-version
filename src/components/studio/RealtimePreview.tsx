@@ -211,7 +211,7 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
         </div>
 
         {/* Preview Area */}
-        <div className={`${getPreviewDimensions()} bg-black rounded-lg overflow-hidden relative group flex items-center justify-center`}>
+        <div className={`${getPreviewDimensions()} bg-black rounded-lg overflow-hidden relative group`}>
           {(() => {
             // Priority: Video > Style Transfer > Original Avatar
             if (project.video?.videoUrl) {
@@ -219,7 +219,7 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                 <video
                   src={project.video.videoUrl}
                   controls
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-contain absolute inset-0"
                   poster={project.avatar?.processedUrl || project.avatar?.originalUrl}
                 >
                   Your browser does not support the video tag.
@@ -229,14 +229,14 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
             
             if (project.style?.resultUrl) {
               return (
-                <div className="relative w-full h-full flex items-center justify-center">
+                <>
                   <img
                     src={project.style.resultUrl}
                     alt="Styled Avatar"
-                    className="max-w-full max-h-full object-contain"
+                    className="w-full h-full object-contain absolute inset-0"
                   />
                   {/* Heart save button overlay */}
-                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
                     <Button
                       size="icon"
                       variant="secondary"
@@ -257,21 +257,21 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                       />
                     </Button>
                   </div>
-                </div>
+                </>
               );
             }
             
             if (project.avatar?.processedUrl || project.avatar?.originalUrl) {
               const imageUrl = project.avatar.processedUrl || project.avatar.originalUrl;
               return (
-                <div className="relative w-full h-full flex items-center justify-center">
+                <>
                   <img
                     src={imageUrl}
                     alt="Avatar Preview"
-                    className="max-w-full max-h-full object-contain"
+                    className="w-full h-full object-contain absolute inset-0"
                   />
                   {/* Heart save button overlay */}
-                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
                     <Button
                       size="icon"
                       variant="secondary"
@@ -292,7 +292,7 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                       />
                     </Button>
                   </div>
-                </div>
+                </>
               );
             }
             
