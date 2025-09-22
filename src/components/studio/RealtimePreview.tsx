@@ -43,9 +43,9 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
 
   const getPreviewDimensions = () => {
     switch (previewMode) {
-      case 'mobile': return 'w-full max-w-sm aspect-[9/16]';
-      case 'tablet': return 'w-full max-w-md aspect-[4/3]';
-      default: return 'w-full aspect-video';
+      case 'mobile': return 'w-full max-w-sm aspect-[9/16] min-h-[400px]';
+      case 'tablet': return 'w-full max-w-2xl aspect-[4/3] min-h-[300px]';
+      default: return 'w-full max-w-4xl aspect-video min-h-[300px]';
     }
   };
 
@@ -63,11 +63,9 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
         return;
       }
 
-      const avatarId = `avatar-${Date.now()}`;
       const { error } = await supabase
         .from('avatar_library')
         .insert({
-          id: avatarId,
           user_id: user.id,
           image_url: imageUrl,
           prompt: 'Live Preview Avatar',
