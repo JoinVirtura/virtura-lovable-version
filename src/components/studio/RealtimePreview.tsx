@@ -43,9 +43,9 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
 
   const getPreviewDimensions = () => {
     switch (previewMode) {
-      case 'mobile': return 'w-full max-w-sm min-h-[400px] max-h-[600px]';
-      case 'tablet': return 'w-full max-w-2xl min-h-[300px] max-h-[500px]';
-      default: return 'w-full max-w-4xl min-h-[300px] max-h-[600px]';
+      case 'mobile': return 'w-full h-[400px]';
+      case 'tablet': return 'w-full h-[500px]';
+      default: return 'w-full h-[600px]';
     }
   };
 
@@ -211,7 +211,7 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
         </div>
 
         {/* Preview Area */}
-        <div className={`${getPreviewDimensions()} bg-black rounded-lg overflow-hidden relative group`}>
+        <div className={`${getPreviewDimensions()} bg-black rounded-lg overflow-hidden relative group flex items-center justify-center`}>
           {(() => {
             // Priority: Video > Style Transfer > Original Avatar
             if (project.video?.videoUrl) {
@@ -219,7 +219,7 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                 <video
                   src={project.video.videoUrl}
                   controls
-                  className="w-full h-full object-contain absolute inset-0"
+                  className="w-full h-full object-contain"
                   poster={project.avatar?.processedUrl || project.avatar?.originalUrl}
                 >
                   Your browser does not support the video tag.
@@ -229,11 +229,11 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
             
             if (project.style?.resultUrl) {
               return (
-                <>
+                <div className="relative w-full h-full flex items-center justify-center">
                   <img
                     src={project.style.resultUrl}
                     alt="Styled Avatar"
-                    className="w-full h-full object-contain absolute inset-0"
+                    className="w-full h-full object-contain"
                   />
                   {/* Heart save button overlay */}
                   <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
@@ -257,18 +257,18 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                       />
                     </Button>
                   </div>
-                </>
+                </div>
               );
             }
             
             if (project.avatar?.processedUrl || project.avatar?.originalUrl) {
               const imageUrl = project.avatar.processedUrl || project.avatar.originalUrl;
               return (
-                <>
+                <div className="relative w-full h-full flex items-center justify-center">
                   <img
                     src={imageUrl}
                     alt="Avatar Preview"
-                    className="w-full h-full object-contain absolute inset-0"
+                    className="w-full h-full object-contain"
                   />
                   {/* Heart save button overlay */}
                   <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
@@ -292,7 +292,7 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                       />
                     </Button>
                   </div>
-                </>
+                </div>
               );
             }
             
