@@ -20,7 +20,8 @@ import {
   Loader2,
   RefreshCw,
   Crown,
-  Star
+  Star,
+  Heart
 } from 'lucide-react';
 import { AvatarLibrary } from './AvatarLibrary';
 import { RealAvatarLibrary } from './RealAvatarLibrary';
@@ -64,6 +65,7 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
   const [processingProgress, setProcessingProgress] = useState(0);
   const [estimatedTime, setEstimatedTime] = useState(0);
   const [generatedResult, setGeneratedResult] = useState<any>(null);
+  const [savedAvatars, setSavedAvatars] = useState<Set<string>>(new Set());
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -208,6 +210,25 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
     }
   };
 
+  const handleSaveToLibrary = async (imageUrl: string) => {
+    try {
+      const { supabase } = await import('@/integrations/supabase/client');
+      await supabase.from('avatar_library').insert({
+        image_url: imageUrl,
+        prompt: generationPrompt,
+        title: `${selectedStyle} Avatar - ${quality}`,
+        tags: [selectedStyle, quality, 'AI Generated', 'Saved']
+      });
+      
+      setSavedAvatars(prev => new Set([...prev, imageUrl]));
+      
+      // Show success feedback
+      console.log('Avatar saved to library successfully');
+    } catch (error) {
+      console.error('Failed to save to library:', error);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -278,6 +299,14 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                     Drop image here or click to upload • PNG, JPG, WebP up to 10MB
                   </p>
                 </div>
+                <Button
+                  onClick={() => fileInputRef.current?.click()}
+                  variant="outline"
+                  className="mt-4"
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  Upload Image
+                </Button>
               </div>
             </CardContent>
             
@@ -455,28 +484,51 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                 <div className="space-y-4 mt-6">
                   <div className="text-sm font-medium">Generated Avatar:</div>
                   <div className="max-w-md mx-auto">
-                    <Card 
-                      className="cursor-pointer hover:ring-2 hover:ring-primary transition-all"
-                      onClick={selectGeneratedAvatar}
-                    >
-                      <CardContent className="p-4">
-                        {generatedResult.success && generatedResult.image ? (
-                          <div className="space-y-3">
-                            <img 
-                              src={generatedResult.image} 
-                              alt="Generated Perfect Avatar"
-                              className="w-full aspect-square object-cover rounded"
-                            />
-                            <Button variant="outline" size="sm" className="w-full">
-                              Use This Avatar
+                    <Card className="p-0 overflow-hidden group">
+                      {generatedResult.success && generatedResult.image ? (
+                        <div 
+                          className="aspect-square relative cursor-pointer transition-all duration-300 hover:scale-105"
+                          onClick={selectGeneratedAvatar}
+                        >
+                          <img
+                            src={generatedResult.image}
+                            alt="Generated Avatar"
+                            className="w-full h-full object-cover"
+                          />
+                          {/* Heart save button overlay */}
+                          <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                            <Button
+                              size="icon"
+                              variant="secondary"
+                              className={`h-8 w-8 rounded-full backdrop-blur-sm ${
+                                savedAvatars.has(generatedResult.image) 
+                                  ? 'bg-red-500/80 hover:bg-red-600/80 text-white' 
+                                  : 'bg-white/80 hover:bg-white/90 text-gray-700'
+                              }`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSaveToLibrary(generatedResult.image);
+                              }}
+                            >
+                              <Heart 
+                                className={`h-4 w-4 ${
+                                  savedAvatars.has(generatedResult.image) ? 'fill-current' : ''
+                                }`} 
+                              />
                             </Button>
                           </div>
-                        ) : (
-                          <div className="aspect-square flex items-center justify-center bg-muted rounded">
-                            <span className="text-sm text-muted-foreground">Generation Failed</span>
+                          {/* Click to use overlay */}
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
+                            <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 text-white font-medium bg-black/50 px-4 py-2 rounded-lg backdrop-blur-sm">
+                              Click to use this avatar
+                            </div>
                           </div>
-                        )}
-                      </CardContent>
+                        </div>
+                      ) : (
+                        <div className="aspect-square flex items-center justify-center bg-muted rounded">
+                          <span className="text-sm text-muted-foreground">Generation Failed</span>
+                        </div>
+                      )}
                     </Card>
                   </div>
                 </div>
