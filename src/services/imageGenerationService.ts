@@ -247,9 +247,62 @@ export class ImageGenerationService {
     // PRESERVE user's exact specifications - don't override them
     console.log('🔍 Parsing user prompt for preservation...');
     
-    // Extract core subject identity (preserve exact wording)
+    // Enhanced ethnicity and heritage extraction with multiple patterns
+    const ethnicityPatterns = [
+      // Pattern for "German-American woman", "Italian-Brazilian man", etc.
+      /(?:stunning\s+|beautiful\s+)?([A-Z][a-z]+-[A-Z][a-z]+)\s+(?:woman|man|person)/gi,
+      // Pattern for single ethnicity "German woman", "Italian man"
+      /(?:stunning\s+|beautiful\s+)?([A-Z][a-z]+)\s+(?:woman|man|person)/gi,
+      // Pattern for heritage descriptors
+      /(?:of\s+)?([A-Z][a-z]+-?[A-Z]?[a-z]*)\s+(?:heritage|descent|ancestry|background)/gi,
+      // Pattern for ethnicity labels
+      /(?:ethnicity|heritage|ancestry):\s*([^,\n]+)/gi
+    ];
+    
+    let ethnicityFound = '';
+    for (const pattern of ethnicityPatterns) {
+      const matches = [...prompt.matchAll(pattern)];
+      for (const match of matches) {
+        if (match && match[1]) {
+          ethnicityFound = match[1].trim();
+          break;
+        }
+      }
+      if (ethnicityFound) break;
+    }
+    
+    // Extract skin tone with enhanced precision
+    const skinTonePatterns = [
+      /(?:with\s+)?([a-z]+-?[a-z]*-?[a-z]*)\s+(?:skin|complexion|tone)/gi,
+      /skin\s+(?:tone|color):\s*([^,\n]+)/gi
+    ];
+    
+    let skinToneFound = '';
+    for (const pattern of skinTonePatterns) {
+      const match = prompt.match(pattern);
+      if (match && match[1]) {
+        skinToneFound = match[1].trim();
+        break;
+      }
+    }
+    
+    // Extract core subject identity (preserve exact wording with ethnicity amplification)
     const subjectMatch = prompt.match(/(A stunning [^.,]+)/i);
-    details.subject = subjectMatch ? subjectMatch[1] : 'A stunning woman';
+    let subject = subjectMatch ? subjectMatch[1] : 'A stunning woman';
+    
+    // Amplify ethnicity in subject if found
+    if (ethnicityFound && subject) {
+      details.ethnicity = ethnicityFound;
+      details.heritage = ethnicityFound;
+      // Ensure ethnicity is strongly emphasized in subject description
+      subject = subject.replace(ethnicityFound, `${ethnicityFound} heritage ${ethnicityFound}`);
+    }
+    details.subject = subject;
+    
+    // Store skin tone for amplification
+    if (skinToneFound) {
+      details.skinTone = skinToneFound;
+    }
     
     // Extract physical descriptions (preserve user's specific terms)
     const physicalDescMatch = prompt.match(/(with [^.]+\.)/gi);
@@ -272,7 +325,7 @@ export class ImageGenerationService {
     const makeupMatch = prompt.match(/Makeup is ([^.]*)/i);
     details.makeup = makeupMatch ? makeupMatch[1].trim() : null;
     
-    console.log('📝 Preserved user details:', details);
+    console.log('📝 Preserved user details with ethnicity amplification:', details);
     return details;
   }
 
@@ -319,9 +372,16 @@ export class ImageGenerationService {
       'Professional portrait photography, single subject only, individual headshot, one person',
       'no grid layout, no collage, no multiple images, no split screen',
       
-      // PRESERVE user's exact subject description
+      // ETHNICITY-FIRST APPROACH: Lead with ethnicity/heritage for maximum impact
+      subjectDetails.ethnicity ? `${subjectDetails.ethnicity} ethnicity, ${subjectDetails.heritage} heritage` : '',
+      subjectDetails.skinTone ? `${subjectDetails.skinTone} skin tone, ${subjectDetails.skinTone} complexion` : '',
+      
+      // PRESERVE user's exact subject description with ethnicity reinforcement
       subjectDetails.subject,
       subjectDetails.physicalDescription,
+      
+      // Strategic ethnicity reinforcement mid-prompt
+      subjectDetails.ethnicity ? `of ${subjectDetails.ethnicity} descent, ${subjectDetails.ethnicity} features` : '',
       
       // Add amplified specific features
       ...subjectDetails.specificFeatures.map((feature: string) => this.amplifyFeatureDetail(feature)),
@@ -344,7 +404,7 @@ export class ImageGenerationService {
     ];
     
     const structured = parts.filter(part => part && part.trim().length > 0).join(', ');
-    console.log('✅ Structured prompt built with preserved details');
+    console.log('✅ Structured prompt built with ethnicity-first preservation');
     return structured;
   }
   
@@ -423,9 +483,12 @@ export class ImageGenerationService {
       'different styles, multiple angles, multiple poses, contact sheet, photo strip',
       'tiled layout, mosaic, four-panel, grid layout, split image, divided image',
       
-      // Feature drift prevention - maintains user's specified features
+      // ENHANCED Feature drift prevention with ethnicity protection
       'different hairstyle, changed hair, wrong hair color, altered features',
       'different ethnicity, changed skin tone, wrong eye color, modified face',
+      'wrong nationality, altered heritage, changed ethnicity, wrong ethnic features',
+      'African features, Asian features, Caucasian drift, Latino drift, ethnic confusion',
+      'wrong complexion, altered facial structure, changed bone structure',
       'different outfit, changed clothing, wrong accessories, altered style',
       'different background, changed setting, wrong environment',
       
