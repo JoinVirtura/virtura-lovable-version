@@ -266,15 +266,6 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
               </div>
             </div>
           )}
-
-          {project.avatar?.originalUrl && (
-            <div className="flex justify-center">
-              <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Change Image
-              </Button>
-            </div>
-          )}
         </TabsContent>
 
         {/* AI Generation Tab */}

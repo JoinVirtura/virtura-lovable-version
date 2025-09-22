@@ -77,42 +77,78 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
       </CardHeader>
       
       <CardContent className="space-y-4">
-        {/* Project Status */}
-        <div className="grid grid-cols-2 gap-2">
-          <div className="flex items-center gap-2">
-            <div className={`h-2 w-2 rounded-full ${
-              project.avatar?.status === 'completed' ? 'bg-green-500' : 
-              project.avatar?.status === 'processing' ? 'bg-yellow-500 animate-pulse' : 
-              'bg-gray-300'
-            }`} />
-            <span className="text-xs text-muted-foreground">Avatar</span>
+        {/* Processing Status Bar */}
+        <div className="bg-muted/50 rounded-lg p-3 space-y-3">
+          <div className="flex items-center justify-between">
+            <h4 className="text-sm font-medium">Processing Status</h4>
+            {project.avatar?.status === 'completed' && project.voice?.status === 'completed' && (
+              <Badge className="bg-green-500 text-white">
+                <CheckCircle className="h-3 w-3 mr-1" />
+                Processing Complete
+              </Badge>
+            )}
           </div>
           
-          <div className="flex items-center gap-2">
-            <div className={`h-2 w-2 rounded-full ${
-              project.voice?.status === 'completed' ? 'bg-green-500' : 
-              project.voice?.status === 'processing' ? 'bg-yellow-500 animate-pulse' : 
-              'bg-gray-300'
-            }`} />
-            <span className="text-xs text-muted-foreground">Voice</span>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <div className={`h-2 w-2 rounded-full ${
-              project.style?.status === 'completed' ? 'bg-green-500' : 
-              project.style?.status === 'processing' ? 'bg-yellow-500 animate-pulse' : 
-              'bg-gray-300'
-            }`} />
-            <span className="text-xs text-muted-foreground">Style</span>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <div className={`h-2 w-2 rounded-full ${
-              project.video?.status === 'completed' ? 'bg-green-500' : 
-              project.video?.status === 'processing' ? 'bg-yellow-500 animate-pulse' : 
-              'bg-gray-300'
-            }`} />
-            <span className="text-xs text-muted-foreground">Video</span>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex items-center gap-2">
+              <div className={`h-3 w-3 rounded-full ${
+                project.avatar?.status === 'completed' ? 'bg-green-500' : 
+                project.avatar?.status === 'processing' ? 'bg-yellow-500 animate-pulse' : 
+                'bg-gray-300'
+              }`} />
+              <span className="text-sm font-medium">Avatar</span>
+              {project.avatar?.status === 'completed' && (
+                <CheckCircle className="h-3 w-3 text-green-500" />
+              )}
+              {project.avatar?.status === 'processing' && (
+                <Loader2 className="h-3 w-3 text-yellow-500 animate-spin" />
+              )}
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <div className={`h-3 w-3 rounded-full ${
+                project.voice?.status === 'completed' ? 'bg-green-500' : 
+                project.voice?.status === 'processing' ? 'bg-yellow-500 animate-pulse' : 
+                'bg-gray-300'
+              }`} />
+              <span className="text-sm font-medium">Voice</span>
+              {project.voice?.status === 'completed' && (
+                <CheckCircle className="h-3 w-3 text-green-500" />
+              )}
+              {project.voice?.status === 'processing' && (
+                <Loader2 className="h-3 w-3 text-yellow-500 animate-spin" />
+              )}
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <div className={`h-3 w-3 rounded-full ${
+                project.style?.status === 'completed' ? 'bg-green-500' : 
+                project.style?.status === 'processing' ? 'bg-yellow-500 animate-pulse' : 
+                'bg-gray-300'
+              }`} />
+              <span className="text-sm font-medium">Style</span>
+              {project.style?.status === 'completed' && (
+                <CheckCircle className="h-3 w-3 text-green-500" />
+              )}
+              {project.style?.status === 'processing' && (
+                <Loader2 className="h-3 w-3 text-yellow-500 animate-spin" />
+              )}
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <div className={`h-3 w-3 rounded-full ${
+                project.video?.status === 'completed' ? 'bg-green-500' : 
+                project.video?.status === 'processing' ? 'bg-yellow-500 animate-pulse' : 
+                'bg-gray-300'
+              }`} />
+              <span className="text-sm font-medium">Video</span>
+              {project.video?.status === 'completed' && (
+                <CheckCircle className="h-3 w-3 text-green-500" />
+              )}
+              {project.video?.status === 'processing' && (
+                <Loader2 className="h-3 w-3 text-yellow-500 animate-spin" />
+              )}
+            </div>
           </div>
         </div>
 
@@ -193,12 +229,13 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
 
         {/* Preview Controls */}
         <div className="flex gap-2">
-          {project.avatar?.originalUrl && (
-            <Button size="sm" variant="outline" className="flex-1">
-              <Eye className="h-3 w-3 mr-1" />
-              View Avatar
-            </Button>
-          )}
+          <Button size="sm" variant="outline" className="flex-1" onClick={() => {
+            const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+            fileInput?.click();
+          }}>
+            <Eye className="h-3 w-3 mr-1" />
+            Upload Image
+          </Button>
           
           {project.video?.videoUrl && (
             <Button size="sm" variant="outline" className="flex-1" asChild>
@@ -210,22 +247,61 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
           )}
         </div>
 
-        {/* Project Summary */}
-        <div className="pt-2 border-t space-y-2">
-          <div className="text-xs text-muted-foreground">
-            <div className="flex justify-between">
-              <span>Engine:</span>
-              <span>{project.video?.engine || 'Not selected'}</span>
+        {/* Expanded Metadata */}
+        <div className="pt-2 border-t space-y-3">
+          <h4 className="text-sm font-medium">Project Metadata</h4>
+          
+          <div className="grid grid-cols-2 gap-4 text-xs">
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Engine:</span>
+                <span className="font-medium">{project.video?.engine || 'Not selected'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Quality:</span>
+                <span className="font-medium">{project.video?.quality || project.avatar?.quality || 'Standard'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Format:</span>
+                <span className="font-medium">{project.video?.ratio || '16:9'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Resolution:</span>
+                <span className="font-medium">{project.avatar?.metadata?.resolution || 'Auto'}</span>
+              </div>
             </div>
-            <div className="flex justify-between">
-              <span>Quality:</span>
-              <span>{project.video?.quality || project.avatar?.quality || 'Standard'}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Format:</span>
-              <span>{project.video?.ratio || '16:9'}</span>
+            
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Face Alignment:</span>
+                <span className="font-medium">{project.avatar?.metadata?.faceAlignment || 0}%</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Consistency:</span>
+                <span className="font-medium">{project.avatar?.metadata?.consistency || 0}%</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Voice Duration:</span>
+                <span className="font-medium">{project.voice?.metadata?.duration || '0'}s</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Processing Time:</span>
+                <span className="font-medium">{(project.avatar?.metadata as any)?.processingTime || '0'}s</span>
+              </div>
             </div>
           </div>
+          
+          {project.avatar?.status === 'completed' && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-2">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <span className="text-sm font-medium text-green-800">Avatar Ready</span>
+              </div>
+              <p className="text-xs text-green-700 mt-1">
+                High-quality avatar generated with {project.avatar.metadata?.faceAlignment || 0}% face alignment accuracy
+              </p>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
