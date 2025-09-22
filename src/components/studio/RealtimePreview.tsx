@@ -55,7 +55,7 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
     }
   };
 
-  const handleSaveToLibrary = async (imageUrl: string) => {
+  const handleToggleLibrary = async (imageUrl: string) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -63,27 +63,52 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
         return;
       }
 
-      const { error } = await supabase
-        .from('avatar_library')
-        .insert({
-          user_id: user.id,
-          image_url: imageUrl,
-          prompt: 'Live Preview Avatar',
-          title: 'Generated Avatar',
-          tags: ['live-preview']
+      const isCurrentlySaved = savedAvatars.has(imageUrl);
+
+      if (isCurrentlySaved) {
+        // Remove from library
+        const { error } = await supabase
+          .from('avatar_library')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('image_url', imageUrl);
+
+        if (error) {
+          console.error('Error removing avatar:', error);
+          toast.error('Failed to remove avatar from library');
+          return;
+        }
+
+        setSavedAvatars(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(imageUrl);
+          return newSet;
         });
+        toast.success('Avatar removed from library');
+      } else {
+        // Add to library
+        const { error } = await supabase
+          .from('avatar_library')
+          .insert({
+            user_id: user.id,
+            image_url: imageUrl,
+            prompt: 'Live Preview Avatar',
+            title: 'Generated Avatar',
+            tags: ['live-preview']
+          });
 
-      if (error) {
-        console.error('Error saving avatar:', error);
-        toast.error('Failed to save avatar to library');
-        return;
+        if (error) {
+          console.error('Error saving avatar:', error);
+          toast.error('Failed to save avatar to library');
+          return;
+        }
+
+        setSavedAvatars(prev => new Set([...prev, imageUrl]));
+        toast.success('Avatar saved to library!');
       }
-
-      setSavedAvatars(prev => new Set([...prev, imageUrl]));
-      toast.success('Avatar saved to library!');
     } catch (error) {
       console.error('Error:', error);
-      toast.error('Failed to save avatar');
+      toast.error('Failed to update avatar library');
     }
   };
 
@@ -172,7 +197,7 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                       }`}
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleSaveToLibrary(project.style.resultUrl);
+                        handleToggleLibrary(project.style.resultUrl);
                       }}
                     >
                       <Heart 
@@ -207,7 +232,7 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                       }`}
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleSaveToLibrary(imageUrl || '');
+                        handleToggleLibrary(imageUrl || '');
                       }}
                     >
                       <Heart 

@@ -4,6 +4,22 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
 import {
   Search,
@@ -12,7 +28,11 @@ import {
   Library,
   Sparkles,
   Image as ImageIcon,
-  RefreshCw
+  RefreshCw,
+  Trash2,
+  Share2,
+  Download,
+  MoreVertical
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -38,6 +58,10 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [refreshing, setRefreshing] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; avatar: AvatarLibraryItem | null }>({ 
+    open: false, 
+    avatar: null 
+  });
 
   const loadAvatars = async () => {
     try {
@@ -99,6 +123,60 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
     });
     
     toast.success('Avatar selected from library');
+  };
+
+  const handleDeleteAvatar = async (avatar: AvatarLibraryItem) => {
+    try {
+      const { error } = await supabase
+        .from('avatar_library')
+        .delete()
+        .eq('id', avatar.id);
+
+      if (error) {
+        console.error('Error deleting avatar:', error);
+        toast.error('Failed to delete avatar');
+        return;
+      }
+
+      setAvatars(prev => prev.filter(a => a.id !== avatar.id));
+      toast.success('Avatar deleted from library');
+    } catch (error) {
+      console.error('Error deleting avatar:', error);
+      toast.error('Failed to delete avatar');
+    }
+  };
+
+  const handleShareAvatar = async (avatar: AvatarLibraryItem) => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: avatar.title || 'Generated Avatar',
+          text: avatar.prompt,
+          url: avatar.image_url
+        });
+      } else {
+        await navigator.clipboard.writeText(avatar.image_url);
+        toast.success('Avatar link copied to clipboard!');
+      }
+    } catch (error) {
+      console.error('Error sharing avatar:', error);
+      toast.error('Failed to share avatar');
+    }
+  };
+
+  const handleDownloadAvatar = (avatar: AvatarLibraryItem) => {
+    try {
+      const link = document.createElement('a');
+      link.href = avatar.image_url;
+      link.download = `${avatar.title || 'avatar'}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success('Download started');
+    } catch (error) {
+      console.error('Error downloading avatar:', error);
+      toast.error('Failed to download avatar');
+    }
   };
 
   if (loading) {
@@ -187,6 +265,48 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
                       AI Generated
                     </Badge>
                   </div>
+                  {/* Action Menu */}
+                  <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          size="icon"
+                          variant="secondary"
+                          className="h-8 w-8 rounded-full backdrop-blur-sm bg-white/80 hover:bg-white/90"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start">
+                        <DropdownMenuItem onClick={(e) => {
+                          e.stopPropagation();
+                          handleShareAvatar(avatar);
+                        }}>
+                          <Share2 className="h-4 w-4 mr-2" />
+                          Share
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={(e) => {
+                          e.stopPropagation();
+                          handleDownloadAvatar(avatar);
+                        }}>
+                          <Download className="h-4 w-4 mr-2" />
+                          Download
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setDeleteConfirm({ open: true, avatar });
+                          }}
+                          className="text-destructive focus:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                     <Button size="sm" className="bg-primary hover:bg-primary/90">
                       <CheckCircle className="h-4 w-4 mr-2" />
@@ -248,6 +368,32 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
           )}
         </div>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteConfirm.open} onOpenChange={(open) => setDeleteConfirm({ open, avatar: null })}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Avatar</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{deleteConfirm.avatar?.title || 'this avatar'}"? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (deleteConfirm.avatar) {
+                  handleDeleteAvatar(deleteConfirm.avatar);
+                  setDeleteConfirm({ open: false, avatar: null });
+                }
+              }}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
