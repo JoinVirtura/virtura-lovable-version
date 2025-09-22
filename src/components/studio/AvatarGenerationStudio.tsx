@@ -327,14 +327,19 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                 </Label>
                 <Textarea
                   id="prompt"
-                  placeholder="Describe your avatar... (e.g., Professional business woman, 30s, confident smile, studio lighting)"
+                  placeholder="Describe one specific avatar... (e.g., Professional business woman, 30s, confident smile, studio lighting)"
                   value={generationPrompt}
                   onChange={(e) => setGenerationPrompt(e.target.value)}
                   className="min-h-24 mt-2"
                 />
-                <p className="text-xs text-muted-foreground mt-1">
-                  {generationPrompt.length}/500 characters
-                </p>
+                <div className="flex justify-between items-center mt-1">
+                  <p className="text-xs text-muted-foreground">
+                    💡 For best single portraits, describe one specific look rather than multiple variations
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {generationPrompt.length}/500
+                  </p>
+                </div>
               </div>
 
               <div>

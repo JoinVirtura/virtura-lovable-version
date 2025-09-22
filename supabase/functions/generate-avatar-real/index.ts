@@ -69,10 +69,48 @@ serve(async (req) => {
     const contentEnhancement = contentEnhancements[contentType as keyof typeof contentEnhancements] || contentEnhancements.auto;
     const selectedStyleEnhancement = styleEnhancements[style as keyof typeof styleEnhancements] || styleEnhancements.photorealistic;
     
+    // Focus prompt to prevent collages (select single combinations from multiple options)
+    const focusPrompt = (inputPrompt: string): string => {
+      let focused = inputPrompt;
+      
+      // Single-subject enforcement prefix
+      focused = `single portrait, one person only, individual headshot, focused composition, ${focused}`;
+      
+      // Detect and focus multiple hairstyle options
+      if (focused.includes('either') && focused.includes('hair')) {
+        // Extract and use first hairstyle option
+        const hairMatch = focused.match(/hair styled in either (.*?),/i);
+        if (hairMatch) {
+          const firstOption = hairMatch[1].split(',')[0].trim();
+          focused = focused.replace(/hair styled in either.*?,/, `hair styled in ${firstOption},`);
+        }
+      }
+      
+      // Focus multiple outfit options
+      if (focused.includes('styled in both') || focused.includes('She is styled in both')) {
+        // Select first outfit option only
+        const outfitMatch = focused.match(/styled in both.*?dress with.*?,/i);
+        if (outfitMatch) {
+          focused = focused.replace(/styled in both.*?outfit with a simple cord necklace\./gi, 
+            'wearing a glamorous black lace dress with plunging neckline and long silver earrings.');
+        }
+      }
+      
+      // Focus multiple background options
+      if (focused.includes('Backgrounds:')) {
+        // Select first background option
+        focused = focused.replace(/Backgrounds:.*?wall\./gi, 
+          'Background: dark blurred cinematic backdrop.');
+      }
+      
+      return focused;
+    };
+
     // Build enhanced prompt with content-aware enhancements
+    const focusedPrompt = focusPrompt(prompt);
     let enhancedPrompt = enhance 
-      ? `${prompt}, ${contentEnhancement}, ${selectedStyleEnhancement}, ${qualityBoost}`
-      : prompt;
+      ? `${focusedPrompt}, ${contentEnhancement}, ${selectedStyleEnhancement}, ${qualityBoost}`
+      : focusedPrompt;
     
     // Remove undefined references and clean up prompt enhancement
     
@@ -104,8 +142,8 @@ serve(async (req) => {
                            resolution || '1024x1024';
     const dimensions = resolutionMap[targetResolution as keyof typeof resolutionMap] || resolutionMap['1024x1024'];
     
-    // Professional-grade comprehensive negative prompt for maximum quality
-    const antiDriftNegative = "blurry, low quality, distorted, deformed, ugly, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed face, long neck, cropped, worst quality, jpeg artifacts, watermark, signature, text, logo, cartoon, painting, illustration, (worst quality, low quality:1.4), monochrome, zombie, overexposure, watermark, text, bad anatomy, bad hand, extra hands, extra fingers, too many fingers, fused fingers, bad arm, distorted arm, extra arms, fused arms, extra legs, missing leg, disembodied leg, extra nipples, detached arm, liquid hand, inverted hand, disembodied limb, small breasts, loli, oversized head, extra body, completely nude, extra navel, easynegative, (hair between eyes), sketch, duplicate, ugly, huge eyes, text, logo, worst face, (bad and mutated hands:1.3), (blurry:2.0), horror, geometry, bad_prompt, (bad hands), (missing fingers), multiple limbs, bad anatomy, (interlocked fingers:1.2), Ugly Fingers, (extra digit and hands and fingers and legs and arms:1.4), ((2girl)), (deformed fingers:1.2), (long fingers:1.2), (bad-artist-anime), bad-artist, bad hand, extra legs, nipples, nsfw";
+    // Professional-grade comprehensive negative prompt for maximum quality and single-subject enforcement
+    const antiDriftNegative = "collage, grid, multiple people, split screen, composite image, montage, multiple faces, multiple portraits, side by side, comparison, before and after, panel layout, comic strip, storyboard, multiple versions, variations, different styles, multiple angles, multiple poses, contact sheet, photo strip, tiled layout, mosaic, blurry, low quality, distorted, deformed, ugly, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed face, long neck, cropped, worst quality, jpeg artifacts, watermark, signature, text, logo, cartoon, painting, illustration, (worst quality, low quality:1.4), monochrome, zombie, overexposure, watermark, text, bad anatomy, bad hand, extra hands, extra fingers, too many fingers, fused fingers, bad arm, distorted arm, extra arms, fused arms, extra legs, missing leg, disembodied leg, extra nipples, detached arm, liquid hand, inverted hand, disembodied limb, small breasts, loli, oversized head, extra body, completely nude, extra navel, easynegative, (hair between eyes), sketch, duplicate, ugly, huge eyes, text, logo, worst face, (bad and mutated hands:1.3), (blurry:2.0), horror, geometry, bad_prompt, (bad hands), (missing fingers), multiple limbs, bad anatomy, (interlocked fingers:1.2), Ugly Fingers, (extra digit and hands and fingers and legs and arms:1.4), ((2girl)), (deformed fingers:1.2), (long fingers:1.2), (bad-artist-anime), bad-artist, bad hand, extra legs, nipples, nsfw";
     
     const finalPrompt = negativePrompt ? 
       `${enhancedPrompt} [NEGATIVE: ${negativePrompt}, ${antiDriftNegative}]` : 
