@@ -152,55 +152,6 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
           </div>
         </div>
 
-        {/* Preview Area */}
-        <div className={`mx-auto ${getPreviewDimensions()} bg-black rounded-lg overflow-hidden relative`}>
-          {project.video?.videoUrl ? (
-            <video
-              src={project.video.videoUrl}
-              controls
-              className="w-full h-full object-cover"
-              poster={project.avatar?.processedUrl || project.avatar?.originalUrl}
-            >
-              Your browser does not support the video tag.
-            </video>
-          ) : project.style?.resultUrl ? (
-            <img
-              src={project.style.resultUrl}
-              alt="Styled Avatar"
-              className="w-full h-full object-cover"
-            />
-          ) : project.avatar?.processedUrl || project.avatar?.originalUrl ? (
-            <img
-              src={project.avatar.processedUrl || project.avatar.originalUrl}
-              alt="Avatar Preview"
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="flex items-center justify-center h-full text-muted-foreground">
-              <div className="text-center">
-                <Film className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">Preview will appear here</p>
-              </div>
-            </div>
-          )}
-
-          {/* Processing Overlay */}
-          {isProcessing && (
-            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-              <div className="text-center text-white">
-                <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2" />
-                <p className="text-sm">Processing...</p>
-              </div>
-            </div>
-          )}
-
-          {/* Quality Badge */}
-          {project.video?.quality && (
-            <Badge className="absolute top-2 right-2 bg-black/50 text-white">
-              {project.video.quality}
-            </Badge>
-          )}
-        </div>
 
         {/* Audio Player */}
         {project.voice?.audioUrl && (
@@ -282,26 +233,14 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
               
               <div className="flex justify-between">
                 <span className="text-muted-foreground w-20">Resolution:</span>
-                <span className="font-medium text-right">{project.avatar?.metadata?.resolution || 'Auto'}</span>
+                <span className="font-medium text-right">{project.avatar?.quality || project.video?.quality || 'Auto'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground w-24">Processing Time:</span>
+                <span className="text-muted-foreground w-24">Processing:</span>
                 <span className="font-medium text-right">{(project.avatar?.metadata as any)?.processingTime || '0'}s</span>
               </div>
             </div>
           </div>
-          
-          {project.avatar?.status === 'completed' && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-2">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-600" />
-                <span className="text-sm font-medium text-green-800">Avatar Ready</span>
-              </div>
-              <p className="text-xs text-green-700 mt-1">
-                High-quality avatar generated with {project.avatar.metadata?.faceAlignment || 0}% face alignment accuracy
-              </p>
-            </div>
-          )}
         </div>
       </CardContent>
     </Card>
