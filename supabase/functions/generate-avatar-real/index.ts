@@ -69,16 +69,16 @@ serve(async (req) => {
     const contentEnhancement = contentEnhancements[contentType as keyof typeof contentEnhancements] || contentEnhancements.auto;
     const selectedStyleEnhancement = styleEnhancements[style as keyof typeof styleEnhancements] || styleEnhancements.photorealistic;
     
-    // Enhanced prompt focusing to prevent collages and enforce single-subject generation
+    // Ultra-focused prompt optimization for single perfect portraits
     const focusPrompt = (inputPrompt: string): string => {
       let focused = inputPrompt;
       
       console.log('🔍 Original prompt before focusing:', focused);
       
-      // Single-subject enforcement prefix with stronger anti-collage terms
-      focused = `single portrait, one person only, individual headshot, focused composition, no variations, no multiple versions, ${focused}`;
+      // Stronger single-subject enforcement with anti-grid terms
+      focused = `professional portrait photography, single subject only, individual headshot, one person, no grid layout, no collage, no multiple images, no variations, focused composition, ${focused}`;
       
-      // Comprehensive option detection and selection
+      // More aggressive option detection and selection
       
       // 1. Handle "either...or" hairstyle constructions
       if (focused.includes('either') || focused.includes('or ')) {
@@ -176,9 +176,9 @@ serve(async (req) => {
 
     console.log('Enhanced prompt:', enhancedPrompt);
 
-    // Ultra-realistic professional photography parameters with dynamic optimization
-    const finalSteps = steps || (quality === '8K' ? 100 : quality === '4K' ? 50 : 20);
-    const guidanceScale = adherence || (quality === '8K' ? 15.0 : quality === '4K' ? 12.0 : 8.0);
+    // Optimized parameters for single perfect portrait generation
+    const finalSteps = steps || (quality === '8K' ? 50 : quality === '4K' ? 35 : 20);
+    const guidanceScale = adherence || (quality === '8K' ? 12.0 : quality === '4K' ? 10.0 : 7.5);
     
     // Enhanced resolution mapping with higher quality options
     const resolutionMap = {

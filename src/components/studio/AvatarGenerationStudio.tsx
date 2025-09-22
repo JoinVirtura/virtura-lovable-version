@@ -63,8 +63,7 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
   const [processingStage, setProcessingStage] = useState<string>('');
   const [processingProgress, setProcessingProgress] = useState(0);
   const [estimatedTime, setEstimatedTime] = useState(0);
-  const [generatedVariants, setGeneratedVariants] = useState<any[]>([]);
-  const [variantProgress, setVariantProgress] = useState<number[]>([0, 0, 0]);
+  const [generatedResult, setGeneratedResult] = useState<any>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -116,15 +115,15 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
     }
   }, [handleFileUpload]);
 
-  const handleGenerateThreeVariants = async () => {
+  const handleGeneratePerfectAvatar = async () => {
     if (!generationPrompt.trim()) return;
 
     try {
       // Reset states
-      setGeneratedVariants([]);
-      setVariantProgress([0, 0, 0]);
-      setProcessingStage('Generating 3 High-Quality Variations...');
-      setEstimatedTime(45);
+      setGeneratedResult(null);
+      setProcessingProgress(0);
+      setProcessingStage('Generating Perfect Avatar...');
+      setEstimatedTime(30);
 
       const { ImageGenerationService } = await import('@/services/imageGenerationService');
       
@@ -137,51 +136,51 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                    quality === '4K' ? '1024x1024' as const : '512x512' as const,
         quality: 'ultra' as const,
         enhance: true,
-        steps: quality === '8K' ? 100 : quality === '4K' ? 50 : 20,
-        adherence: quality === '8K' ? 15.0 : quality === '4K' ? 12.0 : 8.0
+        steps: quality === '8K' ? 50 : quality === '4K' ? 35 : 20,
+        adherence: quality === '8K' ? 12.0 : quality === '4K' ? 10.0 : 7.5
       };
 
-      // Generate 3 variants with progress tracking
-      const variants = await ImageGenerationService.generateThreeVariants(
-        generationPrompt, 
-        baseParams,
-        (variantIndex: number, progress: number, stage: string) => {
-          setVariantProgress(prev => {
-            const newProgress = [...prev];
-            newProgress[variantIndex] = progress;
-            return newProgress;
-          });
-          setProcessingStage(`Variant ${variantIndex + 1}: ${stage}`);
-        }
-      );
-
-      setGeneratedVariants(variants);
-      
-      // Save successful variants to library
-      try {
-        const { supabase } = await import('@/integrations/supabase/client');
-        for (let i = 0; i < variants.length; i++) {
-          if (variants[i].success && variants[i].image) {
-            await supabase.from('avatar_library').insert({
-              image_url: variants[i].image,
-              prompt: generationPrompt,
-              title: `${selectedStyle} Avatar Variation ${i + 1} - ${quality}`,
-              tags: [selectedStyle, quality, 'AI Generated', 'Ultra-HD', 'Variation']
-            });
+      // Simulate progress during generation
+      const progressInterval = setInterval(() => {
+        setProcessingProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
           }
+          return prev + Math.random() * 10;
+        });
+      }, 800);
+
+      // Generate single perfect avatar
+      const result = await ImageGenerationService.generateImage(baseParams);
+      
+      clearInterval(progressInterval);
+      setProcessingProgress(100);
+      setGeneratedResult(result);
+      
+      // Save successful generation to library
+      if (result.success && result.image) {
+        try {
+          const { supabase } = await import('@/integrations/supabase/client');
+          await supabase.from('avatar_library').insert({
+            image_url: result.image,
+            prompt: generationPrompt,
+            title: `Perfect ${selectedStyle} Avatar - ${quality}`,
+            tags: [selectedStyle, quality, 'AI Generated', 'Perfect', 'Single']
+          });
+        } catch (error) {
+          console.warn('Failed to save to library:', error);
         }
-      } catch (error) {
-        console.warn('Failed to save to library:', error);
       }
 
-      setProcessingStage('All 3 Variations Complete!');
+      setProcessingStage(result.success ? 'Perfect Avatar Generated!' : 'Generation Failed');
       setTimeout(() => {
         setProcessingStage('');
         setEstimatedTime(0);
       }, 2000);
 
     } catch (error) {
-      console.error('Variant generation failed:', error);
+      console.error('Avatar generation failed:', error);
       setProcessingStage('Generation failed');
       setTimeout(() => {
         setProcessingStage('');
@@ -190,19 +189,19 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
     }
   };
 
-  const selectVariant = (variant: any) => {
-    if (variant.success && variant.image) {
+  const selectGeneratedAvatar = () => {
+    if (generatedResult?.success && generatedResult?.image) {
       onUpdate({
         avatar: {
           type: 'generate',
-          originalUrl: variant.image,
+          originalUrl: generatedResult.image,
           status: 'completed',
           quality: quality as any,
           metadata: {
-            resolution: variant.metadata?.resolution || `${quality} (Generated)`,
+            resolution: generatedResult.metadata?.resolution || `${quality} (Generated)`,
             faceAlignment: 98,
             consistency: faceConsistency,
-            processingTime: variant.metadata?.processingTime || '15s'
+            processingTime: generatedResult.metadata?.processingTime || '30s'
           }
         }
       });
@@ -320,14 +319,14 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                 </Label>
                 <Textarea
                   id="prompt"
-                  placeholder="Describe one specific avatar... (e.g., Professional business woman, 30s, confident smile, studio lighting)"
+                  placeholder="Describe one specific avatar... (e.g., Professional business woman, 30s, confident smile, wearing navy blazer, studio lighting)"
                   value={generationPrompt}
                   onChange={(e) => setGenerationPrompt(e.target.value)}
                   className="min-h-24 mt-2"
                 />
                 <div className="flex justify-between items-center mt-1">
                   <p className="text-xs text-muted-foreground">
-                    💡 For best single portraits, describe one specific look rather than multiple variations
+                    💡 Describe ONE specific person, hairstyle, outfit, and background for perfect results
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {generationPrompt.length}/500
@@ -397,7 +396,7 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
               </div>
 
               <Button
-                onClick={handleGenerateThreeVariants}
+                onClick={handleGeneratePerfectAvatar}
                 disabled={!generationPrompt.trim() || isProcessing || processingStage !== ''}
                 className="w-full h-12 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
                 size="lg"
@@ -407,11 +406,14 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                     <div className="flex flex-col items-start">
                       <span className="text-sm">
-                        {processingStage || 'Generating 3 Variations...'}
+                        {processingStage || 'Generating Perfect Avatar...'}
                       </span>
                       <div className="flex items-center gap-2 text-xs opacity-90">
                         {estimatedTime > 0 && (
-                          <span>{estimatedTime}s remaining</span>
+                          <span>~{estimatedTime}s remaining</span>
+                        )}
+                        {processingProgress > 0 && (
+                          <span>{processingProgress}%</span>
                         )}
                       </div>
                     </div>
@@ -419,70 +421,63 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                 ) : (
                   <>
                     <Sparkles className="h-4 w-4 mr-2" />
-                    Generate 3 {quality} Variations
+                    Generate Perfect {quality} Avatar
                   </>
                 )}
               </Button>
 
-              {/* Variant Progress Bars */}
-              {variantProgress.some(p => p > 0) && (
+              {/* Generation Progress */}
+              {processingProgress > 0 && (
                 <div className="space-y-3 mt-4">
                   <div className="text-sm font-medium text-center">{processingStage}</div>
-                  <div className="grid grid-cols-3 gap-4">
-                    {variantProgress.map((progress, index) => (
-                      <div key={index} className="space-y-2">
-                        <div className="flex justify-between text-xs text-muted-foreground">
-                          <span>Variant {index + 1}</span>
-                          <span>{progress}%</span>
-                        </div>
-                        <div className="w-full bg-muted rounded-full h-2">
-                          <div 
-                            className="bg-gradient-to-r from-primary to-primary/80 h-2 rounded-full transition-all duration-500"
-                            style={{ width: `${progress}%` }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  {estimatedTime > 0 && (
-                    <div className="text-xs text-muted-foreground text-center">
-                      ~{estimatedTime}s remaining
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>Perfect Avatar Generation</span>
+                      <span>{Math.round(processingProgress)}%</span>
                     </div>
-                  )}
+                    <div className="w-full bg-muted rounded-full h-3">
+                      <div 
+                        className="bg-gradient-to-r from-primary to-primary/80 h-3 rounded-full transition-all duration-500"
+                        style={{ width: `${processingProgress}%` }}
+                      />
+                    </div>
+                    {estimatedTime > 0 && (
+                      <div className="text-xs text-muted-foreground text-center">
+                        ~{estimatedTime}s remaining
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
 
-              {/* Generated Variants Display */}
-              {generatedVariants.length > 0 && (
+              {/* Generated Avatar Display */}
+              {generatedResult && (
                 <div className="space-y-4 mt-6">
-                  <div className="text-sm font-medium">Choose Your Favorite:</div>
-                  <div className="grid grid-cols-3 gap-4">
-                    {generatedVariants.map((variant, index) => (
-                      <Card 
-                        key={index} 
-                        className="cursor-pointer hover:ring-2 hover:ring-primary transition-all"
-                        onClick={() => selectVariant(variant)}
-                      >
-                        <CardContent className="p-3">
-                          {variant.success && variant.image ? (
-                            <div className="space-y-2">
-                              <img 
-                                src={variant.image} 
-                                alt={`Variation ${index + 1}`}
-                                className="w-full aspect-square object-cover rounded"
-                              />
-                              <Button variant="outline" size="sm" className="w-full">
-                                Use This One
-                              </Button>
-                            </div>
-                          ) : (
-                            <div className="aspect-square flex items-center justify-center bg-muted rounded">
-                              <span className="text-xs text-muted-foreground">Failed</span>
-                            </div>
-                          )}
-                        </CardContent>
-                      </Card>
-                    ))}
+                  <div className="text-sm font-medium">Generated Avatar:</div>
+                  <div className="max-w-md mx-auto">
+                    <Card 
+                      className="cursor-pointer hover:ring-2 hover:ring-primary transition-all"
+                      onClick={selectGeneratedAvatar}
+                    >
+                      <CardContent className="p-4">
+                        {generatedResult.success && generatedResult.image ? (
+                          <div className="space-y-3">
+                            <img 
+                              src={generatedResult.image} 
+                              alt="Generated Perfect Avatar"
+                              className="w-full aspect-square object-cover rounded"
+                            />
+                            <Button variant="outline" size="sm" className="w-full">
+                              Use This Avatar
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="aspect-square flex items-center justify-center bg-muted rounded">
+                            <span className="text-sm text-muted-foreground">Generation Failed</span>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
                   </div>
                 </div>
               )}

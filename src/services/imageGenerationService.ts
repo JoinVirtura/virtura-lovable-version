@@ -119,14 +119,20 @@ export class ImageGenerationService {
 
   static async generateImage(params: ImageGenerationParams): Promise<GeneratedImage> {
     try {
-      console.log('Generating image with params:', params);
+      console.log('Generating single perfect image with params:', params);
 
       const contentType = params.contentType === 'auto' || !params.contentType 
         ? this.detectContentType(params.prompt) 
         : params.contentType;
 
-      const quality = params.quality || 'balanced';
-      const enhancedPrompt = this.enhancePromptForContentType(params.prompt, contentType, quality);
+      const quality = params.quality || 'ultra';
+      
+      // Apply single-image optimization to prevent grids
+      let optimizedPrompt = this.optimizeForSingleImage(params.prompt);
+      
+      if (params.enhance !== false) {
+        optimizedPrompt = this.enhancePromptForContentType(optimizedPrompt, contentType, quality);
+      }
 
       // Get resolution dimensions
       const resolutionMap = {
@@ -138,37 +144,37 @@ export class ImageGenerationService {
       const resolution = params.resolution || '1024x1024';
       const dimensions = resolutionMap[resolution as keyof typeof resolutionMap];
 
-      // Primary: Real Image Generation (FLUX) with enhanced quality parameters
+      // Primary: Real Image Generation (FLUX) with optimized parameters for single portraits
       const realResp = await supabase.functions.invoke('generate-avatar-real', {
         body: {
-          prompt: enhancedPrompt,
-          negativePrompt: params.negativePrompt || "blurry, low quality, distorted, deformed, ugly, bad anatomy",
+          prompt: optimizedPrompt,
+          negativePrompt: params.negativePrompt || "grid, collage, multiple people, split screen, blurry, low quality, distorted, deformed, ugly, bad anatomy",
           contentType,
           style: params.style || 'photorealistic',
           quality: quality === 'ultra' ? '8K' : quality === 'balanced' ? '4K' : 'HD',
           resolution,
           width: dimensions.width,
           height: dimensions.height,
-          adherence: params.adherence || (quality === 'ultra' ? 15.0 : 12.0),
-          steps: params.steps || (quality === 'ultra' ? 100 : 50),
-          enhance: params.enhance !== false, // Default to true for quality
+          adherence: params.adherence || (quality === 'ultra' ? 12.0 : 10.0),
+          steps: params.steps || (quality === 'ultra' ? 50 : 35),
+          enhance: params.enhance !== false,
           referenceImage: params.referenceImage,
-          photoMode: true, // Enable professional photo mode
+          photoMode: true,
           selectedPreset: params.style || 'photorealistic'
         },
       });
 
       if (!realResp.error && realResp.data?.success) {
-        console.log('Image generated successfully');
+        console.log('Perfect image generated successfully');
         return {
           success: true,
           image: realResp.data.image,
-          prompt: enhancedPrompt,
+          prompt: optimizedPrompt,
           metadata: {
             contentType,
             style: params.style || 'photorealistic',
             resolution,
-            processingTime: realResp.data.processingTime
+            processingTime: realResp.data.metadata?.processingTime || '30s'
           }
         };
       }
@@ -180,7 +186,7 @@ export class ImageGenerationService {
 
       const oaResp = await supabase.functions.invoke('generate-avatar', {
         body: {
-          prompt: enhancedPrompt,
+          prompt: optimizedPrompt,
           ...params
         },
       });
@@ -209,6 +215,47 @@ export class ImageGenerationService {
         error: error instanceof Error ? error.message : 'Unknown error occurred',
       };
     }
+  }
+
+  // Enhanced single-image optimization to prevent grid generation
+  private static optimizeForSingleImage(prompt: string): string {
+    let optimized = prompt;
+    
+    // Remove any multi-option indicators that could trigger grids
+    const multiOptionPatterns = [
+      /hair styled in either.*?or.*?[.,]/gi,
+      /styled in both.*?and.*?[.,]/gi,
+      /backgrounds?:.*?(?:\n|$)/gi,
+      /lighting:.*?or.*?(?:\n|$)/gi,
+      /camera distance:.*?(?:\n|$)/gi,
+      /- \w+.*?(?:\n|- )/gi, // Remove bullet points
+      /\d+\.\s+\w+.*?(?:\n|\d+\.)/gi, // Remove numbered lists
+    ];
+    
+    multiOptionPatterns.forEach(pattern => {
+      optimized = optimized.replace(pattern, '');
+    });
+    
+    // Extract key elements and select ONE of each type
+    const elements = this.parseComplexPrompt(optimized);
+    
+    // Select single focused options
+    const selectedHair = elements.parsedElements.hairstyles?.[0] || 'natural styled hair';
+    const selectedOutfit = elements.parsedElements.outfits?.[0] || 'professional attire';
+    const selectedBackground = elements.parsedElements.backgrounds?.[0] || 'neutral studio background';
+    
+    // Build clean, focused prompt
+    const coreDescription = optimized
+      .replace(/hair.*?[.,]/gi, '')
+      .replace(/wearing.*?[.,]/gi, '')
+      .replace(/background.*?[.,]/gi, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    
+    // Construct single-focused prompt with strong anti-grid terms
+    optimized = `Professional portrait photography, single subject only, individual headshot, one person, no grid layout, no collage, no multiple images, ${coreDescription}, ${selectedHair}, wearing ${selectedOutfit}, ${selectedBackground}`;
+    
+    return optimized;
   }
 
   static async generateVariants(basePrompt: string, params: ImageGenerationParams, count: number = 3): Promise<GeneratedImage[]> {
