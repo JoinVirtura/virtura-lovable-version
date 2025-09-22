@@ -24,8 +24,8 @@ import {
 } from 'lucide-react';
 
 import { AvatarGenerationStudio } from '@/components/studio/AvatarGenerationStudio';
-import { VoiceEngineStudio } from '@/components/studio/VoiceEngineStudio';
-import { VideoEngineStudio } from '@/components/studio/VideoEngineStudio';
+import { PremiumVoiceEngine } from '@/components/studio/PremiumVoiceEngine';
+import { RealVideoEngine } from '@/components/studio/RealVideoEngine';
 import { StyleTransferStudio } from '@/components/studio/StyleTransferStudio';
 import { ExportDeliveryStudio } from '@/components/studio/ExportDeliveryStudio';
 import { ProjectTimeline } from '@/components/studio/ProjectTimeline';
@@ -107,7 +107,7 @@ export default function StudioPage() {
                 </Badge>
               </div>
               <p className="text-muted-foreground">
-                World-class AI media creation • KlingAI • Krea.ai • HeyGen quality
+                Professional AI media creation • 47+ Art Styles • 20 Premium Voices • Real Video Synthesis
               </p>
             </div>
             
@@ -164,8 +164,8 @@ export default function StudioPage() {
                   </TabsContent>
 
                   <TabsContent value="voice" className="p-6 space-y-6">
-                    <ErrorBoundary fallbackTitle="Voice Engine Error" fallbackMessage="There was an issue with the voice generation component.">
-                      <VoiceEngineStudio
+                    <ErrorBoundary fallbackTitle="Premium Voice Engine Error" fallbackMessage="There was an issue with the premium voice generation component.">
+                      <PremiumVoiceEngine
                         project={project}
                         onUpdate={updateProject}
                         onGenerate={generateVoice}
@@ -185,8 +185,8 @@ export default function StudioPage() {
                   </TabsContent>
 
                   <TabsContent value="video" className="p-6 space-y-6">
-                    <ErrorBoundary fallbackTitle="Video Engine Error" fallbackMessage="There was an issue with the video generation component.">
-                      <VideoEngineStudio
+                    <ErrorBoundary fallbackTitle="Real Video Engine Error" fallbackMessage="There was an issue with the real video generation component.">
+                      <RealVideoEngine
                         project={project}
                         onUpdate={updateProject}
                         onGenerate={generateVideo}
