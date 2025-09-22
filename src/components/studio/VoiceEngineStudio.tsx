@@ -424,99 +424,117 @@ export const VoiceEngineStudio: React.FC<VoiceEngineStudioProps> = ({
 
         {/* Voice Cloning Tab */}
         <TabsContent value="clone" className="space-y-6">
-          <div className="text-center py-12">
-            <Wand2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Voice Cloning</h3>
-            <p className="text-muted-foreground mb-4">
-              Upload 2-3 minutes of clear audio to clone your voice
-            </p>
-            <Button variant="outline">
-              <Upload className="h-4 w-4 mr-2" />
-              Upload Voice Sample
-            </Button>
-          </div>
+          <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-purple/5">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Wand2 className="h-5 w-5" />
+                Voice Cloning
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Clone any voice with 5-30 seconds of clear audio
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div 
+                className="border-2 border-dashed border-primary/30 rounded-lg p-8 text-center hover:border-primary/50 transition-colors cursor-pointer"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Upload className="h-8 w-8 mx-auto mb-3 text-primary" />
+                <p className="font-medium mb-1">Upload Voice Sample</p>
+                <p className="text-sm text-muted-foreground">
+                  MP3, WAV, or M4A • 5-30 seconds • Clear speech
+                </p>
+              </div>
+              
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="audio/*"
+                className="hidden"
+              />
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* Upload Audio Tab */}
         <TabsContent value="upload" className="space-y-6">
-          <div className="text-center py-12">
-            <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Upload Audio</h3>
-            <p className="text-muted-foreground mb-4">
-              Upload your own recorded audio file
-            </p>
-            <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
-              <Upload className="h-4 w-4 mr-2" />
-              Choose Audio File
-            </Button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="audio/*"
-              className="hidden"
-            />
-          </div>
+          <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-green/5">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Upload className="h-5 w-5" />
+                Upload Audio
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Upload your own pre-recorded audio file
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div 
+                className="border-2 border-dashed border-primary/30 rounded-lg p-8 text-center hover:border-primary/50 transition-colors cursor-pointer"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Upload className="h-8 w-8 mx-auto mb-3 text-primary" />
+                <p className="font-medium mb-1">Choose Audio File</p>
+                <p className="text-sm text-muted-foreground">
+                  MP3, WAV, M4A • Up to 10MB • Any duration
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
 
       {/* Voice Generation Result */}
       {project.voice?.status === 'completed' && (
-        <Card className="border-primary/30 bg-gradient-to-br from-primary/5 via-primary/3 to-background/50 backdrop-blur-sm">
-          <CardHeader className="pb-3">
+        <Card className="border-primary/30 bg-gradient-to-br from-primary/10 to-primary/5">
+          <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <CheckCircle className="h-5 w-5 text-primary" />
-              <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent font-bold">
-                Voice Generated
-              </span>
+              Voice Generated
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-4">
-              {/* Voice Details */}
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <p className="font-medium text-foreground">Voice Model: {PREMIUM_VOICES.find(v => v.id === selectedVoice)?.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    Language: {LANGUAGES.find(l => l.code === selectedLanguage)?.name}
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="text-xs text-green-600 dark:text-green-400 font-medium">Generation Complete</span>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-xs text-muted-foreground">Voice</Label>
+                <p className="font-medium">{PREMIUM_VOICES.find(v => v.id === selectedVoice)?.name}</p>
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground">Language</Label>
+                <p className="font-medium">{LANGUAGES.find(l => l.code === selectedLanguage)?.name}</p>
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground">Duration</Label>
+                <p className="font-medium">{project.voice.metadata?.duration || 'Unknown'}s</p>
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground">Quality</Label>
+                <p className="font-medium">Ultra-HD</p>
+              </div>
+            </div>
+            
+            {/* Enhanced Audio Player with Waveform */}
+            <div className="mt-4">
+              {project.voice.audioUrl ? (
+                <div>
+                  <Label className="text-sm font-medium mb-2 block">Generated Audio</Label>
+                  <div className="bg-card/50 rounded-lg p-4 border border-primary/20">
+                    <WaveformVisualizer
+                      audioData={project.voice.metadata?.waveform}
+                      isPlaying={isPlaying}
+                      width={400}
+                      height={80}
+                      color="#9333ea"
+                      className="rounded-lg mb-4"
+                    />
+                    <audio controls className="w-full" ref={audioRef}>
+                      <source src={project.voice.audioUrl} type="audio/mpeg" />
+                    </audio>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <Button size="sm" variant="outline" className="border-primary/20 hover:bg-primary/10 hover:border-primary/40">
-                    <Play className="h-4 w-4 mr-1" />
-                    Play
-                  </Button>
-                  <Button size="sm" variant="outline" className="border-primary/20 hover:bg-primary/10 hover:border-primary/40">
-                    <Settings className="h-4 w-4 mr-1" />
-                    Adjust
-                  </Button>
-                </div>
-              </div>
-
-              {/* Waveform Visualization */}
-              <div className="bg-muted/20 rounded-lg p-4 border border-border/50">
-                <div className="flex items-center gap-3 mb-3">
-                  <Volume2 className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium text-foreground">Voice Waveform</span>
-                </div>
-                <WaveformVisualizer
-                  audioData={project.voice.audioUrl}
-                  isPlaying={isPlaying}
-                  width={400}
-                  height={80}
-                  className="w-full"
-                />
-              </div>
-
-              {/* Audio Player */}
-              {project.voice.audioUrl && (
-                <div className="bg-muted/10 rounded-lg p-3 border border-border/30">
-                  <audio controls className="w-full" ref={audioRef}>
-                    <source src={project.voice.audioUrl} type="audio/mpeg" />
-                  </audio>
+              ) : (
+                <div className="text-center py-4 text-muted-foreground">
+                  <p>Voice generated but audio URL not available</p>
                 </div>
               )}
             </div>

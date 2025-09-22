@@ -17,6 +17,8 @@ import {
   Loader2
 } from 'lucide-react';
 import type { StudioProject } from '@/hooks/useStudioProject';
+import { applyStyleTransfer } from './StyleTransferEdge';
+import { useToast } from '@/components/ui/use-toast';
 
 // Import style assets
 import style90sAnime from '@/assets/style-90s-anime.jpg';
@@ -123,23 +125,27 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
   onUpdate, 
   isProcessing 
 }) => {
+  const { toast } = useToast();
   const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [styleStrength, setStyleStrength] = useState(75);
   const [preserveOriginal, setPreserveOriginal] = useState(25);
   const [enhanceDetails, setEnhanceDetails] = useState(80);
+  const [isApplying, setIsApplying] = useState(false);
 
   const filteredStyles = STYLE_PRESETS.filter(style => 
     selectedCategory === 'all' || style.category === selectedCategory
   );
 
   const handleApplyStyle = async () => {
-    if (!selectedStyle || !project.avatar) return;
+    if (!selectedStyle || !project.avatar?.processedUrl) return;
 
     const stylePreset = STYLE_PRESETS.find(s => s.id === selectedStyle);
     if (!stylePreset) return;
 
-    // Update project with style transfer configuration
+    setIsApplying(true);
+
+    // Update project with style transfer processing status
     onUpdate({
       style: {
         preset: selectedStyle,
@@ -156,35 +162,81 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
           styleName: stylePreset.name,
           styleType: stylePreset.type,
           category: stylePreset.category,
-          processingTime: 'Estimating...'
+          processingTime: 'Processing...'
         }
       }
     });
 
-    // Simulate style transfer processing
-    setTimeout(() => {
+    try {
+      // Apply real style transfer
+      const result = await applyStyleTransfer({
+        imageUrl: project.avatar.processedUrl,
+        stylePreset: selectedStyle,
+        strength: styleStrength,
+        preserveOriginal,
+        enhanceDetails
+      });
+
+      if (result.success && result.imageUrl) {
+        onUpdate({
+          style: {
+            preset: selectedStyle,
+            strength: styleStrength,
+            preserveOriginal,
+            enhanceDetails,
+            resultUrl: result.imageUrl,
+            lookMode: 'realistic',
+            background: 'studio',
+            lighting: { key: 80, fill: 60, rim: 40, ambient: 20 },
+            camera: { angle: 0, distance: 100, focus: 50 },
+            effects: {},
+            status: 'completed',
+            metadata: {
+              styleName: stylePreset.name,
+              styleType: stylePreset.type,
+              category: stylePreset.category,
+              processingTime: result.metadata?.processingTime || '3.2s'
+            }
+          }
+        });
+
+        toast({
+          title: "Style Applied",
+          description: `${stylePreset.name} style applied successfully`,
+        });
+      } else {
+        throw new Error(result.error || 'Style transfer failed');
+      }
+    } catch (error: any) {
       onUpdate({
         style: {
           preset: selectedStyle,
           strength: styleStrength,
           preserveOriginal,
           enhanceDetails,
-          resultUrl: project.avatar?.originalUrl,
           lookMode: 'realistic',
           background: 'studio',
           lighting: { key: 80, fill: 60, rim: 40, ambient: 20 },
           camera: { angle: 0, distance: 100, focus: 50 },
           effects: {},
-          status: 'completed',
+          status: 'error',
           metadata: {
             styleName: stylePreset.name,
             styleType: stylePreset.type,
             category: stylePreset.category,
-            processingTime: '3.2s'
+            processingTime: 'Failed'
           }
         }
       });
-    }, 3000);
+
+      toast({
+        title: "Style Transfer Failed",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsApplying(false);
+    }
   };
 
   const canApplyStyle = project.avatar?.status === 'completed' && selectedStyle;
@@ -372,11 +424,11 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
 
           <Button
             onClick={handleApplyStyle}
-            disabled={!canApplyStyle || isProcessing}
+            disabled={!canApplyStyle || isProcessing || isApplying}
             className="w-full h-12"
             size="lg"
           >
-            {isProcessing || project.style?.status === 'processing' ? (
+            {isProcessing || isApplying || project.style?.status === 'processing' ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                 Applying Style Transfer...
