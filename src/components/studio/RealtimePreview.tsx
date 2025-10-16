@@ -138,7 +138,7 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
   }, []);
 
   return (
-    <Card className="h-full">
+    <Card className="h-full" data-preview-section>
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg flex items-center gap-2">
@@ -280,6 +280,29 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                     <source src={project.video.videoUrl} type="video/mp4" />
                     Your browser does not support the video tag.
                   </video>
+                  
+                  {/* Heart save button overlay for videos */}
+                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-20">
+                    <Button
+                      size="icon"
+                      variant="secondary"
+                      className={`h-8 w-8 rounded-full backdrop-blur-sm ${
+                        savedAvatars.has(project.video.videoUrl) 
+                          ? 'bg-red-500/80 hover:bg-red-600/80 text-white' 
+                          : 'bg-white/80 hover:bg-white/90 text-gray-700'
+                      }`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleToggleLibrary(project.video.videoUrl);
+                      }}
+                    >
+                      <Heart 
+                        className={`h-4 w-4 ${
+                          savedAvatars.has(project.video.videoUrl) ? 'fill-current' : ''
+                        }`} 
+                      />
+                    </Button>
+                  </div>
                 </div>
               );
             }
@@ -390,7 +413,7 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                 Voice Preview
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-1">
+            <CardContent className="space-y-3">
               <PremiumAudioPlayer
                 audioUrl={project.voice.audioUrl}
                 isPlaying={isPlaying}
@@ -399,15 +422,26 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                 className="border-0 bg-card/50"
               />
               
-              <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground pt-2">
-                <div>
-                  <span className="block font-medium">Duration</span>
-                  <span>{typeof project.voice.metadata?.duration === 'number' ? `${project.voice.metadata.duration}s` : 'Unknown'}</span>
+              {/* Duration and Quality on ONE LINE with Download Button */}
+              <div className="flex items-center justify-between text-xs text-muted-foreground pt-1">
+                <div className="flex items-center gap-4">
+                  <div>
+                    <span className="font-medium">Duration: </span>
+                    <span>{typeof project.voice.metadata?.duration === 'number' ? `${project.voice.metadata.duration}s` : 'Unknown'}</span>
+                  </div>
+                  <div>
+                    <span className="font-medium">Quality: </span>
+                    <span>Ultra-HD</span>
+                  </div>
                 </div>
-                <div>
-                  <span className="block font-medium">Quality</span>
-                  <span>Ultra-HD</span>
-                </div>
+                
+                {/* Download Audio Button */}
+                <Button size="sm" variant="ghost" className="h-7 px-2" asChild>
+                  <a href={project.voice.audioUrl} download="voice-preview.mp3">
+                    <Download className="h-3 w-3 mr-1" />
+                    Download
+                  </a>
+                </Button>
               </div>
             </CardContent>
           </Card>

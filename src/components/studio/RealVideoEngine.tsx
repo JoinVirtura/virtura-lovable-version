@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -716,13 +717,37 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
                 </div>
               </div>
               <div className="flex gap-2">
-                <Button size="sm" variant="outline" className="border-primary/20 hover:bg-primary/10 hover:border-primary/40">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="border-primary/20 hover:bg-primary/10 hover:border-primary/40"
+                  onClick={() => {
+                    const previewElement = document.querySelector('[data-preview-section]');
+                    if (previewElement) {
+                      previewElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      toast.success('Scrolled to Live Preview');
+                    }
+                  }}
+                >
                   <Play className="h-4 w-4 mr-1" />
                   Preview
                 </Button>
-                <Button size="sm" variant="outline" className="border-primary/20 hover:bg-primary/10 hover:border-primary/40">
-                  <Download className="h-4 w-4 mr-1" />
-                  Download
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="border-primary/20 hover:bg-primary/10 hover:border-primary/40"
+                  asChild
+                >
+                  <a 
+                    href={project.video.videoUrl} 
+                    download={`virtura-video-${Date.now()}.mp4`}
+                    onClick={() => {
+                      toast.success('Downloading video...');
+                    }}
+                  >
+                    <Download className="h-4 w-4 mr-1" />
+                    Download
+                  </a>
                 </Button>
               </div>
             </div>
