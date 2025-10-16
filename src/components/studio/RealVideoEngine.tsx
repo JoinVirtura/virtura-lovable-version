@@ -40,44 +40,34 @@ interface RealVideoEngineProps {
 
 const VIDEO_ENGINES = [
   {
-    id: 'sync-labs',
-    name: 'Sync Labs Lipsync 2 Pro',
-    description: 'Studio-grade lip synchronization with Replicate',
+    id: 'bytedance-omni-human',
+    name: 'ByteDance Omni-Human',
+    description: 'Premium quality lip-sync with ByteDance AI',
     badge: 'Premium',
     badgeColor: 'bg-gradient-to-r from-purple-500 to-pink-500',
     icon: Crown,
-    features: ['Best Quality', 'Zero-Shot', 'No Limits', 'Realistic Sync'],
+    features: ['Best Quality', 'Natural Motion', 'Ultra-HD', 'Realistic Sync'],
     realOutput: true
   },
   {
-    id: 'sadtalker',
-    name: 'SadTalker 3D Motion',
-    description: 'Realistic 3D motion coefficients via Replicate',
+    id: 'synthesys-wav2lip',
+    name: 'Synthesys Wav2Lip',
+    description: 'High-quality professional lip synchronization',
     badge: 'Pro',
     badgeColor: 'bg-blue-500',
     icon: Brain,
-    features: ['4K Support', '3D Animation', 'Face Enhancement', 'Natural Motion'],
+    features: ['4K Support', 'Fast Processing', 'Professional', 'Natural Motion'],
     realOutput: true
   },
   {
-    id: 'wav2lip',
-    name: 'Wav2Lip Fast',
-    description: 'Fast and cost-effective lip-sync via Replicate',
+    id: 'sonic',
+    name: 'Sonic Fast',
+    description: 'Budget-friendly fast generation',
     badge: 'Budget',
     badgeColor: 'bg-green-500',
-    icon: MonitorSpeaker,
-    features: ['HD Support', 'Fast Processing', 'Low Cost', 'Reliable'],
+    icon: Zap,
+    features: ['Low Cost', 'Fast', 'Cost-Effective', 'Reliable'],
     realOutput: true
-  },
-  {
-    id: 'runway',
-    name: 'Runway Gen-3',
-    description: 'Creative video generation with Gen-3 Alpha',
-    badge: 'Creative',
-    badgeColor: 'bg-orange-500',
-    icon: Sparkles,
-    features: ['4K Support', 'Creative Effects', 'Style Transfer', 'AI Motion'],
-    realOutput: false
   }
 ];
 
