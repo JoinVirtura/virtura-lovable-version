@@ -436,11 +436,30 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                 </div>
                 
                 {/* Download Audio Button */}
-                <Button size="sm" variant="ghost" className="h-7 px-2" asChild>
-                  <a href={project.voice.audioUrl} download="voice-preview.mp3">
-                    <Download className="h-3 w-3 mr-1" />
-                    Download
-                  </a>
+                <Button 
+                  size="sm" 
+                  variant="ghost" 
+                  className="h-7 px-2 gap-1"
+                  onClick={async () => {
+                    try {
+                      const response = await fetch(project.voice.audioUrl);
+                      const blob = await response.blob();
+                      const url = window.URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = `voice-preview-${Date.now()}.mp3`;
+                      document.body.appendChild(a);
+                      a.click();
+                      window.URL.revokeObjectURL(url);
+                      document.body.removeChild(a);
+                      toast.success('Downloading audio file...');
+                    } catch (error) {
+                      toast.error('Failed to download audio');
+                    }
+                  }}
+                >
+                  <Download className="h-3 w-3" />
+                  Download
                 </Button>
               </div>
             </CardContent>

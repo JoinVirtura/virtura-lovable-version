@@ -181,7 +181,7 @@ export const PremiumAudioPlayer: React.FC<PremiumAudioPlayerProps> = ({
               </Button>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 pr-2">
               <Button
                 size="sm"
                 variant="ghost"
@@ -191,7 +191,7 @@ export const PremiumAudioPlayer: React.FC<PremiumAudioPlayerProps> = ({
                 <Repeat className="h-3 w-3" />
               </Button>
               
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 pr-1">
                 <Button
                   size="sm"
                   variant="ghost"
@@ -209,22 +209,9 @@ export const PremiumAudioPlayer: React.FC<PremiumAudioPlayerProps> = ({
                   value={[isMuted ? 0 : volume]}
                   onValueChange={handleVolumeChange}
                   max={100}
-                  className="w-20"
+                  className="w-24 mr-2"
                 />
               </div>
-              
-              {audioUrl && (
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  asChild
-                  className="h-8 w-8 p-0"
-                >
-                  <a href={audioUrl} download="voice-preview.mp3">
-                    <Download className="h-3 w-3" />
-                  </a>
-                </Button>
-              )}
             </div>
           </div>
         </div>
