@@ -208,8 +208,9 @@ async function generateWithSyncLabs(
   });
 
   console.log('🎯 Running Sync Labs model with inputs:', { 
-    video: avatarImageUrl, 
-    audio: audioUrl 
+    imageUrl: avatarImageUrl.substring(0, 60) + '...',
+    audioUrl: audioUrl.substring(0, 60) + '...',
+    modelVersion: 'sync/lipsync-2-pro'
   });
 
   try {
@@ -230,7 +231,10 @@ async function generateWithSyncLabs(
     });
 
     const videoUrl = Array.isArray(output) ? output[0] : output;
-    console.log('✅ Sync Labs generated video:', videoUrl);
+    console.log('✅ Sync Labs success:', {
+      videoUrl: videoUrl.substring(0, 60) + '...',
+      status: 'completed'
+    });
 
     return await downloadAndUploadVideo(
       videoUrl,

@@ -398,6 +398,32 @@ export const useStudioProject = () => {
       const supabaseUrl = 'https://ujaoziqnxhjqlmnvlxav.supabase.co';
       const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqYW96aXFueGhqcWxtbnZseGF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1ODYwMDMsImV4cCI6MjA3MTE2MjAwM30.jbBjuZPRyc2CDonO7JJstuhBUlRxgX2K1qgDhpXrIHU';
       
+      // Health check: Verify edge function is ready
+      console.log('🏥 Running health check...');
+      try {
+        const healthResponse = await fetch(`${supabaseUrl}/functions/v1/video-engine-pro`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${supabaseKey}`
+          }
+        });
+        
+        const healthData = await healthResponse.json();
+        console.log('Health check result:', healthData);
+        
+        if (!healthData.hasReplicateKey) {
+          throw new Error('REPLICATE_API_KEY not configured in Supabase. Please add it in Project Settings → Edge Functions → Secrets');
+        }
+        
+        if (healthData.status !== 'ok') {
+          throw new Error('Video engine not ready. Please try again in a few moments.');
+        }
+        
+        console.log('✅ Health check passed - proceeding with video generation');
+      } catch (healthError: any) {
+        throw new Error(`Video engine health check failed: ${healthError.message}`);
+      }
+      
       // Add 60-second timeout to prevent infinite hang
       const abortController = new AbortController();
       const timeoutId = setTimeout(() => {
@@ -406,7 +432,7 @@ export const useStudioProject = () => {
       }, 60000);
 
       console.log('🚀 Starting video generation request...');
-      console.log('Avatar URL:', project.avatar?.processedUrl);
+      console.log('Avatar URL:', avatarUrl);
       console.log('Audio URL:', project.voice?.audioUrl);
       
       const response = await fetch(`${supabaseUrl}/functions/v1/video-engine-pro`, {
@@ -416,7 +442,7 @@ export const useStudioProject = () => {
           'Authorization': `Bearer ${supabaseKey}`
         },
         body: JSON.stringify({
-          avatarImageUrl: project.avatar?.processedUrl,
+          avatarImageUrl: avatarUrl,
           audioUrl: project.voice?.audioUrl,
           prompt: config.prompt,
           settings: {
