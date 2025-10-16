@@ -531,13 +531,15 @@ export const useStudioProject = () => {
           const errorText = await response.text();
           console.error('Edge function error:', errorText);
           
-          // Enhanced model-specific error messages for retry logic
+          // Enhanced model-specific error messages
           if (response.status === 404) {
-            throw new Error('🔄 Model unavailable - automatically trying alternative engine...');
+            throw new Error('❌ Model not available - trying alternative engine...');
           } else if (response.status === 422) {
-            throw new Error('⚙️ Invalid input detected - adjusting parameters and retrying...');
+            throw new Error('⚠️ Invalid input format - adjusting parameters...');
           } else if (response.status === 429) {
-            throw new Error('⏱️ Rate limit reached - will retry in 60 seconds...');
+            throw new Error('⏸️ Rate limited - retrying in 60 seconds...');
+          } else if (response.status === 402 || errorText.includes('payment') || errorText.includes('billing')) {
+            throw new Error('💳 Replicate payment required - please add billing at replicate.com/account/billing');
           } else if (response.status >= 500) {
             throw new Error(`🔧 Server error (${response.status}) - retrying with exponential backoff...`);
           } else {
@@ -569,7 +571,7 @@ export const useStudioProject = () => {
           try {
             const data = JSON.parse(line.slice(6));
             
-            // Update project with progress
+            // Update project with progress including engine attempt info
             setProject(prev => ({
               ...prev,
               video: {
@@ -578,10 +580,22 @@ export const useStudioProject = () => {
                 metadata: {
                   ...prev.video?.metadata,
                   currentStage: data.message,
-                  progress: data.progress
+                  progress: data.progress,
+                  engineAttempt: data.engineAttempt,
+                  totalEngines: data.totalEngines
                 }
               } as any
             }));
+
+            // Show engine fallback toast
+            if (data.stage === 'engine_fallback') {
+              const isLastModel = data.engineAttempt === data.totalEngines;
+              toast({
+                title: isLastModel ? "All Models Failed" : "Trying Alternative Model",
+                description: data.message,
+                variant: isLastModel ? 'destructive' : 'default'
+              });
+            }
 
             if (data.stage === 'complete') {
               setProject(prev => ({
