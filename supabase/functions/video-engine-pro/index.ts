@@ -220,38 +220,93 @@ async function generateRealVideo(avatarImageUrl: string, audioUrl: string, promp
 
     console.log('💾 Step 4: Downloading and storing video...');
 
-    // Step 4: Download video and upload to Supabase Storage
+    // Step 4: Download video and validate
     const videoDownloadResponse = await fetch(videoUrl);
+    
+    if (!videoDownloadResponse.ok) {
+      throw new Error(`Failed to download video: ${videoDownloadResponse.status}`);
+    }
+
     const videoBlob = await videoDownloadResponse.blob();
+    const videoSize = videoBlob.size;
+    const contentType = videoDownloadResponse.headers.get('content-type') || 'video/mp4';
+    
+    // Validate video
+    console.log('📊 Video validation:');
+    console.log('  - Size:', Math.round(videoSize / 1024 / 1024), 'MB');
+    console.log('  - Content-Type:', contentType);
+    
+    if (videoSize === 0) {
+      throw new Error('Downloaded video is empty (0 bytes)');
+    }
+    
+    if (videoSize < 1000) {
+      throw new Error('Downloaded video is too small (likely corrupt)');
+    }
+    
+    if (!contentType.includes('video')) {
+      console.warn('⚠️ Unexpected content type:', contentType);
+    }
+    
     const videoArrayBuffer = await videoBlob.arrayBuffer();
     const videoBuffer = new Uint8Array(videoArrayBuffer);
 
     const fileName = `${Date.now()}-${videoId}.mp4`;
     const storagePath = `videos/${fileName}`;
 
-    const { data: uploadData2, error: uploadError } = await supabase.storage
-      .from('virtura-media')
-      .upload(storagePath, videoBuffer, {
-        contentType: 'video/mp4',
-        upsert: false
-      });
+    console.log('📤 Uploading to Supabase Storage:', storagePath);
 
-    if (uploadError) {
-      console.error('Storage upload error:', uploadError);
-      // Fallback to HeyGen URL if upload fails
-      console.log('⚠️ Using HeyGen URL directly');
+    // Attempt upload with retry logic
+    let uploadAttempt = 0;
+    let uploadSuccess = false;
+    let uploadData2;
+    let uploadError;
+
+    while (uploadAttempt < 3 && !uploadSuccess) {
+      uploadAttempt++;
+      console.log(`  Upload attempt ${uploadAttempt}/3...`);
+      
+      const result = await supabase.storage
+        .from('virtura-media')
+        .upload(storagePath, videoBuffer, {
+          contentType: 'video/mp4',
+          cacheControl: '3600',
+          upsert: false
+        });
+      
+      uploadData2 = result.data;
+      uploadError = result.error;
+      
+      if (!uploadError) {
+        uploadSuccess = true;
+        break;
+      }
+      
+      console.error(`  Attempt ${uploadAttempt} failed:`, uploadError);
+      
+      if (uploadAttempt < 3) {
+        await delay(2000); // Wait 2s before retry
+      }
+    }
+
+    if (uploadError || !uploadSuccess) {
+      console.error('❌ Storage upload failed after 3 attempts:', uploadError);
+      console.log('⚠️ Falling back to HeyGen URL directly');
       return {
         videoUrl: videoUrl,
         video_id: videoId,
         duration: settings.duration || 30,
         quality: settings.quality || '4K',
-        provider: 'heygen',
+        provider: 'heygen-direct',
         metadata: {
           engine: 'heygen',
           avatarIntegrated: true,
           audioIntegrated: true,
           resolution: settings.quality || '4K',
-          ratio: settings.ratio || '16:9'
+          ratio: settings.ratio || '16:9',
+          storageError: uploadError?.message || 'Upload failed',
+          videoSize: Math.round(videoSize / 1024 / 1024) + ' MB',
+          fallbackUrl: videoUrl
         }
       };
     }
@@ -261,20 +316,27 @@ async function generateRealVideo(avatarImageUrl: string, audioUrl: string, promp
       .getPublicUrl(storagePath);
 
     console.log('✅ Video stored successfully:', publicUrl);
+    console.log('📊 Final video metadata:');
+    console.log('  - Public URL:', publicUrl);
+    console.log('  - Storage Path:', storagePath);
+    console.log('  - Size:', Math.round(videoSize / 1024 / 1024), 'MB');
 
     return {
       videoUrl: publicUrl,
       video_id: videoId,
       duration: settings.duration || 30,
       quality: settings.quality || '4K',
-      provider: 'heygen',
+      provider: 'virtura-supabase',
       metadata: {
         engine: 'heygen',
         avatarIntegrated: true,
         audioIntegrated: true,
         resolution: settings.quality || '4K',
         ratio: settings.ratio || '16:9',
-        storagePath: storagePath
+        storagePath: storagePath,
+        videoSize: Math.round(videoSize / 1024 / 1024) + ' MB',
+        contentType: contentType,
+        heygenUrl: videoUrl
       }
     };
     

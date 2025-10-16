@@ -89,6 +89,12 @@ export interface StudioProject {
       frames?: number;
       bitrate?: string;
       codec?: string;
+      heygenUrl?: string;
+      fallbackUrl?: string;
+      videoSize?: string;
+      contentType?: string;
+      storageError?: string;
+      storagePath?: string;
     };
   } | null;
   

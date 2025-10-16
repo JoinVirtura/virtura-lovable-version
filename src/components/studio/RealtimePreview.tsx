@@ -40,6 +40,9 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
   const [previewMode, setPreviewMode] = useState('desktop');
   const [isPlaying, setIsPlaying] = useState(false);
   const [savedAvatars, setSavedAvatars] = useState<Set<string>>(new Set());
+  const [videoError, setVideoError] = useState<string | null>(null);
+  const [videoLoading, setVideoLoading] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
 
   const getPreviewDimensions = () => {
     switch (previewMode) {
@@ -165,21 +168,119 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
           {(() => {
             // Priority: Video > Style Transfer > Original Avatar
             if (project.video?.videoUrl) {
+              const fallbackUrl = project.video?.metadata?.heygenUrl || project.video?.metadata?.fallbackUrl;
+              
               return (
-                <video
-                  src={project.video.videoUrl}
-                  controls
-                  className="w-full h-full object-cover"
-                  poster={project.avatar?.processedUrl || project.avatar?.originalUrl}
-                  preload="metadata"
-                  onError={(e) => {
-                    console.error('Video playback error:', e);
-                    toast.error('Video playback error. Please try regenerating.');
-                  }}
-                >
-                  <source src={project.video.videoUrl} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
+                <div className="relative w-full h-full">
+                  {videoError && (
+                    <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-10 p-4">
+                      <div className="text-center text-white max-w-md">
+                        <AlertCircle className="h-8 w-8 mx-auto mb-3 text-red-400" />
+                        <p className="text-sm mb-3">{videoError}</p>
+                        <div className="flex flex-col gap-2">
+                          {retryCount < 2 && (
+                            <Button
+                              size="sm"
+                              onClick={() => {
+                                setVideoError(null);
+                                setRetryCount(prev => prev + 1);
+                                const video = document.querySelector('video');
+                                if (video) video.load();
+                              }}
+                            >
+                              Retry ({2 - retryCount} attempts left)
+                            </Button>
+                          )}
+                          {fallbackUrl && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                setVideoError(null);
+                                window.open(fallbackUrl, '_blank');
+                              }}
+                            >
+                              Open Original Video
+                            </Button>
+                          )}
+                          <p className="text-xs text-gray-400 mt-2">
+                            Video URL: {project.video.videoUrl}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {videoLoading && !videoError && (
+                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-10">
+                      <div className="text-center text-white">
+                        <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2" />
+                        <p className="text-sm">Loading video...</p>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <video
+                    key={`${project.video.videoUrl}-${retryCount}`}
+                    src={project.video.videoUrl}
+                    controls
+                    className="w-full h-full object-cover"
+                    poster={project.avatar?.processedUrl || project.avatar?.originalUrl}
+                    preload="metadata"
+                    onLoadStart={() => {
+                      console.log('🎬 Video loading started:', project.video.videoUrl);
+                      setVideoLoading(true);
+                      setVideoError(null);
+                    }}
+                    onCanPlay={() => {
+                      console.log('✅ Video can play');
+                      setVideoLoading(false);
+                    }}
+                    onLoadedMetadata={(e) => {
+                      const video = e.currentTarget;
+                      console.log('📊 Video metadata loaded:', {
+                        duration: video.duration,
+                        videoWidth: video.videoWidth,
+                        videoHeight: video.videoHeight
+                      });
+                    }}
+                    onError={(e) => {
+                      const video = e.currentTarget;
+                      const error = video.error;
+                      console.error('❌ Video playback error:', {
+                        code: error?.code,
+                        message: error?.message,
+                        url: project.video.videoUrl
+                      });
+                      
+                      setVideoLoading(false);
+                      
+                      let errorMessage = 'Video playback failed. ';
+                      switch (error?.code) {
+                        case 1: // MEDIA_ERR_ABORTED
+                          errorMessage += 'Playback was aborted.';
+                          break;
+                        case 2: // MEDIA_ERR_NETWORK
+                          errorMessage += 'Network error occurred.';
+                          break;
+                        case 3: // MEDIA_ERR_DECODE
+                          errorMessage += 'Video file is corrupted or in wrong format.';
+                          break;
+                        case 4: // MEDIA_ERR_SRC_NOT_SUPPORTED
+                          errorMessage += 'Video format not supported by browser.';
+                          break;
+                        default:
+                          errorMessage += 'Unknown error occurred.';
+                      }
+                      
+                      setVideoError(errorMessage);
+                      toast.error(errorMessage);
+                    }}
+                  >
+                    <source src={project.video.videoUrl} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
               );
             }
             
