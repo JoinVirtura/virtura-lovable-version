@@ -361,8 +361,9 @@ export const useStudioProject = () => {
 
   const generateVideo = useCallback(async (config: any) => {
     try {
-      // VALIDATION: Check prerequisites
-      if (!project.avatar?.processedUrl) {
+      // VALIDATION: Check prerequisites (check EITHER processedUrl OR originalUrl)
+      const avatarUrl = project.avatar?.processedUrl || project.avatar?.originalUrl;
+      if (!avatarUrl) {
         toast({
           title: "Avatar Required",
           description: "Please select or generate an avatar before creating video",

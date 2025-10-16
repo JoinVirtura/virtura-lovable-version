@@ -111,6 +111,7 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
   });
 
   const handleSelectAvatar = (avatar: AvatarLibraryItem) => {
+    // CRITICAL FIX: Set both originalUrl AND processedUrl to ensure validation passes
     onSelectAvatar(avatar.image_url, {
       title: avatar.title || 'Generated Avatar',
       prompt: avatar.prompt,
@@ -119,7 +120,10 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
       faceAlignment: 96,
       consistency: 94,
       type: 'Library',
-      created: avatar.created_at
+      created: avatar.created_at,
+      // Set both URLs so avatar validation works immediately
+      originalUrl: avatar.image_url,
+      processedUrl: avatar.image_url
     });
     
     toast.success('Avatar selected from library');

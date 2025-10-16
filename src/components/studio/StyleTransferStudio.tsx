@@ -81,6 +81,9 @@ interface StyleTransferStudioProps {
 }
 
 const STYLE_PRESETS = [
+  // No Style - Use Original Avatar
+  { id: 'none', name: 'No Style (Original)', description: 'Use your avatar as-is without any style modifications', image: null, type: 'Free', strength: 0, category: 'original', badge: 'Default' },
+  
   // Artistic Styles
   { id: 'oil-painting', name: 'Oil Painting', description: 'Classical oil painting style', image: styleOilPainting, type: 'Premium', strength: 85, category: 'artistic' },
   { id: 'oil-painting-new', name: 'Modern Oil', description: 'Contemporary oil painting', image: styleOilPaintingNew, type: 'Premium', strength: 82, category: 'artistic' },
@@ -152,6 +155,7 @@ const STYLE_PRESETS = [
 
 const STYLE_CATEGORIES = [
   { id: 'all', name: 'All Styles', icon: Palette },
+  { id: 'original', name: 'Original', icon: CheckCircle },
   { id: 'artistic', name: 'Artistic', icon: Brush },
   { id: 'futuristic', name: 'Futuristic', icon: Sparkles },
   { id: 'animation', name: 'Animation', icon: Star },
@@ -180,10 +184,42 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
   );
 
   const handleApplyStyle = async () => {
-    if (!selectedStyle || !project.avatar?.processedUrl) return;
+    const avatarUrl = project.avatar?.processedUrl || project.avatar?.originalUrl;
+    if (!selectedStyle || !avatarUrl) return;
 
     const stylePreset = STYLE_PRESETS.find(s => s.id === selectedStyle);
     if (!stylePreset) return;
+
+    // SPECIAL HANDLING: "No Style" option - skip API call and use original avatar
+    if (selectedStyle === 'none') {
+      onUpdate({
+        style: {
+          preset: 'none',
+          strength: 0,
+          preserveOriginal: 100,
+          enhanceDetails: 0,
+          resultUrl: avatarUrl,
+          lookMode: 'realistic',
+          background: 'studio',
+          lighting: { key: 80, fill: 60, rim: 40, ambient: 20 },
+          camera: { angle: 0, distance: 100, focus: 50 },
+          effects: {},
+          status: 'completed',
+          metadata: {
+            styleName: 'No Style (Original)',
+            styleType: 'Free',
+            category: 'original',
+            processingTime: 'Instant'
+          }
+        }
+      });
+
+      toast({
+        title: "Original Avatar Selected",
+        description: "Using your avatar without any style modifications",
+      });
+      return;
+    }
 
     setIsApplying(true);
 
@@ -212,7 +248,7 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
     try {
       // Apply real style transfer
       const result = await applyStyleTransfer({
-        imageUrl: project.avatar.processedUrl,
+        imageUrl: avatarUrl,
         stylePreset: selectedStyle,
         strength: styleStrength,
         preserveOriginal,
@@ -368,11 +404,26 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
                     }`}
                     onClick={() => setSelectedStyle(style.id)}
                   >
-                    <img
-                      src={style.image}
-                      alt={style.name}
-                      className="w-full aspect-square object-cover"
-                    />
+                    {style.image ? (
+                      <img
+                        src={style.image}
+                        alt={style.name}
+                        className="w-full aspect-square object-cover"
+                      />
+                    ) : (
+                      // Show avatar preview for "No Style" option
+                      <div className="w-full aspect-square bg-muted flex items-center justify-center">
+                        {project.avatar?.processedUrl || project.avatar?.originalUrl ? (
+                          <img
+                            src={project.avatar.processedUrl || project.avatar.originalUrl}
+                            alt="Your Avatar"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <CheckCircle className="h-12 w-12 text-primary" />
+                        )}
+                      </div>
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                     <div className="absolute bottom-2 left-2 right-2">
                       <div className="text-white text-xs font-medium">{style.name}</div>
@@ -383,6 +434,12 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
                         <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-xs">
                           <Crown className="h-3 w-3 mr-1" />
                           Premium
+                        </Badge>
+                      )}
+                      {style.type === 'Free' && (
+                        <Badge className="bg-green-500 text-white text-xs">
+                          <CheckCircle className="h-3 w-3 mr-1" />
+                          Free
                         </Badge>
                       )}
                     </div>

@@ -204,6 +204,7 @@ export const AvatarLibrary: React.FC<AvatarLibraryProps> = ({ onSelectAvatar, is
   });
 
   const handleSelectAvatar = (avatar: any) => {
+    // CRITICAL FIX: Set both originalUrl AND processedUrl to ensure validation passes
     onSelectAvatar(avatar.image, {
       name: avatar.name,
       type: avatar.type,
@@ -212,7 +213,10 @@ export const AvatarLibrary: React.FC<AvatarLibraryProps> = ({ onSelectAvatar, is
       tags: avatar.tags,
       resolution: '4K Ultra HD',
       faceAlignment: 98,
-      consistency: 92
+      consistency: 92,
+      // Set both URLs so avatar validation works immediately
+      originalUrl: avatar.image,
+      processedUrl: avatar.image
     });
   };
 
