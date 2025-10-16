@@ -171,7 +171,13 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                   controls
                   className="w-full h-full object-cover"
                   poster={project.avatar?.processedUrl || project.avatar?.originalUrl}
+                  preload="metadata"
+                  onError={(e) => {
+                    console.error('Video playback error:', e);
+                    toast.error('Video playback error. Please try regenerating.');
+                  }}
                 >
+                  <source src={project.video.videoUrl} type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
               );

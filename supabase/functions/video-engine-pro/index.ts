@@ -71,224 +71,219 @@ serve(async (req) => {
   }
 });
 
-// REAL video generation function - NO MORE MOCK OUTPUTS
+// Import Supabase for video storage
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+
+// REAL video generation function with HeyGen integration
 async function generateRealVideo(avatarImageUrl: string, audioUrl: string, prompt: string, settings: any) {
-  console.log('🚀 Starting REAL Video Generation...');
+  console.log('🚀 Starting REAL Video Generation with HeyGen...');
   console.log('Avatar Image URL:', avatarImageUrl);
   console.log('Audio URL:', audioUrl);
   
+  const supabase = createClient(
+    Deno.env.get('SUPABASE_URL') ?? '',
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+  );
+  
   try {
-    // Check if we have actual avatar and voice data
     if (!avatarImageUrl || !audioUrl) {
-      console.log('⚠️ Missing avatar or audio - cannot generate real video');
-      throw new Error('Avatar image and audio URL are required for real video generation');
+      throw new Error('Avatar image and audio URL are required for video generation');
     }
     
-    // Phase 1: Process Avatar
-    console.log('🎭 Phase 1: Processing avatar for video synthesis...');
-    await delay(1000);
+    const heyGenApiKey = Deno.env.get('HEYGEN_API_KEY');
+    if (!heyGenApiKey) {
+      throw new Error('HEYGEN_API_KEY is not configured. Please add it in Supabase secrets.');
+    }
+
+    console.log('📤 Step 1: Uploading avatar to HeyGen...');
     
-    // Phase 2: Sync Audio  
-    console.log('🎵 Phase 2: Analyzing audio for lip synchronization...');
-    await delay(1500);
+    // Step 1: Upload avatar image to HeyGen
+    const imageResponse = await fetch(avatarImageUrl);
+    const imageBlob = await imageResponse.blob();
     
-    // Phase 3: Generate Video with REAL APIs
-    console.log('🎬 Phase 3: Generating REAL talking avatar video...');
+    const uploadFormData = new FormData();
+    uploadFormData.append('file', imageBlob, 'avatar.jpg');
     
-    // Try LivePortrait first - REAL VIDEO GENERATION
-    try {
-      console.log('🎯 Attempting REAL LivePortrait generation...');
-      const livePortraitResponse = await fetch('https://api.liveportrait.com/v1/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${Deno.env.get('LIVEPORTRAIT_API_KEY') || 'demo-key'}`
+    const uploadResponse = await fetch('https://api.heygen.com/v2/avatars/talking_photo', {
+      method: 'POST',
+      headers: {
+        'X-API-Key': heyGenApiKey
+      },
+      body: uploadFormData
+    });
+    
+    if (!uploadResponse.ok) {
+      const errorText = await uploadResponse.text();
+      console.error('HeyGen upload failed:', errorText);
+      throw new Error(`HeyGen avatar upload failed: ${uploadResponse.status} ${errorText}`);
+    }
+    
+    const uploadData = await uploadResponse.json();
+    const avatarId = uploadData.data?.avatar_id;
+    
+    if (!avatarId) {
+      throw new Error('No avatar ID received from HeyGen');
+    }
+    
+    console.log('✅ Avatar uploaded to HeyGen:', avatarId);
+    console.log('🎬 Step 2: Creating talking photo video...');
+
+    // Step 2: Create video with talking photo
+    const videoPayload = {
+      video_inputs: [{
+        character: {
+          type: 'talking_photo',
+          talking_photo_id: avatarId,
+          talking_style: settings.talkingStyle || 'stable'
         },
-        body: JSON.stringify({
-          source_image: avatarImageUrl,
-          driving_audio: audioUrl,
-          quality: settings.quality || '4K',
-          fps: settings.fps || 30
-        })
-      });
-      
-      if (livePortraitResponse.ok) {
-        const livePortraitData = await livePortraitResponse.json();
-        console.log('✅ REAL LivePortrait generation successful!');
-        return {
-          videoUrl: livePortraitData.output_video || livePortraitData.videoUrl,
-          video_id: `liveportrait_${Date.now()}`,
-          duration: settings.duration || 30,
-          quality: settings.quality || '4K',
-          provider: 'liveportrait',
-          metadata: {
-            engine: 'liveportrait',
-            processingTime: '45s',
-            frames: (settings.duration || 30) * (settings.fps || 30),
-            resolution: settings.quality || '4K',
-            realOutput: true,
-            avatarIntegrated: true,
-            audioIntegrated: true
-          }
-        };
-      }
-    } catch (livePortraitError) {
-      console.log('⚠️ LivePortrait failed, trying SadTalker...');
-    }
-    
-    // Try SadTalker as fallback - REAL VIDEO GENERATION
-    try {
-      console.log('🎯 Attempting REAL SadTalker generation...');
-      const sadTalkerResponse = await fetch('https://api.sadtalker.com/v1/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${Deno.env.get('SADTALKER_API_KEY') || 'demo-key'}`
+        voice: {
+          type: 'audio',
+          audio_url: audioUrl
         },
-        body: JSON.stringify({
-          source_img: avatarImageUrl,
-          driven_audio: audioUrl,
-          enhancer: 'gfpgan',
-          still: false,
-          preprocess: 'crop'
-        })
-      });
-      
-      if (sadTalkerResponse.ok) {
-        const sadTalkerData = await sadTalkerResponse.json();
-        console.log('✅ REAL SadTalker generation successful!');
-        return {
-          videoUrl: sadTalkerData.output_video || sadTalkerData.videoUrl,
-          video_id: `sadtalker_${Date.now()}`,
-          duration: settings.duration || 30,
-          quality: settings.quality || '4K',
-          provider: 'sadtalker',
-          metadata: {
-            engine: 'sadtalker',
-            processingTime: '35s',
-            frames: (settings.duration || 30) * (settings.fps || 30),
-            resolution: settings.quality || '4K',
-            realOutput: true,
-            avatarIntegrated: true,
-            audioIntegrated: true
-          }
-        };
-      }
-    } catch (sadTalkerError) {
-      console.log('⚠️ SadTalker failed, trying HeyGen...');
-    }
-    
-    // Try HeyGen as third option - REAL VIDEO GENERATION
-    try {
-      console.log('🎯 Attempting REAL HeyGen generation...');
-      const heyGenApiKey = Deno.env.get('HEYGEN_API_KEY');
-      if (heyGenApiKey) {
-        const heyGenResponse = await fetch('https://api.heygen.com/v2/video/generate', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-API-Key': heyGenApiKey
-          },
-          body: JSON.stringify({
-            background: {
-              type: 'color',
-              value: '#000000'
-            },
-            clips: [
-              {
-                avatar_id: 'custom',
-                avatar_image: avatarImageUrl,
-                input_audio: audioUrl,
-                voice_settings: {
-                  speed: 1.0,
-                  emotion: 'friendly'
-                }
-              }
-            ],
-            aspect_ratio: settings.ratio || '16:9',
-            quality: settings.quality || '4K'
-          })
-        });
-        
-        if (heyGenResponse.ok) {
-          const heyGenData = await heyGenResponse.json();
-          console.log('✅ REAL HeyGen generation successful!');
-          return {
-            videoUrl: heyGenData.data?.video_url || heyGenData.videoUrl,
-            video_id: heyGenData.data?.video_id || `heygen_${Date.now()}`,
-            duration: settings.duration || 30,
-            quality: settings.quality || '4K',
-            provider: 'heygen',
-            metadata: {
-              engine: 'heygen',
-              processingTime: '60s',
-              frames: (settings.duration || 30) * (settings.fps || 30),
-              resolution: settings.quality || '4K',
-              realOutput: true,
-              avatarIntegrated: true,
-              audioIntegrated: true
-            }
-          };
+        background: {
+          type: settings.background === 'transparent' ? 'transparent' : 'color',
+          value: settings.backgroundValue || '#000000'
         }
-      }
-    } catch (heyGenError) {
-      console.log('⚠️ HeyGen failed, using enhanced processing...');
+      }],
+      dimension: {
+        width: settings.ratio === '9:16' ? 1080 : settings.ratio === '1:1' ? 1080 : 1920,
+        height: settings.ratio === '9:16' ? 1920 : settings.ratio === '1:1' ? 1080 : 1080
+      },
+      aspect_ratio: settings.ratio || '16:9',
+      test: false
+    };
+
+    const videoResponse = await fetch('https://api.heygen.com/v2/video/generate', {
+      method: 'POST',
+      headers: {
+        'X-API-Key': heyGenApiKey,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(videoPayload)
+    });
+
+    if (!videoResponse.ok) {
+      const errorText = await videoResponse.text();
+      console.error('HeyGen video generation failed:', errorText);
+      throw new Error(`HeyGen video generation failed: ${videoResponse.status} ${errorText}`);
     }
+
+    const videoData = await videoResponse.json();
+    const videoId = videoData.data?.video_id;
     
-    // Enhanced processing with real asset integration - NO MORE MOCK VIDEOS
-    console.log('📹 Generating enhanced video with real avatar + audio integration...');
-    return await generateEnhancedVideo(avatarImageUrl, audioUrl, settings);
+    if (!videoId) {
+      throw new Error('No video ID received from HeyGen');
+    }
+
+    console.log('🎥 Video generation started:', videoId);
+    console.log('⏳ Step 3: Polling for video completion...');
+
+    // Step 3: Poll for video completion
+    let attempts = 0;
+    const maxAttempts = 60; // 5 minutes max
+    let videoUrl = null;
+
+    while (attempts < maxAttempts) {
+      await delay(5000); // Wait 5 seconds between polls
+      
+      const statusResponse = await fetch(`https://api.heygen.com/v1/video_status.get?video_id=${videoId}`, {
+        headers: {
+          'X-API-Key': heyGenApiKey
+        }
+      });
+
+      if (!statusResponse.ok) {
+        console.error('Status check failed:', await statusResponse.text());
+        attempts++;
+        continue;
+      }
+
+      const statusData = await statusResponse.json();
+      const status = statusData.data?.status;
+      
+      console.log(`📊 Video status (attempt ${attempts + 1}/${maxAttempts}):`, status);
+
+      if (status === 'completed') {
+        videoUrl = statusData.data?.video_url;
+        console.log('✅ Video generation completed!');
+        break;
+      } else if (status === 'failed') {
+        throw new Error('HeyGen video generation failed');
+      }
+
+      attempts++;
+    }
+
+    if (!videoUrl) {
+      throw new Error('Video generation timed out after 5 minutes');
+    }
+
+    console.log('💾 Step 4: Downloading and storing video...');
+
+    // Step 4: Download video and upload to Supabase Storage
+    const videoDownloadResponse = await fetch(videoUrl);
+    const videoBlob = await videoDownloadResponse.blob();
+    const videoArrayBuffer = await videoBlob.arrayBuffer();
+    const videoBuffer = new Uint8Array(videoArrayBuffer);
+
+    const fileName = `${Date.now()}-${videoId}.mp4`;
+    const storagePath = `videos/${fileName}`;
+
+    const { data: uploadData2, error: uploadError } = await supabase.storage
+      .from('virtura-media')
+      .upload(storagePath, videoBuffer, {
+        contentType: 'video/mp4',
+        upsert: false
+      });
+
+    if (uploadError) {
+      console.error('Storage upload error:', uploadError);
+      // Fallback to HeyGen URL if upload fails
+      console.log('⚠️ Using HeyGen URL directly');
+      return {
+        videoUrl: videoUrl,
+        video_id: videoId,
+        duration: settings.duration || 30,
+        quality: settings.quality || '4K',
+        provider: 'heygen',
+        metadata: {
+          engine: 'heygen',
+          avatarIntegrated: true,
+          audioIntegrated: true,
+          resolution: settings.quality || '4K',
+          ratio: settings.ratio || '16:9'
+        }
+      };
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('virtura-media')
+      .getPublicUrl(storagePath);
+
+    console.log('✅ Video stored successfully:', publicUrl);
+
+    return {
+      videoUrl: publicUrl,
+      video_id: videoId,
+      duration: settings.duration || 30,
+      quality: settings.quality || '4K',
+      provider: 'heygen',
+      metadata: {
+        engine: 'heygen',
+        avatarIntegrated: true,
+        audioIntegrated: true,
+        resolution: settings.quality || '4K',
+        ratio: settings.ratio || '16:9',
+        storagePath: storagePath
+      }
+    };
     
   } catch (error: any) {
-    console.error('Video generation failed:', error);
-    throw new Error(`Real video generation failed: ${error.message}`);
+    console.error('❌ Video generation failed:', error.message);
+    throw new Error(`Video generation failed: ${error.message}`);
   }
 }
 
-// Enhanced video generation that creates actual content - NO MORE BIGBUCKBUNNY
-async function generateEnhancedVideo(avatarImageUrl: string, audioUrl: string, settings: any) {
-  console.log('🎬 Generating enhanced video with REAL assets integration...');
-  
-  // Simulate more sophisticated processing phases
-  console.log('Phase 1: Avatar analysis and preprocessing...');
-  await delay(2000);
-  
-  console.log('Phase 2: Audio synchronization and lip-sync mapping...');
-  await delay(2500);
-  
-  console.log('Phase 3: Motion synthesis and avatar animation...');
-  await delay(3000);
-  
-  console.log('Phase 4: Video composition and quality enhancement...');
-  await delay(2000);
-  
-  // In a real implementation, this would upload the actual generated video
-  // For now, we create a placeholder that indicates real processing occurred
-  const videoId = `virtura_${Date.now()}`;
-  
-  console.log('✅ Video synthesis completed with REAL asset integration!');
-  
-  // Return a video that at least acknowledges the real inputs
-  return {
-    videoUrl: `https://storage.googleapis.com/virtura-generated/${videoId}.mp4`, // This would be the real generated video
-    video_id: videoId,
-    duration: settings.duration || 30,
-    quality: settings.quality || '4K',
-    provider: 'virtura-pro',
-    metadata: {
-      engine: 'virtura-pro',
-      avatarIntegrated: true,
-      audioIntegrated: true,
-      processingTime: '90s',
-      frames: (settings.duration || 30) * (settings.fps || 30),
-      resolution: settings.quality || '4K',
-      avatarSource: avatarImageUrl,
-      audioSource: audioUrl,
-      realProcessing: true,
-      note: "Generated with real avatar and audio integration - production ready"
-    }
-  };
-}
 
 function delay(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));

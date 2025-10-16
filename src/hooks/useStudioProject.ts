@@ -353,15 +353,34 @@ export const useStudioProject = () => {
           audioUrl: project.voice?.audioUrl,
           prompt: config.prompt,
           settings: {
+            // Video engine settings
             engine: config.engine || 'virtura-pro',
             quality: config.quality || '4K',
             fps: config.fps || 30,
             ratio: config.ratio || '16:9',
             duration: config.duration || 30,
             motionSettings: config.motionSettings,
+            
+            // Style settings integration
+            background: project.style?.background || 'studio',
+            backgroundValue: project.style?.effects?.colorGrading,
+            lookMode: project.style?.lookMode,
+            lighting: project.style?.lighting,
+            camera: project.style?.camera,
+            effects: project.style?.effects,
+            talkingStyle: config.talkingStyle || 'stable',
+            
+            // Voice settings integration
+            voiceEmotions: project.voice?.emotions,
+            voiceLanguage: project.voice?.language,
+            voiceProvider: project.voice?.provider,
+            
+            // Quality enhancements
             ultraHD: project.qualitySettings.enableUltraHD,
             neuralEnhancement: project.qualitySettings.neuralEnhancement,
-            cinematicEffects: project.qualitySettings.cinematicEffects
+            cinematicEffects: project.qualitySettings.cinematicEffects,
+            realTimeSync: project.qualitySettings.realTimeSync,
+            gpuAcceleration: project.qualitySettings.gpuAcceleration
           }
         }
       });
@@ -380,16 +399,16 @@ export const useStudioProject = () => {
           videoUrl: data.videoUrl,
           status: 'completed',
           metadata: {
-            frames: data.frames,
-            bitrate: data.bitrate,
-            codec: data.codec
+            frames: data.metadata?.frames,
+            bitrate: data.metadata?.bitrate,
+            codec: data.metadata?.codec
           }
         }
       }));
 
       toast({
         title: "Video Generated",
-        description: `Ultra-HD video created with ${data.engine} engine`,
+        description: `High-quality talking avatar created with ${data.provider} engine`,
       });
 
     } catch (error: any) {
@@ -404,7 +423,7 @@ export const useStudioProject = () => {
         variant: "destructive"
       });
     }
-  }, [project.avatar, project.voice, project.qualitySettings, toast]);
+  }, [project.avatar, project.voice, project.style, project.qualitySettings, toast]);
 
   const exportProject = useCallback(async (config: any) => {
     try {
