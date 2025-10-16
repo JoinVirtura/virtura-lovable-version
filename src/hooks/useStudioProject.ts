@@ -85,20 +85,23 @@ export interface StudioProject {
     };
     videoUrl?: string;
     status: 'pending' | 'processing' | 'completed' | 'error';
-    metadata?: {
-      frames?: number;
-      bitrate?: string;
-      codec?: string;
-      heygenUrl?: string;
-      fallbackUrl?: string;
-      videoSize?: string;
-      contentType?: string;
-      storageError?: string;
-      storagePath?: string;
-      currentStage?: string;
-      progress?: number;
-      errorMessage?: string;
-    };
+  metadata?: {
+    frames?: number;
+    bitrate?: string;
+    codec?: string;
+    heygenUrl?: string;
+    fallbackUrl?: string;
+    videoSize?: string;
+    contentType?: string;
+    storageError?: string;
+    storagePath?: string;
+    currentStage?: string;
+    progress?: number;
+    errorMessage?: string;
+    model?: string;  // Replicate model name (sync-labs, sadtalker, wav2lip)
+    replicateUrl?: string;  // Original Replicate video URL
+    storageSuccess?: boolean;  // Whether Supabase storage upload succeeded
+  };
   } | null;
   
   export: {

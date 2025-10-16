@@ -39,33 +39,33 @@ interface RealVideoEngineProps {
 
 const VIDEO_ENGINES = [
   {
-    id: 'virtura-pro',
-    name: 'Virtura Pro Engine',
-    description: 'Our proprietary ultra-HD engine with real avatar synthesis',
+    id: 'sync-labs',
+    name: 'Sync Labs Lipsync 2 Pro',
+    description: 'Studio-grade lip synchronization with Replicate',
     badge: 'Premium',
     badgeColor: 'bg-gradient-to-r from-purple-500 to-pink-500',
     icon: Crown,
-    features: ['8K Support', 'Neural Enhancement', 'Real Avatar Sync', 'Cinematic Effects'],
-    realOutput: true
-  },
-  {
-    id: 'liveportrait',
-    name: 'LivePortrait Engine',
-    description: 'Advanced portrait animation with real facial movement',
-    badge: 'Pro',
-    badgeColor: 'bg-blue-500',
-    icon: Brain,
-    features: ['4K Support', 'Facial Reenactment', 'Natural Motion', 'Real-time Sync'],
+    features: ['Best Quality', 'Zero-Shot', 'No Limits', 'Realistic Sync'],
     realOutput: true
   },
   {
     id: 'sadtalker',
-    name: 'SadTalker Engine',
-    description: 'Academic-grade talking face generation',
-    badge: 'Standard',
+    name: 'SadTalker 3D Motion',
+    description: 'Realistic 3D motion coefficients via Replicate',
+    badge: 'Pro',
+    badgeColor: 'bg-blue-500',
+    icon: Brain,
+    features: ['4K Support', '3D Animation', 'Face Enhancement', 'Natural Motion'],
+    realOutput: true
+  },
+  {
+    id: 'wav2lip',
+    name: 'Wav2Lip Fast',
+    description: 'Fast and cost-effective lip-sync via Replicate',
+    badge: 'Budget',
     badgeColor: 'bg-green-500',
     icon: MonitorSpeaker,
-    features: ['HD Support', 'Academic Quality', 'Fast Processing', 'Reliable'],
+    features: ['HD Support', 'Fast Processing', 'Low Cost', 'Reliable'],
     realOutput: true
   },
   {
@@ -108,7 +108,7 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
   onGenerate,
   isProcessing
 }) => {
-  const [selectedEngine, setSelectedEngine] = useState('liveportrait');
+  const [selectedEngine, setSelectedEngine] = useState('sync-labs');
   const [videoPrompt, setVideoPrompt] = useState('Professional presentation with natural head movements, confident eye contact, and subtle facial expressions. Maintain professional posture with engaging body language.');
   const [quality, setQuality] = useState('4K');
   const [aspectRatio, setAspectRatio] = useState('16:9');
@@ -220,11 +220,11 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
               <Zap className="h-3 w-3 absolute -bottom-1 -left-1 text-purple-500" />
             </div>
             <span className="bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
-              Real Video Engine
+              Replicate Video Engine
             </span>
           </h2>
           <p className="text-muted-foreground text-lg">
-            Real avatar synthesis • Motion diffusion • Cinematic quality • No mock outputs
+            Powered by Replicate • No Avatar Limits • Multiple Quality Engines • Unlimited Generation
           </p>
         </div>
         
@@ -286,11 +286,11 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
               <div className="flex items-center gap-3">
                 <Loader2 className="h-5 w-5 text-blue-500 animate-spin flex-shrink-0" />
                 <div className="flex-1">
-                  <p className="font-medium text-blue-800 dark:text-blue-200">
-                    {project.video.metadata?.currentStage || 'Processing video...'}
+                   <p className="font-medium text-blue-800 dark:text-blue-200">
+                    {project.video.metadata?.currentStage || 'Generating video with Replicate...'}
                   </p>
                   <p className="text-sm text-blue-600 dark:text-blue-300">
-                    This may take 2-5 minutes depending on video length
+                    Using {project.video.metadata?.model || 'Sync Labs'} - This may take 2-5 minutes
                   </p>
                 </div>
               </div>
@@ -311,10 +311,10 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <Brain className="h-5 w-5" />
-                Real AI Engine Selection
+                Replicate Engine Selection
               </CardTitle>
               <p className="text-sm text-muted-foreground">
-                Choose your video synthesis engine - all produce real output
+                Choose your Replicate model - all produce real output with no avatar limits
               </p>
             </CardHeader>
             <CardContent className="space-y-4">

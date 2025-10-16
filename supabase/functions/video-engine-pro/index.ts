@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+import Replicate from "https://esm.sh/replicate@0.25.2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -14,7 +15,7 @@ serve(async (req) => {
   try {
     const { avatarImageUrl, audioUrl, prompt, settings = {} } = await req.json();
     
-    console.log('🎬 Video Engine Pro: Starting REAL generation with SSE...');
+    console.log('🎬 Video Engine Pro: Starting Replicate generation with SSE...');
     console.log('Avatar URL:', avatarImageUrl);
     console.log('Audio URL:', audioUrl);
     console.log('Settings:', JSON.stringify(settings, null, 2));
@@ -32,7 +33,7 @@ serve(async (req) => {
 
     console.log('🎯 Processing with enhanced settings:', videoSettings);
 
-    // Priority 2: Return SSE stream for real-time progress
+    // Return SSE stream for real-time progress
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
       async start(controller) {
@@ -42,14 +43,14 @@ serve(async (req) => {
         };
 
         try {
-          send({ stage: 'initializing', progress: 5, message: 'Initializing video synthesis...' });
+          send({ stage: 'initializing', progress: 5, message: 'Initializing Replicate video synthesis...' });
 
           const videoResult = await generateRealVideo(
             avatarImageUrl, 
             audioUrl, 
             prompt, 
             videoSettings,
-            send  // Pass the send function for progress updates
+            send
           );
 
           send({ 
@@ -101,55 +102,63 @@ serve(async (req) => {
   }
 });
 
-// REAL video generation function with all priorities implemented
+// Main video generation function with Replicate cascade
 async function generateRealVideo(
-  avatarImageUrl: string, 
-  audioUrl: string, 
-  prompt: string, 
+  avatarImageUrl: string,
+  audioUrl: string,
+  prompt: string,
   settings: any,
-  sendProgress?: (data: any) => void
+  sendProgress: (data: any) => void
 ) {
-  console.log('🚀 Starting REAL Video Generation with Priority Implementation...');
+  console.log('🚀 Starting Replicate Video Generation with Cascade...');
   
-  const supabase = createClient(
-    Deno.env.get('SUPABASE_URL') ?? '',
-    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-  );
-  
-  // Priority 6: Try engines in order - HeyGen, LivePortrait, SadTalker
+  const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+  const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
+  // Priority cascade: Sync Labs (Best) -> SadTalker (Good) -> Wav2Lip (Fast)
   const engines = [
-    { name: 'HeyGen', apiKey: Deno.env.get('HEYGEN_API_KEY'), fn: generateWithHeyGen },
-    { name: 'LivePortrait', apiKey: Deno.env.get('LIVEPORTRAIT_API_KEY'), fn: generateWithLivePortrait },
-    { name: 'SadTalker', apiKey: Deno.env.get('SADTALKER_API_KEY'), fn: generateWithSadTalker }
+    { name: 'Sync Labs Lipsync 2 Pro', fn: generateWithSyncLabs, quality: '⭐⭐⭐⭐⭐ Premium' },
+    { name: 'SadTalker (3D Motion)', fn: generateWithSadTalker, quality: '⭐⭐⭐⭐ High Quality' },
+    { name: 'Wav2Lip (Fast)', fn: generateWithWav2Lip, quality: '⭐⭐⭐ Budget' }
   ];
+
+  const REPLICATE_API_KEY = Deno.env.get('REPLICATE_API_KEY');
+  if (!REPLICATE_API_KEY) {
+    throw new Error('REPLICATE_API_KEY not configured. Please add it in Supabase secrets.');
+  }
 
   let lastError: Error | null = null;
 
   for (const engine of engines) {
-    if (!engine.apiKey) {
-      console.log(`⚠️ ${engine.name} API key not configured, skipping...`);
-      continue;
-    }
-
     try {
-      console.log(`🎯 Attempting video generation with ${engine.name}...`);
-      sendProgress?.({ 
+      console.log(`🎯 Attempting video generation with ${engine.name} ${engine.quality}...`);
+      sendProgress({ 
         stage: 'engine_selection', 
         progress: 10, 
-        message: `Using ${engine.name} engine...` 
+        message: `Using ${engine.name} for video generation...` 
       });
 
-      const result = await engine.fn(avatarImageUrl, audioUrl, prompt, settings, supabase, sendProgress);
+      const result = await engine.fn(
+        avatarImageUrl, 
+        audioUrl, 
+        settings, 
+        sendProgress, 
+        supabase,
+        REPLICATE_API_KEY
+      );
+      
+      console.log(`✅ ${engine.name} succeeded!`);
       return result;
+      
     } catch (error: any) {
       console.error(`❌ ${engine.name} failed:`, error.message);
       lastError = error;
       
-      // Priority 5: Better error handling with specific messages
-      sendProgress?.({ 
+      sendProgress({ 
         stage: 'engine_fallback', 
-        progress: 15, 
-        message: `${engine.name} unavailable, trying next engine...` 
+        progress: 10, 
+        message: `${engine.name} failed, trying next engine...` 
       });
       
       continue;
@@ -157,302 +166,296 @@ async function generateRealVideo(
   }
 
   // All engines failed
-  throw new Error(
-    lastError 
-      ? `All video engines failed. Last error: ${lastError.message}` 
-      : 'No video engines are configured. Please add HEYGEN_API_KEY, LIVEPORTRAIT_API_KEY, or SADTALKER_API_KEY in Supabase secrets.'
-  );
+  throw new Error(`All Replicate engines failed. Last error: ${lastError?.message || 'Unknown error'}`);
 }
 
-// HeyGen Implementation with Priorities 3, 4, 5
-async function generateWithHeyGen(
+// Primary Engine: Sync Labs Lipsync 2 Pro
+async function generateWithSyncLabs(
   avatarImageUrl: string,
   audioUrl: string,
-  prompt: string,
   settings: any,
+  sendProgress: (data: any) => void,
   supabase: any,
-  sendProgress?: (data: any) => void
+  replicateApiKey: string
 ) {
-  const heyGenApiKey = Deno.env.get('HEYGEN_API_KEY');
-  if (!heyGenApiKey) throw new Error('HEYGEN_API_KEY not configured');
+  const replicate = new Replicate({ auth: replicateApiKey });
 
-  sendProgress?.({ stage: 'avatar_check', progress: 15, message: 'Checking avatar cache...' });
-
-  // Priority 4: Check for cached avatar
-  let avatarId: string | null = null;
-  const { data: cachedAvatar } = await supabase
-    .from('talking_avatars')
-    .select('heygen_avatar_id')
-    .eq('original_image_url', avatarImageUrl)
-    .single();
-
-  if (cachedAvatar?.heygen_avatar_id) {
-    console.log('✅ Using cached HeyGen avatar:', cachedAvatar.heygen_avatar_id);
-    avatarId = cachedAvatar.heygen_avatar_id;
-    sendProgress?.({ stage: 'avatar_cached', progress: 25, message: 'Using cached avatar...' });
-  } else {
-    sendProgress?.({ stage: 'avatar_upload', progress: 20, message: 'Uploading avatar to HeyGen...' });
-    
-    try {
-      const imageResponse = await fetch(avatarImageUrl);
-      if (!imageResponse.ok) {
-        throw new Error(`Failed to fetch avatar image: ${imageResponse.status}`);
-      }
-      
-      const imageBlob = await imageResponse.blob();
-      
-      const uploadFormData = new FormData();
-      uploadFormData.append('file', imageBlob, 'avatar.jpg');
-      
-      const uploadResponse = await fetch('https://api.heygen.com/v2/avatars/talking_photo', {
-        method: 'POST',
-        headers: {
-          'X-API-Key': heyGenApiKey
-        },
-        body: uploadFormData
-      });
-      
-      if (!uploadResponse.ok) {
-        const errorText = await uploadResponse.text();
-        throw new Error(`Avatar upload failed: ${uploadResponse.status} ${errorText}`);
-      }
-      
-      const uploadData = await uploadResponse.json();
-      avatarId = uploadData.data?.avatar_id;
-      
-      if (!avatarId) throw new Error('No avatar ID received from HeyGen');
-      
-      // Cache the avatar ID
-      await supabase.from('talking_avatars').upsert({
-        original_image_url: avatarImageUrl,
-        heygen_avatar_id: avatarId,
-        status: 'completed'
-      }, { onConflict: 'original_image_url' });
-      
-      console.log('✅ Avatar uploaded and cached:', avatarId);
-      sendProgress?.({ stage: 'avatar_uploaded', progress: 30, message: 'Avatar uploaded successfully!' });
-    } catch (error: any) {
-      throw new Error(`Avatar upload failed: ${error.message}. Please check image format and size.`);
-    }
-  }
-
-  sendProgress?.({ stage: 'video_creation', progress: 35, message: 'Creating talking photo video...' });
-
-  // Priority 3: Apply style settings to HeyGen
-  const videoPayload: any = {
-    video_inputs: [{
-      character: {
-        type: 'talking_photo',
-        talking_photo_id: avatarId,
-        talking_style: settings.lookMode === 'realistic' ? 'stable' : 
-                      settings.lookMode === 'cinematic' ? 'expressive' : 'stable'
-      },
-      voice: {
-        type: 'audio',
-        audio_url: audioUrl,
-        ...(settings.voiceEmotions && {
-          speed: settings.voiceEmotions.speed || 1.0
-        })
-      },
-      background: {
-        type: settings.background === 'transparent' ? 'transparent' : 'color',
-        value: settings.backgroundValue || 
-               (settings.background === 'studio' ? '#F5F5F5' : 
-                settings.background === 'office' ? '#E8E8E8' : '#000000')
-      }
-    }],
-    dimension: {
-      width: settings.ratio === '9:16' ? 1080 : settings.ratio === '1:1' ? 1080 : 1920,
-      height: settings.ratio === '9:16' ? 1920 : settings.ratio === '1:1' ? 1080 : 1080
-    },
-    aspect_ratio: settings.ratio || '16:9',
-    test: false
-  };
-
-  // Apply quality settings
-  if (settings.ultraHD) {
-    videoPayload.quality = 'high';
-  }
-
-  console.log('📤 Sending video generation request:', JSON.stringify(videoPayload, null, 2));
-
-  const videoResponse = await fetch('https://api.heygen.com/v2/video/generate', {
-    method: 'POST',
-    headers: {
-      'X-API-Key': heyGenApiKey,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(videoPayload)
+  sendProgress({ 
+    stage: 'preparing', 
+    progress: 15, 
+    message: '📤 Preparing avatar and audio for Sync Labs...' 
   });
 
-  if (!videoResponse.ok) {
-    const errorText = await videoResponse.text();
-    throw new Error(`Video generation failed: ${videoResponse.status} ${errorText}. Please verify your HeyGen API key and credits.`);
-  }
+  sendProgress({ 
+    stage: 'generating', 
+    progress: 30, 
+    message: '🎬 Generating premium quality talking avatar with Sync Labs Lipsync 2 Pro...' 
+  });
 
-  const videoData = await videoResponse.json();
-  const videoId = videoData.data?.video_id;
-  
-  if (!videoId) throw new Error('No video ID received from HeyGen');
+  console.log('🎯 Running Sync Labs model with inputs:', { 
+    video: avatarImageUrl, 
+    audio: audioUrl 
+  });
 
-  console.log('🎥 Video generation started:', videoId);
-  sendProgress?.({ stage: 'video_processing', progress: 50, message: 'Processing lip-sync and animations...' });
+  try {
+    const output: any = await replicate.run(
+      "sync/lipsync-2-pro",
+      {
+        input: {
+          video: avatarImageUrl,  // Can accept image or video
+          audio: audioUrl,
+        }
+      }
+    );
 
-  // Poll for completion with progress updates
-  let attempts = 0;
-  const maxAttempts = 60;
-  let videoUrl = null;
-
-  while (attempts < maxAttempts) {
-    await delay(5000);
-    
-    const statusResponse = await fetch(`https://api.heygen.com/v1/video_status.get?video_id=${videoId}`, {
-      headers: { 'X-API-Key': heyGenApiKey }
+    sendProgress({ 
+      stage: 'processing', 
+      progress: 60, 
+      message: '🎭 Processing lip-sync and facial animations...' 
     });
 
-    if (!statusResponse.ok) {
-      console.error('Status check failed:', await statusResponse.text());
-      attempts++;
-      continue;
-    }
+    const videoUrl = Array.isArray(output) ? output[0] : output;
+    console.log('✅ Sync Labs generated video:', videoUrl);
 
-    const statusData = await statusResponse.json();
-    const status = statusData.data?.status;
-    
-    // Update progress during polling
-    const pollProgress = 50 + Math.min((attempts / maxAttempts) * 30, 30);
-    sendProgress?.({ 
-      stage: 'video_processing', 
-      progress: pollProgress, 
-      message: `Generating video... (${attempts + 1}/${maxAttempts})` 
-    });
+    return await downloadAndUploadVideo(
+      videoUrl,
+      'sync-labs',
+      settings,
+      sendProgress,
+      supabase
+    );
 
-    console.log(`📊 Video status (attempt ${attempts + 1}/${maxAttempts}):`, status);
-
-    if (status === 'completed') {
-      videoUrl = statusData.data?.video_url;
-      console.log('✅ Video generation completed!');
-      sendProgress?.({ stage: 'video_completed', progress: 80, message: 'Video generated successfully!' });
-      break;
-    } else if (status === 'failed') {
-      throw new Error('HeyGen video generation failed. Please try again or contact support.');
-    }
-
-    attempts++;
+  } catch (error: any) {
+    console.error('Sync Labs generation error:', error);
+    throw new Error(`Sync Labs failed: ${error.message}`);
   }
-
-  if (!videoUrl) {
-    throw new Error('Video generation timed out after 5 minutes. Please try again with shorter audio.');
-  }
-
-  sendProgress?.({ stage: 'video_download', progress: 85, message: 'Downloading and storing video...' });
-
-  // Download and store video with validation
-  const videoDownloadResponse = await fetch(videoUrl);
-  
-  if (!videoDownloadResponse.ok) {
-    throw new Error(`Failed to download video: ${videoDownloadResponse.status}`);
-  }
-
-  const videoBlob = await videoDownloadResponse.blob();
-  const videoSize = videoBlob.size;
-  const contentType = videoDownloadResponse.headers.get('content-type') || 'video/mp4';
-  
-  console.log('📊 Video validation:');
-  console.log('  - Size:', Math.round(videoSize / 1024 / 1024), 'MB');
-  console.log('  - Content-Type:', contentType);
-  
-  if (videoSize === 0) throw new Error('Downloaded video is empty (0 bytes)');
-  if (videoSize < 1000) throw new Error('Downloaded video is too small (likely corrupt)');
-  
-  const videoArrayBuffer = await videoBlob.arrayBuffer();
-  const videoBuffer = new Uint8Array(videoArrayBuffer);
-
-  const fileName = `${Date.now()}-${videoId}.mp4`;
-  const storagePath = `videos/${fileName}`;
-
-  sendProgress?.({ stage: 'video_upload', progress: 90, message: 'Uploading to storage...' });
-
-  // Upload with retry logic
-  let uploadSuccess = false;
-  let uploadAttempt = 0;
-  let publicUrl = videoUrl;  // Fallback to HeyGen URL
-
-  while (uploadAttempt < 3 && !uploadSuccess) {
-    uploadAttempt++;
-    
-    const { error: uploadError } = await supabase.storage
-      .from('virtura-media')
-      .upload(storagePath, videoBuffer, {
-        contentType: 'video/mp4',
-        cacheControl: '3600',
-        upsert: false
-      });
-    
-    if (!uploadError) {
-      uploadSuccess = true;
-      const { data: { publicUrl: storageUrl } } = supabase.storage
-        .from('virtura-media')
-        .getPublicUrl(storagePath);
-      publicUrl = storageUrl;
-      console.log('✅ Video stored in Supabase:', publicUrl);
-      break;
-    }
-    
-    console.error(`Upload attempt ${uploadAttempt} failed:`, uploadError);
-    if (uploadAttempt < 3) await delay(2000);
-  }
-
-  sendProgress?.({ stage: 'finalizing', progress: 95, message: 'Finalizing video...' });
-
-  return {
-    videoUrl: publicUrl,
-    video_id: videoId,
-    duration: settings.duration || 30,
-    quality: settings.quality || '4K',
-    provider: uploadSuccess ? 'virtura-supabase' : 'heygen-direct',
-    metadata: {
-      engine: 'heygen',
-      avatarIntegrated: true,
-      audioIntegrated: true,
-      resolution: settings.quality || '4K',
-      ratio: settings.ratio || '16:9',
-      storagePath: uploadSuccess ? storagePath : undefined,
-      videoSize: Math.round(videoSize / 1024 / 1024) + ' MB',
-      contentType: contentType,
-      heygenUrl: videoUrl,
-      fallbackUrl: videoUrl,
-      styleApplied: true
-    }
-  };
 }
 
-// LivePortrait fallback implementation
-async function generateWithLivePortrait(
-  avatarImageUrl: string,
-  audioUrl: string,
-  prompt: string,
-  settings: any,
-  supabase: any,
-  sendProgress?: (data: any) => void
-) {
-  // Placeholder - would implement LivePortrait API integration
-  throw new Error('LivePortrait engine is not yet implemented');
-}
-
-// SadTalker fallback implementation
+// Fallback #1: SadTalker (3D Motion)
 async function generateWithSadTalker(
   avatarImageUrl: string,
   audioUrl: string,
-  prompt: string,
   settings: any,
+  sendProgress: (data: any) => void,
   supabase: any,
-  sendProgress?: (data: any) => void
+  replicateApiKey: string
 ) {
-  // Placeholder - would implement SadTalker API integration
-  throw new Error('SadTalker engine is not yet implemented');
+  const replicate = new Replicate({ auth: replicateApiKey });
+
+  sendProgress({ 
+    stage: 'generating', 
+    progress: 30, 
+    message: '🎬 Generating with SadTalker (3D Motion Coefficients)...' 
+  });
+
+  console.log('🎯 Running SadTalker model');
+
+  try {
+    const output: any = await replicate.run(
+      "cjwbw/sadtalker",
+      {
+        input: {
+          source_image: avatarImageUrl,
+          driven_audio: audioUrl,
+          preprocess: 'full',
+          still_mode: true,
+          use_enhancer: true,
+          batch_size: 2,
+          size: settings.quality === '4K' ? 512 : 256,
+          pose_style: 0,
+          expression_scale: 1.0
+        }
+      }
+    );
+
+    sendProgress({ 
+      stage: 'processing', 
+      progress: 65, 
+      message: '🎭 Applying 3D motion and enhancements...' 
+    });
+
+    const videoUrl = Array.isArray(output) ? output[0] : output;
+    console.log('✅ SadTalker generated video:', videoUrl);
+
+    return await downloadAndUploadVideo(
+      videoUrl,
+      'sadtalker',
+      settings,
+      sendProgress,
+      supabase
+    );
+
+  } catch (error: any) {
+    console.error('SadTalker generation error:', error);
+    throw new Error(`SadTalker failed: ${error.message}`);
+  }
 }
 
+// Fallback #2: Wav2Lip (Fast & Budget)
+async function generateWithWav2Lip(
+  avatarImageUrl: string,
+  audioUrl: string,
+  settings: any,
+  sendProgress: (data: any) => void,
+  supabase: any,
+  replicateApiKey: string
+) {
+  const replicate = new Replicate({ auth: replicateApiKey });
+
+  sendProgress({ 
+    stage: 'generating', 
+    progress: 35, 
+    message: '⚡ Fast generation with Wav2Lip...' 
+  });
+
+  console.log('🎯 Running Wav2Lip model');
+
+  try {
+    const output: any = await replicate.run(
+      "devxpy/cog-wav2lip",
+      {
+        input: {
+          face: avatarImageUrl,
+          audio: audioUrl,
+        }
+      }
+    );
+
+    sendProgress({ 
+      stage: 'processing', 
+      progress: 70, 
+      message: '🎭 Finalizing lip-sync...' 
+    });
+
+    const videoUrl = Array.isArray(output) ? output[0] : output;
+    console.log('✅ Wav2Lip generated video:', videoUrl);
+
+    return await downloadAndUploadVideo(
+      videoUrl,
+      'wav2lip',
+      settings,
+      sendProgress,
+      supabase
+    );
+
+  } catch (error: any) {
+    console.error('Wav2Lip generation error:', error);
+    throw new Error(`Wav2Lip failed: ${error.message}`);
+  }
+}
+
+// Helper function to download video from Replicate and upload to Supabase
+async function downloadAndUploadVideo(
+  replicateVideoUrl: string,
+  provider: string,
+  settings: any,
+  sendProgress: (data: any) => void,
+  supabase: any
+) {
+  sendProgress({ 
+    stage: 'downloading', 
+    progress: 75, 
+    message: '⬇️ Downloading generated video...' 
+  });
+
+  const videoResponse = await fetch(replicateVideoUrl);
+  if (!videoResponse.ok) {
+    throw new Error(`Failed to download video: ${videoResponse.status}`);
+  }
+
+  const videoBlob = await videoResponse.arrayBuffer();
+  const videoSize = videoBlob.byteLength;
+  const contentType = videoResponse.headers.get('content-type') || 'video/mp4';
+  
+  console.log(`📦 Video downloaded, size: ${videoSize} bytes, type: ${contentType}`);
+
+  // Validate video
+  if (videoSize === 0) {
+    throw new Error('Downloaded video is empty (0 bytes)');
+  }
+
+  if (videoSize < 1000) {
+    console.warn('⚠️ Video file is suspiciously small, but proceeding...');
+  }
+
+  sendProgress({ 
+    stage: 'uploading', 
+    progress: 85, 
+    message: '☁️ Uploading to secure storage...' 
+  });
+
+  // Upload to Supabase with retry logic
+  const fileName = `${provider}-${Date.now()}.mp4`;
+  const filePath = `videos/${fileName}`;
+
+  let uploadAttempt = 0;
+  let uploadSuccess = false;
+  let publicUrl = replicateVideoUrl; // Fallback to Replicate URL
+  let storageError = null;
+
+  while (uploadAttempt < 3 && !uploadSuccess) {
+    try {
+      uploadAttempt++;
+      console.log(`📤 Storage upload attempt ${uploadAttempt}/3...`);
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('virtura-media')
+        .upload(filePath, videoBlob, {
+          contentType: contentType,
+          upsert: true
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage
+        .from('virtura-media')
+        .getPublicUrl(filePath);
+
+      publicUrl = urlData.publicUrl;
+      uploadSuccess = true;
+      console.log('✅ Video uploaded to Supabase Storage:', publicUrl);
+      
+    } catch (error: any) {
+      console.warn(`⚠️ Upload attempt ${uploadAttempt} failed:`, error.message);
+      storageError = error.message;
+      
+      if (uploadAttempt < 3) {
+        await delay(1000); // Wait 1s before retry
+      } else {
+        console.error('❌ Storage upload failed after 3 attempts, using Replicate URL as fallback');
+      }
+    }
+  }
+
+  const videoResult = {
+    videoUrl: publicUrl,
+    provider: `replicate-${provider}`,
+    video_id: fileName,
+    duration: settings.duration || 0,
+    quality: settings.quality || '4K',
+    metadata: {
+      replicateUrl: replicateVideoUrl,
+      model: provider,
+      videoSize,
+      contentType,
+      storageSuccess: uploadSuccess,
+      storagePath: uploadSuccess ? filePath : null,
+      storageError: storageError,
+      fallbackUrl: !uploadSuccess ? replicateVideoUrl : null,
+      settings: {
+        ratio: settings.ratio,
+        fps: settings.fps,
+        style: settings.style,
+        background: settings.background,
+        quality: settings.quality
+      }
+    }
+  };
+
+  return videoResult;
+}
+
+// Utility function for delays
 function delay(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
