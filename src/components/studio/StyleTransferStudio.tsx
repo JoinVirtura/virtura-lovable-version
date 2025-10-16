@@ -553,16 +553,10 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
                   <p className="text-sm text-muted-foreground">
                     Processing Time: {project.style.metadata?.processingTime}
                   </p>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    ✨ Styled avatar visible in Live Preview (right panel)
+                  </p>
                 </div>
-                {project.style.resultUrl && (
-                  <div className="aspect-square rounded-lg overflow-hidden">
-                    <img
-                      src={project.style.resultUrl}
-                      alt="Styled avatar"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
               </CardContent>
             </Card>
           )}

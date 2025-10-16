@@ -381,29 +381,48 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
           )}
         </div>
 
-        {/* Audio Player */}
-        {project.voice?.audioUrl && (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Voice Preview</span>
-              <Button
-                size="sm"
-                onClick={handlePlayPreview}
-                className="h-8"
-              >
-                <Play className="h-3 w-3 mr-1" />
-                Play Preview
-              </Button>
-            </div>
-            
-            <PremiumAudioPlayer
-              audioUrl={project.voice.audioUrl}
-              isPlaying={isPlaying}
-              onPlayPause={handlePlayPreview}
-              waveformData={project.voice.metadata?.waveform}
-              className="border-0 bg-muted/50"
-            />
-          </div>
+        {/* Voice Preview Section - Full Audio Player */}
+        {project.voice?.status === 'completed' && project.voice?.audioUrl && (
+          <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
+            <CardHeader>
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Volume2 className="h-4 w-4 text-primary" />
+                Voice Preview
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs text-muted-foreground">Studio Voice Generated</span>
+                <Button
+                  size="sm"
+                  onClick={handlePlayPreview}
+                  className="h-7 px-2"
+                >
+                  <Play className="h-3 w-3 mr-1" />
+                  {isPlaying ? 'Pause' : 'Play'}
+                </Button>
+              </div>
+              
+              <PremiumAudioPlayer
+                audioUrl={project.voice.audioUrl}
+                isPlaying={isPlaying}
+                onPlayPause={handlePlayPreview}
+                waveformData={project.voice.metadata?.waveform}
+                className="border-0 bg-card/50"
+              />
+              
+              <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                <div>
+                  <span className="block font-medium">Duration</span>
+                  <span>{project.voice.metadata?.duration || 'Unknown'}s</span>
+                </div>
+                <div>
+                  <span className="block font-medium">Quality</span>
+                  <span>Ultra-HD</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         )}
 
         {/* Preview Controls */}

@@ -513,30 +513,10 @@ export const VoiceEngineStudio: React.FC<VoiceEngineStudioProps> = ({
               </div>
             </div>
             
-            {/* Enhanced Audio Player with Waveform */}
-            <div className="mt-4">
-              {project.voice.audioUrl ? (
-                <div>
-                  <Label className="text-sm font-medium mb-2 block">Generated Audio</Label>
-                  <div className="bg-card/50 rounded-lg p-4 border border-primary/20">
-                    <WaveformVisualizer
-                      audioData={project.voice.metadata?.waveform}
-                      isPlaying={isPlaying}
-                      width={400}
-                      height={80}
-                      color="#9333ea"
-                      className="rounded-lg mb-4"
-                    />
-                    <audio controls className="w-full" ref={audioRef}>
-                      <source src={project.voice.audioUrl} type="audio/mpeg" />
-                    </audio>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-4 text-muted-foreground">
-                  <p>Voice generated but audio URL not available</p>
-                </div>
-              )}
+            <div className="mt-2">
+              <p className="text-xs text-muted-foreground">
+                🎵 Full audio player with waveform available in Voice Preview (right panel)
+              </p>
             </div>
           </CardContent>
         </Card>

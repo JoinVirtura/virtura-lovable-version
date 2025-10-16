@@ -131,11 +131,11 @@ async function generateRealVideo(
   const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
   const supabase = createClient(supabaseUrl, supabaseKey);
 
-  // Priority cascade: Sync Labs (Best) -> SadTalker (Good) -> Wav2Lip (Fast)
+  // Priority cascade: LivePortrait (Best) -> Wav2Lip (Good) -> Video Retalking (Fast)
   const engines = [
-    { name: 'Sync Labs Lipsync 2 Pro', fn: generateWithSyncLabs, quality: '⭐⭐⭐⭐⭐ Premium' },
-    { name: 'SadTalker (3D Motion)', fn: generateWithSadTalker, quality: '⭐⭐⭐⭐ High Quality' },
-    { name: 'Wav2Lip (Fast)', fn: generateWithWav2Lip, quality: '⭐⭐⭐ Budget' }
+    { name: 'LivePortrait', fn: generateWithSyncLabs, quality: '⭐⭐⭐⭐⭐ Premium' },
+    { name: 'Wav2Lip (High Quality)', fn: generateWithSadTalker, quality: '⭐⭐⭐⭐ High Quality' },
+    { name: 'Video Retalking (Fast)', fn: generateWithWav2Lip, quality: '⭐⭐⭐ Budget' }
   ];
 
   const REPLICATE_API_KEY = Deno.env.get('REPLICATE_API_KEY');
@@ -198,28 +198,32 @@ async function generateWithSyncLabs(
   sendProgress({ 
     stage: 'preparing', 
     progress: 15, 
-    message: '📤 Preparing avatar and audio for Sync Labs...' 
+    message: '📤 Preparing avatar and audio for LivePortrait...' 
   });
 
   sendProgress({ 
     stage: 'generating', 
     progress: 30, 
-    message: '🎬 Generating premium quality talking avatar with Sync Labs Lipsync 2 Pro...' 
+    message: '🎬 Generating premium quality talking avatar with LivePortrait...' 
   });
 
-  console.log('🎯 Running Sync Labs model with inputs:', { 
+  console.log('🎯 Running LivePortrait model with inputs:', { 
     imageUrl: avatarImageUrl.substring(0, 60) + '...',
     audioUrl: audioUrl.substring(0, 60) + '...',
-    modelVersion: 'sync/lipsync-2-pro'
+    modelVersion: 'fofr/live-portrait'
   });
 
   try {
     const output: any = await replicate.run(
-      "sync/lipsync-2-pro",
+      "fofr/live-portrait",
       {
         input: {
-          image: avatarImageUrl,  // FIXED: Correct parameter name for Sync Labs
-          audio: audioUrl,
+          driving_audio: audioUrl,
+          source_image: avatarImageUrl,
+          flag_relative: true,
+          flag_pasteback: true,
+          flag_do_crop: false,
+          flag_stitching: true
         }
       }
     );
@@ -231,21 +235,21 @@ async function generateWithSyncLabs(
     });
 
     const videoUrl = Array.isArray(output) ? output[0] : output;
-    console.log('✅ Sync Labs success:', {
+    console.log('✅ LivePortrait success:', {
       videoUrl: videoUrl.substring(0, 60) + '...',
       status: 'completed'
     });
 
     return await downloadAndUploadVideo(
       videoUrl,
-      'sync-labs',
+      'live-portrait',
       settings,
       sendProgress,
       supabase
     );
 
   } catch (error: any) {
-    console.error('Sync Labs generation error:', error);
+    console.error('LivePortrait generation error:', error);
     
     // Enhanced error handling for Replicate errors
     let errorMessage = error.message;
@@ -255,7 +259,7 @@ async function generateWithSyncLabs(
       errorMessage = 'Replicate payment required. Please add a payment method at replicate.com/account/billing';
     }
     
-    throw new Error(`Sync Labs failed: ${errorMessage}`);
+    throw new Error(`LivePortrait failed: ${errorMessage}`);
   }
 }
 
@@ -273,25 +277,22 @@ async function generateWithSadTalker(
   sendProgress({ 
     stage: 'generating', 
     progress: 30, 
-    message: '🎬 Generating with SadTalker (3D Motion Coefficients)...' 
+    message: '🎬 Generating with Wav2Lip (High Quality)...' 
   });
 
-  console.log('🎯 Running SadTalker model');
+  console.log('🎯 Running Wav2Lip model (zsxkib/wav2lip)');
 
   try {
     const output: any = await replicate.run(
-      "cjwbw/sadtalker",
+      "zsxkib/wav2lip",
       {
         input: {
-          source_image: avatarImageUrl,
-          driven_audio: audioUrl,
-          preprocess: 'full',
-          still_mode: true,
-          use_enhancer: true,
-          batch_size: 2,
-          size: 512, // FIXED: Always use max resolution (512 is SadTalker's maximum)
-          pose_style: 0,
-          expression_scale: 1.0
+          face: avatarImageUrl,
+          audio: audioUrl,
+          pads: "0 10 0 0",
+          resize_factor: 1,
+          smooth: true,
+          nosmooth: false
         }
       }
     );
@@ -300,68 +301,6 @@ async function generateWithSadTalker(
       stage: 'processing', 
       progress: 65, 
       message: '🎭 Applying 3D motion and enhancements...' 
-    });
-
-    const videoUrl = Array.isArray(output) ? output[0] : output;
-    console.log('✅ SadTalker generated video:', videoUrl);
-
-    return await downloadAndUploadVideo(
-      videoUrl,
-      'sadtalker',
-      settings,
-      sendProgress,
-      supabase
-    );
-
-  } catch (error: any) {
-    console.error('SadTalker generation error:', error);
-    
-    // Enhanced error handling for Replicate errors
-    let errorMessage = error.message;
-    if (errorMessage.includes('429') || errorMessage.includes('rate limit')) {
-      errorMessage = 'Replicate rate limit reached. Please wait 60 seconds and try again.';
-    } else if (errorMessage.includes('402') || errorMessage.includes('payment')) {
-      errorMessage = 'Replicate payment required. Please add a payment method at replicate.com/account/billing';
-    }
-    
-    throw new Error(`SadTalker failed: ${errorMessage}`);
-  }
-}
-
-// Fallback #2: Wav2Lip (Fast & Budget)
-async function generateWithWav2Lip(
-  avatarImageUrl: string,
-  audioUrl: string,
-  settings: any,
-  sendProgress: (data: any) => void,
-  supabase: any,
-  replicateApiKey: string
-) {
-  const replicate = new Replicate({ auth: replicateApiKey });
-
-  sendProgress({ 
-    stage: 'generating', 
-    progress: 35, 
-    message: '⚡ Fast generation with Wav2Lip...' 
-  });
-
-  console.log('🎯 Running Wav2Lip model');
-
-  try {
-    const output: any = await replicate.run(
-      "devxpy/cog-wav2lip",
-      {
-        input: {
-          face: avatarImageUrl,
-          audio: audioUrl,
-        }
-      }
-    );
-
-    sendProgress({ 
-      stage: 'processing', 
-      progress: 70, 
-      message: '🎭 Finalizing lip-sync...' 
     });
 
     const videoUrl = Array.isArray(output) ? output[0] : output;
@@ -387,6 +326,68 @@ async function generateWithWav2Lip(
     }
     
     throw new Error(`Wav2Lip failed: ${errorMessage}`);
+  }
+}
+
+// Fallback #2: Wav2Lip (Fast & Budget)
+async function generateWithWav2Lip(
+  avatarImageUrl: string,
+  audioUrl: string,
+  settings: any,
+  sendProgress: (data: any) => void,
+  supabase: any,
+  replicateApiKey: string
+) {
+  const replicate = new Replicate({ auth: replicateApiKey });
+
+  sendProgress({ 
+    stage: 'generating', 
+    progress: 35, 
+    message: '⚡ Fast generation with Video Retalking...' 
+  });
+
+  console.log('🎯 Running Video Retalking model (camenduru/video-retalking)');
+
+  try {
+    const output: any = await replicate.run(
+      "camenduru/video-retalking",
+      {
+        input: {
+          face: avatarImageUrl,
+          audio: audioUrl
+        }
+      }
+    );
+
+    sendProgress({ 
+      stage: 'processing', 
+      progress: 70, 
+      message: '🎭 Finalizing lip-sync...' 
+    });
+
+    const videoUrl = Array.isArray(output) ? output[0] : output;
+    console.log('✅ Wav2Lip generated video:', videoUrl);
+
+    return await downloadAndUploadVideo(
+      videoUrl,
+      'wav2lip',
+      settings,
+      sendProgress,
+      supabase
+    );
+
+  } catch (error: any) {
+    console.error('Video Retalking generation error:', error);
+    
+    // Enhanced error handling for Replicate errors
+    let errorMessage = error.message;
+    if (errorMessage.includes('429') || errorMessage.includes('rate limit')) {
+      errorMessage = 'Replicate rate limit reached. Please wait 60 seconds and try again.';
+    } else if (errorMessage.includes('402') || errorMessage.includes('payment')) {
+      errorMessage = 'Replicate payment required. Please add a payment method at replicate.com/account/billing';
+    }
+    
+    throw new Error(`Video Retalking failed: ${errorMessage}`);
   }
 }
 
