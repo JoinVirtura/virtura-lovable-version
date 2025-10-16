@@ -319,31 +319,41 @@ export const useStudioProject = () => {
 
       if (error) throw error;
 
-      // Calculate actual audio duration
+      // Calculate actual audio duration - wait for metadata before updating state
       const audioUrl = data.audioUrl;
-      const audio = new Audio(audioUrl);
       
-      audio.addEventListener('loadedmetadata', () => {
-        const durationInSeconds = Math.round(audio.duration);
+      await new Promise<void>((resolve) => {
+        const audio = new Audio(audioUrl);
         
-        setProject(prev => ({
-          ...prev,
-          voice: {
-            type: 'tts',
-            script: config.script,
-            voiceId: config.voiceId,
-            audioUrl,
-            status: 'completed',
-            language: config.language,
-            metadata: {
-              duration: durationInSeconds,  // Store as number in seconds
-              waveform: data.waveform,
-              phonemes: data.phonemes,
-              provider: data.provider,
-              model: data.model
+        audio.addEventListener('loadedmetadata', () => {
+          const durationInSeconds = Math.round(audio.duration);
+          
+          setProject(prev => ({
+            ...prev,
+            voice: {
+              type: 'tts',
+              script: config.script,
+              voiceId: config.voiceId,
+              audioUrl,
+              status: 'completed',
+              language: config.language,
+              metadata: {
+                duration: durationInSeconds,
+                waveform: data.waveform,
+                phonemes: data.phonemes,
+                provider: data.provider,
+                model: data.model
+              }
             }
-          }
-        }));
+          }));
+          
+          resolve();
+        });
+        
+        audio.addEventListener('error', () => {
+          console.warn('Could not load audio metadata, using default duration');
+          resolve();
+        });
       });
 
       toast({
@@ -514,12 +524,12 @@ export const useStudioProject = () => {
       
       // Wrap video generation with retry logic
       const response = await retryWithBackoff(async () => {
-        // Add 60-second timeout to prevent infinite hang
+        // 10-minute timeout (Replicate models can take 2-5 minutes)
         const abortController = new AbortController();
         const timeoutId = setTimeout(() => {
           abortController.abort();
-          console.error('Video generation request timed out after 60 seconds');
-        }, 60000);
+          console.error('Video generation request timed out after 10 minutes');
+        }, 600000);
 
         console.log('🚀 Starting video generation request...');
         console.log('Avatar URL:', publicAvatarUrl);
@@ -532,7 +542,7 @@ export const useStudioProject = () => {
             'Authorization': `Bearer ${supabaseKey}`
           },
           body: JSON.stringify({
-            avatarImageUrl: publicAvatarUrl,  // Use public URL instead of blob
+            avatarImageUrl: publicAvatarUrl,
             audioUrl: project.voice?.audioUrl,
             prompt: config.prompt,
             settings: {
@@ -651,18 +661,39 @@ export const useStudioProject = () => {
                   status: 'completed',
                   metadata: {
                     ...data.metadata,
-                    currentStage: 'Completed',
-                    progress: 100
+                    currentStage: 'Video generation complete',
+                    progress: 100,
+                    provider: data.provider,
+                    model: data.model,
+                    processingTime: data.processingTime
                   }
                 }
               }));
 
               toast({
-                title: "Video Generated",
-                description: `High-quality talking avatar created with ${data.provider} engine`,
+                title: "Video Generated Successfully! 🎉",
+                description: `Created with ${data.provider} - ${data.model}`,
               });
+              
+              break; // Exit SSE loop on completion
             } else if (data.stage === 'error') {
-              throw new Error(data.error);
+              const errorMessage = data.error.includes('404') 
+                ? 'Model not available - trying alternative engine...'
+                : data.error.includes('422')
+                ? 'Invalid input format - adjusting parameters...'
+                : data.error.includes('429')
+                ? 'Rate limited - will retry automatically...'
+                : data.error.includes('payment') || data.error.includes('402')
+                ? 'Replicate payment required - please add billing at replicate.com/account/billing'
+                : data.error;
+                
+              toast({
+                title: "Video Generation Issue",
+                description: errorMessage,
+                variant: data.code === 'VIDEO_ENGINE_ERROR' ? 'destructive' : 'default'
+              });
+              
+              // Don't throw - let cascade try next model
             }
           } catch (parseError) {
             console.error('Failed to parse SSE data:', parseError);
@@ -692,7 +723,7 @@ export const useStudioProject = () => {
       // Timeout error
       if (error.name === 'AbortError') {
         errorTitle = "Request Timeout";
-        errorMessage = "Video generation request timed out after 60 seconds. This usually means the edge function is not responding. Please check: 1) Edge function is deployed 2) REPLICATE_API_KEY is set in Supabase secrets";
+        errorMessage = "Video generation request timed out after 10 minutes. The edge function may be experiencing issues. Please check: 1) Edge function is deployed 2) REPLICATE_API_KEY is set in Supabase secrets 3) Replicate account has available credits";
       }
       // Network errors
       else if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError')) {
