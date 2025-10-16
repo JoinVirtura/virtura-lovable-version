@@ -16,6 +16,7 @@ export default function AuthPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState({
     hasMinLength: false,
     hasNumber: false,
@@ -35,6 +36,12 @@ export default function AuthPage() {
   });
 
   const signUpRateLimit = useRateLimiting('signup', {
+    maxAttempts: 3,
+    windowMs: 60 * 60 * 1000, // 1 hour
+    blockDurationMs: 60 * 60 * 1000, // 1 hour block
+  });
+
+  const passwordResetRateLimit = useRateLimiting('password-reset', {
     maxAttempts: 3,
     windowMs: 60 * 60 * 1000, // 1 hour
     blockDurationMs: 60 * 60 * 1000, // 1 hour block
@@ -171,6 +178,42 @@ export default function AuthPage() {
     }
   };
 
+  const handlePasswordReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Check rate limiting
+    if (passwordResetRateLimit.isBlocked) {
+      const minutes = Math.ceil(passwordResetRateLimit.remainingTime / (60 * 1000));
+      toast.error(`Too many password reset attempts. Please try again in ${minutes} minutes.`);
+      return;
+    }
+    
+    setLoading(true);
+    passwordResetRateLimit.recordAttempt();
+
+    try {
+      const redirectUrl = `${window.location.origin}/auth`;
+      
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectUrl,
+      });
+
+      if (error) {
+        toast.error(error.message || "Failed to send reset email");
+        throw error;
+      }
+      
+      toast.success("Password reset email sent! Check your inbox.");
+      passwordResetRateLimit.reset();
+      setShowForgotPassword(false);
+      setEmail("");
+    } catch (error: any) {
+      // Error already handled above
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
       <Card className="w-full max-w-md">
@@ -193,50 +236,106 @@ export default function AuthPage() {
             </TabsList>
             
             <TabsContent value="signin">
-              <form onSubmit={handleSignIn} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email-signin">Email</Label>
-                  <Input
-                    id="email-signin"
-                    type="email"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password-signin">Password</Label>
-                  <div className="relative">
+              {!showForgotPassword ? (
+                <form onSubmit={handleSignIn} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email-signin">Email</Label>
                     <Input
-                      id="password-signin"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Enter your password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      id="email-signin"
+                      type="email"
+                      placeholder="Enter your email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       required
                     />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="password-signin">Password</Label>
+                      <Button
+                        type="button"
+                        variant="link"
+                        size="sm"
+                        className="px-0 text-xs h-auto"
+                        onClick={() => setShowForgotPassword(true)}
+                      >
+                        Forgot Password?
+                      </Button>
+                    </div>
+                    <div className="relative">
+                      <Input
+                        id="password-signin"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Enter your password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                  </div>
+                  <Button type="submit" className="w-full" disabled={loading || signInRateLimit.isBlocked}>
+                    {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Sign In
+                  </Button>
+                  {signInRateLimit.isBlocked && (
+                    <p className="text-sm text-destructive text-center mt-2">
+                      Too many attempts. Try again in {Math.ceil(signInRateLimit.remainingTime / (60 * 1000))} minutes.
+                    </p>
+                  )}
+                </form>
+              ) : (
+                <form onSubmit={handlePasswordReset} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email-reset">Email</Label>
+                    <Input
+                      id="email-reset"
+                      type="email"
+                      placeholder="Enter your email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    We'll send you a link to reset your password.
+                  </p>
+                  <div className="flex gap-2">
                     <Button
                       type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                      onClick={() => setShowPassword(!showPassword)}
+                      variant="outline"
+                      className="flex-1"
+                      onClick={() => {
+                        setShowForgotPassword(false);
+                        setEmail("");
+                      }}
                     >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      Back
+                    </Button>
+                    <Button 
+                      type="submit" 
+                      className="flex-1" 
+                      disabled={loading || passwordResetRateLimit.isBlocked}
+                    >
+                      {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      Send Reset Link
                     </Button>
                   </div>
-                </div>
-                <Button type="submit" className="w-full" disabled={loading || signInRateLimit.isBlocked}>
-                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Sign In
-                </Button>
-                {signInRateLimit.isBlocked && (
-                  <p className="text-sm text-destructive text-center mt-2">
-                    Too many attempts. Try again in {Math.ceil(signInRateLimit.remainingTime / (60 * 1000))} minutes.
-                  </p>
-                )}
-              </form>
+                  {passwordResetRateLimit.isBlocked && (
+                    <p className="text-sm text-destructive text-center mt-2">
+                      Too many attempts. Try again in {Math.ceil(passwordResetRateLimit.remainingTime / (60 * 1000))} minutes.
+                    </p>
+                  )}
+                </form>
+              )}
             </TabsContent>
             
             <TabsContent value="signup">
