@@ -359,6 +359,55 @@ export const useStudioProject = () => {
     }
   }, [toast]);
 
+  // Retry helper with exponential backoff
+  const retryWithBackoff = async (
+    fn: () => Promise<any>,
+    maxRetries: number = 3,
+    baseDelay: number = 2000
+  ): Promise<any> => {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        return await fn();
+      } catch (error: any) {
+        // Don't retry on validation errors or missing API keys
+        if (
+          error.message?.includes('Required') || 
+          error.message?.includes('not configured') ||
+          error.message?.includes('health check failed')
+        ) {
+          throw error; // Throw immediately for config errors
+        }
+        
+        // Don't retry on final attempt
+        if (attempt === maxRetries) {
+          throw error;
+        }
+        
+        // Calculate exponential backoff delay (2s, 4s, 8s)
+        const delay = baseDelay * Math.pow(2, attempt - 1);
+        console.log(`⚠️ Attempt ${attempt}/${maxRetries} failed. Retrying in ${delay}ms...`);
+        
+        // Update UI to show retry status
+        setProject(prev => ({
+          ...prev,
+          video: {
+            ...prev.video,
+            status: 'processing',
+            metadata: {
+              ...prev.video?.metadata,
+              currentStage: `Retrying (attempt ${attempt}/${maxRetries})...`,
+              progress: 5,
+              error: error.message
+            }
+          } as any
+        }));
+        
+        // Wait before retry
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+  };
+
   const generateVideo = useCallback(async (config: any) => {
     try {
       // VALIDATION: Check prerequisites (check EITHER processedUrl OR originalUrl)
@@ -424,63 +473,80 @@ export const useStudioProject = () => {
         throw new Error(`Video engine health check failed: ${healthError.message}`);
       }
       
-      // Add 60-second timeout to prevent infinite hang
-      const abortController = new AbortController();
-      const timeoutId = setTimeout(() => {
-        abortController.abort();
-        console.error('Video generation request timed out after 60 seconds');
-      }, 60000);
+      // Wrap video generation with retry logic
+      const response = await retryWithBackoff(async () => {
+        // Add 60-second timeout to prevent infinite hang
+        const abortController = new AbortController();
+        const timeoutId = setTimeout(() => {
+          abortController.abort();
+          console.error('Video generation request timed out after 60 seconds');
+        }, 60000);
 
-      console.log('🚀 Starting video generation request...');
-      console.log('Avatar URL:', avatarUrl);
-      console.log('Audio URL:', project.voice?.audioUrl);
-      
-      const response = await fetch(`${supabaseUrl}/functions/v1/video-engine-pro`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${supabaseKey}`
-        },
-        body: JSON.stringify({
-          avatarImageUrl: avatarUrl,
-          audioUrl: project.voice?.audioUrl,
-          prompt: config.prompt,
-          settings: {
-            engine: config.engine || 'virtura-pro',
-            quality: config.quality || '4K',
-            fps: config.fps || 30,
-            ratio: config.ratio || '16:9',
-            duration: config.duration || 30,
-            motionSettings: config.motionSettings,
-            background: project.style?.background || 'studio',
-            backgroundValue: project.style?.effects?.colorGrading,
-            lookMode: project.style?.lookMode,
-            lighting: project.style?.lighting,
-            camera: project.style?.camera,
-            effects: project.style?.effects,
-            talkingStyle: config.talkingStyle || 'stable',
-            voiceEmotions: project.voice?.emotions,
-            voiceLanguage: project.voice?.language,
-            voiceProvider: project.voice?.provider,
-            ultraHD: project.qualitySettings.enableUltraHD,
-            neuralEnhancement: project.qualitySettings.neuralEnhancement,
-            cinematicEffects: project.qualitySettings.cinematicEffects,
-            realTimeSync: project.qualitySettings.realTimeSync,
-            gpuAcceleration: project.qualitySettings.gpuAcceleration
+        console.log('🚀 Starting video generation request...');
+        console.log('Avatar URL:', avatarUrl);
+        console.log('Audio URL:', project.voice?.audioUrl);
+        
+        const response = await fetch(`${supabaseUrl}/functions/v1/video-engine-pro`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${supabaseKey}`
+          },
+          body: JSON.stringify({
+            avatarImageUrl: avatarUrl,
+            audioUrl: project.voice?.audioUrl,
+            prompt: config.prompt,
+            settings: {
+              engine: config.engine || 'virtura-pro',
+              quality: config.quality || '4K',
+              fps: config.fps || 30,
+              ratio: config.ratio || '16:9',
+              duration: config.duration || 30,
+              motionSettings: config.motionSettings,
+              background: project.style?.background || 'studio',
+              backgroundValue: project.style?.effects?.colorGrading,
+              lookMode: project.style?.lookMode,
+              lighting: project.style?.lighting,
+              camera: project.style?.camera,
+              effects: project.style?.effects,
+              talkingStyle: config.talkingStyle || 'stable',
+              voiceEmotions: project.voice?.emotions,
+              voiceLanguage: project.voice?.language,
+              voiceProvider: project.voice?.provider,
+              ultraHD: project.qualitySettings.enableUltraHD,
+              neuralEnhancement: project.qualitySettings.neuralEnhancement,
+              cinematicEffects: project.qualitySettings.cinematicEffects,
+              realTimeSync: project.qualitySettings.realTimeSync,
+              gpuAcceleration: project.qualitySettings.gpuAcceleration
+            }
+          }),
+          signal: abortController.signal
+        }).finally(() => {
+          clearTimeout(timeoutId);
+        });
+
+        console.log('📡 Response status:', response.status, response.statusText);
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Edge function error:', errorText);
+          
+          // Model-specific error messages for retry logic
+          if (response.status === 404) {
+            throw new Error('Video generation model not available - trying alternative engine...');
+          } else if (response.status === 422) {
+            throw new Error('Invalid input format - adjusting parameters and retrying...');
+          } else if (response.status === 429) {
+            throw new Error('Rate limit reached - will retry in 60 seconds...');
+          } else if (response.status >= 500) {
+            throw new Error(`Server error (${response.status}) - retrying with exponential backoff...`);
+          } else {
+            throw new Error(`Failed to start video generation: ${response.status} ${errorText}`);
           }
-        }),
-        signal: abortController.signal
-      }).finally(() => {
-        clearTimeout(timeoutId);
+        }
+        
+        return response;
       });
-
-      console.log('📡 Response status:', response.status, response.statusText);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Edge function error:', errorText);
-        throw new Error(`Failed to start video generation: ${response.status} ${errorText}`);
-      }
 
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
