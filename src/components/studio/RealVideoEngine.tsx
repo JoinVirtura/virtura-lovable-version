@@ -252,13 +252,51 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
               <AlertCircle className="h-5 w-5 text-orange-500 flex-shrink-0" />
               <div>
                 <p className="font-medium text-orange-800 dark:text-orange-200">
-                  Real Integration Prerequisites
+                  Prerequisites Required
                 </p>
-                <p className="text-sm text-orange-600 dark:text-orange-300">
-                  {!project.avatar && '1. Avatar image required for synthesis. '}
-                  {!project.voice && '2. Voice audio required for synchronization. '}
-                  Complete these to enable real video generation.
-                </p>
+                <div className="text-sm text-orange-600 dark:text-orange-300 space-y-1 mt-1">
+                  <div className="flex items-center gap-2">
+                    {project.avatar?.status === 'completed' ? (
+                      <CheckCircle className="h-3 w-3 text-green-600" />
+                    ) : (
+                      <AlertCircle className="h-3 w-3" />
+                    )}
+                    <span>Avatar: {project.avatar?.status === 'completed' ? 'Ready' : 'Missing or processing'}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {project.voice?.status === 'completed' ? (
+                      <CheckCircle className="h-3 w-3 text-green-600" />
+                    ) : (
+                      <AlertCircle className="h-3 w-3" />
+                    )}
+                    <span>Voice: {project.voice?.status === 'completed' ? 'Ready' : 'Missing or processing'}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Real-time Progress Tracking */}
+      {project.video?.status === 'processing' && (
+        <Card className="border-blue-200 bg-blue-50/50 dark:bg-blue-950/20">
+          <CardContent className="p-4">
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <Loader2 className="h-5 w-5 text-blue-500 animate-spin flex-shrink-0" />
+                <div className="flex-1">
+                  <p className="font-medium text-blue-800 dark:text-blue-200">
+                    {project.video.metadata?.currentStage || 'Processing video...'}
+                  </p>
+                  <p className="text-sm text-blue-600 dark:text-blue-300">
+                    This may take 2-5 minutes depending on video length
+                  </p>
+                </div>
+              </div>
+              <Progress value={project.video.metadata?.progress || 0} className="w-full" />
+              <div className="text-xs text-right text-blue-600 dark:text-blue-400">
+                {project.video.metadata?.progress || 0}% complete
               </div>
             </div>
           </CardContent>

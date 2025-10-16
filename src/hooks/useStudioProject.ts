@@ -95,6 +95,9 @@ export interface StudioProject {
       contentType?: string;
       storageError?: string;
       storagePath?: string;
+      currentStage?: string;
+      progress?: number;
+      errorMessage?: string;
     };
   } | null;
   
@@ -350,24 +353,38 @@ export const useStudioProject = () => {
     try {
       setProject(prev => ({
         ...prev,
-        video: { ...prev.video, status: 'processing' } as any
+        video: { 
+          ...prev.video, 
+          status: 'processing',
+          metadata: {
+            ...prev.video?.metadata,
+            currentStage: 'Initializing...',
+            progress: 0
+          }
+        } as any
       }));
 
-      const { data, error } = await supabase.functions.invoke('video-engine-pro', {
-        body: {
+      // Priority 2: Use SSE for real-time progress
+      const supabaseUrl = 'https://ujaoziqnxhjqlmnvlxav.supabase.co';
+      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqYW96aXFueGhqcWxtbnZseGF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1ODYwMDMsImV4cCI6MjA3MTE2MjAwM30.jbBjuZPRyc2CDonO7JJstuhBUlRxgX2K1qgDhpXrIHU';
+      
+      const response = await fetch(`${supabaseUrl}/functions/v1/video-engine-pro`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${supabaseKey}`
+        },
+        body: JSON.stringify({
           avatarImageUrl: project.avatar?.processedUrl,
           audioUrl: project.voice?.audioUrl,
           prompt: config.prompt,
           settings: {
-            // Video engine settings
             engine: config.engine || 'virtura-pro',
             quality: config.quality || '4K',
             fps: config.fps || 30,
             ratio: config.ratio || '16:9',
             duration: config.duration || 30,
             motionSettings: config.motionSettings,
-            
-            // Style settings integration
             background: project.style?.background || 'studio',
             backgroundValue: project.style?.effects?.colorGrading,
             lookMode: project.style?.lookMode,
@@ -375,52 +392,99 @@ export const useStudioProject = () => {
             camera: project.style?.camera,
             effects: project.style?.effects,
             talkingStyle: config.talkingStyle || 'stable',
-            
-            // Voice settings integration
             voiceEmotions: project.voice?.emotions,
             voiceLanguage: project.voice?.language,
             voiceProvider: project.voice?.provider,
-            
-            // Quality enhancements
             ultraHD: project.qualitySettings.enableUltraHD,
             neuralEnhancement: project.qualitySettings.neuralEnhancement,
             cinematicEffects: project.qualitySettings.cinematicEffects,
             realTimeSync: project.qualitySettings.realTimeSync,
             gpuAcceleration: project.qualitySettings.gpuAcceleration
           }
-        }
+        })
       });
 
-      if (error) throw error;
+      if (!response.ok) throw new Error('Failed to start video generation');
 
-      setProject(prev => ({
-        ...prev,
-        video: {
-          engine: config.engine || 'virtura-pro',
-          quality: config.quality || '4K',
-          fps: config.fps || 30,
-          duration: config.duration || 30,
-          ratio: config.ratio || '16:9',
-          motionSettings: config.motionSettings,
-          videoUrl: data.videoUrl,
-          status: 'completed',
-          metadata: {
-            frames: data.metadata?.frames,
-            bitrate: data.metadata?.bitrate,
-            codec: data.metadata?.codec
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      
+      if (!reader) throw new Error('No response stream');
+
+      let buffer = '';
+      
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n\n');
+        buffer = lines.pop() || '';
+        
+        for (const line of lines) {
+          if (!line.trim() || !line.startsWith('data: ')) continue;
+          
+          try {
+            const data = JSON.parse(line.slice(6));
+            
+            // Update project with progress
+            setProject(prev => ({
+              ...prev,
+              video: {
+                ...prev.video,
+                status: data.stage === 'complete' ? 'completed' : data.stage === 'error' ? 'error' : 'processing',
+                metadata: {
+                  ...prev.video?.metadata,
+                  currentStage: data.message,
+                  progress: data.progress
+                }
+              } as any
+            }));
+
+            if (data.stage === 'complete') {
+              setProject(prev => ({
+                ...prev,
+                video: {
+                  engine: config.engine || 'virtura-pro',
+                  quality: config.quality || '4K',
+                  fps: config.fps || 30,
+                  duration: config.duration || 30,
+                  ratio: config.ratio || '16:9',
+                  motionSettings: config.motionSettings,
+                  videoUrl: data.videoUrl,
+                  status: 'completed',
+                  metadata: {
+                    ...data.metadata,
+                    currentStage: 'Completed',
+                    progress: 100
+                  }
+                }
+              }));
+
+              toast({
+                title: "Video Generated",
+                description: `High-quality talking avatar created with ${data.provider} engine`,
+              });
+            } else if (data.stage === 'error') {
+              throw new Error(data.error);
+            }
+          } catch (parseError) {
+            console.error('Failed to parse SSE data:', parseError);
           }
         }
-      }));
-
-      toast({
-        title: "Video Generated",
-        description: `High-quality talking avatar created with ${data.provider} engine`,
-      });
+      }
 
     } catch (error: any) {
       setProject(prev => ({
         ...prev,
-        video: { ...prev.video, status: 'error' } as any
+        video: { 
+          ...prev.video, 
+          status: 'error',
+          metadata: {
+            ...prev.video?.metadata,
+            errorMessage: error.message
+          }
+        } as any
       }));
       
       toast({
