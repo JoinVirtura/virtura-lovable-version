@@ -381,28 +381,16 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
           )}
         </div>
 
-        {/* Voice Preview Section - Full Audio Player */}
+        {/* Voice Preview Section - Compact Audio Player */}
         {project.voice?.status === 'completed' && project.voice?.audioUrl && (
           <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
-            <CardHeader>
+            <CardHeader className="pb-2">
               <CardTitle className="text-sm flex items-center gap-2">
                 <Volume2 className="h-4 w-4 text-primary" />
                 Voice Preview
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs text-muted-foreground">Studio Voice Generated</span>
-                <Button
-                  size="sm"
-                  onClick={handlePlayPreview}
-                  className="h-7 px-2"
-                >
-                  <Play className="h-3 w-3 mr-1" />
-                  {isPlaying ? 'Pause' : 'Play'}
-                </Button>
-              </div>
-              
+            <CardContent className="space-y-1">
               <PremiumAudioPlayer
                 audioUrl={project.voice.audioUrl}
                 isPlaying={isPlaying}
@@ -411,10 +399,10 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                 className="border-0 bg-card/50"
               />
               
-              <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+              <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground pt-2">
                 <div>
                   <span className="block font-medium">Duration</span>
-                  <span>{project.voice.metadata?.duration || 'Unknown'}s</span>
+                  <span>{typeof project.voice.metadata?.duration === 'number' ? `${project.voice.metadata.duration}s` : 'Unknown'}</span>
                 </div>
                 <div>
                   <span className="block font-medium">Quality</span>

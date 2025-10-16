@@ -531,17 +531,17 @@ export const useStudioProject = () => {
           const errorText = await response.text();
           console.error('Edge function error:', errorText);
           
-          // Model-specific error messages for retry logic
+          // Enhanced model-specific error messages for retry logic
           if (response.status === 404) {
-            throw new Error('Video generation model not available - trying alternative engine...');
+            throw new Error('🔄 Model unavailable - automatically trying alternative engine...');
           } else if (response.status === 422) {
-            throw new Error('Invalid input format - adjusting parameters and retrying...');
+            throw new Error('⚙️ Invalid input detected - adjusting parameters and retrying...');
           } else if (response.status === 429) {
-            throw new Error('Rate limit reached - will retry in 60 seconds...');
+            throw new Error('⏱️ Rate limit reached - will retry in 60 seconds...');
           } else if (response.status >= 500) {
-            throw new Error(`Server error (${response.status}) - retrying with exponential backoff...`);
+            throw new Error(`🔧 Server error (${response.status}) - retrying with exponential backoff...`);
           } else {
-            throw new Error(`Failed to start video generation: ${response.status} ${errorText}`);
+            throw new Error(`❌ Generation failed: ${response.status} ${errorText}`);
           }
         }
         

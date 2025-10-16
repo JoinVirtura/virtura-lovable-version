@@ -131,11 +131,11 @@ async function generateRealVideo(
   const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
   const supabase = createClient(supabaseUrl, supabaseKey);
 
-  // Priority cascade: LivePortrait (Best) -> Wav2Lip (Good) -> Video Retalking (Fast)
+  // Priority cascade: Sync Lipsync 2 Pro (Best) -> Sync Lipsync 2 (Good) -> Wav2Lip Fallback (Fast)
   const engines = [
-    { name: 'LivePortrait', fn: generateWithSyncLabs, quality: '⭐⭐⭐⭐⭐ Premium' },
-    { name: 'Wav2Lip (High Quality)', fn: generateWithSadTalker, quality: '⭐⭐⭐⭐ High Quality' },
-    { name: 'Video Retalking (Fast)', fn: generateWithWav2Lip, quality: '⭐⭐⭐ Budget' }
+    { name: 'Sync Lipsync 2 Pro', fn: generateWithSyncLabs, quality: '⭐⭐⭐⭐⭐ Premium' },
+    { name: 'Sync Lipsync 2', fn: generateWithSadTalker, quality: '⭐⭐⭐⭐ High Quality' },
+    { name: 'Wav2Lip Fallback', fn: generateWithWav2Lip, quality: '⭐⭐⭐ Budget' }
   ];
 
   const REPLICATE_API_KEY = Deno.env.get('REPLICATE_API_KEY');
@@ -198,32 +198,30 @@ async function generateWithSyncLabs(
   sendProgress({ 
     stage: 'preparing', 
     progress: 15, 
-    message: '📤 Preparing avatar and audio for LivePortrait...' 
+    message: '📤 Preparing avatar and audio for Sync Lipsync 2 Pro...' 
   });
 
   sendProgress({ 
     stage: 'generating', 
     progress: 30, 
-    message: '🎬 Generating premium quality talking avatar with LivePortrait...' 
+    message: '🎬 Generating premium quality talking avatar with Sync Lipsync 2 Pro...' 
   });
 
-  console.log('🎯 Running LivePortrait model with inputs:', { 
+  console.log('🎯 Running Sync Lipsync 2 Pro model with inputs:', { 
     imageUrl: avatarImageUrl.substring(0, 60) + '...',
     audioUrl: audioUrl.substring(0, 60) + '...',
-    modelVersion: 'fofr/live-portrait'
+    modelVersion: 'sync/lipsync-2-pro'
   });
 
   try {
     const output: any = await replicate.run(
-      "fofr/live-portrait",
+      "sync/lipsync-2-pro",
       {
         input: {
-          driving_audio: audioUrl,
-          source_image: avatarImageUrl,
-          flag_relative: true,
-          flag_pasteback: true,
-          flag_do_crop: false,
-          flag_stitching: true
+          video: avatarImageUrl,
+          audio: audioUrl,
+          model: "sync-1.6.0",
+          synergize: true
         }
       }
     );
@@ -231,39 +229,39 @@ async function generateWithSyncLabs(
     sendProgress({ 
       stage: 'processing', 
       progress: 60, 
-      message: '🎭 Processing lip-sync and facial animations...' 
+      message: '🎭 Processing studio-grade lip-sync...' 
     });
 
     const videoUrl = Array.isArray(output) ? output[0] : output;
-    console.log('✅ LivePortrait success:', {
+    console.log('✅ Sync Lipsync 2 Pro success:', {
       videoUrl: videoUrl.substring(0, 60) + '...',
       status: 'completed'
     });
 
     return await downloadAndUploadVideo(
       videoUrl,
-      'live-portrait',
+      'sync-lipsync-2-pro',
       settings,
       sendProgress,
       supabase
     );
 
   } catch (error: any) {
-    console.error('LivePortrait generation error:', error);
+    console.error('Sync Lipsync 2 Pro generation error:', error);
     
     // Enhanced error handling for Replicate errors
     let errorMessage = error.message;
     if (errorMessage.includes('429') || errorMessage.includes('rate limit')) {
-      errorMessage = 'Replicate rate limit reached. Please wait 60 seconds and try again.';
+      errorMessage = 'Replicate rate limit reached. Trying alternative model...';
     } else if (errorMessage.includes('402') || errorMessage.includes('payment')) {
       errorMessage = 'Replicate payment required. Please add a payment method at replicate.com/account/billing';
     }
     
-    throw new Error(`LivePortrait failed: ${errorMessage}`);
+    throw new Error(`Sync Lipsync 2 Pro failed: ${errorMessage}`);
   }
 }
 
-// Fallback #1: SadTalker (3D Motion)
+// Fallback #1: Sync Lipsync 2
 async function generateWithSadTalker(
   avatarImageUrl: string,
   audioUrl: string,
@@ -277,22 +275,18 @@ async function generateWithSadTalker(
   sendProgress({ 
     stage: 'generating', 
     progress: 30, 
-    message: '🎬 Generating with Wav2Lip (High Quality)...' 
+    message: '🎬 Generating with Sync Lipsync 2 (High Quality)...' 
   });
 
-  console.log('🎯 Running Wav2Lip model (zsxkib/wav2lip)');
+  console.log('🎯 Running Sync Lipsync 2 model (sync/lipsync-2)');
 
   try {
     const output: any = await replicate.run(
-      "zsxkib/wav2lip",
+      "sync/lipsync-2",
       {
         input: {
-          face: avatarImageUrl,
-          audio: audioUrl,
-          pads: "0 10 0 0",
-          resize_factor: 1,
-          smooth: true,
-          nosmooth: false
+          video: avatarImageUrl,
+          audio: audioUrl
         }
       }
     );
@@ -300,32 +294,32 @@ async function generateWithSadTalker(
     sendProgress({ 
       stage: 'processing', 
       progress: 65, 
-      message: '🎭 Applying 3D motion and enhancements...' 
+      message: '🎭 Applying lip synchronization...' 
     });
 
     const videoUrl = Array.isArray(output) ? output[0] : output;
-    console.log('✅ Wav2Lip generated video:', videoUrl);
+    console.log('✅ Sync Lipsync 2 generated video:', videoUrl);
 
     return await downloadAndUploadVideo(
       videoUrl,
-      'wav2lip',
+      'sync-lipsync-2',
       settings,
       sendProgress,
       supabase
     );
 
   } catch (error: any) {
-    console.error('Wav2Lip generation error:', error);
+    console.error('Sync Lipsync 2 generation error:', error);
     
     // Enhanced error handling for Replicate errors
     let errorMessage = error.message;
     if (errorMessage.includes('429') || errorMessage.includes('rate limit')) {
-      errorMessage = 'Replicate rate limit reached. Please wait 60 seconds and try again.';
+      errorMessage = 'Replicate rate limit reached. Trying fallback model...';
     } else if (errorMessage.includes('402') || errorMessage.includes('payment')) {
       errorMessage = 'Replicate payment required. Please add a payment method at replicate.com/account/billing';
     }
     
-    throw new Error(`Wav2Lip failed: ${errorMessage}`);
+    throw new Error(`Sync Lipsync 2 failed: ${errorMessage}`);
   }
 }
 
@@ -343,18 +337,21 @@ async function generateWithWav2Lip(
   sendProgress({ 
     stage: 'generating', 
     progress: 35, 
-    message: '⚡ Fast generation with Video Retalking...' 
+    message: '⚡ Fast generation with Wav2Lip fallback...' 
   });
 
-  console.log('🎯 Running Video Retalking model (camenduru/video-retalking)');
+  console.log('🎯 Running Wav2Lip fallback model (devxpy/cog-wav2lip)');
 
   try {
     const output: any = await replicate.run(
-      "camenduru/video-retalking",
+      "devxpy/cog-wav2lip",
       {
         input: {
           face: avatarImageUrl,
-          audio: audioUrl
+          audio: audioUrl,
+          pads: "0,10,0,0",
+          smooth: true,
+          resize_factor: 1
         }
       }
     );
@@ -366,28 +363,28 @@ async function generateWithWav2Lip(
     });
 
     const videoUrl = Array.isArray(output) ? output[0] : output;
-    console.log('✅ Wav2Lip generated video:', videoUrl);
+    console.log('✅ Wav2Lip fallback generated video:', videoUrl);
 
     return await downloadAndUploadVideo(
       videoUrl,
-      'wav2lip',
+      'wav2lip-fallback',
       settings,
       sendProgress,
       supabase
     );
 
   } catch (error: any) {
-    console.error('Video Retalking generation error:', error);
+    console.error('Wav2Lip fallback generation error:', error);
     
     // Enhanced error handling for Replicate errors
     let errorMessage = error.message;
     if (errorMessage.includes('429') || errorMessage.includes('rate limit')) {
-      errorMessage = 'Replicate rate limit reached. Please wait 60 seconds and try again.';
+      errorMessage = 'All Replicate models rate limited. Please wait and try again later.';
     } else if (errorMessage.includes('402') || errorMessage.includes('payment')) {
       errorMessage = 'Replicate payment required. Please add a payment method at replicate.com/account/billing';
     }
     
-    throw new Error(`Video Retalking failed: ${errorMessage}`);
+    throw new Error(`All video generation models failed: ${errorMessage}`);
   }
 }
 

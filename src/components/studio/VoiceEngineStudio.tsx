@@ -505,7 +505,7 @@ export const VoiceEngineStudio: React.FC<VoiceEngineStudioProps> = ({
               </div>
               <div>
                 <Label className="text-xs text-muted-foreground">Duration</Label>
-                <p className="font-medium">{project.voice.metadata?.duration || 'Unknown'}s</p>
+                <p className="font-medium">{typeof project.voice.metadata?.duration === 'number' ? `${project.voice.metadata.duration}s` : 'Unknown'}</p>
               </div>
               <div>
                 <Label className="text-xs text-muted-foreground">Quality</Label>
@@ -513,8 +513,8 @@ export const VoiceEngineStudio: React.FC<VoiceEngineStudioProps> = ({
               </div>
             </div>
             
-            <div className="mt-2">
-              <p className="text-xs text-muted-foreground">
+            <div className="mt-2 p-3 bg-muted/30 rounded-lg border border-primary/20">
+              <p className="text-xs text-muted-foreground text-center">
                 🎵 Full audio player with waveform available in Voice Preview (right panel)
               </p>
             </div>
