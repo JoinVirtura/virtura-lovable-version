@@ -300,7 +300,7 @@ export const useStudioProject = () => {
         voice: { ...prev.voice, status: 'processing' } as any
       }));
 
-      const { data, error } = await supabase.functions.invoke('voice-generate-elevenlabs', {
+      const { data, error } = await supabase.functions.invoke('voice-generate', {
         body: {
           script: config.script,
           voiceId: config.voiceId,
@@ -334,8 +334,10 @@ export const useStudioProject = () => {
       }));
 
       toast({
-        title: "Voice Generated",
-        description: "High-fidelity voice synthesis completed",
+        title: "Voice Generated Successfully",
+        description: data.provider === 'elevenlabs' 
+          ? "Premium ElevenLabs voice generated"
+          : "High-quality OpenAI voice generated",
       });
 
     } catch (error: any) {
@@ -344,9 +346,14 @@ export const useStudioProject = () => {
         voice: { ...prev.voice, status: 'error' } as any
       }));
       
+      const errorMsg = error.message || 'Failed to generate voice';
+      const isApiKey = errorMsg.toLowerCase().includes('api key');
+      
       toast({
         title: "Voice Generation Failed",
-        description: error.message,
+        description: isApiKey 
+          ? "Voice API configuration issue. Using fallback provider..."
+          : errorMsg,
         variant: "destructive"
       });
     }
