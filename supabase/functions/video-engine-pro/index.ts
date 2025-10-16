@@ -12,6 +12,21 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Health check endpoint
+  if (req.method === 'GET') {
+    const REPLICATE_API_KEY = Deno.env.get('REPLICATE_API_KEY');
+    return new Response(JSON.stringify({
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      hasReplicateKey: !!REPLICATE_API_KEY,
+      message: REPLICATE_API_KEY 
+        ? 'Video engine ready' 
+        : 'REPLICATE_API_KEY not configured - add it in Supabase secrets'
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  }
+
   try {
     const { avatarImageUrl, audioUrl, prompt, settings = {} } = await req.json();
     

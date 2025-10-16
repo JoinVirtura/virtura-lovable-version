@@ -397,6 +397,17 @@ export const useStudioProject = () => {
       const supabaseUrl = 'https://ujaoziqnxhjqlmnvlxav.supabase.co';
       const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqYW96aXFueGhqcWxtbnZseGF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1ODYwMDMsImV4cCI6MjA3MTE2MjAwM30.jbBjuZPRyc2CDonO7JJstuhBUlRxgX2K1qgDhpXrIHU';
       
+      // Add 60-second timeout to prevent infinite hang
+      const abortController = new AbortController();
+      const timeoutId = setTimeout(() => {
+        abortController.abort();
+        console.error('Video generation request timed out after 60 seconds');
+      }, 60000);
+
+      console.log('🚀 Starting video generation request...');
+      console.log('Avatar URL:', project.avatar?.processedUrl);
+      console.log('Audio URL:', project.voice?.audioUrl);
+      
       const response = await fetch(`${supabaseUrl}/functions/v1/video-engine-pro`, {
         method: 'POST',
         headers: {
@@ -430,10 +441,19 @@ export const useStudioProject = () => {
             realTimeSync: project.qualitySettings.realTimeSync,
             gpuAcceleration: project.qualitySettings.gpuAcceleration
           }
-        })
+        }),
+        signal: abortController.signal
+      }).finally(() => {
+        clearTimeout(timeoutId);
       });
 
-      if (!response.ok) throw new Error('Failed to start video generation');
+      console.log('📡 Response status:', response.status, response.statusText);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Edge function error:', errorText);
+        throw new Error(`Failed to start video generation: ${response.status} ${errorText}`);
+      }
 
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
@@ -504,6 +524,8 @@ export const useStudioProject = () => {
       }
 
     } catch (error: any) {
+      console.error('❌ Video generation error:', error);
+      
       setProject(prev => ({
         ...prev,
         video: { 
@@ -516,11 +538,22 @@ export const useStudioProject = () => {
         } as any
       }));
       
-      // Enhanced error handling for Replicate errors
+      // Enhanced error handling
       let errorMessage = error.message || 'Failed to generate video';
       let errorTitle = "Video Generation Failed";
       
-      if (errorMessage.includes('429') || errorMessage.toLowerCase().includes('rate limit')) {
+      // Timeout error
+      if (error.name === 'AbortError') {
+        errorTitle = "Request Timeout";
+        errorMessage = "Video generation request timed out after 60 seconds. This usually means the edge function is not responding. Please check: 1) Edge function is deployed 2) REPLICATE_API_KEY is set in Supabase secrets";
+      }
+      // Network errors
+      else if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError')) {
+        errorTitle = "Connection Failed";
+        errorMessage = "Unable to connect to video engine. Please check your internet connection and ensure the edge function is deployed.";
+      }
+      // Replicate errors
+      else if (errorMessage.includes('429') || errorMessage.toLowerCase().includes('rate limit')) {
         errorTitle = "Rate Limit Reached";
         errorMessage = "Replicate rate limit exceeded. Please wait 60 seconds and try again, or add a payment method to your Replicate account at replicate.com/account/billing";
       } else if (errorMessage.includes('402') || errorMessage.toLowerCase().includes('payment')) {
