@@ -202,7 +202,7 @@ async function generateWithSyncLabs(
       "sync/lipsync-2-pro",
       {
         input: {
-          video: avatarImageUrl,  // Can accept image or video
+          image: avatarImageUrl,  // FIXED: Correct parameter name for Sync Labs
           audio: audioUrl,
         }
       }
@@ -227,7 +227,16 @@ async function generateWithSyncLabs(
 
   } catch (error: any) {
     console.error('Sync Labs generation error:', error);
-    throw new Error(`Sync Labs failed: ${error.message}`);
+    
+    // Enhanced error handling for Replicate errors
+    let errorMessage = error.message;
+    if (errorMessage.includes('429') || errorMessage.includes('rate limit')) {
+      errorMessage = 'Replicate rate limit reached. Please wait 60 seconds and try again.';
+    } else if (errorMessage.includes('402') || errorMessage.includes('payment')) {
+      errorMessage = 'Replicate payment required. Please add a payment method at replicate.com/account/billing';
+    }
+    
+    throw new Error(`Sync Labs failed: ${errorMessage}`);
   }
 }
 
@@ -261,7 +270,7 @@ async function generateWithSadTalker(
           still_mode: true,
           use_enhancer: true,
           batch_size: 2,
-          size: settings.quality === '4K' ? 512 : 256,
+          size: 512, // FIXED: Always use max resolution (512 is SadTalker's maximum)
           pose_style: 0,
           expression_scale: 1.0
         }
@@ -287,7 +296,16 @@ async function generateWithSadTalker(
 
   } catch (error: any) {
     console.error('SadTalker generation error:', error);
-    throw new Error(`SadTalker failed: ${error.message}`);
+    
+    // Enhanced error handling for Replicate errors
+    let errorMessage = error.message;
+    if (errorMessage.includes('429') || errorMessage.includes('rate limit')) {
+      errorMessage = 'Replicate rate limit reached. Please wait 60 seconds and try again.';
+    } else if (errorMessage.includes('402') || errorMessage.includes('payment')) {
+      errorMessage = 'Replicate payment required. Please add a payment method at replicate.com/account/billing';
+    }
+    
+    throw new Error(`SadTalker failed: ${errorMessage}`);
   }
 }
 
@@ -340,7 +358,16 @@ async function generateWithWav2Lip(
 
   } catch (error: any) {
     console.error('Wav2Lip generation error:', error);
-    throw new Error(`Wav2Lip failed: ${error.message}`);
+    
+    // Enhanced error handling for Replicate errors
+    let errorMessage = error.message;
+    if (errorMessage.includes('429') || errorMessage.includes('rate limit')) {
+      errorMessage = 'Replicate rate limit reached. Please wait 60 seconds and try again.';
+    } else if (errorMessage.includes('402') || errorMessage.includes('payment')) {
+      errorMessage = 'Replicate payment required. Please add a payment method at replicate.com/account/billing';
+    }
+    
+    throw new Error(`Wav2Lip failed: ${errorMessage}`);
   }
 }
 

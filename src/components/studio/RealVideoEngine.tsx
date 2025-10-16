@@ -289,14 +289,44 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
                     {project.video.metadata?.currentStage || 'Generating video with Replicate...'}
                   </p>
                   <p className="text-sm text-blue-600 dark:text-blue-300">
-                    Using {project.video.metadata?.model || 'Sync Labs'} - This may take 2-5 minutes
+                    Using Replicate AI - This may take 2-5 minutes
                   </p>
                 </div>
               </div>
-              <Progress value={project.video.metadata?.progress || 0} className="w-full" />
+              <Progress value={project.video?.metadata?.progress || 0} className="w-full" />
               <div className="text-xs text-right text-blue-600 dark:text-blue-400">
-                {project.video.metadata?.progress || 0}% complete
+                {project.video?.metadata?.progress || 0}% complete
               </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Error Display */}
+      {project.video?.status === 'error' && (
+        <Card className="border-red-200 bg-red-50/50 dark:bg-red-950/20">
+          <CardContent className="p-4">
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
+                <div className="flex-1">
+                  <p className="font-medium text-red-800 dark:text-red-200">
+                    Video Generation Failed
+                  </p>
+                  <p className="text-sm text-red-600 dark:text-red-300 mt-1">
+                    {project.video.metadata?.errorMessage || 'An error occurred during video generation'}
+                  </p>
+                </div>
+              </div>
+              <Button 
+                onClick={handleGenerateVideo}
+                variant="outline"
+                size="sm"
+                className="w-full"
+              >
+                <Zap className="h-4 w-4 mr-2" />
+                Retry Generation
+              </Button>
             </div>
           </CardContent>
         </Card>
