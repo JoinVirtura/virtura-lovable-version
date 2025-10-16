@@ -101,6 +101,9 @@ export interface StudioProject {
     model?: string;  // Replicate model name (sync-labs, sadtalker, wav2lip)
     replicateUrl?: string;  // Original Replicate video URL
     storageSuccess?: boolean;  // Whether Supabase storage upload succeeded
+    engineAttempt?: number;  // Current engine being tried (1, 2, 3)
+    totalEngines?: number;  // Total number of engines in cascade (3)
+    lastError?: string;  // Last error message from failed engine
   };
   } | null;
   

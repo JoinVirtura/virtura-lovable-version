@@ -8,6 +8,7 @@ import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Progress } from '@/components/ui/progress';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   Film,
   Play,
@@ -282,17 +283,38 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
         <Card className="border-blue-200 bg-blue-50/50 dark:bg-blue-950/20">
           <CardContent className="p-4">
             <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <Loader2 className="h-5 w-5 text-blue-500 animate-spin flex-shrink-0" />
-                <div className="flex-1">
-                   <p className="font-medium text-blue-800 dark:text-blue-200">
-                    {project.video.metadata?.currentStage || 'Generating video with Replicate...'}
-                  </p>
-                  <p className="text-sm text-blue-600 dark:text-blue-300">
-                    Using Replicate AI - This may take 2-5 minutes
-                  </p>
+              {/* Header with Model Badge */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 flex-1">
+                  <Loader2 className="h-5 w-5 text-blue-500 animate-spin flex-shrink-0" />
+                  <div className="flex-1">
+                    <p className="font-medium text-blue-800 dark:text-blue-200">
+                      {project.video.metadata?.currentStage || 'Generating video with Replicate...'}
+                    </p>
+                    <p className="text-sm text-blue-600 dark:text-blue-300">
+                      Using Replicate AI - This may take 2-5 minutes
+                    </p>
+                  </div>
                 </div>
+                
+                {/* Model Attempt Badge */}
+                {project.video.metadata?.engineAttempt && project.video.metadata?.totalEngines && (
+                  <Badge variant="outline" className="text-xs shrink-0 ml-2">
+                    Model {project.video.metadata.engineAttempt}/{project.video.metadata.totalEngines}
+                  </Badge>
+                )}
               </div>
+              
+              {/* Last Error Alert */}
+              {project.video.metadata?.lastError && (
+                <Alert className="border-orange-200 bg-orange-50/50 dark:bg-orange-950/30 py-2">
+                  <AlertCircle className="h-3 w-3 text-orange-500" />
+                  <AlertDescription className="text-xs text-orange-700 dark:text-orange-300">
+                    {project.video.metadata.lastError}
+                  </AlertDescription>
+                </Alert>
+              )}
+              
               <Progress value={project.video?.metadata?.progress || 0} className="w-full" />
               <div className="text-xs text-right text-blue-600 dark:text-blue-400">
                 {project.video?.metadata?.progress || 0}% complete
