@@ -319,22 +319,32 @@ export const useStudioProject = () => {
 
       if (error) throw error;
 
-      setProject(prev => ({
-        ...prev,
-        voice: {
-          type: 'tts',
-          script: config.script,
-          voiceId: config.voiceId,
-          audioUrl: data.audioUrl,
-          status: 'completed',
-          language: config.language,
-          metadata: {
-            duration: data.duration,
-            waveform: data.waveform,
-            phonemes: data.phonemes
+      // Calculate actual audio duration
+      const audioUrl = data.audioUrl;
+      const audio = new Audio(audioUrl);
+      
+      audio.addEventListener('loadedmetadata', () => {
+        const durationInSeconds = Math.round(audio.duration);
+        
+        setProject(prev => ({
+          ...prev,
+          voice: {
+            type: 'tts',
+            script: config.script,
+            voiceId: config.voiceId,
+            audioUrl,
+            status: 'completed',
+            language: config.language,
+            metadata: {
+              duration: durationInSeconds,  // Store as number in seconds
+              waveform: data.waveform,
+              phonemes: data.phonemes,
+              provider: data.provider,
+              model: data.model
+            }
           }
-        }
-      }));
+        }));
+      });
 
       toast({
         title: "Voice Generated Successfully",
@@ -450,6 +460,32 @@ export const useStudioProject = () => {
       const supabaseUrl = 'https://ujaoziqnxhjqlmnvlxav.supabase.co';
       const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqYW96aXFueGhqcWxtbnZseGF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1ODYwMDMsImV4cCI6MjA3MTE2MjAwM30.jbBjuZPRyc2CDonO7JJstuhBUlRxgX2K1qgDhpXrIHU';
       
+      // Convert blob URLs to public Supabase URLs
+      let publicAvatarUrl = avatarUrl;
+      
+      if (avatarUrl.startsWith('blob:')) {
+        console.log('Converting blob URL to public URL...');
+        const response = await fetch(avatarUrl);
+        const blob = await response.blob();
+        const fileName = `avatar-${Date.now()}.png`;
+        
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('virtura-media')
+          .upload(`avatars/${fileName}`, blob, {
+            contentType: 'image/png',
+            upsert: true
+          });
+          
+        if (uploadError) throw new Error(`Avatar upload failed: ${uploadError.message}`);
+        
+        const { data: urlData } = supabase.storage
+          .from('virtura-media')
+          .getPublicUrl(`avatars/${fileName}`);
+          
+        publicAvatarUrl = urlData.publicUrl;
+        console.log('Avatar uploaded to:', publicAvatarUrl);
+      }
+      
       // Health check: Verify edge function is ready
       console.log('🏥 Running health check...');
       try {
@@ -486,7 +522,7 @@ export const useStudioProject = () => {
         }, 60000);
 
         console.log('🚀 Starting video generation request...');
-        console.log('Avatar URL:', avatarUrl);
+        console.log('Avatar URL:', publicAvatarUrl);
         console.log('Audio URL:', project.voice?.audioUrl);
         
         const response = await fetch(`${supabaseUrl}/functions/v1/video-engine-pro`, {
@@ -496,7 +532,7 @@ export const useStudioProject = () => {
             'Authorization': `Bearer ${supabaseKey}`
           },
           body: JSON.stringify({
-            avatarImageUrl: avatarUrl,
+            avatarImageUrl: publicAvatarUrl,  // Use public URL instead of blob
             audioUrl: project.voice?.audioUrl,
             prompt: config.prompt,
             settings: {
@@ -585,7 +621,8 @@ export const useStudioProject = () => {
                   currentStage: data.message,
                   progress: data.progress,
                   engineAttempt: data.engineAttempt,
-                  totalEngines: data.totalEngines
+                  totalEngines: data.totalEngines,
+                  lastError: data.error  // Track last error
                 }
               } as any
             }));

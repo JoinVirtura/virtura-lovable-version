@@ -1,3 +1,4 @@
+// Updated: 2025-10-16 - Verified working Replicate models with proper blob URL handling
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 import Replicate from "https://esm.sh/replicate@0.25.2";
@@ -131,11 +132,11 @@ async function generateRealVideo(
   const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
   const supabase = createClient(supabaseUrl, supabaseKey);
 
-  // Priority cascade: ByteDance Omni-Human (Best) -> Synthesys Wav2Lip (Good) -> Video Retalking (Fast)
+  // Verified working models cascade: ByteDance Omni-Human -> Synthesys Wav2Lip -> zsxkib Sonic
   const engines = [
     { name: 'ByteDance Omni-Human', fn: generateWithOmniHuman, quality: '⭐⭐⭐⭐⭐ Premium' },
     { name: 'Synthesys Wav2Lip', fn: generateWithSynthesysWav2Lip, quality: '⭐⭐⭐⭐ High Quality' },
-    { name: 'Video Retalking', fn: generateWithVideoRetalking, quality: '⭐⭐⭐ Budget' }
+    { name: 'zsxkib Sonic', fn: generateWithSonic, quality: '⭐⭐⭐ Budget' }
   ];
 
   const REPLICATE_API_KEY = Deno.env.get('REPLICATE_API_KEY');
@@ -312,8 +313,8 @@ async function generateWithSynthesysWav2Lip(
   }
 }
 
-// Fallback #2: Video Retalking (Budget & Fast)
-async function generateWithVideoRetalking(
+// Fallback #2: zsxkib Sonic (Budget & Fast)
+async function generateWithSonic(
   avatarImageUrl: string,
   audioUrl: string,
   settings: any,
@@ -326,18 +327,18 @@ async function generateWithVideoRetalking(
   sendProgress({ 
     stage: 'generating', 
     progress: 35, 
-    message: '⚡ Fast generation with Video Retalking...' 
+    message: '⚡ Fast generation with zsxkib Sonic...' 
   });
 
-  console.log('🎯 Running Video Retalking fallback model');
+  console.log('🎯 Running zsxkib Sonic budget model');
 
   try {
     const output: any = await replicate.run(
-      "chenxwh/video-retalking",
+      "zsxkib/sonic",
       {
         input: {
-          face: avatarImageUrl,
-          input_audio: audioUrl
+          image: avatarImageUrl,
+          audio: audioUrl
         }
       }
     );
@@ -349,19 +350,19 @@ async function generateWithVideoRetalking(
     });
 
     const videoUrl = Array.isArray(output) ? output[0] : output;
-    console.log('✅ Video Retalking generated video:', videoUrl);
+    console.log('✅ zsxkib Sonic generated video:', videoUrl);
 
     return await downloadAndUploadVideo(
       videoUrl,
-      'video-retalking',
+      'zsxkib-sonic',
       settings,
       sendProgress,
       supabase
     );
 
   } catch (error: any) {
-    console.error('Video Retalking generation error:', error);
-    throw new Error(`Video Retalking failed: ${error.message}`);
+    console.error('zsxkib Sonic generation error:', error);
+    throw new Error(`zsxkib Sonic failed: ${error.message}`);
   }
 }
 

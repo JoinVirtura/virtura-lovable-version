@@ -35,40 +35,31 @@ interface VideoEngineStudioProps {
 
 const VIDEO_ENGINES = [
   {
-    id: 'virtura-pro',
-    name: 'Virtura Pro Engine',
-    description: 'Our proprietary ultra-HD engine',
+    id: 'bytedance-omni-human',
+    name: 'ByteDance Omni-Human',
+    description: 'Premium quality lip-sync with ByteDance AI',
     badge: 'Premium',
     badgeColor: 'bg-gradient-to-r from-purple-500 to-pink-500',
     icon: Crown,
-    features: ['8K Support', 'Neural Enhancement', 'Cinematic Effects']
+    features: ['Best Quality', 'Natural Motion', 'Ultra-HD']
   },
   {
-    id: 'kling',
-    name: 'KlingAI Engine',
-    description: 'Motion diffusion for natural gestures',
+    id: 'synthesys-wav2lip',
+    name: 'Synthesys Wav2Lip',
+    description: 'High-quality professional lip synchronization',
     badge: 'Pro',
     badgeColor: 'bg-blue-500',
     icon: Brain,
-    features: ['4K Support', 'Natural Motion', 'Face Reenactment']
+    features: ['4K Support', 'Fast Processing', 'Professional']
   },
   {
-    id: 'heygen',
-    name: 'HeyGen Engine',
-    description: 'Professional talking photo generation',
-    badge: 'Standard',
+    id: 'sonic',
+    name: 'Sonic Fast',
+    description: 'Budget-friendly fast generation',
+    badge: 'Budget',
     badgeColor: 'bg-green-500',
-    icon: MonitorSpeaker,
-    features: ['HD Support', 'Lip Sync', 'Fast Processing']
-  },
-  {
-    id: 'runway',
-    name: 'Runway Gen-3',
-    description: 'Creative video generation with Gen-3 Alpha',
-    badge: 'Creative',
-    badgeColor: 'bg-orange-500',
-    icon: Sparkles,
-    features: ['4K Support', 'Creative Effects', 'Style Transfer']
+    icon: Zap,
+    features: ['Low Cost', 'Fast', 'Cost-Effective']
   }
 ];
 
