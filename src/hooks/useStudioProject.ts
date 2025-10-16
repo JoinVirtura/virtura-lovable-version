@@ -361,6 +361,25 @@ export const useStudioProject = () => {
 
   const generateVideo = useCallback(async (config: any) => {
     try {
+      // VALIDATION: Check prerequisites
+      if (!project.avatar?.processedUrl) {
+        toast({
+          title: "Avatar Required",
+          description: "Please select or generate an avatar before creating video",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      if (!project.voice?.audioUrl) {
+        toast({
+          title: "Voice Required", 
+          description: "Please generate voice audio before creating video",
+          variant: "destructive"
+        });
+        return;
+      }
+
       setProject(prev => ({
         ...prev,
         video: { 
@@ -497,9 +516,24 @@ export const useStudioProject = () => {
         } as any
       }));
       
+      // Enhanced error handling for Replicate errors
+      let errorMessage = error.message || 'Failed to generate video';
+      let errorTitle = "Video Generation Failed";
+      
+      if (errorMessage.includes('429') || errorMessage.toLowerCase().includes('rate limit')) {
+        errorTitle = "Rate Limit Reached";
+        errorMessage = "Replicate rate limit exceeded. Please wait 60 seconds and try again, or add a payment method to your Replicate account at replicate.com/account/billing";
+      } else if (errorMessage.includes('402') || errorMessage.toLowerCase().includes('payment')) {
+        errorTitle = "Payment Required";
+        errorMessage = "Replicate payment method required. Add a payment method at replicate.com/account/billing to continue.";
+      } else if (errorMessage.toLowerCase().includes('all replicate engines failed')) {
+        errorTitle = "All Engines Failed";
+        errorMessage = "Video generation failed due to Replicate API limits. Please add a payment method at replicate.com/account/billing or wait 60 seconds before retrying.";
+      }
+      
       toast({
-        title: "Video Generation Failed",
-        description: error.message,
+        title: errorTitle,
+        description: errorMessage,
         variant: "destructive"
       });
     }

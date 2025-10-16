@@ -9,6 +9,8 @@ import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import {
   Mic,
   Upload,
@@ -112,6 +114,7 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
   onGenerate,
   isProcessing
 }) => {
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('tts');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [script, setScript] = useState('');
@@ -183,56 +186,42 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
     if (!voiceData) return;
 
     try {
-      // Create a simple preview using ElevenLabs
       const sampleText = "Hello, this is a voice preview for your professional content.";
       
       if (audioRef.current) {
         audioRef.current.pause();
       }
 
-      // Create new audio element with ElevenLabs preview
-      const audio = new Audio();
-      
-      // Generate preview using TTS
-      const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${targetVoiceId}`, {
-        method: 'POST',
-        headers: {
-          'Accept': 'audio/mpeg',
-          'xi-api-key': 'your-api-key', // This should come from environment
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          text: sampleText,
-          model_id: 'eleven_multilingual_v2',
-          voice_settings: {
-            stability: 0.75,
-            similarity_boost: 0.75
-          }
-        })
+      // Use edge function for voice preview
+      const { data, error } = await supabase.functions.invoke('voice-preview', {
+        body: {
+          voiceId: targetVoiceId,
+          text: sampleText
+        }
       });
-      
-      if (response.ok) {
-        const audioBlob = await response.blob();
-        const audioUrl = URL.createObjectURL(audioBlob);
-        audio.src = audioUrl;
+
+      if (error) throw error;
+
+      if (data?.success && data?.audioData) {
+        const audio = new Audio(data.audioData);
+        audioRef.current = audio;
+        
         await audio.play();
         setIsPlaying(true);
         
         audio.onended = () => {
           setIsPlaying(false);
-          URL.revokeObjectURL(audioUrl);
         };
       } else {
-        // Fallback to simulated preview
-        console.log(`Playing preview for ${voiceData.name}`);
-        setIsPlaying(true);
-        setTimeout(() => setIsPlaying(false), 3000);
+        throw new Error('No audio data received');
       }
     } catch (error) {
       console.error('Preview playback failed:', error);
-      // Fallback to simulated preview
-      setIsPlaying(true);
-      setTimeout(() => setIsPlaying(false), 3000);
+      toast({
+        title: "Preview Failed",
+        description: "Could not play voice preview. Voice generation will still work.",
+        variant: "destructive"
+      });
     }
   };
 

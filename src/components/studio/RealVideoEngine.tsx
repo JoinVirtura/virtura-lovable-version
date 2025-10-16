@@ -141,10 +141,9 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
   const [processingProgress, setProcessingProgress] = useState(0);
 
   const handleGenerateVideo = async () => {
-    if (!project.avatar || !project.voice) {
-      return;
-    }
-
+    // Prerequisite checks are now handled in useStudioProject.ts
+    // This ensures consistent validation across all components
+    
     // Update processing status
     setProcessingPhase('Initializing video synthesis...');
     setProcessingProgress(10);

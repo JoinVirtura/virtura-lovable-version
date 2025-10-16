@@ -1,5 +1,8 @@
 project_id = "ujaoziqnxhjqlmnvlxav"
 
+[functions.voice-preview]
+verify_jwt = false
+
 [functions.generate-avatar]
 verify_jwt = true
 
