@@ -311,61 +311,148 @@ export const useTalkingAvatar = (
         background: 'studio'
       };
       
-      const videoResponse = await supabase.functions.invoke('video-engine-pro', {
-        body: {
+      // Use SSE stream for real-time progress updates
+      const supabaseUrl = 'https://ujaoziqnxhjqlmnvlxav.supabase.co';
+      const functionUrl = `${supabaseUrl}/functions/v1/video-engine-pro`;
+      
+      console.log('🎬 Starting SSE stream for video generation...');
+      
+      const response = await fetch(functionUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+        body: JSON.stringify({
           avatarImageUrl: avatarData.original_image_url,
           audioUrl: generatedAudio,
           prompt: prompt,
           settings: videoSettings
-        },
-        headers: {
-          Authorization: `Bearer ${session?.access_token}`,
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to start video generation: ${response.status} ${response.statusText}`);
+      }
+
+      // Read SSE stream
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let videoUrl = '';
+      let lastEventTime = Date.now();
+      const TIMEOUT_MS = 300000; // 5 minutes timeout
+
+      if (!reader) {
+        throw new Error('Failed to get stream reader');
+      }
+
+      const checkTimeout = () => {
+        if (Date.now() - lastEventTime > TIMEOUT_MS) {
+          throw new Error('Video generation timeout - no updates for 5 minutes');
         }
-      });
+      };
 
-      console.log('Pro Video Engine response:', videoResponse);
+      while (true) {
+        checkTimeout();
+        const { done, value } = await reader.read();
+        
+        if (done) {
+          console.log('✅ SSE stream completed');
+          break;
+        }
 
-      if (videoResponse.error) {
-        console.error('Video generation error:', videoResponse.error);
-        throw new Error(`Video generation failed: ${videoResponse.error.message || 'Unknown error'}`);
+        lastEventTime = Date.now();
+        buffer += decoder.decode(value, { stream: true });
+        
+        // Process each complete line
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+        
+        for (const line of lines) {
+          if (!line.trim() || !line.startsWith('data: ')) continue;
+          
+          try {
+            const data = JSON.parse(line.substring(6));
+            console.log('📡 SSE event:', data.stage, data.progress + '%', data.message);
+            
+            // Update job progress based on stage
+            if (data.stage === 'initializing') {
+              setJob(prev => prev ? {
+                ...prev,
+                progress: data.progress || 5,
+                logs: [...prev.logs, `🎬 ${data.message}`]
+              } : null);
+            } else if (data.stage === 'engine_selection') {
+              setJob(prev => prev ? {
+                ...prev,
+                progress: data.progress || 10,
+                logs: [...prev.logs, `🎯 ${data.message}`]
+              } : null);
+            } else if (data.stage === 'generating') {
+              setJob(prev => prev ? {
+                ...prev,
+                progress: data.progress || 30,
+                steps: { ...prev.steps, 'ai-engine': 'running' },
+                logs: [...prev.logs, `🎬 ${data.message}`]
+              } : null);
+            } else if (data.stage === 'processing') {
+              setJob(prev => prev ? {
+                ...prev,
+                progress: data.progress || 60,
+                steps: { ...prev.steps, 'ultra-hd': 'running' },
+                logs: [...prev.logs, `🎭 ${data.message}`]
+              } : null);
+            } else if (data.stage === 'downloading') {
+              setJob(prev => prev ? {
+                ...prev,
+                progress: data.progress || 75,
+                logs: [...prev.logs, `⬇️ ${data.message}`]
+              } : null);
+            } else if (data.stage === 'uploading') {
+              setJob(prev => prev ? {
+                ...prev,
+                progress: data.progress || 85,
+                logs: [...prev.logs, `☁️ ${data.message}`]
+              } : null);
+            } else if (data.stage === 'complete') {
+              videoUrl = data.videoUrl;
+              console.log('✅ Video generation complete:', videoUrl);
+              
+              setGeneratedVideo(videoUrl);
+              
+              setJob(prev => prev ? {
+                ...prev,
+                progress: 100,
+                status: 'done',
+                steps: { 
+                  ...prev.steps, 
+                  'ai-engine': 'done',
+                  'ultra-hd': 'done',
+                  'cinematic': 'done',
+                  export: 'done'
+                },
+                logs: [...prev.logs, '🎉 Ultra-HD video generation completed!']
+              } : null);
+
+              toast({
+                title: "Ultra-HD Video Generated! 🎬✨",
+                description: `${data.metadata?.engine || 'Pro Engine'} created ${data.quality || '4K'} cinematic quality video`,
+              });
+            } else if (data.stage === 'error') {
+              throw new Error(data.error || 'Video generation failed');
+            }
+          } catch (parseError: any) {
+            console.warn('Failed to parse SSE message:', line, parseError);
+          }
+        }
       }
 
-      const videoData = videoResponse.data;
-      
-      if (!videoData?.success) {
-        throw new Error(videoData?.error || 'Video generation failed');
+      if (!videoUrl) {
+        throw new Error('Video generation completed but no video URL received');
       }
 
-      setJob(prev => prev ? {
-        ...prev,
-        progress: 85,
-        steps: { ...prev.steps, 'ultra-hd': 'done', 'cinematic': 'running' },
-        logs: [...prev.logs, `✨ ${videoData.metadata?.engine || 'Pro Engine'} processing completed!`]
-      } : null);
-
-      console.log('✅ Ultra-HD video generated successfully:', videoData);
-      
-      setGeneratedVideo(videoData.videoUrl);
-      
-      // Success with complete job tracking
-      setJob(prev => prev ? {
-        ...prev,
-        progress: 100,
-        status: 'done',
-        steps: { 
-          ...prev.steps, 
-          'ai-engine': 'done',
-          'ultra-hd': 'done',
-          'cinematic': 'done',
-          export: 'done'
-        },
-        logs: [...prev.logs, '🎉 Ultra-HD video generation completed!']
-      } : null);
-
-      toast({
-        title: "Ultra-HD Video Generated! 🎬✨",
-        description: `${videoData.metadata?.engine || 'Pro Engine'} created ${videoData.quality || '4K'} cinematic quality video`,
-      });
+      console.log('✅ Final video URL:', videoUrl);
 
     } catch (error: any) {
       console.error('Pro Video Engine failed:', error);
