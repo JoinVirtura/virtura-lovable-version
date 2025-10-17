@@ -32,7 +32,9 @@ import {
   Trash2,
   Share2,
   Download,
-  MoreVertical
+  MoreVertical,
+  Film,
+  Play
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -72,8 +74,7 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
       const { data, error } = await supabase
         .from('avatar_library')
         .select('*')
-        .order('created_at', { ascending: false })
-        .limit(50);
+        .order('created_at', { ascending: false });
 
       if (error) {
         console.error('Error loading avatars:', error);
@@ -81,7 +82,46 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
         return;
       }
 
-      setAvatars(data || []);
+      // Get current user ID for querying talking_avatars
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setAvatars(data || []);
+        return;
+      }
+
+      // Process avatars to fix video URLs
+      const processedAvatars = await Promise.all(
+        (data || []).map(async (avatar) => {
+          // Check if image_url is a video file or blob
+          const isVideoUrl = avatar.image_url.endsWith('.mp4') || 
+                            avatar.image_url.endsWith('.webm') ||
+                            avatar.image_url.startsWith('blob:');
+          
+          if (isVideoUrl) {
+            // Try to find the original image from talking_avatars table
+            const { data: talkingAvatar } = await supabase
+              .from('talking_avatars')
+              .select('original_image_url')
+              .eq('user_id', user.id)
+              .order('created_at', { ascending: false })
+              .limit(1)
+              .maybeSingle();
+            
+            if (talkingAvatar?.original_image_url) {
+              return {
+                ...avatar,
+                image_url: talkingAvatar.original_image_url,
+                video_url: avatar.image_url,
+                thumbnail_url: talkingAvatar.original_image_url
+              };
+            }
+          }
+          
+          return avatar;
+        })
+      );
+
+      setAvatars(processedAvatars);
     } catch (error) {
       console.error('Error loading avatars:', error);
       toast.error('Failed to load avatar library');
@@ -265,7 +305,13 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
                       e.currentTarget.src = '/placeholder.svg';
                     }}
                   />
-                  <div className="absolute top-2 right-2">
+                  <div className="absolute top-2 right-2 flex gap-2">
+                    {avatar.video_url && (
+                      <Badge className="bg-blue-500/90 backdrop-blur-sm">
+                        <Film className="h-3 w-3 mr-1" />
+                        Video
+                      </Badge>
+                    )}
                     <Badge className="bg-primary/90 backdrop-blur-sm">
                       <Sparkles className="h-3 w-3 mr-1" />
                       AI Generated
