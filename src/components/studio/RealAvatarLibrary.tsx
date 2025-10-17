@@ -357,8 +357,8 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
                       alt={avatar.title || 'Generated Avatar'}
                       className="w-full aspect-square object-cover"
                       onError={(e) => {
-                        // Fallback for broken images
-                        e.currentTarget.src = '/placeholder.svg';
+                        // Hide broken images gracefully
+                        e.currentTarget.style.display = 'none';
                       }}
                     />
                   )}
