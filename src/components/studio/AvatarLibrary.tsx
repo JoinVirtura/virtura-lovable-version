@@ -280,7 +280,7 @@ export const AvatarLibrary: React.FC<AvatarLibraryProps> = ({ onSelectAvatar, is
                 />
                 <div className="absolute top-2 left-2 flex gap-1">
                   {avatar.type === 'Premium' && (
-                    <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white">
+                    <Badge className="bg-gradient-to-r from-violet-400 to-blue-500 text-white">
                       <Crown className="h-3 w-3 mr-1" />
                       Premium
                     </Badge>

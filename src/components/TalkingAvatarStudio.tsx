@@ -152,22 +152,22 @@ export const TalkingAvatarStudio: React.FC<TalkingAvatarStudioProps> = ({ onView
         <div className="absolute top-1/2 left-1/6 w-32 h-32 border border-primary/20 rounded-full animate-gentle-sway" style={{animationDelay: '0.5s'}}></div>
         <div className="absolute bottom-1/3 right-1/4 w-48 h-48 border border-primary/12 rounded-full animate-gentle-sway" style={{animationDelay: '1.5s'}}></div>
         
-        {/* Scattered yellow dots */}
-        <div className="absolute top-1/4 left-1/3 w-2 h-2 bg-yellow-400/60 rounded-full animate-pulse"></div>
-        <div className="absolute top-1/2 right-1/4 w-1.5 h-1.5 bg-yellow-400/40 rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
-        <div className="absolute bottom-1/3 left-1/5 w-3 h-3 bg-yellow-400/50 rounded-full animate-pulse" style={{animationDelay: '2s'}}></div>
-        <div className="absolute top-3/4 right-1/3 w-1 h-1 bg-yellow-400/70 rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
-        <div className="absolute top-1/6 right-1/6 w-2.5 h-2.5 bg-yellow-400/45 rounded-full animate-pulse" style={{animationDelay: '1.5s'}}></div>
-        <div className="absolute bottom-1/4 left-3/4 w-1.5 h-1.5 bg-yellow-400/55 rounded-full animate-pulse" style={{animationDelay: '0.8s'}}></div>
-        <div className="absolute top-2/3 left-1/4 w-2 h-2 bg-yellow-400/35 rounded-full animate-pulse" style={{animationDelay: '2.2s'}}></div>
-        <div className="absolute bottom-1/6 right-1/2 w-1 h-1 bg-yellow-400/60 rounded-full animate-pulse" style={{animationDelay: '1.8s'}}></div>
+        {/* Scattered violet dots */}
+        <div className="absolute top-1/4 left-1/3 w-2 h-2 bg-violet-400/60 rounded-full animate-pulse"></div>
+        <div className="absolute top-1/2 right-1/4 w-1.5 h-1.5 bg-violet-400/40 rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
+        <div className="absolute bottom-1/3 left-1/5 w-3 h-3 bg-violet-400/50 rounded-full animate-pulse" style={{animationDelay: '2s'}}></div>
+        <div className="absolute top-3/4 right-1/3 w-1 h-1 bg-violet-400/70 rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
+        <div className="absolute top-1/6 right-1/6 w-2.5 h-2.5 bg-violet-400/45 rounded-full animate-pulse" style={{animationDelay: '1.5s'}}></div>
+        <div className="absolute bottom-1/4 left-3/4 w-1.5 h-1.5 bg-violet-400/55 rounded-full animate-pulse" style={{animationDelay: '0.8s'}}></div>
+        <div className="absolute top-2/3 left-1/4 w-2 h-2 bg-violet-400/35 rounded-full animate-pulse" style={{animationDelay: '2.2s'}}></div>
+        <div className="absolute bottom-1/6 right-1/2 w-1 h-1 bg-violet-400/60 rounded-full animate-pulse" style={{animationDelay: '1.8s'}}></div>
       </div>
       
       <div className="max-w-6xl mx-auto p-6 relative z-10">
         {/* Header */}
         <div className="text-center mb-8 pt-8">
           <h1 className="text-4xl font-bold text-foreground mb-2">
-            AI <span className="bg-gradient-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent">Video</span> Studio
+            AI <span className="bg-gradient-to-r from-violet-400 to-blue-500 bg-clip-text text-transparent">Video</span> Studio
           </h1>
           <p className="text-muted-foreground text-lg">
             Create professional talking avatar videos with AI

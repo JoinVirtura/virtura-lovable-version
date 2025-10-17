@@ -76,7 +76,7 @@ export const ProjectStatusPanel: React.FC<ProjectStatusPanelProps> = ({
       case 'Configured':
         return 'bg-green-500/20 text-green-700 border-green-500/30';
       case 'Generating':
-        return 'bg-yellow-500/20 text-yellow-700 border-yellow-500/30 animate-pulse';
+        return 'bg-violet-500/20 text-violet-300 border-violet-500/30 animate-pulse';
       default:
         return 'bg-muted text-muted-foreground border-muted';
     }
@@ -89,7 +89,7 @@ export const ProjectStatusPanel: React.FC<ProjectStatusPanelProps> = ({
     if (status === 'Ready' || status === 'Generated' || status === 'Configured') {
       return <CheckCircle className="h-4 w-4 text-green-500" />;
     } else if (status === 'Generating') {
-      return <Clock className="h-4 w-4 text-yellow-500 animate-spin" />;
+      return <Clock className="h-4 w-4 text-violet-400 animate-spin" />;
     } else if (stepId === currentStep) {
       return <StepIcon className="h-4 w-4 text-primary" />;
     } else {
@@ -140,7 +140,7 @@ export const ProjectStatusPanel: React.FC<ProjectStatusPanelProps> = ({
                     <span className="capitalize">{stepKey.replace('-', ' ')}</span>
                     <div className="flex items-center gap-1">
                       {status === 'done' && <CheckCircle className="h-3 w-3 text-green-500" />}
-                      {status === 'running' && <Clock className="h-3 w-3 text-yellow-500 animate-spin" />}
+                      {status === 'running' && <Clock className="h-3 w-3 text-violet-400 animate-spin" />}
                       {status === 'error' && <AlertCircle className="h-3 w-3 text-red-500" />}
                       <span className={`
                         ${status === 'done' ? 'text-green-600' : ''}

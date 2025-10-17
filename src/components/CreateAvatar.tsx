@@ -82,7 +82,7 @@ export const CreateAvatar = () => {
     { id: "photorealistic", name: "Photorealism Pro", gradient: "from-primary/90 to-primary/70" },
     { id: "realistic", name: "Realistic V2.1", gradient: "from-primary/80 to-primary/60" },
     { id: "anime", name: "Anime V2", gradient: "from-purple-500/80 to-pink-500/60" },
-    { id: "furry", name: "Furry V2", gradient: "from-orange-500/80 to-yellow-500/60" },
+    { id: "furry", name: "Furry V2", gradient: "from-violet-500/80 to-blue-500/60" },
     { id: "legacy", name: "Legacy", gradient: "from-gray-500/80 to-gray-400/60" }
   ];
 

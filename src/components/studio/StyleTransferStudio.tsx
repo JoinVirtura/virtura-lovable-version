@@ -344,15 +344,15 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
 
       {/* Prerequisites Check */}
       {!project.avatar && (
-        <Card className="border-orange-200 bg-orange-50/50 dark:bg-orange-950/20">
+        <Card className="border-violet-500/20 bg-violet-950/20 backdrop-blur-xl">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <ImageIcon className="h-5 w-5 text-orange-500" />
+              <ImageIcon className="h-5 w-5 text-violet-400" />
               <div>
-                <p className="font-medium text-orange-800 dark:text-orange-200">
+                <p className="font-medium text-violet-200">
                   Avatar Required
                 </p>
-                <p className="text-sm text-orange-600 dark:text-orange-300">
+                <p className="text-sm text-violet-300">
                   Upload or generate an avatar first to apply style transfer
                 </p>
               </div>
@@ -431,7 +431,7 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
                     </div>
                     <div className="absolute top-2 right-2">
                       {style.type === 'Premium' && (
-                        <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-xs">
+                        <Badge className="bg-gradient-to-r from-violet-400 to-blue-500 text-white text-xs">
                           <Crown className="h-3 w-3 mr-1" />
                           Premium
                         </Badge>

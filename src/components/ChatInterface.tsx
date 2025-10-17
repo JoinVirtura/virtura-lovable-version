@@ -54,7 +54,7 @@ export function ChatInterface({ type, onGenerate }: ChatInterfaceProps) {
   const hairStyles = ["Long", "Medium", "Short", "Curly", "Straight", "Wavy", "Braided"];
   const eyeColors = ["Brown", "Blue", "Green", "Hazel", "Gray", "Amber"];
   const locations = ["Studio", "Office", "Outdoor", "Home", "Cafe", "Library", "Park"];
-  const lightingOptions = ["Natural", "Studio", "Golden Hour", "Soft", "Dramatic", "Warm"];
+  const lightingOptions = ["Natural", "Studio", "Vibrant", "Soft", "Dramatic", "Neon"];
   const poses = ["Standing", "Sitting", "Portrait", "Three-Quarter", "Profile", "Action"];
   const clothingStyles = ["Casual", "Business", "Formal", "Creative", "Sporty", "Elegant"];
   const accessories = ["None", "Glasses", "Watch", "Jewelry", "Hat", "Scarf"];
@@ -88,7 +88,7 @@ export function ChatInterface({ type, onGenerate }: ChatInterfaceProps) {
             <Button
               onClick={handleGenerate}
               size="icon"
-              className="absolute bottom-3 right-3 shadow-gold"
+              className="absolute bottom-3 right-3 shadow-violet-glow"
               disabled={!prompt.trim()}
             >
               <Sparkles className="w-5 h-5" />

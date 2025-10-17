@@ -229,14 +229,14 @@ export const AvatarLibraryModal = ({ open, onOpenChange, onSelectAvatar }: Avata
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                     />
                     {avatar.premium && (
-                      <Badge className="absolute top-2 right-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-black">
+                      <Badge className="absolute top-2 right-2 bg-gradient-to-r from-violet-400 to-blue-500 text-white">
                         <Crown className="w-3 h-3 mr-1" />
                         Pro
                       </Badge>
                     )}
                     {avatar.rating && (
                       <Badge className="absolute top-2 left-2 bg-black/70 text-white">
-                        <Star className="w-3 h-3 mr-1 fill-yellow-400 text-yellow-400" />
+                        <Star className="w-3 h-3 mr-1 fill-violet-400 text-violet-400" />
                         {avatar.rating}
                       </Badge>
                     )}

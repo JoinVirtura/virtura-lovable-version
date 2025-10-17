@@ -143,7 +143,7 @@ export const VideoEngineStudio: React.FC<VideoEngineStudioProps> = ({
           <h2 className="text-2xl font-bold flex items-center gap-3">
             <div className="relative">
               <Film className="h-6 w-6 text-primary" />
-              <Sparkles className="h-3 w-3 absolute -top-1 -right-1 text-yellow-500" />
+              <Sparkles className="h-3 w-3 absolute -top-1 -right-1 text-violet-400" />
             </div>
             Video Engine
           </h2>
@@ -166,15 +166,15 @@ export const VideoEngineStudio: React.FC<VideoEngineStudioProps> = ({
 
       {/* Prerequisites Check */}
       {!canGenerate && (
-        <Card className="border-orange-200 bg-orange-50/50 dark:bg-orange-950/20">
+        <Card className="border-violet-500/20 bg-violet-950/20 backdrop-blur-xl">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <AlertCircle className="h-5 w-5 text-orange-500 flex-shrink-0" />
+              <AlertCircle className="h-5 w-5 text-violet-400 flex-shrink-0" />
               <div>
-                <p className="font-medium text-orange-800 dark:text-orange-200">
+                <p className="font-medium text-violet-200">
                   Prerequisites Required
                 </p>
-                <p className="text-sm text-orange-600 dark:text-orange-300">
+                <p className="text-sm text-violet-300">
                   {!project.avatar && 'Upload an avatar image. '}
                   {!project.voice && 'Generate voice audio. '}
                   Complete these steps to enable video generation.

@@ -291,7 +291,7 @@ export default function SettingsPage() {
                   <h3 className="font-display font-bold">Free Plan</h3>
                   <p className="text-sm text-muted-foreground">50 generations per month</p>
                 </div>
-                <Badge className="bg-gradient-gold">Active</Badge>
+                <Badge className="bg-gradient-primary">Active</Badge>
               </div>
               
               {/* Usage */}
@@ -301,7 +301,7 @@ export default function SettingsPage() {
                   <span className="text-sm text-muted-foreground">12 / 50</span>
                 </div>
                 <div className="w-full bg-muted rounded-full h-2">
-                  <div className="bg-gradient-gold h-2 rounded-full" style={{ width: "24%" }}></div>
+                  <div className="bg-gradient-primary h-2 rounded-full" style={{ width: "24%" }}></div>
                 </div>
               </div>
               

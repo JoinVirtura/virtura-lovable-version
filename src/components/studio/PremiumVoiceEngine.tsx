@@ -236,7 +236,7 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
             <div className="relative">
               <Mic className="h-7 w-7 text-primary" />
               <Brain className="h-4 w-4 absolute -top-1 -right-1 text-purple-500" />
-              <Crown className="h-3 w-3 absolute -bottom-1 -left-1 text-yellow-500" />
+              <Crown className="h-3 w-3 absolute -bottom-1 -left-1 text-violet-400" />
             </div>
             <span className="bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
               Premium Voice Engine
@@ -288,7 +288,7 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg flex items-center gap-2">
-                    <Crown className="h-5 w-5 text-yellow-500" />
+                    <Crown className="h-5 w-5 text-violet-400" />
                     Premium Voice Library
                   </CardTitle>
                 </CardHeader>

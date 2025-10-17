@@ -207,7 +207,7 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
           <h2 className="text-3xl font-bold flex items-center gap-3">
             <div className="relative">
               <Film className="h-7 w-7 text-primary" />
-              <Sparkles className="h-4 w-4 absolute -top-1 -right-1 text-yellow-500" />
+              <Sparkles className="h-4 w-4 absolute -top-1 -right-1 text-violet-400" />
               <Zap className="h-3 w-3 absolute -bottom-1 -left-1 text-purple-500" />
             </div>
             <span className="bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
@@ -237,15 +237,15 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
 
       {/* Prerequisites Check with Real Integration Status */}
       {!canGenerate && (
-        <Card className="border-orange-200 bg-orange-50/50 dark:bg-orange-950/20">
+        <Card className="border-violet-500/20 bg-violet-950/20 backdrop-blur-xl">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <AlertCircle className="h-5 w-5 text-orange-500 flex-shrink-0" />
+              <AlertCircle className="h-5 w-5 text-violet-400 flex-shrink-0" />
               <div>
-                <p className="font-medium text-orange-800 dark:text-orange-200">
+                <p className="font-medium text-violet-200">
                   Prerequisites Required
                 </p>
-                <div className="text-sm text-orange-600 dark:text-orange-300 space-y-1 mt-1">
+                <div className="text-sm text-violet-300 space-y-1 mt-1">
                   <div className="flex items-center gap-2">
                     {project.avatar?.status === 'completed' ? (
                       <CheckCircle className="h-3 w-3 text-green-600" />
@@ -298,9 +298,9 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
               
               {/* Last Error Alert */}
               {project.video.metadata?.lastError && (
-                <Alert className="border-orange-200 bg-orange-50/50 dark:bg-orange-950/30 py-2">
-                  <AlertCircle className="h-3 w-3 text-orange-500" />
-                  <AlertDescription className="text-xs text-orange-700 dark:text-orange-300">
+                <Alert className="border-violet-500/20 bg-violet-950/30 backdrop-blur-sm py-2">
+                  <AlertCircle className="h-3 w-3 text-violet-400" />
+                  <AlertDescription className="text-xs text-violet-300">
                     {project.video.metadata.lastError}
                   </AlertDescription>
                 </Alert>
@@ -769,16 +769,16 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
 
       {/* Processing Status */}
       {project.video?.status === 'processing' && (
-        <Card className="border-yellow-200 bg-yellow-50/50 dark:bg-yellow-950/20">
+        <Card className="border-violet-500/20 bg-violet-950/20 backdrop-blur-xl">
           <CardContent className="p-4">
             <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <Loader2 className="h-5 w-5 text-yellow-500 animate-spin" />
+                <Loader2 className="h-5 w-5 text-violet-400 animate-spin" />
                 <div>
-                  <p className="font-medium text-yellow-800 dark:text-yellow-200">
+                  <p className="font-medium text-violet-200">
                     Real Video Generation in Progress
                   </p>
-                  <p className="text-sm text-yellow-600 dark:text-yellow-300">
+                  <p className="text-sm text-violet-300">
                     Processing your avatar and voice...
                   </p>
                 </div>

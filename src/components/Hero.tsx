@@ -364,15 +364,15 @@ export const Hero = () => {
                   <div className="flex items-center gap-3 flex-wrap flex-1 min-w-0">
                    {/* Style Button - Updated Icon */}
                    <div className="relative">
-                     <Button
-                       type="button"
-                       variant="outline"
-                       onClick={() => setShowStyleModal(true)}
-                       className="bg-muted/60 border-border/50 hover:bg-gradient-gold hover:text-primary-foreground hover:border-primary/50 px-4 py-2 rounded-xl text-sm font-medium h-10 transition-all duration-200"
-                     >
-                       <Palette className="w-4 h-4 mr-1" />
-                       Style
-                     </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setShowStyleModal(true)}
+                        className="bg-muted/60 border-border/50 hover:bg-gradient-primary hover:text-white hover:border-violet-500/50 px-4 py-2 rounded-xl text-sm font-medium h-10 transition-all duration-200"
+                      >
+                        <Palette className="w-4 h-4 mr-1" />
+                        Style
+                      </Button>
                    </div>
 
                   {/* Image Prompt Button with Upload Functionality */}
@@ -387,7 +387,7 @@ export const Hero = () => {
                     <Button
                       type="button"
                       variant="outline"
-                      className="bg-muted/60 border-border/50 hover:bg-gradient-gold hover:text-primary-foreground hover:border-primary/50 px-4 py-2 rounded-xl text-sm font-medium h-10 transition-all duration-200"
+                      className="bg-muted/60 border-border/50 hover:bg-gradient-primary hover:text-white hover:border-violet-500/50 px-4 py-2 rounded-xl text-sm font-medium h-10 transition-all duration-200"
                       onClick={() => {
                         document.getElementById("image-prompt-upload")?.click();
                       }}
@@ -487,7 +487,7 @@ export const Hero = () => {
                     <Button
                       type="submit"
                       disabled={!inputValue.trim()}
-                      className="bg-gradient-gold hover:bg-gradient-gold-hover shadow-gold px-6 py-3 rounded-xl font-bold text-base h-12 whitespace-nowrap"
+                      className="bg-gradient-primary hover:bg-gradient-secondary shadow-violet-glow px-6 py-3 rounded-xl font-bold text-base h-12 whitespace-nowrap"
                     >
                       Generate
                     </Button>
@@ -737,7 +737,7 @@ export const Hero = () => {
                   <Button 
                     type="button"
                     variant="outline" 
-                    className="flex-1 border-primary/30 text-foreground hover:bg-gradient-gold hover:text-primary-foreground hover:border-primary/50 py-2 rounded-lg text-sm transition-all duration-200"
+                    className="flex-1 border-violet-500/30 text-foreground hover:bg-gradient-primary hover:text-white hover:border-violet-500/50 py-2 rounded-lg text-sm transition-all duration-200"
                     onClick={() => {
                       console.log('Select asset clicked');
                       setShowImageStylePopup(false);

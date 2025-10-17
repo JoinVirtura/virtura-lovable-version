@@ -114,7 +114,7 @@ export default function UpgradePage() {
           {plans.map((plan) => (
             <Card key={plan.id} className={`p-6 relative h-full flex flex-col ${plan.popular ? "ring-2 ring-primary" : ""}`}>
               {plan.popular && (
-                <Badge className="absolute -top-3 left-6 bg-gradient-gold">Most Popular</Badge>
+                <Badge className="absolute -top-3 left-6 bg-gradient-primary">Most Popular</Badge>
               )}
               <div className="space-y-2">
                 <h3 className="text-xl font-display font-bold">{plan.name}</h3>
@@ -126,7 +126,7 @@ export default function UpgradePage() {
                   <li key={h}>• {h}</li>
                 ))}
               </ul>
-              <Button className="mt-6 w-full bg-gradient-gold hover:bg-gradient-gold-hover text-primary-foreground" onClick={() => startSubscription(plan.id)}>
+              <Button className="mt-6 w-full bg-gradient-primary hover:bg-gradient-secondary text-white shadow-violet-glow" onClick={() => startSubscription(plan.id)}>
                 Choose {plan.name}
               </Button>
             </Card>

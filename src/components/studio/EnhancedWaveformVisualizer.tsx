@@ -160,10 +160,10 @@ export const EnhancedWaveformVisualizer: React.FC<EnhancedWaveformVisualizerProp
           gradient.addColorStop(1, `hsl(51, 100%, ${Math.min(100, 45 + intensity * 35)}%)`);
         } else {
           // Enhanced static state
-          gradient.addColorStop(0, '#f59e0b'); // amber-500
-          gradient.addColorStop(0.3, '#eab308'); // yellow-500
-          gradient.addColorStop(0.7, '#facc15'); // yellow-400
-          gradient.addColorStop(1, '#fde047'); // yellow-300
+          gradient.addColorStop(0, '#a855f7'); // violet-500
+          gradient.addColorStop(0.3, '#c084fc'); // violet-400
+          gradient.addColorStop(0.7, '#3b82f6'); // blue-500
+          gradient.addColorStop(1, '#60a5fa'); // blue-400
         }
 
         ctx.fillStyle = gradient;
@@ -175,14 +175,14 @@ export const EnhancedWaveformVisualizer: React.FC<EnhancedWaveformVisualizerProp
           const distance = Math.abs((index / waveformData.length) - playPosition);
           if (distance < 0.1) {
             ctx.shadowBlur = 10;
-            ctx.shadowColor = '#facc15';
+            ctx.shadowColor = '#c084fc';
             ctx.fillRect(x, centerY - barHeight/2, barWidth - 1, barHeight);
             ctx.shadowBlur = 0;
           }
         }
       } catch (error) {
         // Fallback
-        ctx.fillStyle = '#eab308';
+        ctx.fillStyle = '#a855f7';
         ctx.fillRect(x, centerY - barHeight/2, barWidth - 1, barHeight);
       }
     });
@@ -199,8 +199,8 @@ export const EnhancedWaveformVisualizer: React.FC<EnhancedWaveformVisualizerProp
       
       // Spectrum bars at the bottom
       const gradient = ctx.createLinearGradient(0, h - barHeight, 0, h);
-      gradient.addColorStop(0, 'rgba(234, 179, 8, 0.6)'); // yellow-500 with alpha
-      gradient.addColorStop(1, 'rgba(234, 179, 8, 0.2)');
+      gradient.addColorStop(0, 'rgba(168, 85, 247, 0.6)'); // violet-500 with alpha
+      gradient.addColorStop(1, 'rgba(168, 85, 247, 0.2)');
       
       ctx.fillStyle = gradient;
       ctx.fillRect(x, h - barHeight, barWidth - 1, barHeight);

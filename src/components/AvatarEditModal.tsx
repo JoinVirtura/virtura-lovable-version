@@ -38,9 +38,9 @@ export function AvatarEditModal({ isOpen, onClose, avatar }: AvatarEditModalProp
   const [style, setStyle] = useState("realistic")
 
   const moods = [
-    { id: "happy", label: "Happy", icon: Smile, color: "bg-yellow-500" },
+    { id: "happy", label: "Happy", icon: Smile, color: "bg-violet-400" },
     { id: "mysterious", label: "Mysterious", icon: Moon, color: "bg-purple-500" },
-    { id: "confident", label: "Confident", icon: Sun, color: "bg-orange-500" },
+    { id: "confident", label: "Confident", icon: Sun, color: "bg-blue-500" },
     { id: "dreamy", label: "Dreamy", icon: Sparkles, color: "bg-pink-500" },
   ]
 

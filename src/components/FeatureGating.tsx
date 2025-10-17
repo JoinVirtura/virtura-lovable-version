@@ -163,20 +163,20 @@ function FeatureGate({ feature, children, fallback }: FeatureGateProps) {
   };
 
   const getUpgradeCard = () => (
-    <Card className="border-orange-200 bg-orange-50/50">
+    <Card className="border-violet-500/20 bg-violet-950/30 backdrop-blur-xl">
       <CardHeader>
         <div className="flex items-center gap-2">
-          <Crown className="w-5 h-5 text-orange-600" />
-          <CardTitle className="text-orange-900">Upgrade Required</CardTitle>
+          <Crown className="w-5 h-5 text-violet-400" />
+          <CardTitle className="text-violet-200">Upgrade Required</CardTitle>
         </div>
-        <CardDescription className="text-orange-700">
+        <CardDescription className="text-violet-300">
           This feature requires a Pro or Enterprise plan
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <div className="text-sm font-medium text-orange-900">Pro Plan Includes:</div>
-          <ul className="text-sm text-orange-700 space-y-1">
+          <div className="text-sm font-medium text-violet-200">Pro Plan Includes:</div>
+          <ul className="text-sm text-violet-300 space-y-1">
             <li>• 100 voice generations/day</li>
             <li>• 25 video generations/day</li>
             <li>• Premium voice library</li>
@@ -184,7 +184,7 @@ function FeatureGate({ feature, children, fallback }: FeatureGateProps) {
             <li>• 1GB storage</li>
           </ul>
         </div>
-        <Button className="w-full bg-orange-600 hover:bg-orange-700">
+        <Button className="w-full bg-gradient-primary hover:bg-gradient-secondary shadow-violet-glow">
           <Crown className="w-4 h-4 mr-2" />
           Upgrade to Pro
         </Button>

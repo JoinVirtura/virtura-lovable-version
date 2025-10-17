@@ -3318,7 +3318,7 @@ export default function Dashboard() {
                   </div>
                   
                   {isFullyComplete && (
-                    <Badge className="bg-gradient-gold">
+                    <Badge className="bg-gradient-primary">
                       <Star className="w-4 h-4 mr-1" />
                       Virtura Creator Ready ✅
                     </Badge>
@@ -3328,7 +3328,7 @@ export default function Dashboard() {
                 {/* Progress Bar */}
                 <div className="w-full bg-muted rounded-full h-3">
                   <div 
-                    className="bg-gradient-gold h-3 rounded-full transition-all duration-500 shadow-gold"
+                    className="bg-gradient-primary h-3 rounded-full transition-all duration-500 shadow-violet-glow"
                     style={{ width: `${progress}%` }}
                   ></div>
                 </div>
@@ -3701,7 +3701,7 @@ export default function Dashboard() {
                     <h3 className="font-display font-bold">Free Plan</h3>
                     <p className="text-sm text-muted-foreground">50 generations per month</p>
                   </div>
-                  <Badge className="bg-gradient-gold">Active</Badge>
+                  <Badge className="bg-gradient-primary">Active</Badge>
                 </div>
                 
                 {/* Usage */}
@@ -3711,7 +3711,7 @@ export default function Dashboard() {
                     <span className="text-sm text-muted-foreground">12 / 50</span>
                   </div>
                   <div className="w-full bg-muted rounded-full h-2">
-                    <div className="bg-gradient-gold h-2 rounded-full" style={{ width: "24%" }}></div>
+                    <div className="bg-gradient-primary h-2 rounded-full" style={{ width: "24%" }}></div>
                   </div>
                 </div>
                 

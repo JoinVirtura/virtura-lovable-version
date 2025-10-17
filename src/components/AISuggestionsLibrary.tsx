@@ -581,7 +581,7 @@ export function AISuggestionsLibrary() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Sparkles className="w-5 h-5 text-yellow-500" />
+            <Sparkles className="w-5 h-5 text-violet-400" />
             <h3 className="text-lg font-semibold text-foreground">AI Suggestions Library</h3>
           </div>
           <Badge variant="secondary" className="text-xs">
@@ -631,7 +631,7 @@ export function AISuggestionsLibrary() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-start space-x-3 flex-1">
                     <div className="p-2 rounded-lg bg-muted/50 border">
-                      <Icon className="w-4 h-4 text-yellow-500" />
+                      <Icon className="w-4 h-4 text-violet-400" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center space-x-2 mb-1">

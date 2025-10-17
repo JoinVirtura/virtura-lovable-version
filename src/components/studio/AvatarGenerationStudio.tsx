@@ -237,7 +237,7 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
           <h2 className="text-2xl font-bold flex items-center gap-3">
             <div className="relative">
               <Camera className="h-6 w-6 text-primary" />
-              <Sparkles className="h-3 w-3 absolute -top-1 -right-1 text-yellow-500" />
+              <Sparkles className="h-3 w-3 absolute -top-1 -right-1 text-violet-400" />
             </div>
             Avatar Generation
           </h2>

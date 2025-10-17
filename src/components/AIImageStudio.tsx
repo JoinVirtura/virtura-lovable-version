@@ -788,9 +788,9 @@ export const AIImageStudio = () => {
               <div className="space-y-4">
                 {/* Quick Edit Suggestions */}
                 <div className="flex flex-wrap gap-2">
-                  <Button variant="outline" size="sm" onClick={() => setChatInput("Change the lighting to golden hour")}>
+                  <Button variant="outline" size="sm" onClick={() => setChatInput("Change the lighting to vibrant neon")}>
                     <Wand2 className="h-3 w-3 mr-1" />
-                    Golden Hour
+                    Vibrant Light
                   </Button>
                   <Button variant="outline" size="sm" onClick={() => setChatInput("Make it more dramatic")}>
                     <Camera className="h-3 w-3 mr-1" />

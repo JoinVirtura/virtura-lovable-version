@@ -216,15 +216,15 @@ export function UploadSection() {
         <Card
           className={`border-2 border-dashed transition-all duration-300 animate-fade-in ${
             isDragging 
-              ? "border-yellow-500 bg-yellow-50/10 shadow-lg scale-[1.02] shadow-yellow-500/20" 
-              : "border-border hover:border-yellow-500/50"
+              ? "border-violet-500 bg-violet-50/10 shadow-lg scale-[1.02] shadow-violet-500/20" 
+              : "border-border hover:border-violet-500/50"
           }`}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
         >
           <div className="p-12 text-center">
-            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center shadow-xl">
+            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-violet-400 to-blue-500 flex items-center justify-center shadow-xl">
               <Upload className="w-10 h-10 text-white" />
             </div>
             
@@ -241,7 +241,7 @@ export function UploadSection() {
               <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
                 <Button 
                   onClick={() => fileInputRef.current?.click()}
-                  className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white hover-scale"
+                  className="bg-gradient-to-r from-violet-500 to-blue-500 hover:from-violet-600 hover:to-blue-600 text-white hover-scale shadow-violet-glow"
                 >
                   <Upload className="w-4 h-4 mr-2" />
                   Choose Files
@@ -265,7 +265,7 @@ export function UploadSection() {
         <div className="space-y-6 animate-fade-in">
           {isProcessing ? (
             <Card className="p-8 text-center">
-              <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center animate-pulse">
+              <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-br from-violet-400 to-blue-500 flex items-center justify-center animate-pulse">
                 <Sparkles className="w-8 h-8 text-white" />
               </div>
               
@@ -280,7 +280,7 @@ export function UploadSection() {
                 </div>
                 <div className="w-full bg-secondary rounded-full h-2 mb-2">
                   <div 
-                    className="bg-gradient-to-r from-yellow-500 to-yellow-600 h-2 rounded-full transition-all duration-500"
+                    className="bg-gradient-to-r from-violet-500 to-blue-500 h-2 rounded-full transition-all duration-500"
                     style={{ width: `${Math.min(100, (progressStep / 5) * 100)}%` }}
                   ></div>
                 </div>
@@ -296,7 +296,7 @@ export function UploadSection() {
                     key={step}
                     className={`h-2 rounded-full transition-all duration-300 ${
                       step <= progressStep
-                        ? "bg-gradient-to-r from-yellow-500 to-yellow-600"
+                        ? "bg-gradient-to-r from-violet-500 to-blue-500"
                         : "bg-secondary"
                     }`}
                   />
@@ -331,7 +331,7 @@ export function UploadSection() {
                   <Button 
                     onClick={handleGenerateAvatars}
                     disabled={isProcessing || !uploadedFile}
-                    className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white"
+                    className="w-full bg-gradient-to-r from-violet-500 to-blue-500 hover:from-violet-600 hover:to-blue-600 text-white shadow-violet-glow"
                   >
                     {isProcessing ? (
                       <>
@@ -351,7 +351,7 @@ export function UploadSection() {
               <div className="grid md:grid-cols-2 gap-6">
                 <Card className="p-6 hover-scale flex flex-col h-full">
                   <h3 className="text-lg font-semibold mb-4 flex items-center">
-                    <Sparkles className="w-5 h-5 mr-2 text-yellow-500" />
+                    <Sparkles className="w-5 h-5 mr-2 text-violet-400" />
                     Enhanced Version (Enhancor)
                   </h3>
                   <div className="flex-1 bg-gradient-to-br from-muted to-muted/50 rounded-lg mb-6 flex items-center justify-center border min-h-[400px] overflow-hidden">
