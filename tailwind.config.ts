@@ -18,22 +18,24 @@ export default {
 			}
 		},
 		extend: {
-			fontFamily: {
-				sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-				display: ['Montserrat', 'system-ui', '-apple-system', 'sans-serif'],
-				heading: ['Montserrat', 'system-ui', '-apple-system', 'sans-serif']
-			},
+		fontFamily: {
+			sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+			display: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+			heading: ['Inter', 'system-ui', '-apple-system', 'sans-serif']
+		},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
-				primary: {
-					DEFAULT: 'hsl(var(--primary))',
-					dark: 'hsl(var(--primary-dark))',
-					foreground: 'hsl(var(--primary-foreground))'
-				},
+			primary: {
+				DEFAULT: 'hsl(var(--primary))',
+				dark: 'hsl(var(--primary-dark))',
+				blue: 'hsl(var(--primary-blue))',
+				magenta: 'hsl(var(--primary-magenta))',
+				foreground: 'hsl(var(--primary-foreground))'
+			},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
 					foreground: 'hsl(var(--secondary-foreground))'
@@ -69,17 +71,19 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				}
 			},
-			backgroundImage: {
-				'gradient-gold': 'var(--gradient-gold)',
-				'gradient-gold-hover': 'var(--gradient-gold-hover)',
-				'gradient-hero': 'var(--gradient-hero)',
-				'gradient-card': 'var(--gradient-card)'
-			},
-			boxShadow: {
-				'gold': 'var(--shadow-gold)',
-				'gold-intense': 'var(--shadow-gold-intense)',
-				'card': 'var(--shadow-card)'
-			},
+		backgroundImage: {
+			'gradient-primary': 'var(--gradient-primary)',
+			'gradient-secondary': 'var(--gradient-secondary)',
+			'gradient-hero': 'var(--gradient-hero)',
+			'gradient-card': 'var(--gradient-card)',
+			'gradient-text': 'var(--gradient-text)'
+		},
+		boxShadow: {
+			'violet-glow': 'var(--shadow-violet-glow)',
+			'blue-glow': 'var(--shadow-blue-glow)',
+			'neon': 'var(--shadow-neon)',
+			'card': 'var(--shadow-card)'
+		},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
@@ -129,32 +133,47 @@ export default {
 						transform: 'translateY(-2px)'
 					}
 				},
-				'alive': {
-					'0%': {
-						transform: 'scale(1) translateX(0) rotate(0deg)'
-					},
-					'25%': {
-						transform: 'scale(1.01) translateX(0.5px) rotate(0.2deg)'
-					},
-					'50%': {
-						transform: 'scale(1.02) translateX(0) rotate(0deg)'
-					},
-					'75%': {
-						transform: 'scale(1.01) translateX(-0.5px) rotate(-0.2deg)'
-					},
-					'100%': {
-						transform: 'scale(1) translateX(0) rotate(0deg)'
-					}
+			'alive': {
+				'0%': {
+					transform: 'scale(1) translateX(0) rotate(0deg)'
+				},
+				'25%': {
+					transform: 'scale(1.01) translateX(0.5px) rotate(0.2deg)'
+				},
+				'50%': {
+					transform: 'scale(1.02) translateX(0) rotate(0deg)'
+				},
+				'75%': {
+					transform: 'scale(1.01) translateX(-0.5px) rotate(-0.2deg)'
+				},
+				'100%': {
+					transform: 'scale(1) translateX(0) rotate(0deg)'
 				}
 			},
-			animation: {
-				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out',
-				'breathe': 'breathe 3s ease-in-out infinite',
-				'gentle-sway': 'gentle-sway 4s ease-in-out infinite',
-				'micro-bounce': 'micro-bounce 2s ease-in-out infinite',
-				'alive': 'alive 5s ease-in-out infinite'
+			'neon-pulse': {
+				'0%, 100%': { boxShadow: '0 0 20px hsl(270 100% 70% / 0.3)' },
+				'50%': { boxShadow: '0 0 40px hsl(270 100% 70% / 0.6)' }
+			},
+			'glow-text': {
+				'0%, 100%': { textShadow: '0 0 10px hsl(270 100% 70% / 0.5)' },
+				'50%': { textShadow: '0 0 20px hsl(270 100% 70% / 0.8)' }
+			},
+			'particle-float': {
+				'0%, 100%': { transform: 'translateY(0) translateX(0)', opacity: '0.3' },
+				'50%': { transform: 'translateY(-20px) translateX(10px)', opacity: '0.8' }
 			}
+			},
+		animation: {
+			'accordion-down': 'accordion-down 0.2s ease-out',
+			'accordion-up': 'accordion-up 0.2s ease-out',
+			'breathe': 'breathe 3s ease-in-out infinite',
+			'gentle-sway': 'gentle-sway 4s ease-in-out infinite',
+			'micro-bounce': 'micro-bounce 2s ease-in-out infinite',
+			'alive': 'alive 5s ease-in-out infinite',
+			'neon-pulse': 'neon-pulse 3s ease-in-out infinite',
+			'glow-text': 'glow-text 2s ease-in-out infinite',
+			'particle-float': 'particle-float 4s ease-in-out infinite'
+		}
 		}
 	},
 	plugins: [require("tailwindcss-animate")],

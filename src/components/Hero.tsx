@@ -244,35 +244,39 @@ export const Hero = () => {
 
   return (
     <section className="relative min-h-screen bg-background overflow-hidden">
-      {/* Revolutionary Futuristic Background System */}
+      {/* Futuristic Violet-to-Blue Background System */}
       <div className="absolute inset-0 overflow-hidden">
-        {/* Deep Space Gradient Foundation */}
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-background/90 to-background" />
+        {/* Deep Space Navy Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0F0F1A] via-[#1a1a2e] to-[#0F0F1A]" />
         
-        {/* Morphing Geometric Shapes */}
-        <div className="absolute top-1/4 left-1/6 w-64 h-64 opacity-30">
-          <div className="w-full h-full bg-gradient-to-br from-primary/20 to-transparent animate-morph-1 blur-xl" />
+        {/* Glowing Orbs (Brain-like energy) */}
+        <div className="absolute top-1/4 right-1/4 w-96 h-96">
+          <div className="w-full h-full bg-gradient-to-br from-violet-500/30 to-blue-500/20 rounded-full blur-[100px] animate-neon-pulse" />
         </div>
-        <div className="absolute bottom-1/3 right-1/6 w-80 h-80 opacity-25">
-          <div className="w-full h-full bg-gradient-to-tl from-primary/15 to-transparent animate-morph-2 blur-2xl" />
-        </div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 opacity-20">
-          <div className="w-full h-full bg-gradient-to-r from-primary/10 via-primary/5 to-transparent animate-morph-3 blur-3xl" />
+        <div className="absolute bottom-1/3 left-1/4 w-[500px] h-[500px]">
+          <div className="w-full h-full bg-gradient-to-tl from-blue-500/20 to-purple-500/30 rounded-full blur-[120px] animate-pulse" />
         </div>
         
-        {/* Advanced Particle Trail System */}
+        {/* Particle System */}
         <div className="absolute inset-0">
-          <div className="absolute top-20 left-20 w-1 h-1 bg-primary animate-particle-trail-1" />
-          <div className="absolute top-32 left-24 w-0.5 h-0.5 bg-primary/80 animate-particle-trail-2" />
-          <div className="absolute top-24 left-28 w-0.5 h-0.5 bg-primary/60 animate-particle-trail-3" />
-          
-          <div className="absolute top-40 right-32 w-1 h-1 bg-primary animate-particle-trail-4" />
-          <div className="absolute top-52 right-36 w-0.5 h-0.5 bg-primary/80 animate-particle-trail-5" />
-          
-          <div className="absolute bottom-32 left-1/3 w-1.5 h-1.5 bg-primary animate-particle-trail-6" />
-          <div className="absolute bottom-24 left-1/3 w-0.5 h-0.5 bg-primary/70 animate-particle-trail-7" />
-          
-          <div className="absolute bottom-20 right-20 w-1 h-1 bg-primary animate-particle-trail-8" />
+          {[...Array(20)].map((_, i) => (
+            <div 
+              key={i}
+              className="absolute w-1 h-1 bg-violet-400/60 rounded-full animate-particle-float"
+              style={{
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 5}s`
+              }}
+            />
+          ))}
+        </div>
+        
+        {/* Neural Network Lines */}
+        <div className="absolute inset-0">
+          <div className="absolute w-full h-px bg-gradient-to-r from-transparent via-violet-500/30 to-transparent top-1/4 animate-pulse" />
+          <div className="absolute w-full h-px bg-gradient-to-r from-transparent via-blue-500/20 to-transparent top-2/3" />
+          <div className="absolute h-full w-px bg-gradient-to-b from-transparent via-violet-500/20 to-transparent left-1/3" />
         </div>
         
         {/* Holographic Grid System */}
@@ -322,15 +326,18 @@ export const Hero = () => {
           Revolutionary AI Technology
         </Badge>
 
-        {/* Main Heading - Steve Jobs Level Sophistication */}
+        {/* Main Heading - Futuristic Aesthetic */}
         <div className="mb-16 animate-fade-in">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-light leading-[1.1] mb-8 tracking-tight w-full max-w-5xl mx-auto break-words px-4">
-            <span className="text-foreground font-light">Where Identity </span>
-            <span className="bg-gradient-to-r from-primary via-primary to-primary-dark bg-clip-text text-transparent font-medium italic inline-block pr-2">Evolves</span>
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-8 tracking-tight">
+            <span className="text-white font-light">Virtura</span>
+            <br />
+            <span className="text-white font-light">Where Identity </span>
+            <span className="text-gradient-primary font-bold animate-glow-text">Evolves</span>
           </h1>
           
-          <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto font-light">
-            Transform your vision into reality with hyper realistic AI avatars
+          <p className="text-xl md:text-2xl text-gray-300 leading-relaxed max-w-2xl mx-auto font-light">
+            Join our waitlist today for a chance to win amazing prizes
+            and be one of the first to try our revolutionary software.
           </p>
         </div>
 

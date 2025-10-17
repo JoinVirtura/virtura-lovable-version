@@ -74,20 +74,20 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
 
   return (
     <Sidebar 
-      className="border-r border-border"
+      className="bg-black/90 backdrop-blur-xl border-r border-violet-500/20"
       collapsible="icon"
     >
       <SidebarHeader className={isCollapsed ? "p-2" : "p-4"}>
         <div className="flex items-center justify-between">
           {!isCollapsed && (
             <div>
-              <h1 className="text-xl font-display font-bold text-foreground leading-tight">
+              <h1 className="text-xl font-display font-bold text-gradient-primary drop-shadow-[0_0_10px_rgba(212,110,255,0.6)] leading-tight">
                 Virtura
               </h1>
-              <p className="text-xs text-muted-foreground">Where Identity Evolves</p>
+              <p className="text-xs text-violet-300">Where Identity Evolves</p>
             </div>
           )}
-          <SidebarTrigger className="h-8 w-8 p-0 ml-auto" />
+          <SidebarTrigger className="h-8 w-8 p-0 ml-auto text-violet-400 hover:text-violet-300" />
         </div>
       </SidebarHeader>
 
@@ -109,8 +109,8 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                     isActive={activeView === item.id}
                     className={`w-full ${isCollapsed ? "justify-center px-2" : "justify-start gap-3"} ${
                       activeView === item.id 
-                        ? "bg-primary text-primary-foreground shadow-gold" 
-                        : "hover:bg-accent"
+                        ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30" 
+                        : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
                     }`}
                   >
                     <item.icon className="w-4 h-4 shrink-0" />
@@ -135,8 +135,8 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                     isActive={activeView === item.id}
                     className={`w-full ${isCollapsed ? "justify-center px-2" : "justify-start gap-3"} ${
                       activeView === item.id 
-                        ? "bg-primary text-primary-foreground shadow-gold" 
-                        : "hover:bg-accent"
+                        ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30" 
+                        : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
                     }`}
                   >
                     <item.icon className="w-4 h-4 shrink-0" />
@@ -157,8 +157,8 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                   isActive={activeView === "export"}
                   className={`w-full ${isCollapsed ? "justify-center px-2" : "justify-start gap-3"} ${
                     activeView === "export" 
-                      ? "bg-primary text-primary-foreground shadow-gold" 
-                      : "hover:bg-accent"
+                      ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30" 
+                      : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
                   }`}
                 >
                   <Download className="w-4 h-4 shrink-0" />
@@ -171,8 +171,8 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                   isActive={activeView === "settings"}
                   className={`w-full ${isCollapsed ? "justify-center px-2" : "justify-start gap-3"} ${
                     activeView === "settings" 
-                      ? "bg-primary text-primary-foreground shadow-gold" 
-                      : "hover:bg-accent"
+                      ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30" 
+                      : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
                   }`}
                 >
                   <Settings className="w-4 h-4 shrink-0" />
@@ -185,8 +185,8 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                   isActive={activeView === "upgrade"}
                   className={`w-full ${isCollapsed ? "justify-center px-2" : "justify-start gap-3"} ${
                     activeView === "upgrade" 
-                      ? "bg-primary text-primary-foreground shadow-gold" 
-                      : "hover:bg-accent"
+                      ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30" 
+                      : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
                   }`}
                 >
                   <Crown className="w-4 h-4 shrink-0" />
@@ -202,14 +202,14 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
         <SidebarSeparator className={isCollapsed ? "mx-1" : "mx-3"} />
         
         <div className={`flex items-center gap-3 ${isCollapsed ? "px-2 py-3 justify-center" : "px-4 py-3"}`}>
-          <Avatar className="w-8 h-8">
+          <Avatar className="w-8 h-8 ring-2 ring-violet-500/30">
             <AvatarImage src="/lovable-uploads/517f5d9c-c223-4625-9aa5-5f2ef255f576.png" />
-            <AvatarFallback>J</AvatarFallback>
+            <AvatarFallback className="bg-violet-500/20 text-violet-300">J</AvatarFallback>
           </Avatar>
           {!isCollapsed && (
             <div className="flex-1 min-w-0">
-              <p className="font-medium text-sm">Jeff Krammer</p>
-              <p className="text-xs text-muted-foreground">Pro Plan</p>
+              <p className="font-medium text-sm text-white">Jeff Krammer</p>
+              <p className="text-xs text-violet-300">Pro Plan</p>
             </div>
           )}
         </div>

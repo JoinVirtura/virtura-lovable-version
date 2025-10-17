@@ -9,16 +9,16 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-gradient-gold text-primary-foreground shadow-gold hover:bg-gradient-gold-hover hover:shadow-gold-intense transition-all duration-200 rounded-lg",
+        default: "bg-gradient-to-r from-violet-500 via-purple-500 to-blue-500 text-white shadow-[0_0_30px_rgba(212,110,255,0.5)] hover:shadow-[0_0_50px_rgba(212,110,255,0.7)] hover:scale-105 transition-all duration-300 rounded-xl border border-violet-400/30",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-lg",
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl",
         outline:
-          "border border-border bg-card text-foreground hover:bg-accent hover:text-accent-foreground rounded-lg transition-all duration-200",
+          "border-2 border-violet-500/50 bg-transparent text-violet-300 hover:bg-violet-500/10 hover:border-violet-400 hover:shadow-[0_0_20px_rgba(212,110,255,0.4)] transition-all duration-300 rounded-xl",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-lg",
-        ghost: "hover:bg-accent hover:text-accent-foreground rounded-lg transition-all duration-200",
+          "bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white hover:shadow-[0_0_30px_rgba(236,72,153,0.5)] rounded-xl transition-all duration-300",
+        ghost: "hover:bg-violet-500/10 hover:text-violet-300 rounded-xl transition-all duration-200",
         link: "text-primary underline-offset-4 hover:underline",
-        premium: "bg-gradient-gold text-primary-foreground shadow-gold hover:shadow-gold-intense hover:scale-105 transition-all duration-200 rounded-lg font-bold",
+        premium: "bg-gradient-to-r from-violet-500 to-blue-500 text-white shadow-[0_0_40px_rgba(212,110,255,0.6)] hover:shadow-[0_0_60px_rgba(212,110,255,0.8)] hover:scale-110 transition-all duration-300 rounded-xl font-bold border-2 border-violet-400/50",
       },
       size: {
         default: "h-12 px-6 py-3 text-sm",
