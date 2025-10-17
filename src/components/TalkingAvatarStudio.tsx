@@ -632,16 +632,38 @@ export const TalkingAvatarStudio: React.FC<TalkingAvatarStudioProps> = ({ onView
                       </div>
                       
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <Button onClick={downloadVideo} className="flex items-center gap-2">
-                          <Download className="h-4 w-4" />
+                        <Button 
+                          onClick={downloadVideo} 
+                          disabled={isProcessing}
+                          className="flex items-center gap-2"
+                        >
+                          {isProcessing ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Download className="h-4 w-4" />
+                          )}
                           Download
                         </Button>
-                        <Button onClick={shareVideo} variant="outline" className="flex items-center gap-2">
+                        <Button 
+                          onClick={shareVideo} 
+                          disabled={isProcessing}
+                          variant="outline" 
+                          className="flex items-center gap-2"
+                        >
                           <Share className="h-4 w-4" />
                           Share
                         </Button>
-                        <Button onClick={saveToLibrary} variant="outline" className="flex items-center gap-2">
-                          <Save className="h-4 w-4" />
+                        <Button 
+                          onClick={saveToLibrary} 
+                          disabled={isProcessing}
+                          variant="outline" 
+                          className="flex items-center gap-2"
+                        >
+                          {isProcessing ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Save className="h-4 w-4" />
+                          )}
                           Save to Library
                         </Button>
                       </div>

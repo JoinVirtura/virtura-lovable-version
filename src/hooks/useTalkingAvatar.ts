@@ -573,7 +573,7 @@ export const useTalkingAvatar = (
     }
   }, [generatedAudio, generatedVideo, toast]);
 
-  const downloadVideo = useCallback(() => {
+  const downloadVideo = useCallback(async () => {
     const videoUrl = finalVideo || generatedVideo;
     if (!videoUrl) {
       toast({
@@ -584,17 +584,37 @@ export const useTalkingAvatar = (
       return;
     }
 
-    const link = document.createElement('a');
-    link.href = videoUrl;
-    link.download = `talking-avatar-${Date.now()}.mp4`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    try {
+      // Fetch video as blob to bypass CORS restrictions
+      const response = await fetch(videoUrl);
+      const blob = await response.blob();
+      
+      // Create local blob URL
+      const blobUrl = URL.createObjectURL(blob);
+      
+      // Create and trigger download
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = `talking-avatar-${Date.now()}.mp4`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Clean up blob URL
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
 
-    toast({
-      title: "Download Started",
-      description: "Your video is being downloaded",
-    });
+      toast({
+        title: "Download Started",
+        description: "Your video is being downloaded",
+      });
+    } catch (error: any) {
+      console.error('Download error:', error);
+      toast({
+        title: "Download Failed",
+        description: "Failed to download video. Please try again.",
+        variant: "destructive",
+      });
+    }
   }, [finalVideo, generatedVideo, toast]);
 
   const shareVideo = useCallback(async () => {
@@ -651,8 +671,33 @@ export const useTalkingAvatar = (
     try {
       setIsProcessing(true);
       
-      // Extract thumbnail from video if we have avatarData
-      const thumbnailUrl = avatarData?.original_image_url || uploadedFile;
+      // Handle thumbnail - upload to storage if it's a File object
+      let thumbnailUrl: string | null = null;
+      
+      if (uploadedFile && uploadedFile instanceof File) {
+        console.log('Uploading thumbnail to storage...');
+        const fileName = `thumbnail-${Date.now()}.jpg`;
+        const filePath = `thumbnails/${fileName}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('virtura-media')
+          .upload(filePath, uploadedFile, {
+            contentType: uploadedFile.type,
+            upsert: false
+          });
+        
+        if (uploadError) {
+          console.error('Thumbnail upload error:', uploadError);
+        } else {
+          const { data: { publicUrl } } = supabase.storage
+            .from('virtura-media')
+            .getPublicUrl(filePath);
+          thumbnailUrl = publicUrl;
+          console.log('Thumbnail uploaded:', thumbnailUrl);
+        }
+      } else if (avatarData?.original_image_url) {
+        thumbnailUrl = avatarData.original_image_url;
+      }
       
       const { data, error } = await supabase.functions.invoke('save-to-library', {
         body: {
@@ -691,7 +736,7 @@ export const useTalkingAvatar = (
     } finally {
       setIsProcessing(false);
     }
-  }, [finalVideo, generatedVideo, generatedAudio, avatarData, uploadedFile, voice, style, exports, toast, setIsProcessing]);
+  }, [finalVideo, generatedVideo, generatedAudio, avatarData, uploadedFile, voice, style, exports, toast, supabase]);
 
   const resetWorkflow = useCallback(() => {
     setUploadedFile(null);

@@ -19,9 +19,22 @@ serve(async (req) => {
 
     const { videoUrl, thumbnailUrl, audioUrl, title, prompt, duration, metadata } = await req.json();
 
+    // Input validation
     if (!videoUrl) {
       throw new Error('Video URL is required');
     }
+
+    if (thumbnailUrl && typeof thumbnailUrl !== 'string') {
+      throw new Error('Thumbnail URL must be a string, not a File object');
+    }
+
+    console.log('Save to library request:', {
+      videoUrl: videoUrl.substring(0, 50) + '...',
+      thumbnailUrl: thumbnailUrl ? thumbnailUrl.substring(0, 50) + '...' : 'null',
+      audioUrl: audioUrl ? audioUrl.substring(0, 50) + '...' : 'null',
+      title,
+      hasMetadata: !!metadata
+    });
 
     // Get user from auth header
     const authHeader = req.headers.get('Authorization')!;
