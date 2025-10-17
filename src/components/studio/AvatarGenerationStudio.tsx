@@ -233,26 +233,19 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold flex items-center gap-3">
-            <div className="relative">
-              <Camera className="h-6 w-6 text-primary" />
-              <Sparkles className="h-3 w-3 absolute -top-1 -right-1 text-violet-400" />
-            </div>
-            Avatar Generation
-          </h2>
-          <p className="text-muted-foreground">
-            Create ultra-realistic avatars with AI • Stable Diffusion XL • KlingAI quality
-          </p>
-        </div>
+        <h2 className="text-2xl font-bold flex items-center gap-3">
+          <div className="relative">
+            <Camera className="h-6 w-6 text-primary" />
+            <Sparkles className="h-3 w-3 absolute -top-1 -right-1 text-violet-400" />
+          </div>
+          Avatar Generation
+        </h2>
         
         <div className="flex items-center gap-2">
           <Badge variant="secondary" className="text-xs">
-            <Zap className="h-3 w-3 mr-1" />
             Neural Enhanced
           </Badge>
-          <Badge variant="outline" className="text-xs">
-            <Star className="h-3 w-3 mr-1" />
+          <Badge variant="secondary" className="text-xs">
             {quality}
           </Badge>
         </div>
@@ -345,14 +338,9 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                   onChange={(e) => setGenerationPrompt(e.target.value)}
                   className="min-h-24 mt-2"
                 />
-                <div className="flex justify-between items-center mt-1">
-                  <p className="text-xs text-muted-foreground">
-                    💡 Describe ONE specific person, hairstyle, outfit, and background for perfect results
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {generationPrompt.length}/500
-                  </p>
-                </div>
+                <p className="text-xs text-muted-foreground mt-1 text-right">
+                  {generationPrompt.length}/500
+                </p>
               </div>
 
               <div>
@@ -364,13 +352,10 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                       variant={selectedStyle === style.id ? "default" : "outline"}
                       size="sm"
                       onClick={() => setSelectedStyle(style.id)}
-                      className="justify-start h-auto p-3"
+                      className="justify-start h-10 px-3"
                     >
                       <style.icon className="h-4 w-4 mr-2" />
-                      <div className="text-left">
-                        <div className="font-medium text-xs">{style.name}</div>
-                        <div className="text-xs text-muted-foreground">{style.description}</div>
-                      </div>
+                      <span className="text-sm">{style.name}</span>
                     </Button>
                   ))}
                 </div>
@@ -387,12 +372,7 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                   <SelectContent>
                     {QUALITY_SETTINGS.map((setting) => (
                       <SelectItem key={setting.value} value={setting.value}>
-                        <div className="flex items-center gap-2">
-                          <span>{setting.label}</span>
-                          <Badge variant="secondary" className="text-xs">
-                            {setting.description}
-                          </Badge>
-                        </div>
+                        {setting.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -411,38 +391,23 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                   step={5}
                   className="mt-2"
                 />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Higher values ensure better likeness across multiple videos
-                </p>
               </div>
 
               <Button
                 onClick={handleGeneratePerfectAvatar}
                 disabled={!generationPrompt.trim() || isProcessing || processingStage !== ''}
-                className="w-full h-12 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+                className="w-full h-12"
                 size="lg"
               >
                 {isProcessing || processingStage !== '' ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    <div className="flex flex-col items-start">
-                      <span className="text-sm">
-                        {processingStage || 'Generating Perfect Avatar...'}
-                      </span>
-                      <div className="flex items-center gap-2 text-xs opacity-90">
-                        {estimatedTime > 0 && (
-                          <span>~{estimatedTime}s remaining</span>
-                        )}
-                        {processingProgress > 0 && (
-                          <span>{processingProgress}%</span>
-                        )}
-                      </div>
-                    </div>
+                    Generating {quality} Avatar...
                   </>
                 ) : (
                   <>
                     <Sparkles className="h-4 w-4 mr-2" />
-                    Generate Perfect {quality} Avatar
+                    Generate {quality} Avatar
                   </>
                 )}
               </Button>
