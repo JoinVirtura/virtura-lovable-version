@@ -686,6 +686,15 @@ export const useStudioProject = () => {
                 title: "Video Generated Successfully! 🎉",
                 description: `Created with ${data.provider} - ${data.model}`,
               });
+
+              // Auto-save to library after successful generation
+              if (data.videoUrl && data.videoUrl.includes('supabase.co')) {
+                setTimeout(() => {
+                  saveToLibrary().catch(error => {
+                    console.error('Auto-save failed:', error);
+                  });
+                }, 1000);
+              }
               
               break; // Exit SSE loop on completion
             } else if (data.stage === 'error') {
