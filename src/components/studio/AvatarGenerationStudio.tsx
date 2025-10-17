@@ -271,8 +271,8 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
         {/* Upload Tab */}
         <TabsContent value="upload" className="space-y-6">
           <Card 
-            className={`h-64 relative cursor-pointer transition-all duration-300 ${
-              isDragOver ? 'border-primary/50 bg-primary/5' : 'border-dashed border-muted-foreground/30'
+            className={`h-64 relative cursor-pointer transition-all duration-300 border-2 ${
+              isDragOver ? 'border-violet-400 bg-violet-500/10 scale-[1.02] shadow-[0_0_25px_rgba(212,110,255,0.25)]' : 'border-dashed border-violet-500/40 hover:border-violet-400 hover:shadow-[0_0_25px_rgba(212,110,255,0.25)]'
             }`}
             onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
             onDragLeave={(e) => { e.preventDefault(); setIsDragOver(false); }}
@@ -282,9 +282,9 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
             <CardContent className="h-full flex items-center justify-center">
               <div className="text-center space-y-4">
                 <div className={`p-4 rounded-full border-2 border-dashed transition-all ${
-                  isDragOver ? 'border-primary bg-primary/10 scale-110' : 'border-muted-foreground/30'
+                  isDragOver ? 'border-violet-400 bg-violet-500/10 scale-110' : 'border-violet-500/40'
                 }`}>
-                  <Upload className="h-8 w-8 text-muted-foreground" />
+                  <Upload className="h-8 w-8 text-violet-400" />
                 </div>
                 <div>
                   <h3 className="font-semibold mb-1">Upload Avatar Image</h3>
@@ -315,7 +315,7 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
               </div>
               <div className="w-full bg-muted rounded-full h-2">
                 <div 
-                  className="bg-primary h-2 rounded-full transition-all duration-300"
+                  className="bg-gradient-to-r from-violet-500 to-blue-500 h-2 rounded-full transition-all duration-300 shadow-[0_0_15px_rgba(212,110,255,0.5)]"
                   style={{ width: `${uploadProgress}%` }}
                 />
               </div>

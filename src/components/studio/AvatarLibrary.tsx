@@ -230,7 +230,7 @@ export const AvatarLibrary: React.FC<AvatarLibraryProps> = ({ onSelectAvatar, is
             placeholder="Search avatars by name or tags..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
+            className="pl-10 border-violet-500/30 focus:border-violet-400 focus:ring-2 focus:ring-violet-400/30"
           />
         </div>
         
@@ -255,7 +255,11 @@ export const AvatarLibrary: React.FC<AvatarLibraryProps> = ({ onSelectAvatar, is
             variant={selectedCategory === category.id ? "default" : "outline"}
             size="sm"
             onClick={() => setSelectedCategory(category.id)}
-            className="flex items-center gap-2 whitespace-nowrap"
+            className={`flex items-center gap-2 whitespace-nowrap ${
+              selectedCategory === category.id 
+                ? 'bg-gradient-to-r from-violet-500 to-blue-500 border-0 shadow-violet-glow' 
+                : 'border-violet-500/30 hover:border-violet-400'
+            }`}
           >
             <category.icon className="h-4 w-4" />
             {category.name}
@@ -268,7 +272,7 @@ export const AvatarLibrary: React.FC<AvatarLibraryProps> = ({ onSelectAvatar, is
         {filteredAvatars.map((avatar) => (
           <Card
             key={avatar.id}
-            className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-105 border-border/50 hover:border-primary/50"
+            className="group cursor-pointer transition-all duration-500 hover:shadow-lg hover:scale-105 border-2 border-violet-500/30 hover:border-violet-400 hover:shadow-[0_0_30px_rgba(212,110,255,0.3)] bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-sm overflow-hidden relative"
             onClick={() => handleSelectAvatar(avatar)}
           >
             <CardContent className="p-4">
