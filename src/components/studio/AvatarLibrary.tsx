@@ -272,19 +272,19 @@ export const AvatarLibrary: React.FC<AvatarLibraryProps> = ({ onSelectAvatar, is
         {filteredAvatars.map((avatar) => (
           <Card
             key={avatar.id}
-            className="group cursor-pointer transition-all duration-500 hover:shadow-lg hover:scale-105 border-2 border-violet-500/30 hover:border-violet-400 hover:shadow-[0_0_30px_rgba(212,110,255,0.3)] bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-sm overflow-hidden relative"
+            className="group cursor-pointer transition-all duration-500 hover:scale-105 border-2 border-violet-500/30 hover:border-violet-400 bg-gradient-to-br from-gray-900/95 to-gray-800/95 backdrop-blur-sm overflow-hidden relative shadow-[0_0_20px_rgba(212,110,255,0.15)] hover:shadow-[0_0_30px_rgba(212,110,255,0.3)]"
             onClick={() => handleSelectAvatar(avatar)}
           >
             <CardContent className="p-4">
-              <div className="relative mb-4">
+              <div className="relative mb-4 rounded-xl overflow-hidden border border-violet-500/10">
                 <img
                   src={avatar.image}
                   alt={avatar.name}
-                  className="w-full aspect-square object-cover rounded-lg"
+                  className="w-full aspect-square object-cover"
                 />
                 <div className="absolute top-2 left-2 flex gap-1">
                   {avatar.type === 'Premium' && (
-                    <Badge className="bg-gradient-to-r from-violet-400 to-blue-500 text-white">
+                    <Badge className="bg-gradient-to-r from-violet-400 to-blue-500 text-white shadow-lg">
                       <Crown className="h-3 w-3 mr-1" />
                       Premium
                     </Badge>
@@ -296,7 +296,7 @@ export const AvatarLibrary: React.FC<AvatarLibraryProps> = ({ onSelectAvatar, is
                     {avatar.rating}
                   </Badge>
                 </div>
-                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg flex items-center justify-center">
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl flex items-center justify-center">
                   <Button size="sm" className="bg-primary hover:bg-primary/90">
                     <CheckCircle className="h-4 w-4 mr-2" />
                     Select Avatar
