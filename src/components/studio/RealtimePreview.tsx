@@ -89,6 +89,16 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
         });
         toast.success('Avatar removed from library');
       } else {
+        // Check if imageUrl is a video and prevent saving it directly
+        const isVideoUrl = imageUrl.endsWith('.mp4') || 
+                          imageUrl.endsWith('.webm') ||
+                          imageUrl.startsWith('blob:');
+        
+        if (isVideoUrl) {
+          toast.error('Cannot save video URLs directly. Please use the original avatar image.');
+          return;
+        }
+
         // Add to library
         const { error } = await supabase
           .from('avatar_library')

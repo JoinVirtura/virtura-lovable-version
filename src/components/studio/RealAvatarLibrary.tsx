@@ -43,6 +43,8 @@ interface AvatarLibraryItem {
   title?: string;
   tags?: string[];
   created_at: string;
+  video_url?: string; // Optional: if this is a video avatar
+  thumbnail_url?: string; // Optional: extracted thumbnail
 }
 
 interface RealAvatarLibraryProps {
@@ -311,11 +313,31 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
                     </DropdownMenu>
                   </div>
 
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center rounded-xl">
-                    <Button size="sm" className="bg-primary hover:bg-primary/90">
-                      <CheckCircle className="h-4 w-4 mr-2" />
-                      Select Avatar
-                    </Button>
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2 rounded-xl">
+                    {avatar.video_url ? (
+                      <>
+                        <Button 
+                          size="sm" 
+                          className="bg-blue-500 hover:bg-blue-600"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.open(avatar.video_url, '_blank');
+                          }}
+                        >
+                          <Play className="h-4 w-4 mr-2" />
+                          Preview Video
+                        </Button>
+                        <Button size="sm" className="bg-primary hover:bg-primary/90">
+                          <CheckCircle className="h-4 w-4 mr-2" />
+                          Select Avatar
+                        </Button>
+                      </>
+                    ) : (
+                      <Button size="sm" className="bg-primary hover:bg-primary/90">
+                        <CheckCircle className="h-4 w-4 mr-2" />
+                        Select Avatar
+                      </Button>
+                    )}
                   </div>
                 </div>
                 
