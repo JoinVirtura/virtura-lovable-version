@@ -575,7 +575,10 @@ export const useTalkingAvatar = (
 
   const downloadVideo = useCallback(async () => {
     const videoUrl = finalVideo || generatedVideo;
+    console.log('⬇️ downloadVideo called with:', videoUrl?.substring(0, 60) + '...');
+    
     if (!videoUrl) {
+      console.error('❌ No video URL available for download');
       toast({
         title: "Error",
         description: "No video available for download",
@@ -585,12 +588,21 @@ export const useTalkingAvatar = (
     }
 
     try {
+      setIsProcessing(true);
+      console.log('🔄 Fetching video as blob...');
+      
       // Fetch video as blob to bypass CORS restrictions
       const response = await fetch(videoUrl);
+      if (!response.ok) {
+        throw new Error(`Download failed: ${response.status} ${response.statusText}`);
+      }
+      
       const blob = await response.blob();
+      console.log(`✅ Video fetched: ${(blob.size / 1024 / 1024).toFixed(2)}MB`);
       
       // Create local blob URL
       const blobUrl = URL.createObjectURL(blob);
+      console.log('✅ Blob URL created, triggering download...');
       
       // Create and trigger download
       const link = document.createElement('a');
@@ -603,17 +615,20 @@ export const useTalkingAvatar = (
       // Clean up blob URL
       setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
 
+      console.log('✅ Download triggered successfully');
       toast({
         title: "Download Started",
         description: "Your video is being downloaded",
       });
     } catch (error: any) {
-      console.error('Download error:', error);
+      console.error('❌ Download error:', error);
       toast({
         title: "Download Failed",
-        description: "Failed to download video. Please try again.",
+        description: error.message || "Failed to download video. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsProcessing(false);
     }
   }, [finalVideo, generatedVideo, toast]);
 
@@ -659,7 +674,15 @@ export const useTalkingAvatar = (
 
   const saveToLibrary = useCallback(async () => {
     const videoUrl = finalVideo || generatedVideo;
+    console.log('💾 saveToLibrary called with:', { 
+      videoUrl: videoUrl?.substring(0, 60) + '...', 
+      generatedAudio: generatedAudio?.substring(0, 60) + '...', 
+      uploadedFile: !!uploadedFile,
+      avatarData: !!avatarData
+    });
+    
     if (!videoUrl) {
+      console.error('❌ No video URL available');
       toast({
         title: "Error",
         description: "No video available to save",
@@ -670,12 +693,13 @@ export const useTalkingAvatar = (
 
     try {
       setIsProcessing(true);
+      console.log('🔄 Starting save to library process...');
       
       // Handle thumbnail - upload to storage if it's a File object
       let thumbnailUrl: string | null = null;
       
       if (uploadedFile && uploadedFile instanceof File) {
-        console.log('Uploading thumbnail to storage...');
+        console.log('📤 Uploading thumbnail to storage...');
         const fileName = `thumbnail-${Date.now()}.jpg`;
         const filePath = `thumbnails/${fileName}`;
         
@@ -687,17 +711,24 @@ export const useTalkingAvatar = (
           });
         
         if (uploadError) {
-          console.error('Thumbnail upload error:', uploadError);
+          console.error('❌ Thumbnail upload error:', uploadError);
         } else {
           const { data: { publicUrl } } = supabase.storage
             .from('virtura-media')
             .getPublicUrl(filePath);
           thumbnailUrl = publicUrl;
-          console.log('Thumbnail uploaded:', thumbnailUrl);
+          console.log('✅ Thumbnail uploaded:', thumbnailUrl);
         }
       } else if (avatarData?.original_image_url) {
         thumbnailUrl = avatarData.original_image_url;
+        console.log('✅ Using avatar image as thumbnail:', thumbnailUrl);
       }
+      
+      console.log('📡 Calling save-to-library edge function with:', {
+        videoUrl: videoUrl.substring(0, 60) + '...',
+        thumbnailUrl: thumbnailUrl?.substring(0, 60) + '...' || 'null',
+        audioUrl: generatedAudio?.substring(0, 60) + '...' || 'null'
+      });
       
       const { data, error } = await supabase.functions.invoke('save-to-library', {
         body: {
@@ -716,8 +747,12 @@ export const useTalkingAvatar = (
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Edge function returned error:', error);
+        throw error;
+      }
 
+      console.log('✅ Edge function response:', data);
       if (data?.success) {
         toast({
           title: "Saved to Library",
@@ -727,7 +762,7 @@ export const useTalkingAvatar = (
         throw new Error(data?.error || 'Failed to save');
       }
     } catch (error: any) {
-      console.error('Save to library error:', error);
+      console.error('❌ Save to library error:', error);
       toast({
         title: "Save Failed",
         description: error.message || "Failed to save video to library",

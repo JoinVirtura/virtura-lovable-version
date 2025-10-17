@@ -448,7 +448,29 @@ async function downloadAndUploadVideo(
     message: '☁️ Uploading to secure storage...' 
   });
 
-  // Upload to Supabase with retry logic
+  // Pre-flight check: Verify storage bucket access
+  try {
+    console.log(`🔍 Verifying virtura-media bucket access...`);
+    const { data: buckets, error: bucketError } = await supabase.storage.listBuckets();
+    
+    if (bucketError) {
+      console.error(`❌ Storage authentication failed:`, bucketError);
+      throw new Error(`Storage authentication failed: ${bucketError.message}`);
+    }
+    
+    const bucket = buckets?.find(b => b.name === 'virtura-media');
+    if (!bucket) {
+      console.error(`❌ virtura-media bucket not found`);
+      throw new Error('Storage bucket not found. Please check Supabase configuration.');
+    }
+    
+    console.log(`✅ Storage bucket verified: ${bucket.name} (public: ${bucket.public})`);
+  } catch (error: any) {
+    console.error(`❌ Storage pre-flight check failed:`, error);
+    throw new Error(`Storage access denied: ${error.message}`);
+  }
+
+  // Upload to Supabase with retry logic and extended timeout
   const fileName = `${provider}-${Date.now()}.mp4`;
   const filePath = `videos/${fileName}`;
 
@@ -463,16 +485,24 @@ async function downloadAndUploadVideo(
       console.log(`📤 Storage upload attempt ${uploadAttempt}/3 to virtura-media bucket...`);
       console.log(`📤 File path: ${filePath}`);
       console.log(`📤 File size: ${(videoSize / 1024 / 1024).toFixed(2)}MB`);
+      console.log(`📤 Content type: ${contentType}`);
 
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('virtura-media')
         .upload(filePath, videoBlob, {
           contentType: contentType,
-          upsert: true
+          upsert: true,
+          cacheControl: '3600'
         });
 
       if (uploadError) {
-        console.error(`❌ Upload error:`, uploadError);
+        console.error(`❌ Upload error details:`, {
+          message: uploadError.message,
+          statusCode: uploadError.statusCode,
+          error: uploadError.error,
+          filePath,
+          fileSize: videoSize
+        });
         throw uploadError;
       }
 
@@ -485,10 +515,11 @@ async function downloadAndUploadVideo(
       uploadSuccess = true;
       console.log(`✅ Video uploaded to Supabase Storage successfully`);
       console.log(`✅ Public URL: ${publicUrl}`);
+      console.log(`✅ Storage path: ${filePath}`);
       
     } catch (error: any) {
       console.warn(`⚠️ Upload attempt ${uploadAttempt} failed:`, error.message);
-      console.warn(`⚠️ Error details:`, error);
+      console.warn(`⚠️ Full error:`, JSON.stringify(error, null, 2));
       storageError = error.message;
       
       if (uploadAttempt < 3) {
