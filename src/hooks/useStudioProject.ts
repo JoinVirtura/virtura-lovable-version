@@ -815,6 +815,127 @@ export const useStudioProject = () => {
     }
   }, [project, toast]);
 
+  const downloadVideo = useCallback(async () => {
+    if (!project.video?.videoUrl) {
+      toast({ title: "Error", description: "No video available to download", variant: "destructive" });
+      return;
+    }
+
+    console.log('📥 Starting video download:', project.video.videoUrl);
+
+    try {
+      const response = await fetch(project.video.videoUrl);
+      if (!response.ok) throw new Error('Failed to fetch video');
+
+      const blob = await response.blob();
+      console.log('✅ Video blob created:', blob.size, 'bytes');
+
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = `virtura-studio-${Date.now()}.mp4`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+
+      toast({ title: "Success", description: "Video downloaded successfully!" });
+      console.log('✅ Video download complete');
+    } catch (error: any) {
+      console.error('❌ Download failed:', error);
+      toast({ 
+        title: "Download Failed", 
+        description: error.message || "Failed to download video",
+        variant: "destructive" 
+      });
+    }
+  }, [project.video?.videoUrl, toast]);
+
+  const saveToLibrary = useCallback(async () => {
+    if (!project.video?.videoUrl) {
+      toast({ title: "Error", description: "No video available to save", variant: "destructive" });
+      return;
+    }
+
+    console.log('💾 Starting save to library:', {
+      videoUrl: project.video.videoUrl,
+      hasAvatar: !!project.avatar?.originalUrl,
+      hasVoice: !!project.voice?.script
+    });
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({ title: "Error", description: "Please sign in to save to library", variant: "destructive" });
+        return;
+      }
+
+      let thumbnailUrl = project.avatar?.processedUrl || project.avatar?.originalUrl;
+      
+      if (!thumbnailUrl && project.avatar?.originalUrl?.startsWith('blob:')) {
+        console.log('📤 Uploading avatar as thumbnail...');
+        
+        const response = await fetch(project.avatar.originalUrl);
+        const blob = await response.blob();
+        
+        const fileName = `thumbnail-${Date.now()}.png`;
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('virtura-media')
+          .upload(`thumbnails/${fileName}`, blob, {
+            contentType: 'image/png',
+            cacheControl: '3600'
+          });
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('virtura-media')
+          .getPublicUrl(`thumbnails/${fileName}`);
+
+        thumbnailUrl = publicUrl;
+        console.log('✅ Thumbnail uploaded:', thumbnailUrl);
+      }
+
+      console.log('📡 Calling save-to-library edge function...');
+
+      const { data, error } = await supabase.functions.invoke('save-to-library', {
+        body: {
+          videoUrl: project.video.videoUrl,
+          thumbnailUrl: thumbnailUrl,
+          title: project.name || `Studio Video ${new Date().toLocaleDateString()}`,
+          prompt: project.voice?.script || 'Studio Pro generated video',
+          voiceId: project.voice?.voiceId,
+          quality: project.video?.quality,
+          duration: project.video?.duration,
+          metadata: {
+            engine: project.video?.engine,
+            fps: project.video?.fps,
+            ratio: project.video?.ratio,
+            style: project.style?.preset
+          }
+        }
+      });
+
+      if (error) throw error;
+
+      toast({ 
+        title: "Success", 
+        description: "Video saved to your library!",
+        duration: 3000
+      });
+      
+      console.log('✅ Video saved to library successfully');
+    } catch (error: any) {
+      console.error('❌ Save to library failed:', error);
+      toast({ 
+        title: "Save Failed", 
+        description: error.message || "Failed to save video to library",
+        variant: "destructive" 
+      });
+    }
+  }, [project, toast]);
+
   return {
     project,
     updateProject,
@@ -822,6 +943,8 @@ export const useStudioProject = () => {
     generateVoice,
     generateVideo,
     exportProject,
+    downloadVideo,
+    saveToLibrary,
     projectProgress,
     qualityMetrics,
     setProjectProgress

@@ -55,6 +55,8 @@ export default function StudioPage() {
     generateVoice,
     generateVideo,
     exportProject,
+    downloadVideo,
+    saveToLibrary,
     projectProgress,
     qualityMetrics
   } = useStudioProject();
@@ -197,6 +199,8 @@ export default function StudioPage() {
                         onUpdate={updateProject}
                         onGenerate={generateVideo}
                         isProcessing={isProcessing}
+                        onDownload={downloadVideo}
+                        onSaveToLibrary={saveToLibrary}
                       />
                     </ErrorBoundary>
                   </TabsContent>

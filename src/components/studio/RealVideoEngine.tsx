@@ -37,6 +37,8 @@ interface RealVideoEngineProps {
   onUpdate: (updates: Partial<StudioProject>) => void;
   onGenerate: (config: any) => Promise<void>;
   isProcessing: boolean;
+  onDownload?: () => void;
+  onSaveToLibrary?: () => void;
 }
 
 const VIDEO_ENGINES = [
@@ -98,7 +100,9 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
   project,
   onUpdate,
   onGenerate,
-  isProcessing
+  isProcessing,
+  onDownload,
+  onSaveToLibrary
 }) => {
   const [selectedEngine, setSelectedEngine] = useState('sync-labs');
   const [videoPrompt, setVideoPrompt] = useState('Professional presentation with natural head movements, confident eye contact, and subtle facial expressions. Maintain professional posture with engaging body language.');
@@ -732,23 +736,6 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
                   <Play className="h-4 w-4 mr-1" />
                   Preview
                 </Button>
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  className="border-primary/20 hover:bg-primary/10 hover:border-primary/40"
-                  asChild
-                >
-                  <a 
-                    href={project.video.videoUrl} 
-                    download={`virtura-video-${Date.now()}.mp4`}
-                    onClick={() => {
-                      toast.success('Downloading video...');
-                    }}
-                  >
-                    <Download className="h-4 w-4 mr-1" />
-                    Download
-                  </a>
-                </Button>
               </div>
             </div>
             
@@ -763,6 +750,46 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
                 </div>
               </div>
             )}
+
+            {/* Download & Save to Library Buttons */}
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              <Button
+                onClick={onDownload}
+                disabled={isProcessing}
+                variant="outline"
+                className="h-12 border-primary/20 hover:bg-primary/10 hover:border-primary/40"
+              >
+                {isProcessing ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Downloading...
+                  </>
+                ) : (
+                  <>
+                    <Download className="h-4 w-4 mr-2" />
+                    Download Video
+                  </>
+                )}
+              </Button>
+              
+              <Button
+                onClick={onSaveToLibrary}
+                disabled={isProcessing}
+                className="h-12 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white"
+              >
+                {isProcessing ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    Save to Library
+                  </>
+                )}
+              </Button>
+            </div>
           </CardContent>
         </Card>
       )}
