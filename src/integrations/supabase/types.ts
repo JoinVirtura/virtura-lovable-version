@@ -16,34 +16,49 @@ export type Database = {
     Tables: {
       avatar_library: {
         Row: {
+          audio_url: string | null
           created_at: string
+          duration: number | null
           id: string
           image_url: string
+          is_video: boolean | null
           prompt: string
           tags: string[] | null
+          thumbnail_url: string | null
           title: string | null
           updated_at: string
           user_id: string | null
+          video_url: string | null
         }
         Insert: {
+          audio_url?: string | null
           created_at?: string
+          duration?: number | null
           id?: string
           image_url: string
+          is_video?: boolean | null
           prompt: string
           tags?: string[] | null
+          thumbnail_url?: string | null
           title?: string | null
           updated_at?: string
           user_id?: string | null
+          video_url?: string | null
         }
         Update: {
+          audio_url?: string | null
           created_at?: string
+          duration?: number | null
           id?: string
           image_url?: string
+          is_video?: boolean | null
           prompt?: string
           tags?: string[] | null
+          thumbnail_url?: string | null
           title?: string | null
           updated_at?: string
           user_id?: string | null
+          video_url?: string | null
         }
         Relationships: []
       }

@@ -550,21 +550,38 @@ export const useTalkingAvatar = (
     }
 
     try {
-      // Save to Supabase storage bucket
+      setIsProcessing(true);
+      
+      // Extract thumbnail from video if we have avatarData
+      const thumbnailUrl = avatarData?.original_image_url || uploadedFile;
+      
       const { data, error } = await supabase.functions.invoke('save-to-library', {
         body: {
           videoUrl,
-          title: `Talking Avatar ${new Date().toISOString()}`,
-          type: 'talking_avatar'
+          thumbnailUrl,
+          audioUrl: generatedAudio,
+          title: `Talking Avatar ${new Date().toLocaleDateString()}`,
+          prompt: `Created with voice`,
+          duration: 0,
+          metadata: {
+            voice: voice,
+            style: style,
+            exports: exports,
+            generatedAt: new Date().toISOString()
+          }
         }
       });
 
       if (error) throw error;
 
-      toast({
-        title: "Saved to Library",
-        description: "Video saved to your library successfully",
-      });
+      if (data?.success) {
+        toast({
+          title: "Saved to Library",
+          description: "Video saved successfully! View it in Studio Pro.",
+        });
+      } else {
+        throw new Error(data?.error || 'Failed to save');
+      }
     } catch (error: any) {
       console.error('Save to library error:', error);
       toast({
@@ -572,8 +589,10 @@ export const useTalkingAvatar = (
         description: error.message || "Failed to save video to library",
         variant: "destructive",
       });
+    } finally {
+      setIsProcessing(false);
     }
-  }, [finalVideo, generatedVideo, toast]);
+  }, [finalVideo, generatedVideo, generatedAudio, avatarData, uploadedFile, voice, style, exports, toast, setIsProcessing]);
 
   const resetWorkflow = useCallback(() => {
     setUploadedFile(null);

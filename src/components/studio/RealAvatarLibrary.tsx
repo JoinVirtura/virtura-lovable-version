@@ -34,7 +34,8 @@ import {
   Download,
   MoreVertical,
   Film,
-  Play
+  Play,
+  Camera
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -45,8 +46,11 @@ interface AvatarLibraryItem {
   title?: string;
   tags?: string[];
   created_at: string;
-  video_url?: string; // Optional: if this is a video avatar
-  thumbnail_url?: string; // Optional: extracted thumbnail
+  video_url?: string;
+  thumbnail_url?: string;
+  is_video?: boolean;
+  duration?: number;
+  audio_url?: string;
 }
 
 interface RealAvatarLibraryProps {
@@ -62,6 +66,7 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [refreshing, setRefreshing] = useState(false);
+  const [filterType, setFilterType] = useState<'all' | 'images' | 'videos'>('all');
   const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; avatar: AvatarLibraryItem | null }>({ 
     open: false, 
     avatar: null 
@@ -71,10 +76,19 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
     try {
       setLoading(true);
       
-      const { data, error } = await supabase
+      let query = supabase
         .from('avatar_library')
         .select('*')
         .order('created_at', { ascending: false });
+
+      // Apply filter
+      if (filterType === 'videos') {
+        query = query.eq('is_video', true);
+      } else if (filterType === 'images') {
+        query = query.or('is_video.is.null,is_video.eq.false');
+      }
+
+      const { data, error } = await query;
 
       if (error) {
         console.error('Error loading avatars:', error);
@@ -129,6 +143,11 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
       setLoading(false);
     }
   };
+
+  // Re-run loadAvatars when filterType changes
+  useEffect(() => {
+    loadAvatars();
+  }, [filterType]);
 
   const refreshLibrary = async () => {
     setRefreshing(true);
@@ -274,6 +293,33 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
         </Button>
       </div>
 
+      {/* Filter Tabs */}
+      <div className="flex gap-2">
+        <Button
+          variant={filterType === 'all' ? 'default' : 'outline'}
+          onClick={() => setFilterType('all')}
+          size="sm"
+        >
+          All
+        </Button>
+        <Button
+          variant={filterType === 'images' ? 'default' : 'outline'}
+          onClick={() => setFilterType('images')}
+          size="sm"
+        >
+          <Camera className="h-4 w-4 mr-2" />
+          Images
+        </Button>
+        <Button
+          variant={filterType === 'videos' ? 'default' : 'outline'}
+          onClick={() => setFilterType('videos')}
+          size="sm"
+        >
+          <Film className="h-4 w-4 mr-2" />
+          Videos
+        </Button>
+      </div>
+
       {/* Search */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -296,15 +342,26 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
             >
               <CardContent className="p-0">
                 <div className="relative rounded-xl overflow-hidden border border-violet-500/10">
-                  <img
-                    src={avatar.image_url}
-                    alt={avatar.title || 'Generated Avatar'}
-                    className="w-full aspect-square object-cover"
-                    onError={(e) => {
-                      // Fallback for broken images
-                      e.currentTarget.src = '/placeholder.svg';
-                    }}
-                  />
+                  {avatar.is_video && avatar.video_url ? (
+                    <video
+                      src={avatar.video_url}
+                      poster={avatar.thumbnail_url || avatar.image_url}
+                      className="w-full aspect-square object-cover"
+                      controls
+                      preload="metadata"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  ) : (
+                    <img
+                      src={avatar.image_url}
+                      alt={avatar.title || 'Generated Avatar'}
+                      className="w-full aspect-square object-cover"
+                      onError={(e) => {
+                        // Fallback for broken images
+                        e.currentTarget.src = '/placeholder.svg';
+                      }}
+                    />
+                  )}
                   <div className="absolute top-2 right-2 flex gap-2">
                     {avatar.video_url && (
                       <Badge className="bg-blue-500/90 backdrop-blur-sm">
