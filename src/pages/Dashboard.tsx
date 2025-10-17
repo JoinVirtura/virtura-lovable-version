@@ -12,6 +12,7 @@ import { ChatInterface } from "@/components/ChatInterface";
 import { TalkingAvatarStudio } from "@/components/TalkingAvatarStudio";
 import { MotionBackground } from "@/components/MotionBackground";
 import UpgradePage from "./UpgradePage";
+import StudioPage from "./StudioPage";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -1242,7 +1243,11 @@ export default function Dashboard() {
       case "overview":
         return <OverviewPage onViewChange={setActiveView} />;
       case "talking-avatar":
-        return <TalkingAvatarStudio onViewChange={setActiveView} />;
+        return (
+          <div className="h-screen overflow-y-auto">
+            <StudioPage />
+          </div>
+        );
       case "create":
         return <CreateAvatar />;
       case "studio":
