@@ -101,9 +101,9 @@ export default function StudioPage() {
       {/* Hero Header */}
       <div className="relative bg-gradient-to-b from-black/40 via-black/20 to-transparent backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-6 py-6">
-          <div className="flex items-center justify-between">
-            {/* Minimal Logo & Title */}
-            <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between gap-8">
+            {/* Left: Minimal Logo & Title */}
+            <div className="flex items-center gap-3 flex-shrink-0">
               <div className="relative">
                 <Sparkles className="h-7 w-7 text-violet-400 drop-shadow-[0_0_8px_rgba(212,110,255,0.6)]" />
                 <Crown className="h-3 w-3 absolute -top-0.5 -right-0.5 text-violet-400" />
@@ -116,8 +116,19 @@ export default function StudioPage() {
               </div>
             </div>
             
-            {/* Floating Quality Card */}
-            <div className="glass-card px-4 py-3 rounded-xl border border-violet-500/20">
+            {/* Center: Studio Navigation */}
+            <div className="flex-1 flex justify-center">
+              <StudioNavigation
+                steps={STUDIO_STEPS}
+                currentStep={currentStep}
+                onStepChange={handleStepChange}
+                getStepStatus={getStepStatus}
+                isProcessing={isProcessing}
+              />
+            </div>
+            
+            {/* Right: Floating Quality Card */}
+            <div className="glass-card px-4 py-3 rounded-xl border border-violet-500/20 flex-shrink-0">
               <div className="flex items-center gap-3">
                 <div className="text-right">
                   <div className="text-xs text-gray-400">Project Quality</div>
@@ -133,17 +144,6 @@ export default function StudioPage() {
               </div>
             </div>
           </div>
-        </div>
-        
-        {/* Studio Navigation */}
-        <div className="max-w-7xl mx-auto px-6 py-6">
-          <StudioNavigation
-            steps={STUDIO_STEPS}
-            currentStep={currentStep}
-            onStepChange={handleStepChange}
-            getStepStatus={getStepStatus}
-            isProcessing={isProcessing}
-          />
         </div>
         
         {/* Gradient fade instead of hard line */}
