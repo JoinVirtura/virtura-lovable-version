@@ -72,18 +72,48 @@ serve(async (req) => {
     const generateWithOpenAI = async (): Promise<Uint8Array> => {
       console.log('Trying OpenAI TTS (tts-1)...');
       
-      // Map ElevenLabs voice IDs to OpenAI voices
+      // Map ALL 20 ElevenLabs voice IDs to OpenAI voices for fallback
       const voiceMapping: Record<string, string> = {
-        '9BWtsMINqrJLrRacOk9x': 'nova',     // Aria -> Nova (expressive female)
-        'IKne3meq5aSn9XLyUdCD': 'shimmer',  // Freya -> Shimmer (conversational female)
-        'EXAVITQu4vr4xnSDxMaL': 'alloy',    // Sarah -> Alloy (professional female)
-        'pNInz6obpgDQGcFmaJgB': 'onyx',     // Adam -> Onyx (confident male)
-        'TxGEqnHWrfWFTfGW9XjX': 'echo',     // Josh -> Echo (deep male)
-        'VR6AewLTigWG4xSOukaG': 'fable',    // Arnold -> Fable (authoritative male)
+        // Executive Voices
+        '9BWtsMINqrJLrRacOk9x': 'nova',     // Aria (Executive Female)
+        'CwhRBWXzGAHq8TQ4Fs17': 'echo',     // Roger (Executive Male) ← KEY FIX
+        'TX3LPaxmHKxFdv7VOQHJ': 'onyx',     // Liam (Executive Male)
+        
+        // Creative Voices
+        'EXAVITQu4vr4xnSDxMaL': 'alloy',    // Sarah (Creative Female)
+        'cgSgspJ2msm6clMCkdW9': 'shimmer',  // Jessica (Creative Female)
+        'pFZP5JQG7iQjIQuC4Bku': 'nova',     // Lily (Creative Female)
+        
+        // Narrator Voices
+        'onwK4e9ZLuTAKqWW03F9': 'onyx',     // Daniel (Narrator Male)
+        'cjVigY5qzO86Huf0OWal': 'fable',    // Eric (Narrator Male)
+        'XB0fDUnXU5powFXDhCwa': 'shimmer',  // Charlotte (Narrator Female)
+        
+        // Character Voices
+        'IKne3meq5aSn9XLyUdCD': 'fable',    // Charlie (Character Male)
+        'Xb7hH8MSUJpSbSDYk0k2': 'nova',     // Alice (Character Female)
+        'XrExE9yKIg1WjnnlVkGX': 'alloy',    // Matilda (Character Female)
+        
+        // International Voices
+        'SAz9YHcvj6GT2YYXdXww': 'onyx',     // River (International Male)
+        'N2lVS1w4EtoT3dr4eOWO': 'echo',     // Callum (International Male)
+        'FGY2WhTYpPnrIDTdsKH5': 'nova',     // Laura (International Female)
+        
+        // Young Professional Voices
+        'JBFqnCBsd6RMkjVDRZzb': 'fable',    // George (Young Professional)
+        'iP95p4xoKVk53GoZ742B': 'onyx',     // Chris (Young Professional)
+        'nPczCjzI2devNBz1zQrb': 'echo',     // Brian (Young Professional)
+        'pqHfZKP75CvOlQylNhV4': 'alloy',    // Bill (Young Professional)
+        'bIHbv24MWmeRgasZH58o': 'echo',     // Will (Young Professional)
+        
+        // Legacy voice mappings (for backward compatibility)
+        'pNInz6obpgDQGcFmaJgB': 'onyx',     // Adam
+        'TxGEqnHWrfWFTfGW9XjX': 'echo',     // Josh
+        'VR6AewLTigWG4xSOukaG': 'fable',    // Arnold
       };
       
       const openaiVoice = voiceMapping[selectedVoiceId] || 'alloy';
-      console.log(`Using OpenAI voice: ${openaiVoice} (mapped from ${selectedVoiceId})`);
+      console.log(`✅ Voice Selection: ElevenLabs ID '${selectedVoiceId}' → OpenAI voice '${openaiVoice}'`);
       
       const res = await fetch('https://api.openai.com/v1/audio/speech', {
         method: 'POST',

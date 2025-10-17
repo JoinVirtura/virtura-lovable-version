@@ -73,14 +73,43 @@ serve(async (req) => {
     
     console.log('Attempting OpenAI preview...')
     
-    // Map ElevenLabs voice IDs to OpenAI voices
+    // Map ALL 20 ElevenLabs voice IDs to OpenAI voices (matches voice-generate)
     const voiceMap: Record<string, string> = {
-      '9BWtsMINqrJLrRacOk9x': 'nova',     // Aria
-      'IKne3meq5aSn9XLyUdCD': 'shimmer',  // Charlie
-      'TX3LPaxmHKxFdv7VOQHJ': 'onyx',     // Liam
-      'EXAVITQu4vr4xnSDxMaL': 'nova',     // Sarah
-      'CwhRBWXzGAHq8TQ4Fs17': 'echo',     // Roger
-    }
+      // Executive Voices
+      '9BWtsMINqrJLrRacOk9x': 'nova',     // Aria (Executive Female)
+      'CwhRBWXzGAHq8TQ4Fs17': 'echo',     // Roger (Executive Male)
+      'TX3LPaxmHKxFdv7VOQHJ': 'onyx',     // Liam (Executive Male)
+      
+      // Creative Voices
+      'EXAVITQu4vr4xnSDxMaL': 'alloy',    // Sarah (Creative Female)
+      'cgSgspJ2msm6clMCkdW9': 'shimmer',  // Jessica (Creative Female)
+      'pFZP5JQG7iQjIQuC4Bku': 'nova',     // Lily (Creative Female)
+      
+      // Narrator Voices
+      'onwK4e9ZLuTAKqWW03F9': 'onyx',     // Daniel (Narrator Male)
+      'cjVigY5qzO86Huf0OWal': 'fable',    // Eric (Narrator Male)
+      'XB0fDUnXU5powFXDhCwa': 'shimmer',  // Charlotte (Narrator Female)
+      
+      // Character Voices
+      'IKne3meq5aSn9XLyUdCD': 'fable',    // Charlie (Character Male)
+      'Xb7hH8MSUJpSbSDYk0k2': 'nova',     // Alice (Character Female)
+      'XrExE9yKIg1WjnnlVkGX': 'alloy',    // Matilda (Character Female)
+      
+      // International Voices
+      'SAz9YHcvj6GT2YYXdXww': 'onyx',     // River (International Male)
+      'N2lVS1w4EtoT3dr4eOWO': 'echo',     // Callum (International Male)
+      'FGY2WhTYpPnrIDTdsKH5': 'nova',     // Laura (International Female)
+      
+      // Young Professional Voices
+      'JBFqnCBsd6RMkjVDRZzb': 'fable',    // George (Young Professional)
+      'iP95p4xoKVk53GoZ742B': 'onyx',     // Chris (Young Professional)
+      'nPczCjzI2devNBz1zQrb': 'echo',     // Brian (Young Professional)
+      'pqHfZKP75CvOlQylNhV4': 'alloy',    // Bill (Young Professional)
+      'bIHbv24MWmeRgasZH58o': 'echo',     // Will (Young Professional)
+    };
+    
+    const openaiVoice = voiceMap[voiceId] || 'alloy';
+    console.log(`🎙️ Voice Preview: ElevenLabs ID '${voiceId}' → OpenAI voice '${openaiVoice}'`);
     
     const openaiResponse = await fetch('https://api.openai.com/v1/audio/speech', {
       method: 'POST',

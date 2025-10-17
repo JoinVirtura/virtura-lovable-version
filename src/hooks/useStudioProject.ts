@@ -303,6 +303,12 @@ export const useStudioProject = () => {
         voice: { ...prev.voice, status: 'processing' } as any
       }));
 
+      console.log('🎙️ Generating voice with:', {
+        voiceId: config.voiceId,
+        language: config.language || 'en',
+        scriptPreview: config.script?.substring(0, 50) + '...'
+      });
+
       const { data, error } = await supabase.functions.invoke('voice-generate', {
         body: {
           script: config.script,
@@ -315,6 +321,12 @@ export const useStudioProject = () => {
             use_speaker_boost: true
           }
         }
+      });
+      
+      console.log('✅ Voice generation response:', { 
+        success: !error, 
+        provider: data?.provider,
+        hasAudioUrl: !!data?.audioUrl 
       });
 
       if (error) throw error;
