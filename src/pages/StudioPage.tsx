@@ -135,13 +135,8 @@ export default function StudioPage() {
           </div>
         </div>
         
-        {/* Gradient fade instead of hard line */}
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-violet-500/20 to-transparent" />
-      </div>
-
-      {/* Studio Navigation */}
-      <div className="relative">
-        <div className="max-w-7xl mx-auto px-6">
+        {/* Studio Navigation */}
+        <div className="max-w-7xl mx-auto px-6 py-6">
           <StudioNavigation
             steps={STUDIO_STEPS}
             currentStep={currentStep}
@@ -150,6 +145,9 @@ export default function StudioPage() {
             isProcessing={isProcessing}
           />
         </div>
+        
+        {/* Gradient fade instead of hard line */}
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-violet-500/20 to-transparent" />
       </div>
 
       {/* Main Studio Interface */}
