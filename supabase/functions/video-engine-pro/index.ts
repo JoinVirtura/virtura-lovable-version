@@ -374,32 +374,74 @@ async function downloadAndUploadVideo(
   sendProgress: (data: any) => void,
   supabase: any
 ) {
+  console.log(`⬇️ Starting download from Replicate: ${replicateVideoUrl}`);
+  
   sendProgress({ 
     stage: 'downloading', 
     progress: 75, 
-    message: '⬇️ Downloading generated video...' 
+    message: '⬇️ Downloading generated video from Replicate...' 
   });
 
+  console.log(`⬇️ Fetching video with streaming download...`);
   const videoResponse = await fetch(replicateVideoUrl);
+  
   if (!videoResponse.ok) {
+    console.error(`❌ Download failed with status: ${videoResponse.status}`);
     throw new Error(`Failed to download video: ${videoResponse.status}`);
   }
 
-  const videoBlob = await videoResponse.arrayBuffer();
-  const videoSize = videoBlob.byteLength;
+  if (!videoResponse.body) {
+    console.error(`❌ No response body received`);
+    throw new Error('No video data received from Replicate');
+  }
+
+  // Stream download to prevent memory issues with large files
+  console.log(`📥 Streaming video download...`);
+  const chunks: Uint8Array[] = [];
+  const reader = videoResponse.body.getReader();
+  let receivedLength = 0;
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      
+      if (done) {
+        console.log(`✅ Download complete: ${receivedLength} bytes total`);
+        break;
+      }
+      
+      chunks.push(value);
+      receivedLength += value.length;
+      
+      // Log progress every 1MB
+      if (receivedLength % (1024 * 1024) < 50000) {
+        console.log(`📥 Downloaded ${(receivedLength / 1024 / 1024).toFixed(1)}MB...`);
+      }
+    }
+  } catch (error: any) {
+    console.error(`❌ Stream download error:`, error);
+    throw new Error(`Download stream failed: ${error.message}`);
+  }
+
+  const videoBlob = new Blob(chunks);
+  const videoSize = videoBlob.size;
   const contentType = videoResponse.headers.get('content-type') || 'video/mp4';
   
-  console.log(`📦 Video downloaded, size: ${videoSize} bytes, type: ${contentType}`);
+  console.log(`✅ Video downloaded successfully`);
+  console.log(`📦 Size: ${(videoSize / 1024 / 1024).toFixed(2)}MB`);
+  console.log(`📦 Type: ${contentType}`);
 
   // Validate video
   if (videoSize === 0) {
+    console.error(`❌ Downloaded video is empty (0 bytes)`);
     throw new Error('Downloaded video is empty (0 bytes)');
   }
 
   if (videoSize < 1000) {
-    console.warn('⚠️ Video file is suspiciously small, but proceeding...');
+    console.warn(`⚠️ Video file is suspiciously small (${videoSize} bytes), but proceeding...`);
   }
 
+  console.log(`📤 Starting upload to Supabase Storage...`);
   sendProgress({ 
     stage: 'uploading', 
     progress: 85, 
@@ -418,7 +460,9 @@ async function downloadAndUploadVideo(
   while (uploadAttempt < 3 && !uploadSuccess) {
     try {
       uploadAttempt++;
-      console.log(`📤 Storage upload attempt ${uploadAttempt}/3...`);
+      console.log(`📤 Storage upload attempt ${uploadAttempt}/3 to virtura-media bucket...`);
+      console.log(`📤 File path: ${filePath}`);
+      console.log(`📤 File size: ${(videoSize / 1024 / 1024).toFixed(2)}MB`);
 
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('virtura-media')
@@ -427,26 +471,46 @@ async function downloadAndUploadVideo(
           upsert: true
         });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error(`❌ Upload error:`, uploadError);
+        throw uploadError;
+      }
 
+      console.log(`✅ Upload successful, generating public URL...`);
       const { data: urlData } = supabase.storage
         .from('virtura-media')
         .getPublicUrl(filePath);
 
       publicUrl = urlData.publicUrl;
       uploadSuccess = true;
-      console.log('✅ Video uploaded to Supabase Storage:', publicUrl);
+      console.log(`✅ Video uploaded to Supabase Storage successfully`);
+      console.log(`✅ Public URL: ${publicUrl}`);
       
     } catch (error: any) {
       console.warn(`⚠️ Upload attempt ${uploadAttempt} failed:`, error.message);
+      console.warn(`⚠️ Error details:`, error);
       storageError = error.message;
       
       if (uploadAttempt < 3) {
-        await delay(1000); // Wait 1s before retry
+        console.log(`⏳ Waiting 1 second before retry...`);
+        await delay(1000);
       } else {
-        console.error('❌ Storage upload failed after 3 attempts, using Replicate URL as fallback');
+        console.error(`❌ All 3 upload attempts failed`);
+        console.error(`❌ Using Replicate URL as fallback: ${replicateVideoUrl}`);
       }
     }
+  }
+
+  // Log final result
+  if (!uploadSuccess) {
+    console.warn(`⚠️ Using Replicate URL as fallback (storage upload failed)`);
+    sendProgress({ 
+      stage: 'fallback', 
+      progress: 95, 
+      message: '⚠️ Using direct link (storage upload failed, video still playable)' 
+    });
+  } else {
+    console.log(`✅ Video successfully stored in Supabase Storage`);
   }
 
   const videoResult = {
@@ -474,6 +538,8 @@ async function downloadAndUploadVideo(
     }
   };
 
+  console.log(`🎉 Video processing complete, returning result`);
+  console.log(`🎉 Final video URL: ${videoResult.videoUrl}`);
   return videoResult;
 }
 

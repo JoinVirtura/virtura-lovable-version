@@ -348,8 +348,20 @@ export const useTalkingAvatar = (
       }
 
       const checkTimeout = () => {
-        if (Date.now() - lastEventTime > TIMEOUT_MS) {
-          throw new Error('Video generation timeout - no updates for 5 minutes');
+        const timeSinceLastEvent = Date.now() - lastEventTime;
+        
+        // Show warning after 60 seconds of no updates
+        if (timeSinceLastEvent > 60000 && timeSinceLastEvent < 62000) {
+          console.warn(`⚠️ No progress updates for ${(timeSinceLastEvent / 1000).toFixed(0)}s`);
+          toast({
+            title: "Still Processing",
+            description: "Video generation is taking longer than expected. Large files may take a few minutes to upload.",
+          });
+        }
+        
+        // Timeout after 5 minutes
+        if (timeSinceLastEvent > TIMEOUT_MS) {
+          throw new Error(`Video generation timeout - no updates for ${(TIMEOUT_MS / 60000).toFixed(0)} minutes`);
         }
       };
 
