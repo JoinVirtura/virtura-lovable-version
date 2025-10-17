@@ -391,8 +391,8 @@ export default function LibraryPage() {
                 ) : viewMode === "grid" ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredAssets.map((asset) => (
-                      <Card key={asset.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border-2 hover:border-primary/30 bg-gradient-to-br from-card to-card/95">
-                        <div className="aspect-square bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 relative overflow-hidden">
+                      <Card key={asset.id} className="group overflow-hidden transition-all duration-500 hover:-translate-y-3 border-2 border-violet-500/30 hover:border-violet-400 bg-gradient-to-br from-gray-900/95 to-gray-800/95 backdrop-blur-sm shadow-[0_0_20px_rgba(212,110,255,0.15)] hover:shadow-[0_0_30px_rgba(212,110,255,0.3)]">
+                        <div className="aspect-square bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 relative overflow-hidden rounded-xl border border-violet-500/10">
                           {/* Content Preview */}
                           <img 
                             src={asset.thumbnail} 
@@ -430,7 +430,7 @@ export default function LibraryPage() {
                           </div>
                           
                           {/* Smart Hover Actions - Fixed spacing */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-4">
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-4 rounded-xl">
                             <div className="space-y-2">
                               <div className="flex justify-center gap-3">
                                 <Button 
