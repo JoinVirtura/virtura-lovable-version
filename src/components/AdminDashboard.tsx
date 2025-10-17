@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RefreshCw, AlertTriangle, CheckCircle, Clock, Users, Video, FileText } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
+import { AdminVideoRecovery } from '@/components/AdminVideoRecovery';
 
 interface DashboardStats {
   totalUsers: number;
@@ -295,6 +296,7 @@ export function AdminDashboard() {
         <TabsList>
           <TabsTrigger value="jobs">Recent Jobs</TabsTrigger>
           <TabsTrigger value="users">User Activity</TabsTrigger>
+          <TabsTrigger value="recovery">Video Recovery</TabsTrigger>
         </TabsList>
 
         <TabsContent value="jobs" className="space-y-4">
@@ -365,6 +367,10 @@ export function AdminDashboard() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="recovery" className="space-y-4">
+          <AdminVideoRecovery />
         </TabsContent>
       </Tabs>
     </div>
