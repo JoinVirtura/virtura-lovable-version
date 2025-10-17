@@ -81,58 +81,66 @@ export default function StudioPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-muted/20">
+    <div className="min-h-screen bg-gradient-to-br from-[#0F0F1A] via-[#1a1a2e] to-[#0F0F1A] relative overflow-hidden">
+      {/* Ambient particles */}
+      <div className="absolute inset-0 pointer-events-none">
+        {[...Array(12)].map((_, i) => (
+          <div 
+            key={i}
+            className="absolute w-1 h-1 bg-violet-400/30 rounded-full animate-pulse"
+            style={{
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 5}s`,
+              animationDuration: `${8 + Math.random() * 4}s`
+            }}
+          />
+        ))}
+      </div>
+
       {/* Hero Header */}
-      <div className="border-b border-border/50 bg-card/50 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="relative bg-gradient-to-b from-black/40 via-black/20 to-transparent backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <div className="flex items-center gap-2">
-                  <div className="relative">
-                    <Sparkles className="h-8 w-8 text-primary" />
-                    <div className="absolute -top-1 -right-1">
-                      <Crown className="h-4 w-4 text-yellow-500" />
-                    </div>
-                  </div>
-                  <h1 className="text-3xl font-bold">
-                    <span className="bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                      AI Studio Pro
-                    </span>
-                  </h1>
-                </div>
-                <Badge variant="secondary" className="text-xs font-semibold">
-                  <Star className="h-3 w-3 mr-1" />
+            {/* Minimal Logo & Title */}
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <Sparkles className="h-7 w-7 text-violet-400 drop-shadow-[0_0_8px_rgba(212,110,255,0.6)]" />
+                <Crown className="h-3 w-3 absolute -top-0.5 -right-0.5 text-violet-400" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gradient-primary">AI Studio Pro</h1>
+                <Badge variant="secondary" className="text-xs mt-1 bg-violet-500/20 text-violet-300 border-violet-500/30">
                   Ultra-HD
                 </Badge>
               </div>
-              <p className="text-muted-foreground">
-                Professional AI media creation • 47+ Art Styles • 20 Premium Voices • Real Video Synthesis
-              </p>
             </div>
             
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <div className="text-sm font-medium">Project Quality</div>
-                <div className="flex items-center gap-2">
-                  <Progress value={qualityMetrics.overall} className="w-20 h-2" />
-                  <span className="text-xs text-muted-foreground">
-                    {qualityMetrics.overall}%
-                  </span>
+            {/* Floating Quality Card */}
+            <div className="glass-card px-4 py-3 rounded-xl border border-violet-500/20">
+              <div className="flex items-center gap-3">
+                <div className="text-right">
+                  <div className="text-xs text-gray-400">Project Quality</div>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Progress value={qualityMetrics.overall} className="w-20 h-1.5 bg-gray-800" />
+                    <span className="text-sm font-bold text-violet-400">{qualityMetrics.overall}%</span>
+                  </div>
                 </div>
+                <QualitySettings 
+                  settings={project.qualitySettings}
+                  onUpdate={(settings) => updateProject({ qualitySettings: settings })}
+                />
               </div>
-              
-              <QualitySettings 
-                settings={project.qualitySettings}
-                onUpdate={(settings) => updateProject({ qualitySettings: settings })}
-              />
             </div>
           </div>
         </div>
+        
+        {/* Gradient fade instead of hard line */}
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-violet-500/20 to-transparent" />
       </div>
 
       {/* Studio Navigation */}
-      <div className="border-b border-border/30">
+      <div className="relative">
         <div className="max-w-7xl mx-auto px-6">
           <StudioNavigation
             steps={STUDIO_STEPS}
@@ -149,7 +157,7 @@ export default function StudioPage() {
         <div className="grid lg:grid-cols-12 gap-6">
           {/* Main Studio Panel */}
           <div className="lg:col-span-8">
-            <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-sm">
+            <Card className="border-0 shadow-[0_8px_32px_rgba(0,0,0,0.3)] bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl rounded-2xl overflow-hidden">
               <CardContent className="p-0">
                 <Tabs value={currentStep} onValueChange={setCurrentStep}>
                   <TabsContent value="avatar" className="p-6 space-y-6">
@@ -213,21 +221,25 @@ export default function StudioPage() {
           {/* Sidebar - Preview & Controls */}
           <div className="lg:col-span-4 space-y-6">
             {/* Real-time Preview */}
+            <div className="glass-card border border-violet-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] rounded-xl overflow-hidden">
               <RealtimePreview 
                 project={project}
                 isProcessing={isProcessing}
               />
+            </div>
 
             {/* Project Timeline */}
-            <ProjectTimeline
-              project={project}
-              onUpdate={updateProject}
-              currentStep={currentStep}
-            />
+            <div className="glass-card border border-violet-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] rounded-xl">
+              <ProjectTimeline
+                project={project}
+                onUpdate={updateProject}
+                currentStep={currentStep}
+              />
+            </div>
 
             {/* Processing Status */}
             {isProcessing && (
-              <Card className="border-0 shadow-lg bg-card/90 backdrop-blur-sm">
+              <Card className="glass-card border border-violet-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] rounded-xl">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm flex items-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin text-primary" />
@@ -263,27 +275,24 @@ export default function StudioPage() {
             )}
 
             {/* Quick Actions */}
-            <Card className="border-0 shadow-lg bg-card/90 backdrop-blur-sm">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm">Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="grid grid-cols-2 gap-2">
-                  <Button size="sm" variant="outline" className="h-8">
-                    <Play className="h-3 w-3 mr-1" />
-                    Preview
+            <Card className="glass-card border border-violet-500/20 rounded-xl">
+              <CardContent className="p-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <Button size="sm" variant="ghost" className="h-12 flex-col gap-1 hover:bg-violet-500/10 hover:text-violet-300 transition-all">
+                    <Play className="h-4 w-4" />
+                    <span className="text-xs">Preview</span>
                   </Button>
-                  <Button size="sm" variant="outline" className="h-8">
-                    <Share2 className="h-3 w-3 mr-1" />
-                    Share
+                  <Button size="sm" variant="ghost" className="h-12 flex-col gap-1 hover:bg-violet-500/10 hover:text-violet-300 transition-all">
+                    <Share2 className="h-4 w-4" />
+                    <span className="text-xs">Share</span>
                   </Button>
-                  <Button size="sm" variant="outline" className="h-8">
-                    <Download className="h-3 w-3 mr-1" />
-                    Export
+                  <Button size="sm" variant="ghost" className="h-12 flex-col gap-1 hover:bg-violet-500/10 hover:text-violet-300 transition-all">
+                    <Download className="h-4 w-4" />
+                    <span className="text-xs">Export</span>
                   </Button>
-                  <Button size="sm" variant="outline" className="h-8">
-                    <Settings className="h-3 w-3 mr-1" />
-                    Settings
+                  <Button size="sm" variant="ghost" className="h-12 flex-col gap-1 hover:bg-violet-500/10 hover:text-violet-300 transition-all">
+                    <Settings className="h-4 w-4" />
+                    <span className="text-xs">Settings</span>
                   </Button>
                 </div>
               </CardContent>
