@@ -7,14 +7,14 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Content-type to Replicate model mapping
+// Content-type to Replicate model mapping - CORRECT MODEL IDENTIFIERS
 const modelMap: Record<string, string> = {
   'portrait': 'black-forest-labs/flux-schnell',
-  'landscape': 'stability-ai/sdxl',
+  'landscape': 'stability-ai/stable-diffusion-xl-base-1.0',
   'object': 'black-forest-labs/flux-1.1-pro',
-  'abstract': 'ai-forever/kandinsky-2.2',
-  'scene': 'stability-ai/sdxl',
-  'auto': 'black-forest-labs/flux-1.1-pro'  // ✅ Best universal model for all content types
+  'abstract': 'ai-forever/kandinsky-3',
+  'scene': 'stability-ai/stable-diffusion-xl-base-1.0',
+  'auto': 'black-forest-labs/flux-1.1-pro'
 };
 
 // Quality settings for FLUX Schnell (max 4 steps)
@@ -127,6 +127,14 @@ serve(async (req) => {
 
     // Generate image with Replicate
     console.log('🚀 Starting Replicate generation...');
+    console.log('🎯 Generation Config:', {
+      model,
+      contentType,
+      userPrompt: prompt,
+      enhancedPrompt,
+      dimensions,
+      steps: model.includes('flux-schnell') ? Math.min(qualitySettings.steps, 4) : qualitySettings.steps
+    });
     const startTime = Date.now();
 
     let output;
@@ -136,41 +144,72 @@ serve(async (req) => {
       ? Math.min(qualitySettings.steps, 4) 
       : qualitySettings.steps;
     
-    if (model === 'black-forest-labs/flux-schnell' || model === 'black-forest-labs/flux-1.1-pro') {
-      // FLUX models
-      output = await replicate.run(model, {
-        input: {
-          prompt: enhancedPrompt,
-          num_outputs: 1, // CRITICAL: Single image only
-          aspect_ratio: aspectRatio === '1:1' ? '1:1' : aspectRatio === '16:9' ? '16:9' : aspectRatio === '9:16' ? '9:16' : '1:1',
-          output_format: "png",
-          output_quality: quality === '8K' ? 100 : quality === '4K' ? 90 : 80,
-          num_inference_steps: finalSteps
-        }
-      });
-    } else if (model === 'stability-ai/sdxl') {
-      // SDXL model
-      output = await replicate.run(model, {
-        input: {
-          prompt: enhancedPrompt,
-          negative_prompt: negativePrompt,
-          width: dimensions.width,
-          height: dimensions.height,
-          num_outputs: 1,
-          num_inference_steps: finalSteps,
-          guidance_scale: 7.5
-        }
-      });
-    } else {
-      // Kandinsky or other models
-      output = await replicate.run(model, {
-        input: {
-          prompt: enhancedPrompt,
-          num_outputs: 1,
-          width: dimensions.width,
-          height: dimensions.height
-        }
-      });
+    try {
+      if (model === 'black-forest-labs/flux-schnell' || model === 'black-forest-labs/flux-1.1-pro') {
+        // FLUX models
+        output = await replicate.run(model, {
+          input: {
+            prompt: enhancedPrompt,
+            num_outputs: 1,
+            aspect_ratio: aspectRatio === '1:1' ? '1:1' : aspectRatio === '16:9' ? '16:9' : aspectRatio === '9:16' ? '9:16' : '1:1',
+            output_format: "png",
+            output_quality: quality === '8K' ? 100 : quality === '4K' ? 90 : 80,
+            num_inference_steps: finalSteps
+          }
+        });
+      } else if (model === 'stability-ai/stable-diffusion-xl-base-1.0') {
+        // SDXL model - CORRECTED MODEL NAME
+        output = await replicate.run(model, {
+          input: {
+            prompt: enhancedPrompt,
+            negative_prompt: negativePrompt,
+            width: dimensions.width,
+            height: dimensions.height,
+            num_outputs: 1,
+            num_inference_steps: finalSteps,
+            guidance_scale: 7.5
+          }
+        });
+      } else if (model === 'ai-forever/kandinsky-3') {
+        // Kandinsky v3 - CORRECTED MODEL NAME
+        output = await replicate.run(model, {
+          input: {
+            prompt: enhancedPrompt,
+            num_outputs: 1,
+            width: dimensions.width,
+            height: dimensions.height
+          }
+        });
+      } else {
+        // Other models
+        output = await replicate.run(model, {
+          input: {
+            prompt: enhancedPrompt,
+            num_outputs: 1,
+            width: dimensions.width,
+            height: dimensions.height
+          }
+        });
+      }
+    } catch (modelError) {
+      console.error(`❌ ${model} failed:`, modelError);
+      
+      // Retry with FLUX 1.1 Pro as universal fallback
+      if (model !== 'black-forest-labs/flux-1.1-pro') {
+        console.log('🔄 Retrying with FLUX 1.1 Pro as universal fallback...');
+        output = await replicate.run('black-forest-labs/flux-1.1-pro', {
+          input: {
+            prompt: enhancedPrompt,
+            num_outputs: 1,
+            aspect_ratio: aspectRatio === '1:1' ? '1:1' : aspectRatio === '16:9' ? '16:9' : aspectRatio === '9:16' ? '9:16' : '1:1',
+            output_format: "png",
+            output_quality: quality === '8K' ? 100 : quality === '4K' ? 90 : 80,
+            num_inference_steps: 28
+          }
+        });
+      } else {
+        throw modelError;
+      }
     }
 
     const processingTime = `${Math.round((Date.now() - startTime) / 1000)}s`;

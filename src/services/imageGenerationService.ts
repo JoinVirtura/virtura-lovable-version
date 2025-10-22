@@ -151,19 +151,21 @@ export class ImageGenerationService {
           return replicateResp.data as GeneratedImage;
         }
 
-        console.warn('⚠️ Replicate failed, falling back to HuggingFace:', replicateResp.error?.message);
+        // Replicate failed - decide whether to fallback or throw error
+        console.warn('⚠️ Replicate failed:', replicateResp.error?.message);
+        
+        // For non-portrait content, throw error instead of falling back to HuggingFace
+        if (contentType !== 'portrait') {
+          console.error('❌ Replicate failed for non-portrait content - no fallback available');
+          throw new Error(`Image generation failed: ${replicateResp.error?.message || 'Unknown error'}`);
+        }
+        
+        // Only portraits can fall back to HuggingFace
+        console.log('🔄 Falling back to HuggingFace for portrait generation');
       }
-      
-      // Fallback to HuggingFace FLUX
-      console.log('🔄 Using HuggingFace FLUX as fallback');
       
       // ONLY apply portrait optimization for portrait content type
-      let optimizedPrompt = params.prompt; // Start with raw user prompt
-      
-      if (contentType === 'portrait') {
-        // Only force portrait-specific optimization for portrait mode
-        optimizedPrompt = this.optimizeForSingleImage(params.prompt);
-      }
+      let optimizedPrompt = this.optimizeForSingleImage(params.prompt);
       
       if (params.enhance !== false) {
         optimizedPrompt = this.enhancePromptForContentType(optimizedPrompt, contentType, quality);

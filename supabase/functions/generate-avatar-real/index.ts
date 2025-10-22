@@ -69,15 +69,10 @@ serve(async (req) => {
     const contentEnhancement = contentEnhancements[contentType as keyof typeof contentEnhancements] || contentEnhancements.auto;
     const selectedStyleEnhancement = styleEnhancements[style as keyof typeof styleEnhancements] || styleEnhancements.photorealistic;
     
-    // ULTRA-STRONG Enhanced focus function to guarantee single portrait without grids/collages
-    const focusPrompt = (inputPrompt: string): string => {
-      console.log('🔍 Focusing prompt for SINGLE portrait with anti-grid enforcement...');
-      
-      // ULTRA-STRONG single-subject enforcement prefix
-      const singleSubjectPrefix = "SINGLE PORTRAIT ONLY, one person, individual subject, isolated composition, no grid, no collage, no multiple people, no variations, no comparison, focused single-subject portrait";
-      
-      // Remove ALL multi-option artifacts and formatting
-      let focused = inputPrompt
+    // Content-aware prompt optimization - ONLY apply portrait-specific for portraits
+    const focusPrompt = (inputPrompt: string, type: string): string => {
+      // Remove multi-option artifacts and formatting
+      let cleaned = inputPrompt
         .replace(/(\*\s*|•\s*|-\s*)/g, '')
         .replace(/\s*vary between:.*?(?=\.|,|$)/gi, '')
         .replace(/\s*shift between:.*?(?=\.|,|$)/gi, '')
@@ -87,13 +82,22 @@ serve(async (req) => {
         .replace(/\s+/g, ' ')
         .trim();
       
-      const finalPrompt = `${singleSubjectPrefix}, ${focused}`;
-      console.log('✅ Ultra-focused single-subject prompt:', finalPrompt);
-      return finalPrompt;
+      // ONLY add portrait-specific language for portrait content type
+      if (type === 'portrait') {
+        console.log('🔍 Applying portrait-specific optimization...');
+        const singleSubjectPrefix = "SINGLE PORTRAIT ONLY, one person, individual subject, isolated composition, no grid, no collage, no multiple people, no variations, no comparison, focused single-subject portrait";
+        const finalPrompt = `${singleSubjectPrefix}, ${cleaned}`;
+        console.log('✅ Portrait-optimized prompt:', finalPrompt);
+        return finalPrompt;
+      }
+      
+      // For other content types, use the prompt as-is with minimal enhancement
+      console.log(`🔍 Processing ${type} content type with minimal optimization...`);
+      return cleaned;
     };
 
     // Build enhanced prompt with content-aware enhancements
-    const focusedPrompt = focusPrompt(prompt);
+    const focusedPrompt = focusPrompt(prompt, contentType || 'auto');
     let enhancedPrompt = enhance 
       ? `${focusedPrompt}, ${contentEnhancement}, ${selectedStyleEnhancement}, ${qualityBoost}`
       : focusedPrompt;
