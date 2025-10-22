@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -81,6 +82,8 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<any>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
   const [isRecording, setIsRecording] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -295,99 +298,136 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
   const handleVoiceInput = async () => {
     // If already recording, stop it
     if (isRecording) {
-      if (recognitionRef.current) {
-        recognitionRef.current.stop();
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+        mediaRecorderRef.current.stop();
       }
-      setIsRecording(false);
       return;
     }
 
-    // Check if Speech Recognition is supported
-    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-      console.error('Speech recognition not supported in this browser');
+    // Check if MediaRecorder is supported (works in all modern browsers)
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       toast({
         title: "Not Supported",
-        description: "Voice input is not supported in this browser. Please try Chrome or Edge.",
+        description: "Voice input is not supported in this browser. Please use a modern browser.",
         variant: "destructive"
       });
       return;
     }
 
-    // Start recording
-    setIsRecording(true);
-    
     try {
-      const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
-      const recognition = new SpeechRecognition();
-      recognitionRef.current = recognition;
+      // Request microphone access
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.lang = 'en-US';
-      recognition.maxAlternatives = 1;
-      
-      recognition.onstart = () => {
-        console.log('🎤 Voice recording started');
-      };
-      
-      recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript;
-        console.log('🎤 Transcript:', transcript);
-        
-        // Append transcript to existing prompt or set new one
-        setGenerationPrompt(prev => {
-          const newPrompt = prev ? `${prev} ${transcript}` : transcript;
-          return newPrompt.trim();
-        });
-        
-        toast({
-          title: "Voice Input Received",
-          description: `Added: "${transcript}"`,
-        });
-      };
-      
-      recognition.onerror = (event: any) => {
-        console.error('🎤 Speech recognition error:', event.error);
-        setIsRecording(false);
-        recognitionRef.current = null;
-        
-        let errorMessage = "Failed to capture voice input";
-        if (event.error === 'no-speech') {
-          errorMessage = "No speech detected. Please try again.";
-        } else if (event.error === 'not-allowed') {
-          errorMessage = "Microphone access denied. Please allow microphone access.";
+      // Create MediaRecorder
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
         }
+      };
+
+      mediaRecorder.onstop = async () => {
+        setIsRecording(false);
         
+        // Stop all audio tracks
+        stream.getTracks().forEach(track => track.stop());
+        
+        // Create blob from recorded chunks
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        
+        // Show processing toast
         toast({
-          title: "Voice Input Error",
-          description: errorMessage,
+          title: "Processing",
+          description: "Transcribing your voice input...",
+        });
+
+        try {
+          // Convert blob to base64
+          const reader = new FileReader();
+          reader.readAsDataURL(audioBlob);
+          
+          reader.onloadend = async () => {
+            const base64Audio = (reader.result as string).split(',')[1];
+            
+            // Call Supabase Edge Function
+            const { data, error } = await supabase.functions.invoke('voice-transcribe-whisper', {
+              body: { audio: base64Audio }
+            });
+
+            if (error) {
+              throw error;
+            }
+
+            if (data?.text) {
+              // Append transcript to existing prompt
+              setGenerationPrompt(prev => {
+                const newPrompt = prev ? `${prev} ${data.text}` : data.text;
+                return newPrompt.trim();
+              });
+              
+              toast({
+                title: "Voice Input Received",
+                description: `Added: "${data.text}"`,
+              });
+            }
+          };
+        } catch (error) {
+          console.error('Transcription error:', error);
+          toast({
+            title: "Transcription Failed",
+            description: "Failed to transcribe audio. Please try again.",
+            variant: "destructive"
+          });
+        }
+      };
+
+      mediaRecorder.onerror = (event) => {
+        console.error('MediaRecorder error:', event);
+        setIsRecording(false);
+        toast({
+          title: "Recording Error",
+          description: "Failed to record audio. Please try again.",
           variant: "destructive"
         });
       };
+
+      // Start recording
+      mediaRecorder.start();
+      setIsRecording(true);
       
-      recognition.onend = () => {
-        console.log('🎤 Voice recording ended');
-        setIsRecording(false);
-        recognitionRef.current = null;
-      };
-      
-      recognition.start();
-      
-    } catch (error) {
-      console.error('Failed to start voice recognition:', error);
-      setIsRecording(false);
-      recognitionRef.current = null;
       toast({
-        title: "Error",
-        description: "Failed to start voice input",
+        title: "Recording",
+        description: "Speak now... Click the mic again to stop.",
+      });
+
+    } catch (error: any) {
+      console.error('Failed to start voice recording:', error);
+      setIsRecording(false);
+      
+      let errorMessage = "Failed to access microphone";
+      if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+        errorMessage = "Microphone access denied. Please allow microphone access in your browser settings.";
+      } else if (error.name === 'NotFoundError') {
+        errorMessage = "No microphone found. Please connect a microphone.";
+      }
+      
+      toast({
+        title: "Microphone Error",
+        description: errorMessage,
         variant: "destructive"
       });
     }
   };
 
-  // Cleanup speech recognition on unmount
+  // Cleanup on unmount
   useEffect(() => {
     return () => {
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+        mediaRecorderRef.current.stop();
+      }
       if (recognitionRef.current) {
         recognitionRef.current.stop();
         recognitionRef.current = null;
