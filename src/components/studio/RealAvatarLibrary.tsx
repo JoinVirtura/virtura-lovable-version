@@ -229,18 +229,39 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
     }
   };
 
-  const handleDownloadAvatar = (avatar: AvatarLibraryItem) => {
+  const handleDownloadAvatar = async (avatar: AvatarLibraryItem) => {
     try {
+      // Fetch the image as blob to handle CORS
+      const response = await fetch(avatar.image_url);
+      if (!response.ok) throw new Error('Failed to fetch image');
+      
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      
+      // Create download link
       const link = document.createElement('a');
-      link.href = avatar.image_url;
-      link.download = `${avatar.title || 'avatar'}.jpg`;
+      link.href = blobUrl;
+      const filename = `${avatar.title?.replace(/[^a-z0-9]/gi, '_') || 'avatar'}_${Date.now()}`;
+      link.download = avatar.is_video ? `${filename}.mp4` : `${filename}.jpg`;
+      
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      
+      // Clean up
+      URL.revokeObjectURL(blobUrl);
+      
       toast.success('Download started');
     } catch (error) {
-      console.error('Error downloading avatar:', error);
-      toast.error('Failed to download avatar');
+      console.error('Error downloading:', error);
+      
+      // Fallback: try opening in new tab
+      try {
+        window.open(avatar.image_url, '_blank');
+        toast.success('Opening in new tab - right-click to save');
+      } catch {
+        toast.error('Download failed. Please try again.');
+      }
     }
   };
 
@@ -374,47 +395,6 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
                       AI Generated
                     </Badge>
                   </div>
-                  {/* Action Menu */}
-                  <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          size="icon"
-                          variant="secondary"
-                          className="h-8 w-8 rounded-full backdrop-blur-sm bg-white/80 hover:bg-white/90"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="start">
-                        <DropdownMenuItem onClick={(e) => {
-                          e.stopPropagation();
-                          handleShareAvatar(avatar);
-                        }}>
-                          <Share2 className="h-4 w-4 mr-2" />
-                          Share
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={(e) => {
-                          e.stopPropagation();
-                          handleDownloadAvatar(avatar);
-                        }}>
-                          <Download className="h-4 w-4 mr-2" />
-                          Download
-                        </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setDeleteConfirm({ open: true, avatar });
-                          }}
-                          className="text-destructive focus:text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
 
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2 rounded-xl">
                     {avatar.video_url ? (
@@ -467,6 +447,47 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
                   <p className="text-xs text-muted-foreground">
                     {new Date(avatar.created_at).toLocaleDateString()}
                   </p>
+                  
+                  {/* Always-visible action buttons */}
+                  <div className="flex gap-2 pt-3 border-t border-violet-500/20">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleShareAvatar(avatar);
+                      }}
+                      className="flex-1 h-8 text-xs"
+                    >
+                      <Share2 className="h-3 w-3 mr-1" />
+                      Share
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDownloadAvatar(avatar);
+                      }}
+                      className="flex-1 h-8 text-xs"
+                    >
+                      <Download className="h-3 w-3 mr-1" />
+                      Download
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDeleteConfirm({ open: true, avatar });
+                      }}
+                      className="h-8 text-xs text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/50"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -500,11 +521,36 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteConfirm.open} onOpenChange={(open) => setDeleteConfirm({ open, avatar: null })}>
-        <AlertDialogContent>
+        <AlertDialogContent className="max-w-md">
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Avatar</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete "{deleteConfirm.avatar?.title || 'this avatar'}"? This action cannot be undone.
+            <AlertDialogTitle>Delete Avatar?</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-3">
+              {deleteConfirm.avatar && (
+                <>
+                  {/* Preview thumbnail */}
+                  <div className="rounded-lg overflow-hidden border border-violet-500/20">
+                    <img 
+                      src={deleteConfirm.avatar.image_url} 
+                      alt={deleteConfirm.avatar.title || 'Avatar'}
+                      className="w-full h-32 object-cover"
+                    />
+                  </div>
+                  
+                  {/* Avatar details */}
+                  <div>
+                    <p className="font-medium text-foreground">
+                      {deleteConfirm.avatar.title || 'Generated Avatar'}
+                    </p>
+                    <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+                      {deleteConfirm.avatar.prompt}
+                    </p>
+                  </div>
+                  
+                  <p className="text-sm">
+                    This action cannot be undone. This will permanently delete this avatar from your library.
+                  </p>
+                </>
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -516,9 +562,10 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
                   setDeleteConfirm({ open: false, avatar: null });
                 }
               }}
-              className="bg-destructive hover:bg-destructive/90"
+              className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
             >
-              Delete
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete Permanently
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
