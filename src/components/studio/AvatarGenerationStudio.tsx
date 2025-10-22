@@ -9,6 +9,7 @@ import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { CircularProgress } from '@/components/ui/circular-progress';
 import {
   Upload,
   Camera,
@@ -378,14 +379,15 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
         <TabsContent value="generate" className="space-y-6">
           <Card className="max-w-2xl mx-auto">
             <CardContent className="pt-6 space-y-6">
-              {/* Chat-style Input */}
-              <div>
+              {/* Chat-style Input with Circular Generate Button */}
+              <div className="relative flex items-center gap-3">
+                {/* Input field - takes remaining space */}
                 <Input
                   id="prompt"
                   placeholder="Describe the image you want to create..."
                   value={generationPrompt}
                   onChange={(e) => setGenerationPrompt(e.target.value)}
-                  className="h-14 text-base"
+                  className="flex-1 h-14 text-base pr-4"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey && generationPrompt.trim()) {
                       e.preventDefault();
@@ -393,43 +395,36 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                     }
                   }}
                 />
+                
+                {/* Circular Generate Button */}
+                <div className="relative flex-shrink-0">
+                  {(isProcessing || processingStage !== '') && (
+                    <CircularProgress 
+                      value={processingProgress} 
+                      size={56}
+                      strokeWidth={3}
+                      className="absolute inset-0"
+                    />
+                  )}
+                  
+                  <Button
+                    onClick={handleGeneratePerfectAvatar}
+                    disabled={!generationPrompt.trim() || isProcessing || processingStage !== ''}
+                    size="icon"
+                    className="h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
+                    title="Generate Avatar (Enter)"
+                  >
+                    {isProcessing || processingStage !== '' ? (
+                      <Loader2 className="h-6 w-6 animate-spin" />
+                    ) : (
+                      <Sparkles className="h-6 w-6" />
+                    )}
+                  </Button>
+                </div>
               </div>
 
-              {/* Generate Button with Integrated Progress */}
-              <Button
-                onClick={handleGeneratePerfectAvatar}
-                disabled={!generationPrompt.trim() || isProcessing || processingStage !== ''}
-                className="relative w-full h-14 overflow-hidden text-lg font-medium"
-              >
-                {/* Animated progress background */}
-                {(isProcessing || processingStage !== '') && (
-                  <div 
-                    className="absolute inset-0 bg-gradient-to-r from-violet-500 via-purple-500 to-blue-500 transition-all duration-300"
-                    style={{ 
-                      width: `${processingProgress}%`,
-                      opacity: 0.8
-                    }}
-                  />
-                )}
-                
-                {/* Button content */}
-                <span className="relative z-10 flex items-center gap-2">
-                  {isProcessing || processingStage !== '' ? (
-                    <>
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                      {Math.round(processingProgress)}%
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="h-5 w-5" />
-                      Generate
-                    </>
-                  )}
-                </span>
-              </Button>
-
               {/* Collapsible Advanced Settings */}
-              <Collapsible open={showAdvanced} onOpenChange={setShowAdvanced}>
+              <Collapsible open={showAdvanced} onOpenChange={setShowAdvanced} className="mt-4">
                 <CollapsibleTrigger asChild>
                   <Button 
                     variant="ghost" 
