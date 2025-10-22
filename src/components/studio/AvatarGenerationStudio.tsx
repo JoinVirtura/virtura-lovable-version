@@ -133,12 +133,13 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
       
       const baseParams = {
         prompt: generationPrompt,
-        contentType: 'portrait' as const,
+        contentType: contentType,
         style: selectedStyle === 'realistic' ? 'photorealistic' : selectedStyle,
-        aspectRatio: '1:1' as const,
+        aspectRatio: aspectRatio,
         resolution: quality === '8K' ? '1536x1536' as const : 
                    quality === '4K' ? '1024x1024' as const : '512x512' as const,
-        quality: 'ultra' as const,
+        quality: quality === '8K' ? 'ultra' as const : 
+                 quality === '4K' ? 'balanced' as const : 'speed' as const,
         enhance: true,
         steps: quality === '8K' ? 50 : quality === '4K' ? 35 : 20,
         adherence: quality === '8K' ? 12.0 : quality === '4K' ? 10.0 : 7.5
