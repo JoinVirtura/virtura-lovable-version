@@ -1,4 +1,5 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -79,9 +80,11 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
+  const recognitionRef = useRef<any>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const handleFileUpload = useCallback(async (file: File) => {
     if (!file.type.startsWith('image/')) {
@@ -290,36 +293,107 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
   };
 
   const handleVoiceInput = async () => {
+    // If already recording, stop it
     if (isRecording) {
-      setIsRecording(false);
-      // Stop recording logic here
-    } else {
-      setIsRecording(true);
-      // Start voice recording using Web Speech API
-      if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-        const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
-        const recognition = new SpeechRecognition();
-        recognition.continuous = false;
-        recognition.interimResults = false;
-        recognition.lang = 'en-US';
-        
-        recognition.onresult = (event: any) => {
-          const transcript = event.results[0][0].transcript;
-          setGenerationPrompt(prev => prev ? prev + ' ' + transcript : transcript);
-        };
-        
-        recognition.onend = () => {
-          setIsRecording(false);
-        };
-        
-        recognition.onerror = () => {
-          setIsRecording(false);
-        };
-        
-        recognition.start();
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
       }
+      setIsRecording(false);
+      return;
+    }
+
+    // Check if Speech Recognition is supported
+    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+      console.error('Speech recognition not supported in this browser');
+      toast({
+        title: "Not Supported",
+        description: "Voice input is not supported in this browser. Please try Chrome or Edge.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Start recording
+    setIsRecording(true);
+    
+    try {
+      const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognitionRef.current = recognition;
+      
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = 'en-US';
+      recognition.maxAlternatives = 1;
+      
+      recognition.onstart = () => {
+        console.log('🎤 Voice recording started');
+      };
+      
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        console.log('🎤 Transcript:', transcript);
+        
+        // Append transcript to existing prompt or set new one
+        setGenerationPrompt(prev => {
+          const newPrompt = prev ? `${prev} ${transcript}` : transcript;
+          return newPrompt.trim();
+        });
+        
+        toast({
+          title: "Voice Input Received",
+          description: `Added: "${transcript}"`,
+        });
+      };
+      
+      recognition.onerror = (event: any) => {
+        console.error('🎤 Speech recognition error:', event.error);
+        setIsRecording(false);
+        recognitionRef.current = null;
+        
+        let errorMessage = "Failed to capture voice input";
+        if (event.error === 'no-speech') {
+          errorMessage = "No speech detected. Please try again.";
+        } else if (event.error === 'not-allowed') {
+          errorMessage = "Microphone access denied. Please allow microphone access.";
+        }
+        
+        toast({
+          title: "Voice Input Error",
+          description: errorMessage,
+          variant: "destructive"
+        });
+      };
+      
+      recognition.onend = () => {
+        console.log('🎤 Voice recording ended');
+        setIsRecording(false);
+        recognitionRef.current = null;
+      };
+      
+      recognition.start();
+      
+    } catch (error) {
+      console.error('Failed to start voice recognition:', error);
+      setIsRecording(false);
+      recognitionRef.current = null;
+      toast({
+        title: "Error",
+        description: "Failed to start voice input",
+        variant: "destructive"
+      });
     }
   };
+
+  // Cleanup speech recognition on unmount
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+        recognitionRef.current = null;
+      }
+    };
+  }, []);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -327,7 +401,23 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
       setSelectedImage(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result as string);
+        const imageUrl = reader.result as string;
+        setImagePreview(imageUrl);
+        
+        // Update the live preview on the right side
+        onUpdate({
+          avatar: {
+            type: 'upload',
+            originalUrl: imageUrl,
+            status: 'completed',
+            quality: quality as any,
+            metadata: {
+              resolution: `Reference Image`,
+              faceAlignment: 95,
+              consistency: faceConsistency
+            }
+          }
+        });
       };
       reader.readAsDataURL(file);
     }
@@ -429,7 +519,7 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
 
         {/* AI Generation Tab */}
         <TabsContent value="generate" className="space-y-6">
-          <Card className="max-w-2xl mx-auto">
+          <Card className="w-full">
             <CardContent className="pt-6 space-y-6">
               {/* Chat-style Input with Action Buttons */}
               <div className="space-y-3">
