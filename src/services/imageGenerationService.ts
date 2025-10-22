@@ -148,7 +148,7 @@ export class ImageGenerationService {
       const realResp = await supabase.functions.invoke('generate-avatar-real', {
         body: {
           prompt: optimizedPrompt,
-          negativePrompt: params.negativePrompt || "grid, collage, multiple people, split screen, blurry, low quality, distorted, deformed, ugly, bad anatomy",
+          negativePrompt: params.negativePrompt || "multiple people, multiple faces, grid layout, collage, split screen, composite, montage, side by side, comparison, before and after, variations, panel layout, contact sheet, mosaic, tiled, different poses, different angles, photo strip, multiple versions, comparison shot, variation grid, option display, blurry, low quality, distorted, deformed, ugly, bad anatomy, extra limbs, mutation",
           contentType,
           style: params.style || 'photorealistic',
           quality: quality === 'ultra' ? '8K' : quality === 'balanced' ? '4K' : 'HD',
@@ -368,9 +368,11 @@ export class ImageGenerationService {
     console.log('🏗️ Building structured prompt with preserved details...');
     
     const parts = [
-      // Anti-grid reinforcement at the start
-      'Professional portrait photography, single subject only, individual headshot, one person',
-      'no grid layout, no collage, no multiple images, no split screen',
+      // ULTRA-STRONG Anti-grid reinforcement at the start
+      'SINGLE PORTRAIT ONLY, one person, individual subject, isolated composition',
+      'professional portrait photography, single subject only, individual headshot',
+      'NO GRID, NO COLLAGE, NO MULTIPLE PEOPLE, NO VARIATIONS, NO SPLIT SCREEN, NO SIDE BY SIDE',
+      'focused single-subject composition, no contact sheet, no mosaic, no tiled layout',
       
       // ETHNICITY-FIRST APPROACH: Lead with ethnicity/heritage for maximum impact
       subjectDetails.ethnicity ? `${subjectDetails.ethnicity} ethnicity, ${subjectDetails.heritage} heritage` : '',

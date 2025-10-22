@@ -173,6 +173,11 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
         } catch (error) {
           console.warn('Failed to save to library:', error);
         }
+        
+        // Automatically display in Live Preview after successful generation
+        setTimeout(() => {
+          selectGeneratedAvatar();
+        }, 500);
       }
 
       setProcessingStage(result.success ? 'Perfect Avatar Generated!' : 'Generation Failed');

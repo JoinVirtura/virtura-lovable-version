@@ -69,35 +69,27 @@ serve(async (req) => {
     const contentEnhancement = contentEnhancements[contentType as keyof typeof contentEnhancements] || contentEnhancements.auto;
     const selectedStyleEnhancement = styleEnhancements[style as keyof typeof styleEnhancements] || styleEnhancements.photorealistic;
     
-    // Ultra-focused prompt optimization for single perfect portraits
+    // ULTRA-STRONG Enhanced focus function to guarantee single portrait without grids/collages
     const focusPrompt = (inputPrompt: string): string => {
-      let focused = inputPrompt;
+      console.log('🔍 Focusing prompt for SINGLE portrait with anti-grid enforcement...');
       
-      console.log('🔍 Original prompt before focusing:', focused);
+      // ULTRA-STRONG single-subject enforcement prefix
+      const singleSubjectPrefix = "SINGLE PORTRAIT ONLY, one person, individual subject, isolated composition, no grid, no collage, no multiple people, no variations, no comparison, focused single-subject portrait";
       
-      // Stronger single-subject enforcement with anti-grid terms
-      focused = `professional portrait photography, single subject only, individual headshot, one person, no grid layout, no collage, no multiple images, no variations, focused composition, ${focused}`;
+      // Remove ALL multi-option artifacts and formatting
+      let focused = inputPrompt
+        .replace(/(\*\s*|•\s*|-\s*)/g, '')
+        .replace(/\s*vary between:.*?(?=\.|,|$)/gi, '')
+        .replace(/\s*shift between:.*?(?=\.|,|$)/gi, '')
+        .replace(/\s*either.*?or.*?(?=\.|,)/gi, '')
+        .replace(/\s*options?:.*?(?=\.|,|$)/gi, '')
+        .replace(/\s*,\s*,/g, ',')
+        .replace(/\s+/g, ' ')
+        .trim();
       
-      // Enhanced prompt processing - the imageGenerationService now handles most optimization
-      // This function now focuses on final cleanup and model-specific adjustments
-      
-      console.log('🔧 Edge function prompt preprocessing...');
-      
-      // Remove any remaining multi-option artifacts that might have slipped through
-      focused = focused.replace(/(\*\s*|•\s*|-\s*)/g, ''); // Remove bullet markers
-      focused = focused.replace(/\s*vary between:.*?(?=\.|,|$)/gi, ''); // Remove "vary between" phrases
-      focused = focused.replace(/\s*shift between:.*?(?=\.|,|$)/gi, ''); // Remove "shift between" phrases
-      focused = focused.replace(/\s*either.*?or.*?(?=\.|,)/gi, ''); // Remove any remaining either/or
-      
-      // Clean up redundant spacing and formatting
-      focused = focused.replace(/\s*,\s*,/g, ','); // Remove double commas
-      focused = focused.replace(/\s+/g, ' '); // Normalize whitespace
-      focused = focused.replace(/,\s*\./g, '.'); // Fix comma-period combinations
-      focused = focused.trim();
-      
-      console.log('🧹 Cleaned prompt:', focused.substring(0, 200) + '...');
-      
-      return focused;
+      const finalPrompt = `${singleSubjectPrefix}, ${focused}`;
+      console.log('✅ Ultra-focused single-subject prompt:', finalPrompt);
+      return finalPrompt;
     };
 
     // Build enhanced prompt with content-aware enhancements
@@ -119,9 +111,15 @@ serve(async (req) => {
 
     console.log('Enhanced prompt:', enhancedPrompt);
 
-    // Optimized parameters for single perfect portrait generation
-    const finalSteps = steps || (quality === '8K' ? 50 : quality === '4K' ? 35 : 20);
-    const guidanceScale = adherence || (quality === '8K' ? 12.0 : quality === '4K' ? 10.0 : 7.5);
+    // OPTIMIZED quality parameters for single-subject focus
+    const qualityMap: Record<string, { steps: number, guidance: number }> = {
+      'HD': { steps: 20, guidance: 12.0 },    // Increased guidance for stricter adherence
+      '4K': { steps: 25, guidance: 15.0 },    // Reduced steps, increased guidance
+      '8K': { steps: 25, guidance: 15.0 }     // Reduced steps, increased guidance
+    };
+    
+    const { steps: finalSteps, guidance: guidanceScale } = qualityMap[quality as keyof typeof qualityMap] || 
+      { steps: steps || 25, guidance: adherence || 15.0 };
     
     // Enhanced resolution mapping with higher quality options
     const resolutionMap = {
@@ -136,8 +134,8 @@ serve(async (req) => {
                            resolution || '1024x1024';
     const dimensions = resolutionMap[targetResolution as keyof typeof resolutionMap] || resolutionMap['1024x1024'];
     
-    // Professional-grade comprehensive negative prompt for maximum quality and single-subject enforcement
-    const antiDriftNegative = "collage, grid, multiple people, split screen, composite image, montage, multiple faces, multiple portraits, side by side, comparison, before and after, panel layout, comic strip, storyboard, multiple versions, variations, different styles, multiple angles, multiple poses, contact sheet, photo strip, tiled layout, mosaic, blurry, low quality, distorted, deformed, ugly, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed face, long neck, cropped, worst quality, jpeg artifacts, watermark, signature, text, logo, cartoon, painting, illustration, (worst quality, low quality:1.4), monochrome, zombie, overexposure, watermark, text, bad anatomy, bad hand, extra hands, extra fingers, too many fingers, fused fingers, bad arm, distorted arm, extra arms, fused arms, extra legs, missing leg, disembodied leg, extra nipples, detached arm, liquid hand, inverted hand, disembodied limb, small breasts, loli, oversized head, extra body, completely nude, extra navel, easynegative, (hair between eyes), sketch, duplicate, ugly, huge eyes, text, logo, worst face, (bad and mutated hands:1.3), (blurry:2.0), horror, geometry, bad_prompt, (bad hands), (missing fingers), multiple limbs, bad anatomy, (interlocked fingers:1.2), Ugly Fingers, (extra digit and hands and fingers and legs and arms:1.4), ((2girl)), (deformed fingers:1.2), (long fingers:1.2), (bad-artist-anime), bad-artist, bad hand, extra legs, nipples, nsfw";
+    // ENHANCED negative prompt with FLUX-specific anti-grid tokens
+    const antiDriftNegative = "multiple people, multiple faces, grid layout, collage, split screen, composite, montage, side by side, comparison, before and after, variations, panel layout, contact sheet, mosaic, tiled, different poses, different angles, DSLR photo strip, multiple versions, comparison shot, variation grid, option display, split view, panel view, multi-frame, multiple portraits, side by side portraits, portrait grid, portrait collage, blurry, distorted, deformed, ugly, bad anatomy, extra limbs, mutation, bad hands, poorly drawn hands, poorly drawn face, out of frame, watermark, text, logo, signature, username, lowres, worst quality, low quality, normal quality, jpeg artifacts, cropped, bad proportions, cloned face, disfigured, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, mutated hands, mutation, deformed face, long neck, comic strip, storyboard, photo strip, tiled layout, montage, composite image, panel view, multiple angles, multiple poses, contact sheet, variation display";
     
     const finalPrompt = negativePrompt ? 
       `${enhancedPrompt} [NEGATIVE: ${negativePrompt}, ${antiDriftNegative}]` : 
