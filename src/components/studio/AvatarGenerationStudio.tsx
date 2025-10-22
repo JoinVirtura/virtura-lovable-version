@@ -58,8 +58,10 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
   const [uploadProgress, setUploadProgress] = useState(0);
   const [generationPrompt, setGenerationPrompt] = useState('');
   const [selectedStyle, setSelectedStyle] = useState('realistic');
-  const [quality, setQuality] = useState('4K');
+  const [quality, setQuality] = useState<'HD' | '4K' | '8K'>('4K');
   const [faceConsistency, setFaceConsistency] = useState(85);
+  const [contentType, setContentType] = useState<'portrait' | 'landscape' | 'object' | 'abstract' | 'scene' | 'auto'>('portrait');
+  const [aspectRatio, setAspectRatio] = useState<'1:1' | '16:9' | '9:16' | '4:3'>('1:1');
   const [isDragOver, setIsDragOver] = useState(false);
   const [processingStage, setProcessingStage] = useState<string>('');
   const [processingProgress, setProcessingProgress] = useState(0);
@@ -153,8 +155,13 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
         });
       }, 800);
 
-      // Generate single perfect avatar
-      const result = await ImageGenerationService.generateImage(baseParams);
+      // Generate single perfect avatar with Replicate
+      const result = await ImageGenerationService.generateImage({
+        ...baseParams,
+        contentType: contentType,
+        aspectRatio: aspectRatio,
+        provider: 'replicate'
+      });
       
       clearInterval(progressInterval);
       setProcessingProgress(100);
@@ -334,11 +341,21 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
             <div className="space-y-4">
               <div>
                 <Label htmlFor="prompt" className="text-base font-medium">
-                  Avatar Description
+                  {contentType === 'portrait' ? 'Avatar Description' : 'Image Description'}
                 </Label>
                 <Textarea
                   id="prompt"
-                  placeholder="Describe one specific avatar... (e.g., Professional business woman, 30s, confident smile, wearing navy blazer, studio lighting)"
+                  placeholder={
+                    contentType === 'portrait' 
+                      ? "Describe one specific person... (e.g., Professional business woman, 30s, confident smile, wearing navy blazer, studio lighting)"
+                      : contentType === 'landscape'
+                      ? "Describe a scenic view... (e.g., Sunset over mountain range, golden hour lighting, misty valleys)"
+                      : contentType === 'object'
+                      ? "Describe a product... (e.g., Modern wireless headphones, matte black finish, floating on white background)"
+                      : contentType === 'abstract'
+                      ? "Describe artistic concept... (e.g., Geometric patterns in blue and gold, flowing liquid metal texture)"
+                      : "Describe any image you want to create..."
+                  }
                   value={generationPrompt}
                   onChange={(e) => setGenerationPrompt(e.target.value)}
                   className="min-h-24 mt-2"
@@ -346,6 +363,57 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                 <p className="text-xs text-muted-foreground mt-1 text-right">
                   {generationPrompt.length}/500
                 </p>
+              </div>
+
+              {/* Content Type Selection */}
+              <div>
+                <Label className="text-base font-medium mb-3 block">Content Type</Label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: 'portrait' as const, name: 'Portrait', icon: Camera, description: 'People & avatars' },
+                    { id: 'landscape' as const, name: 'Landscape', icon: Sparkles, description: 'Scenic views' },
+                    { id: 'object' as const, name: 'Object', icon: Star, description: 'Products & items' },
+                    { id: 'abstract' as const, name: 'Abstract', icon: Wand2, description: 'Artistic concepts' },
+                    { id: 'scene' as const, name: 'Scene', icon: Crown, description: 'Environmental shots' },
+                    { id: 'auto' as const, name: 'Auto', icon: Zap, description: 'Smart detection' }
+                  ].map((type) => (
+                    <Button
+                      key={type.id}
+                      variant={contentType === type.id ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setContentType(type.id)}
+                      className="justify-start h-10 px-3"
+                      title={type.description}
+                    >
+                      <type.icon className="h-4 w-4 mr-2" />
+                      <span className="text-sm">{type.name}</span>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Aspect Ratio Selection */}
+              <div>
+                <Label className="text-base font-medium mb-3 block">Aspect Ratio</Label>
+                <div className="grid grid-cols-4 gap-2">
+                  {[
+                    { value: '1:1' as const, label: 'Square', emoji: '□' },
+                    { value: '16:9' as const, label: 'Wide', emoji: '▭' },
+                    { value: '9:16' as const, label: 'Tall', emoji: '▯' },
+                    { value: '4:3' as const, label: 'Classic', emoji: '▬' }
+                  ].map((ratio) => (
+                    <Button
+                      key={ratio.value}
+                      variant={aspectRatio === ratio.value ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setAspectRatio(ratio.value)}
+                      className="h-10"
+                    >
+                      <span className="text-lg mr-1">{ratio.emoji}</span>
+                      <span className="text-xs">{ratio.label}</span>
+                    </Button>
+                  ))}
+                </div>
               </div>
 
               <div>
@@ -370,7 +438,7 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
             <div className="space-y-4">
               <div>
                 <Label className="text-base font-medium">Quality Settings</Label>
-                <Select value={quality} onValueChange={setQuality}>
+                <Select value={quality} onValueChange={(value) => setQuality(value as 'HD' | '4K' | '8K')}>
                   <SelectTrigger className="mt-2">
                     <SelectValue />
                   </SelectTrigger>
@@ -384,19 +452,22 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                 </Select>
               </div>
 
-              <div>
-                <Label className="text-sm font-medium">
-                  Face Consistency: {faceConsistency}%
-                </Label>
-                <Slider
-                  value={[faceConsistency]}
-                  onValueChange={([value]) => setFaceConsistency(value)}
-                  max={100}
-                  min={50}
-                  step={5}
-                  className="mt-2"
-                />
-              </div>
+              {/* Face Consistency - only show for portrait mode */}
+              {contentType === 'portrait' && (
+                <div>
+                  <Label className="text-sm font-medium">
+                    Face Consistency: {faceConsistency}%
+                  </Label>
+                  <Slider
+                    value={[faceConsistency]}
+                    onValueChange={([value]) => setFaceConsistency(value)}
+                    max={100}
+                    min={50}
+                    step={5}
+                    className="mt-2"
+                  />
+                </div>
+              )}
 
               <Button
                 onClick={handleGeneratePerfectAvatar}
@@ -407,12 +478,12 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                 {isProcessing || processingStage !== '' ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Generating {quality} Avatar...
+                    Generating {quality} {contentType === 'portrait' ? 'Avatar' : 'Image'}...
                   </>
                 ) : (
                   <>
                     <Sparkles className="h-4 w-4 mr-2" />
-                    Generate {quality} Avatar
+                    Generate {quality} {contentType === 'portrait' ? 'Avatar' : 'Image'}
                   </>
                 )}
               </Button>

@@ -7,12 +7,13 @@ export interface ImageGenerationParams {
   style?: string;
   aspectRatio?: '1:1' | '16:9' | '9:16' | '4:3' | '3:4';
   resolution?: '512x512' | '1024x1024' | '1536x1536';
-  quality?: 'speed' | 'balanced' | 'ultra';
+  quality?: 'speed' | 'balanced' | 'ultra' | 'hd' | '4k' | '8k';
   adherence?: number;
   steps?: number;
   enhance?: boolean;
   referenceImage?: string;
   variantType?: 'composition' | 'style' | 'lighting' | 'mood';
+  provider?: 'huggingface' | 'replicate';
 }
 
 export interface GeneratedImage {
@@ -125,9 +126,36 @@ export class ImageGenerationService {
         ? this.detectContentType(params.prompt) 
         : params.contentType;
 
+      const provider = params.provider || 'replicate';
       const quality = params.quality || 'ultra';
       
-      // Apply single-image optimization to prevent grids
+      // Route to Replicate by default
+      if (provider === 'replicate') {
+        console.log('🎨 Using Replicate API for generation');
+        
+        // Map quality to Replicate format
+        const replicateQuality = quality === 'ultra' ? '8K' : quality === 'balanced' ? '4K' : 'HD';
+        
+        const replicateResp = await supabase.functions.invoke('generate-image-replicate', {
+          body: {
+            prompt: params.prompt,
+            contentType,
+            quality: replicateQuality,
+            aspectRatio: params.aspectRatio || '1:1',
+            style: params.style || 'photorealistic'
+          }
+        });
+
+        if (!replicateResp.error && replicateResp.data?.success) {
+          console.log('✅ Replicate generation successful');
+          return replicateResp.data as GeneratedImage;
+        }
+
+        console.warn('⚠️ Replicate failed, falling back to HuggingFace:', replicateResp.error?.message);
+      }
+      
+      // Fallback to HuggingFace FLUX
+      console.log('🔄 Using HuggingFace FLUX as fallback');
       let optimizedPrompt = this.optimizeForSingleImage(params.prompt);
       
       if (params.enhance !== false) {
@@ -144,7 +172,7 @@ export class ImageGenerationService {
       const resolution = params.resolution || '1024x1024';
       const dimensions = resolutionMap[resolution as keyof typeof resolutionMap];
 
-      // Primary: Real Image Generation (FLUX) with optimized parameters for single portraits
+      // HuggingFace FLUX generation
       const realResp = await supabase.functions.invoke('generate-avatar-real', {
         body: {
           prompt: optimizedPrompt,
