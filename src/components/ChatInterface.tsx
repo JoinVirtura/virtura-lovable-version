@@ -75,20 +75,20 @@ export function ChatInterface({ type, onGenerate }: ChatInterfaceProps) {
   return (
     <div className="space-y-6">
       {/* Main Chat Input */}
-      <Card className="p-6 bg-gradient-card border-border/50 shadow-card">
+      <Card className="p-6 border-violet-500/20 bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:shadow-[0_0_40px_rgba(168,85,247,0.2)]">
         <div className="space-y-4">
           <div className="relative">
             <Textarea
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               placeholder={`Describe what you want: 'Make a smiling teacher in a bright classroom'...`}
-              className="min-h-[100px] text-base bg-background/50 border-border resize-none pr-12"
+              className="min-h-[100px] text-base bg-black/40 backdrop-blur-md border-2 border-violet-500/30 focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:shadow-[0_0_20px_rgba(168,85,247,0.4)] resize-none pr-12"
               id="main-prompt-textarea"
             />
             <Button
               onClick={handleGenerate}
               size="icon"
-              className="absolute bottom-3 right-3 shadow-violet-glow"
+              className="absolute bottom-3 right-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.4)]"
               disabled={!prompt.trim()}
             >
               <Sparkles className="w-5 h-5" />
@@ -97,16 +97,16 @@ export function ChatInterface({ type, onGenerate }: ChatInterfaceProps) {
 
           {/* Quick Presets */}
           <div className="space-y-3">
-            <h3 className="text-sm font-medium text-muted-foreground">Quick Presets</h3>
+            <h3 className="text-sm font-medium text-violet-300">Quick Presets</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {quickPresets.map((preset) => (
                 <Button
                   key={preset.label}
                   variant="outline"
                   onClick={() => handlePresetClick(preset)}
-                  className="flex flex-col gap-2 h-auto py-4 hover-zoom"
+                  className="flex flex-col gap-2 h-auto py-4 border-violet-500/30 hover:border-violet-500/50 hover:bg-violet-500/10 transition-all duration-300 hover:shadow-[0_0_20px_rgba(168,85,247,0.3)]"
                 >
-                  <preset.icon className="w-6 h-6 text-primary" />
+                  <preset.icon className="w-6 h-6 text-violet-400" />
                   <span className="text-xs font-medium">{preset.label}</span>
                 </Button>
               ))}
@@ -116,7 +116,7 @@ export function ChatInterface({ type, onGenerate }: ChatInterfaceProps) {
           {/* Advanced Options */}
           <Collapsible open={showAdvanced} onOpenChange={setShowAdvanced}>
             <CollapsibleTrigger asChild>
-              <Button variant="ghost" className="flex items-center gap-2 text-muted-foreground">
+              <Button variant="ghost" className="flex items-center gap-2 text-violet-300 hover:text-violet-200 hover:bg-violet-500/10">
                 <Settings className="w-4 h-4" />
                 Advanced Options
                 <span className="text-xs">({showAdvanced ? "Hide" : "Show"})</span>

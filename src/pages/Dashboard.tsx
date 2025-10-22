@@ -13,6 +13,7 @@ import { TalkingAvatarStudio } from "@/components/TalkingAvatarStudio";
 import { MotionBackground } from "@/components/MotionBackground";
 import UpgradePage from "./UpgradePage";
 import StudioPage from "./StudioPage";
+import { StudioBackground } from "@/components/StudioBackground";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -1251,45 +1252,50 @@ export default function Dashboard() {
       case "create":
         return <CreateAvatar />;
       case "studio":
-        return <AvatarStudio editImage={selectedEditImage} onBackToLibrary={() => { setSelectedEditImage(null); setActiveView('library'); }} />;
+        return (
+          <StudioBackground>
+            <AvatarStudio editImage={selectedEditImage} onBackToLibrary={() => { setSelectedEditImage(null); setActiveView('library'); }} />
+          </StudioBackground>
+        );
       case "individuals":
         return (
-          <div className="space-y-6 min-h-screen">
-            {/* Welcome Banner */}
-            <Card className="p-6 bg-gradient-card border-primary/20">
-              <div className="flex items-center justify-between">
-                <div className="space-y-2">
-                  <h2 className="text-xl font-display font-bold text-foreground">
-                    🎉 New here? Watch how to create your first avatar in 30 seconds.
-                  </h2>
-                  <p className="text-muted-foreground">
-                    Generate photorealistic avatars, headshots, and social content with AI
-                  </p>
+          <StudioBackground>
+            <div className="space-y-6">
+              {/* Welcome Banner */}
+              <Card className="p-6 border-violet-500/20 bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-2">
+                    <h2 className="text-xl font-display font-bold text-white">
+                      🎉 New here? Watch how to create your first avatar in 30 seconds.
+                    </h2>
+                    <p className="text-violet-200">
+                      Generate photorealistic avatars, headshots, and social content with AI
+                    </p>
+                  </div>
+                  <Button variant="outline" className="flex items-center gap-2 border-violet-500/30 hover:border-violet-500/50 hover:bg-violet-500/10">
+                    <Play className="w-4 h-4" />
+                    Watch Demo
+                  </Button>
                 </div>
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Play className="w-4 h-4" />
-                  Watch Demo
-                </Button>
-              </div>
-            </Card>
+              </Card>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Main Content */}
-              <div className="lg:col-span-2 space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Main Content */}
+                <div className="lg:col-span-2 space-y-6">
                 {/* Copilot Input */}
-                <Card className="p-6">
+                <Card className="p-6 border-violet-500/20 bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
                   <div className="space-y-4">
                     <div className="relative">
                       <Input
                         value={currentPrompt}
                         onChange={(e) => setCurrentPrompt(e.target.value)}
                         placeholder="Describe what you want: 'Make a smiling teacher in a bright classroom'..."
-                        className="pr-12 h-12 text-base"
+                        className="pr-12 h-12 text-base bg-black/40 backdrop-blur-md border-2 border-violet-500/30 focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:shadow-[0_0_20px_rgba(168,85,247,0.4)]"
                         onKeyPress={(e) => e.key === 'Enter' && handleGenerate(currentPrompt)}
                       />
                       <Button 
                         onClick={() => handleGenerate(currentPrompt)}
-                        className="absolute right-2 top-2 h-8 w-8 p-0"
+                        className="absolute right-2 top-2 h-8 w-8 p-0 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.4)]"
                         disabled={isGenerating || !currentPrompt.trim()}
                       >
                         <Sparkles className="w-4 h-4" />
@@ -1298,7 +1304,7 @@ export default function Dashboard() {
 
                     {/* Quick Presets */}
                     <div className="space-y-2">
-                      <p className="text-sm font-medium text-muted-foreground">Quick Presets</p>
+                      <p className="text-sm font-medium text-violet-300">Quick Presets</p>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                         {[
                           { icon: User, label: "Headshot" },
@@ -1309,10 +1315,10 @@ export default function Dashboard() {
                           <Button
                             key={preset.label}
                             variant="outline"
-                            className="h-16 flex-col gap-2"
+                            className="h-16 flex-col gap-2 border-violet-500/30 hover:border-violet-500/50 hover:bg-violet-500/10 transition-all duration-300"
                             onClick={() => setCurrentPrompt(`Create a ${preset.label.toLowerCase()}`)}
                           >
-                            <preset.icon className="w-5 h-5" />
+                            <preset.icon className="w-5 h-5 text-violet-400" />
                             <span className="text-xs">{preset.label}</span>
                           </Button>
                         ))}
@@ -1323,7 +1329,7 @@ export default function Dashboard() {
                     <Button
                       variant="ghost"
                       onClick={() => setShowAdvanced(!showAdvanced)}
-                      className="flex items-center gap-2 text-muted-foreground"
+                      className="flex items-center gap-2 text-violet-300 hover:text-violet-200 hover:bg-violet-500/10"
                     >
                       <SettingsIcon className="w-4 h-4" />
                       Advanced Options ({showAdvanced ? 'Hide' : 'Show'})
@@ -1720,46 +1726,48 @@ export default function Dashboard() {
                 </Card>
               </div>
             </div>
-          </div>
+            </div>
+          </StudioBackground>
         );
       case "brands":
         return (
-          <div className="space-y-6 min-h-screen">
-            {/* Welcome Banner */}
-            <Card className="p-6 bg-gradient-card border-primary/20">
-              <div className="flex items-center justify-between">
-                <div className="space-y-2">
-                  <h2 className="text-xl font-display font-bold text-foreground">
-                    🚀 Build ready-to-use commercials and campaigns powered by AI.
-                  </h2>
-                  <p className="text-muted-foreground">
-                    Create professional brand content, advertisements, and marketing materials
-                  </p>
+          <StudioBackground>
+            <div className="space-y-6">
+              {/* Welcome Banner */}
+              <Card className="p-6 border-violet-500/20 bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-2">
+                    <h2 className="text-xl font-display font-bold text-white">
+                      🚀 Build ready-to-use commercials and campaigns powered by AI.
+                    </h2>
+                    <p className="text-violet-200">
+                      Create professional brand content, advertisements, and marketing materials
+                    </p>
+                  </div>
+                  <Button variant="outline" className="flex items-center gap-2 border-violet-500/30 hover:border-violet-500/50 hover:bg-violet-500/10">
+                    <Play className="w-4 h-4" />
+                    View Examples
+                  </Button>
                 </div>
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Play className="w-4 h-4" />
-                  View Examples
-                </Button>
-              </div>
-            </Card>
+              </Card>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Main Content */}
               <div className="lg:col-span-2 space-y-6">
                 {/* Copilot Input */}
-                <Card className="p-6">
+                <Card className="p-6 border-violet-500/20 bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
                   <div className="space-y-4">
                     <div className="relative">
                       <Input
                         value={currentPrompt}
                         onChange={(e) => setCurrentPrompt(e.target.value)}
                         placeholder="Describe what you want: 'Make a smiling teacher in a bright classroom'..."
-                        className="pr-12 h-12 text-base"
+                        className="pr-12 h-12 text-base bg-black/40 backdrop-blur-md border-2 border-violet-500/30 focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:shadow-[0_0_20px_rgba(168,85,247,0.4)]"
                         onKeyPress={(e) => e.key === 'Enter' && handleGenerate(currentPrompt)}
                       />
                       <Button 
                         onClick={() => handleGenerate(currentPrompt)}
-                        className="absolute right-2 top-2 h-8 w-8 p-0"
+                        className="absolute right-2 top-2 h-8 w-8 p-0 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.4)]"
                         disabled={isGenerating || !currentPrompt.trim()}
                       >
                         <Sparkles className="w-4 h-4" />
@@ -1768,7 +1776,7 @@ export default function Dashboard() {
 
                     {/* Quick Presets */}
                     <div className="space-y-2">
-                      <p className="text-sm font-medium text-muted-foreground">Quick Presets</p>
+                      <p className="text-sm font-medium text-violet-300">Quick Presets</p>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                         {[
                           { icon: Star, label: "Commercial" },
@@ -1779,10 +1787,10 @@ export default function Dashboard() {
                           <Button
                             key={preset.label}
                             variant="outline"
-                            className="h-16 flex-col gap-2"
+                            className="h-16 flex-col gap-2 border-violet-500/30 hover:border-violet-500/50 hover:bg-violet-500/10 transition-all duration-300"
                             onClick={() => setCurrentPrompt(`Create a ${preset.label.toLowerCase()}`)}
                           >
-                            <preset.icon className="w-5 h-5" />
+                            <preset.icon className="w-5 h-5 text-violet-400" />
                             <span className="text-xs">{preset.label}</span>
                           </Button>
                         ))}
@@ -1793,7 +1801,7 @@ export default function Dashboard() {
                     <Button
                       variant="ghost"
                       onClick={() => setShowAdvanced(!showAdvanced)}
-                      className="flex items-center gap-2 text-muted-foreground"
+                      className="flex items-center gap-2 text-violet-300 hover:text-violet-200 hover:bg-violet-500/10"
                     >
                       <SettingsIcon className="w-4 h-4" />
                       Advanced Options ({showAdvanced ? 'Hide' : 'Show'})
@@ -2675,7 +2683,8 @@ export default function Dashboard() {
                 </Card>
               </div>
             </div>
-          </div>
+            </div>
+          </StudioBackground>
         );
       case "library":
         return (
