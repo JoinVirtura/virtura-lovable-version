@@ -17,8 +17,15 @@ const modelMap: Record<string, string> = {
   'auto': 'black-forest-labs/flux-schnell'
 };
 
-// Quality to resolution and steps mapping
-const qualityMap: Record<string, { width: number; height: number; steps: number }> = {
+// Quality settings for FLUX Schnell (max 4 steps)
+const fluxSchnellQualityMap: Record<string, { width: number; height: number; steps: number }> = {
+  'HD': { width: 1024, height: 1024, steps: 4 },
+  '4K': { width: 1536, height: 1536, steps: 4 },
+  '8K': { width: 2048, height: 2048, steps: 4 }
+};
+
+// Quality settings for SDXL and other models (can use more steps)
+const standardQualityMap: Record<string, { width: number; height: number; steps: number }> = {
   'HD': { width: 1024, height: 1024, steps: 25 },
   '4K': { width: 1536, height: 1536, steps: 30 },
   '8K': { width: 2048, height: 2048, steps: 40 }
@@ -96,6 +103,11 @@ serve(async (req) => {
     const model = modelMap[contentType] || modelMap['auto'];
     console.log('📦 Selected model:', model);
 
+    // Select appropriate quality map based on model
+    const qualityMap = model.includes('flux-schnell') 
+      ? fluxSchnellQualityMap 
+      : standardQualityMap;
+    
     // Get quality settings
     const qualitySettings = qualityMap[quality] || qualityMap['HD'];
     
@@ -119,6 +131,11 @@ serve(async (req) => {
 
     let output;
     
+    // Ensure num_inference_steps doesn't exceed model limits
+    const finalSteps = model.includes('flux-schnell') 
+      ? Math.min(qualitySettings.steps, 4) 
+      : qualitySettings.steps;
+    
     if (model === 'black-forest-labs/flux-schnell' || model === 'black-forest-labs/flux-1.1-pro') {
       // FLUX models
       output = await replicate.run(model, {
@@ -128,7 +145,7 @@ serve(async (req) => {
           aspect_ratio: aspectRatio === '1:1' ? '1:1' : aspectRatio === '16:9' ? '16:9' : aspectRatio === '9:16' ? '9:16' : '1:1',
           output_format: "png",
           output_quality: quality === '8K' ? 100 : quality === '4K' ? 90 : 80,
-          num_inference_steps: qualitySettings.steps
+          num_inference_steps: finalSteps
         }
       });
     } else if (model === 'stability-ai/sdxl') {
@@ -140,7 +157,7 @@ serve(async (req) => {
           width: dimensions.width,
           height: dimensions.height,
           num_outputs: 1,
-          num_inference_steps: qualitySettings.steps,
+          num_inference_steps: finalSteps,
           guidance_scale: 7.5
         }
       });
