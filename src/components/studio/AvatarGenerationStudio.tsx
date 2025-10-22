@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
   Upload,
   Camera,
@@ -21,7 +22,8 @@ import {
   RefreshCw,
   Crown,
   Star,
-  Heart
+  Heart,
+  ChevronDown
 } from 'lucide-react';
 import { AvatarLibrary } from './AvatarLibrary';
 import { RealAvatarLibrary } from './RealAvatarLibrary';
@@ -60,8 +62,9 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
   const [selectedStyle, setSelectedStyle] = useState('realistic');
   const [quality, setQuality] = useState<'HD' | '4K' | '8K'>('4K');
   const [faceConsistency, setFaceConsistency] = useState(85);
-  const [contentType, setContentType] = useState<'portrait' | 'landscape' | 'object' | 'abstract' | 'scene' | 'auto'>('portrait');
+  const [contentType, setContentType] = useState<'portrait' | 'landscape' | 'object' | 'abstract' | 'scene' | 'auto'>('auto');
   const [aspectRatio, setAspectRatio] = useState<'1:1' | '16:9' | '9:16' | '4:3'>('1:1');
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
   const [processingStage, setProcessingStage] = useState<string>('');
   const [processingProgress, setProcessingProgress] = useState(0);
@@ -373,183 +376,180 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
 
         {/* AI Generation Tab */}
         <TabsContent value="generate" className="space-y-6">
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="space-y-4">
+          <Card className="max-w-2xl mx-auto">
+            <CardContent className="pt-6 space-y-6">
+              {/* Chat-style Input */}
               <div>
-                <Label htmlFor="prompt" className="text-base font-medium">
-                  {contentType === 'portrait' ? 'Avatar Description' : 'Image Description'}
-                </Label>
-                <Textarea
+                <Input
                   id="prompt"
-                  placeholder={
-                    contentType === 'portrait' 
-                      ? "Describe one specific person... (e.g., Professional business woman, 30s, confident smile, wearing navy blazer, studio lighting)"
-                      : contentType === 'landscape'
-                      ? "Describe a scenic view... (e.g., Sunset over mountain range, golden hour lighting, misty valleys)"
-                      : contentType === 'object'
-                      ? "Describe a product... (e.g., Modern wireless headphones, matte black finish, floating on white background)"
-                      : contentType === 'abstract'
-                      ? "Describe artistic concept... (e.g., Geometric patterns in blue and gold, flowing liquid metal texture)"
-                      : "Describe any image you want to create..."
-                  }
+                  placeholder="Describe the image you want to create..."
                   value={generationPrompt}
                   onChange={(e) => setGenerationPrompt(e.target.value)}
-                  className="min-h-24 mt-2"
+                  className="h-14 text-base"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey && generationPrompt.trim()) {
+                      e.preventDefault();
+                      handleGeneratePerfectAvatar();
+                    }
+                  }}
                 />
-                <p className="text-xs text-muted-foreground mt-1 text-right">
-                  {generationPrompt.length}/500
-                </p>
               </div>
 
-              {/* Content Type Selection */}
-              <div>
-                <Label className="text-base font-medium mb-3 block">Content Type</Label>
-                <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { id: 'portrait' as const, name: 'Portrait', icon: Camera, description: 'People & avatars' },
-                    { id: 'landscape' as const, name: 'Landscape', icon: Sparkles, description: 'Scenic views' },
-                    { id: 'object' as const, name: 'Object', icon: Star, description: 'Products & items' },
-                    { id: 'abstract' as const, name: 'Abstract', icon: Wand2, description: 'Artistic concepts' },
-                    { id: 'scene' as const, name: 'Scene', icon: Crown, description: 'Environmental shots' },
-                    { id: 'auto' as const, name: 'Auto', icon: Zap, description: 'Smart detection' }
-                  ].map((type) => (
-                    <Button
-                      key={type.id}
-                      variant={contentType === type.id ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setContentType(type.id)}
-                      className="justify-start h-10 px-3"
-                      title={type.description}
-                    >
-                      <type.icon className="h-4 w-4 mr-2" />
-                      <span className="text-sm">{type.name}</span>
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Aspect Ratio Selection */}
-              <div>
-                <Label className="text-base font-medium mb-3 block">Aspect Ratio</Label>
-                <div className="grid grid-cols-4 gap-2">
-                  {[
-                    { value: '1:1' as const, label: 'Square', emoji: '□' },
-                    { value: '16:9' as const, label: 'Wide', emoji: '▭' },
-                    { value: '9:16' as const, label: 'Tall', emoji: '▯' },
-                    { value: '4:3' as const, label: 'Classic', emoji: '▬' }
-                  ].map((ratio) => (
-                    <Button
-                      key={ratio.value}
-                      variant={aspectRatio === ratio.value ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setAspectRatio(ratio.value)}
-                      className="h-10"
-                    >
-                      <span className="text-lg mr-1">{ratio.emoji}</span>
-                      <span className="text-xs">{ratio.label}</span>
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <Label className="text-base font-medium mb-3 block">Style Preset</Label>
-                <div className="grid grid-cols-2 gap-2">
-                  {STYLE_PRESETS.map((style) => (
-                    <Button
-                      key={style.id}
-                      variant={selectedStyle === style.id ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setSelectedStyle(style.id)}
-                      className="justify-start h-10 px-3"
-                    >
-                      <style.icon className="h-4 w-4 mr-2" />
-                      <span className="text-sm">{style.name}</span>
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <Label className="text-base font-medium">Quality Settings</Label>
-                <Select value={quality} onValueChange={(value) => setQuality(value as 'HD' | '4K' | '8K')}>
-                  <SelectTrigger className="mt-2">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {QUALITY_SETTINGS.map((setting) => (
-                      <SelectItem key={setting.value} value={setting.value}>
-                        {setting.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Face Consistency - only show for portrait mode */}
-              {contentType === 'portrait' && (
-                <div>
-                  <Label className="text-sm font-medium">
-                    Face Consistency: {faceConsistency}%
-                  </Label>
-                  <Slider
-                    value={[faceConsistency]}
-                    onValueChange={([value]) => setFaceConsistency(value)}
-                    max={100}
-                    min={50}
-                    step={5}
-                    className="mt-2"
-                  />
-                </div>
-              )}
-
+              {/* Generate Button with Integrated Progress */}
               <Button
                 onClick={handleGeneratePerfectAvatar}
                 disabled={!generationPrompt.trim() || isProcessing || processingStage !== ''}
-                className="w-full h-12"
-                size="lg"
+                className="relative w-full h-14 overflow-hidden text-lg font-medium"
               >
-                {isProcessing || processingStage !== '' ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Generating {quality} {contentType === 'portrait' ? 'Avatar' : 'Image'}...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="h-4 w-4 mr-2" />
-                    Generate {quality} {contentType === 'portrait' ? 'Avatar' : 'Image'}
-                  </>
+                {/* Animated progress background */}
+                {(isProcessing || processingStage !== '') && (
+                  <div 
+                    className="absolute inset-0 bg-gradient-to-r from-violet-500 via-purple-500 to-blue-500 transition-all duration-300"
+                    style={{ 
+                      width: `${processingProgress}%`,
+                      opacity: 0.8
+                    }}
+                  />
                 )}
+                
+                {/* Button content */}
+                <span className="relative z-10 flex items-center gap-2">
+                  {isProcessing || processingStage !== '' ? (
+                    <>
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      {Math.round(processingProgress)}%
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-5 w-5" />
+                      Generate
+                    </>
+                  )}
+                </span>
               </Button>
 
-              {/* Generation Progress */}
-              {processingProgress > 0 && (
-                <div className="space-y-3 mt-4">
-                  <div className="text-sm font-medium text-center">{processingStage}</div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-xs text-muted-foreground">
-                      <span>Perfect Avatar Generation</span>
-                      <span>{Math.round(processingProgress)}%</span>
+              {/* Collapsible Advanced Settings */}
+              <Collapsible open={showAdvanced} onOpenChange={setShowAdvanced}>
+                <CollapsibleTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="w-full justify-center gap-2 text-muted-foreground hover:text-foreground"
+                  >
+                    <Settings className="h-4 w-4" />
+                    Advanced Settings
+                    <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${showAdvanced ? 'rotate-180' : ''}`} />
+                  </Button>
+                </CollapsibleTrigger>
+                
+                <CollapsibleContent className="space-y-6 pt-6">
+                  {/* Content Type Selection */}
+                  <div>
+                    <Label className="text-sm font-medium mb-3 block">Content Type</Label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {[
+                        { id: 'portrait' as const, name: 'Portrait', icon: Camera, description: 'People & avatars' },
+                        { id: 'landscape' as const, name: 'Landscape', icon: Sparkles, description: 'Scenic views' },
+                        { id: 'object' as const, name: 'Object', icon: Star, description: 'Products & items' },
+                        { id: 'abstract' as const, name: 'Abstract', icon: Wand2, description: 'Artistic concepts' },
+                        { id: 'scene' as const, name: 'Scene', icon: Crown, description: 'Environmental shots' },
+                        { id: 'auto' as const, name: 'Auto', icon: Zap, description: 'Smart detection' }
+                      ].map((type) => (
+                        <Button
+                          key={type.id}
+                          variant={contentType === type.id ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setContentType(type.id)}
+                          className="justify-start h-10 px-3"
+                          title={type.description}
+                        >
+                          <type.icon className="h-4 w-4 mr-2" />
+                          <span className="text-sm">{type.name}</span>
+                        </Button>
+                      ))}
                     </div>
-                    <div className="w-full bg-muted rounded-full h-3">
-                      <div 
-                        className="bg-gradient-to-r from-primary to-primary/80 h-3 rounded-full transition-all duration-500"
-                        style={{ width: `${processingProgress}%` }}
+                  </div>
+
+                  {/* Aspect Ratio Selection */}
+                  <div>
+                    <Label className="text-sm font-medium mb-3 block">Aspect Ratio</Label>
+                    <div className="grid grid-cols-4 gap-2">
+                      {[
+                        { value: '1:1' as const, label: 'Square', emoji: '□' },
+                        { value: '16:9' as const, label: 'Wide', emoji: '▭' },
+                        { value: '9:16' as const, label: 'Tall', emoji: '▯' },
+                        { value: '4:3' as const, label: 'Classic', emoji: '▬' }
+                      ].map((ratio) => (
+                        <Button
+                          key={ratio.value}
+                          variant={aspectRatio === ratio.value ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setAspectRatio(ratio.value)}
+                          className="h-10"
+                        >
+                          <span className="text-lg mr-1">{ratio.emoji}</span>
+                          <span className="text-xs">{ratio.label}</span>
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Style Preset */}
+                  <div>
+                    <Label className="text-sm font-medium mb-3 block">Style Preset</Label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {STYLE_PRESETS.map((style) => (
+                        <Button
+                          key={style.id}
+                          variant={selectedStyle === style.id ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setSelectedStyle(style.id)}
+                          className="justify-start h-10 px-3"
+                        >
+                          <style.icon className="h-4 w-4 mr-2" />
+                          <span className="text-sm">{style.name}</span>
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Quality Settings */}
+                  <div>
+                    <Label className="text-sm font-medium">Quality Settings</Label>
+                    <Select value={quality} onValueChange={(value) => setQuality(value as 'HD' | '4K' | '8K')}>
+                      <SelectTrigger className="mt-2">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {QUALITY_SETTINGS.map((setting) => (
+                          <SelectItem key={setting.value} value={setting.value}>
+                            {setting.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Face Consistency - only show for portrait mode */}
+                  {contentType === 'portrait' && (
+                    <div>
+                      <Label className="text-sm font-medium">
+                        Face Consistency: {faceConsistency}%
+                      </Label>
+                      <Slider
+                        value={[faceConsistency]}
+                        onValueChange={([value]) => setFaceConsistency(value)}
+                        max={100}
+                        min={50}
+                        step={5}
+                        className="mt-2"
                       />
                     </div>
-                    {estimatedTime > 0 && (
-                      <div className="text-xs text-muted-foreground text-center">
-                        ~{estimatedTime}s remaining
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-            </div>
-          </div>
+                  )}
+                </CollapsibleContent>
+              </Collapsible>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* Library Tab */}
