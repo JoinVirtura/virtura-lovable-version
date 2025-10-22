@@ -441,38 +441,6 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                 </div>
               )}
 
-              {/* Generated Avatar Display */}
-              {generatedResult && (
-                <div className="space-y-4 mt-6">
-                  <div className="text-sm font-medium">Generated Avatar:</div>
-                  <div className="max-w-md mx-auto">
-                    <Card className="p-0 overflow-hidden group">
-                      {generatedResult.success && generatedResult.image ? (
-                        <div 
-                          className="aspect-square relative cursor-pointer transition-all duration-300 hover:scale-105"
-                          onClick={selectGeneratedAvatar}
-                        >
-                          <img
-                            src={generatedResult.image}
-                            alt="Generated Avatar"
-                            className="w-full h-full object-cover"
-                          />
-                          {/* Click to use overlay */}
-                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
-                            <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 text-white font-medium bg-black/50 px-4 py-2 rounded-lg backdrop-blur-sm">
-                              Click to use this avatar
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="aspect-square flex items-center justify-center bg-muted rounded">
-                          <span className="text-sm text-muted-foreground">Generation Failed</span>
-                        </div>
-                      )}
-                    </Card>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </TabsContent>
