@@ -71,11 +71,11 @@ export class ImageGenerationService {
     };
 
     const contentEnhancements = {
-      'portrait': 'perfect facial features, detailed skin texture, professional portrait lighting, sharp eyes',
-      'landscape': 'atmospheric perspective, detailed environment, natural lighting, expansive view',
-      'object': 'precise details, clean composition, studio lighting, product photography',
-      'abstract': 'creative composition, artistic interpretation, dynamic colors',
-      'scene': 'cinematic composition, environmental storytelling, atmospheric lighting'
+      'portrait': 'SINGLE PERSON ONLY, perfect facial features, detailed skin texture, professional portrait lighting, sharp eyes, isolated subject, NOT a group',
+      'landscape': 'wide scenic view, atmospheric perspective, detailed environment, natural lighting, expansive composition, cinematic vista',
+      'object': 'isolated product, studio lighting, clean composition, commercial photography, sharp details, professional product shot',
+      'abstract': 'creative composition, artistic interpretation, dynamic colors, conceptual art',
+      'scene': 'environmental storytelling, cinematic composition, atmospheric lighting, narrative depth'
     };
 
     const baseEnhancement = qualityEnhancements[quality as keyof typeof qualityEnhancements] || qualityEnhancements.balanced;
@@ -156,7 +156,14 @@ export class ImageGenerationService {
       
       // Fallback to HuggingFace FLUX
       console.log('🔄 Using HuggingFace FLUX as fallback');
-      let optimizedPrompt = this.optimizeForSingleImage(params.prompt);
+      
+      // ONLY apply portrait optimization for portrait content type
+      let optimizedPrompt = params.prompt; // Start with raw user prompt
+      
+      if (contentType === 'portrait') {
+        // Only force portrait-specific optimization for portrait mode
+        optimizedPrompt = this.optimizeForSingleImage(params.prompt);
+      }
       
       if (params.enhance !== false) {
         optimizedPrompt = this.enhancePromptForContentType(optimizedPrompt, contentType, quality);

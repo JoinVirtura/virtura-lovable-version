@@ -14,7 +14,7 @@ const modelMap: Record<string, string> = {
   'object': 'black-forest-labs/flux-1.1-pro',
   'abstract': 'ai-forever/kandinsky-2.2',
   'scene': 'stability-ai/sdxl',
-  'auto': 'black-forest-labs/flux-schnell'
+  'auto': 'black-forest-labs/flux-1.1-pro'  // ✅ Best universal model for all content types
 };
 
 // Quality settings for FLUX Schnell (max 4 steps)

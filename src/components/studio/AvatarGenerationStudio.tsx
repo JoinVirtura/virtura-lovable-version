@@ -123,6 +123,14 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
     if (!generationPrompt.trim()) return;
 
     try {
+      console.log('🎯 Generation Request:', {
+        userPrompt: generationPrompt,
+        selectedContentType: contentType,
+        selectedQuality: quality,
+        selectedAspectRatio: aspectRatio,
+        selectedStyle: selectedStyle
+      });
+      
       // Reset states
       setGeneratedResult(null);
       setProcessingProgress(0);
