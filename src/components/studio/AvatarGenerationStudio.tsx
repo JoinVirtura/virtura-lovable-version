@@ -425,26 +425,6 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold flex items-center gap-3">
-          <div className="relative">
-            <Camera className="h-6 w-6 text-primary" />
-            <Sparkles className="h-3 w-3 absolute -top-1 -right-1 text-violet-400" />
-          </div>
-          Avatar Generation
-        </h2>
-        
-        <div className="flex items-center gap-2">
-          <Badge variant="secondary" className="text-xs">
-            Neural Enhanced
-          </Badge>
-          <Badge variant="secondary" className="text-xs">
-            {quality}
-          </Badge>
-        </div>
-      </div>
-
       {/* Main Generation Interface */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-3">
@@ -601,24 +581,6 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                   </div>
                 </div>
 
-                {/* Image Preview */}
-                {imagePreview && (
-                  <div className="flex items-center gap-2 p-2 bg-violet-500/10 border border-violet-500/20 rounded-lg">
-                    <img src={imagePreview} alt="Reference" className="h-12 w-12 rounded object-cover" />
-                    <span className="text-sm text-muted-foreground flex-1">Reference image uploaded</span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setSelectedImage(null);
-                        setImagePreview(null);
-                      }}
-                      className="h-8 w-8 p-0"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                )}
               </div>
 
               {/* Collapsible Advanced Settings */}
@@ -636,6 +598,19 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                 </CollapsibleTrigger>
                 
                 <CollapsibleContent className="space-y-6 pt-6">
+                  {/* Quality Indicators */}
+                  <div className="flex items-center justify-between pb-4 border-b border-violet-500/20">
+                    <span className="text-sm text-muted-foreground">Quality Settings</span>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary" className="text-xs bg-violet-500/10 border-violet-500/20">
+                        Neural Enhanced
+                      </Badge>
+                      <Badge variant="secondary" className="text-xs bg-violet-500/10 border-violet-500/20">
+                        {quality}
+                      </Badge>
+                    </div>
+                  </div>
+                  
                   {/* Content Type Selection */}
                   <div>
                     <Label className="text-sm font-medium mb-3 block">Content Type</Label>
