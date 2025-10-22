@@ -10,10 +10,10 @@ const corsHeaders = {
 // Content-type to Replicate model mapping
 const modelMap: Record<string, string> = {
   'portrait': 'black-forest-labs/flux-schnell',
-  'landscape': 'stability-ai/stable-diffusion-xl-base-1.0',
+  'landscape': 'stability-ai/sdxl',
   'object': 'black-forest-labs/flux-1.1-pro',
   'abstract': 'ai-forever/kandinsky-2.2',
-  'scene': 'black-forest-labs/flux-schnell',
+  'scene': 'stability-ai/sdxl',
   'auto': 'black-forest-labs/flux-schnell'
 };
 
@@ -148,7 +148,7 @@ serve(async (req) => {
           num_inference_steps: finalSteps
         }
       });
-    } else if (model === 'stability-ai/stable-diffusion-xl-base-1.0') {
+    } else if (model === 'stability-ai/sdxl') {
       // SDXL model
       output = await replicate.run(model, {
         input: {
