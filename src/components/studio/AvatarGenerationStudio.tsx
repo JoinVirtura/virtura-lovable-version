@@ -168,24 +168,44 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
       setProcessingProgress(100);
       setGeneratedResult(result);
       
-      // Save successful generation to library
+      console.log('✅ Image generated successfully:', result.image);
+      
+      // Save successful generation to library and update preview immediately
       if (result.success && result.image) {
         try {
           const { supabase } = await import('@/integrations/supabase/client');
-          await supabase.from('avatar_library').insert({
-            image_url: result.image,
-            prompt: generationPrompt,
-            title: `Perfect ${selectedStyle} Avatar - ${quality}`,
-            tags: [selectedStyle, quality, 'AI Generated', 'Perfect', 'Single']
-          });
+          const { data: { user } } = await supabase.auth.getUser();
+          
+          if (user) {
+            await supabase.from('avatar_library').insert({
+              user_id: user.id,
+              image_url: result.image,
+              prompt: generationPrompt,
+              title: `Perfect ${selectedStyle} Avatar - ${quality}`,
+              tags: [selectedStyle, quality, 'AI Generated', 'Perfect', 'Single']
+            });
+            console.log('💾 Saved to library successfully');
+          }
         } catch (error) {
-          console.warn('Failed to save to library:', error);
+          console.warn('⚠️ Failed to save to library:', error);
         }
         
-        // Automatically display in Live Preview after successful generation
-        setTimeout(() => {
-          selectGeneratedAvatar();
-        }, 500);
+        // ✅ Immediately update the Live Preview with the generated avatar
+        console.log('🎨 Updating Live Preview with generated image');
+        onUpdate({
+          avatar: {
+            type: 'generate',
+            originalUrl: result.image,
+            status: 'completed',
+            quality: quality as any,
+            metadata: {
+              resolution: result.metadata?.resolution || `${quality} (Generated)`,
+              faceAlignment: 98,
+              consistency: faceConsistency,
+              processingTime: result.metadata?.processingTime || '30s'
+            }
+          }
+        });
       }
 
       setProcessingStage(result.success ? 'Perfect Avatar Generated!' : 'Generation Failed');
@@ -226,7 +246,15 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
   const handleSaveToLibrary = async (imageUrl: string) => {
     try {
       const { supabase } = await import('@/integrations/supabase/client');
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        console.error('❌ No user found, cannot save to library');
+        return;
+      }
+      
       await supabase.from('avatar_library').insert({
+        user_id: user.id,
         image_url: imageUrl,
         prompt: generationPrompt,
         title: `${selectedStyle} Avatar - ${quality}`,
@@ -235,10 +263,9 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
       
       setSavedAvatars(prev => new Set([...prev, imageUrl]));
       
-      // Show success feedback
-      console.log('Avatar saved to library successfully');
+      console.log('✅ Avatar saved to library successfully');
     } catch (error) {
-      console.error('Failed to save to library:', error);
+      console.error('❌ Failed to save to library:', error);
     }
   };
 
