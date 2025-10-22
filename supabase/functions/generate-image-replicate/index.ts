@@ -10,7 +10,7 @@ const corsHeaders = {
 // Content-type to Replicate model mapping
 const modelMap: Record<string, string> = {
   'portrait': 'black-forest-labs/flux-schnell',
-  'landscape': 'stability-ai/sdxl',
+  'landscape': 'stability-ai/stable-diffusion-xl-base-1.0',
   'object': 'black-forest-labs/flux-1.1-pro',
   'abstract': 'ai-forever/kandinsky-2.2',
   'scene': 'black-forest-labs/flux-schnell',
@@ -32,17 +32,17 @@ const standardQualityMap: Record<string, { width: number; height: number; steps:
 };
 
 // Aspect ratio to dimension adjustments
-const aspectRatioMap: Record<string, (base: number) => { width: number; height: number }> = {
-  '1:1': (base) => ({ width: base, height: base }),
-  '16:9': (base) => ({ width: Math.round(base * 1.78), height: base }),
-  '9:16': (base) => ({ width: base, height: Math.round(base * 1.78) }),
-  '4:3': (base) => ({ width: Math.round(base * 1.33), height: base })
+const aspectRatioMap: Record<string, (base: { width: number; height: number }) => { width: number; height: number }> = {
+  '1:1': (base) => ({ width: base.width, height: base.height }),
+  '16:9': (base) => ({ width: Math.round(base.height * 1.78), height: base.height }),
+  '9:16': (base) => ({ width: base.width, height: Math.round(base.width * 1.78) }),
+  '4:3': (base) => ({ width: Math.round(base.height * 1.33), height: base.height })
 };
 
 // Content-specific prompt enhancement
 function enhancePromptByContentType(prompt: string, contentType: string): string {
   const enhancements: Record<string, string> = {
-    'portrait': 'professional portrait, single person, studio quality, individual subject',
+    'portrait': 'SINGLE PERSON ONLY, professional portrait photography of ONE individual, solo subject, individual headshot, NOT a group photo, studio quality lighting, isolated subject',
     'landscape': 'cinematic landscape, wide angle, atmospheric, scenic view',
     'object': 'product photography, studio lighting, isolated subject, clean background',
     'abstract': 'abstract art, creative composition, artistic interpretation',
@@ -113,7 +113,7 @@ serve(async (req) => {
     
     // Adjust dimensions for aspect ratio
     const dimensions = aspectRatioMap[aspectRatio] 
-      ? aspectRatioMap[aspectRatio](qualitySettings.height)
+      ? aspectRatioMap[aspectRatio]({ width: qualitySettings.width, height: qualitySettings.height })
       : { width: qualitySettings.width, height: qualitySettings.height };
 
     console.log('📐 Dimensions:', dimensions);
@@ -148,7 +148,7 @@ serve(async (req) => {
           num_inference_steps: finalSteps
         }
       });
-    } else if (model === 'stability-ai/sdxl') {
+    } else if (model === 'stability-ai/stable-diffusion-xl-base-1.0') {
       // SDXL model
       output = await replicate.run(model, {
         input: {
