@@ -476,17 +476,18 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
                       Download
                     </Button>
                     
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setDeleteConfirm({ open: true, avatar });
-                      }}
-                      className="h-8 text-xs text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/50"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                setDeleteConfirm({ open: true, avatar });
+              }}
+              className="flex-1 h-8 text-xs text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/50"
+            >
+              <Trash2 className="h-3 w-3 mr-1" />
+              Delete
+            </Button>
                   </div>
                 </div>
               </CardContent>
