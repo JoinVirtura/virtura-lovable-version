@@ -24,7 +24,11 @@ import {
   Crown,
   Star,
   Heart,
-  ChevronDown
+  ChevronDown,
+  Send,
+  Mic,
+  ImagePlus,
+  X
 } from 'lucide-react';
 import { AvatarLibrary } from './AvatarLibrary';
 import { RealAvatarLibrary } from './RealAvatarLibrary';
@@ -74,6 +78,10 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
   const [savedAvatars, setSavedAvatars] = useState<Set<string>>(new Set());
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const handleFileUpload = useCallback(async (file: File) => {
     if (!file.type.startsWith('image/')) {
@@ -281,6 +289,50 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
     }
   };
 
+  const handleVoiceInput = async () => {
+    if (isRecording) {
+      setIsRecording(false);
+      // Stop recording logic here
+    } else {
+      setIsRecording(true);
+      // Start voice recording using Web Speech API
+      if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+        
+        recognition.onresult = (event: any) => {
+          const transcript = event.results[0][0].transcript;
+          setGenerationPrompt(prev => prev ? prev + ' ' + transcript : transcript);
+        };
+        
+        recognition.onend = () => {
+          setIsRecording(false);
+        };
+        
+        recognition.onerror = () => {
+          setIsRecording(false);
+        };
+        
+        recognition.start();
+      }
+    }
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      setSelectedImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -379,48 +431,104 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
         <TabsContent value="generate" className="space-y-6">
           <Card className="max-w-2xl mx-auto">
             <CardContent className="pt-6 space-y-6">
-              {/* Chat-style Input with Circular Generate Button */}
-              <div className="relative flex items-center gap-3">
-                {/* Input field - takes remaining space */}
-                <Input
-                  id="prompt"
-                  placeholder="Describe the image you want to create..."
-                  value={generationPrompt}
-                  onChange={(e) => setGenerationPrompt(e.target.value)}
-                  className="flex-1 h-14 text-base pr-4"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey && generationPrompt.trim()) {
-                      e.preventDefault();
-                      handleGeneratePerfectAvatar();
-                    }
-                  }}
-                />
-                
-                {/* Circular Generate Button */}
-                <div className="relative flex-shrink-0">
-                  {(isProcessing || processingStage !== '') && (
-                    <CircularProgress 
-                      value={processingProgress} 
-                      size={56}
-                      strokeWidth={3}
-                      className="absolute inset-0"
-                    />
-                  )}
+              {/* Chat-style Input with Action Buttons */}
+              <div className="space-y-3">
+                <div className="relative flex items-center gap-2">
+                  {/* Input field - takes remaining space */}
+                  <Input
+                    id="prompt"
+                    placeholder="Describe the image you want to create..."
+                    value={generationPrompt}
+                    onChange={(e) => setGenerationPrompt(e.target.value)}
+                    className="flex-1 h-14 text-base pl-4 pr-4"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey && generationPrompt.trim()) {
+                        e.preventDefault();
+                        handleGeneratePerfectAvatar();
+                      }
+                    }}
+                  />
                   
+                  {/* Image Upload Button */}
                   <Button
-                    onClick={handleGeneratePerfectAvatar}
-                    disabled={!generationPrompt.trim() || isProcessing || processingStage !== ''}
+                    variant="outline"
                     size="icon"
-                    className="h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
-                    title="Generate Avatar (Enter)"
+                    onClick={() => imageInputRef.current?.click()}
+                    className="h-14 w-14 rounded-full border-violet-500/40 hover:border-violet-400 hover:bg-violet-500/10 transition-all duration-300"
+                    title="Upload reference image"
                   >
-                    {isProcessing || processingStage !== '' ? (
-                      <Loader2 className="h-6 w-6 animate-spin" />
-                    ) : (
-                      <Sparkles className="h-6 w-6" />
-                    )}
+                    <ImagePlus className="h-5 w-5 text-violet-400" />
                   </Button>
+                  
+                  {/* Hidden file input */}
+                  <input
+                    ref={imageInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleImageUpload}
+                  />
+                  
+                  {/* Microphone Button */}
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={handleVoiceInput}
+                    className={`h-14 w-14 rounded-full border-violet-500/40 transition-all duration-300 ${
+                      isRecording 
+                        ? 'bg-red-500/20 border-red-400 hover:bg-red-500/30' 
+                        : 'hover:border-violet-400 hover:bg-violet-500/10'
+                    }`}
+                    title={isRecording ? "Stop recording" : "Voice input"}
+                  >
+                    <Mic className={`h-5 w-5 ${isRecording ? 'text-red-400 animate-pulse' : 'text-violet-400'}`} />
+                  </Button>
+                  
+                  {/* Send/Generate Button with Progress */}
+                  <div className="relative flex-shrink-0">
+                    {(isProcessing || processingStage !== '') && (
+                      <CircularProgress 
+                        value={processingProgress} 
+                        size={56}
+                        strokeWidth={3}
+                        className="absolute inset-0"
+                      />
+                    )}
+                    
+                    <Button
+                      onClick={handleGeneratePerfectAvatar}
+                      disabled={!generationPrompt.trim() || isProcessing || processingStage !== ''}
+                      size="icon"
+                      className="h-14 w-14 rounded-full bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
+                      title="Generate Avatar (Enter)"
+                    >
+                      {isProcessing || processingStage !== '' ? (
+                        <Loader2 className="h-5 w-5 animate-spin text-white" />
+                      ) : (
+                        <Send className="h-5 w-5 text-white" />
+                      )}
+                    </Button>
+                  </div>
                 </div>
+
+                {/* Image Preview */}
+                {imagePreview && (
+                  <div className="flex items-center gap-2 p-2 bg-violet-500/10 border border-violet-500/20 rounded-lg">
+                    <img src={imagePreview} alt="Reference" className="h-12 w-12 rounded object-cover" />
+                    <span className="text-sm text-muted-foreground flex-1">Reference image uploaded</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setSelectedImage(null);
+                        setImagePreview(null);
+                      }}
+                      className="h-8 w-8 p-0"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
               </div>
 
               {/* Collapsible Advanced Settings */}
