@@ -457,10 +457,10 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
                         e.stopPropagation();
                         handleShareAvatar(avatar);
                       }}
-                      className="flex-1 h-8 text-xs"
+                      className="flex-1 h-8"
+                      title="Share avatar"
                     >
-                      <Share2 className="h-3 w-3 mr-1" />
-                      Share
+                      <Share2 className="h-4 w-4" />
                     </Button>
                     
                     <Button
@@ -470,24 +470,24 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
                         e.stopPropagation();
                         handleDownloadAvatar(avatar);
                       }}
-                      className="flex-1 h-8 text-xs"
+                      className="flex-1 h-8"
+                      title="Download avatar"
                     >
-                      <Download className="h-3 w-3 mr-1" />
-                      Download
+                      <Download className="h-4 w-4" />
                     </Button>
                     
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                setDeleteConfirm({ open: true, avatar });
-              }}
-              className="flex-1 h-8 text-xs text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/50"
-            >
-              <Trash2 className="h-3 w-3 mr-1" />
-              Delete
-            </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDeleteConfirm({ open: true, avatar });
+                      }}
+                      className="flex-1 h-8 text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/50"
+                      title="Delete avatar"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
               </CardContent>
