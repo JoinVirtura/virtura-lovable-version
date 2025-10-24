@@ -147,7 +147,7 @@ export default function VideoProPage() {
       <div className="w-full px-6 py-6 mb-8">
         <div className="grid lg:grid-cols-12 gap-6">
           {/* Main Studio Panel */}
-          <div className="lg:col-span-8 relative">
+          <div className="lg:col-span-9 relative">
             <Card className="border-0 shadow-[0_8px_32px_rgba(0,0,0,0.3)] bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl rounded-2xl overflow-visible">
               <CardContent className="p-6">
                 <Tabs value={currentStep} onValueChange={setCurrentStep}>
@@ -239,7 +239,7 @@ export default function VideoProPage() {
           </div>
 
           {/* Sidebar - Preview & Controls */}
-          <div className="lg:col-span-4 space-y-6 mb-6">
+          <div className="lg:col-span-3 space-y-6 mb-6">
             {/* Real-time Preview */}
             <div className="glass-card border border-violet-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] rounded-xl overflow-hidden">
               <RealtimePreview 
