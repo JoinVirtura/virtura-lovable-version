@@ -144,7 +144,7 @@ export default function VideoProPage() {
       </div>
 
       {/* Main Studio Interface */}
-      <div className="max-w-7xl mx-auto px-6 py-6 mb-8">
+      <div className="w-full px-6 py-6 mb-8">
         <div className="grid lg:grid-cols-12 gap-6">
           {/* Main Studio Panel */}
           <div className="lg:col-span-8 relative">
