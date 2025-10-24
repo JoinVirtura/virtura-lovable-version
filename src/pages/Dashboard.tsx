@@ -13,6 +13,7 @@ import { TalkingAvatarStudio } from "@/components/TalkingAvatarStudio";
 import { MotionBackground } from "@/components/MotionBackground";
 import UpgradePage from "./UpgradePage";
 import StudioPage from "./StudioPage";
+import VideoProPage from "./VideoProPage";
 import { StudioBackground } from "@/components/StudioBackground";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -1247,6 +1248,12 @@ export default function Dashboard() {
         return (
           <div className="h-screen overflow-y-auto">
             <StudioPage />
+          </div>
+        );
+      case "video-pro":
+        return (
+          <div className="h-screen overflow-y-auto">
+            <VideoProPage />
           </div>
         );
       case "create":

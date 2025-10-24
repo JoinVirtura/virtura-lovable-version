@@ -53,6 +53,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
   const mainItems = [
     { id: "overview", label: "Home", icon: Home },
     { id: "studio", label: "Copilot", icon: Command },
+    { id: "video-pro", label: "Video Pro", icon: Video },
     { id: "talking-avatar", label: "Studio Pro", icon: Video },
   ];
 
