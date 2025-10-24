@@ -30,8 +30,6 @@ import { StudioNavigation } from '@/components/studio/StudioNavigation';
 import { QualitySettings } from '@/components/studio/QualitySettings';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { BottomStepNavigation } from '@/components/studio/BottomStepNavigation';
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/AppSidebar";
 
 const VIDEO_PRO_STEPS = [
   { id: 'upload', title: 'Upload', icon: Upload, color: 'bg-blue-500' },
@@ -76,11 +74,7 @@ export default function VideoProPage() {
   };
 
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full">
-        <AppSidebar />
-        
-        <div className="flex-1 w-full min-h-screen pb-32 bg-gradient-to-br from-[#0F0F1A] via-[#1a1a2e] to-[#0F0F1A] relative overflow-hidden">
+    <div className="w-full min-h-screen pb-32 bg-gradient-to-br from-[#0F0F1A] via-[#1a1a2e] to-[#0F0F1A] relative overflow-hidden">
       {/* Ambient particles */}
       <div className="absolute inset-0 pointer-events-none">
         {[...Array(12)].map((_, i) => (
@@ -286,8 +280,6 @@ export default function VideoProPage() {
           </div>
         </div>
       </div>
-        </div>
-      </div>
-    </SidebarProvider>
+    </div>
   );
 }
