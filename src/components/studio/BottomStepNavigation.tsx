@@ -50,7 +50,7 @@ export const BottomStepNavigation: React.FC<BottomStepNavigationProps> = ({
   return (
     <div className="relative z-50">
       <div className="pb-10">
-        <div className="flex items-center justify-center gap-4 w-full">
+        <div className="flex items-center justify-start gap-4 w-full">
           {/* Back Button */}
           <div className="flex-shrink-0">
             {prevStep ? (
@@ -66,12 +66,12 @@ export const BottomStepNavigation: React.FC<BottomStepNavigationProps> = ({
                 <span className="sm:hidden">Back</span>
               </Button>
             ) : (
-              <div className="w-32" />
+              <div />
             )}
           </div>
 
           {/* Center: Progress Indicators */}
-          <div className="flex items-center justify-center max-w-md mx-auto">
+          <div className="flex items-center justify-center max-w-md">
             <div className="flex items-center gap-3">
               {steps.map((step, index) => {
                 const isActive = step.id === currentStep;
