@@ -160,7 +160,7 @@ export default function VideoProPage() {
                       />
                     </ErrorBoundary>
                     
-                    <div className="mt-8">
+                    <div className="mt-8 -mx-6 -mb-6">
                       <BottomStepNavigation
                         currentStep={currentStep}
                         steps={VIDEO_PRO_STEPS}
@@ -181,7 +181,7 @@ export default function VideoProPage() {
                       />
                     </ErrorBoundary>
                     
-                    <div className="mt-8">
+                    <div className="mt-8 -mx-6 -mb-6">
                       <BottomStepNavigation
                         currentStep={currentStep}
                         steps={VIDEO_PRO_STEPS}
@@ -202,7 +202,7 @@ export default function VideoProPage() {
                       />
                     </ErrorBoundary>
                     
-                    <div className="mt-8">
+                    <div className="mt-8 -mx-6 -mb-6">
                       <BottomStepNavigation
                         currentStep={currentStep}
                         steps={VIDEO_PRO_STEPS}
@@ -223,7 +223,7 @@ export default function VideoProPage() {
                       />
                     </ErrorBoundary>
                     
-                    <div className="mt-8">
+                    <div className="mt-8 -mx-6 -mb-6">
                       <BottomStepNavigation
                         currentStep={currentStep}
                         steps={VIDEO_PRO_STEPS}
