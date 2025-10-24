@@ -30,6 +30,7 @@ import { StudioNavigation } from '@/components/studio/StudioNavigation';
 import { QualitySettings } from '@/components/studio/QualitySettings';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { BottomStepNavigation } from '@/components/studio/BottomStepNavigation';
+import { useSidebar } from '@/components/ui/sidebar';
 
 const VIDEO_PRO_STEPS = [
   { id: 'upload', title: 'Upload', icon: Upload, color: 'bg-blue-500' },
@@ -195,15 +196,6 @@ export default function VideoProPage() {
                 </Tabs>
               </CardContent>
             </Card>
-
-            {/* Bottom Navigation - floats on page background */}
-            <BottomStepNavigation
-              currentStep={currentStep}
-              steps={VIDEO_PRO_STEPS}
-              onStepChange={handleStepChange}
-              isProcessing={isProcessing}
-              getStepStatus={getStepStatus}
-            />
           </div>
 
           {/* Sidebar - Preview & Controls */}
@@ -279,6 +271,17 @@ export default function VideoProPage() {
             </Card>
           </div>
         </div>
+      </div>
+
+      {/* Bottom Navigation - aligned with content */}
+      <div className="max-w-7xl mx-auto px-6">
+        <BottomStepNavigation
+          currentStep={currentStep}
+          steps={VIDEO_PRO_STEPS}
+          onStepChange={handleStepChange}
+          isProcessing={isProcessing}
+          getStepStatus={getStepStatus}
+        />
       </div>
     </div>
   );
