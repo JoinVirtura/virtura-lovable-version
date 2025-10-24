@@ -228,35 +228,23 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
   const selectedVoiceData = PREMIUM_VOICES.find(v => v.id === selectedVoice);
 
   return (
-    <div className="space-y-6">
-      {/* Enhanced Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl font-bold flex items-center gap-3">
-            <div className="relative">
-              <Mic className="h-7 w-7 text-primary" />
-              <Brain className="h-4 w-4 absolute -top-1 -right-1 text-purple-500" />
-              <Crown className="h-3 w-3 absolute -bottom-1 -left-1 text-violet-400" />
-            </div>
-            <span className="bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
+    <div className="space-y-4">
+      {/* Compact Header */}
+      <div className="flex items-center justify-between pb-2 border-b border-violet-500/20">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-gradient-to-br from-violet-500/20 to-purple-500/20 border border-violet-500/30">
+            <Mic className="h-5 w-5 text-violet-400" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-white flex items-center gap-2">
               Premium Voice Engine
-            </span>
-          </h2>
-          <p className="text-muted-foreground text-lg">
-            Studio-quality AI voices • 20 Premium models • Multi-lingual • Professional audio processing
-          </p>
+              <Crown className="h-4 w-4 text-violet-400" />
+            </h3>
+            <p className="text-sm text-muted-foreground">Studio-quality AI voices • 20 Premium models</p>
+          </div>
         </div>
-        
-        <div className="flex items-center gap-2">
-          <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-            <Crown className="h-3 w-3 mr-1" />
-            Premium
-          </Badge>
-          <Badge variant="secondary" className="text-xs">
-            <Zap className="h-3 w-3 mr-1" />
-            Studio Quality
-          </Badge>
-          <Badge variant="outline" className="text-xs">
+        <div className="flex gap-2">
+          <Badge variant="secondary" className="bg-violet-500/20 text-violet-300 border-violet-500/30 text-xs">
             <Languages className="h-3 w-3 mr-1" />
             12 Languages
           </Badge>
@@ -281,115 +269,82 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
         </TabsList>
 
         {/* Premium Text-to-Speech Tab */}
-        <TabsContent value="tts" className="space-y-6">
-          <div className="grid lg:grid-cols-3 gap-6">
-            {/* Voice Selection */}
-            <div className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Crown className="h-5 w-5 text-violet-400" />
-                    Premium Voice Library
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {/* Category Filter */}
-                  <div>
-                    <Label className="mb-2 block">Voice Categories</Label>
-                    <div className="grid grid-cols-2 gap-1">
-                      {VOICE_CATEGORIES.map((category) => (
-                        <Button
-                          key={category.id}
-                          variant={selectedCategory === category.id ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setSelectedCategory(category.id)}
-                          className="h-8 text-xs"
-                        >
-                          <category.icon className="h-3 w-3 mr-1" />
-                          {category.name}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
+        <TabsContent value="tts" className="space-y-4">
+            {/* Voice Selection Card */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <Crown className="h-4 w-4 text-violet-400" />
+                  Voice Selection
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {/* Voice Category Pills */}
+                <div className="flex flex-wrap gap-1">
+                  {VOICE_CATEGORIES.slice(0, 4).map((category) => (
+                    <Button
+                      key={category.id}
+                      variant={selectedCategory === category.id ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setSelectedCategory(category.id)}
+                      className="h-7 text-xs"
+                    >
+                      <category.icon className="h-3 w-3 mr-1" />
+                      {category.name}
+                    </Button>
+                  ))}
+                </div>
 
-                  {/* Voice Selection */}
-                  <div>
-                    <Label>Select Voice Model</Label>
-                    <div className="max-h-64 overflow-y-auto space-y-2 mt-2">
-                      {filteredVoices.map((voice) => (
-                        <div
-                          key={voice.id}
-                          className={`p-3 rounded-lg border cursor-pointer transition-all ${
-                            selectedVoice === voice.id
-                              ? 'border-primary bg-primary/5'
-                              : 'border-border hover:border-primary/50'
-                          }`}
-                          onClick={() => setSelectedVoice(voice.id)}
-                        >
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <div className="font-medium text-sm">{voice.name}</div>
-                              <div className="text-xs text-muted-foreground">{voice.type}</div>
-                              <div className="text-xs text-primary">{voice.accent}</div>
-                            </div>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                togglePlayPreview(voice.id);
-                              }}
-                              className="h-6 w-6 p-0"
-                            >
-                              {isPlaying && selectedVoice === voice.id ? (
-                                <Pause className="h-3 w-3" />
-                              ) : (
-                                <Play className="h-3 w-3" />
-                              )}
-                            </Button>
-                          </div>
-                          <p className="text-xs text-muted-foreground mt-1">{voice.description}</p>
-                          {voice.category === 'executive' && (
-                            <Badge className="mt-1 text-xs bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-                              Executive
-                            </Badge>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                {/* Voice Selector */}
+                <Select value={selectedVoice} onValueChange={setSelectedVoice}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select voice..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {filteredVoices.map((voice) => (
+                      <SelectItem key={voice.id} value={voice.id}>
+                        {voice.name} • {voice.type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
 
-            {/* Script & Language */}
-            <div className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Script Editor Pro</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <Label htmlFor="script">Script Content</Label>
-                    <Textarea
-                      id="script"
-                      placeholder="Enter your professional script here... The AI will generate studio-quality speech with advanced emotional modeling and natural prosody."
-                      value={script}
-                      onChange={(e) => setScript(e.target.value)}
-                      className="min-h-40 mt-2"
-                      maxLength={2000}
-                    />
-                    <div className="flex justify-between items-center mt-2 text-xs text-muted-foreground">
-                      <span>{script.length}/2000 characters</span>
-                      <span className="text-green-500 flex items-center gap-1">
-                        <CheckCircle className="h-3 w-3" />
-                        Auto-saved
-                      </span>
+                {/* Selected Voice Info */}
+                {selectedVoiceData && (
+                  <div className="p-3 rounded-lg bg-violet-500/5 border border-violet-500/20">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-medium text-sm">{selectedVoiceData.name}</span>
+                      <Button size="sm" variant="ghost" onClick={() => togglePlayPreview()} className="h-6 px-2">
+                        {isPlaying ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
+                      </Button>
                     </div>
+                    <p className="text-xs text-muted-foreground">{selectedVoiceData.description}</p>
                   </div>
+                )}
+              </CardContent>
+            </Card>
 
-                  <div>
-                    <Label>Language & Accent</Label>
+            {/* Script Editor */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm">Script Editor</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Textarea
+                  placeholder="Enter your script here..."
+                  value={script}
+                  onChange={(e) => setScript(e.target.value)}
+                  className="min-h-32"
+                  maxLength={2000}
+                />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>{script.length}/2000</span>
+                  <span className="text-green-500">Auto-saved</span>
+                </div>
+
+                {/* Language Selector */}
+                <div>
+                  <Label className="text-xs">Language</Label>
                     <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
                       <SelectTrigger className="mt-1">
                         <SelectValue />

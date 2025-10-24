@@ -105,9 +105,9 @@ export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between pb-2 border-b border-violet-500/20">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-lg bg-gradient-to-br from-violet-500/20 to-purple-500/20 border border-violet-500/30">
             <ImagePlus className="h-5 w-5 text-violet-400" />
@@ -255,38 +255,29 @@ export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
         </Card>
       )}
 
-      {/* Info Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Enhancement Settings */}
+      {imagePreview && (
         <Card className="glass-card border-violet-500/20">
-          <CardContent className="p-4 text-center">
-            <div className="w-10 h-10 mx-auto mb-2 rounded-lg bg-violet-500/20 flex items-center justify-center">
-              <Zap className="h-5 w-5 text-violet-400" />
+          <CardHeader>
+            <CardTitle className="text-sm flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-violet-400" />
+              Enhancement Options
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex items-center gap-2 p-3 rounded-lg bg-violet-500/5 border border-violet-500/20">
+                <Zap className="h-4 w-4 text-violet-400" />
+                <span className="text-sm">4K Quality</span>
+              </div>
+              <div className="flex items-center gap-2 p-3 rounded-lg bg-violet-500/5 border border-violet-500/20">
+                <Sparkles className="h-4 w-4 text-blue-400" />
+                <span className="text-sm">AI Enhanced</span>
+              </div>
             </div>
-            <h4 className="text-sm font-medium text-white mb-1">4K Quality</h4>
-            <p className="text-xs text-muted-foreground">Ultra high definition support</p>
           </CardContent>
         </Card>
-
-        <Card className="glass-card border-violet-500/20">
-          <CardContent className="p-4 text-center">
-            <div className="w-10 h-10 mx-auto mb-2 rounded-lg bg-blue-500/20 flex items-center justify-center">
-              <Sparkles className="h-5 w-5 text-blue-400" />
-            </div>
-            <h4 className="text-sm font-medium text-white mb-1">AI Enhanced</h4>
-            <p className="text-xs text-muted-foreground">Neural enhancement technology</p>
-          </CardContent>
-        </Card>
-
-        <Card className="glass-card border-violet-500/20">
-          <CardContent className="p-4 text-center">
-            <div className="w-10 h-10 mx-auto mb-2 rounded-lg bg-green-500/20 flex items-center justify-center">
-              <Crown className="h-5 w-5 text-green-400" />
-            </div>
-            <h4 className="text-sm font-medium text-white mb-1">Premium</h4>
-            <p className="text-xs text-muted-foreground">Professional grade output</p>
-          </CardContent>
-        </Card>
-      </div>
+      )}
     </div>
   );
 };

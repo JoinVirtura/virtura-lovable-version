@@ -29,6 +29,7 @@ import { useStudioProject } from '@/hooks/useStudioProject';
 import { StudioNavigation } from '@/components/studio/StudioNavigation';
 import { QualitySettings } from '@/components/studio/QualitySettings';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { BottomStepNavigation } from '@/components/studio/BottomStepNavigation';
 
 const VIDEO_PRO_STEPS = [
   { id: 'upload', title: 'Upload', icon: Upload, color: 'bg-blue-500' },
@@ -73,7 +74,7 @@ export default function VideoProPage() {
   };
 
   return (
-    <div className="w-full bg-gradient-to-br from-[#0F0F1A] via-[#1a1a2e] to-[#0F0F1A] relative overflow-hidden pb-8">
+    <div className="w-full bg-gradient-to-br from-[#0F0F1A] via-[#1a1a2e] to-[#0F0F1A] relative overflow-hidden pb-28">
       {/* Ambient particles */}
       <div className="absolute inset-0 pointer-events-none">
         {[...Array(12)].map((_, i) => (
@@ -272,6 +273,15 @@ export default function VideoProPage() {
           </div>
         </div>
       </div>
+
+      {/* Sticky Bottom Navigation */}
+      <BottomStepNavigation
+        currentStep={currentStep}
+        steps={VIDEO_PRO_STEPS}
+        onStepChange={handleStepChange}
+        isProcessing={isProcessing}
+        getStepStatus={getStepStatus}
+      />
     </div>
   );
 }

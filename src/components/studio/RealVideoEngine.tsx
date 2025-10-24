@@ -204,36 +204,27 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
   const selectedEngineData = VIDEO_ENGINES.find(e => e.id === selectedEngine);
 
   return (
-    <div className="space-y-6">
-      {/* Enhanced Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl font-bold flex items-center gap-3">
-            <div className="relative">
-              <Film className="h-7 w-7 text-primary" />
-              <Sparkles className="h-4 w-4 absolute -top-1 -right-1 text-violet-400" />
-              <Zap className="h-3 w-3 absolute -bottom-1 -left-1 text-purple-500" />
-            </div>
-            <span className="bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
-              Replicate Video Engine
-            </span>
-          </h2>
-          <p className="text-muted-foreground text-lg">
-            Powered by Replicate • No Avatar Limits • Multiple Quality Engines • Unlimited Generation
-          </p>
+    <div className="space-y-4">
+      {/* Compact Header */}
+      <div className="flex items-center justify-between pb-2 border-b border-violet-500/20">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-gradient-to-br from-violet-500/20 to-purple-500/20 border border-violet-500/30">
+            <Film className="h-5 w-5 text-violet-400" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+              Real Video Engine
+              <Sparkles className="h-4 w-4 text-purple-400" />
+            </h3>
+            <p className="text-sm text-muted-foreground">Powered by Replicate • Multiple Quality Engines</p>
+          </div>
         </div>
-        
-        <div className="flex items-center gap-2">
-          <Badge className="bg-gradient-to-r from-green-500 to-blue-500 text-white">
+        <div className="flex gap-2">
+          <Badge className="bg-gradient-to-r from-green-500 to-blue-500 text-white text-xs">
             <CheckCircle className="h-3 w-3 mr-1" />
             Real Output
           </Badge>
-          <Badge variant="secondary" className="text-xs">
-            <Zap className="h-3 w-3 mr-1" />
-            GPU Accelerated
-          </Badge>
           <Badge variant="outline" className="text-xs">
-            <Star className="h-3 w-3 mr-1" />
             {quality}
           </Badge>
         </div>
@@ -349,9 +340,7 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
         </Card>
       )}
 
-      <div className="grid lg:grid-cols-2 gap-6">
-        {/* Engine Selection & Settings */}
-        <div className="space-y-6">
+      <div className="space-y-4">
           {/* Real AI Engine Selection */}
           <Card>
             <CardHeader>
