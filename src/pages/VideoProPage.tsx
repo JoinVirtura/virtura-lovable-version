@@ -159,6 +159,16 @@ export default function VideoProPage() {
                         isProcessing={isProcessing}
                       />
                     </ErrorBoundary>
+                    
+                    <div className="mt-8">
+                      <BottomStepNavigation
+                        currentStep={currentStep}
+                        steps={VIDEO_PRO_STEPS}
+                        onStepChange={handleStepChange}
+                        isProcessing={isProcessing}
+                        getStepStatus={getStepStatus}
+                      />
+                    </div>
                   </TabsContent>
 
                   <TabsContent value="voice" className="mt-0">
@@ -170,6 +180,16 @@ export default function VideoProPage() {
                         isProcessing={isProcessing}
                       />
                     </ErrorBoundary>
+                    
+                    <div className="mt-8">
+                      <BottomStepNavigation
+                        currentStep={currentStep}
+                        steps={VIDEO_PRO_STEPS}
+                        onStepChange={handleStepChange}
+                        isProcessing={isProcessing}
+                        getStepStatus={getStepStatus}
+                      />
+                    </div>
                   </TabsContent>
 
                   <TabsContent value="video" className="mt-0">
@@ -181,6 +201,16 @@ export default function VideoProPage() {
                         isProcessing={isProcessing}
                       />
                     </ErrorBoundary>
+                    
+                    <div className="mt-8">
+                      <BottomStepNavigation
+                        currentStep={currentStep}
+                        steps={VIDEO_PRO_STEPS}
+                        onStepChange={handleStepChange}
+                        isProcessing={isProcessing}
+                        getStepStatus={getStepStatus}
+                      />
+                    </div>
                   </TabsContent>
 
                   <TabsContent value="export" className="mt-0">
@@ -192,6 +222,16 @@ export default function VideoProPage() {
                         isProcessing={isProcessing}
                       />
                     </ErrorBoundary>
+                    
+                    <div className="mt-8">
+                      <BottomStepNavigation
+                        currentStep={currentStep}
+                        steps={VIDEO_PRO_STEPS}
+                        onStepChange={handleStepChange}
+                        isProcessing={isProcessing}
+                        getStepStatus={getStepStatus}
+                      />
+                    </div>
                   </TabsContent>
                 </Tabs>
               </CardContent>
@@ -271,17 +311,6 @@ export default function VideoProPage() {
             </Card>
           </div>
         </div>
-      </div>
-
-      {/* Bottom Navigation - aligned with content */}
-      <div className="max-w-7xl mx-auto px-6">
-        <BottomStepNavigation
-          currentStep={currentStep}
-          steps={VIDEO_PRO_STEPS}
-          onStepChange={handleStepChange}
-          isProcessing={isProcessing}
-          getStepStatus={getStepStatus}
-        />
       </div>
     </div>
   );
