@@ -74,7 +74,7 @@ export default function VideoProPage() {
   };
 
   return (
-    <div className="w-full bg-gradient-to-br from-[#0F0F1A] via-[#1a1a2e] to-[#0F0F1A] relative overflow-hidden">
+    <div className="w-full min-h-screen pb-32 bg-gradient-to-br from-[#0F0F1A] via-[#1a1a2e] to-[#0F0F1A] relative overflow-hidden">
       {/* Ambient particles */}
       <div className="absolute inset-0 pointer-events-none">
         {[...Array(12)].map((_, i) => (
@@ -143,11 +143,11 @@ export default function VideoProPage() {
       </div>
 
       {/* Main Studio Interface */}
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      <div className="max-w-7xl mx-auto px-6 py-6 mb-8">
         <div className="grid lg:grid-cols-12 gap-6">
           {/* Main Studio Panel */}
           <div className="lg:col-span-8 relative">
-            <Card className="border-0 shadow-[0_8px_32px_rgba(0,0,0,0.3)] bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl rounded-2xl overflow-hidden">
+            <Card className="border-0 shadow-[0_8px_32px_rgba(0,0,0,0.3)] bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl rounded-2xl overflow-visible">
               <CardContent className="p-0">
                 <Tabs value={currentStep} onValueChange={setCurrentStep}>
                   <TabsContent value="upload" className="mt-0">
