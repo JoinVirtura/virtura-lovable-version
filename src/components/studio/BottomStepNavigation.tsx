@@ -48,8 +48,8 @@ export const BottomStepNavigation: React.FC<BottomStepNavigationProps> = ({
   };
 
   return (
-    <div className="relative z-50 border-t border-violet-500/20 rounded-b-2xl pt-4">
-      <div className="px-6 pb-6">
+    <div className="relative z-50 pt-8">
+      <div className="px-6 pb-10">
         <div className="flex items-center justify-between gap-4">
           {/* Back Button */}
           <div className="flex-shrink-0">
