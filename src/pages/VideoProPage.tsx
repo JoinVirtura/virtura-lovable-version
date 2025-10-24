@@ -148,7 +148,7 @@ export default function VideoProPage() {
           {/* Main Studio Panel */}
           <div className="lg:col-span-8 relative">
             <Card className="border-0 shadow-[0_8px_32px_rgba(0,0,0,0.3)] bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl rounded-2xl overflow-visible">
-              <CardContent className="p-0">
+              <CardContent className="p-6">
                 <Tabs value={currentStep} onValueChange={setCurrentStep}>
                   <TabsContent value="upload" className="mt-0">
                     <ErrorBoundary>
