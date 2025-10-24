@@ -204,52 +204,43 @@ export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
           />
         </Card>
       ) : (
-        <Card className="border-violet-500/20 shadow-[0_0_25px_rgba(212,110,255,0.15)]">
-          <CardHeader>
-            <CardTitle className="text-sm flex items-center justify-between">
-              <span className="flex items-center gap-2">
-                <ImagePlus className="h-4 w-4 text-violet-400" />
-                Uploaded Image
-              </span>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={handleClearImage}
-                className="h-8 w-8 p-0 hover:bg-red-500/10 hover:text-red-400"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="relative aspect-square rounded-lg overflow-hidden border border-violet-500/20">
-              <img 
-                src={imagePreview} 
-                alt="Uploaded preview" 
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute top-2 right-2">
-                <Badge className="bg-green-500/90 text-white border-0">
-                  Ready
-                </Badge>
+        <Card className="border-green-500/30 bg-green-500/5 backdrop-blur-sm">
+          <CardContent className="p-4">
+            <div className="flex items-start gap-4">
+              {/* Small Thumbnail */}
+              <div className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 ring-2 ring-green-500/30">
+                <img
+                  src={imagePreview}
+                  alt="Uploaded"
+                  className="w-full h-full object-cover"
+                />
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Status</span>
-                <span className="text-green-400 font-medium">✓ Upload Complete</span>
+              {/* Status Info */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge className="bg-green-500/90 text-white border-0">
+                    Ready
+                  </Badge>
+                  <span className="text-xs text-muted-foreground">Upload Complete</span>
+                </div>
+                <p className="text-sm text-white font-medium mb-1">Image Uploaded Successfully</p>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Preview available in Live Preview panel →
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    handleClearImage();
+                    fileInputRef.current?.click();
+                  }}
+                  className="h-8 text-xs border-violet-500/30 hover:bg-violet-500/10"
+                >
+                  <Upload className="h-3 w-3 mr-2" />
+                  Change Image
+                </Button>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Quality</span>
-                <span className="text-violet-400 font-medium">Ultra-HD Ready</span>
-              </div>
-            </div>
-
-            <div className="pt-4 border-t border-violet-500/20">
-              <p className="text-xs text-center text-muted-foreground">
-                Your image is ready! Proceed to <span className="text-violet-400 font-medium">Voice</span> to add audio.
-              </p>
             </div>
           </CardContent>
         </Card>
