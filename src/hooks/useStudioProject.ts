@@ -688,11 +688,18 @@ export const useStudioProject = () => {
               });
 
               // Auto-save to library after successful generation
-              if (data.videoUrl && data.videoUrl.includes('supabase.co')) {
-                setTimeout(() => {
-                  saveToLibrary().catch(error => {
+              const autoSaveEnabled = localStorage.getItem('virtura_auto_save_videos') !== 'false';
+              if (autoSaveEnabled && data.videoUrl && data.videoUrl.includes('supabase.co')) {
+                setTimeout(async () => {
+                  try {
+                    await saveToLibrary();
+                    toast({
+                      title: "Auto-saved to Library",
+                      description: "Your video has been automatically saved",
+                    });
+                  } catch (error) {
                     console.error('Auto-save failed:', error);
-                  });
+                  }
                 }, 1000);
               }
               
