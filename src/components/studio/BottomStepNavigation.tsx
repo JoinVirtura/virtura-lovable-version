@@ -48,7 +48,7 @@ export const BottomStepNavigation: React.FC<BottomStepNavigationProps> = ({
   };
 
   return (
-    <div className="sticky bottom-0 left-0 right-0 z-50 mt-6 backdrop-blur-xl bg-black/90 border-t border-violet-500/20 shadow-[0_-4px_24px_rgba(139,92,246,0.2)] rounded-t-xl">
+    <div className="relative z-50 backdrop-blur-xl bg-black/90 border-t border-violet-500/20 shadow-[0_-4px_24px_rgba(139,92,246,0.2)]">
       <div className="px-6 py-4">
         <div className="flex items-center justify-between gap-4">
           {/* Back Button */}

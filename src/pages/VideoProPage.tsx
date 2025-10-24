@@ -146,12 +146,12 @@ export default function VideoProPage() {
       <div className="max-w-7xl mx-auto px-6 py-6">
         <div className="grid lg:grid-cols-12 gap-6">
           {/* Main Studio Panel */}
-          <div className="lg:col-span-8 relative pb-6">
+          <div className="lg:col-span-8 relative">
             <Card className="border-0 shadow-[0_8px_32px_rgba(0,0,0,0.3)] bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl rounded-2xl overflow-hidden">
               <CardContent className="p-0">
                 <Tabs value={currentStep} onValueChange={setCurrentStep}>
-                  <TabsContent value="upload" className="p-6 space-y-6">
-                    <ErrorBoundary fallbackTitle="Video Upload Error" fallbackMessage="There was an issue with the upload component.">
+                  <TabsContent value="upload" className="mt-0">
+                    <ErrorBoundary>
                       <VideoUploadStudio
                         project={project}
                         onUpdate={updateProject}
@@ -160,32 +160,30 @@ export default function VideoProPage() {
                     </ErrorBoundary>
                   </TabsContent>
 
-                  <TabsContent value="voice" className="p-6 space-y-6">
-                    <ErrorBoundary fallbackTitle="Voice Engine Error" fallbackMessage="There was an issue with the voice generation component.">
+                  <TabsContent value="voice" className="mt-0">
+                    <ErrorBoundary>
                       <PremiumVoiceEngine
                         project={project}
                         onUpdate={updateProject}
-                        onGenerate={generateVoice}
+                        onGenerate={generateVideo}
                         isProcessing={isProcessing}
                       />
                     </ErrorBoundary>
                   </TabsContent>
 
-                  <TabsContent value="video" className="p-6 space-y-6">
-                    <ErrorBoundary fallbackTitle="Video Engine Error" fallbackMessage="There was an issue with the video generation component.">
+                  <TabsContent value="video" className="mt-0">
+                    <ErrorBoundary>
                       <RealVideoEngine
                         project={project}
                         onUpdate={updateProject}
                         onGenerate={generateVideo}
                         isProcessing={isProcessing}
-                        onDownload={downloadVideo}
-                        onSaveToLibrary={saveToLibrary}
                       />
                     </ErrorBoundary>
                   </TabsContent>
 
-                  <TabsContent value="export" className="p-6 space-y-6">
-                    <ErrorBoundary fallbackTitle="Export Error" fallbackMessage="There was an issue with the export component.">
+                  <TabsContent value="export" className="mt-0">
+                    <ErrorBoundary>
                       <ExportDeliveryStudio
                         project={project}
                         onUpdate={updateProject}
@@ -195,17 +193,17 @@ export default function VideoProPage() {
                     </ErrorBoundary>
                   </TabsContent>
                 </Tabs>
+
+                {/* Bottom Navigation inside Card */}
+                <BottomStepNavigation
+                  currentStep={currentStep}
+                  steps={VIDEO_PRO_STEPS}
+                  onStepChange={handleStepChange}
+                  isProcessing={isProcessing}
+                  getStepStatus={getStepStatus}
+                />
               </CardContent>
             </Card>
-
-            {/* Sticky Bottom Navigation */}
-            <BottomStepNavigation
-              currentStep={currentStep}
-              steps={VIDEO_PRO_STEPS}
-              onStepChange={handleStepChange}
-              isProcessing={isProcessing}
-              getStepStatus={getStepStatus}
-            />
           </div>
 
           {/* Sidebar - Preview & Controls */}
