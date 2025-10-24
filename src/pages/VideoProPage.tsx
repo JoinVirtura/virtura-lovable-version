@@ -193,17 +193,17 @@ export default function VideoProPage() {
                     </ErrorBoundary>
                   </TabsContent>
                 </Tabs>
-
-                {/* Bottom Navigation inside Card */}
-                <BottomStepNavigation
-                  currentStep={currentStep}
-                  steps={VIDEO_PRO_STEPS}
-                  onStepChange={handleStepChange}
-                  isProcessing={isProcessing}
-                  getStepStatus={getStepStatus}
-                />
               </CardContent>
             </Card>
+
+            {/* Bottom Navigation - floats on page background */}
+            <BottomStepNavigation
+              currentStep={currentStep}
+              steps={VIDEO_PRO_STEPS}
+              onStepChange={handleStepChange}
+              isProcessing={isProcessing}
+              getStepStatus={getStepStatus}
+            />
           </div>
 
           {/* Sidebar - Preview & Controls */}
