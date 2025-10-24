@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ChevronLeft, ChevronRight, CheckCircle, Loader2 } from 'lucide-react';
+import { useSidebar } from '@/components/ui/sidebar';
 
 interface Step {
   id: string;
@@ -25,6 +26,8 @@ export const BottomStepNavigation: React.FC<BottomStepNavigationProps> = ({
   isProcessing = false,
   getStepStatus
 }) => {
+  const { state } = useSidebar();
+  const sidebarCollapsed = state === "collapsed";
   const currentIndex = steps.findIndex(step => step.id === currentStep);
   const prevStep = currentIndex > 0 ? steps[currentIndex - 1] : null;
   const nextStep = currentIndex < steps.length - 1 ? steps[currentIndex + 1] : null;
@@ -48,8 +51,8 @@ export const BottomStepNavigation: React.FC<BottomStepNavigationProps> = ({
   };
 
   return (
-    <div className="relative z-50 pt-8">
-      <div className="px-6 pb-10">
+    <div className={`relative z-50 pt-8 transition-all duration-200`}>
+      <div className="px-6 pb-10 max-w-7xl mx-auto">
         <div className="flex items-center justify-between gap-4">
           {/* Back Button */}
           <div className="flex-shrink-0">
