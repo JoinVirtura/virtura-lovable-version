@@ -94,15 +94,15 @@ export default function VideoProPage() {
 
       {/* Hero Header */}
       <div className="relative bg-gradient-to-b from-black/40 via-black/20 to-transparent backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-6 py-6">
-          <div className="flex items-center justify-between gap-8">
+        <div className="max-w-7xl mx-auto px-6 py-3">
+          <div className="flex items-center justify-between gap-4">
             {/* Left: Video Pro Branding */}
-            <div className="flex items-center gap-3 flex-shrink-0">
+            <div className="flex items-center gap-2 flex-shrink-0">
               <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-violet-400 via-purple-400 to-fuchsia-400 bg-clip-text text-transparent">
+                <h1 className="text-xl font-bold bg-gradient-to-r from-violet-400 via-purple-400 to-fuchsia-400 bg-clip-text text-transparent leading-tight">
                   Video Pro
                 </h1>
-                <Badge variant="secondary" className="text-xs mt-1 bg-violet-500/20 text-violet-300 border-violet-500/30">
+                <Badge variant="secondary" className="text-xs bg-violet-500/20 text-violet-300 border-violet-500/30">
                   Ultra-HD
                 </Badge>
               </div>
@@ -120,11 +120,11 @@ export default function VideoProPage() {
             </div>
             
             {/* Right: Quality Card */}
-            <div className="glass-card px-4 py-3 rounded-xl border border-violet-500/20 flex-shrink-0">
-              <div className="flex items-center gap-3">
+            <div className="glass-card px-3 py-2 rounded-xl border border-violet-500/20 flex-shrink-0">
+              <div className="flex items-center gap-2">
                 <div className="text-right">
                   <div className="text-xs text-gray-400">Project Quality</div>
-                  <div className="flex items-center gap-2 mt-1">
+                  <div className="flex items-center gap-2">
                     <Progress value={qualityMetrics.overall} className="w-20 h-1.5 bg-gray-800" />
                     <span className="text-sm font-bold text-violet-400">{qualityMetrics.overall}%</span>
                   </div>
