@@ -48,9 +48,9 @@ export const BottomStepNavigation: React.FC<BottomStepNavigationProps> = ({
   };
 
   return (
-    <div className="relative z-50 pt-4">
+    <div className="relative z-50 pt-6">
       <div className="pb-10">
-        <div className="flex items-center justify-start gap-4 w-full">
+        <div className="flex items-center justify-between gap-4 w-full">
           {/* Back Button */}
           <div className="flex-shrink-0">
             {prevStep ? (
@@ -71,8 +71,8 @@ export const BottomStepNavigation: React.FC<BottomStepNavigationProps> = ({
           </div>
 
           {/* Center: Progress Indicators */}
-          <div className="flex items-center justify-center max-w-md">
-            <div className="flex items-center gap-3">
+          <div className="flex items-center justify-center mx-auto">
+            <div className="flex items-center gap-1.5">
               {steps.map((step, index) => {
                 const isActive = step.id === currentStep;
                 const isCompleted = isStepCompleted(step.id);
@@ -86,16 +86,16 @@ export const BottomStepNavigation: React.FC<BottomStepNavigationProps> = ({
                       disabled={isProcessing}
                       className={`relative flex items-center justify-center transition-all ${
                         isActive 
-                          ? 'w-12 h-12 rounded-full bg-gradient-to-r from-violet-500 to-purple-600 animate-pulse shadow-[0_0_20px_rgba(139,92,246,0.5)]' 
+                          ? 'w-11 h-11 rounded-full bg-gradient-to-r from-violet-500 to-purple-600 animate-pulse shadow-[0_0_20px_rgba(139,92,246,0.5)]' 
                           : isCompleted
-                          ? 'w-10 h-10 rounded-full bg-green-500 hover:scale-110'
-                          : 'w-10 h-10 rounded-full bg-gray-700 hover:bg-gray-600'
+                          ? 'w-9 h-9 rounded-full bg-green-500 hover:scale-110'
+                          : 'w-9 h-9 rounded-full bg-gray-700 hover:bg-gray-600'
                       }`}
                     >
                       {isCompleted && !isActive ? (
-                        <CheckCircle className="h-5 w-5 text-white" />
+                        <CheckCircle className="h-4 w-4 text-white" />
                       ) : (
-                        <Icon className={`h-4 w-4 ${isActive ? 'text-white' : 'text-gray-400'}`} />
+                        <Icon className={`h-3.5 w-3.5 ${isActive ? 'text-white' : 'text-gray-400'}`} />
                       )}
                       
                       {/* Step Label */}
@@ -108,7 +108,7 @@ export const BottomStepNavigation: React.FC<BottomStepNavigationProps> = ({
 
                     {/* Connecting Line */}
                     {index < steps.length - 1 && (
-                      <div className={`w-12 h-0.5 mx-1 transition-colors ${
+                      <div className={`w-8 h-0.5 transition-colors ${
                         isStepCompleted(step.id) ? 'bg-green-500' : 'bg-gray-700'
                       }`} />
                     )}
@@ -118,7 +118,7 @@ export const BottomStepNavigation: React.FC<BottomStepNavigationProps> = ({
             </div>
 
             {/* Step Counter Text */}
-            <div className="absolute -top-8 left-1/2 -translate-x-1/2">
+            <div className="absolute -top-12 left-1/2 -translate-x-1/2">
               <Badge variant="secondary" className="bg-violet-500/20 text-violet-300 border-violet-500/30">
                 Step {currentIndex + 1} of {steps.length}
               </Badge>
