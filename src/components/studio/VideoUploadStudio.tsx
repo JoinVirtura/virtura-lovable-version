@@ -111,6 +111,19 @@ export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
 
   return (
     <div className="space-y-4">
+      {/* File input - always rendered but hidden */}
+      <input
+        id="avatar-upload-input"
+        ref={fileInputRef}
+        type="file"
+        accept="image/png,image/jpeg,image/webp"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) handleFileUpload(file);
+        }}
+      />
+      
       {/* Upload Area */}
       {!imagePreview ? (
         <Card 
@@ -171,17 +184,6 @@ export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
               </Button>
             </div>
           </CardContent>
-          <input
-            id="avatar-upload-input"
-            ref={fileInputRef}
-            type="file"
-            accept="image/png,image/jpeg,image/webp"
-            className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) handleFileUpload(file);
-            }}
-          />
         </Card>
       ) : !onStepChange ? (
         <Card className="border-green-500/30 bg-green-500/5 backdrop-blur-sm">

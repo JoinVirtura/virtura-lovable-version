@@ -382,8 +382,13 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                           variant="outline"
                           className="h-6 px-2 text-[10px] bg-white/10 border-white/20 hover:bg-white/20 text-white flex-shrink-0"
                           onClick={() => {
-                            // Navigate to the avatar step to allow changing the image
-                            onStepChange?.('avatar');
+                            const fileInput = document.getElementById('avatar-upload-input') as HTMLInputElement;
+                            if (fileInput) {
+                              fileInput.click();
+                            } else {
+                              // Fallback: navigate to avatar step
+                              onStepChange?.('avatar');
+                            }
                           }}
                         >
                           <Upload className="h-3 w-3 mr-1" />
