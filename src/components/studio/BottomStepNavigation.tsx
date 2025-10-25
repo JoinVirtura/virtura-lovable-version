@@ -116,8 +116,8 @@ export const BottomStepNavigation: React.FC<BottomStepNavigationProps> = ({
             </div>
 
             {/* Step Counter Text */}
-            <div className="absolute -top-5 left-1/2 -translate-x-1/2">
-              <Badge variant="secondary" className="bg-violet-500/20 text-violet-300 border-violet-500/30">
+            <div className="absolute -top-2 left-1/2 -translate-x-1/2">
+              <Badge variant="secondary" className="bg-violet-500/20 text-violet-300 border-violet-500/30 text-xs">
                 Step {currentIndex + 1} of {steps.length}
               </Badge>
             </div>
