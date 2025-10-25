@@ -278,6 +278,29 @@ export const VoiceEngineStudio: React.FC<VoiceEngineStudioProps> = ({
           <div className="grid lg:grid-cols-2 gap-6">
             {/* Left Column */}
             <div className="space-y-4">
+              {/* Script Editor */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Script Content</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Textarea
+                      id="script"
+                      placeholder="Enter your script here... The AI will generate ultra-realistic speech with emotional nuance."
+                      value={script}
+                      onChange={(e) => setScript(e.target.value)}
+                      className="min-h-32"
+                      maxLength={1000}
+                    />
+                    <div className="flex justify-between items-center mt-2 text-xs text-muted-foreground">
+                      <span>{script.length}/1000 characters</span>
+                      <span className="text-green-500">Auto-saved</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
               {/* Voice Selection */}
               <Card>
                 <CardHeader>
@@ -341,29 +364,6 @@ export const VoiceEngineStudio: React.FC<VoiceEngineStudioProps> = ({
                     <audio ref={audioRef} className="hidden">
                       <source src={PREMIUM_VOICES.find(v => v.id === selectedVoice)?.preview} type="audio/mpeg" />
                     </audio>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Script Editor */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Script Content</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <Textarea
-                      id="script"
-                      placeholder="Enter your script here... The AI will generate ultra-realistic speech with emotional nuance."
-                      value={script}
-                      onChange={(e) => setScript(e.target.value)}
-                      className="min-h-32"
-                      maxLength={1000}
-                    />
-                    <div className="flex justify-between items-center mt-2 text-xs text-muted-foreground">
-                      <span>{script.length}/1000 characters</span>
-                      <span className="text-green-500">Auto-saved</span>
-                    </div>
                   </div>
                 </CardContent>
               </Card>

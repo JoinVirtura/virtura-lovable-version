@@ -367,29 +367,31 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                     className="w-full h-full object-cover"
                   />
                   
-                  {/* Upload Success Overlay - Compact Bottom Bar */}
+                  {/* Upload Success Overlay - Minimal Bottom Bar */}
                   {showUploadOverlay && (
                     <div className="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-md border-t border-violet-500/20 animate-fade-in">
                       <div className="flex items-center justify-between gap-2 px-3 py-2">
-                        {/* Left: Badge and Text */}
-                        <div className="flex items-center gap-2 min-w-0 flex-1">
-                          <Badge variant="success" className="text-[9px] px-1.5 py-0 flex-shrink-0">
-                            ✓ Ready
-                          </Badge>
-                          <span className="text-[10px] text-white/90 truncate">Image Uploaded</span>
+                        {/* Left: Green Checkmark Circle */}
+                        <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+                          <CheckCircle className="h-3 w-3 text-white" />
                         </div>
                         
                         {/* Right: Change Button */}
                         <Button
                           size="sm"
                           variant="outline"
-                          className="bg-white/10 border-white/20 hover:bg-white/20 text-white h-6 text-[10px] px-2 flex-shrink-0"
+                          className="h-6 px-2 text-[10px] bg-white/10 border-white/20 hover:bg-white/20 text-white flex-shrink-0"
                           onClick={() => {
                             const fileInput = document.getElementById('avatar-upload-input') as HTMLInputElement;
-                            fileInput?.click();
+                            if (!fileInput) {
+                              console.error('File input #avatar-upload-input not found');
+                              toast.error('Unable to open file selector');
+                              return;
+                            }
+                            fileInput.click();
                           }}
                         >
-                          <Upload className="h-2.5 w-2.5 mr-1" />
+                          <Upload className="h-3 w-3 mr-1" />
                           Change
                         </Button>
                       </div>
