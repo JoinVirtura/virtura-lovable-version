@@ -108,36 +108,39 @@ export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between pb-4 border-b border-violet-500/20">
-        {/* Left: Video Pro Logo + Badge */}
-        <div className="flex items-center gap-3 flex-shrink-0">
-          <div className="relative">
-            <Video className="h-7 w-7 text-violet-400 drop-shadow-[0_0_8px_rgba(212,110,255,0.6)]" />
-            <Crown className="h-3 w-3 absolute -top-0.5 -right-0.5 text-violet-400" />
+      {/* Header Section */}
+      <div className="space-y-4 pb-4 border-b border-violet-500/20">
+        {/* Top Row: Branding and Title Text */}
+        <div className="flex items-start justify-between">
+          {/* Left: Video Pro Logo + Badge */}
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <Video className="h-8 w-8 text-violet-400 drop-shadow-[0_0_8px_rgba(212,110,255,0.6)]" />
+              <Crown className="h-3.5 w-3.5 absolute -top-0.5 -right-0.5 text-violet-400" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-violet-400 via-purple-400 to-fuchsia-400 bg-clip-text text-transparent">
+                Video Pro
+              </h1>
+              <Badge variant="secondary" className="text-xs mt-1 bg-violet-500/20 text-violet-300 border-violet-500/30">
+                Ultra-HD
+              </Badge>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-violet-400 via-purple-400 to-fuchsia-400 bg-clip-text text-transparent">
-              Video Pro
-            </h1>
-            <Badge variant="secondary" className="text-xs mt-0.5 bg-violet-500/20 text-violet-300 border-violet-500/30">
-              Ultra-HD
-            </Badge>
+
+          {/* Right: Upload Image Title */}
+          <div className="text-left flex-1 pl-12">
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-400 via-violet-400 to-purple-400 bg-clip-text text-transparent">
+              Upload Image
+            </h2>
+            <p className="text-sm mt-1 bg-gradient-to-r from-gray-400 via-gray-300 to-gray-400 bg-clip-text text-transparent">
+              Upload your image to create AI Avatars Videos
+            </p>
           </div>
         </div>
 
-        {/* Center: Upload Image Title with Gradient */}
-        <div className="flex-1 text-center px-8">
-          <h2 className="text-xl font-bold bg-gradient-to-r from-blue-400 via-violet-400 to-purple-400 bg-clip-text text-transparent">
-            Upload Image
-          </h2>
-          <p className="text-sm mt-0.5 bg-gradient-to-r from-gray-400 via-gray-300 to-gray-400 bg-clip-text text-transparent">
-            Upload your image to create AI Avatars Videos
-          </p>
-        </div>
-
-        {/* Right: Bottom Navigation */}
-        <div className="flex-shrink-0">
+        {/* Bottom Row: Navigation Component */}
+        <div className="w-full">
           {bottomNavigation}
         </div>
       </div>
