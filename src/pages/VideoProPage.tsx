@@ -155,6 +155,7 @@ export default function VideoProPage() {
                         project={project}
                         onUpdate={updateProject}
                         isProcessing={isProcessing}
+                        onStepChange={handleStepChange}
                       />
                     </ErrorBoundary>
                   </TabsContent>
@@ -203,6 +204,7 @@ export default function VideoProPage() {
               <RealtimePreview 
                 project={project}
                 isProcessing={isProcessing}
+                onStepChange={handleStepChange}
               />
             </div>
 

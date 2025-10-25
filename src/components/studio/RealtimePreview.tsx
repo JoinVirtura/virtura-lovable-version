@@ -15,7 +15,9 @@ import {
   Smartphone,
   Tablet,
   Download,
-  Heart
+  Heart,
+  Upload,
+  Sparkles
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -25,6 +27,7 @@ import type { StudioProject } from '@/hooks/useStudioProject';
 interface RealtimePreviewProps {
   project: StudioProject;
   isProcessing?: boolean;
+  onStepChange?: (stepId: string) => void;
 }
 
 const PREVIEW_MODES = [
@@ -35,7 +38,8 @@ const PREVIEW_MODES = [
 
 export const RealtimePreview: React.FC<RealtimePreviewProps> = ({ 
   project, 
-  isProcessing = false 
+  isProcessing = false,
+  onStepChange
 }) => {
   const [previewMode, setPreviewMode] = useState('desktop');
   const [isPlaying, setIsPlaying] = useState(false);
@@ -353,6 +357,8 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
             
             if (project.avatar?.processedUrl || project.avatar?.originalUrl) {
               const imageUrl = project.avatar.processedUrl || project.avatar.originalUrl;
+              const showUploadOverlay = project.avatar?.status === 'completed' && !project.video?.videoUrl;
+              
               return (
                 <div className="relative w-full h-full">
                   <img
@@ -360,28 +366,79 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                     alt="Avatar Preview"
                     className="w-full h-full object-cover"
                   />
-                  {/* Heart save button overlay */}
-                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
-                    <Button
-                      size="icon"
-                      variant="secondary"
-                      className={`h-8 w-8 rounded-full backdrop-blur-sm ${
-                        savedAvatars.has(imageUrl || '') 
-                          ? 'bg-red-500/80 hover:bg-red-600/80 text-white' 
-                          : 'bg-white/80 hover:bg-white/90 text-gray-700'
-                      }`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleToggleLibrary(imageUrl || '');
-                      }}
-                    >
-                      <Heart 
-                        className={`h-4 w-4 ${
-                          savedAvatars.has(imageUrl || '') ? 'fill-current' : ''
-                        }`} 
-                      />
-                    </Button>
-                  </div>
+                  
+                  {/* Upload Success Overlay with Fade-in Animation */}
+                  {showUploadOverlay && (
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60 flex items-center justify-center animate-fade-in">
+                      <div className="text-center space-y-4 px-6 backdrop-blur-sm bg-black/20 p-8 rounded-2xl border border-violet-500/30">
+                        {/* Green Ready Badge */}
+                        <Badge className="bg-green-500/90 text-white border-0 text-sm">
+                          ✓ Ready
+                        </Badge>
+                        
+                        {/* Success Heading */}
+                        <h3 className="text-2xl font-bold text-white">
+                          Image Uploaded Successfully
+                        </h3>
+                        
+                        {/* Subtext */}
+                        <p className="text-sm text-gray-300">
+                          Preview available in Live Preview panel →
+                        </p>
+                        
+                        {/* Action Buttons */}
+                        <div className="flex items-center gap-3 justify-center pt-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="bg-white/10 border-white/20 hover:bg-white/20 text-white"
+                            onClick={() => {
+                              // Trigger file input to change image
+                              const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+                              fileInput?.click();
+                            }}
+                          >
+                            <Upload className="h-4 w-4 mr-2" />
+                            Change Image
+                          </Button>
+                          
+                          <Button
+                            size="sm"
+                            className="bg-violet-500 hover:bg-violet-600 text-white"
+                            onClick={() => onStepChange?.('voice')}
+                          >
+                            Continue to Voice
+                            <Sparkles className="h-4 w-4 ml-2" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Heart save button overlay - only show when NO upload overlay */}
+                  {!showUploadOverlay && (
+                    <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
+                      <Button
+                        size="icon"
+                        variant="secondary"
+                        className={`h-8 w-8 rounded-full backdrop-blur-sm ${
+                          savedAvatars.has(imageUrl || '') 
+                            ? 'bg-red-500/80 hover:bg-red-600/80 text-white' 
+                            : 'bg-white/80 hover:bg-white/90 text-gray-700'
+                        }`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleToggleLibrary(imageUrl || '');
+                        }}
+                      >
+                        <Heart 
+                          className={`h-4 w-4 ${
+                            savedAvatars.has(imageUrl || '') ? 'fill-current' : ''
+                          }`} 
+                        />
+                      </Button>
+                    </div>
+                  )}
                 </div>
               );
             }

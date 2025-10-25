@@ -10,12 +10,14 @@ interface VideoUploadStudioProps {
   project: StudioProject;
   onUpdate: (updates: Partial<StudioProject>) => void;
   isProcessing: boolean;
+  onStepChange?: (stepId: string) => void;
 }
 
 export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
   project,
   onUpdate,
-  isProcessing
+  isProcessing,
+  onStepChange
 }) => {
   const [isDragOver, setIsDragOver] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -80,9 +82,14 @@ export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
         title: "Upload Successful",
         description: "Image uploaded and ready for video creation",
       });
+
+      // Auto-advance to voice step after brief delay
+      setTimeout(() => {
+        onStepChange?.('voice');
+      }, 1000);
     };
     reader.readAsDataURL(file);
-  }, [onUpdate, toast]);
+  }, [onUpdate, toast, onStepChange]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
