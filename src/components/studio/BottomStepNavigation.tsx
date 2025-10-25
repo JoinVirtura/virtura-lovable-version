@@ -56,14 +56,12 @@ export const BottomStepNavigation: React.FC<BottomStepNavigationProps> = ({
             {prevStep ? (
               <Button
                 variant="outline"
-                size="lg"
+                size="icon"
                 onClick={() => handleNavigation(prevStep.id)}
                 disabled={isProcessing}
-                className="h-12 px-3 sm:px-6 border-2 border-violet-500/30 hover:bg-violet-500/10 hover:border-violet-400 transition-all"
+                className="h-10 w-10 rounded-full border-2 border-violet-500/30 hover:bg-violet-500/10 hover:border-violet-400 transition-all"
               >
-                <ChevronLeft className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Back to {prevStep.title}</span>
-                <span className="sm:hidden">Back</span>
+                <ChevronLeft className="h-5 w-5" />
               </Button>
             ) : (
               <div />
@@ -129,36 +127,27 @@ export const BottomStepNavigation: React.FC<BottomStepNavigationProps> = ({
           <div className="flex-shrink-0">
             {nextStep ? (
               <Button
-                size="lg"
+                size="icon"
                 onClick={() => handleNavigation(nextStep.id)}
                 disabled={!canNavigateNext() || isProcessing}
-                className="h-12 px-4 sm:px-8 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 hover:scale-105 transition-all shadow-[0_0_20px_rgba(139,92,246,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
+                className="h-10 w-10 rounded-full bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 hover:scale-105 transition-all shadow-[0_0_20px_rgba(139,92,246,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isProcessing ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Processing...
-                  </>
+                  <Loader2 className="h-5 w-5 animate-spin" />
                 ) : (
-                  <>
-                    <span className="hidden sm:inline">Continue to {nextStep.title}</span>
-                    <span className="sm:hidden">Next</span>
-                    <ChevronRight className="h-4 w-4 ml-2" />
-                  </>
+                  <ChevronRight className="h-5 w-5" />
                 )}
               </Button>
             ) : (
               <Button
-                size="lg"
+                size="icon"
                 onClick={() => {
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
                 disabled={isProcessing}
-                className="h-12 px-8 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 hover:scale-105 transition-all shadow-[0_0_20px_rgba(34,197,94,0.3)]"
+                className="h-10 w-10 rounded-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 hover:scale-105 transition-all shadow-[0_0_20px_rgba(34,197,94,0.3)]"
               >
-                <CheckCircle className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Finish Project</span>
-                <span className="sm:hidden">Finish</span>
+                <CheckCircle className="h-5 w-5" />
               </Button>
             )}
           </div>
