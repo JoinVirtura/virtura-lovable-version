@@ -379,30 +379,19 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                           <span className="text-[10px] text-white/90 truncate">Image Uploaded</span>
                         </div>
                         
-                        {/* Right: Action Buttons */}
-                        <div className="flex items-center gap-1.5 flex-shrink-0">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="bg-white/10 border-white/20 hover:bg-white/20 text-white h-6 text-[10px] px-2"
-                            onClick={() => {
-                              const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-                              fileInput?.click();
-                            }}
-                          >
-                            <Upload className="h-2.5 w-2.5 mr-1" />
-                            Change
-                          </Button>
-                          
-                          <Button
-                            size="sm"
-                            className="bg-violet-500 hover:bg-violet-600 text-white h-6 text-[10px] px-2"
-                            onClick={() => onStepChange?.('voice')}
-                          >
-                            Continue
-                            <Sparkles className="h-2.5 w-2.5 ml-1" />
-                          </Button>
-                        </div>
+                        {/* Right: Change Button */}
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="bg-white/10 border-white/20 hover:bg-white/20 text-white h-6 text-[10px] px-2 flex-shrink-0"
+                          onClick={() => {
+                            const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+                            fileInput?.click();
+                          }}
+                        >
+                          <Upload className="h-2.5 w-2.5 mr-1" />
+                          Change
+                        </Button>
                       </div>
                     </div>
                   )}
