@@ -383,12 +383,7 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                           className="h-6 px-2 text-[10px] bg-white/10 border-white/20 hover:bg-white/20 text-white flex-shrink-0"
                           onClick={() => {
                             const fileInput = document.getElementById('avatar-upload-input') as HTMLInputElement;
-                            if (fileInput) {
-                              fileInput.click();
-                            } else {
-                              // Fallback: navigate to upload step
-                              onStepChange?.('upload');
-                            }
+                            fileInput?.click();
                           }}
                         >
                           <Upload className="h-3 w-3 mr-1" />
