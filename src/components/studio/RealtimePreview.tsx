@@ -367,48 +367,40 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                     className="w-full h-full object-cover"
                   />
                   
-                  {/* Upload Success Overlay with Fade-in Animation */}
+                  {/* Upload Success Overlay - Compact Bottom Bar */}
                   {showUploadOverlay && (
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/50 flex items-center justify-center animate-fade-in">
-                      <div className="text-center space-y-3 px-4 backdrop-blur-sm bg-black/10 p-6 rounded-xl border border-violet-500/20">
-                        {/* Green Ready Badge - Smaller */}
-                        <Badge className="bg-green-500/80 text-white border-0 text-[10px] px-2 py-0.5">
-                          ✓ Ready
-                        </Badge>
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-md border-t border-violet-500/20 animate-fade-in">
+                      <div className="flex items-center justify-between gap-2 px-3 py-2">
+                        {/* Left: Badge and Text */}
+                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                          <Badge className="bg-green-500/80 text-white border-0 text-[9px] px-1.5 py-0 flex-shrink-0">
+                            ✓ Ready
+                          </Badge>
+                          <span className="text-[10px] text-white/90 truncate">Image Uploaded</span>
+                        </div>
                         
-                        {/* Success Heading - Smaller */}
-                        <h3 className="text-base font-semibold text-white">
-                          Image Uploaded Successfully
-                        </h3>
-                        
-                        {/* Subtext - More subtle */}
-                        <p className="text-xs text-gray-400">
-                          Preview available in Live Preview panel →
-                        </p>
-                        
-                        {/* Action Buttons - Smaller */}
-                        <div className="flex items-center gap-2 justify-center pt-1">
+                        {/* Right: Action Buttons */}
+                        <div className="flex items-center gap-1.5 flex-shrink-0">
                           <Button
                             size="sm"
                             variant="outline"
-                            className="bg-white/10 border-white/20 hover:bg-white/20 text-white h-8 text-xs"
+                            className="bg-white/10 border-white/20 hover:bg-white/20 text-white h-6 text-[10px] px-2"
                             onClick={() => {
-                              // Trigger file input to change image
                               const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
                               fileInput?.click();
                             }}
                           >
-                            <Upload className="h-3 w-3 mr-1.5" />
-                            Change Image
+                            <Upload className="h-2.5 w-2.5 mr-1" />
+                            Change
                           </Button>
                           
                           <Button
                             size="sm"
-                            className="bg-violet-500 hover:bg-violet-600 text-white h-8 text-xs"
+                            className="bg-violet-500 hover:bg-violet-600 text-white h-6 text-[10px] px-2"
                             onClick={() => onStepChange?.('voice')}
                           >
-                            Continue to Voice
-                            <Sparkles className="h-3 w-3 ml-1.5" />
+                            Continue
+                            <Sparkles className="h-2.5 w-2.5 ml-1" />
                           </Button>
                         </div>
                       </div>
