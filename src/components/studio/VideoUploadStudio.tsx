@@ -200,7 +200,7 @@ export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
               {/* Status Info */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-2">
-                  <Badge className="bg-green-500/80 text-white border-0 text-[10px] px-2 py-0">
+                  <Badge variant="success" className="text-[10px] px-2 py-0">
                     Ready
                   </Badge>
                   <span className="text-[10px] text-muted-foreground">Upload Complete</span>

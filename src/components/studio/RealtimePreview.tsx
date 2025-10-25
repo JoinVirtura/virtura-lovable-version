@@ -373,7 +373,7 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                       <div className="flex items-center justify-between gap-2 px-3 py-2">
                         {/* Left: Badge and Text */}
                         <div className="flex items-center gap-2 min-w-0 flex-1">
-                          <Badge className="bg-green-500/80 text-white border-0 text-[9px] px-1.5 py-0 flex-shrink-0">
+                          <Badge variant="success" className="text-[9px] px-1.5 py-0 flex-shrink-0">
                             ✓ Ready
                           </Badge>
                           <span className="text-[10px] text-white/90 truncate">Image Uploaded</span>
