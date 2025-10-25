@@ -83,10 +83,10 @@ export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
         description: "Image uploaded and ready for video creation",
       });
 
-      // Auto-advance to voice step after brief delay
+      // Auto-advance to voice step after longer delay to prevent glitch
       setTimeout(() => {
         onStepChange?.('voice');
-      }, 1000);
+      }, 2000);
     };
     reader.readAsDataURL(file);
   }, [onUpdate, toast, onStepChange]);
@@ -200,13 +200,13 @@ export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
               {/* Status Info */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-2">
-                  <Badge className="bg-green-500/90 text-white border-0">
+                  <Badge className="bg-green-500/80 text-white border-0 text-[10px] px-2 py-0">
                     Ready
                   </Badge>
-                  <span className="text-xs text-muted-foreground">Upload Complete</span>
+                  <span className="text-[10px] text-muted-foreground">Upload Complete</span>
                 </div>
-                <p className="text-sm text-white font-medium mb-1">Image Uploaded Successfully</p>
-                <p className="text-xs text-muted-foreground mb-3">
+                <p className="text-xs text-white font-medium mb-1">Image Uploaded Successfully</p>
+                <p className="text-[10px] text-muted-foreground/80 mb-3">
                   Preview available in Live Preview panel →
                 </p>
                 <Button
@@ -216,9 +216,9 @@ export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
                     handleClearImage();
                     fileInputRef.current?.click();
                   }}
-                  className="h-8 text-xs border-violet-500/30 hover:bg-violet-500/10"
+                  className="h-7 text-[11px] border-violet-500/30 hover:bg-violet-500/10"
                 >
-                  <Upload className="h-3 w-3 mr-2" />
+                  <Upload className="h-3 w-3 mr-1.5" />
                   Change Image
                 </Button>
               </div>
