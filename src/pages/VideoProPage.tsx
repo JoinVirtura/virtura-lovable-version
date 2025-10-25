@@ -26,7 +26,7 @@ import { ExportDeliveryStudio } from '@/components/studio/ExportDeliveryStudio';
 import { ProjectTimeline } from '@/components/studio/ProjectTimeline';
 import { RealtimePreview } from '@/components/studio/RealtimePreview';
 import { useStudioProject } from '@/hooks/useStudioProject';
-import { StudioNavigation } from '@/components/studio/StudioNavigation';
+
 import { QualitySettings } from '@/components/studio/QualitySettings';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { BottomStepNavigation } from '@/components/studio/BottomStepNavigation';
@@ -96,46 +96,14 @@ export default function VideoProPage() {
       <div className="relative bg-gradient-to-b from-black/40 via-black/20 to-transparent backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between gap-8">
-            {/* Left: Logo & Current Step */}
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-3 flex-shrink-0">
-                <div className="relative">
-                  <Video className="h-7 w-7 text-violet-400 drop-shadow-[0_0_8px_rgba(212,110,255,0.6)]" />
-                  <Crown className="h-3 w-3 absolute -top-0.5 -right-0.5 text-violet-400" />
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-violet-400 via-purple-400 to-fuchsia-400 bg-clip-text text-transparent">
-                    Video Pro
-                  </h1>
-                  <Badge variant="secondary" className="text-xs mt-1 bg-violet-500/20 text-violet-300 border-violet-500/30">
-                    Ultra-HD
-                  </Badge>
-                </div>
-              </div>
-              
-              {/* Current Step Info - Dynamic */}
-              <div className="h-10 w-px bg-violet-500/30 mx-2" />
-              <div>
-                <h2 className="text-lg font-semibold bg-gradient-to-r from-blue-400 via-violet-400 to-purple-400 bg-clip-text text-transparent">
-                  {VIDEO_PRO_STEPS.find(s => s.id === currentStep)?.title || 'Upload'} 
-                </h2>
-                <p className="text-xs text-gray-400">
-                  {currentStep === 'upload' && 'Upload your image to create AI Avatar Videos'}
-                  {currentStep === 'voice' && 'Add voice and audio to your avatar'}
-                  {currentStep === 'video' && 'Generate ultra-HD video with AI'}
-                  {currentStep === 'export' && 'Export and share your creation'}
-                </p>
-              </div>
-            </div>
-            
-            {/* Center: Studio Navigation */}
+            {/* Center: Step Navigation */}
             <div className="flex-1 flex justify-center">
-              <StudioNavigation
-                steps={VIDEO_PRO_STEPS}
+              <BottomStepNavigation
                 currentStep={currentStep}
+                steps={VIDEO_PRO_STEPS}
                 onStepChange={handleStepChange}
-                getStepStatus={getStepStatus}
                 isProcessing={isProcessing}
+                getStepStatus={getStepStatus}
               />
             </div>
             
