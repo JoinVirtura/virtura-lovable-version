@@ -385,7 +385,7 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                           variant="outline"
                           className="bg-white/10 border-white/20 hover:bg-white/20 text-white h-6 text-[10px] px-2 flex-shrink-0"
                           onClick={() => {
-                            const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+                            const fileInput = document.getElementById('avatar-upload-input') as HTMLInputElement;
                             fileInput?.click();
                           }}
                         >

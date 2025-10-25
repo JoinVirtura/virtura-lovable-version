@@ -172,6 +172,7 @@ export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
             </div>
           </CardContent>
           <input
+            id="avatar-upload-input"
             ref={fileInputRef}
             type="file"
             accept="image/png,image/jpeg,image/webp"

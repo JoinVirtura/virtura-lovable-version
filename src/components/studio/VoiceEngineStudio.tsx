@@ -24,10 +24,12 @@ import {
   Brain,
   Languages,
   Settings,
-  CheckCircle
+  CheckCircle,
+  X
 } from 'lucide-react';
 import { WaveformVisualizer } from './WaveformVisualizer';
 import type { StudioProject } from '@/hooks/useStudioProject';
+import { useToast } from '@/hooks/use-toast';
 
 interface VoiceEngineStudioProps {
   project: StudioProject;
@@ -88,6 +90,7 @@ export const VoiceEngineStudio: React.FC<VoiceEngineStudioProps> = ({
   onGenerate,
   isProcessing
 }) => {
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('tts');
   const [script, setScript] = useState('');
   const [selectedVoice, setSelectedVoice] = useState('9BWtsMINqrJLrRacOk9x');
@@ -103,8 +106,12 @@ export const VoiceEngineStudio: React.FC<VoiceEngineStudioProps> = ({
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [cloneFile, setCloneFile] = useState<File | null>(null);
+  const [uploadedAudio, setUploadedAudio] = useState<File | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cloneInputRef = useRef<HTMLInputElement>(null);
+  const uploadInputRef = useRef<HTMLInputElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const handleGenerateVoice = async () => {
@@ -138,6 +145,86 @@ export const VoiceEngineStudio: React.FC<VoiceEngineStudioProps> = ({
       }
       setIsPlaying(!isPlaying);
     }
+  };
+
+  const handleCloneFileUpload = async (file: File) => {
+    if (!file.type.startsWith('audio/')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload an audio file (MP3, WAV, M4A)",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "Audio file must be under 10MB",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const audio = new Audio(URL.createObjectURL(file));
+    audio.addEventListener('loadedmetadata', () => {
+      if (audio.duration < 5 || audio.duration > 30) {
+        toast({
+          title: "Invalid duration",
+          description: "Voice sample must be between 5-30 seconds",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      setCloneFile(file);
+      toast({
+        title: "Voice sample uploaded",
+        description: "Voice cloning will be available in the next update"
+      });
+    });
+  };
+
+  const handleAudioUpload = async (file: File) => {
+    if (!file.type.startsWith('audio/')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload an audio file (MP3, WAV, M4A)",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "Audio file must be under 10MB",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setUploadedAudio(file);
+    const audioUrl = URL.createObjectURL(file);
+    
+    const audio = new Audio(audioUrl);
+    audio.addEventListener('loadedmetadata', () => {
+      onUpdate({
+        voice: {
+          type: 'upload',
+          audioUrl: audioUrl,
+          status: 'completed',
+          metadata: {
+            duration: Math.round(audio.duration)
+          }
+        }
+      });
+      
+      toast({
+        title: "Audio uploaded successfully",
+        description: `${file.name} (${Math.round(audio.duration)}s)`
+      });
+    });
   };
 
   return (
@@ -189,29 +276,14 @@ export const VoiceEngineStudio: React.FC<VoiceEngineStudioProps> = ({
         {/* Text-to-Speech Tab */}
         <TabsContent value="tts" className="space-y-6">
           <div className="grid lg:grid-cols-2 gap-6">
-            {/* Script Editor */}
+            {/* Left Column */}
             <div className="space-y-4">
+              {/* Voice Selection */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Script Editor</CardTitle>
+                  <CardTitle className="text-lg">Voice Selection</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div>
-                    <Label htmlFor="script">Script Content</Label>
-                    <Textarea
-                      id="script"
-                      placeholder="Enter your script here... The AI will generate ultra-realistic speech with emotional nuance."
-                      value={script}
-                      onChange={(e) => setScript(e.target.value)}
-                      className="min-h-32 mt-2"
-                      maxLength={1000}
-                    />
-                    <div className="flex justify-between items-center mt-2 text-xs text-muted-foreground">
-                      <span>{script.length}/1000 characters</span>
-                      <span className="text-green-500">Auto-saved</span>
-                    </div>
-                  </div>
-
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label>Language</Label>
@@ -249,6 +321,48 @@ export const VoiceEngineStudio: React.FC<VoiceEngineStudioProps> = ({
                           ))}
                         </SelectContent>
                       </Select>
+                    </div>
+                  </div>
+
+                  {/* Voice Preview */}
+                  <div className="pt-4 border-t">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Volume2 className="h-4 w-4" />
+                      <span className="font-medium text-sm">Voice Preview</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button size="sm" variant="outline" onClick={togglePlayPreview}>
+                        {isPlaying ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
+                      </Button>
+                      <div className="flex-1 text-sm text-muted-foreground">
+                        Sample: "Hello, I'm {PREMIUM_VOICES.find(v => v.id === selectedVoice)?.name}..."
+                      </div>
+                    </div>
+                    <audio ref={audioRef} className="hidden">
+                      <source src={PREMIUM_VOICES.find(v => v.id === selectedVoice)?.preview} type="audio/mpeg" />
+                    </audio>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Script Editor */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Script Content</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Textarea
+                      id="script"
+                      placeholder="Enter your script here... The AI will generate ultra-realistic speech with emotional nuance."
+                      value={script}
+                      onChange={(e) => setScript(e.target.value)}
+                      className="min-h-32"
+                      maxLength={1000}
+                    />
+                    <div className="flex justify-between items-center mt-2 text-xs text-muted-foreground">
+                      <span>{script.length}/1000 characters</span>
+                      <span className="text-green-500">Auto-saved</span>
                     </div>
                   </div>
                 </CardContent>
@@ -314,7 +428,7 @@ export const VoiceEngineStudio: React.FC<VoiceEngineStudioProps> = ({
               </Card>
             </div>
 
-            {/* Voice Settings & Preview */}
+            {/* Right Column */}
             <div className="space-y-4">
               <Card>
                 <CardHeader>
@@ -376,24 +490,6 @@ export const VoiceEngineStudio: React.FC<VoiceEngineStudioProps> = ({
                       />
                     </div>
                   </div>
-
-                  <div className="pt-4 border-t">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Volume2 className="h-4 w-4" />
-                      <span className="font-medium">Voice Preview</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button size="sm" variant="outline" onClick={togglePlayPreview}>
-                        {isPlaying ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
-                      </Button>
-                      <div className="flex-1 text-sm text-muted-foreground">
-                        Sample: "Hello, I'm {PREMIUM_VOICES.find(v => v.id === selectedVoice)?.name}..."
-                      </div>
-                    </div>
-                    <audio ref={audioRef} className="hidden">
-                      <source src={PREMIUM_VOICES.find(v => v.id === selectedVoice)?.preview} type="audio/mpeg" />
-                    </audio>
-                  </div>
                 </CardContent>
               </Card>
 
@@ -435,21 +531,50 @@ export const VoiceEngineStudio: React.FC<VoiceEngineStudioProps> = ({
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div 
-                className="border-2 border-dashed border-primary/30 rounded-lg p-8 text-center hover:border-primary/50 transition-colors cursor-pointer"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <Upload className="h-8 w-8 mx-auto mb-3 text-primary" />
-                <p className="font-medium mb-1">Upload Voice Sample</p>
-                <p className="text-sm text-muted-foreground">
-                  MP3, WAV, or M4A • 5-30 seconds • Clear speech
-                </p>
-              </div>
+              {!cloneFile ? (
+                <div 
+                  className="border-2 border-dashed border-primary/30 rounded-lg p-8 text-center hover:border-primary/50 transition-colors cursor-pointer"
+                  onClick={() => cloneInputRef.current?.click()}
+                >
+                  <Upload className="h-8 w-8 mx-auto mb-3 text-primary" />
+                  <p className="font-medium mb-1">Upload Voice Sample</p>
+                  <p className="text-sm text-muted-foreground">
+                    MP3, WAV, or M4A • 5-30 seconds • Clear speech
+                  </p>
+                </div>
+              ) : (
+                <div className="border border-primary/30 rounded-lg p-4 bg-primary/5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                        <Mic className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-sm">{cloneFile.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {(cloneFile.size / 1024 / 1024).toFixed(2)} MB
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setCloneFile(null)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
               
               <input
-                ref={fileInputRef}
+                ref={cloneInputRef}
                 type="file"
                 accept="audio/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleCloneFileUpload(file);
+                }}
                 className="hidden"
               />
             </CardContent>
@@ -469,16 +594,71 @@ export const VoiceEngineStudio: React.FC<VoiceEngineStudioProps> = ({
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div 
-                className="border-2 border-dashed border-primary/30 rounded-lg p-8 text-center hover:border-primary/50 transition-colors cursor-pointer"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <Upload className="h-8 w-8 mx-auto mb-3 text-primary" />
-                <p className="font-medium mb-1">Choose Audio File</p>
-                <p className="text-sm text-muted-foreground">
-                  MP3, WAV, M4A • Up to 10MB • Any duration
-                </p>
-              </div>
+              {!uploadedAudio ? (
+                <div 
+                  className="border-2 border-dashed border-primary/30 rounded-lg p-8 text-center hover:border-primary/50 transition-colors cursor-pointer"
+                  onClick={() => uploadInputRef.current?.click()}
+                >
+                  <Upload className="h-8 w-8 mx-auto mb-3 text-primary" />
+                  <p className="font-medium mb-1">Choose Audio File</p>
+                  <p className="text-sm text-muted-foreground">
+                    MP3, WAV, M4A • Up to 10MB • Any duration
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="border border-primary/30 rounded-lg p-4 bg-primary/5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                          <Volume2 className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm">{uploadedAudio.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {(uploadedAudio.size / 1024 / 1024).toFixed(2)} MB
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setUploadedAudio(null);
+                          onUpdate({
+                            voice: {
+                              type: 'upload',
+                              audioUrl: undefined,
+                              status: 'pending'
+                            }
+                          });
+                        }}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  {project.voice?.audioUrl && (
+                    <div className="border border-primary/20 rounded-lg p-4">
+                      <audio controls className="w-full">
+                        <source src={project.voice.audioUrl} type={uploadedAudio.type} />
+                      </audio>
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              <input
+                ref={uploadInputRef}
+                type="file"
+                accept="audio/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleAudioUpload(file);
+                }}
+                className="hidden"
+              />
             </CardContent>
           </Card>
         </TabsContent>
