@@ -98,10 +98,6 @@ export default function VideoProPage() {
           <div className="flex items-center justify-between gap-8">
             {/* Left: Video Pro Branding */}
             <div className="flex items-center gap-3 flex-shrink-0">
-              <div className="relative">
-                <Video className="h-7 w-7 text-violet-400 drop-shadow-[0_0_8px_rgba(212,110,255,0.6)]" />
-                <Crown className="h-3 w-3 absolute -top-0.5 -right-0.5 text-violet-400" />
-              </div>
               <div>
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-violet-400 via-purple-400 to-fuchsia-400 bg-clip-text text-transparent">
                   Video Pro
