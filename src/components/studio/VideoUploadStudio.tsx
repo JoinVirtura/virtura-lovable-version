@@ -10,12 +10,14 @@ interface VideoUploadStudioProps {
   project: StudioProject;
   onUpdate: (updates: Partial<StudioProject>) => void;
   isProcessing: boolean;
+  bottomNavigation?: React.ReactNode;
 }
 
 export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
   project,
   onUpdate,
-  isProcessing
+  isProcessing,
+  bottomNavigation
 }) => {
   const [isDragOver, setIsDragOver] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -119,14 +121,7 @@ export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
             <p className="text-sm text-muted-foreground">Upload your image to create AI Avatars Videos</p>
           </div>
         </div>
-        <div className="flex gap-2">
-          <Badge variant="secondary" className="bg-violet-500/20 text-violet-300 border-violet-500/30">
-            Ultra-HD
-          </Badge>
-          <Badge variant="secondary" className="bg-amber-500/20 text-amber-300 border-amber-500/30">
-            Premium
-          </Badge>
-        </div>
+        {bottomNavigation}
       </div>
 
       {/* Upload Area */}
