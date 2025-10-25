@@ -83,10 +83,8 @@ export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
         description: "Image uploaded and ready for video creation",
       });
 
-      // Auto-advance to voice step after longer delay to prevent glitch
-      setTimeout(() => {
-        onStepChange?.('voice');
-      }, 2000);
+      // Auto-advance to voice step immediately
+      onStepChange?.('voice');
     };
     reader.readAsDataURL(file);
   }, [onUpdate, toast, onStepChange]);
@@ -184,7 +182,7 @@ export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
             }}
           />
         </Card>
-      ) : (
+      ) : !onStepChange ? (
         <Card className="border-green-500/30 bg-green-500/5 backdrop-blur-sm">
           <CardContent className="p-4">
             <div className="flex items-start gap-4">
@@ -225,7 +223,7 @@ export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
             </div>
           </CardContent>
         </Card>
-      )}
+      ) : null}
 
       {/* Enhancement Settings */}
       {imagePreview && (
