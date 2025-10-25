@@ -106,29 +106,6 @@ export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between pb-2 border-b border-violet-500/20">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-gradient-to-br from-violet-500/20 to-purple-500/20 border border-violet-500/30">
-            <ImagePlus className="h-5 w-5 text-violet-400" />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-white">
-              Upload Image
-            </h3>
-            <p className="text-sm text-muted-foreground">Upload your image to create AI Avatars Videos</p>
-          </div>
-        </div>
-        <div className="flex gap-2">
-          <Badge variant="secondary" className="bg-violet-500/20 text-violet-300 border-violet-500/30">
-            Ultra-HD
-          </Badge>
-          <Badge variant="secondary" className="bg-amber-500/20 text-amber-300 border-amber-500/30">
-            Premium
-          </Badge>
-        </div>
-      </div>
-
       {/* Upload Area */}
       {!imagePreview ? (
         <Card 

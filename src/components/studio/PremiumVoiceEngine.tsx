@@ -147,26 +147,6 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* Compact Header */}
-      <div className="flex items-center justify-between pb-2 border-b border-violet-500/20">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-gradient-to-br from-violet-500/20 to-purple-500/20 border border-violet-500/30">
-            <Mic className="h-5 w-5 text-violet-400" />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-              Premium Voice Engine
-              <Crown className="h-4 w-4 text-violet-400" />
-            </h3>
-            <p className="text-sm text-muted-foreground">Studio-quality AI voices • 20 Premium models</p>
-          </div>
-        </div>
-        <Badge variant="secondary" className="bg-violet-500/20 text-violet-300 border-violet-500/30 text-xs">
-          <Languages className="h-3 w-3 mr-1" />
-          12 Languages
-        </Badge>
-      </div>
-
       {/* Main Content */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-3">

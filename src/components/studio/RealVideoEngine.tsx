@@ -124,29 +124,6 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between pb-2 border-b border-violet-500/20">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-gradient-to-br from-violet-500/20 to-purple-500/20 border border-violet-500/30">
-            <Film className="h-5 w-5 text-violet-400" />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-              Real Video Engine
-              <Sparkles className="h-4 w-4 text-purple-400" />
-            </h3>
-            <p className="text-sm text-muted-foreground">Powered by Replicate • Multiple Quality Engines</p>
-          </div>
-        </div>
-        <div className="flex gap-2">
-          <Badge className="bg-gradient-to-r from-green-500 to-blue-500 text-white text-xs">
-            <CheckCircle className="h-3 w-3 mr-1" />
-            Real Output
-          </Badge>
-          <Badge variant="outline" className="text-xs">{quality}</Badge>
-        </div>
-      </div>
-
       {/* Prerequisites Check */}
       {!canGenerate && (
         <Card className="border-violet-500/20 bg-violet-950/20">
