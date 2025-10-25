@@ -386,8 +386,8 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                             if (fileInput) {
                               fileInput.click();
                             } else {
-                              // Fallback: navigate to avatar step
-                              onStepChange?.('avatar');
+                              // Fallback: navigate to upload step
+                              onStepChange?.('upload');
                             }
                           }}
                         >

@@ -156,6 +156,43 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
         </TabsList>
 
         <TabsContent value="tts" className="space-y-4 mt-4">
+          {/* Script Editor */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm">Script Content</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Textarea
+                placeholder="Enter your script here..."
+                value={script}
+                onChange={(e) => setScript(e.target.value)}
+                className="min-h-32"
+                maxLength={2000}
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>{script.length}/2000</span>
+                <span className="text-green-500">Auto-saved</span>
+              </div>
+
+              {/* Language */}
+              <div>
+                <Label className="text-xs">Language</Label>
+                <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LANGUAGES.map((lang) => (
+                      <SelectItem key={lang.code} value={lang.code}>
+                        {lang.flag} {lang.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Voice Selection */}
           <Card>
             <CardHeader>
@@ -207,43 +244,6 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
                   <p className="text-xs text-muted-foreground">{selectedVoiceData.description}</p>
                 </div>
               )}
-            </CardContent>
-          </Card>
-
-          {/* Script Editor */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm">Script Content</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Textarea
-                placeholder="Enter your script here..."
-                value={script}
-                onChange={(e) => setScript(e.target.value)}
-                className="min-h-32"
-                maxLength={2000}
-              />
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>{script.length}/2000</span>
-                <span className="text-green-500">Auto-saved</span>
-              </div>
-
-              {/* Language */}
-              <div>
-                <Label className="text-xs">Language</Label>
-                <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {LANGUAGES.map((lang) => (
-                      <SelectItem key={lang.code} value={lang.code}>
-                        {lang.flag} {lang.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
             </CardContent>
           </Card>
 
