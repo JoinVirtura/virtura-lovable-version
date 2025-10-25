@@ -217,7 +217,7 @@ export default function VideoProPage() {
                       <PremiumVoiceEngine
                         project={project}
                         onUpdate={updateProject}
-                        onGenerate={generateVideo}
+                        onGenerate={generateVoice}
                         isProcessing={isProcessing}
                       />
                     </ErrorBoundary>
