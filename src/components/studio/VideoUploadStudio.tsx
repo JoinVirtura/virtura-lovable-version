@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Upload, ImagePlus, X, Sparkles, Zap, Crown, Video } from 'lucide-react';
+import { Upload, ImagePlus, X, Sparkles, Zap, Crown } from 'lucide-react';
 import type { StudioProject } from '@/hooks/useStudioProject';
 import { useToast } from '@/hooks/use-toast';
 
@@ -109,37 +109,19 @@ export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between pb-4 border-b border-violet-500/20">
-        {/* Left: Video Pro Logo + Badge */}
-        <div className="flex items-center gap-3 flex-shrink-0">
-          <div className="relative">
-            <Video className="h-7 w-7 text-violet-400 drop-shadow-[0_0_8px_rgba(212,110,255,0.6)]" />
-            <Crown className="h-3 w-3 absolute -top-0.5 -right-0.5 text-violet-400" />
+      <div className="flex items-center justify-between pb-2 border-b border-violet-500/20">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-gradient-to-br from-violet-500/20 to-purple-500/20 border border-violet-500/30">
+            <ImagePlus className="h-5 w-5 text-violet-400" />
           </div>
           <div>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-violet-400 via-purple-400 to-fuchsia-400 bg-clip-text text-transparent">
-              Video Pro
-            </h1>
-            <Badge variant="secondary" className="text-xs mt-0.5 bg-violet-500/20 text-violet-300 border-violet-500/30">
-              Ultra-HD
-            </Badge>
+            <h3 className="text-lg font-semibold text-white">
+              Upload Image
+            </h3>
+            <p className="text-sm text-muted-foreground">Upload your image to create AI Avatars Videos</p>
           </div>
         </div>
-
-        {/* Center: Upload Image Title with Gradient */}
-        <div className="flex-1 text-center px-8">
-          <h2 className="text-xl font-bold bg-gradient-to-r from-blue-400 via-violet-400 to-purple-400 bg-clip-text text-transparent">
-            Upload Image
-          </h2>
-          <p className="text-sm mt-0.5 bg-gradient-to-r from-gray-400 via-gray-300 to-gray-400 bg-clip-text text-transparent">
-            Upload your image to create AI Avatars Videos
-          </p>
-        </div>
-
-        {/* Right: Bottom Navigation */}
-        <div className="flex-shrink-0">
-          {bottomNavigation}
-        </div>
+        {bottomNavigation}
       </div>
 
       {/* Upload Area */}

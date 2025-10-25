@@ -92,6 +92,56 @@ export default function VideoProPage() {
         ))}
       </div>
 
+      {/* Hero Header */}
+      <div className="relative bg-gradient-to-b from-black/40 via-black/20 to-transparent backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-6 py-6">
+          <div className="flex items-center justify-between gap-8">
+            {/* Left: Logo & Title */}
+            <div className="flex items-center gap-3 flex-shrink-0">
+              <div className="relative">
+                <Video className="h-7 w-7 text-violet-400 drop-shadow-[0_0_8px_rgba(212,110,255,0.6)]" />
+                <Crown className="h-3 w-3 absolute -top-0.5 -right-0.5 text-violet-400" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gradient-primary">Video Pro</h1>
+                <Badge variant="secondary" className="text-xs mt-1 bg-violet-500/20 text-violet-300 border-violet-500/30">
+                  Ultra-HD
+                </Badge>
+              </div>
+            </div>
+            
+            {/* Center: Studio Navigation */}
+            <div className="flex-1 flex justify-center">
+              <StudioNavigation
+                steps={VIDEO_PRO_STEPS}
+                currentStep={currentStep}
+                onStepChange={handleStepChange}
+                getStepStatus={getStepStatus}
+                isProcessing={isProcessing}
+              />
+            </div>
+            
+            {/* Right: Quality Card */}
+            <div className="glass-card px-4 py-3 rounded-xl border border-violet-500/20 flex-shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="text-right">
+                  <div className="text-xs text-gray-400">Project Quality</div>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Progress value={qualityMetrics.overall} className="w-20 h-1.5 bg-gray-800" />
+                    <span className="text-sm font-bold text-violet-400">{qualityMetrics.overall}%</span>
+                  </div>
+                </div>
+                <QualitySettings 
+                  settings={project.qualitySettings}
+                  onUpdate={(settings) => updateProject({ qualitySettings: settings })}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-violet-500/20 to-transparent" />
+      </div>
 
       {/* Main Studio Interface */}
       <div className="w-full px-6 py-6 mb-8">
