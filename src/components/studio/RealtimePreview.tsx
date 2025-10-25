@@ -382,13 +382,8 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                           variant="outline"
                           className="h-6 px-2 text-[10px] bg-white/10 border-white/20 hover:bg-white/20 text-white flex-shrink-0"
                           onClick={() => {
-                            const fileInput = document.getElementById('avatar-upload-input') as HTMLInputElement;
-                            if (!fileInput) {
-                              console.error('File input #avatar-upload-input not found');
-                              toast.error('Unable to open file selector');
-                              return;
-                            }
-                            fileInput.click();
+                            // Navigate to the avatar step to allow changing the image
+                            onStepChange?.('avatar');
                           }}
                         >
                           <Upload className="h-3 w-3 mr-1" />
