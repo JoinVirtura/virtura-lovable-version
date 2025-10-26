@@ -2960,22 +2960,22 @@ export default function Dashboard() {
                                    <Button 
                                      size="sm" 
                                      variant="outline"
-                                     className="h-8 px-3 hover:bg-violet-500/10 hover:border-violet-500/50 transition-all xl:w-8 xl:p-0"
+                                     className="h-8 px-3 hover:bg-violet-500/10 hover:border-violet-500/50 transition-all lg:w-8 lg:p-0"
                                      onClick={() => handleEdit(asset)}
                                      title="Edit"
                                    >
-                                     <Edit className="xl:w-4 xl:h-4 w-3 h-3 xl:mr-0 mr-1" />
-                                     <span className="xl:hidden">Edit</span>
+                                     <Edit className="lg:w-4 lg:h-4 w-3 h-3 lg:mr-0 mr-1" />
+                                     <span className="lg:hidden">Edit</span>
                                    </Button>
                                    <Button 
                                      size="sm" 
                                      variant="outline"
-                                     className="h-8 px-3 hover:bg-purple-500/10 hover:border-purple-500/50 transition-all xl:w-8 xl:p-0"
+                                     className="h-8 px-3 hover:bg-purple-500/10 hover:border-purple-500/50 transition-all lg:w-8 lg:p-0"
                                      onClick={() => handleDownload(asset)}
                                      title="Download"
                                    >
-                                     <Download className="xl:w-4 xl:h-4 w-3 h-3 xl:mr-0 mr-1" />
-                                     <span className="xl:hidden">Download</span>
+                                     <Download className="lg:w-4 lg:h-4 w-3 h-3 lg:mr-0 mr-1" />
+                                     <span className="lg:hidden">Download</span>
                                    </Button>
                                    <DropdownMenu>
                                      <DropdownMenuTrigger asChild>
@@ -3019,7 +3019,7 @@ export default function Dashboard() {
                                 </div>
                               
                               {/* Generation Stats */}
-                              <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t border-border/50">
+                              <div className="flex items-center justify-between text-xs text-muted-foreground pt-2">
                                 <span className="flex items-center gap-1">
                                   <Clock className="w-3 h-3" />
                                   {asset.generationTime}
