@@ -156,10 +156,10 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
         
         <button 
           onClick={() => onViewChange("settings")}
-          className={`flex items-center w-full transition-colors ${isCollapsed ? "px-2 py-3 justify-center" : "pl-6 pr-4 py-3 gap-3"} ${
+          className={`flex items-center w-full transition-colors rounded-lg ${isCollapsed ? "px-2 py-3 justify-center" : "pl-6 pr-4 py-3 gap-3"} ${
             activeView === "settings" 
               ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30" 
-              : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
+              : "hover:bg-violet-500/5 hover:text-violet-300 text-white"
           }`}
         >
           <Avatar className="w-8 h-8 ring-2 ring-violet-500/30 shrink-0">
