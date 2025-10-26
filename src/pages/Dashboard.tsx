@@ -503,7 +503,7 @@ export default function Dashboard() {
     {
       id: 1,
       type: "Avatar",
-      title: "Business Executive",
+      title: "Confident CEO in Modern Office",
       date: "Dec 15, 2024 2:30 PM",
       format: "JPG",
       tags: ["Professional", "Business", "Executive"],
@@ -516,7 +516,7 @@ export default function Dashboard() {
     {
       id: 2,
       type: "Avatar", 
-      title: "Creative Artist",
+      title: "Bold Creative Director Portrait",
       date: "Dec 14, 2024 4:45 PM",
       format: "PNG",
       tags: ["Creative", "Artistic", "Bohemian"],
@@ -529,7 +529,7 @@ export default function Dashboard() {
     {
       id: 3,
       type: "Avatar",
-      title: "Fashion Model",
+      title: "Elegant Fashion Editorial Shot",
       date: "Dec 13, 2024 1:20 PM",
       format: "JPG",
       tags: ["Fashion", "Luxury", "Editorial"],
@@ -542,7 +542,7 @@ export default function Dashboard() {
     {
       id: 4,
       type: "Avatar",
-      title: "Tech Entrepreneur",
+      title: "Silicon Valley Visionary",
       date: "Dec 12, 2024 11:15 AM",
       format: "PNG",
       tags: ["Technology", "Startup", "Innovation"],
@@ -555,7 +555,7 @@ export default function Dashboard() {
     {
       id: 5,
       type: "Avatar",
-      title: "Healthcare Professional",
+      title: "Trusted Medical Expert",
       date: "Dec 11, 2024 9:30 AM",
       format: "JPG",
       tags: ["Medical", "Healthcare", "Doctor"],
@@ -568,7 +568,7 @@ export default function Dashboard() {
     {
       id: 6,
       type: "Avatar",
-      title: "Fitness Coach",
+      title: "Dynamic Personal Trainer",
       date: "Dec 10, 2024 3:22 PM",
       format: "PNG",
       tags: ["Fitness", "Health", "Athletic"],
@@ -582,7 +582,7 @@ export default function Dashboard() {
     {
       id: 7,
       type: "Headshot",
-      title: "Corporate Executive",
+      title: "Executive C-Suite Portrait",
       date: "Dec 9, 2024 1:20 PM",
       format: "JPG",
       tags: ["Corporate", "Executive", "Professional"],
@@ -595,7 +595,7 @@ export default function Dashboard() {
     {
       id: 8,
       type: "Headshot",
-      title: "LinkedIn Profile",
+      title: "Professional LinkedIn Headshot",
       date: "Dec 8, 2024 11:15 AM",
       format: "PNG",
       tags: ["LinkedIn", "Professional", "Portrait"],
@@ -608,7 +608,7 @@ export default function Dashboard() {
     {
       id: 9,
       type: "Headshot",
-      title: "Author Portrait",
+      title: "Best-Selling Author Bio Photo",
       date: "Dec 7, 2024 4:45 PM",
       format: "JPG",
       tags: ["Author", "Writer", "Creative"],
@@ -622,7 +622,7 @@ export default function Dashboard() {
     {
       id: 10,
       type: "Brand Asset",
-      title: "Complete Logo Suite",
+      title: "Premium Logo Design Collection",
       date: "Dec 6, 2024 3:22 PM",
       format: "SVG",
       tags: ["Logo", "Branding", "Identity"],
@@ -637,7 +637,7 @@ export default function Dashboard() {
     {
       id: 11,
       type: "Brand Asset",
-      title: "Marketing Campaign Pack",
+      title: "Q4 Marketing Campaign Assets",
       date: "Dec 5, 2024 9:30 AM",
       format: "PNG",
       tags: ["Marketing", "Campaign", "Templates"],
@@ -652,7 +652,7 @@ export default function Dashboard() {
     {
       id: 12,
       type: "Brand Asset",
-      title: "Social Media Bundle",
+      title: "Multi-Platform Social Media Pack",
       date: "Dec 4, 2024 2:15 PM",
       format: "JPG",
       tags: ["Social", "Instagram", "Facebook", "Twitter"],
@@ -667,7 +667,7 @@ export default function Dashboard() {
     {
       id: 13,
       type: "Brand Asset",
-      title: "Business Presentation Kit",
+      title: "Corporate Presentation Essentials",
       date: "Dec 3, 2024 11:45 AM",
       format: "PNG",
       tags: ["Presentation", "Business", "Professional"],
@@ -683,7 +683,7 @@ export default function Dashboard() {
     {
       id: 14,
       type: "Video",
-      title: "Avatar Introduction Reel",
+      title: "30-Second Brand Intro Reel",
       date: "Dec 2, 2024 5:45 PM",
       format: "MP4",
       tags: ["Avatar", "Video", "Introduction", "Reel"],
@@ -698,7 +698,7 @@ export default function Dashboard() {
     {
       id: 15,
       type: "Video",
-      title: "Professional Showcase",
+      title: "Executive Testimonial Video",
       date: "Dec 1, 2024 3:20 PM",
       format: "MP4",
       tags: ["Professional", "Business", "Showcase"],
@@ -713,7 +713,7 @@ export default function Dashboard() {
     {
       id: 16,
       type: "Video",
-      title: "Creative Portfolio Demo",
+      title: "Artistic Motion Graphics Showcase",
       date: "Nov 30, 2024 1:10 PM",
       format: "MP4",
       tags: ["Creative", "Portfolio", "Artistic"],
@@ -728,7 +728,7 @@ export default function Dashboard() {
     {
       id: 17,
       type: "Video",
-      title: "Social Media Story",
+      title: "Viral Instagram Story Template",
       date: "Nov 29, 2024 4:35 PM",
       format: "MP4",
       tags: ["Social", "Story", "Instagram", "TikTok"],
@@ -744,7 +744,7 @@ export default function Dashboard() {
     {
       id: 18,
       type: "Avatar",
-      title: "Award-Winning Portrait",
+      title: "2024 Design Excellence Winner",
       date: "Nov 28, 2024 12:30 PM",
       format: "PNG",
       tags: ["Award", "Professional", "Premium"],
@@ -759,7 +759,7 @@ export default function Dashboard() {
     {
       id: 19,
       type: "Brand Asset",
-      title: "Signature Brand Kit",
+      title: "Ultimate Brand Identity System",
       date: "Nov 27, 2024 10:15 AM",
       format: "SVG",
       tags: ["Premium", "Signature", "Complete"],
@@ -2958,21 +2958,35 @@ export default function Dashboard() {
                                 </div>
                             </div>
                             
-                            <div className="p-6 space-y-4">
-                              <div>
-                                <h3 className="font-semibold text-lg line-clamp-1">{asset.title}</h3>
-                                 <p className="text-sm text-muted-foreground font-medium flex items-center gap-2">
-                                   <Calendar className="w-3 h-3" />
-                                   {new Date(asset.date).toLocaleDateString('en-US', { 
-                                     month: 'short', 
-                                     day: 'numeric', 
-                                     year: 'numeric',
-                                     hour: 'numeric',
-                                     minute: '2-digit',
-                                     hour12: true
-                                   })}
-                                 </p>
-                               </div>
+                             <div className="p-6 space-y-4">
+                               <div>
+                                 <div className="flex items-center gap-2 group/title">
+                                   <h3 className="font-semibold text-lg line-clamp-1 flex-1">{asset.title}</h3>
+                                   <Button
+                                     size="sm"
+                                     variant="ghost"
+                                     className="h-6 w-6 p-0 opacity-0 group-hover/title:opacity-100 transition-opacity hover:bg-violet-500/10"
+                                     onClick={(e) => {
+                                       e.stopPropagation();
+                                       handleEditTitle(asset);
+                                     }}
+                                     title="Edit title"
+                                   >
+                                     <Edit className="w-3 h-3" />
+                                   </Button>
+                                 </div>
+                                  <p className="text-sm text-muted-foreground font-medium flex items-center gap-2 mt-1">
+                                    <Clock className="w-3 h-3" />
+                                    {new Date(asset.date).toLocaleDateString('en-US', { 
+                                      month: 'short', 
+                                      day: 'numeric'
+                                    })} at {new Date(asset.date).toLocaleTimeString('en-US', { 
+                                      hour: 'numeric',
+                                      minute: '2-digit',
+                                      hour12: true
+                                    })}
+                                  </p>
+                                </div>
                                
                                 {/* AI Tags - Always Visible */}
                                 <div className="flex flex-wrap gap-1.5 mt-2">
