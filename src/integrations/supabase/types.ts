@@ -700,10 +700,7 @@ export type Database = {
         }
         Returns: boolean
       }
-      is_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      is_admin: { Args: never; Returns: boolean }
       update_gpu_worker_heartbeat: {
         Args: { worker_id_param: string }
         Returns: undefined

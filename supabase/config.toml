@@ -1,13 +1,13 @@
 project_id = "ujaoziqnxhjqlmnvlxav"
 
 [functions.generate-image-replicate]
-verify_jwt = false
+verify_jwt = true
 
 [functions.generate-avatar-real]
-verify_jwt = false
+verify_jwt = true
 
 [functions.voice-preview]
-verify_jwt = false
+verify_jwt = true
 
 [functions.generate-avatar]
 verify_jwt = true
@@ -16,7 +16,7 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.test-openai]
-verify_jwt = false
+verify_jwt = true
 
 [functions.create-payment]
 verify_jwt = true
@@ -49,13 +49,13 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.video-generate-direct]
-verify_jwt = false
+verify_jwt = true
 
 [functions.video-engine-pro]
-verify_jwt = false
+verify_jwt = true
 
 [functions.voice-tts]
-verify_jwt = false
+verify_jwt = true
 
 [functions.webhook-stripe]
 verify_jwt = false

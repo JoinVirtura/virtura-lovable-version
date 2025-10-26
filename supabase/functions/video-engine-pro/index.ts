@@ -13,7 +13,7 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // Health check endpoint
+  // Health check endpoint (no auth required)
   if (req.method === 'GET') {
     const REPLICATE_API_KEY = Deno.env.get('REPLICATE_API_KEY');
     return new Response(JSON.stringify({
@@ -29,7 +29,64 @@ serve(async (req) => {
   }
 
   try {
+    // Verify authentication
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized - Authentication required' }), 
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const authClient = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } }
+    });
+
+    const { data: { user }, error: authError } = await authClient.auth.getUser();
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid authentication' }), 
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const { avatarImageUrl, audioUrl, prompt, settings = {} } = await req.json();
+    
+    // Input validation
+    if (!avatarImageUrl || typeof avatarImageUrl !== 'string') {
+      return new Response(
+        JSON.stringify({ error: 'Valid avatarImageUrl is required' }), 
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (prompt && typeof prompt === 'string' && prompt.length > 5000) {
+      return new Response(
+        JSON.stringify({ error: 'Prompt too long (max 5000 characters)' }), 
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate URLs are HTTPS
+    try {
+      const avatarUrl = new URL(avatarImageUrl);
+      if (avatarUrl.protocol !== 'https:') {
+        throw new Error('Avatar URL must use HTTPS');
+      }
+      if (audioUrl) {
+        const audioUrlObj = new URL(audioUrl);
+        if (audioUrlObj.protocol !== 'https:') {
+          throw new Error('Audio URL must use HTTPS');
+        }
+      }
+    } catch (urlError) {
+      return new Response(
+        JSON.stringify({ error: `Invalid URL: ${urlError.message}` }), 
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
     
     console.log('🎬 Video Engine Pro: Starting Replicate generation with SSE...');
     console.log('Avatar URL:', avatarImageUrl);
