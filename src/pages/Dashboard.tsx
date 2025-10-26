@@ -26,6 +26,7 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -71,7 +72,8 @@ import {
   X,
   Heart,
   MessageSquare,
-  Loader2
+  Loader2,
+  MoreVertical
 } from "lucide-react";
 
 // Import diverse avatar images
@@ -2949,7 +2951,9 @@ export default function Dashboard() {
                                 </div>
 
                                 {/* Purple Separator Line */}
-                                <div className="mt-4 h-px bg-gradient-to-r from-transparent via-purple-500/60 to-transparent shadow-[0_0_8px_rgba(168,85,247,0.4)]" />
+                                <div className="mt-4 mb-4">
+                                  <div className="h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-60 shadow-[0_0_12px_rgba(168,85,247,0.6)]" />
+                                </div>
 
                                 {/* Action Buttons - Always Visible */}
                                 <div className="flex items-center justify-between mt-4 pt-4">
@@ -2973,54 +2977,45 @@ export default function Dashboard() {
                                       Download
                                     </Button>
                                   </div>
-                                 <div className="flex gap-1">
-                                   <Button 
-                                     size="sm" 
-                                     variant="ghost"
-                                     className="h-8 w-8 p-0"
-                                     onClick={() => handleShare(asset)}
-                                   >
-                                     <Share2 className="w-3 h-3" />
-                                   </Button>
-                                    <Button 
-                                      size="sm" 
-                                      variant="ghost"
-                                      className={`h-8 w-8 p-0 ${asset.isFavorite ? 'text-yellow-500' : 'text-muted-foreground'}`}
-                                      onClick={() => handleFavorite(asset)}
-                                    >
-                                      <Star className={`w-3 h-3 ${asset.isFavorite ? 'fill-current' : ''}`} />
-                                    </Button>
-                                    <AlertDialog>
-                                      <AlertDialogTrigger asChild>
-                                        <Button 
-                                          size="sm" 
-                                          variant="ghost"
-                                          className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                                          disabled={deletingAssetId === asset.dbId}
-                                        >
-                                          {deletingAssetId === asset.dbId ? (
-                                            <Loader2 className="w-3 h-3 animate-spin" />
-                                          ) : (
-                                            <Trash2 className="w-3 h-3" />
-                                          )}
-                                        </Button>
-                                      </AlertDialogTrigger>
-                                      <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                          <AlertDialogTitle>Delete Avatar</AlertDialogTitle>
-                                          <AlertDialogDescription>
-                                            Are you sure you want to delete "{asset.title}"? This action cannot be undone.
-                                          </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                          <AlertDialogAction onClick={() => handleDelete(asset)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                                            Delete
-                                          </AlertDialogAction>
-                                        </AlertDialogFooter>
-                                      </AlertDialogContent>
-                                    </AlertDialog>
-                                 </div>
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                      <Button 
+                                        size="sm" 
+                                        variant="outline"
+                                        className="h-8 w-8 p-0 hover:bg-violet-500/10 hover:border-violet-500/50 transition-all"
+                                        onClick={(e) => e.stopPropagation()}
+                                      >
+                                        <MoreVertical className="w-4 h-4" />
+                                      </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end" className="w-40">
+                                      <DropdownMenuItem 
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleShare(asset);
+                                        }}
+                                        className="cursor-pointer"
+                                      >
+                                        <Share2 className="w-4 h-4 mr-2" />
+                                        Share
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem 
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleDelete(asset);
+                                        }}
+                                        className="cursor-pointer text-destructive focus:text-destructive"
+                                        disabled={deletingAssetId === asset.dbId}
+                                      >
+                                        {deletingAssetId === asset.dbId ? (
+                                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                        ) : (
+                                          <Trash2 className="w-4 h-4 mr-2" />
+                                        )}
+                                        Delete
+                                      </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
                                </div>
                               
                               {/* Generation Stats */}
