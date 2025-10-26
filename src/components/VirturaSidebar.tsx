@@ -163,9 +163,9 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
               : "hover:bg-violet-500/5 hover:text-violet-300 text-white"
           }`}
         >
-          <Avatar className="w-8 h-8 ring-2 ring-violet-500/30 shrink-0">
-            <AvatarImage src="/lovable-uploads/jahi-bentley-logo.png" />
-            <AvatarFallback className="bg-violet-500/20 text-violet-300">JB</AvatarFallback>
+          <Avatar className="w-8 h-8 ring-2 ring-violet-500/30 shrink-0 rounded-lg">
+            <AvatarImage src="/lovable-uploads/jahi-bentley-logo.png" className="object-contain p-1" />
+            <AvatarFallback className="bg-violet-500/20 text-violet-300 rounded-lg">JB</AvatarFallback>
           </Avatar>
           {!isCollapsed && (
             <div className="flex-1 min-w-0 text-left">
