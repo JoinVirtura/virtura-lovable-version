@@ -149,7 +149,7 @@ export const VoiceEngineStudio: React.FC<VoiceEngineStudioProps> = ({
     try {
       setPreviewLoading(true);
       
-      // Use shorter text for faster generation
+      // Use shorter text for faster response
       const previewText = `Hello, this is ${PREMIUM_VOICES.find(v => v.id === selectedVoice)?.name}.`;
       
       const { data, error } = await supabase.functions.invoke('voice-preview', {
@@ -162,56 +162,14 @@ export const VoiceEngineStudio: React.FC<VoiceEngineStudioProps> = ({
       if (error) throw error;
 
       if (audioRef.current && data.audioData) {
-        // Convert base64 to Blob URL for instant loading
-        const base64Data = data.audioData.split(',')[1];
-        const byteCharacters = atob(base64Data);
-        const byteNumbers = new Array(byteCharacters.length);
-        for (let i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-        }
-        const byteArray = new Uint8Array(byteNumbers);
-        const audioBlob = new Blob([byteArray], { type: 'audio/mpeg' });
-        const blobUrl = URL.createObjectURL(audioBlob);
+        // Simple approach - just set the source and play
+        audioRef.current.src = data.audioData;
         
-        // Set source and wait for canplaythrough before playing
-        audioRef.current.src = blobUrl;
+        // Wait a tiny bit for browser to process the data URL
+        await new Promise(resolve => setTimeout(resolve, 100));
         
-        await new Promise<void>((resolve, reject) => {
-          const audio = audioRef.current!;
-          const timeoutId = setTimeout(() => {
-            reject(new Error('Audio loading timeout'));
-          }, 5000);
-          
-          const handleCanPlay = () => {
-            clearTimeout(timeoutId);
-            audio.removeEventListener('canplaythrough', handleCanPlay);
-            audio.removeEventListener('error', handleError);
-            resolve();
-          };
-          
-          const handleError = (e: Event) => {
-            clearTimeout(timeoutId);
-            audio.removeEventListener('canplaythrough', handleCanPlay);
-            audio.removeEventListener('error', handleError);
-            reject(new Error('Audio loading failed'));
-          };
-          
-          audio.addEventListener('canplaythrough', handleCanPlay, { once: true });
-          audio.addEventListener('error', handleError, { once: true });
-          
-          // Start loading
-          audio.load();
-        });
-        
-        // Audio is now ready - play instantly
         await audioRef.current.play();
         setIsPlaying(true);
-        
-        // Cleanup blob URL when audio finishes
-        audioRef.current.addEventListener('ended', () => {
-          URL.revokeObjectURL(blobUrl);
-          setIsPlaying(false);
-        }, { once: true });
       }
     } catch (error) {
       console.error('Preview failed:', error);
@@ -443,12 +401,8 @@ export const VoiceEngineStudio: React.FC<VoiceEngineStudioProps> = ({
                     <audio 
                       ref={audioRef} 
                       className="hidden"
-                      preload="auto"
                       onEnded={() => setIsPlaying(false)}
-                      onError={(e) => {
-                        console.error('Audio playback error:', e);
-                        setIsPlaying(false);
-                      }}
+                      onError={() => setIsPlaying(false)}
                     />
                   </div>
                 </CardContent>
