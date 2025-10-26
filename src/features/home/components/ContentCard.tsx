@@ -81,7 +81,7 @@ export const ContentCard = ({ tile, className = "", size = 'md' }: ContentCardPr
 
         {/* Category Badge */}
         <div className="absolute top-3 left-3 z-20">
-          <Badge className="bg-yellow-400 text-black font-bold text-xs px-3 py-1 rounded-full shadow-md">
+          <Badge className="bg-purple-500/90 backdrop-blur-md text-white font-bold text-xs px-3 py-1 rounded-full border border-purple-400/30 shadow-lg shadow-purple-500/20">
             {tile.tag}
           </Badge>
         </div>
@@ -94,12 +94,12 @@ export const ContentCard = ({ tile, className = "", size = 'md' }: ContentCardPr
           
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1">
-              <Eye className="w-4 h-4 text-yellow-400" />
+              <Eye className="w-4 h-4 text-purple-400" />
               <span className="text-white font-medium text-sm">{formatViews(tile.views)}</span>
             </div>
             
             <div className="flex items-center gap-1">
-              <Sparkles className="w-4 h-4 text-yellow-400" />
+              <Sparkles className="w-4 h-4 text-purple-400" />
             </div>
           </div>
         </div>

@@ -153,9 +153,9 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
           {/* Main Title with Gradient and Accent */}
           <div className="relative">
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-1 h-16 bg-gradient-to-b from-amber-400 via-orange-500 to-amber-600 rounded-full shadow-lg shadow-amber-500/20" />
+              <div className="w-1 h-16 bg-gradient-to-b from-purple-400 via-violet-500 to-fuchsia-600 rounded-full shadow-lg shadow-purple-500/30" />
               <div>
-                <h2 className="text-5xl md:text-6xl lg:text-7xl font-black bg-gradient-to-r from-amber-400 via-orange-500 to-amber-600 bg-clip-text text-transparent leading-tight tracking-tight">
+                <h2 className="text-5xl md:text-6xl lg:text-7xl font-black bg-gradient-to-r from-purple-400 via-violet-500 to-fuchsia-600 bg-clip-text text-transparent leading-tight tracking-tight">
                   Trending
                 </h2>
                 <p className="text-2xl md:text-3xl font-light text-muted-foreground/80 tracking-[0.2em] uppercase mt-2">
@@ -167,7 +167,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
             {/* Description */}
             <div className="max-w-4xl">
               <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
-                Discover the most <span className="font-semibold bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">viral creations</span> shaping digital culture — from stunning visuals to groundbreaking concepts
+                Discover the most <span className="font-semibold bg-gradient-to-r from-purple-400 via-violet-500 to-fuchsia-600 bg-clip-text text-transparent">viral creations</span> shaping digital culture — from stunning visuals to groundbreaking concepts
               </p>
             </div>
           </div>
@@ -178,7 +178,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
               onClick={handleShuffle}
               disabled={isShuffling}
               size="lg"
-              className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold px-8 py-4 h-auto border-2 border-amber-400/20 shadow-lg hover:shadow-amber-500/25 transition-all duration-300"
+              className="bg-gradient-to-r from-purple-500 to-violet-600 hover:from-purple-600 hover:to-violet-700 text-white font-semibold px-8 py-4 h-auto border-2 border-purple-400/20 shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all duration-300"
             >
               {isShuffling ? 'REGENERATING...' : 'REGENERATE'}
             </Button>
@@ -186,7 +186,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
             <Button
               variant="outline"
               size="lg"
-              className="border-2 border-muted-foreground/20 hover:border-amber-400/50 px-6 py-4 h-auto font-semibold text-foreground hover:text-amber-400 transition-all duration-300"
+              className="border-2 border-muted-foreground/20 hover:border-purple-400/50 px-6 py-4 h-auto font-semibold text-foreground hover:text-purple-400 transition-all duration-300"
             >
               <Filter className="w-5 h-5 mr-2" />
               FILTER
@@ -195,7 +195,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
             <Button
               variant="ghost"
               size="lg"
-              className="text-amber-400 hover:text-amber-300 font-semibold px-6 py-4 h-auto hover:bg-amber-400/10 transition-all duration-300 group"
+              className="text-purple-400 hover:text-purple-300 font-semibold px-6 py-4 h-auto hover:bg-purple-400/10 transition-all duration-300 group"
               onClick={handleViewAll}
             >
               {isExpanded ? 'SHOW LESS' : 'VIEW ALL'}
@@ -317,7 +317,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
               onClick={() => setDisplayCount(prev => prev + 50)}
               size="lg"
               variant="outline"
-              className="px-8 py-6 text-lg font-semibold hover:bg-amber-400 hover:text-white transition-all duration-300 border-2 border-amber-400/30 hover:border-amber-400"
+              className="px-8 py-6 text-lg font-semibold hover:bg-purple-500 hover:text-white transition-all duration-300 border-2 border-purple-400/30 hover:border-purple-400 hover:shadow-lg hover:shadow-purple-500/30"
             >
               Load More Creations
             </Button>
