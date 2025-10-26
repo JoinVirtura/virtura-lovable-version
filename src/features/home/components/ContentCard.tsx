@@ -245,12 +245,11 @@ export const ContentCard = ({ tile, className = "", size = 'md' }: ContentCardPr
           </div>
         </motion.div>
 
-        {/* Ultra-Premium Content Overlay */}
+        {/* Title Overlay with Transparent Background */}
         <motion.div 
           className="absolute bottom-0 left-0 right-0 p-5 z-10"
           style={{
-            background: 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.8) 60%, transparent 100%)',
-            backdropFilter: 'blur(10px)',
+            background: 'transparent',
             transform: 'translateZ(30px)',
           }}
           animate={{
@@ -259,7 +258,7 @@ export const ContentCard = ({ tile, className = "", size = 'md' }: ContentCardPr
           transition={{ duration: 0.3 }}
         >
           <motion.h3 
-            className="text-white font-black text-lg leading-tight mb-3 line-clamp-2"
+            className="text-white font-black text-lg leading-tight mb-3 line-clamp-2 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
             animate={{
               color: isHovered ? '#e9d5ff' : '#ffffff',
             }}
@@ -267,7 +266,6 @@ export const ContentCard = ({ tile, className = "", size = 'md' }: ContentCardPr
           >
             {tile.title}
           </motion.h3>
-          
         </motion.div>
       </div>
 
