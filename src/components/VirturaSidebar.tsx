@@ -166,34 +166,6 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                   {!isCollapsed && <span className="font-medium">Export</span>}
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton 
-                  onClick={() => onViewChange("settings")}
-                  isActive={activeView === "settings"}
-                  className={`w-full ${isCollapsed ? "justify-center px-2" : "justify-start gap-3"} ${
-                    activeView === "settings" 
-                      ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30" 
-                      : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
-                  }`}
-                >
-                  <Settings className="w-4 h-4 shrink-0" />
-                  {!isCollapsed && <span className="font-medium">Settings</span>}
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton 
-                  onClick={() => onViewChange("upgrade")}
-                  isActive={activeView === "upgrade"}
-                  className={`w-full ${isCollapsed ? "justify-center px-2" : "justify-start gap-3"} ${
-                    activeView === "upgrade" 
-                      ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30" 
-                      : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
-                  }`}
-                >
-                  <Crown className="w-4 h-4 shrink-0" />
-                  {!isCollapsed && <span className="font-medium">Upgrade</span>}
-                </SidebarMenuButton>
-              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
