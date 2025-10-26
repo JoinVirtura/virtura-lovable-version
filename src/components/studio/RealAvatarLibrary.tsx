@@ -25,7 +25,6 @@ import { toast } from 'sonner';
 import {
   Search,
   Star,
-  CheckCircle,
   Library,
   Sparkles,
   Image as ImageIcon,
@@ -35,18 +34,13 @@ import {
   Download,
   MoreVertical,
   Film,
-  Play,
   Camera,
   Grid3x3,
   List,
   Edit3,
-  Save,
-  Clock,
-  FileType,
   Heart,
   User,
-  Briefcase,
-  Video
+  Briefcase
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
@@ -474,16 +468,16 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
             return (
               <Card
                 key={avatar.id}
-                className="group cursor-pointer transition-all duration-300 hover:scale-[1.02] overflow-hidden"
+                className="group cursor-pointer transition-all duration-300 hover:shadow-[0_0_40px_rgba(212,110,255,0.3)] overflow-hidden border-violet-500/20 hover:border-violet-500/40"
                 onClick={() => handleSelectAvatar(avatar)}
               >
                 <CardContent className="p-0">
-                  <div className="relative rounded-t-xl overflow-hidden">
+                  <div className="relative overflow-hidden">
                     {avatar.is_video && avatar.video_url ? (
                       <video
                         src={avatar.video_url}
                         poster={avatar.thumbnail_url || avatar.image_url}
-                        className="w-full aspect-square object-cover"
+                        className="w-full aspect-square object-cover transition-transform duration-300 group-hover:scale-105"
                         controls
                         preload="metadata"
                         onClick={(e) => e.stopPropagation()}
@@ -492,16 +486,27 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
                       <img
                         src={avatar.image_url}
                         alt={avatar.title || 'Generated Avatar'}
-                        className="w-full aspect-square object-cover"
+                        className="w-full aspect-square object-cover transition-transform duration-300 group-hover:scale-105"
                         onError={(e) => {
                           e.currentTarget.style.display = 'none';
                         }}
                       />
                     )}
                     
-                    {/* Favorite Star - Top Left */}
+                    {/* Gradient Overlay on Hover */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    
+                    {/* Quality Score Badge - Top Right */}
+                    <div className="absolute top-3 right-3 z-10">
+                      <Badge className="bg-gradient-to-r from-violet-500 to-purple-600 text-white px-3 py-1.5 text-sm font-bold shadow-lg border-0">
+                        <Star className="h-3.5 w-3.5 mr-1 fill-current" />
+                        {qualityScore.toFixed(1)}
+                      </Badge>
+                    </div>
+
+                    {/* Favorite Heart - Top Left */}
                     <button
-                      className="absolute top-3 left-3 z-10 p-2 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background transition-colors"
+                      className="absolute top-3 left-3 z-10 p-2 rounded-full bg-black/40 backdrop-blur-md hover:bg-black/60 transition-all duration-200 hover:scale-110"
                       onClick={(e) => {
                         e.stopPropagation();
                         toggleFavorite(avatar.id);
@@ -509,108 +514,71 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
                       title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
                     >
                       <Heart 
-                        className={`h-4 w-4 transition-colors ${
-                          isFavorite ? 'fill-primary text-primary' : 'text-muted-foreground'
+                        className={`h-4 w-4 transition-all duration-200 ${
+                          isFavorite ? 'fill-red-500 text-red-500 scale-110' : 'text-white/80'
                         }`} 
                       />
                     </button>
-
-                    {/* Quality Score Badge - Top Right */}
-                    <div className="absolute top-3 right-3 z-10">
-                      <Badge className="bg-gradient-to-r from-primary to-primary-blue text-primary-foreground px-3 py-1 text-sm font-semibold shadow-lg">
-                        <Star className="h-3 w-3 mr-1 fill-current" />
-                        {qualityScore.toFixed(1)}
-                      </Badge>
-                    </div>
-
-                    {/* Type Badge - Bottom Right on Image */}
-                    <div className="absolute bottom-3 right-3 z-10">
-                      {avatar.video_url && (
-                        <Badge className="bg-blue-500/90 backdrop-blur-sm">
-                          <Video className="h-3 w-3 mr-1" />
-                          Video
-                        </Badge>
-                      )}
-                    </div>
-
-                    {/* Hover Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
-                      {avatar.video_url ? (
-                        <>
-                          <Button 
-                            size="sm" 
-                            className="bg-blue-500 hover:bg-blue-600 shadow-lg"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              window.open(avatar.video_url, '_blank');
-                            }}
-                          >
-                            <Play className="h-4 w-4 mr-2" />
-                            Preview Video
-                          </Button>
-                          <Button size="sm" className="bg-primary hover:bg-primary/90 shadow-lg">
-                            <CheckCircle className="h-4 w-4 mr-2" />
-                            Select
-                          </Button>
-                        </>
-                      ) : (
-                        <Button size="sm" className="bg-primary hover:bg-primary/90 shadow-lg">
-                          <CheckCircle className="h-4 w-4 mr-2" />
-                          Select Avatar
-                        </Button>
-                      )}
-                    </div>
                   </div>
                   
                   {/* Card Content */}
                   <div className="p-4 space-y-3">
-                    {/* Title */}
-                    <h4 className="font-semibold text-base line-clamp-1">
-                      {avatar.title || 'Generated Avatar'}
-                    </h4>
+                    {/* Dynamic Title with Type */}
+                    <div className="space-y-1">
+                      <h4 className="font-bold text-base line-clamp-1 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                        {avatar.is_video ? (
+                          <>AI Video{avatar.duration ? ` • ${avatar.duration}s` : ''}</>
+                        ) : avatar.tags?.some(t => ['headshot', 'professional', 'business'].includes(t.toLowerCase())) ? (
+                          <>Professional Headshot • Ultra HD</>
+                        ) : avatar.tags?.some(t => ['brand', 'logo', 'marketing'].includes(t.toLowerCase())) ? (
+                          <>Brand Asset • 4K Ready</>
+                        ) : (
+                          <>AI Avatar • {avatar.tags?.[0] || 'Realistic'}</>
+                        )}
+                      </h4>
+                      <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                        <Sparkles className="h-3 w-3" />
+                        Generated {(() => {
+                          const now = Date.now();
+                          const created = new Date(avatar.created_at).getTime();
+                          const diffMs = now - created;
+                          const diffMins = Math.floor(diffMs / 60000);
+                          const diffHours = Math.floor(diffMs / 3600000);
+                          const diffDays = Math.floor(diffMs / 86400000);
+                          
+                          if (diffMins < 1) return 'just now';
+                          if (diffMins < 60) return `${diffMins}m ago`;
+                          if (diffHours < 24) return `${diffHours}h ago`;
+                          if (diffDays < 7) return `${diffDays}d ago`;
+                          return format(new Date(avatar.created_at), 'MMM d');
+                        })()}
+                      </p>
+                    </div>
                     
-                    {/* Timestamp */}
-                    <p className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {formattedDate}
-                    </p>
-                    
-                    {/* Tags */}
+                    {/* Tags with Gradient Backgrounds */}
                     {avatar.tags && avatar.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1.5">
                         {avatar.tags.slice(0, 3).map((tag, index) => (
                           <Badge
                             key={index}
-                            variant="secondary"
-                            className="text-xs px-2.5 py-0.5 bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20"
+                            className="text-xs px-3 py-1 bg-gradient-to-r from-violet-500/20 to-purple-600/20 border border-violet-500/30 text-foreground hover:from-violet-500/30 hover:to-purple-600/30 transition-all"
                           >
                             {tag}
                           </Badge>
                         ))}
                         {avatar.tags.length > 3 && (
-                          <Badge variant="secondary" className="text-xs px-2.5 py-0.5">
-                            +{avatar.tags.length - 3}
+                          <Badge className="text-xs px-3 py-1 bg-gradient-to-r from-blue-500/20 to-cyan-600/20 border border-blue-500/30">
+                            +{avatar.tags.length - 3} more
                           </Badge>
                         )}
                       </div>
                     )}
                     
-                    {/* Metadata Row */}
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground pt-2 border-t border-border/50">
-                      {avatar.duration && (
-                        <div className="flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          <span>{avatar.duration}s</span>
-                        </div>
-                      )}
-                      <div className="flex items-center gap-1">
-                        <FileType className="h-3 w-3" />
-                        <span>{avatar.is_video ? 'Video' : 'Image'}</span>
-                      </div>
-                    </div>
+                    {/* Divider */}
+                    <div className="h-px bg-gradient-to-r from-transparent via-violet-500/30 to-transparent" />
                     
-                    {/* Action Buttons */}
-                    <div className="flex gap-2 pt-2">
+                    {/* Action Buttons - No Save Button */}
+                    <div className="flex gap-2">
                       <Button
                         variant="outline"
                         size="sm"
@@ -618,7 +586,7 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
                           e.stopPropagation();
                           setEditDialog({ open: true, avatar });
                         }}
-                        className="flex-1 h-9"
+                        className="flex-1 h-9 hover:bg-violet-500/10 hover:border-violet-500/50 transition-all"
                       >
                         <Edit3 className="h-4 w-4 mr-2" />
                         Edit
@@ -629,22 +597,9 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleDownloadAvatar(avatar);
-                        }}
-                        className="flex-1 h-9"
-                      >
-                        <Save className="h-4 w-4 mr-2" />
-                        Save
-                      </Button>
-                      
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
                           handleShareAvatar(avatar);
                         }}
-                        className="flex-1 h-9"
+                        className="flex-1 h-9 hover:bg-blue-500/10 hover:border-blue-500/50 transition-all"
                       >
                         <Share2 className="h-4 w-4 mr-2" />
                         Share
@@ -652,11 +607,20 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
 
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                          <Button variant="outline" size="sm" className="h-9 px-3">
+                          <Button variant="outline" size="sm" className="h-9 px-3 hover:bg-violet-500/10 hover:border-violet-500/50 transition-all">
                             <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDownloadAvatar(avatar);
+                            }}
+                          >
+                            <Download className="h-4 w-4 mr-2" />
+                            Download
+                          </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={(e) => {
                               e.stopPropagation();
