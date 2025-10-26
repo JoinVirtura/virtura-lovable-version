@@ -96,7 +96,7 @@ export const ContentCard = ({ tile, className = "", size = 'md' }: ContentCardPr
       
       {/* Main Card Container with 3D Transform */}
       <div 
-        className="relative w-full h-full rounded-2xl overflow-hidden border-2 border-transparent group-hover:border-purple-500/40"
+        className="relative w-full h-full rounded-none overflow-hidden border-2 border-transparent group-hover:border-purple-500/40"
         style={{
           transform: 'translateZ(20px)',
           transformStyle: 'preserve-3d',

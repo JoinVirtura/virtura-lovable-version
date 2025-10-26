@@ -519,7 +519,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
         </motion.div>
 
         {/* Innovative Masonry Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-1 auto-rows-[200px] md:auto-rows-[240px] lg:auto-rows-[280px]">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-0 auto-rows-[200px] md:auto-rows-[240px] lg:auto-rows-[280px]" style={{ gridAutoFlow: 'dense' }}>
           {displayedTiles.map((tile, index) => {
             // Dynamic sizing for visual interest
             const getCardSize = (index: number) => {
@@ -541,7 +541,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                   ease: [0.25, 0.1, 0.25, 1]
                 }}
                 className={cn(
-                  'relative group cursor-pointer overflow-hidden',
+                  'relative group cursor-pointer overflow-hidden rounded-none',
                   getCardSize(index)
                 )}
                 whileHover={{ 
@@ -556,7 +556,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
               >
                 <ContentCard 
                   tile={tile} 
-                  className="h-full w-full border-0 rounded-2xl overflow-hidden bg-card/80 backdrop-blur-sm"
+                  className="h-full w-full border-0 rounded-none overflow-hidden bg-card/80 backdrop-blur-sm"
                   size="md"
                 />
                 
@@ -568,7 +568,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.2 }}
-                      className="absolute inset-0 rounded-2xl flex items-center justify-center p-4"
+                      className="absolute inset-0 flex items-center justify-center p-4"
                     >
                       <motion.div 
                         className="flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-2 rounded-full border border-purple-400/30"
