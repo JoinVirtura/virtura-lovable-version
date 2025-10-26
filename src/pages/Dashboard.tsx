@@ -2915,14 +2915,47 @@ export default function Dashboard() {
                               )}
                               
                                {/* Quality Score */}
-                               <div className="absolute top-3 right-3">
-                                 <div className="flex items-center gap-1 bg-black/80 rounded-full px-3 py-1.5 backdrop-blur-sm">
-                                   <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
-                                   <span className="text-sm text-white font-semibold">9.2</span>
-                                 </div>
-                               </div>
-                              
-                               {/* Removed hover overlay - buttons will be below */}
+                                <div className="absolute top-3 right-3">
+                                  <div className="flex items-center gap-1 bg-black/80 rounded-full px-3 py-1.5 backdrop-blur-sm">
+                                    <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
+                                    <span className="text-sm text-white font-semibold">9.2</span>
+                                  </div>
+                                </div>
+                               
+                                {/* Hover Action Buttons - Share & Delete overlay on image (only visible when sidebar expanded) */}
+                                <div className="xl:hidden absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-3">
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    className="h-9 px-4 bg-black/40 backdrop-blur-md hover:bg-violet-500/30 hover:border-violet-500 transition-all border-violet-500/50"
+                                    onClick={(e) => { 
+                                      e.stopPropagation(); 
+                                      handleShare(asset); 
+                                    }}
+                                    title="Share"
+                                  >
+                                    <Share2 className="w-4 h-4 mr-2" />
+                                    <span className="text-sm font-medium">Share</span>
+                                  </Button>
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    className="h-9 px-4 bg-black/40 backdrop-blur-md hover:bg-red-500/30 hover:border-red-500 transition-all border-red-500/50 text-red-400 hover:text-red-300"
+                                    onClick={(e) => { 
+                                      e.stopPropagation(); 
+                                      handleDelete(asset); 
+                                    }}
+                                    disabled={deletingAssetId === asset.dbId}
+                                    title="Delete"
+                                  >
+                                    {deletingAssetId === asset.dbId ? (
+                                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    ) : (
+                                      <Trash2 className="w-4 h-4 mr-2" />
+                                    )}
+                                    <span className="text-sm font-medium">Delete</span>
+                                  </Button>
+                                </div>
                             </div>
                             
                             <div className="p-6 space-y-4">
@@ -3018,41 +3051,6 @@ export default function Dashboard() {
                                        </DropdownMenuItem>
                                      </DropdownMenuContent>
                                    </DropdownMenu>
-                                   
-                                   {/* Direct Share & Delete buttons - only visible on hover when sidebar expanded (small/medium screens) */}
-                                   <div className="xl:hidden flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                                     <Button 
-                                       size="sm" 
-                                       variant="outline"
-                                       className="h-8 px-3 bg-black/40 backdrop-blur-md hover:bg-violet-500/20 hover:border-violet-500/50 transition-all border-violet-500/30"
-                                       onClick={(e) => { 
-                                         e.stopPropagation(); 
-                                         handleShare(asset); 
-                                       }}
-                                       title="Share"
-                                     >
-                                       <Share2 className="w-3 h-3 mr-1" />
-                                       <span className="text-xs">Share</span>
-                                     </Button>
-                                     <Button 
-                                       size="sm" 
-                                       variant="outline"
-                                       className="h-8 px-3 bg-black/40 backdrop-blur-md hover:bg-red-500/20 hover:border-red-500/50 transition-all border-red-500/30 text-red-400"
-                                       onClick={(e) => { 
-                                         e.stopPropagation(); 
-                                         handleDelete(asset); 
-                                       }}
-                                       disabled={deletingAssetId === asset.dbId}
-                                       title="Delete"
-                                     >
-                                       {deletingAssetId === asset.dbId ? (
-                                         <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-                                       ) : (
-                                         <Trash2 className="w-3 h-3 mr-1" />
-                                       )}
-                                       <span className="text-xs">Delete</span>
-                                     </Button>
-                                   </div>
                                 </div>
                               
                               {/* Generation Stats */}
