@@ -2720,7 +2720,7 @@ export default function Dashboard() {
                     </div>
                     
                     {/* View Controls */}
-                    <div className="flex border-2 border-border/50 rounded-xl overflow-hidden bg-muted/20">
+                    <div className="flex border-2 border-violet-500/50 rounded-xl overflow-hidden bg-muted/20">
                       <Button
                         variant={viewMode === "grid" ? "default" : "ghost"}
                         size="sm"
