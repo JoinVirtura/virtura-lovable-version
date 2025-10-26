@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -19,7 +19,8 @@ import {
   CheckCircle,
   AlertCircle,
   Download,
-  Settings
+  Settings,
+  Package
 } from 'lucide-react';
 import {
   Accordion,
@@ -85,6 +86,12 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
   const [fps, setFps] = useState(30);
   const [duration, setDuration] = useState(30);
   const [advancedSettingsOpen, setAdvancedSettingsOpen] = useState<string | undefined>(undefined);
+  const [selectedExportPack, setSelectedExportPack] = useState<'social' | 'professional' | 'ad'>(
+    (project?.export?.pack as 'social' | 'professional' | 'ad') || 'social'
+  );
+  const [primaryRatio, setPrimaryRatio] = useState<'1:1' | '9:16' | '16:9' | '4:5'>(
+    (project?.video?.ratio as '1:1' | '9:16' | '16:9' | '4:5') || '9:16'
+  );
   
   const [motionSettings, setMotionSettings] = useState({
     headMovement: 75,
@@ -94,12 +101,36 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
     lipSync: 95
   });
 
+  const PACK_PRIMARY_RATIOS: Record<string, '1:1' | '9:16' | '16:9' | '4:5'> = {
+    social: '9:16',
+    professional: '16:9',
+    ad: '16:9'
+  };
+
+  useEffect(() => {
+    if (selectedExportPack !== 'ad') {
+      setPrimaryRatio(PACK_PRIMARY_RATIOS[selectedExportPack]);
+    }
+  }, [selectedExportPack]);
+
+  const getRatioDimensions = (ratio: string): string => {
+    const dims: Record<string, string> = {
+      '1:1': '1080×1080',
+      '9:16': '1080×1920',
+      '16:9': '1920×1080',
+      '4:5': '1080×1350'
+    };
+    return dims[ratio] || '1920×1080';
+  };
+
   const handleGenerateVideo = async () => {
     const videoConfig = {
       engine: selectedEngine,
       prompt: videoPrompt,
       avatarImageUrl: project.avatar?.processedUrl || project.avatar?.originalUrl,
       audioUrl: project.voice?.audioUrl,
+      ratio: primaryRatio,
+      exportPack: selectedExportPack,
       settings: {
         quality,
         fps,
@@ -112,7 +143,7 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
       video: {
         engine: selectedEngine as "virtura-pro" | "runway" | "heygen" | "kling",
         quality: quality as "720p" | "1080p" | "4K" | "8K",
-        ratio: "16:9",
+        ratio: primaryRatio,
         fps: fps as 60 | 30 | 24,
         duration,
         motionSettings,
@@ -121,7 +152,12 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
           frames: duration * fps,
           bitrate: quality === '8K' ? '50000k' : quality === '4K' ? '20000k' : '8000k'
         }
-      }
+      },
+      export: {
+        ...project.export,
+        pack: selectedExportPack,
+        primaryRatio: primaryRatio
+      } as any
     });
 
     await onGenerate(videoConfig);
@@ -258,6 +294,63 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
           </CardContent>
         </Card>
       )}
+
+      {/* Export Pack Selection */}
+      <Card className="p-6 bg-gradient-to-br from-purple-500/5 to-pink-500/5 border-purple-500/20">
+        <div className="flex items-center gap-2 mb-4">
+          <Package className="w-5 h-5 text-purple-400" />
+          <h3 className="text-lg font-semibold">Target Export Pack</h3>
+          <Badge variant="outline" className="ml-auto">Determines Video Dimensions</Badge>
+        </div>
+        
+        <div className="grid sm:grid-cols-3 gap-3 mb-4">
+          {Object.entries({
+            social: { icon: '📱', label: 'Social Pack', ratio: '9:16 Vertical', desc: 'TikTok, Stories, Reels' },
+            professional: { icon: '💼', label: 'Professional', ratio: '16:9 Landscape', desc: 'LinkedIn, Presentations' },
+            ad: { icon: '🎯', label: 'Ad Pack', ratio: '16:9 Landscape', desc: 'YouTube, Google Ads' }
+          }).map(([key, pack]) => (
+            <Card 
+              key={key}
+              className={`p-4 cursor-pointer transition-all ${
+                selectedExportPack === key 
+                  ? 'border-purple-500 bg-purple-500/10' 
+                  : 'hover:border-purple-500/50'
+              }`}
+              onClick={() => setSelectedExportPack(key as any)}
+            >
+              <div className="text-2xl mb-2">{pack.icon}</div>
+              <div className="font-medium">{pack.label}</div>
+              <Badge variant="secondary" className="text-xs mt-2">{pack.ratio}</Badge>
+              <p className="text-xs text-muted-foreground mt-1">{pack.desc}</p>
+            </Card>
+          ))}
+        </div>
+
+        {selectedExportPack === 'ad' && (
+          <div className="mt-4 p-4 bg-background/50 rounded-lg">
+            <Label className="text-sm mb-2 block">Primary Aspect Ratio</Label>
+            <Select value={primaryRatio} onValueChange={(v) => setPrimaryRatio(v as any)}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="16:9">16:9 - Landscape (YouTube)</SelectItem>
+                <SelectItem value="9:16">9:16 - Vertical (TikTok Ads)</SelectItem>
+                <SelectItem value="1:1">1:1 - Square (Instagram Ads)</SelectItem>
+                <SelectItem value="4:5">4:5 - Portrait (Facebook Ads)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
+        <Alert className="mt-4">
+          <Sparkles className="w-4 h-4" />
+          <AlertDescription>
+            Video will be generated at <strong>{getRatioDimensions(primaryRatio)}</strong> for perfect composition. 
+            Additional formats will be intelligently cropped during export.
+          </AlertDescription>
+        </Alert>
+      </Card>
 
       {/* Engine Selection - Simplified */}
       <Card>

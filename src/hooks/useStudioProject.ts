@@ -123,8 +123,10 @@ export interface StudioProject {
       width: number;
       height: number;
       size: string;
+      isNative?: boolean;
     }>;
     pack?: string;
+    primaryRatio?: string;
     exportId?: string;
     timestamp?: string;
   } | null;
@@ -591,6 +593,18 @@ export const useStudioProject = () => {
 
       console.log('✅ Video generation complete:', data);
 
+      const getDimensionsForRatio = (ratio: string) => {
+        const dimensions: Record<string, { width: number; height: number }> = {
+          '1:1': { width: 1080, height: 1080 },
+          '9:16': { width: 1080, height: 1920 },
+          '16:9': { width: 1920, height: 1080 },
+          '4:5': { width: 1080, height: 1350 }
+        };
+        return dimensions[ratio] || { width: 1920, height: 1080 };
+      };
+
+      const dims = getDimensionsForRatio(config.ratio || '16:9');
+
       // Update project with completed video
       setProject(prev => ({
         ...prev,
@@ -598,8 +612,8 @@ export const useStudioProject = () => {
           engine: config.engine || 'virtura-pro',
           quality: config.quality || '4K',
           fps: config.fps || 30,
-          duration: config.duration || 30,
           ratio: config.ratio || '16:9',
+          duration: config.duration || 30,
           motionSettings: config.motionSettings,
           videoUrl: data.videoUrl,
           status: 'completed',
@@ -714,12 +728,17 @@ export const useStudioProject = () => {
           sourceVideo: {
             width: project.video.metadata?.width || 1920,
             height: project.video.metadata?.height || 1080,
-            duration: project.video.duration
+            duration: project.video.duration,
+            ratio: project.video.ratio
           }
         }
       });
 
       if (error) throw error;
+
+      if (!data.success || !data.videos) {
+        throw new Error(data.error || 'Export failed');
+      }
 
       setProject(prev => ({
         ...prev,

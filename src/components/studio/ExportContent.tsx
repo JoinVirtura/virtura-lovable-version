@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -52,10 +52,21 @@ export const ExportContent: React.FC<ExportContentProps> = ({
   isProcessing = false,
   className = ""
 }) => {
-  const [selectedPack, setSelectedPack] = useState<keyof typeof exportPacks>("social");
-  const [selectedRatios, setSelectedRatios] = useState<string[]>(["1:1"]);
+  const [selectedPack, setSelectedPack] = useState<keyof typeof exportPacks>(
+    (project?.export?.pack as keyof typeof exportPacks) || "social"
+  );
+  const [selectedRatios, setSelectedRatios] = useState<string[]>(
+    exportPacks[(project?.export?.pack as keyof typeof exportPacks) || "social"].formats
+  );
   const [contentCredentials, setContentCredentials] = useState(true);
   const [localProcessing, setLocalProcessing] = useState(false);
+
+  const primaryRatio = project?.video?.ratio || '16:9';
+
+  // Update selected ratios when pack changes
+  useEffect(() => {
+    setSelectedRatios(exportPacks[selectedPack].formats);
+  }, [selectedPack]);
 
   const handleRatioToggle = (ratio: string) => {
     setSelectedRatios(prev => 
@@ -158,8 +169,20 @@ export const ExportContent: React.FC<ExportContentProps> = ({
                 } bg-muted`}>
                   <span className="text-xs font-mono">{ratio}</span>
                 </div>
-                <h4 className="font-medium text-foreground">{info.label}</h4>
+                <div className="flex items-center justify-center gap-2 mb-1">
+                  <h4 className="font-medium text-foreground">{info.label}</h4>
+                  {ratio === primaryRatio && (
+                    <Badge variant="outline" className="text-xs bg-green-500/20 border-green-500">
+                      Native
+                    </Badge>
+                  )}
+                </div>
                 <p className="text-xs text-muted-foreground mt-1">{info.description}</p>
+                {ratio === primaryRatio && (
+                  <p className="text-xs text-green-400 mt-1">
+                    ✓ Perfect quality
+                  </p>
+                )}
                 {selectedRatios.includes(ratio) && (
                   <div className="mt-2">
                     <Badge className="text-xs">Selected</Badge>
