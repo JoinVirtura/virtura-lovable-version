@@ -267,14 +267,14 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
         value={advancedSettingsOpen}
         onValueChange={setAdvancedSettingsOpen}
       >
-        <AccordionItem value="advanced" className="border-0 rounded-xl bg-[#1a2332] overflow-hidden">
-          <AccordionTrigger className="hover:no-underline py-6 px-6 data-[state=open]:border-b data-[state=open]:border-slate-700/50">
+        <AccordionItem value="advanced" className="border-0">
+          <AccordionTrigger className="hover:no-underline py-4 px-0 hover:bg-slate-800/30 hover:px-6 rounded-lg transition-all data-[state=open]:bg-slate-800/20 data-[state=open]:px-6">
             <div className="flex items-center gap-3 w-full justify-center">
-              <Settings className="h-6 w-6 text-white" />
-              <span className="font-semibold text-xl text-white">Advanced Settings</span>
+              <Settings className="h-5 w-5 text-slate-400" />
+              <span className="font-medium text-base text-slate-300">Advanced Settings</span>
             </div>
           </AccordionTrigger>
-          <AccordionContent className="space-y-6 pb-6 px-6 pt-6">
+          <AccordionContent className="space-y-6 pb-6 px-6 pt-6 bg-slate-800/10 rounded-b-lg">
             {/* Professional Video Direction */}
             <div className="space-y-2">
               <h3 className="font-semibold text-lg text-white mb-3">Professional Video Direction</h3>
