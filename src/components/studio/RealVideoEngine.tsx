@@ -19,7 +19,21 @@ import {
   CheckCircle,
   AlertCircle,
   Download,
-  Settings
+  Settings,
+  Camera,
+  Mountain,
+  Box,
+  Palette,
+  Layout,
+  Wand2,
+  Square,
+  RectangleHorizontal,
+  RectangleVertical,
+  Monitor,
+  Aperture,
+  Video,
+  Brush,
+  Clock,
 } from 'lucide-react';
 import {
   Accordion,
@@ -85,6 +99,10 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
   const [fps, setFps] = useState(30);
   const [duration, setDuration] = useState(30);
   const [advancedSettingsOpen, setAdvancedSettingsOpen] = useState<string | undefined>(undefined);
+  const [contentType, setContentType] = useState('auto');
+  const [aspectRatio, setAspectRatio] = useState('square');
+  const [stylePreset, setStylePreset] = useState('hyper-realistic');
+  const [qualityPreset, setQualityPreset] = useState('neural-enhanced');
   
   const [motionSettings, setMotionSettings] = useState({
     headMovement: 75,
@@ -104,6 +122,10 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
         quality,
         fps,
         duration,
+        contentType,
+        aspectRatio,
+        stylePreset,
+        qualityPreset,
         motionSettings
       }
     };
@@ -274,111 +296,154 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
               <span className="font-semibold">Advanced Settings</span>
             </div>
           </AccordionTrigger>
-          <AccordionContent className="space-y-6 pb-4">
-            {/* Professional Video Direction */}
-            <div className="space-y-2">
-              <h3 className="font-semibold">Professional Video Direction</h3>
-              <Textarea
-                placeholder="Professional presentation with natural head movements and engaging body language."
-                value={videoPrompt}
-                onChange={(e) => setVideoPrompt(e.target.value)}
-                className="min-h-32 bg-black/40 border-border"
-                maxLength={500}
-              />
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>{videoPrompt.length}/500</span>
-                <span className="text-green-500">Professional direction</span>
-              </div>
+        <AccordionContent className="space-y-6 pb-4">
+          {/* Quality Settings Header with Badges */}
+          <div className="flex items-center justify-between">
+            <h3 className="font-semibold text-lg">Quality Settings</h3>
+            <div className="flex items-center gap-2">
+              <Badge 
+                variant="secondary" 
+                className="bg-purple-500/20 text-purple-300 border-purple-500/30"
+              >
+                Neural Enhanced
+              </Badge>
+              <Badge 
+                variant="secondary"
+                className="bg-purple-500/20 text-purple-300 border-purple-500/30"
+              >
+                4K
+              </Badge>
             </div>
+          </div>
 
-            {/* Motion & Expression Controls */}
-            <div className="space-y-3">
-              <h3 className="font-semibold">Motion & Expression Controls</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <div className="flex justify-between text-sm mb-2">
-                    <span>Head Movement</span>
-                    <span>{motionSettings.headMovement}%</span>
-                  </div>
-                  <Slider
-                    value={[motionSettings.headMovement]}
-                    onValueChange={([value]) => setMotionSettings(prev => ({ ...prev, headMovement: value }))}
-                    max={100}
-                    className="[&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-purple-500 [&_[role=slider]]:to-pink-500"
-                  />
-                </div>
-                <div>
-                  <div className="flex justify-between text-sm mb-2">
-                    <span>Eye Contact</span>
-                    <span>{motionSettings.eyeContact}%</span>
-                  </div>
-                  <Slider
-                    value={[motionSettings.eyeContact]}
-                    onValueChange={([value]) => setMotionSettings(prev => ({ ...prev, eyeContact: value }))}
-                    max={100}
-                    className="[&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-purple-500 [&_[role=slider]]:to-pink-500"
-                  />
-                </div>
-                <div>
-                  <div className="flex justify-between text-sm mb-2">
-                    <span>Expressions</span>
-                    <span>{motionSettings.expressions}%</span>
-                  </div>
-                  <Slider
-                    value={[motionSettings.expressions]}
-                    onValueChange={([value]) => setMotionSettings(prev => ({ ...prev, expressions: value }))}
-                    max={100}
-                    className="[&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-purple-500 [&_[role=slider]]:to-pink-500"
-                  />
-                </div>
-                <div>
-                  <div className="flex justify-between text-sm mb-2">
-                    <span>Lip Sync</span>
-                    <span>{motionSettings.lipSync}%</span>
-                  </div>
-                  <Slider
-                    value={[motionSettings.lipSync]}
-                    onValueChange={([value]) => setMotionSettings(prev => ({ ...prev, lipSync: value }))}
-                    max={100}
-                    className="[&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-purple-500 [&_[role=slider]]:to-pink-500"
-                  />
-                </div>
-              </div>
+          {/* Content Type Section */}
+          <div className="space-y-3">
+            <h3 className="font-semibold text-base">Content Type</h3>
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { id: 'portrait', label: 'Portrait', icon: Camera },
+                { id: 'landscape', label: 'Landscape', icon: Mountain },
+                { id: 'object', label: 'Object', icon: Box },
+                { id: 'abstract', label: 'Abstract', icon: Palette },
+                { id: 'scene', label: 'Scene', icon: Layout },
+                { id: 'auto', label: 'Auto', icon: Wand2 }
+              ].map((type) => (
+                <button
+                  key={type.id}
+                  onClick={() => setContentType(type.id)}
+                  className={`flex items-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
+                    contentType === type.id
+                      ? 'border-purple-500 bg-gradient-to-r from-purple-500/20 to-blue-500/20 text-white'
+                      : 'border-border bg-background/50 hover:border-purple-500/50'
+                  }`}
+                >
+                  <type.icon className="h-4 w-4" />
+                  <span className="font-medium text-sm">{type.label}</span>
+                </button>
+              ))}
             </div>
+          </div>
 
-            {/* Quality & Format */}
-            <div className="space-y-3">
-              <h3 className="font-semibold">Quality & Format</h3>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label className="text-xs mb-2 block">Quality</Label>
-                  <Select value={quality} onValueChange={setQuality}>
-                    <SelectTrigger className="bg-black/40">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-background border-border">
-                      <SelectItem value="720p">720p HD</SelectItem>
-                      <SelectItem value="1080p">1080p Full HD</SelectItem>
-                      <SelectItem value="4K">4K Ultra HD</SelectItem>
-                    </SelectContent>
-                  </Select>
+          {/* Aspect Ratio Section */}
+          <div className="space-y-3">
+            <h3 className="font-semibold text-base">Aspect Ratio</h3>
+            <div className="grid grid-cols-4 gap-3">
+              {[
+                { id: 'square', label: 'Square', icon: Square },
+                { id: 'wide', label: 'Wide', icon: RectangleHorizontal },
+                { id: 'tall', label: 'Tall', icon: RectangleVertical },
+                { id: 'classic', label: 'Classic', icon: Monitor }
+              ].map((ratio) => (
+                <button
+                  key={ratio.id}
+                  onClick={() => setAspectRatio(ratio.id)}
+                  className={`flex flex-col items-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
+                    aspectRatio === ratio.id
+                      ? 'border-purple-500 bg-gradient-to-r from-purple-500/20 to-blue-500/20 text-white'
+                      : 'border-border bg-background/50 hover:border-purple-500/50'
+                  }`}
+                >
+                  <ratio.icon className="h-5 w-5" />
+                  <span className="font-medium text-sm">{ratio.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Style Preset Section */}
+          <div className="space-y-3">
+            <h3 className="font-semibold text-base">Style Preset</h3>
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { id: 'hyper-realistic', label: 'Hyper Realistic', icon: Aperture },
+                { id: 'pixar-style', label: 'Pixar Style', icon: Sparkles },
+                { id: 'cinematic', label: 'Cinematic', icon: Video },
+                { id: 'anime-style', label: 'Anime Style', icon: Brush },
+                { id: 'vintage', label: 'Vintage', icon: Clock }
+              ].map((style) => (
+                <button
+                  key={style.id}
+                  onClick={() => setStylePreset(style.id)}
+                  className={`flex items-center gap-3 px-4 py-4 rounded-lg border-2 transition-all ${
+                    stylePreset === style.id
+                      ? 'border-purple-500 bg-gradient-to-r from-purple-500/20 to-blue-500/20 text-white'
+                      : 'border-border bg-background/50 hover:border-purple-500/50'
+                  }`}
+                >
+                  <style.icon className="h-5 w-5" />
+                  <span className="font-medium">{style.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Quality Settings Dropdown */}
+          <div className="space-y-3">
+            <h3 className="font-semibold text-base">Quality Settings</h3>
+            <Select value={quality} onValueChange={setQuality}>
+              <SelectTrigger className="w-full bg-background/50 border-border h-12">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-background border-border">
+                <SelectItem value="720p">720p HD</SelectItem>
+                <SelectItem value="1080p">1080p Full HD</SelectItem>
+                <SelectItem value="4K">4K Ultra</SelectItem>
+                <SelectItem value="8K">8K Ultra</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Motion & Expression Controls */}
+          <div className="space-y-3 pt-4 border-t border-border">
+            <h3 className="font-semibold text-base">Motion & Expression Controls</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <div className="flex justify-between text-sm mb-2">
+                  <span>Head Movement</span>
+                  <span>{motionSettings.headMovement}%</span>
                 </div>
-                <div>
-                  <Label className="text-xs mb-2 block">FPS</Label>
-                  <Select value={fps.toString()} onValueChange={(v) => setFps(parseInt(v))}>
-                    <SelectTrigger className="bg-black/40">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-background border-border">
-                      <SelectItem value="24">24 FPS</SelectItem>
-                      <SelectItem value="30">30 FPS</SelectItem>
-                      <SelectItem value="60">60 FPS</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <Slider
+                  value={[motionSettings.headMovement]}
+                  onValueChange={([value]) => setMotionSettings(prev => ({ ...prev, headMovement: value }))}
+                  max={100}
+                  className="[&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-purple-500 [&_[role=slider]]:to-pink-500"
+                />
+              </div>
+              <div>
+                <div className="flex justify-between text-sm mb-2">
+                  <span>Lip Sync</span>
+                  <span>{motionSettings.lipSync}%</span>
                 </div>
+                <Slider
+                  value={[motionSettings.lipSync]}
+                  onValueChange={([value]) => setMotionSettings(prev => ({ ...prev, lipSync: value }))}
+                  max={100}
+                  className="[&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-purple-500 [&_[role=slider]]:to-pink-500"
+                />
               </div>
             </div>
-          </AccordionContent>
+          </div>
+        </AccordionContent>
         </AccordionItem>
       </Accordion>
 
