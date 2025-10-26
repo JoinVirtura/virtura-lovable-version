@@ -357,7 +357,8 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                 {/* Multi-Layer Holographic Title */}
                 <div className="relative">
                   <motion.h2 
-                    className="relative text-7xl md:text-8xl lg:text-9xl font-black leading-relaxed tracking-tighter pb-4"
+                    className="relative text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter pb-6 overflow-visible"
+                    style={{ lineHeight: '1.3' }}
                     initial={{ y: 50, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ duration: 0.8, delay: 0.2 }}

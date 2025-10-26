@@ -99,15 +99,16 @@ export const MasonryGrid: React.FC<MasonryGridProps> = ({ tiles, className }) =>
                   transition={{ duration: 3, repeat: Infinity }}
                 />
                 
-                <div className="space-y-1">
+                <div className="space-y-1 overflow-visible">
                   <motion.h2 
-                    className="text-5xl md:text-6xl font-black relative leading-relaxed py-3 pb-4"
+                    className="text-5xl md:text-6xl font-black relative py-3 pb-6 overflow-visible"
                     style={{
                       background: 'linear-gradient(135deg, #FFD700 0%, #B8860B 100%)',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
                       backgroundClip: 'text',
-                      filter: 'drop-shadow(0 8px 16px rgba(255, 215, 0, 0.3))'
+                      filter: 'drop-shadow(0 8px 16px rgba(255, 215, 0, 0.3))',
+                      lineHeight: '1.4'
                     }}
                   >
                     Trending
