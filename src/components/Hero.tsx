@@ -96,6 +96,7 @@ export const Hero = () => {
     metadata?: any;
   }>>([]);
   const [referenceImage, setReferenceImage] = useState<string | null>(null);
+  const [savingImageId, setSavingImageId] = useState<string | null>(null);
   
   // Handle file upload for Image Style
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -327,6 +328,84 @@ export const Hero = () => {
     }
   };
 
+  const handleSaveToLibrary = async (card: {
+    id: string;
+    imageUrl: string;
+    prompt: string;
+    metadata?: any;
+  }) => {
+    setSavingImageId(card.id);
+    
+    try {
+      // Check authentication
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast.error("Please sign in to save images to your library");
+        setSavingImageId(null);
+        return;
+      }
+
+      let finalImageUrl = card.imageUrl;
+
+      // Handle base64 images - upload to Supabase Storage
+      if (card.imageUrl.startsWith('data:image/')) {
+        const base64Data = card.imageUrl.split(',')[1];
+        const byteCharacters = atob(base64Data);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: 'image/png' });
+        
+        const fileName = `generated-image-${Date.now()}-${card.id}.png`;
+        const filePath = `images/${fileName}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('virtura-media')
+          .upload(filePath, blob, {
+            contentType: 'image/png',
+            cacheControl: '3600',
+            upsert: true
+          });
+          
+        if (uploadError) throw uploadError;
+        
+        const { data: { publicUrl } } = supabase.storage
+          .from('virtura-media')
+          .getPublicUrl(filePath);
+          
+        finalImageUrl = publicUrl;
+      }
+
+      // Insert into avatar_library
+      const { error } = await supabase
+        .from('avatar_library')
+        .insert({
+          user_id: user.id,
+          image_url: finalImageUrl,
+          video_url: null,
+          thumbnail_url: finalImageUrl,
+          audio_url: null,
+          is_video: false,
+          prompt: card.prompt,
+          title: `AI Generated Image ${new Date().toLocaleDateString()}`,
+          tags: ['ai-generated', 'home-page', selectedStyle !== 'Style' ? selectedStyle : 'photorealistic'],
+          duration: 0
+        });
+
+      if (error) throw error;
+
+      toast.success("Image saved to your library!");
+    } catch (error: any) {
+      console.error('Save to library error:', error);
+      toast.error(error.message || "Failed to save image. Please try again.");
+    } finally {
+      setSavingImageId(null);
+    }
+  };
+
   return (
     <section className="relative min-h-screen bg-background overflow-hidden">
       {/* Futuristic Violet-to-Blue Background System */}
@@ -472,12 +551,15 @@ export const Hero = () => {
                                   <Download className="h-5 w-5 text-white" />
                                 </button>
                                 <button
-                                  onClick={() => {
-                                    toast.success("Saved to library!");
-                                  }}
-                                  className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all flex items-center justify-center"
+                                  onClick={() => handleSaveToLibrary(card)}
+                                  disabled={savingImageId === card.id}
+                                  className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all flex items-center justify-center disabled:opacity-50"
                                 >
-                                  <Heart className="h-5 w-5 text-white" />
+                                  {savingImageId === card.id ? (
+                                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
+                                  ) : (
+                                    <Heart className="h-5 w-5 text-white" />
+                                  )}
                                 </button>
                                 <button
                                   onClick={() => {
