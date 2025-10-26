@@ -488,11 +488,11 @@ export const useStudioProject = () => {
       const supabaseUrl = 'https://ujaoziqnxhjqlmnvlxav.supabase.co';
       const authToken = session.access_token; // Use user's JWT token instead of anon key
       
-      // Convert blob URLs to public Supabase URLs
+      // Convert blob URLs OR data URLs to public Supabase URLs
       let publicAvatarUrl = avatarUrl;
-      
-      if (avatarUrl.startsWith('blob:')) {
-        console.log('Converting blob URL to public URL...');
+
+      if (avatarUrl.startsWith('blob:') || avatarUrl.startsWith('data:')) {
+        console.log('Converting blob/data URL to public URL...');
         const response = await fetch(avatarUrl);
         const blob = await response.blob();
         const fileName = `avatar-${Date.now()}.png`;
