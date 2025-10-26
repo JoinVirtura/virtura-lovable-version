@@ -53,8 +53,8 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
   const mainItems = [
     { id: "overview", label: "Home", icon: Home },
     { id: "studio", label: "Copilot", icon: Command },
+    { id: "talking-avatar", label: "Image Pro", icon: Video },
     { id: "video-pro", label: "Video Pro", icon: Video },
-    { id: "talking-avatar", label: "Studio Pro", icon: Video },
   ];
 
   const navigationTabs = [
@@ -149,26 +149,6 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup className="py-0">{/* Removed pb-0 which caused spacing issue */}
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton 
-                  onClick={() => onViewChange("export")}
-                  isActive={activeView === "export"}
-                  className={`w-full ${isCollapsed ? "justify-center px-2" : "justify-start gap-3"} ${
-                    activeView === "export" 
-                      ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30" 
-                      : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
-                  }`}
-                >
-                  <Download className="w-4 h-4 shrink-0" />
-                  {!isCollapsed && <span className="font-medium">Export</span>}
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
       </SidebarContent>
 
       <SidebarFooter className="p-0">
@@ -176,15 +156,15 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
         
         <button 
           onClick={() => onViewChange("settings")}
-          className={`flex items-center gap-3 w-full transition-colors ${isCollapsed ? "px-2 py-3 justify-center" : "px-4 py-3"} ${
+          className={`flex items-center w-full transition-colors ${isCollapsed ? "px-2 py-3 justify-center" : "px-3 py-3 gap-3"} ${
             activeView === "settings" 
               ? "bg-violet-500/20" 
               : "hover:bg-violet-500/5"
           }`}
         >
-          <Avatar className="w-8 h-8 ring-2 ring-violet-500/30">
+          <Avatar className="w-4 h-4 ring-2 ring-violet-500/30 shrink-0">
             <AvatarImage src="/lovable-uploads/517f5d9c-c223-4625-9aa5-5f2ef255f576.png" />
-            <AvatarFallback className="bg-violet-500/20 text-violet-300">J</AvatarFallback>
+            <AvatarFallback className="bg-violet-500/20 text-violet-300 text-[10px]">J</AvatarFallback>
           </Avatar>
           {!isCollapsed && (
             <div className="flex-1 min-w-0 text-left">
