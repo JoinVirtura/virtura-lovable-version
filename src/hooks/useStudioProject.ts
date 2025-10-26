@@ -478,16 +478,6 @@ export const useStudioProject = () => {
         } as any
       }));
 
-      // Get authenticated user session token
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        throw new Error('Authentication required. Please sign in to generate videos.');
-      }
-
-      // Priority 2: Use SSE for real-time progress
-      const supabaseUrl = 'https://ujaoziqnxhjqlmnvlxav.supabase.co';
-      const authToken = session.access_token; // Use user's JWT token instead of anon key
-      
       // Convert blob URLs OR data URLs to public Supabase URLs
       let publicAvatarUrl = avatarUrl;
 
@@ -511,228 +501,91 @@ export const useStudioProject = () => {
           .getPublicUrl(`avatars/${fileName}`);
           
         publicAvatarUrl = urlData.publicUrl;
-        console.log('Avatar uploaded to:', publicAvatarUrl);
+        console.log('✅ Avatar uploaded to:', publicAvatarUrl);
       }
-      
-      // Health check: Verify edge function is ready
-      console.log('🏥 Running health check...');
-      try {
-        const healthResponse = await fetch(`${supabaseUrl}/functions/v1/video-engine-pro`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${authToken}`
-          }
-        });
-        
-        const healthData = await healthResponse.json();
-        console.log('Health check result:', healthData);
-        
-        if (!healthData.hasReplicateKey) {
-          throw new Error('REPLICATE_API_KEY not configured in Supabase. Please add it in Project Settings → Edge Functions → Secrets');
-        }
-        
-        if (healthData.status !== 'ok') {
-          throw new Error('Video engine not ready. Please try again in a few moments.');
-        }
-        
-        console.log('✅ Health check passed - proceeding with video generation');
-      } catch (healthError: any) {
-        throw new Error(`Video engine health check failed: ${healthError.message}`);
-      }
-      
-      // Wrap video generation with retry logic
-      const response = await retryWithBackoff(async () => {
-        // 10-minute timeout (Replicate models can take 2-5 minutes)
-        const abortController = new AbortController();
-        const timeoutId = setTimeout(() => {
-          abortController.abort();
-          console.error('Video generation request timed out after 10 minutes');
-        }, 600000);
 
-        console.log('🚀 Starting video generation request...');
-        console.log('Avatar URL:', publicAvatarUrl);
-        console.log('Audio URL:', project.voice?.audioUrl);
-        
-        const response = await fetch(`${supabaseUrl}/functions/v1/video-engine-pro`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${authToken}`
-          },
-          body: JSON.stringify({
-            avatarImageUrl: publicAvatarUrl,
-            audioUrl: project.voice?.audioUrl,
-            prompt: config.prompt,
-            settings: {
-              engine: config.engine || 'virtura-pro',
-              quality: config.quality || '4K',
-              fps: config.fps || 30,
-              ratio: config.ratio || '16:9',
-              duration: config.duration || 30,
-              motionSettings: config.motionSettings,
-              background: project.style?.background || 'studio',
-              backgroundValue: project.style?.effects?.colorGrading,
-              lookMode: project.style?.lookMode,
-              lighting: project.style?.lighting,
-              camera: project.style?.camera,
-              effects: project.style?.effects,
-              talkingStyle: config.talkingStyle || 'stable',
-              voiceEmotions: project.voice?.emotions,
-              voiceLanguage: project.voice?.language,
-              voiceProvider: project.voice?.provider,
-              ultraHD: project.qualitySettings.enableUltraHD,
-              neuralEnhancement: project.qualitySettings.neuralEnhancement,
-              cinematicEffects: project.qualitySettings.cinematicEffects,
-              realTimeSync: project.qualitySettings.realTimeSync,
-              gpuAcceleration: project.qualitySettings.gpuAcceleration
-            }
-          }),
-          signal: abortController.signal
-        }).finally(() => {
-          clearTimeout(timeoutId);
-        });
+      console.log('🚀 Starting video generation...');
+      console.log('Avatar URL:', publicAvatarUrl);
+      console.log('Audio URL:', project.voice?.audioUrl);
 
-        console.log('📡 Response status:', response.status, response.statusText);
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error('Edge function error:', errorText);
-          
-          // Enhanced model-specific error messages
-          if (response.status === 404) {
-            throw new Error('❌ Model not available - trying alternative engine...');
-          } else if (response.status === 422) {
-            throw new Error('⚠️ Invalid input format - adjusting parameters...');
-          } else if (response.status === 429) {
-            throw new Error('⏸️ Rate limited - retrying in 60 seconds...');
-          } else if (response.status === 402 || errorText.includes('payment') || errorText.includes('billing')) {
-            throw new Error('💳 Replicate payment required - please add billing at replicate.com/account/billing');
-          } else if (response.status >= 500) {
-            throw new Error(`🔧 Server error (${response.status}) - retrying with exponential backoff...`);
-          } else {
-            throw new Error(`❌ Generation failed: ${response.status} ${errorText}`);
+      // Use supabase.functions.invoke() for automatic authentication (same pattern as all other edge functions)
+      const { data, error } = await supabase.functions.invoke('video-engine-pro', {
+        body: {
+          avatarImageUrl: publicAvatarUrl,
+          audioUrl: project.voice?.audioUrl,
+          prompt: config.prompt,
+          settings: {
+            engine: config.engine || 'virtura-pro',
+            quality: config.quality || '4K',
+            fps: config.fps || 30,
+            ratio: config.ratio || '16:9',
+            duration: config.duration || 30,
+            motionSettings: config.motionSettings,
+            background: project.style?.background || 'studio',
+            backgroundValue: project.style?.effects?.colorGrading,
+            lookMode: project.style?.lookMode,
+            lighting: project.style?.lighting,
+            camera: project.style?.camera,
+            effects: project.style?.effects,
+            talkingStyle: config.talkingStyle || 'stable',
+            voiceEmotions: project.voice?.emotions,
+            voiceLanguage: project.voice?.language,
+            voiceProvider: project.voice?.provider,
+            ultraHD: project.qualitySettings.enableUltraHD,
+            neuralEnhancement: project.qualitySettings.neuralEnhancement,
+            cinematicEffects: project.qualitySettings.cinematicEffects,
+            realTimeSync: project.qualitySettings.realTimeSync,
+            gpuAcceleration: project.qualitySettings.gpuAcceleration
           }
         }
-        
-        return response;
       });
 
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-      
-      if (!reader) throw new Error('No response stream');
+      if (error) throw error;
+      if (!data) throw new Error('No response from video engine');
 
-      let buffer = '';
-      
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n\n');
-        buffer = lines.pop() || '';
-        
-        for (const line of lines) {
-          if (!line.trim() || !line.startsWith('data: ')) continue;
-          
-          try {
-            const data = JSON.parse(line.slice(6));
-            
-            // Update project with progress including engine attempt info
-            setProject(prev => ({
-              ...prev,
-              video: {
-                ...prev.video,
-                status: data.stage === 'complete' ? 'completed' : data.stage === 'error' ? 'error' : 'processing',
-                metadata: {
-                  ...prev.video?.metadata,
-                  currentStage: data.message,
-                  progress: data.progress,
-                  engineAttempt: data.engineAttempt,
-                  totalEngines: data.totalEngines,
-                  lastError: data.error  // Track last error
-                }
-              } as any
-            }));
+      console.log('✅ Video generation complete:', data);
 
-            // Show engine fallback toast
-            if (data.stage === 'engine_fallback') {
-              const isLastModel = data.engineAttempt === data.totalEngines;
-              toast({
-                title: isLastModel ? "All Models Failed" : "Trying Alternative Model",
-                description: data.message,
-                variant: isLastModel ? 'destructive' : 'default'
-              });
-            }
-
-            if (data.stage === 'complete') {
-              setProject(prev => ({
-                ...prev,
-                video: {
-                  engine: config.engine || 'virtura-pro',
-                  quality: config.quality || '4K',
-                  fps: config.fps || 30,
-                  duration: config.duration || 30,
-                  ratio: config.ratio || '16:9',
-                  motionSettings: config.motionSettings,
-                  videoUrl: data.videoUrl,
-                  status: 'completed',
-                  metadata: {
-                    ...data.metadata,
-                    currentStage: 'Video generation complete',
-                    progress: 100,
-                    provider: data.provider,
-                    model: data.model,
-                    processingTime: data.processingTime
-                  }
-                }
-              }));
-
-              toast({
-                title: "Video Generated Successfully! 🎉",
-                description: `Created with ${data.provider} - ${data.model}`,
-              });
-
-              // Auto-save to library after successful generation
-              const autoSaveEnabled = localStorage.getItem('virtura_auto_save_videos') !== 'false';
-              if (autoSaveEnabled && data.videoUrl && data.videoUrl.includes('supabase.co')) {
-                setTimeout(async () => {
-                  try {
-                    await saveToLibrary();
-                    toast({
-                      title: "Auto-saved to Library",
-                      description: "Your video has been automatically saved",
-                    });
-                  } catch (error) {
-                    console.error('Auto-save failed:', error);
-                  }
-                }, 1000);
-              }
-              
-              break; // Exit SSE loop on completion
-            } else if (data.stage === 'error') {
-              const errorMessage = data.error.includes('404') 
-                ? 'Model not available - trying alternative engine...'
-                : data.error.includes('422')
-                ? 'Invalid input format - adjusting parameters...'
-                : data.error.includes('429')
-                ? 'Rate limited - will retry automatically...'
-                : data.error.includes('payment') || data.error.includes('402')
-                ? 'Replicate payment required - please add billing at replicate.com/account/billing'
-                : data.error;
-                
-              toast({
-                title: "Video Generation Issue",
-                description: errorMessage,
-                variant: data.code === 'VIDEO_ENGINE_ERROR' ? 'destructive' : 'default'
-              });
-              
-              // Don't throw - let cascade try next model
-            }
-          } catch (parseError) {
-            console.error('Failed to parse SSE data:', parseError);
+      // Update project with completed video
+      setProject(prev => ({
+        ...prev,
+        video: {
+          engine: config.engine || 'virtura-pro',
+          quality: config.quality || '4K',
+          fps: config.fps || 30,
+          duration: config.duration || 30,
+          ratio: config.ratio || '16:9',
+          motionSettings: config.motionSettings,
+          videoUrl: data.videoUrl,
+          status: 'completed',
+          metadata: {
+            currentStage: 'Video generation complete',
+            progress: 100,
+            provider: data.provider,
+            model: data.model,
+            processingTime: data.processingTime
           }
         }
+      }));
+
+      toast({
+        title: "Video Generated Successfully! 🎉",
+        description: `Created with ${data.provider || 'Replicate'}`,
+      });
+
+      // Auto-save to library after successful generation
+      const autoSaveEnabled = localStorage.getItem('virtura_auto_save_videos') !== 'false';
+      if (autoSaveEnabled && data.videoUrl && data.videoUrl.includes('supabase.co')) {
+        setTimeout(async () => {
+          try {
+            await saveToLibrary();
+            toast({
+              title: "Auto-saved to Library",
+              description: "Your video has been automatically saved",
+            });
+          } catch (error) {
+            console.error('Auto-save failed:', error);
+          }
+        }, 1000);
       }
 
     } catch (error: any) {
