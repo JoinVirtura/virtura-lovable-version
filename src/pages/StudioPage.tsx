@@ -59,7 +59,7 @@ export default function StudioPage() {
     saveToLibrary,
     projectProgress,
     qualityMetrics
-  } = useStudioProject();
+  } = useStudioProject(false);
 
   // Load pre-selected avatar from Library
   useEffect(() => {
