@@ -180,6 +180,40 @@ export const useStudioProject = () => {
     style: 87
   });
 
+  // Load most recent project on mount
+  useEffect(() => {
+    const loadProject = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data: projects } = await supabase
+          .from('projects')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('updated_at', { ascending: false })
+          .limit(1);
+
+        if (projects && projects.length > 0) {
+          const savedProject = projects[0];
+          if (savedProject.metadata) {
+            setProject(prev => ({
+              ...prev,
+              ...(savedProject.metadata as Partial<StudioProject>),
+              id: savedProject.id,
+              name: savedProject.title
+            }));
+            console.log('✅ Loaded project from database:', savedProject.id);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load project:', error);
+      }
+    };
+
+    loadProject();
+  }, []);
+
   // Auto-save project changes
   useEffect(() => {
     const saveProject = async () => {

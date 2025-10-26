@@ -231,6 +231,8 @@ export default function VideoProPage() {
                         onUpdate={updateProject}
                         onGenerate={generateVideo}
                         isProcessing={isProcessing}
+                        onDownload={downloadVideo}
+                        onSaveToLibrary={saveToLibrary}
                       />
                     </ErrorBoundary>
                   </TabsContent>

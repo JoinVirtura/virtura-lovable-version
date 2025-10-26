@@ -227,6 +227,38 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
         </Card>
       )}
 
+      {/* Video Result - Moved to Top for Visibility */}
+      {project.video?.status === 'completed' && project.video?.videoUrl && (
+        <Card className="border-green-500/20 bg-green-500/5">
+          <CardHeader>
+            <CardTitle className="text-sm flex items-center gap-2">
+              <CheckCircle className="h-4 w-4 text-green-500" />
+              Video Generated Successfully
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <video 
+              controls 
+              className="w-full rounded-lg"
+              controlsList="nodownload"
+              onContextMenu={(e) => e.preventDefault()}
+            >
+              <source src={project.video.videoUrl} type="video/mp4" />
+            </video>
+            <div className="grid grid-cols-2 gap-2">
+              <Button onClick={onDownload} variant="outline" size="sm">
+                <Download className="h-4 w-4 mr-2" />
+                Download
+              </Button>
+              <Button onClick={onSaveToLibrary} variant="outline" size="sm">
+                <CheckCircle className="h-4 w-4 mr-2" />
+                Save to Library
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Engine Selection - Simplified */}
       <Card>
         <CardHeader>
@@ -401,33 +433,6 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
           </>
         )}
       </Button>
-
-      {/* Video Result */}
-      {project.video?.status === 'completed' && project.video?.videoUrl && (
-        <Card className="border-green-500/20 bg-green-500/5">
-          <CardHeader>
-            <CardTitle className="text-sm flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-green-500" />
-              Video Generated Successfully
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <video controls className="w-full rounded-lg">
-              <source src={project.video.videoUrl} type="video/mp4" />
-            </video>
-            <div className="grid grid-cols-2 gap-2">
-              <Button onClick={onDownload} variant="outline" size="sm">
-                <Download className="h-4 w-4 mr-2" />
-                Download
-              </Button>
-              <Button onClick={onSaveToLibrary} variant="outline" size="sm">
-                <CheckCircle className="h-4 w-4 mr-2" />
-                Save to Library
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 };
