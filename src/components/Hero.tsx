@@ -675,63 +675,6 @@ export const Hero = () => {
                   </button>
                 </div>
               </div>
-              
-              {/* Advanced Settings Dropdown */}
-              <div className="border-t border-primary/20 pt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowAdvanced(!showAdvanced)}
-                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-white transition-colors"
-                >
-                  <Settings className="h-4 w-4" />
-                  Advanced Settings
-                  <ChevronDown className={`h-4 w-4 transition-transform ${showAdvanced ? 'rotate-180' : ''}`} />
-                </button>
-                
-                {showAdvanced && (
-                  <div className="mt-4 space-y-4 animate-fade-in">
-                    <div className="grid grid-cols-2 gap-4">
-                      {/* Style Button */}
-                      <Button
-                        type="button"
-                        onClick={() => setShowStyleModal(true)}
-                        className="w-full justify-start bg-black/40 border-2 border-primary/30 text-white hover:bg-primary/20"
-                      >
-                        <Palette className="h-4 w-4 mr-2" />
-                        {selectedImageStyle ? selectedImageStyle.name : selectedStyle}
-                      </Button>
-                      
-                      {/* Aspect Ratio */}
-                      <div className="relative" data-aspect-container>
-                        <Button
-                          type="button"
-                          onClick={() => setShowAspectOptions(!showAspectOptions)}
-                          className="w-full justify-start bg-black/40 border-2 border-primary/30 text-white hover:bg-primary/20"
-                        >
-                          Aspect: {selectedAspect}
-                        </Button>
-                        {showAspectOptions && (
-                          <div className="absolute top-full mt-2 w-full bg-black/90 backdrop-blur-xl border-2 border-primary/50 shadow-[0_0_30px_rgba(139,92,246,0.4)] rounded-lg p-2 z-[100]">
-                            {['1:1', '2:3', '3:2', '16:9', '9:16'].map((ratio) => (
-                              <button
-                                key={ratio}
-                                type="button"
-                                onClick={() => {
-                                  setSelectedAspect(ratio);
-                                  setShowAspectOptions(false);
-                                }}
-                                className="w-full text-left px-3 py-2 rounded text-white hover:bg-primary/20 hover:text-white transition-colors"
-                              >
-                                {ratio}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
             </div>
           </Card>
         </div>
