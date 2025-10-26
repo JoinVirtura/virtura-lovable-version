@@ -169,7 +169,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
           </Avatar>
           {!isCollapsed && (
             <div className="flex-1 min-w-0 text-left">
-              <p className="font-medium text-sm text-white">Jeff Krammer</p>
+              <p className="font-medium text-sm text-white">Jahi Bentley</p>
             </div>
           )}
         </button>
