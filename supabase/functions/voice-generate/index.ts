@@ -12,7 +12,9 @@ serve(async (req) => {
   }
 
   try {
+    const startTime = Date.now();
     const { script, voiceId, model, voiceSettings } = await req.json();
+    console.log('🎙️ Voice generation started:', { scriptLength: script?.length, voiceId });
     
     if (!script) {
       throw new Error('Script is required');
@@ -66,6 +68,7 @@ serve(async (req) => {
         throw new Error(`ElevenLabs API error: ${res.status} ${res.statusText}: ${txt}`);
       }
       const buf = await res.arrayBuffer();
+      console.log(`✅ ElevenLabs audio generated in ${Date.now() - startTime}ms`);
       return new Uint8Array(buf);
     };
 
@@ -187,6 +190,7 @@ serve(async (req) => {
     let publicUrl: string | null = null;
 
     if (SUPABASE_URL && SERVICE_ROLE_KEY) {
+      console.log('📤 Starting storage upload...');
       try {
         const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
         const fileName = `audio/${Date.now()}-${(crypto as any).randomUUID?.() || Math.random().toString(36).slice(2)}.mp3`;
@@ -200,7 +204,7 @@ serve(async (req) => {
         } else {
           const { data: pub } = supabase.storage.from('virtura-media').getPublicUrl(fileName);
           publicUrl = pub?.publicUrl || null;
-          console.log('Uploaded audio to storage at:', publicUrl, 'provider:', providerUsed);
+          console.log(`✅ Storage upload completed in ${Date.now() - startTime}ms total - URL:`, publicUrl, 'provider:', providerUsed);
         }
       } catch (e) {
         console.warn('Error uploading audio to storage:', e);

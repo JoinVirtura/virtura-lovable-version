@@ -357,7 +357,8 @@ export const useStudioProject = () => {
         scriptPreview: config.script?.substring(0, 50) + '...'
       });
 
-      const { data, error } = await supabase.functions.invoke('voice-generate', {
+      // Add timeout protection (60 seconds)
+      const invokePromise = supabase.functions.invoke('voice-generate', {
         body: {
           script: config.script,
           voiceId: config.voiceId,
@@ -370,6 +371,12 @@ export const useStudioProject = () => {
           }
         }
       });
+
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Voice generation timed out after 60s')), 60000)
+      );
+
+      const { data, error } = await Promise.race([invokePromise, timeoutPromise]) as any;
       
       console.log('✅ Voice generation response:', { 
         success: !error, 
@@ -379,41 +386,46 @@ export const useStudioProject = () => {
 
       if (error) throw error;
 
-      // Calculate actual audio duration - wait for metadata before updating state
+      // Update state immediately with audio URL (non-blocking)
       const audioUrl = data.audioUrl;
       
-      await new Promise<void>((resolve) => {
-        const audio = new Audio(audioUrl);
-        
-        audio.addEventListener('loadedmetadata', () => {
-          const durationInSeconds = Math.round(audio.duration);
-          
-          setProject(prev => ({
-            ...prev,
-            voice: {
-              type: 'tts',
-              script: config.script,
-              voiceId: config.voiceId,
-              audioUrl,
-              status: 'completed',
-              language: config.language,
-              metadata: {
-                duration: durationInSeconds,
-                waveform: data.waveform,
-                phonemes: data.phonemes,
-                provider: data.provider,
-                model: data.model
-              }
+      setProject(prev => ({
+        ...prev,
+        voice: {
+          type: 'tts',
+          script: config.script,
+          voiceId: config.voiceId,
+          audioUrl,
+          status: 'completed',
+          language: config.language,
+          metadata: {
+            duration: 0, // Will be updated shortly by background task
+            waveform: data.waveform,
+            phonemes: data.phonemes,
+            provider: data.provider,
+            model: data.model
+          }
+        }
+      }));
+
+      // Fetch audio duration in background (non-blocking)
+      const audio = new Audio(audioUrl);
+      audio.addEventListener('loadedmetadata', () => {
+        const durationInSeconds = Math.round(audio.duration);
+        setProject(prev => ({
+          ...prev,
+          voice: prev.voice ? {
+            ...prev.voice,
+            metadata: {
+              ...prev.voice.metadata,
+              duration: durationInSeconds
             }
-          }));
-          
-          resolve();
-        });
-        
-        audio.addEventListener('error', () => {
-          console.warn('Could not load audio metadata, using default duration');
-          resolve();
-        });
+          } : prev.voice
+        }));
+        console.log(`✅ Audio metadata loaded: ${durationInSeconds}s`);
+      });
+      audio.addEventListener('error', () => {
+        console.warn('Could not load audio metadata');
       });
 
       toast({
