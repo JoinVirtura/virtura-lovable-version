@@ -62,6 +62,16 @@ export default function StudioPage() {
   } = useStudioProject();
 
   const handleStepChange = (stepId: string) => {
+    // Clear video if navigating away from video step
+    if (currentStep === 'video' && stepId !== 'video') {
+      updateProject({
+        video: {
+          ...project.video,
+          videoUrl: undefined
+        }
+      });
+    }
+    
     setCurrentStep(stepId);
   };
 
@@ -225,6 +235,7 @@ export default function StudioPage() {
             {/* Real-time Preview */}
             <div className="glass-card border border-violet-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] rounded-xl overflow-hidden">
               <RealtimePreview 
+                key={currentStep}
                 project={project}
                 isProcessing={isProcessing}
               />

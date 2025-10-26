@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { toast as sonnerToast } from 'sonner';
 
 // Enhanced project structure for world-class AI studio
 export interface StudioProject {
@@ -381,11 +382,19 @@ export const useStudioProject = () => {
 
       // Calculate actual audio duration - wait for metadata before updating state
       const audioUrl = data.audioUrl;
+      const startTime = Date.now();
+      
+      console.log('📥 Loading audio metadata...');
+      sonnerToast.loading('Voice generated! Loading audio...', { id: 'voice-loading' });
       
       await new Promise<void>((resolve) => {
         const audio = new Audio(audioUrl);
+        let metadataLoaded = false;
         
         audio.addEventListener('loadedmetadata', () => {
+          metadataLoaded = true;
+          const loadTime = Date.now() - startTime;
+          console.log('✅ Audio metadata loaded in', loadTime, 'ms');
           const durationInSeconds = Math.round(audio.duration);
           
           setProject(prev => ({
@@ -407,11 +416,14 @@ export const useStudioProject = () => {
             }
           }));
           
+          sonnerToast.success('Voice ready to use!', { id: 'voice-loading' });
           resolve();
         });
         
         audio.addEventListener('error', () => {
-          console.warn('Could not load audio metadata, using default duration');
+          if (!metadataLoaded) {
+            console.warn('⚠️ Audio metadata failed, using defaults');
+          }
           setProject(prev => ({
             ...prev,
             voice: {
@@ -430,8 +442,17 @@ export const useStudioProject = () => {
               }
             }
           }));
+          sonnerToast.success('Voice ready to use!', { id: 'voice-loading' });
           resolve();
         });
+        
+        // Timeout after 5 seconds
+        setTimeout(() => {
+          if (!metadataLoaded) {
+            console.warn('⚠️ Audio metadata timeout');
+            audio.dispatchEvent(new Event('error'));
+          }
+        }, 5000);
       });
 
       toast({

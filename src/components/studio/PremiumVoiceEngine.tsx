@@ -231,36 +231,39 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
       const { data, error } = await supabase.functions.invoke('voice-preview', {
         body: {
           voiceId: selectedVoice,
-          text: 'Hello! This is a preview of my voice.',
+          text: `Hello, I'm ${selectedVoiceData?.name}. This is a preview of my voice.`,
         },
       });
 
       if (error) throw error;
 
-      if (data?.audioData) {
-        // Handle data URI format (data:audio/mpeg;base64,xxxxx)
-        let audioData = data.audioData;
-        if (audioData.startsWith('data:')) {
-          // Extract base64 part after the comma
-          audioData = audioData.split(',')[1];
-        }
+      if (data?.audioData && previewAudioRef.current) {
+        // Convert base64 to blob for faster playback
+        const base64Response = await fetch(data.audioData);
+        const blob = await base64Response.blob();
+        const blobUrl = URL.createObjectURL(blob);
         
-        const audioBlob = new Blob(
-          [Uint8Array.from(atob(audioData), c => c.charCodeAt(0))],
-          { type: 'audio/mpeg' }
-        );
-        const audioUrl = URL.createObjectURL(audioBlob);
+        previewAudioRef.current.src = blobUrl;
         
-        if (previewAudioRef.current) {
-          previewAudioRef.current.src = audioUrl;
-          await previewAudioRef.current.play();
-        }
+        // Wait for canplaythrough event before playing
+        await new Promise((resolve, reject) => {
+          const timeoutId = setTimeout(() => reject(new Error('Audio loading timeout')), 3000);
+          
+          previewAudioRef.current!.addEventListener('canplaythrough', () => {
+            clearTimeout(timeoutId);
+            resolve(true);
+          }, { once: true });
+          
+          previewAudioRef.current!.load();
+        });
+        
+        await previewAudioRef.current.play();
       } else {
         throw new Error('No audio data received');
       }
     } catch (error: any) {
       console.error('Preview error:', error);
-      toast.error(`Failed to play preview: ${error.message}`);
+      toast.error('Failed to play preview');
       setIsPlayingPreview(false);
     }
   };
@@ -401,7 +404,21 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
           {/* Script Editor */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm">Voice Script</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm">Voice Script</CardTitle>
+                {script && (
+                  <Button 
+                    size="sm" 
+                    variant="ghost" 
+                    onClick={() => {
+                      setScript('');
+                      onUpdate({ voice: null });
+                    }}
+                  >
+                    Clear Script
+                  </Button>
+                )}
+              </div>
             </CardHeader>
             <CardContent>
               <Textarea
