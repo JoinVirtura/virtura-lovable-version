@@ -1,5 +1,8 @@
 project_id = "ujaoziqnxhjqlmnvlxav"
 
+[functions.track-usage]
+verify_jwt = true
+
 [functions.generate-image-replicate]
 verify_jwt = true
 

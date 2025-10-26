@@ -107,7 +107,9 @@ export function useUsageTracking() {
       if (!checkLimit(resource, amount)) {
         toast({
           title: "Daily Limit Reached",
-          description: `You've reached your daily limit for ${resource.replace('_', ' ')}`,
+          description: subscription?.plan_name === 'free' 
+            ? "Upgrade to Pro for higher limits"
+            : "You've reached your daily limit for this resource",
           variant: "destructive",
         });
         return false;
@@ -117,18 +119,19 @@ export function useUsageTracking() {
       if (!user) {
         toast({
           title: "Authentication Required",
-          description: "Please sign in to continue",
+          description: "Please sign in to track usage",
           variant: "destructive",
         });
         return false;
       }
 
-      // Track the usage
-      const { error } = await supabase.from('usage_tracking').insert({
-        user_id: user.id,
-        resource_type: resource,
-        amount,
-        metadata: { tracked_at: new Date().toISOString() }
+      // Track the usage via edge function (uses service role)
+      const { error } = await supabase.functions.invoke('track-usage', {
+        body: {
+          resource_type: resource,
+          amount,
+          metadata: { tracked_at: new Date().toISOString() }
+        }
       });
 
       if (error) throw error;

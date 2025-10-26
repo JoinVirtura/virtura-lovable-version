@@ -127,11 +127,16 @@ function FeatureGate({ feature, children, fallback }: FeatureGateProps) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return false;
 
-      await supabase.from('usage_tracking').insert({
-        user_id: user.id,
-        resource_type: resource,
-        amount
+      // Track usage via edge function (uses service role)
+      const { error } = await supabase.functions.invoke('track-usage', {
+        body: {
+          resource_type: resource,
+          amount,
+          metadata: { tracked_at: new Date().toISOString() }
+        }
       });
+
+      if (error) throw error;
 
       // Refresh usage
       await checkUsageAndSubscription();
@@ -304,11 +309,13 @@ export function useFeatureGating() {
         return false;
       }
 
-      // Track the usage
-      const { error } = await supabase.from('usage_tracking').insert({
-        user_id: user.id,
-        resource_type: feature,
-        amount
+      // Track the usage via edge function (uses service role)
+      const { error } = await supabase.functions.invoke('track-usage', {
+        body: {
+          resource_type: feature,
+          amount,
+          metadata: { tracked_at: new Date().toISOString() }
+        }
       });
 
       if (error) throw error;
