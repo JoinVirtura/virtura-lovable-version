@@ -3,6 +3,12 @@ project_id = "ujaoziqnxhjqlmnvlxav"
 [functions.track-usage]
 verify_jwt = true
 
+[functions.voice-clone-elevenlabs]
+verify_jwt = true
+
+[functions.voice-upload-audio]
+verify_jwt = true
+
 [functions.generate-image-replicate]
 verify_jwt = true
 

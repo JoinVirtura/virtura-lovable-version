@@ -663,6 +663,42 @@ export type Database = {
         }
         Relationships: []
       }
+      voice_clones: {
+        Row: {
+          audio_samples: string[] | null
+          created_at: string
+          id: string
+          metadata: Json | null
+          provider: string
+          updated_at: string
+          user_id: string
+          voice_id: string
+          voice_name: string
+        }
+        Insert: {
+          audio_samples?: string[] | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          provider?: string
+          updated_at?: string
+          user_id: string
+          voice_id: string
+          voice_name: string
+        }
+        Update: {
+          audio_samples?: string[] | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          provider?: string
+          updated_at?: string
+          user_id?: string
+          voice_id?: string
+          voice_name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
