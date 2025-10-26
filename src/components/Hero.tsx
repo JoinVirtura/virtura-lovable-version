@@ -1,9 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Sparkles, Mic, Send, Crown, Lock, Zap, Camera, Shuffle, Star, X, Circle, Search, Target, Image, Palette, RectangleHorizontal, Diamond, Upload, ChevronDown } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Card } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Sparkles, Mic, Send, Crown, Lock, Zap, Camera, Shuffle, Star, X, Circle, Search, Target, Image, Palette, RectangleHorizontal, Diamond, Upload, ChevronDown, Download, Heart, Share2, Shield, Settings } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { ImageGenerationService, type ImageGenerationParams } from "@/services/imageGenerationService";
+import { toast } from "sonner";
 
 // Import high-quality style images
 import styleLongExposure from '@/assets/style-long-exposure.jpg';
@@ -81,6 +86,16 @@ export const Hero = () => {
   const [selectedImageStyle, setSelectedImageStyle] = useState<{name: string, username: string, id: string, image: string} | null>(null);
   const [uploadedImagePrompt, setUploadedImagePrompt] = useState<string | null>(null);
   const [uploadedGeneralImage, setUploadedGeneralImage] = useState<string | null>(null);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedImages, setGeneratedImages] = useState<Array<{
+    id: string;
+    imageUrl: string;
+    prompt: string;
+    isGenerating: boolean;
+    metadata?: any;
+  }>>([]);
+  const [referenceImage, setReferenceImage] = useState<string | null>(null);
   
   // Handle file upload for Image Style
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -227,6 +242,7 @@ export const Hero = () => {
               }
             } catch (error) {
               console.error('Transcription error:', error);
+              toast.error("Voice transcription failed");
             }
           };
           
@@ -238,7 +254,76 @@ export const Hero = () => {
         setIsRecording(true);
       } catch (error) {
         console.error('Error accessing microphone:', error);
+        toast.error("Could not access microphone");
       }
+    }
+  };
+
+  const handleGenerate = async () => {
+    if (!inputValue.trim()) {
+      toast.error("Please enter a prompt");
+      return;
+    }
+
+    setIsGenerating(true);
+    
+    // Create placeholder cards
+    const newCardIds = Array.from({ length: 3 }, (_, i) => `card-${Date.now()}-${i}`);
+    const placeholderCards = newCardIds.map(id => ({
+      id,
+      imageUrl: "",
+      prompt: inputValue,
+      isGenerating: true,
+    }));
+
+    setGeneratedImages(prev => [...placeholderCards, ...prev]);
+
+    try {
+      const params: ImageGenerationParams = {
+        prompt: inputValue,
+        negativePrompt: "blurry, low quality, distorted",
+        contentType: "auto",
+        style: selectedImageStyle?.name || selectedStyle === "Style" ? "photorealistic" : selectedStyle,
+        aspectRatio: selectedAspect as any,
+        resolution: "1024x1024",
+        quality: "balanced",
+        adherence: 8.5,
+        steps: 50,
+        enhance: true,
+        referenceImage: uploadedImagePrompt || referenceImage || undefined
+      };
+
+      const results = await ImageGenerationService.generateVariants(inputValue, params, 3);
+      
+      // Update cards with results
+      setGeneratedImages(prev => 
+        prev.map(card => {
+          if (newCardIds.includes(card.id)) {
+            const cardIndex = newCardIds.indexOf(card.id);
+            const result = results[cardIndex];
+            
+            if (result?.success && result.image) {
+              return {
+                ...card,
+                imageUrl: result.image,
+                isGenerating: false,
+                metadata: result.metadata
+              };
+            }
+          }
+          return card;
+        })
+      );
+
+      toast.success("Images generated successfully!");
+    } catch (error) {
+      console.error('Generation error:', error);
+      toast.error("Generation failed. Please try again.");
+      
+      // Remove placeholder cards on error
+      setGeneratedImages(prev => prev.filter(card => !newCardIds.includes(card.id)));
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -341,161 +426,240 @@ export const Hero = () => {
           </p>
         </div>
 
-        {/* Compact Image Generation Interface */}
-        <div className="w-full max-w-5xl mb-12 animate-fade-in relative">
-          <form onSubmit={handleSubmit}>
-            {/* Main Input Container - Improved Width */}
-            <div className="relative bg-card/90 border border-border/50 rounded-2xl backdrop-blur-xl shadow-2xl overflow-hidden">
-              {/* Text Input Area - Minimized Height */}
-              <div className="px-8 py-4">
-                <textarea
-                  placeholder="Describe an image and click generate..."
+        {/* Output Display Section - ABOVE input */}
+        {generatedImages.length > 0 && (
+          <div className="w-full max-w-5xl mb-8 animate-fade-in">
+            <Card className="backdrop-blur-xl bg-card/90 border-2 border-primary/30 shadow-[0_0_40px_rgba(139,92,246,0.3)] overflow-hidden">
+              <div className="p-8">
+                <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                  <Sparkles className="h-6 w-6 text-primary" />
+                  Generated Images
+                </h3>
+                
+                <ScrollArea className="h-[500px]">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {generatedImages.map((card) => (
+                      <Card 
+                        key={card.id} 
+                        className="overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] border-primary/20 bg-background/50 backdrop-blur-sm"
+                      >
+                        <div className="aspect-square relative group">
+                          {card.isGenerating ? (
+                            <div className="w-full h-full bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
+                              <div className="text-center">
+                                <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent mx-auto mb-4" />
+                                <p className="text-sm text-muted-foreground">Creating magic...</p>
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              <img
+                                src={card.imageUrl}
+                                alt={card.prompt}
+                                className="w-full h-full object-cover"
+                              />
+                              <div className="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-3">
+                                <button
+                                  onClick={() => {
+                                    const link = document.createElement('a');
+                                    link.href = card.imageUrl;
+                                    link.download = `virtura-${card.id}.png`;
+                                    link.click();
+                                    toast.success("Download started!");
+                                  }}
+                                  className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all flex items-center justify-center"
+                                >
+                                  <Download className="h-5 w-5 text-white" />
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    toast.success("Saved to library!");
+                                  }}
+                                  className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all flex items-center justify-center"
+                                >
+                                  <Heart className="h-5 w-5 text-white" />
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(window.location.href);
+                                    toast.success("Sharing link copied to clipboard!");
+                                  }}
+                                  className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all flex items-center justify-center"
+                                >
+                                  <Share2 className="h-5 w-5 text-white" />
+                                </button>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                        
+                        <div className="p-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex gap-1 flex-wrap">
+                              {card.metadata && (
+                                <>
+                                  <Badge variant="outline" className="text-xs">
+                                    {card.metadata.resolution}
+                                  </Badge>
+                                  <Badge variant="outline" className="text-xs">
+                                    {card.metadata.style}
+                                  </Badge>
+                                </>
+                              )}
+                            </div>
+                            <Badge variant="outline" className="text-xs flex items-center gap-1">
+                              <Shield className="h-3 w-3" />
+                              Safe
+                            </Badge>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </div>
+            </Card>
+          </div>
+        )}
+
+        {/* Input Interface - Studio Pro Style */}
+        <div className="w-full max-w-5xl mb-12 animate-fade-in">
+          <Card className="backdrop-blur-xl bg-black/60 border-2 border-primary/30 shadow-2xl overflow-hidden">
+            <div className="p-6">
+              {/* Main Input Row */}
+              <div className="flex items-center gap-4 mb-4">
+                <Textarea
+                  placeholder="Describe the image you want to create..."
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  className="w-full h-12 text-lg bg-transparent border-0 focus:ring-0 placeholder:text-muted-foreground/70 resize-none leading-relaxed p-0"
+                  className="flex-1 min-h-[56px] max-h-[56px] text-base bg-transparent border-0 focus:ring-0 placeholder:text-muted-foreground/70 resize-none"
                   style={{ outline: 'none' }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleGenerate();
+                    }
+                  }}
                 />
-              </div>
-
-              {/* Bottom Action Bar - Full Width Layout */}
-              <div className="px-6 py-4 bg-muted/10 border-t border-border/30">
-                <div className="flex items-center justify-between gap-4 w-full">
-                  {/* Options Row - Flex Wrap for Responsiveness */}
-                  <div className="flex items-center gap-3 flex-wrap flex-1 min-w-0">
-                   {/* Style Button - Updated Icon */}
-                   <div className="relative">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setShowStyleModal(true)}
-                        className="bg-muted/60 border-border/50 hover:bg-gradient-primary hover:text-white hover:border-violet-500/50 px-4 py-2 rounded-xl text-sm font-medium h-10 transition-all duration-200"
-                      >
-                        <Palette className="w-4 h-4 mr-1" />
-                        Style
-                      </Button>
-                   </div>
-
-                  {/* Image Prompt Button with Upload Functionality */}
-                  <div className="relative">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      id="image-prompt-upload"
-                      onChange={handleImagePromptUpload}
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="bg-muted/60 border-border/50 hover:bg-gradient-primary hover:text-white hover:border-violet-500/50 px-4 py-2 rounded-xl text-sm font-medium h-10 transition-all duration-200"
-                      onClick={() => {
-                        document.getElementById("image-prompt-upload")?.click();
-                      }}
-                    >
-                      <Image className="w-4 h-4 mr-2" />
-                      Image prompt
-                    </Button>
-                  </div>
-
-
-                  </div>
+                
+                {/* Action Buttons */}
+                <div className="flex items-center gap-3">
+                  {/* Image Upload Button */}
+                  <button
+                    type="button"
+                    onClick={() => document.getElementById('reference-upload')?.click()}
+                    className="w-14 h-14 rounded-full bg-black/40 backdrop-blur-md border border-primary/30 hover:bg-primary/20 hover:border-primary/50 transition-all flex items-center justify-center"
+                  >
+                    <Camera className="h-6 w-6 text-white" />
+                  </button>
+                  <input
+                    id="reference-upload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                          setReferenceImage(event.target?.result as string);
+                          toast.success("Reference image uploaded");
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                  />
                   
-                  {/* Action Buttons Group - Fixed Width */}
-                  <div className="flex items-center gap-3 flex-shrink-0">
-                    {/* Image Thumbnails Display */}
-                    {(uploadedImagePrompt || uploadedImage || selectedImageStyle) && (
-                      <div className="flex items-center gap-3">
-                        {/* Image Prompt Thumbnail */}
-                        {uploadedImagePrompt && (
-                          <div className="relative">
-                            <div className="w-10 h-10 rounded-lg overflow-hidden border border-border/50 bg-muted/30">
-                              <img 
-                                src={uploadedImagePrompt} 
-                                alt="Image prompt" 
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                            <button
-                              onClick={removeUploadedImagePrompt}
-                              className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 border-2 border-white shadow-lg z-10"
-                            >
-                              <X className="w-3 h-3" />
-                            </button>
-                          </div>
-                        )}
-                        
-                        {/* Image Style Thumbnail */}
-                        {(uploadedImage || selectedImageStyle) && (
-                          <div className="relative">
-                            <div className="w-10 h-10 rounded-lg overflow-hidden border border-border/50 bg-muted/30">
-                              <img 
-                                src={uploadedImage || selectedImageStyle?.image} 
-                                alt="Image style" 
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                            <button
-                              onClick={() => {
-                                if (uploadedImage) {
-                                  removeUploadedImage();
-                                } else {
-                                  removeSelectedStyle();
-                                }
-                              }}
-                              className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 border-2 border-white shadow-lg z-10"
-                            >
-                              <X className="w-3 h-3" />
-                            </button>
-                          </div>
-                        )}
-                      </div>
+                  {/* Microphone Button */}
+                  <button
+                    type="button"
+                    onClick={handleVoiceInput}
+                    className={`w-14 h-14 rounded-full backdrop-blur-md border transition-all flex items-center justify-center ${
+                      isRecording 
+                        ? 'bg-red-500 border-red-400 animate-pulse' 
+                        : 'bg-black/40 border-primary/30 hover:bg-primary/20 hover:border-primary/50'
+                    }`}
+                  >
+                    <Mic className="h-6 w-6 text-white" />
+                  </button>
+                  
+                  {/* Generate Button */}
+                  <button
+                    type="button"
+                    onClick={handleGenerate}
+                    disabled={isGenerating || !inputValue.trim()}
+                    className="w-16 h-16 rounded-full bg-gradient-to-r from-primary to-secondary hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isGenerating ? (
+                      <div className="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent" />
+                    ) : (
+                      <Send className="h-6 w-6 text-white" />
                     )}
-                    
-                    {/* General Uploaded Image Thumbnail */}
-                    {uploadedGeneralImage && (
-                      <div className="relative">
-                        <div className="w-10 h-10 rounded-lg overflow-hidden border border-border/50 bg-muted/30">
-                          <img 
-                            src={uploadedGeneralImage} 
-                            alt="Uploaded image" 
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <button
-                          onClick={removeUploadedGeneralImage}
-                          className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 border-2 border-white shadow-lg z-10"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </div>
-                    )}
-
-                    {/* Microphone Button */}
-                    <Button
-                      type="button"
-                      onClick={handleVoiceInput}
-                      className={`w-12 h-12 p-0 rounded-xl transition-all duration-300 ${
-                        isRecording 
-                          ? "bg-red-500 hover:bg-red-600 animate-pulse" 
-                          : "bg-primary/10 border border-primary/30 hover:bg-primary/20"
-                      }`}
-                    >
-                      <Mic className={`w-5 h-5 ${isRecording ? "text-white" : "text-primary"}`} />
-                    </Button>
-                    
-                    {/* Generate Button */}
-                    <Button
-                      type="submit"
-                      disabled={!inputValue.trim()}
-                      className="bg-gradient-primary hover:bg-gradient-secondary shadow-violet-glow px-6 py-3 rounded-xl font-bold text-base h-12 whitespace-nowrap"
-                    >
-                      Generate
-                    </Button>
-                  </div>
+                  </button>
                 </div>
               </div>
+              
+              {/* Advanced Settings Dropdown */}
+              <div className="border-t border-primary/20 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowAdvanced(!showAdvanced)}
+                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-white transition-colors"
+                >
+                  <Settings className="h-4 w-4" />
+                  Advanced Settings
+                  <ChevronDown className={`h-4 w-4 transition-transform ${showAdvanced ? 'rotate-180' : ''}`} />
+                </button>
+                
+                {showAdvanced && (
+                  <div className="mt-4 space-y-4 animate-fade-in">
+                    <div className="grid grid-cols-2 gap-4">
+                      {/* Style Button */}
+                      <Button
+                        type="button"
+                        onClick={() => setShowStyleModal(true)}
+                        variant="outline"
+                        className="w-full justify-start"
+                      >
+                        <Palette className="h-4 w-4 mr-2" />
+                        {selectedImageStyle ? selectedImageStyle.name : selectedStyle}
+                      </Button>
+                      
+                      {/* Aspect Ratio */}
+                      <div className="relative" data-aspect-container>
+                        <Button
+                          type="button"
+                          onClick={() => setShowAspectOptions(!showAspectOptions)}
+                          variant="outline"
+                          className="w-full justify-start"
+                        >
+                          Aspect: {selectedAspect}
+                        </Button>
+                        {showAspectOptions && (
+                          <div className="absolute top-full mt-2 w-full bg-card border border-border rounded-lg p-2 z-50">
+                            {['1:1', '2:3', '3:2', '16:9', '9:16'].map((ratio) => (
+                              <button
+                                key={ratio}
+                                type="button"
+                                onClick={() => {
+                                  setSelectedAspect(ratio);
+                                  setShowAspectOptions(false);
+                                }}
+                                className="w-full text-left px-3 py-2 rounded hover:bg-accent transition-colors"
+                              >
+                                {ratio}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-          </form>
+          </Card>
+        </div>
           
           {/* Large Styles Popup Window */}
           {showStyleModal && (
@@ -813,9 +977,6 @@ export const Hero = () => {
               </div>
             </div>
           )}
-          
-
-        </div>
       </div>
     </section>
   );
