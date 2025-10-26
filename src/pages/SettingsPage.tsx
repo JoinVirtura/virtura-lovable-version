@@ -13,11 +13,103 @@ import {
   CreditCard, 
   Download,
   Trash2,
-  Settings as SettingsIcon
+  Settings as SettingsIcon,
+  Crown,
+  Zap
 } from "lucide-react";
 import { MotionBackground } from "@/components/MotionBackground";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 export default function SettingsPage() {
+  const { toast } = useToast();
+
+  const startSubscription = async (planId: string) => {
+    const { data, error } = await supabase.functions.invoke("create-checkout", {
+      body: { plan: planId },
+    });
+    if (error || !data?.url) {
+      toast({ title: "Subscription failed", description: error?.message || "Please sign in and try again.", variant: "destructive" });
+      return;
+    }
+    window.open(data.url, "_blank");
+  };
+
+  const buyTokens = async (tokens: number) => {
+    const { data, error } = await supabase.functions.invoke("create-payment", {
+      body: { tokens },
+    });
+    if (error || !data?.url) {
+      toast({ title: "Checkout failed", description: error?.message || "Please try again.", variant: "destructive" });
+      return;
+    }
+    window.open(data.url, "_blank");
+  };
+
+  const openCustomerPortal = async () => {
+    const { data, error } = await supabase.functions.invoke("customer-portal");
+    if (error || !data?.url) {
+      toast({ title: "Portal error", description: error?.message || "Please sign in and try again.", variant: "destructive" });
+      return;
+    }
+    window.open(data.url, "_blank");
+  };
+
+  const plans = [
+    {
+      id: "individual",
+      name: "Individual",
+      price: "$20/mo",
+      highlights: [
+        "200 tokens/month",
+        "Image & video generations",
+        "Export packs",
+        "Tokens never expire",
+        "Community support",
+      ],
+      popular: false,
+      description: "For creators, hobbyists, and freelancers"
+    },
+    {
+      id: "pro",
+      name: "Pro",
+      price: "$99/mo",
+      highlights: [
+        "1,000 tokens/month",
+        "All generation features",
+        "Priority processing",
+        "Advanced editing tools",
+        "Email support",
+        "Commercial licensing",
+      ],
+      popular: true,
+      description: "For professionals and small teams"
+    },
+    {
+      id: "enterprise",
+      name: "Enterprise",
+      price: "$299/mo",
+      highlights: [
+        "3,000 tokens/month",
+        "Unlimited scaling",
+        "Team collaboration",
+        "White-label options",
+        "Priority support",
+        "Custom integrations",
+      ],
+      popular: false,
+      description: "For agencies and high-volume users"
+    },
+  ];
+
+  const tokenPacks = [
+    { tokens: 100, price: "$15" },
+    { tokens: 500, price: "$75" },
+    { tokens: 1000, price: "$150" },
+    { tokens: 5000, price: "$750" },
+    { tokens: 10000, price: "$1,500" },
+  ];
+
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       <MotionBackground />
@@ -306,8 +398,74 @@ export default function SettingsPage() {
               </div>
               
               <div className="flex gap-4">
-                <Button>Upgrade Plan</Button>
-                <Button variant="outline">View Billing History</Button>
+                <Button onClick={openCustomerPortal}>Manage Billing</Button>
+                <Button variant="outline" onClick={openCustomerPortal}>View Billing History</Button>
+              </div>
+            </div>
+          </Card>
+
+          {/* Upgrade Plans */}
+          <Card className="p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <Crown className="w-5 h-5 text-primary" />
+              <h2 className="text-xl font-display font-bold">Upgrade Your Plan</h2>
+            </div>
+            
+            <p className="text-muted-foreground mb-6">Choose a plan that fits your creative needs</p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              {plans.map((plan) => (
+                <Card key={plan.id} className={`p-6 relative h-full flex flex-col ${plan.popular ? "ring-2 ring-primary" : ""}`}>
+                  {plan.popular && (
+                    <Badge className="absolute -top-3 left-6 bg-gradient-primary">Most Popular</Badge>
+                  )}
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-display font-bold">{plan.name}</h3>
+                    <p className="text-2xl font-display font-bold">{plan.price}</p>
+                    <p className="text-sm text-muted-foreground">{plan.description}</p>
+                  </div>
+                  <ul className="mt-4 space-y-2 text-sm text-muted-foreground flex-1">
+                    {plan.highlights.map((h) => (
+                      <li key={h}>• {h}</li>
+                    ))}
+                  </ul>
+                  <Button 
+                    className="mt-6 w-full bg-gradient-primary hover:bg-gradient-secondary text-white shadow-violet-glow" 
+                    onClick={() => startSubscription(plan.id)}
+                  >
+                    Choose {plan.name}
+                  </Button>
+                </Card>
+              ))}
+            </div>
+
+            <Separator className="my-8" />
+
+            {/* Token Top-ups */}
+            <div className="space-y-6">
+              <div className="flex items-center gap-3">
+                <Zap className="w-5 h-5 text-primary" />
+                <div>
+                  <h3 className="text-lg font-display font-bold">Need More Tokens?</h3>
+                  <p className="text-sm text-muted-foreground">À la carte pricing - Premium rate: $0.15 per token (vs $0.10 in subscriptions)</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                {tokenPacks.map((pack) => (
+                  <Card key={pack.tokens} className="p-4 h-full flex flex-col">
+                    <h4 className="text-lg font-display font-bold">{pack.tokens}</h4>
+                    <p className="text-sm text-muted-foreground">tokens</p>
+                    <p className="text-xl font-display font-bold mt-2">{pack.price}</p>
+                    <Button 
+                      variant="outline" 
+                      className="mt-4 w-full" 
+                      onClick={() => buyTokens(pack.tokens)}
+                    >
+                      Buy
+                    </Button>
+                  </Card>
+                ))}
               </div>
             </div>
           </Card>
