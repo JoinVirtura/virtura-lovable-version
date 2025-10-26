@@ -575,9 +575,9 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
                     )}
                     
                     {/* Divider */}
-                    <div className="h-px bg-gradient-to-r from-transparent via-violet-500/30 to-transparent" />
+                    <div className="h-px bg-gradient-to-r from-transparent via-purple-500/60 to-transparent shadow-[0_0_8px_rgba(168,85,247,0.4)]" />
                     
-                    {/* Action Buttons - No Save Button */}
+                    {/* Action Buttons */}
                     <div className="flex gap-2">
                       <Button
                         variant="outline"
@@ -597,12 +597,12 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleShareAvatar(avatar);
+                          handleDownloadAvatar(avatar);
                         }}
-                        className="flex-1 h-9 hover:bg-blue-500/10 hover:border-blue-500/50 transition-all"
+                        className="flex-1 h-9 hover:bg-purple-500/10 hover:border-purple-500/50 transition-all"
                       >
-                        <Share2 className="h-4 w-4 mr-2" />
-                        Share
+                        <Download className="h-4 w-4 mr-2" />
+                        Download
                       </Button>
 
                       <DropdownMenu>
@@ -611,15 +611,15 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
                             <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
+                        <DropdownMenuContent align="end" className="w-48">
                           <DropdownMenuItem
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleDownloadAvatar(avatar);
+                              handleShareAvatar(avatar);
                             }}
                           >
-                            <Download className="h-4 w-4 mr-2" />
-                            Download
+                            <Share2 className="h-4 w-4 mr-2" />
+                            Share
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={(e) => {
