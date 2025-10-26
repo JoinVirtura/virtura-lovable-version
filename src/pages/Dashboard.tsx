@@ -2940,19 +2940,10 @@ export default function Dashboard() {
                                    >
                                      <Download className="w-3 h-3 mr-1 2xl:w-4 2xl:h-4 2xl:mr-0" />
                                      <span className="2xl:hidden">Download</span>
-                                   </Button>
-                                   
-                                </div>
-                              
-                              {/* Generation Stats */}
-                              <div className="flex items-center justify-between text-xs text-muted-foreground pt-2">
-                                <span className="flex items-center gap-1">
-                                  <Clock className="w-3 h-3" />
-                                  {asset.generationTime}
-                                </span>
-                                <span className="font-medium">{asset.fileSize}</span>
-                              </div>
-                            </div>
+                                    </Button>
+                                    
+                                 </div>
+                             </div>
                           </Card>
                         ))}
                       </div>
