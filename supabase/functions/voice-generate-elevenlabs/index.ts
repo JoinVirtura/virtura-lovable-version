@@ -39,6 +39,7 @@ serve(async (req) => {
       body: JSON.stringify({
         text: script,
         model_id: 'eleven_multilingual_v2',
+        language_code: language?.split('-')[0] || 'en',
         voice_settings: {
           stability: voiceSettings.stability || 0.75,
           similarity_boost: voiceSettings.similarity_boost || 0.75,

@@ -723,42 +723,6 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
         </TabsContent>
       </Tabs>
 
-      {/* Unified Voice Preview Section */}
-      {(uploadedAudioUrl || project.voice?.audioUrl) && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm flex items-center gap-2">
-              <Volume2 className="h-4 w-4" />
-              Voice Preview
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {uploadedAudioUrl && (
-                <div>
-                  <Label className="text-xs text-muted-foreground mb-2 block">Uploaded Audio</Label>
-                  <div className="p-3 bg-muted rounded-lg">
-                    <audio controls className="w-full">
-                      <source src={uploadedAudioUrl} type="audio/mpeg" />
-                    </audio>
-                  </div>
-                </div>
-              )}
-              
-              {project.voice?.audioUrl && project.voice.audioUrl !== uploadedAudioUrl && (
-                <div>
-                  <Label className="text-xs text-muted-foreground mb-2 block">Generated Voice</Label>
-                  <div className="p-3 bg-muted rounded-lg">
-                    <audio controls className="w-full">
-                      <source src={project.voice.audioUrl} type="audio/mpeg" />
-                    </audio>
-                  </div>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       <audio
         ref={previewAudioRef}
