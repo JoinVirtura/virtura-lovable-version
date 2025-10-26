@@ -34,7 +34,8 @@ import {
   Settings,
   Upload,
   Download,
-  Menu
+  Menu,
+  Image
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -54,7 +55,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
     { id: "overview", label: "Home", icon: Home },
     { id: "library", label: "Library", icon: Library },
     { id: "studio", label: "Copilot", icon: Command },
-    { id: "talking-avatar", label: "Image Pro", icon: Zap },
+    { id: "talking-avatar", label: "Image Pro", icon: Image },
     { id: "video-pro", label: "Video Pro", icon: Video },
   ];
 
