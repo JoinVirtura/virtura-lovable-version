@@ -133,6 +133,8 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
     try {
       setLoading(true);
       
+      console.log('🔄 Loading avatars with filter:', filterCategory);
+      
       let query = supabase
         .from('avatar_library')
         .select('*')
@@ -148,34 +150,37 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
       const { data, error } = await query;
 
       if (error) {
-        console.error('Error loading avatars:', error);
+        console.error('❌ Error loading avatars:', error);
         toast.error('Failed to load avatar library');
         return;
       }
 
+      console.log('✅ Loaded avatars:', data?.length || 0);
+      
       // Simply use the data as-is - avatar_library already has correct URLs
       setAvatars(data || []);
     } catch (error) {
-      console.error('Error loading avatars:', error);
+      console.error('❌ Error loading avatars:', error);
       toast.error('Failed to load avatar library');
     } finally {
       setLoading(false);
     }
   }, [filterCategory]);
 
-  // Load avatars on mount and when filter changes
+  // Load avatars when filter changes
+  useEffect(() => {
+    loadAvatars();
+  }, [loadAvatars]);
+
+  // Timeout protection - runs once on mount only
   useEffect(() => {
     const timeout = setTimeout(() => {
-      if (loading) {
-        setLoading(false);
-        toast.error('Loading timed out. Please refresh.');
-      }
-    }, 10000); // 10 second timeout
-
-    loadAvatars();
+      setLoading(false);
+      console.log('⏱️ Loading timeout reached');
+    }, 10000);
 
     return () => clearTimeout(timeout);
-  }, [loadAvatars, loading]);
+  }, []);
 
   const refreshLibrary = async () => {
     setRefreshing(true);
@@ -196,25 +201,36 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
       if (!matchesSearch) return false;
     }
 
-    // Category filter
+    // Category filter - more lenient, show all if tags missing
     if (filterCategory === 'favorites') {
       return favorites.has(avatar.id);
+    } else if (filterCategory === 'videos') {
+      return avatar.is_video;
     } else if (filterCategory === 'avatars') {
-      return !avatar.is_video && avatar.tags?.some(tag => 
-        ['avatar', 'portrait', 'person', 'character'].includes(tag.toLowerCase())
+      // Show all non-video items if no tags, or if tags match
+      return !avatar.is_video && (!avatar.tags || avatar.tags.length === 0 || 
+        avatar.tags.some(tag => 
+          ['avatar', 'portrait', 'person', 'character'].includes(tag.toLowerCase())
+        )
       );
     } else if (filterCategory === 'headshots') {
-      return !avatar.is_video && avatar.tags?.some(tag => 
-        ['headshot', 'professional', 'business', 'linkedin'].includes(tag.toLowerCase())
+      return !avatar.is_video && (!avatar.tags || avatar.tags.length === 0 ||
+        avatar.tags.some(tag => 
+          ['headshot', 'professional', 'business', 'linkedin'].includes(tag.toLowerCase())
+        )
       );
     } else if (filterCategory === 'brands') {
-      return !avatar.is_video && avatar.tags?.some(tag => 
-        ['brand', 'logo', 'marketing', 'business'].includes(tag.toLowerCase())
+      return !avatar.is_video && (!avatar.tags || avatar.tags.length === 0 ||
+        avatar.tags.some(tag => 
+          ['brand', 'logo', 'marketing', 'business'].includes(tag.toLowerCase())
+        )
       );
     }
     
     return true;
   });
+
+  console.log('📊 Filtered avatars:', filteredAvatars.length, '/', avatars.length);
 
   const handleSelectAvatar = (avatar: AvatarLibraryItem) => {
     // CRITICAL FIX: Set both originalUrl AND processedUrl to ensure validation passes
