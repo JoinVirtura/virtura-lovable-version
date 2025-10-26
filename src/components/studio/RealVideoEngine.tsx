@@ -323,7 +323,7 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
       )}
 
       {/* Export Pack Selection */}
-      <Card className="p-6 bg-gradient-to-br from-purple-500/5 to-pink-500/5 border-purple-500/20">
+      <Card className="p-6 bg-gradient-to-br from-purple-500/5 to-purple-900/5 border-purple-500/20">
         <div className="flex items-center gap-2 mb-4">
           <Package className="w-5 h-5 text-purple-400" />
           <h3 className="text-lg font-semibold">Target Export Pack</h3>
@@ -345,7 +345,11 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
                 onClick={() => setSelectedExportPack(key as any)}
               >
                 <div className="font-medium mb-1 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">{pack.name}</div>
-                <p className="text-xs text-muted-foreground mb-3">{pack.features.join(' • ')}</p>
+                <div className="space-y-0.5 mb-3">
+                  {pack.features.map((feature, idx) => (
+                    <p key={idx} className="text-xs text-muted-foreground">{feature}</p>
+                  ))}
+                </div>
 
                 {/* Available Formats */}
                 <div className="pt-2 border-t border-border/50">
@@ -365,12 +369,6 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
                       </Badge>
                     ))}
                   </div>
-                  {selectedExportPack === key && (
-                    <p className="text-xs text-purple-400 mt-2 flex items-center gap-1">
-                      <Sparkles className="w-3 h-3" />
-                      Native: {currentPrimaryRatio} • Others: Smart-cropped
-                    </p>
-                  )}
                 </div>
               </Card>
             );
