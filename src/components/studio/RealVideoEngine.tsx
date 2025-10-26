@@ -227,38 +227,6 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
         </Card>
       )}
 
-      {/* Engine Selection - Simplified */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm flex items-center gap-2">
-            <Brain className="h-4 w-4" />
-            Select Engine
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          {VIDEO_ENGINES.map((engine) => (
-            <div
-              key={engine.id}
-              className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                selectedEngine === engine.id 
-                  ? 'border-primary bg-primary/5' 
-                  : 'border-border hover:border-primary/50'
-              }`}
-              onClick={() => setSelectedEngine(engine.id)}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <engine.icon className="h-4 w-4 text-primary" />
-                  <span className="font-medium text-sm">{engine.name}</span>
-                </div>
-                <Badge className={`text-xs text-white ${engine.badgeColor}`}>
-                  {engine.badge}
-                </Badge>
-              </div>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
 
       {/* Advanced Settings Accordion */}
       <Accordion 
@@ -275,6 +243,37 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
             </div>
           </AccordionTrigger>
           <AccordionContent className="space-y-6 pb-6 px-6 pt-6 bg-slate-800/10 rounded-b-lg">
+            {/* Select Engine */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-lg text-white mb-3 flex items-center gap-2">
+                <Brain className="h-5 w-5 text-white" />
+                Select Engine
+              </h3>
+              <div className="space-y-3">
+                {VIDEO_ENGINES.map((engine) => (
+                  <div
+                    key={engine.id}
+                    className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                      selectedEngine === engine.id 
+                        ? 'border-purple-500 bg-purple-500/10' 
+                        : 'border-slate-700 hover:border-purple-500/50 bg-slate-800/50'
+                    }`}
+                    onClick={() => setSelectedEngine(engine.id)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <engine.icon className="h-5 w-5 text-purple-400" />
+                        <span className="font-semibold text-white text-base">{engine.name}</span>
+                      </div>
+                      <Badge className={`text-xs text-white px-4 py-1 ${engine.badgeColor}`}>
+                        {engine.badge}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             {/* Professional Video Direction */}
             <div className="space-y-2">
               <h3 className="font-semibold text-lg text-white mb-3">Professional Video Direction</h3>
