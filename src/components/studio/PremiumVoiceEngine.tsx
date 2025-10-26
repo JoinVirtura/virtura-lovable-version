@@ -8,9 +8,10 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Progress } from '@/components/ui/progress';
 import { 
   Mic, Upload, Sparkles, Play, Pause, Loader2, CheckCircle2, 
-  User, Search, Volume2, Globe
+  User, Search, Volume2, Globe, Check
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -100,6 +101,8 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
   const [genderFilter, setGenderFilter] = useState<'all' | 'male' | 'female'>('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [clonedVoices, setClonedVoices] = useState<any[]>([]);
+  const [generationProgress, setGenerationProgress] = useState(0);
+  const [generationStatus, setGenerationStatus] = useState('');
   
   // Voice Clone state
   const [cloneFiles, setCloneFiles] = useState<File[]>([]);
@@ -165,17 +168,51 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
       return;
     }
 
-    await onGenerate({
-      script,
-      voiceId: selectedVoice,
-      language: selectedLanguage,
-      voiceSettings: {
-        stability: 0.75,
-        similarity_boost: 0.85,
-        style: 0.50,
-        use_speaker_boost: true,
-      },
-    });
+    try {
+      setGenerationProgress(0);
+      setGenerationStatus('Preparing voice generation...');
+      toast.loading('Generating studio voice...', { id: 'voice-generation' });
+      
+      setGenerationProgress(25);
+      setGenerationStatus('Processing script...');
+      
+      await onUpdate({
+        voice: {
+          ...project.voice,
+          script,
+          voiceId: selectedVoice,
+          language: selectedLanguage,
+        }
+      });
+      
+      setGenerationProgress(50);
+      setGenerationStatus('Generating voice with AI...');
+      
+      await onGenerate({
+        script,
+        voiceId: selectedVoice,
+        language: selectedLanguage,
+        voiceSettings: {
+          stability: 0.75,
+          similarity_boost: 0.85,
+          style: 0.50,
+          use_speaker_boost: true,
+        },
+      });
+      
+      setGenerationProgress(100);
+      setGenerationStatus('Complete!');
+      toast.success('Voice generated successfully!', { id: 'voice-generation' });
+      
+      setTimeout(() => {
+        setGenerationProgress(0);
+        setGenerationStatus('');
+      }, 2000);
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to generate voice', { id: 'voice-generation' });
+      setGenerationProgress(0);
+      setGenerationStatus('');
+    }
   };
 
   const togglePlayPreview = async () => {
@@ -196,9 +233,16 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
 
       if (error) throw error;
 
-      if (data.audioData) {
+      if (data?.audioData) {
+        // Handle data URI format (data:audio/mpeg;base64,xxxxx)
+        let audioData = data.audioData;
+        if (audioData.startsWith('data:')) {
+          // Extract base64 part after the comma
+          audioData = audioData.split(',')[1];
+        }
+        
         const audioBlob = new Blob(
-          [Uint8Array.from(atob(data.audioData), c => c.charCodeAt(0))],
+          [Uint8Array.from(atob(audioData), c => c.charCodeAt(0))],
           { type: 'audio/mpeg' }
         );
         const audioUrl = URL.createObjectURL(audioBlob);
@@ -207,10 +251,12 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
           previewAudioRef.current.src = audioUrl;
           await previewAudioRef.current.play();
         }
+      } else {
+        throw new Error('No audio data received');
       }
     } catch (error: any) {
       console.error('Preview error:', error);
-      toast.error('Failed to play preview');
+      toast.error(`Failed to play preview: ${error.message}`);
       setIsPlayingPreview(false);
     }
   };
@@ -442,20 +488,25 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
 
               {/* Voice Cards Grid */}
               <ScrollArea className="h-[400px] pr-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 p-1">
                   {allVoices.map(voice => (
                     <Card
                       key={voice.id}
-                      className={`cursor-pointer transition-all hover:shadow-md ${
+                      className={`cursor-pointer transition-all hover:shadow-md relative ${
                         selectedVoice === voice.id
-                          ? 'ring-2 ring-primary bg-primary/5'
-                          : ''
+                          ? 'border-2 border-primary bg-primary/10'
+                          : 'border border-border'
                       }`}
                       onClick={() => setSelectedVoice(voice.id)}
                     >
+                      {selectedVoice === voice.id && (
+                        <div className="absolute top-2 right-2 bg-primary rounded-full p-0.5">
+                          <Check className="h-4 w-4 text-primary-foreground" />
+                        </div>
+                      )}
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between mb-2">
-                          <div>
+                          <div className="flex-1 pr-6">
                             <h4 className="font-medium">{voice.name}</h4>
                             <p className="text-xs text-muted-foreground">{voice.description}</p>
                           </div>
@@ -506,6 +557,21 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
               )}
             </CardContent>
           </Card>
+
+          {/* Progress Indicator */}
+          {generationProgress > 0 && generationProgress < 100 && (
+            <Card>
+              <CardContent className="pt-6">
+                <div className="space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">{generationStatus}</span>
+                    <span className="font-medium text-primary">{generationProgress}%</span>
+                  </div>
+                  <Progress value={generationProgress} className="h-2" />
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Generate Button */}
           <Button
@@ -614,7 +680,7 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
             <CardHeader>
               <CardTitle className="text-sm">Upload Your Own Audio</CardTitle>
               <p className="text-xs text-muted-foreground">
-                Upload a pre-recorded audio file (MP3, WAV, FLAC, OGG - Max 50MB)
+                Upload a pre-recorded audio file. Preview will appear below after upload.
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -652,18 +718,47 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
                   </div>
                 )}
               </Button>
-
-              {uploadedAudioUrl && (
-                <div className="p-4 bg-muted rounded-lg">
-                  <audio controls className="w-full">
-                    <source src={uploadedAudioUrl} type="audio/mpeg" />
-                  </audio>
-                </div>
-              )}
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Unified Voice Preview Section */}
+      {(uploadedAudioUrl || project.voice?.audioUrl) && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm flex items-center gap-2">
+              <Volume2 className="h-4 w-4" />
+              Voice Preview
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {uploadedAudioUrl && (
+                <div>
+                  <Label className="text-xs text-muted-foreground mb-2 block">Uploaded Audio</Label>
+                  <div className="p-3 bg-muted rounded-lg">
+                    <audio controls className="w-full">
+                      <source src={uploadedAudioUrl} type="audio/mpeg" />
+                    </audio>
+                  </div>
+                </div>
+              )}
+              
+              {project.voice?.audioUrl && project.voice.audioUrl !== uploadedAudioUrl && (
+                <div>
+                  <Label className="text-xs text-muted-foreground mb-2 block">Generated Voice</Label>
+                  <div className="p-3 bg-muted rounded-lg">
+                    <audio controls className="w-full">
+                      <source src={project.voice.audioUrl} type="audio/mpeg" />
+                    </audio>
+                  </div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <audio
         ref={previewAudioRef}
