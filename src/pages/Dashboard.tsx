@@ -2937,39 +2937,42 @@ export default function Dashboard() {
                                      hour12: true
                                    })}
                                  </p>
-                              </div>
-                              
-                               {/* AI Tags - Always Visible */}
-                               <div className="flex flex-wrap gap-1.5 mt-2">
-                                 {asset.tags.map((tag, idx) => (
-                                   <Badge key={idx} variant="secondary" className="text-xs py-1 px-2 bg-primary/10 text-primary border-primary/20 font-medium">
-                                     {tag}
-                                   </Badge>
-                                 ))}
                                </div>
+                               
+                                {/* AI Tags - Always Visible */}
+                                <div className="flex flex-wrap gap-1.5 mt-2">
+                                  {asset.tags.map((tag, idx) => (
+                                    <Badge key={idx} variant="secondary" className="text-xs py-1 px-2 bg-primary/10 text-primary border-primary/20 font-medium">
+                                      {tag}
+                                    </Badge>
+                                  ))}
+                                </div>
 
-                               {/* Action Buttons - Always Visible */}
-                               <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/50">
-                                 <div className="flex gap-2">
-                                   <Button 
-                                     size="sm" 
-                                     variant="outline"
-                                     className="h-8 px-3"
-                                     onClick={() => handleEdit(asset)}
-                                   >
-                                     <Edit className="w-3 h-3 mr-1" />
-                                     Edit
-                                   </Button>
-                                   <Button 
-                                     size="sm" 
-                                     variant="outline"
-                                     className="h-8 px-3"
-                                     onClick={() => handleDownload(asset)}
-                                   >
-                                     <Download className="w-3 h-3 mr-1" />
-                                     Save
-                                   </Button>
-                                 </div>
+                                {/* Purple Separator Line */}
+                                <div className="mt-4 h-px bg-gradient-to-r from-transparent via-purple-500/60 to-transparent shadow-[0_0_8px_rgba(168,85,247,0.4)]" />
+
+                                {/* Action Buttons - Always Visible */}
+                                <div className="flex items-center justify-between mt-4 pt-4">
+                                  <div className="flex gap-2">
+                                    <Button 
+                                      size="sm" 
+                                      variant="outline"
+                                      className="h-8 px-3 hover:bg-violet-500/10 hover:border-violet-500/50 transition-all"
+                                      onClick={() => handleEdit(asset)}
+                                    >
+                                      <Edit className="w-3 h-3 mr-1" />
+                                      Edit
+                                    </Button>
+                                    <Button 
+                                      size="sm" 
+                                      variant="outline"
+                                      className="h-8 px-3 hover:bg-purple-500/10 hover:border-purple-500/50 transition-all"
+                                      onClick={() => handleDownload(asset)}
+                                    >
+                                      <Download className="w-3 h-3 mr-1" />
+                                      Download
+                                    </Button>
+                                  </div>
                                  <div className="flex gap-1">
                                    <Button 
                                      size="sm" 
