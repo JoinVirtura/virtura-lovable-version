@@ -376,11 +376,6 @@ async function downloadAndUploadVideo(
   }
 
   console.log(`📤 Starting upload to Supabase Storage...`);
-  sendProgress({ 
-    stage: 'uploading', 
-    progress: 85, 
-    message: '☁️ Uploading to secure storage...' 
-  });
 
   // Pre-flight check: Verify storage bucket access
   try {
