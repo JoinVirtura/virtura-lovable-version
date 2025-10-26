@@ -247,67 +247,6 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
             </CardContent>
           </Card>
 
-          {/* Voice Settings */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm flex items-center gap-2">
-                <Settings className="h-4 w-4" />
-                Voice Controls
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span>Stability</span>
-                    <span>{voiceSettings.stability}%</span>
-                  </div>
-                  <Slider
-                    value={[voiceSettings.stability]}
-                    onValueChange={([value]) => setVoiceSettings(prev => ({ ...prev, stability: value }))}
-                    max={100}
-                  />
-                </div>
-
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span>Clarity</span>
-                    <span>{voiceSettings.clarity}%</span>
-                  </div>
-                  <Slider
-                    value={[voiceSettings.clarity]}
-                    onValueChange={([value]) => setVoiceSettings(prev => ({ ...prev, clarity: value }))}
-                    max={100}
-                  />
-                </div>
-
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span>Speed</span>
-                    <span>{voiceSettings.speed}%</span>
-                  </div>
-                  <Slider
-                    value={[voiceSettings.speed]}
-                    onValueChange={([value]) => setVoiceSettings(prev => ({ ...prev, speed: value }))}
-                    min={50}
-                    max={150}
-                  />
-                </div>
-
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span>Emotion</span>
-                    <span>{voiceSettings.emotion}%</span>
-                  </div>
-                  <Slider
-                    value={[voiceSettings.emotion]}
-                    onValueChange={([value]) => setVoiceSettings(prev => ({ ...prev, emotion: value }))}
-                    max={100}
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
 
           {/* Generate Button */}
           <Button
@@ -374,44 +313,6 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
         </TabsContent>
       </Tabs>
 
-      {/* Voice Result */}
-      {project.voice?.status === 'completed' && (
-        <Card className="border-violet-500/20 bg-violet-500/5">
-          <CardHeader>
-            <CardTitle className="text-sm flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-green-500" />
-              Voice Generated Successfully
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              <div>
-                <Label className="text-xs text-muted-foreground">Voice</Label>
-                <p className="font-medium">{selectedVoiceData?.name}</p>
-              </div>
-              <div>
-                <Label className="text-xs text-muted-foreground">Duration</Label>
-                <p className="font-medium">{project.voice.metadata?.duration || 0}s</p>
-              </div>
-            </div>
-            
-            {project.voice.audioUrl && (
-              <div className="space-y-2">
-                <EnhancedWaveformVisualizer
-                  audioData={project.voice.metadata?.waveform}
-                  isPlaying={isPlaying}
-                  fillContainer={true}
-                  color="#8b5cf6"
-                  className="h-20"
-                />
-                <audio controls className="w-full">
-                  <source src={project.voice.audioUrl} type="audio/mpeg" />
-                </audio>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 };
