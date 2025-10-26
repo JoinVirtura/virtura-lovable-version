@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
 import { VirturaSidebar } from "@/components/VirturaSidebar";
 import { OverviewPage } from "@/components/OverviewPage";
 import virturaLogo from "/lovable-uploads/f264298f-2877-485b-affc-d705994fc848.png";
@@ -107,6 +107,8 @@ export default function Dashboard() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [activeView, setActiveView] = useState("overview");
+  const { state } = useSidebar();
+  const isSidebarExpanded = state === "expanded";
 
   // Fetch saved avatars from Supabase for Library view
   const fetchSavedAvatars = async () => {
@@ -2960,20 +2962,26 @@ export default function Dashboard() {
                                    <Button 
                                      size="sm" 
                                      variant="outline"
-                                     className="h-8 px-3 hover:bg-violet-500/10 hover:border-violet-500/50 transition-all whitespace-nowrap"
+                                     className={`h-8 hover:bg-violet-500/10 hover:border-violet-500/50 transition-all ${
+                                       isSidebarExpanded ? "w-8 p-0" : "px-3"
+                                     }`}
                                      onClick={() => handleEdit(asset)}
+                                     title="Edit"
                                    >
-                                     <Edit className="w-3 h-3 mr-1" />
-                                     Edit
+                                     <Edit className={isSidebarExpanded ? "w-4 h-4" : "w-3 h-3 mr-1"} />
+                                     {!isSidebarExpanded && "Edit"}
                                    </Button>
                                    <Button 
                                      size="sm" 
                                      variant="outline"
-                                     className="h-8 px-3 hover:bg-purple-500/10 hover:border-purple-500/50 transition-all whitespace-nowrap"
+                                     className={`h-8 hover:bg-purple-500/10 hover:border-purple-500/50 transition-all ${
+                                       isSidebarExpanded ? "w-8 p-0" : "px-3"
+                                     }`}
                                      onClick={() => handleDownload(asset)}
+                                     title="Download"
                                    >
-                                     <Download className="w-3 h-3 mr-1" />
-                                     Download
+                                     <Download className={isSidebarExpanded ? "w-4 h-4" : "w-3 h-3 mr-1"} />
+                                     {!isSidebarExpanded && "Download"}
                                    </Button>
                                    <DropdownMenu>
                                      <DropdownMenuTrigger asChild>
