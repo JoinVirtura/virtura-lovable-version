@@ -9,6 +9,7 @@ import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
+import { supabase } from '@/integrations/supabase/client';
 import {
   Mic,
   Upload,
@@ -106,6 +107,7 @@ export const VoiceEngineStudio: React.FC<VoiceEngineStudioProps> = ({
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [previewLoading, setPreviewLoading] = useState(false);
   const [cloneFile, setCloneFile] = useState<File | null>(null);
   const [uploadedAudio, setUploadedAudio] = useState<File | null>(null);
   
@@ -136,14 +138,38 @@ export const VoiceEngineStudio: React.FC<VoiceEngineStudioProps> = ({
     setEmotions(preset.values);
   };
 
-  const togglePlayPreview = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-      } else {
-        audioRef.current.play();
+  const togglePlayPreview = async () => {
+    if (isPlaying && audioRef.current) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+      return;
+    }
+
+    try {
+      setPreviewLoading(true);
+      const { data, error } = await supabase.functions.invoke('voice-preview', {
+        body: {
+          voiceId: selectedVoice,
+          text: `Hello, I'm ${PREMIUM_VOICES.find(v => v.id === selectedVoice)?.name}. This is a preview of my voice.`
+        }
+      });
+
+      if (error) throw error;
+
+      if (audioRef.current && data.audioData) {
+        audioRef.current.src = data.audioData;
+        await audioRef.current.play();
+        setIsPlaying(true);
       }
-      setIsPlaying(!isPlaying);
+    } catch (error) {
+      console.error('Preview failed:', error);
+      toast({
+        title: "Preview unavailable",
+        description: "Could not load voice preview",
+        variant: "destructive"
+      });
+    } finally {
+      setPreviewLoading(false);
     }
   };
 
@@ -354,16 +380,19 @@ export const VoiceEngineStudio: React.FC<VoiceEngineStudioProps> = ({
                       <span className="font-medium text-sm">Voice Preview</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Button size="sm" variant="outline" onClick={togglePlayPreview}>
-                        {isPlaying ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
+                      <Button size="sm" variant="outline" onClick={togglePlayPreview} disabled={previewLoading}>
+                        {previewLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : isPlaying ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
                       </Button>
                       <div className="flex-1 text-sm text-muted-foreground">
                         Sample: "Hello, I'm {PREMIUM_VOICES.find(v => v.id === selectedVoice)?.name}..."
                       </div>
                     </div>
-                    <audio ref={audioRef} className="hidden">
-                      <source src={PREMIUM_VOICES.find(v => v.id === selectedVoice)?.preview} type="audio/mpeg" />
-                    </audio>
+                    <audio 
+                      ref={audioRef} 
+                      className="hidden"
+                      onEnded={() => setIsPlaying(false)}
+                      onError={() => setIsPlaying(false)}
+                    />
                   </div>
                 </CardContent>
               </Card>
