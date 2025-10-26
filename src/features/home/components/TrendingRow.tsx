@@ -471,36 +471,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                   repeat: Infinity,
                 }}
               >
-                Experience the future of{' '}
-                <span className="relative inline-block font-black">
-                  <motion.span
-                    className="relative z-10 bg-gradient-to-r from-purple-400 via-fuchsia-500 to-cyan-400 bg-clip-text text-transparent"
-                    style={{ backgroundSize: '200% auto' }}
-                    animate={{
-                      backgroundPosition: ['0% center', '200% center'],
-                    }}
-                    transition={{
-                      duration: 4,
-                      repeat: Infinity,
-                      ease: "linear"
-                    }}
-                  >
-                    viral creativity
-                  </motion.span>
-                  <motion.span
-                    className="absolute inset-0 bg-gradient-to-r from-purple-400 to-cyan-400 blur-xl opacity-40"
-                    animate={{
-                      scale: [1, 1.2, 1],
-                      opacity: [0.2, 0.6, 0.2],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                    }}
-                    aria-hidden="true"
-                  />
-                </span>
-                {' '}— where innovation meets imagination in stunning detail
+                Experience the future of viral creativity — where innovation meets imagination.
               </motion.p>
             </motion.div>
           </div>
