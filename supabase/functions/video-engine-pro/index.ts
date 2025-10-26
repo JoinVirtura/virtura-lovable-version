@@ -1,4 +1,4 @@
-// Updated: 2025-10-16 - Verified working Replicate models with proper blob URL handling
+// Updated: 2025-10-26 - Fixed sendProgress issue, forcing fresh deployment
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 import Replicate from "https://esm.sh/replicate@0.25.2";
