@@ -2977,12 +2977,14 @@ export default function Dashboard() {
                                      <Download className="w-3 h-3 mr-1 2xl:w-4 2xl:h-4 2xl:mr-0" />
                                      <span className="2xl:hidden">Download</span>
                                    </Button>
+                                   
+                                   {/* Three-dot menu - only visible when sidebar collapsed (large screens) */}
                                    <DropdownMenu>
                                      <DropdownMenuTrigger asChild>
                                        <Button 
                                          size="sm" 
                                          variant="outline"
-                                         className="h-8 w-8 p-0 hover:bg-violet-500/10 hover:border-violet-500/50 transition-all flex-shrink-0"
+                                         className="hidden xl:flex h-8 w-8 p-0 hover:bg-violet-500/10 hover:border-violet-500/50 transition-all flex-shrink-0"
                                          onClick={(e) => e.stopPropagation()}
                                        >
                                          <MoreVertical className="w-4 h-4" />
@@ -3016,6 +3018,41 @@ export default function Dashboard() {
                                        </DropdownMenuItem>
                                      </DropdownMenuContent>
                                    </DropdownMenu>
+                                   
+                                   {/* Direct Share & Delete buttons - only visible on hover when sidebar expanded (small/medium screens) */}
+                                   <div className="xl:hidden flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                                     <Button 
+                                       size="sm" 
+                                       variant="outline"
+                                       className="h-8 px-3 bg-black/40 backdrop-blur-md hover:bg-violet-500/20 hover:border-violet-500/50 transition-all border-violet-500/30"
+                                       onClick={(e) => { 
+                                         e.stopPropagation(); 
+                                         handleShare(asset); 
+                                       }}
+                                       title="Share"
+                                     >
+                                       <Share2 className="w-3 h-3 mr-1" />
+                                       <span className="text-xs">Share</span>
+                                     </Button>
+                                     <Button 
+                                       size="sm" 
+                                       variant="outline"
+                                       className="h-8 px-3 bg-black/40 backdrop-blur-md hover:bg-red-500/20 hover:border-red-500/50 transition-all border-red-500/30 text-red-400"
+                                       onClick={(e) => { 
+                                         e.stopPropagation(); 
+                                         handleDelete(asset); 
+                                       }}
+                                       disabled={deletingAssetId === asset.dbId}
+                                       title="Delete"
+                                     >
+                                       {deletingAssetId === asset.dbId ? (
+                                         <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                                       ) : (
+                                         <Trash2 className="w-3 h-3 mr-1" />
+                                       )}
+                                       <span className="text-xs">Delete</span>
+                                     </Button>
+                                   </div>
                                 </div>
                               
                               {/* Generation Stats */}
