@@ -2956,26 +2956,26 @@ export default function Dashboard() {
                                 </div>
 
                                  {/* Action Buttons - Always Visible */}
-                                 <div className="flex items-center gap-2 mt-4 pt-4 min-w-0">
+                                 <div className="flex items-center gap-2 mt-4 pt-4">
                                    <Button 
                                      size="sm" 
                                      variant="outline"
-                                     className="h-8 px-3 hover:bg-violet-500/10 hover:border-violet-500/50 transition-all xl:w-8 xl:p-0 flex-shrink-0"
+                                     className="h-8 px-3 hover:bg-violet-500/10 hover:border-violet-500/50 transition-all 2xl:w-8 2xl:p-0"
                                      onClick={() => handleEdit(asset)}
                                      title="Edit"
                                    >
-                                     <Edit className="w-3 h-3 mr-1 xl:w-4 xl:h-4 xl:mr-0" />
-                                     <span className="xl:hidden">Edit</span>
+                                     <Edit className="w-3 h-3 mr-1 2xl:w-4 2xl:h-4 2xl:mr-0" />
+                                     <span className="2xl:hidden">Edit</span>
                                    </Button>
                                    <Button 
                                      size="sm" 
                                      variant="outline"
-                                     className="h-8 px-3 hover:bg-purple-500/10 hover:border-purple-500/50 transition-all xl:w-8 xl:p-0 flex-shrink-0"
+                                     className="h-8 px-3 hover:bg-purple-500/10 hover:border-purple-500/50 transition-all 2xl:w-8 2xl:p-0"
                                      onClick={() => handleDownload(asset)}
                                      title="Download"
                                    >
-                                     <Download className="w-3 h-3 mr-1 xl:w-4 xl:h-4 xl:mr-0" />
-                                     <span className="xl:hidden">Download</span>
+                                     <Download className="w-3 h-3 mr-1 2xl:w-4 2xl:h-4 2xl:mr-0" />
+                                     <span className="2xl:hidden">Download</span>
                                    </Button>
                                    <DropdownMenu>
                                      <DropdownMenuTrigger asChild>
