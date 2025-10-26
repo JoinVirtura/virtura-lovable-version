@@ -61,6 +61,31 @@ export default function StudioPage() {
     qualityMetrics
   } = useStudioProject();
 
+  // Load pre-selected avatar from Library
+  useEffect(() => {
+    const selectedAvatar = sessionStorage.getItem('selectedAvatar');
+    if (selectedAvatar) {
+      try {
+        const { avatarUrl, metadata } = JSON.parse(selectedAvatar);
+        
+        updateProject({
+          avatar: {
+            type: 'library',
+            originalUrl: avatarUrl,
+            processedUrl: avatarUrl,
+            status: 'completed',
+            quality: '4K' as any,
+            metadata
+          }
+        });
+        
+        sessionStorage.removeItem('selectedAvatar');
+      } catch (error) {
+        console.error('Failed to load selected avatar:', error);
+      }
+    }
+  }, [updateProject]);
+
   const handleStepChange = (stepId: string) => {
     // Clear video if navigating away from video step
     if (currentStep === 'video' && stepId !== 'video') {

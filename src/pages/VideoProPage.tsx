@@ -1,9 +1,10 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
+import { toast } from 'sonner';
 import { 
   Upload, 
   Play,
@@ -56,6 +57,32 @@ export default function VideoProPage() {
   } = useStudioProject(false); // Start fresh, don't load old projects
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Load pre-selected avatar from Library
+  useEffect(() => {
+    const selectedAvatar = sessionStorage.getItem('selectedAvatar');
+    if (selectedAvatar) {
+      try {
+        const { avatarUrl, metadata } = JSON.parse(selectedAvatar);
+        
+        updateProject({
+          avatar: {
+            type: 'library',
+            originalUrl: avatarUrl,
+            processedUrl: avatarUrl,
+            status: 'completed',
+            quality: '4K' as any,
+            metadata
+          }
+        });
+        
+        sessionStorage.removeItem('selectedAvatar');
+        toast.success('Avatar loaded from library');
+      } catch (error) {
+        console.error('Failed to load selected avatar:', error);
+      }
+    }
+  }, [updateProject]);
 
   const handleImageUpload = useCallback(async (file: File) => {
     // Validate file type
