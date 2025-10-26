@@ -156,7 +156,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
         
         <button 
           onClick={() => onViewChange("settings")}
-          className={`flex items-center w-full transition-colors ${isCollapsed ? "pl-2 pr-2 py-3 justify-center" : "pl-2.5 pr-4 py-3 gap-3"} ${
+          className={`flex items-center w-full transition-colors ${isCollapsed ? "px-2 py-3 justify-center" : "px-2 py-3 gap-3"} ${
             activeView === "settings" 
               ? "bg-violet-500/20" 
               : "hover:bg-violet-500/5"
