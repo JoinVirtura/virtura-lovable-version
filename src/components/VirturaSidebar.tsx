@@ -202,18 +202,25 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
       <SidebarFooter className="p-0">
         <SidebarSeparator className={isCollapsed ? "mx-1" : "mx-3"} />
         
-        <div className={`flex items-center gap-3 ${isCollapsed ? "px-2 py-3 justify-center" : "px-4 py-3"}`}>
+        <button 
+          onClick={() => onViewChange("settings")}
+          className={`flex items-center gap-3 w-full transition-colors ${isCollapsed ? "px-2 py-3 justify-center" : "px-4 py-3"} ${
+            activeView === "settings" 
+              ? "bg-violet-500/20" 
+              : "hover:bg-violet-500/5"
+          }`}
+        >
           <Avatar className="w-8 h-8 ring-2 ring-violet-500/30">
             <AvatarImage src="/lovable-uploads/517f5d9c-c223-4625-9aa5-5f2ef255f576.png" />
             <AvatarFallback className="bg-violet-500/20 text-violet-300">J</AvatarFallback>
           </Avatar>
           {!isCollapsed && (
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 text-left">
               <p className="font-medium text-sm text-white">Jeff Krammer</p>
               <p className="text-xs text-violet-300">Pro Plan</p>
             </div>
           )}
-        </div>
+        </button>
         
         <div className={isCollapsed ? "px-2 pb-3" : "px-4 pb-3"}>
           <SidebarMenuButton 
