@@ -352,21 +352,17 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
                 </div>
 
                 {/* Available Formats */}
-                <div className="pt-2 border-t border-border/50">
+                <div className="pt-2 border-t border-purple-500/30">
                   <Label className="text-xs text-muted-foreground mb-2 block">Available Formats:</Label>
                   <div className="flex flex-wrap gap-1.5">
                     {pack.formats.map((format) => (
-                      <Badge 
-                        key={format}
-                        variant={format === currentPrimaryRatio ? "default" : "secondary"}
-                        className={`text-xs ${
-                          format === currentPrimaryRatio 
-                            ? 'bg-purple-500/20 border-purple-500 text-purple-300' 
-                            : ''
-                        }`}
-                      >
-                      {format}
-                      </Badge>
+                  <Badge 
+                    key={format}
+                    variant="outline"
+                    className="text-xs bg-purple-500/20 border-purple-500 text-purple-300"
+                  >
+                    {format}
+                  </Badge>
                     ))}
                   </div>
                 </div>
