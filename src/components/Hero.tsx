@@ -491,18 +491,13 @@ export const Hero = () => {
         </Badge>
 
         {/* Main Heading - Futuristic Aesthetic */}
-        <div className="mb-16 animate-fade-in">
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-8 tracking-tight">
+        <div className="mb-8 animate-fade-in">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight">
             <span className="text-white font-light">Virtura</span>
             <br />
             <span className="text-white font-light">Where Identity </span>
             <span className="text-gradient-primary font-bold animate-glow-text">Evolves</span>
           </h1>
-          
-          <p className="text-xl md:text-2xl text-gray-300 leading-relaxed max-w-2xl mx-auto font-light">
-            Join our waitlist today for a chance to win amazing prizes
-            and be one of the first to try our revolutionary software.
-          </p>
         </div>
 
         {/* Output Display Section - ABOVE input */}
