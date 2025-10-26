@@ -135,11 +135,10 @@ async function generateRealVideo(
   const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
   const supabase = createClient(supabaseUrl, supabaseKey);
 
-  // Verified working models cascade: ByteDance Omni-Human -> Synthesys Wav2Lip -> zsxkib Sonic
+  // Working models with correct API parameters
   const engines = [
     { name: 'ByteDance Omni-Human', fn: generateWithOmniHuman, quality: '⭐⭐⭐⭐⭐ Premium' },
-    { name: 'Synthesys Wav2Lip', fn: generateWithSynthesysWav2Lip, quality: '⭐⭐⭐⭐ High Quality' },
-    { name: 'zsxkib Sonic', fn: generateWithSonic, quality: '⭐⭐⭐ Budget' }
+    { name: 'Synthesys Wav2Lip', fn: generateWithSynthesysWav2Lip, quality: '⭐⭐⭐⭐ High Quality' }
   ];
 
   const REPLICATE_API_KEY = Deno.env.get('REPLICATE_API_KEY');
@@ -205,10 +204,7 @@ async function generateWithOmniHuman(
       {
         input: {
           image: avatarImageUrl,
-          audio: audioUrl,
-          seed: 42,
-          cfg_scale: 3.5,
-          pose_weight: 1.0
+          audio: audioUrl
         }
       }
     );
@@ -229,7 +225,7 @@ async function generateWithOmniHuman(
   }
 }
 
-// Fallback #1: Synthesys Wav2Lip (High Quality)
+// Fallback: Synthesys Wav2Lip (High Quality)
 async function generateWithSynthesysWav2Lip(
   avatarImageUrl: string,
   audioUrl: string,
@@ -247,7 +243,8 @@ async function generateWithSynthesysWav2Lip(
       {
         input: {
           face: avatarImageUrl,
-          audio: audioUrl
+          audio: audioUrl,
+          smooth: true
         }
       }
     );
@@ -265,45 +262,6 @@ async function generateWithSynthesysWav2Lip(
   } catch (error: any) {
     console.error('Synthesys Wav2Lip generation error:', error);
     throw new Error(`Synthesys Wav2Lip failed: ${error.message}`);
-  }
-}
-
-// Fallback #2: zsxkib Sonic (Budget & Fast)
-async function generateWithSonic(
-  avatarImageUrl: string,
-  audioUrl: string,
-  settings: any,
-  supabase: any,
-  replicateApiKey: string
-) {
-  const replicate = new Replicate({ auth: replicateApiKey });
-
-  console.log('🎯 Running zsxkib Sonic budget model');
-
-  try {
-    const output: any = await replicate.run(
-      "zsxkib/sonic",
-      {
-        input: {
-          image: avatarImageUrl,
-          audio: audioUrl
-        }
-      }
-    );
-
-    const videoUrl = Array.isArray(output) ? output[0] : output;
-    console.log('✅ zsxkib Sonic generated video:', videoUrl);
-
-    return await downloadAndUploadVideo(
-      videoUrl,
-      'zsxkib-sonic',
-      settings,
-      supabase
-    );
-
-  } catch (error: any) {
-    console.error('zsxkib Sonic generation error:', error);
-    throw new Error(`zsxkib Sonic failed: ${error.message}`);
   }
 }
 
