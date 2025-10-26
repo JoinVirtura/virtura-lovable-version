@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Play, Eye, Sparkles, Heart, Share2, Filter } from 'lucide-react';
+import { ArrowRight, Play, Eye, Sparkles, Heart, Share2, Filter, Film } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ContentCard } from './ContentCard';
 import { Tile } from '../types';
@@ -519,88 +519,177 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
         </motion.div>
 
         {/* Innovative Masonry Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-0 auto-rows-[200px] md:auto-rows-[240px] lg:auto-rows-[280px]" style={{ gridAutoFlow: 'dense' }}>
-          {displayedTiles.map((tile, index) => {
-            // Dynamic sizing for visual interest
-            const getCardSize = (index: number) => {
-              const pattern = index % 20;
-              if (pattern === 0) return 'col-span-2 row-span-2'; // Large featured
-              if (pattern === 7 || pattern === 14) return 'col-span-2'; // Wide
-              if (pattern === 3 || pattern === 10 || pattern === 17) return 'row-span-2'; // Tall
-              return ''; // Standard 1x1
-            };
+        <div className="relative">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-0 auto-rows-[200px] md:auto-rows-[240px] lg:auto-rows-[280px]" style={{ gridAutoFlow: 'dense' }}>
+            {displayedTiles.map((tile, index) => {
+              // Dynamic sizing for visual interest
+              const getCardSize = (index: number) => {
+                const pattern = index % 20;
+                if (pattern === 0) return 'col-span-2 row-span-2'; // Large featured
+                if (pattern === 7 || pattern === 14) return 'col-span-2'; // Wide
+                if (pattern === 3 || pattern === 10 || pattern === 17) return 'row-span-2'; // Tall
+                return ''; // Standard 1x1
+              };
 
-            return (
+              return (
+                <motion.div
+                  key={`${tile.id}-${index}`}
+                  initial={{ opacity: 0, scale: 0.8, y: 40 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ 
+                    duration: 0.6, 
+                    delay: (index % 16) * 0.03,
+                    ease: [0.25, 0.1, 0.25, 1]
+                  }}
+                  className={cn(
+                    'relative group cursor-pointer overflow-hidden rounded-none',
+                    getCardSize(index)
+                  )}
+                  whileHover={{ 
+                    scale: 1.03,
+                    zIndex: 50,
+                    transition: { duration: 0.3, ease: "easeOut" }
+                  }}
+                  onHoverStart={() => {
+                    setHoveredCard(tile.id);
+                  }}
+                  onHoverEnd={() => setHoveredCard(null)}
+                >
+                  <ContentCard 
+                    tile={tile} 
+                    className="h-full w-full border-0 rounded-none overflow-hidden bg-card/80 backdrop-blur-sm"
+                    size="md"
+                  />
+                  
+                  {/* Enhanced Hover Overlay */}
+                  <AnimatePresence>
+                    {hoveredCard === tile.id && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute inset-0 flex items-center justify-center p-4"
+                      >
+                        <motion.div 
+                          className="flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-2 rounded-full border border-purple-400/30"
+                          whileHover={{ scale: 1.05, borderColor: 'rgba(168, 85, 247, 0.6)' }}
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ 
+                            opacity: 1, 
+                            scale: 1,
+                            boxShadow: [
+                              '0 0 10px rgba(168, 85, 247, 0.3)',
+                              '0 0 20px rgba(168, 85, 247, 0.5)',
+                              '0 0 10px rgba(168, 85, 247, 0.3)',
+                            ]
+                          }}
+                          transition={{
+                            opacity: { duration: 0.3 },
+                            scale: { duration: 0.3 },
+                            boxShadow: {
+                              duration: 2,
+                              repeat: Infinity,
+                            }
+                          }}
+                        >
+                          <Eye className="w-4 h-4 text-purple-400" />
+                          <span className="text-white font-bold text-sm">{tile.views.toLocaleString()}</span>
+                        </motion.div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          {/* Floating Video Graphics - Scattered Across Grid */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            {[...Array(12)].map((_, i) => (
               <motion.div
-                key={`${tile.id}-${index}`}
-                initial={{ opacity: 0, scale: 0.8, y: 40 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ 
-                  duration: 0.6, 
-                  delay: (index % 16) * 0.03,
-                  ease: [0.25, 0.1, 0.25, 1]
+                key={`video-float-${i}`}
+                className="absolute"
+                initial={{ 
+                  x: Math.random() * 100 + '%',
+                  y: Math.random() * 100 + '%',
+                  opacity: 0,
+                  scale: 0
                 }}
-                className={cn(
-                  'relative group cursor-pointer overflow-hidden rounded-none',
-                  getCardSize(index)
-                )}
-                whileHover={{ 
-                  scale: 1.03,
-                  zIndex: 50,
-                  transition: { duration: 0.3, ease: "easeOut" }
+                animate={{ 
+                  x: [
+                    Math.random() * 100 + '%',
+                    Math.random() * 100 + '%',
+                    Math.random() * 100 + '%',
+                  ],
+                  y: [
+                    Math.random() * 100 + '%',
+                    Math.random() * 100 + '%',
+                    Math.random() * 100 + '%',
+                  ],
+                  opacity: [0, 0.6, 0.4, 0.6, 0],
+                  scale: [0, 1, 0.8, 1, 0],
+                  rotate: [0, 360, 720]
                 }}
-                onHoverStart={() => {
-                  setHoveredCard(tile.id);
+                transition={{
+                  duration: 15 + i * 2,
+                  repeat: Infinity,
+                  ease: "linear",
+                  delay: i * 0.8
                 }}
-                onHoverEnd={() => setHoveredCard(null)}
               >
-                <ContentCard 
-                  tile={tile} 
-                  className="h-full w-full border-0 rounded-none overflow-hidden bg-card/80 backdrop-blur-sm"
-                  size="md"
-                />
-                
-                {/* Enhanced Hover Overlay */}
-                <AnimatePresence>
-                  {hoveredCard === tile.id && (
+                {i % 3 === 0 ? (
+                  <div className="relative">
+                    <Film className="w-8 h-8 text-purple-400" />
                     <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="absolute inset-0 flex items-center justify-center p-4"
-                    >
-                      <motion.div 
-                        className="flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-2 rounded-full border border-purple-400/30"
-                        whileHover={{ scale: 1.05, borderColor: 'rgba(168, 85, 247, 0.6)' }}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ 
-                          opacity: 1, 
-                          scale: 1,
-                          boxShadow: [
-                            '0 0 10px rgba(168, 85, 247, 0.3)',
-                            '0 0 20px rgba(168, 85, 247, 0.5)',
-                            '0 0 10px rgba(168, 85, 247, 0.3)',
-                          ]
+                      className="absolute inset-0 blur-xl bg-purple-500/30 rounded-full"
+                      animate={{
+                        scale: [1, 1.5, 1],
+                        opacity: [0.3, 0.6, 0.3]
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                      }}
+                    />
+                  </div>
+                ) : i % 3 === 1 ? (
+                  <div className="relative">
+                    <Play className="w-10 h-10 text-fuchsia-400 fill-fuchsia-400/20" />
+                    <motion.div
+                      className="absolute inset-0 blur-xl bg-fuchsia-500/30 rounded-full"
+                      animate={{
+                        scale: [1, 1.5, 1],
+                        opacity: [0.3, 0.6, 0.3]
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        delay: 0.5
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div className="relative flex gap-1">
+                    {[...Array(3)].map((_, j) => (
+                      <motion.div
+                        key={j}
+                        className="w-1.5 h-6 bg-gradient-to-t from-purple-500 to-fuchsia-500 rounded-full"
+                        animate={{
+                          scaleY: [1, 1.5, 0.8, 1.2, 1],
                         }}
                         transition={{
-                          opacity: { duration: 0.3 },
-                          scale: { duration: 0.3 },
-                          boxShadow: {
-                            duration: 2,
-                            repeat: Infinity,
-                          }
+                          duration: 1.5,
+                          repeat: Infinity,
+                          delay: j * 0.2
                         }}
-                      >
-                        <Eye className="w-4 h-4 text-purple-400" />
-                        <span className="text-white font-bold text-sm">{tile.views.toLocaleString()}</span>
-                      </motion.div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                      />
+                    ))}
+                  </div>
+                )}
               </motion.div>
-            );
-          })}
+            ))}
+          </div>
         </div>
 
         {/* Load More Section */}
