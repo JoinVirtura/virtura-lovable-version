@@ -159,7 +159,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
           className={`flex items-center w-full transition-colors ${isCollapsed ? "px-2 py-3 justify-center" : "pl-6 pr-4 py-3 gap-3"} ${
             activeView === "settings" 
               ? "bg-violet-500/20" 
-              : "hover:bg-violet-500/10"
+              : "hover:bg-violet-500/5"
           }`}
         >
           <Avatar className="w-8 h-8 ring-2 ring-violet-500/30 shrink-0">
