@@ -22,6 +22,7 @@ interface PremiumVoiceEngineProps {
   onUpdate: (updates: Partial<StudioProject>) => void;
   onGenerate: (config: any) => Promise<void>;
   isProcessing: boolean;
+  onStepChange?: (stepId: string) => void;
 }
 
 const PREMIUM_VOICES = [
@@ -91,6 +92,7 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
   onUpdate,
   onGenerate,
   isProcessing,
+  onStepChange,
 }) => {
   const [activeTab, setActiveTab] = useState('tts');
   const [script, setScript] = useState(project.voice?.script || '');
@@ -204,10 +206,12 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
       setGenerationStatus('Complete!');
       toast.success('Voice generated successfully!', { id: 'voice-generation' });
       
-      setTimeout(() => {
-        setGenerationProgress(0);
-        setGenerationStatus('');
-      }, 2000);
+      // Reset progress and immediately navigate to Video step
+      setGenerationProgress(0);
+      setGenerationStatus('');
+      if (onStepChange) {
+        onStepChange('video');
+      }
     } catch (error: any) {
       toast.error(error.message || 'Failed to generate voice', { id: 'voice-generation' });
       setGenerationProgress(0);
@@ -312,8 +316,12 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
       setCloneDescription('');
       setCloneFiles([]);
       await loadClonedVoices();
-      setActiveTab('tts');
       setSelectedVoice(data.voiceId);
+
+      // Immediately navigate to Video step
+      if (onStepChange) {
+        onStepChange('video');
+      }
     } catch (error: any) {
       console.error('Voice clone error:', error);
       toast.error(error.message || 'Failed to clone voice');
@@ -357,6 +365,11 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
           },
         },
       });
+
+      // Immediately navigate to Video step
+      if (onStepChange) {
+        onStepChange('video');
+      }
     } catch (error: any) {
       console.error('Audio upload error:', error);
       toast.error(error.message || 'Failed to upload audio');

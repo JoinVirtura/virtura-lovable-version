@@ -219,6 +219,7 @@ export default function VideoProPage() {
                         onUpdate={updateProject}
                         onGenerate={generateVoice}
                         isProcessing={isProcessing}
+                        onStepChange={handleStepChange}
                       />
                     </ErrorBoundary>
                   </TabsContent>
