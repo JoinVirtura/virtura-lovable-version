@@ -101,6 +101,33 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
     lipSync: 95
   });
 
+  const exportPacks = {
+    social: {
+      name: "Social Pack",
+      icon: "📱",
+      primaryRatio: "9:16" as const,
+      formats: ["1:1", "9:16", "4:5"],
+      features: ["Instagram Stories", "TikTok Ready", "Facebook Posts"],
+      description: "Perfect for social media platforms"
+    },
+    professional: {
+      name: "Professional Pack",
+      icon: "💼",
+      primaryRatio: "16:9" as const,
+      formats: ["16:9", "4:5", "1:1"],
+      features: ["LinkedIn Posts", "Presentations", "Website Headers"],
+      description: "Ideal for business and professional content"
+    },
+    ad: {
+      name: "Ad Pack",
+      icon: "🎯",
+      primaryRatio: "16:9" as const,
+      formats: ["16:9", "9:16", "1:1", "4:5"],
+      features: ["Google Ads", "Facebook Ads", "YouTube Covers"],
+      description: "All formats for advertising campaigns"
+    }
+  };
+
   const PACK_PRIMARY_RATIOS: Record<string, '1:1' | '9:16' | '16:9' | '4:5'> = {
     social: '9:16',
     professional: '16:9',
@@ -304,31 +331,69 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
         </div>
         
         <div className="grid sm:grid-cols-3 gap-3 mb-4">
-          {Object.entries({
-            social: { icon: '📱', label: 'Social Pack', ratio: '9:16 Vertical', desc: 'TikTok, Stories, Reels' },
-            professional: { icon: '💼', label: 'Professional', ratio: '16:9 Landscape', desc: 'LinkedIn, Presentations' },
-            ad: { icon: '🎯', label: 'Ad Pack', ratio: '16:9 Landscape', desc: 'YouTube, Google Ads' }
-          }).map(([key, pack]) => (
-            <Card 
-              key={key}
-              className={`p-4 cursor-pointer transition-all ${
-                selectedExportPack === key 
-                  ? 'border-purple-500 bg-purple-500/10' 
-                  : 'hover:border-purple-500/50'
-              }`}
-              onClick={() => setSelectedExportPack(key as any)}
-            >
-              <div className="text-2xl mb-2">{pack.icon}</div>
-              <div className="font-medium">{pack.label}</div>
-              <Badge variant="secondary" className="text-xs mt-2">{pack.ratio}</Badge>
-              <p className="text-xs text-muted-foreground mt-1">{pack.desc}</p>
-            </Card>
-          ))}
+          {Object.entries(exportPacks).map(([key, pack]) => {
+            const currentPrimaryRatio = key === 'ad' ? primaryRatio : pack.primaryRatio;
+            
+            return (
+              <Card 
+                key={key}
+                className={`p-4 cursor-pointer transition-all ${
+                  selectedExportPack === key 
+                    ? 'border-purple-500 bg-purple-500/10' 
+                    : 'hover:border-purple-500/50'
+                }`}
+                onClick={() => setSelectedExportPack(key as any)}
+              >
+                <div className="text-2xl mb-2">{pack.icon}</div>
+                <div className="font-medium mb-1">{pack.name}</div>
+                <p className="text-xs text-muted-foreground mb-3">{pack.description}</p>
+                
+                {/* Features */}
+                <div className="space-y-1 mb-3">
+                  {pack.features.map((feature, idx) => (
+                    <div key={idx} className="text-xs text-muted-foreground flex items-center gap-1">
+                      <span className="text-purple-400">•</span>
+                      {feature}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Available Formats */}
+                <div className="pt-2 border-t border-border/50">
+                  <Label className="text-xs text-muted-foreground mb-2 block">Available Formats:</Label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {pack.formats.map((format) => (
+                      <Badge 
+                        key={format}
+                        variant={format === currentPrimaryRatio ? "default" : "secondary"}
+                        className={`text-xs ${
+                          format === currentPrimaryRatio 
+                            ? 'bg-purple-500/20 border-purple-500 text-purple-300' 
+                            : ''
+                        }`}
+                      >
+                        {format}
+                        {format === currentPrimaryRatio && (
+                          <span className="ml-1">★</span>
+                        )}
+                      </Badge>
+                    ))}
+                  </div>
+                  {selectedExportPack === key && (
+                    <p className="text-xs text-purple-400 mt-2 flex items-center gap-1">
+                      <Sparkles className="w-3 h-3" />
+                      Native: {currentPrimaryRatio} • Others: Smart-cropped
+                    </p>
+                  )}
+                </div>
+              </Card>
+            );
+          })}
         </div>
 
         {selectedExportPack === 'ad' && (
           <div className="mt-4 p-4 bg-background/50 rounded-lg">
-            <Label className="text-sm mb-2 block">Primary Aspect Ratio</Label>
+            <Label className="text-sm mb-2 block">Primary Aspect Ratio (Native Generation)</Label>
             <Select value={primaryRatio} onValueChange={(v) => setPrimaryRatio(v as any)}>
               <SelectTrigger>
                 <SelectValue />
@@ -340,14 +405,19 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
                 <SelectItem value="4:5">4:5 - Portrait (Facebook Ads)</SelectItem>
               </SelectContent>
             </Select>
+            <p className="text-xs text-muted-foreground mt-2">
+              Choose which format to generate natively. Other formats will be smart-cropped at export.
+            </p>
           </div>
         )}
 
         <Alert className="mt-4">
           <Sparkles className="w-4 h-4" />
           <AlertDescription>
-            Video will be generated at <strong>{getRatioDimensions(primaryRatio)}</strong> for perfect composition. 
-            Additional formats will be intelligently cropped during export.
+            Video will be generated natively at <strong>{getRatioDimensions(primaryRatio)}</strong> ({primaryRatio}) for perfect composition. 
+            {selectedExportPack && exportPacks[selectedExportPack as keyof typeof exportPacks].formats.length > 1 && (
+              <> All {exportPacks[selectedExportPack as keyof typeof exportPacks].formats.length} pack formats will be available during export with intelligent cropping.</>
+            )}
           </AlertDescription>
         </Alert>
       </Card>
