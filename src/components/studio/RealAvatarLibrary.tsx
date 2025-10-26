@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -129,7 +129,7 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
     });
   };
 
-  const loadAvatars = async () => {
+  const loadAvatars = useCallback(async () => {
     try {
       setLoading(true);
       
@@ -153,58 +153,29 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
         return;
       }
 
-      // Get current user ID for querying talking_avatars
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setAvatars(data || []);
-        return;
-      }
-
-      // Process avatars to fix video URLs
-      const processedAvatars = await Promise.all(
-        (data || []).map(async (avatar) => {
-          // Check if image_url is a video file or blob
-          const isVideoUrl = avatar.image_url.endsWith('.mp4') || 
-                            avatar.image_url.endsWith('.webm') ||
-                            avatar.image_url.startsWith('blob:');
-          
-          if (isVideoUrl) {
-            // Try to find the original image from talking_avatars table
-            const { data: talkingAvatar } = await supabase
-              .from('talking_avatars')
-              .select('original_image_url')
-              .eq('user_id', user.id)
-              .order('created_at', { ascending: false })
-              .limit(1)
-              .maybeSingle();
-            
-            if (talkingAvatar?.original_image_url) {
-              return {
-                ...avatar,
-                image_url: talkingAvatar.original_image_url,
-                video_url: avatar.image_url,
-                thumbnail_url: talkingAvatar.original_image_url
-              };
-            }
-          }
-          
-          return avatar;
-        })
-      );
-
-      setAvatars(processedAvatars);
+      // Simply use the data as-is - avatar_library already has correct URLs
+      setAvatars(data || []);
     } catch (error) {
       console.error('Error loading avatars:', error);
       toast.error('Failed to load avatar library');
     } finally {
       setLoading(false);
     }
-  };
-
-  // Re-run loadAvatars when filterCategory changes
-  useEffect(() => {
-    loadAvatars();
   }, [filterCategory]);
+
+  // Load avatars on mount and when filter changes
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (loading) {
+        setLoading(false);
+        toast.error('Loading timed out. Please refresh.');
+      }
+    }, 10000); // 10 second timeout
+
+    loadAvatars();
+
+    return () => clearTimeout(timeout);
+  }, [loadAvatars, loading]);
 
   const refreshLibrary = async () => {
     setRefreshing(true);
@@ -212,10 +183,6 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
     setRefreshing(false);
     toast.success('Library refreshed');
   };
-
-  useEffect(() => {
-    loadAvatars();
-  }, []);
 
   const filteredAvatars = avatars.filter(avatar => {
     // Search filter
