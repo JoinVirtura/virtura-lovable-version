@@ -20,6 +20,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { EditTitleDialog } from '@/components/EditTitleDialog';
 import { toast } from 'sonner';
 import {
   Search,
@@ -35,9 +36,20 @@ import {
   MoreVertical,
   Film,
   Play,
-  Camera
+  Camera,
+  Grid3x3,
+  List,
+  Edit3,
+  Save,
+  Clock,
+  FileType,
+  Heart,
+  User,
+  Briefcase,
+  Video
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { format } from 'date-fns';
 
 interface AvatarLibraryItem {
   id: string;
@@ -58,6 +70,8 @@ interface RealAvatarLibraryProps {
   isProcessing?: boolean;
 }
 
+type FilterCategory = 'all' | 'avatars' | 'headshots' | 'brands' | 'videos' | 'favorites';
+
 export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({ 
   onSelectAvatar, 
   isProcessing 
@@ -66,11 +80,54 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [refreshing, setRefreshing] = useState(false);
-  const [filterType, setFilterType] = useState<'all' | 'images' | 'videos'>('all');
+  const [filterCategory, setFilterCategory] = useState<FilterCategory>('all');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [editDialog, setEditDialog] = useState<{ open: boolean; avatar: AvatarLibraryItem | null }>({ 
+    open: false, 
+    avatar: null 
+  });
   const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; avatar: AvatarLibraryItem | null }>({ 
     open: false, 
     avatar: null 
   });
+
+  // Load favorites from localStorage
+  useEffect(() => {
+    const savedFavorites = localStorage.getItem('virtura_favorites');
+    if (savedFavorites) {
+      setFavorites(new Set(JSON.parse(savedFavorites)));
+    }
+  }, []);
+
+  // Calculate quality score for avatar
+  const calculateQualityScore = (avatar: AvatarLibraryItem): number => {
+    let score = 7.0;
+    
+    const daysSinceCreation = (Date.now() - new Date(avatar.created_at).getTime()) / (1000 * 60 * 60 * 24);
+    if (daysSinceCreation < 7) score += 1.5;
+    else if (daysSinceCreation < 30) score += 1.0;
+    
+    if (avatar.is_video) score += 0.5;
+    if (avatar.tags && avatar.tags.length > 2) score += 0.5;
+    if (favorites.has(avatar.id)) score += 0.5;
+    
+    return Math.min(9.5, score);
+  };
+
+  // Toggle favorite
+  const toggleFavorite = (avatarId: string) => {
+    setFavorites(prev => {
+      const newFavorites = new Set(prev);
+      if (newFavorites.has(avatarId)) {
+        newFavorites.delete(avatarId);
+      } else {
+        newFavorites.add(avatarId);
+      }
+      localStorage.setItem('virtura_favorites', JSON.stringify(Array.from(newFavorites)));
+      return newFavorites;
+    });
+  };
 
   const loadAvatars = async () => {
     try {
@@ -81,10 +138,10 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
         .select('*')
         .order('created_at', { ascending: false });
 
-      // Apply filter
-      if (filterType === 'videos') {
+      // Apply category filters
+      if (filterCategory === 'videos') {
         query = query.eq('is_video', true);
-      } else if (filterType === 'images') {
+      } else if (filterCategory === 'avatars' || filterCategory === 'headshots' || filterCategory === 'brands') {
         query = query.or('is_video.is.null,is_video.eq.false');
       }
 
@@ -144,10 +201,10 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
     }
   };
 
-  // Re-run loadAvatars when filterType changes
+  // Re-run loadAvatars when filterCategory changes
   useEffect(() => {
     loadAvatars();
-  }, [filterType]);
+  }, [filterCategory]);
 
   const refreshLibrary = async () => {
     setRefreshing(true);
@@ -161,14 +218,35 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
   }, []);
 
   const filteredAvatars = avatars.filter(avatar => {
-    if (!searchTerm.trim()) return true;
+    // Search filter
+    if (searchTerm.trim()) {
+      const searchLower = searchTerm.toLowerCase();
+      const matchesSearch = 
+        avatar.title?.toLowerCase().includes(searchLower) ||
+        avatar.prompt?.toLowerCase().includes(searchLower) ||
+        avatar.tags?.some(tag => tag.toLowerCase().includes(searchLower));
+      
+      if (!matchesSearch) return false;
+    }
+
+    // Category filter
+    if (filterCategory === 'favorites') {
+      return favorites.has(avatar.id);
+    } else if (filterCategory === 'avatars') {
+      return !avatar.is_video && avatar.tags?.some(tag => 
+        ['avatar', 'portrait', 'person', 'character'].includes(tag.toLowerCase())
+      );
+    } else if (filterCategory === 'headshots') {
+      return !avatar.is_video && avatar.tags?.some(tag => 
+        ['headshot', 'professional', 'business', 'linkedin'].includes(tag.toLowerCase())
+      );
+    } else if (filterCategory === 'brands') {
+      return !avatar.is_video && avatar.tags?.some(tag => 
+        ['brand', 'logo', 'marketing', 'business'].includes(tag.toLowerCase())
+      );
+    }
     
-    const searchLower = searchTerm.toLowerCase();
-    return (
-      avatar.title?.toLowerCase().includes(searchLower) ||
-      avatar.prompt?.toLowerCase().includes(searchLower) ||
-      avatar.tags?.some(tag => tag.toLowerCase().includes(searchLower))
-    );
+    return true;
   });
 
   const handleSelectAvatar = (avatar: AvatarLibraryItem) => {
@@ -296,203 +374,324 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Header with View Toggle */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Library className="h-5 w-5 text-primary" />
           <h3 className="text-lg font-semibold">Your Avatar Library</h3>
-          <Badge variant="secondary">{avatars.length} avatars</Badge>
+          <Badge variant="secondary">{avatars.length}</Badge>
         </div>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={refreshLibrary}
-          disabled={refreshing}
-        >
-          <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-          Refresh
-        </Button>
+        <div className="flex items-center gap-2">
+          <div className="flex gap-1 border border-border rounded-lg p-1">
+            <Button
+              variant={viewMode === 'grid' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('grid')}
+              className="h-8 px-3"
+            >
+              <Grid3x3 className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={viewMode === 'list' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('list')}
+              className="h-8 px-3"
+            >
+              <List className="h-4 w-4" />
+            </Button>
+          </div>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={refreshLibrary}
+            disabled={refreshing}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+        </div>
       </div>
 
-      {/* Filter Tabs */}
-      <div className="flex gap-2">
+      {/* Extended Filter Tabs */}
+      <div className="flex gap-2 flex-wrap">
         <Button
-          variant={filterType === 'all' ? 'default' : 'outline'}
-          onClick={() => setFilterType('all')}
+          variant={filterCategory === 'all' ? 'default' : 'outline'}
+          onClick={() => setFilterCategory('all')}
           size="sm"
+          className="rounded-full"
         >
-          All
+          All <Badge variant="secondary" className="ml-2">{avatars.length}</Badge>
         </Button>
         <Button
-          variant={filterType === 'images' ? 'default' : 'outline'}
-          onClick={() => setFilterType('images')}
+          variant={filterCategory === 'avatars' ? 'default' : 'outline'}
+          onClick={() => setFilterCategory('avatars')}
           size="sm"
+          className="rounded-full"
+        >
+          <User className="h-4 w-4 mr-2" />
+          Avatars
+        </Button>
+        <Button
+          variant={filterCategory === 'headshots' ? 'default' : 'outline'}
+          onClick={() => setFilterCategory('headshots')}
+          size="sm"
+          className="rounded-full"
         >
           <Camera className="h-4 w-4 mr-2" />
-          Images
+          Headshots
         </Button>
         <Button
-          variant={filterType === 'videos' ? 'default' : 'outline'}
-          onClick={() => setFilterType('videos')}
+          variant={filterCategory === 'brands' ? 'default' : 'outline'}
+          onClick={() => setFilterCategory('brands')}
           size="sm"
+          className="rounded-full"
+        >
+          <Briefcase className="h-4 w-4 mr-2" />
+          Brand Assets
+        </Button>
+        <Button
+          variant={filterCategory === 'videos' ? 'default' : 'outline'}
+          onClick={() => setFilterCategory('videos')}
+          size="sm"
+          className="rounded-full"
         >
           <Film className="h-4 w-4 mr-2" />
           Videos
         </Button>
+        <Button
+          variant={filterCategory === 'favorites' ? 'default' : 'outline'}
+          onClick={() => setFilterCategory('favorites')}
+          size="sm"
+          className="rounded-full"
+        >
+          <Heart className={`h-4 w-4 mr-2 ${filterCategory === 'favorites' ? 'fill-current' : ''}`} />
+          Favorites
+        </Button>
       </div>
 
-      {/* Search */}
+      {/* Enhanced Search */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Search your avatars..."
+          placeholder="Search by name, tags, AI model, or content type..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10"
+          className="pl-10 h-11 border-border/50 bg-card/50 backdrop-blur-sm"
         />
       </div>
 
-      {/* Avatar Grid */}
+      {/* Avatar Grid/List */}
       {filteredAvatars.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredAvatars.map((avatar) => (
-            <Card
-              key={avatar.id}
-              className="group cursor-pointer transition-all duration-500 hover:scale-105 border-2 border-violet-500/30 hover:border-violet-400 bg-gradient-to-br from-gray-900/95 to-gray-800/95 backdrop-blur-sm shadow-[0_0_20px_rgba(212,110,255,0.15)] hover:shadow-[0_0_30px_rgba(212,110,255,0.3)]"
-              onClick={() => handleSelectAvatar(avatar)}
-            >
-              <CardContent className="p-0">
-                <div className="relative rounded-xl overflow-hidden border border-violet-500/10">
-                  {avatar.is_video && avatar.video_url ? (
-                    <video
-                      src={avatar.video_url}
-                      poster={avatar.thumbnail_url || avatar.image_url}
-                      className="w-full aspect-square object-cover"
-                      controls
-                      preload="metadata"
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  ) : (
-                    <img
-                      src={avatar.image_url}
-                      alt={avatar.title || 'Generated Avatar'}
-                      className="w-full aspect-square object-cover"
-                      onError={(e) => {
-                        // Hide broken images gracefully
-                        e.currentTarget.style.display = 'none';
-                      }}
-                    />
-                  )}
-                  <div className="absolute top-2 right-2 flex gap-2">
-                    {avatar.video_url && (
-                      <Badge className="bg-blue-500/90 backdrop-blur-sm">
-                        <Film className="h-3 w-3 mr-1" />
-                        Video
-                      </Badge>
+        <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'flex flex-col gap-4'}>
+          {filteredAvatars.map((avatar) => {
+            const qualityScore = calculateQualityScore(avatar);
+            const isFavorite = favorites.has(avatar.id);
+            const formattedDate = format(new Date(avatar.created_at), 'MMM d, yyyy, h:mm a');
+            
+            return (
+              <Card
+                key={avatar.id}
+                className="group cursor-pointer transition-all duration-300 hover:scale-[1.02] overflow-hidden"
+                onClick={() => handleSelectAvatar(avatar)}
+              >
+                <CardContent className="p-0">
+                  <div className="relative rounded-t-xl overflow-hidden">
+                    {avatar.is_video && avatar.video_url ? (
+                      <video
+                        src={avatar.video_url}
+                        poster={avatar.thumbnail_url || avatar.image_url}
+                        className="w-full aspect-square object-cover"
+                        controls
+                        preload="metadata"
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    ) : (
+                      <img
+                        src={avatar.image_url}
+                        alt={avatar.title || 'Generated Avatar'}
+                        className="w-full aspect-square object-cover"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
                     )}
-                    <Badge className="bg-primary/90 backdrop-blur-sm">
-                      <Sparkles className="h-3 w-3 mr-1" />
-                      AI Generated
-                    </Badge>
-                  </div>
+                    
+                    {/* Favorite Star - Top Left */}
+                    <button
+                      className="absolute top-3 left-3 z-10 p-2 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background transition-colors"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleFavorite(avatar.id);
+                      }}
+                      title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                    >
+                      <Heart 
+                        className={`h-4 w-4 transition-colors ${
+                          isFavorite ? 'fill-primary text-primary' : 'text-muted-foreground'
+                        }`} 
+                      />
+                    </button>
 
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2 rounded-xl">
-                    {avatar.video_url ? (
-                      <>
-                        <Button 
-                          size="sm" 
-                          className="bg-blue-500 hover:bg-blue-600"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            window.open(avatar.video_url, '_blank');
-                          }}
-                        >
-                          <Play className="h-4 w-4 mr-2" />
-                          Preview Video
-                        </Button>
-                        <Button size="sm" className="bg-primary hover:bg-primary/90">
+                    {/* Quality Score Badge - Top Right */}
+                    <div className="absolute top-3 right-3 z-10">
+                      <Badge className="bg-gradient-to-r from-primary to-primary-blue text-primary-foreground px-3 py-1 text-sm font-semibold shadow-lg">
+                        <Star className="h-3 w-3 mr-1 fill-current" />
+                        {qualityScore.toFixed(1)}
+                      </Badge>
+                    </div>
+
+                    {/* Type Badge - Bottom Right on Image */}
+                    <div className="absolute bottom-3 right-3 z-10">
+                      {avatar.video_url && (
+                        <Badge className="bg-blue-500/90 backdrop-blur-sm">
+                          <Video className="h-3 w-3 mr-1" />
+                          Video
+                        </Badge>
+                      )}
+                    </div>
+
+                    {/* Hover Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
+                      {avatar.video_url ? (
+                        <>
+                          <Button 
+                            size="sm" 
+                            className="bg-blue-500 hover:bg-blue-600 shadow-lg"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              window.open(avatar.video_url, '_blank');
+                            }}
+                          >
+                            <Play className="h-4 w-4 mr-2" />
+                            Preview Video
+                          </Button>
+                          <Button size="sm" className="bg-primary hover:bg-primary/90 shadow-lg">
+                            <CheckCircle className="h-4 w-4 mr-2" />
+                            Select
+                          </Button>
+                        </>
+                      ) : (
+                        <Button size="sm" className="bg-primary hover:bg-primary/90 shadow-lg">
                           <CheckCircle className="h-4 w-4 mr-2" />
                           Select Avatar
                         </Button>
-                      </>
-                    ) : (
-                      <Button size="sm" className="bg-primary hover:bg-primary/90">
-                        <CheckCircle className="h-4 w-4 mr-2" />
-                        Select Avatar
-                      </Button>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="p-4 space-y-2">
-                  <h4 className="font-medium text-sm line-clamp-1">
-                    {avatar.title || 'Generated Avatar'}
-                  </h4>
-                  <p className="text-xs text-muted-foreground line-clamp-2">
-                    {avatar.prompt}
-                  </p>
-                  {avatar.tags && avatar.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
-                      {avatar.tags.slice(0, 2).map((tag, index) => (
-                        <Badge
-                          key={index}
-                          variant="secondary"
-                          className="text-xs px-2 py-0"
-                        >
-                          {tag}
-                        </Badge>
-                      ))}
+                      )}
                     </div>
-                  )}
-                  <p className="text-xs text-muted-foreground">
-                    {new Date(avatar.created_at).toLocaleDateString()}
-                  </p>
-                  
-                  {/* Always-visible action buttons */}
-                  <div className="flex gap-2 pt-3 border-t border-violet-500/20">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleShareAvatar(avatar);
-                      }}
-                      className="flex-1 h-8"
-                      title="Share avatar"
-                    >
-                      <Share2 className="h-4 w-4" />
-                    </Button>
-                    
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDownloadAvatar(avatar);
-                      }}
-                      className="flex-1 h-8"
-                      title="Download avatar"
-                    >
-                      <Download className="h-4 w-4" />
-                    </Button>
-                    
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setDeleteConfirm({ open: true, avatar });
-                      }}
-                      className="flex-1 h-8 text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/50"
-                      title="Delete avatar"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                  
+                  {/* Card Content */}
+                  <div className="p-4 space-y-3">
+                    {/* Title */}
+                    <h4 className="font-semibold text-base line-clamp-1">
+                      {avatar.title || 'Generated Avatar'}
+                    </h4>
+                    
+                    {/* Timestamp */}
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      {formattedDate}
+                    </p>
+                    
+                    {/* Tags */}
+                    {avatar.tags && avatar.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {avatar.tags.slice(0, 3).map((tag, index) => (
+                          <Badge
+                            key={index}
+                            variant="secondary"
+                            className="text-xs px-2.5 py-0.5 bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20"
+                          >
+                            {tag}
+                          </Badge>
+                        ))}
+                        {avatar.tags.length > 3 && (
+                          <Badge variant="secondary" className="text-xs px-2.5 py-0.5">
+                            +{avatar.tags.length - 3}
+                          </Badge>
+                        )}
+                      </div>
+                    )}
+                    
+                    {/* Metadata Row */}
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground pt-2 border-t border-border/50">
+                      {avatar.duration && (
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          <span>{avatar.duration}s</span>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-1">
+                        <FileType className="h-3 w-3" />
+                        <span>{avatar.is_video ? 'Video' : 'Image'}</span>
+                      </div>
+                    </div>
+                    
+                    {/* Action Buttons */}
+                    <div className="flex gap-2 pt-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditDialog({ open: true, avatar });
+                        }}
+                        className="flex-1 h-9"
+                      >
+                        <Edit3 className="h-4 w-4 mr-2" />
+                        Edit
+                      </Button>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDownloadAvatar(avatar);
+                        }}
+                        className="flex-1 h-9"
+                      >
+                        <Save className="h-4 w-4 mr-2" />
+                        Save
+                      </Button>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleShareAvatar(avatar);
+                        }}
+                        className="flex-1 h-9"
+                      >
+                        <Share2 className="h-4 w-4 mr-2" />
+                        Share
+                      </Button>
+
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                          <Button variant="outline" size="sm" className="h-9 px-3">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setDeleteConfirm({ open: true, avatar });
+                            }}
+                            className="text-destructive focus:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       ) : (
         <div className="text-center py-12 space-y-4">
@@ -518,6 +717,41 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
             </Button>
           )}
         </div>
+      )}
+
+      {/* Edit Dialog */}
+      {editDialog.avatar && (
+        <EditTitleDialog
+          open={editDialog.open}
+          onOpenChange={(open) => setEditDialog({ open, avatar: null })}
+          currentTitle={editDialog.avatar.title || 'Generated Avatar'}
+          currentTags={editDialog.avatar.tags || []}
+          onSave={async (newTitle, newTags) => {
+            try {
+              const { error } = await supabase
+                .from('avatar_library')
+                .update({ 
+                  title: newTitle,
+                  tags: newTags 
+                })
+                .eq('id', editDialog.avatar!.id);
+
+              if (error) throw error;
+
+              setAvatars(prev => prev.map(a => 
+                a.id === editDialog.avatar!.id 
+                  ? { ...a, title: newTitle, tags: newTags }
+                  : a
+              ));
+              
+              toast.success('Avatar updated successfully');
+            } catch (error) {
+              console.error('Error updating avatar:', error);
+              toast.error('Failed to update avatar');
+              throw error;
+            }
+          }}
+        />
       )}
 
       {/* Delete Confirmation Dialog */}
