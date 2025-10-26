@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -94,6 +94,21 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
     lipSync: 95
   });
 
+  // Auto-generate video when voice completes and user lands on video step
+  useEffect(() => {
+    const shouldAutoGenerate = 
+      project.voice?.status === 'completed' &&
+      project.avatar?.status === 'completed' &&
+      !project.video?.videoUrl && // Don't regenerate if video already exists
+      project.video?.status !== 'processing' && // Don't trigger if already processing
+      project.video?.status !== 'error'; // Don't auto-retry errors
+
+    if (shouldAutoGenerate) {
+      console.log('🎬 Auto-generating video with ByteDance Omni-Human...');
+      handleGenerateVideo();
+    }
+  }, [project.voice?.status, project.avatar?.status, project.video?.status, project.video?.videoUrl]);
+
   const handleGenerateVideo = async () => {
     const videoConfig = {
       engine: selectedEngine,
@@ -164,29 +179,81 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
         </Card>
       )}
 
-      {/* Processing Progress */}
+      {/* Enhanced Processing Progress */}
       {project.video?.status === 'processing' && (
-        <Card className="border-blue-200 bg-blue-50/50 dark:bg-blue-950/20">
-          <CardContent className="p-4">
-            <div className="space-y-3">
+        <Card className="border-2 border-blue-500/40 bg-gradient-to-br from-blue-950/30 to-purple-950/30 relative overflow-hidden">
+          {/* Animated gradient border effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 animate-pulse" />
+          
+          <CardContent className="p-6 relative z-10">
+            <div className="space-y-4">
+              {/* Header with animated icon */}
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3 flex-1">
-                  <Loader2 className="h-5 w-5 text-blue-500 animate-spin" />
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <Loader2 className="h-6 w-6 text-blue-400 animate-spin" />
+                    <div className="absolute inset-0 bg-blue-400/20 blur-xl animate-pulse" />
+                  </div>
                   <div>
-                    <p className="font-medium text-blue-800 dark:text-blue-200">
-                      {project.video.metadata?.currentStage || 'Generating video with Replicate...'}
+                    <p className="font-semibold text-lg text-blue-200">
+                      Generating Video with {VIDEO_ENGINES.find(e => e.id === selectedEngine)?.name || 'ByteDance Omni-Human'}
                     </p>
-                    <p className="text-sm text-blue-600 dark:text-blue-300">
-                      Using Replicate AI - This may take 2-5 minutes
+                    <p className="text-sm text-blue-400/80">
+                      {project.video.metadata?.currentStage || 'Initializing...'}
                     </p>
                   </div>
                 </div>
-                {project.video.metadata?.engineAttempt && project.video.metadata?.totalEngines && (
-                  <Badge variant="outline" className="text-xs">
-                    Model {project.video.metadata.engineAttempt}/{project.video.metadata.totalEngines}
-                  </Badge>
-                )}
+                {/* Engine badge */}
+                <Badge className={`${VIDEO_ENGINES.find(e => e.id === selectedEngine)?.badgeColor || 'bg-gradient-to-r from-purple-500 to-pink-500'} text-white`}>
+                  {VIDEO_ENGINES.find(e => e.id === selectedEngine)?.badge || 'Premium'}
+                </Badge>
               </div>
+              
+              {/* Enhanced progress bar with gradient */}
+              <div className="space-y-2">
+                <Progress 
+                  value={project.video?.metadata?.progress || 0} 
+                  className="h-3 bg-slate-800"
+                />
+                <div className="flex justify-between text-sm">
+                  <span className="text-blue-300 font-medium">
+                    {project.video?.metadata?.progress || 0}% complete
+                  </span>
+                  <span className="text-blue-400/60">
+                    Est. 2-5 minutes
+                  </span>
+                </div>
+              </div>
+              
+              {/* Stage indicators */}
+              <div className="grid grid-cols-3 gap-2 text-xs">
+                <div className={`p-3 rounded-lg transition-all ${
+                  (project.video?.metadata?.progress || 0) > 0 
+                    ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' 
+                    : 'bg-slate-800 text-slate-500 border border-slate-700'
+                }`}>
+                  <CheckCircle className="h-3 w-3 mb-1" />
+                  <div>Preprocessing</div>
+                </div>
+                <div className={`p-3 rounded-lg transition-all ${
+                  (project.video?.metadata?.progress || 0) > 40 
+                    ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' 
+                    : 'bg-slate-800 text-slate-500 border border-slate-700'
+                }`}>
+                  <Loader2 className={`h-3 w-3 mb-1 ${(project.video?.metadata?.progress || 0) > 40 ? 'animate-spin' : ''}`} />
+                  <div>Generating</div>
+                </div>
+                <div className={`p-3 rounded-lg transition-all ${
+                  (project.video?.metadata?.progress || 0) > 90 
+                    ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' 
+                    : 'bg-slate-800 text-slate-500 border border-slate-700'
+                }`}>
+                  <Sparkles className="h-3 w-3 mb-1" />
+                  <div>Finalizing</div>
+                </div>
+              </div>
+              
+              {/* Error message if cascade fallback */}
               {project.video.metadata?.lastError && (
                 <Alert className="border-violet-500/20 bg-violet-950/30 py-2">
                   <AlertCircle className="h-3 w-3 text-violet-400" />
@@ -195,10 +262,6 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
                   </AlertDescription>
                 </Alert>
               )}
-              <Progress value={project.video?.metadata?.progress || 0} className="w-full" />
-              <div className="text-xs text-right text-blue-600 dark:text-blue-400">
-                {project.video?.metadata?.progress || 0}% complete
-              </div>
             </div>
           </CardContent>
         </Card>
@@ -227,39 +290,6 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
         </Card>
       )}
 
-      {/* Engine Selection - Simplified */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm flex items-center gap-2">
-            <Brain className="h-4 w-4" />
-            Select Engine
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          {VIDEO_ENGINES.map((engine) => (
-            <div
-              key={engine.id}
-              className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                selectedEngine === engine.id 
-                  ? 'border-primary bg-primary/5' 
-                  : 'border-border hover:border-primary/50'
-              }`}
-              onClick={() => setSelectedEngine(engine.id)}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <engine.icon className="h-4 w-4 text-primary" />
-                  <span className="font-medium text-sm">{engine.name}</span>
-                </div>
-                <Badge className={`text-xs text-white ${engine.badgeColor}`}>
-                  {engine.badge}
-                </Badge>
-              </div>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-
       {/* Advanced Settings Accordion */}
       <Accordion 
         type="single" 
@@ -275,6 +305,37 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
             </div>
           </AccordionTrigger>
           <AccordionContent className="space-y-6 pb-6 px-6 pt-6 bg-slate-800/10 rounded-b-lg">
+            {/* Select Engine - Moved inside Advanced Settings */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-lg text-white mb-3">Select Engine</h3>
+              <div className="space-y-2">
+                {VIDEO_ENGINES.map((engine) => (
+                  <div
+                    key={engine.id}
+                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                      selectedEngine === engine.id 
+                        ? 'border-purple-500 bg-purple-500/10' 
+                        : 'border-slate-700 hover:border-purple-500/50 bg-slate-800/30'
+                    }`}
+                    onClick={() => setSelectedEngine(engine.id)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <engine.icon className="h-5 w-5 text-purple-400" />
+                        <div>
+                          <div className="font-medium text-white">{engine.name}</div>
+                          <div className="text-xs text-slate-400">{engine.description}</div>
+                        </div>
+                      </div>
+                      <Badge className={`text-xs text-white ${engine.badgeColor}`}>
+                        {engine.badge}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             {/* Professional Video Direction */}
             <div className="space-y-2">
               <h3 className="font-semibold text-lg text-white mb-3">Professional Video Direction</h3>
