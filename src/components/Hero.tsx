@@ -618,8 +618,7 @@ export const Hero = () => {
                       <Button
                         type="button"
                         onClick={() => setShowStyleModal(true)}
-                        variant="outline"
-                        className="w-full justify-start"
+                        className="w-full justify-start bg-black/40 border-2 border-primary/30 text-white hover:bg-primary/20"
                       >
                         <Palette className="h-4 w-4 mr-2" />
                         {selectedImageStyle ? selectedImageStyle.name : selectedStyle}
@@ -630,13 +629,12 @@ export const Hero = () => {
                         <Button
                           type="button"
                           onClick={() => setShowAspectOptions(!showAspectOptions)}
-                          variant="outline"
-                          className="w-full justify-start"
+                          className="w-full justify-start bg-black/40 border-2 border-primary/30 text-white hover:bg-primary/20"
                         >
                           Aspect: {selectedAspect}
                         </Button>
                         {showAspectOptions && (
-                          <div className="absolute top-full mt-2 w-full bg-card border border-border rounded-lg p-2 z-50">
+                          <div className="absolute top-full mt-2 w-full bg-black/90 backdrop-blur-xl border-2 border-primary/50 shadow-[0_0_30px_rgba(139,92,246,0.4)] rounded-lg p-2 z-[100]">
                             {['1:1', '2:3', '3:2', '16:9', '9:16'].map((ratio) => (
                               <button
                                 key={ratio}
@@ -645,7 +643,7 @@ export const Hero = () => {
                                   setSelectedAspect(ratio);
                                   setShowAspectOptions(false);
                                 }}
-                                className="w-full text-left px-3 py-2 rounded hover:bg-accent transition-colors"
+                                className="w-full text-left px-3 py-2 rounded text-white hover:bg-primary/20 hover:text-white transition-colors"
                               >
                                 {ratio}
                               </button>
@@ -668,37 +666,33 @@ export const Hero = () => {
               <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowStyleModal(false)} />
               
               {/* Large Popup Box - Properly Centered */}
-              <div className="relative bg-card/95 backdrop-blur-xl border border-border rounded-2xl shadow-2xl w-full max-w-7xl h-[85vh] overflow-hidden mx-auto">
+              <div className="relative bg-black/95 backdrop-blur-xl border-2 border-primary/30 rounded-2xl shadow-2xl w-full max-w-7xl h-[85vh] overflow-hidden mx-auto">
                 {/* Modal Header */}
-                <div className="flex items-center justify-between p-4 border-b border-border/30">
+                <div className="flex items-center justify-between p-4 border-b-2 border-primary/20 bg-black/40">
                   <div className="flex items-center gap-3">
-                    <h2 className="text-xl font-bold text-foreground">Styles</h2>
+                    <h2 className="text-xl font-bold text-white">Styles</h2>
                     <div className="flex items-center gap-2">
                       <Button
-                        variant="outline"
                         size="sm"
-                        className="bg-background border-border/50 hover:bg-muted/50 text-xs px-2 py-1 h-7"
+                        className="bg-black/40 text-gray-400 border border-primary/20 hover:bg-primary/20 hover:text-white text-xs px-2 py-1 h-7"
                       >
                         Individual
                       </Button>
                       <Button
-                        variant="default"
                         size="sm"
-                        className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs px-2 py-1 h-7"
+                        className="bg-primary text-white hover:bg-primary/90 text-xs px-2 py-1 h-7"
                       >
                         Brand
                       </Button>
                       <Button
-                        variant="outline"
                         size="sm"
-                        className="bg-background border-border/50 hover:bg-muted/50 text-xs px-2 py-1 h-7"
+                        className="bg-black/40 text-gray-400 border border-primary/20 hover:bg-primary/20 hover:text-white text-xs px-2 py-1 h-7"
                       >
                         Private
                       </Button>
                       <Button
-                        variant="outline"
                         size="sm"
-                        className="bg-background border-border/50 hover:bg-muted/50 text-xs px-2 py-1 h-7"
+                        className="bg-black/40 text-gray-400 border border-primary/20 hover:bg-primary/20 hover:text-white text-xs px-2 py-1 h-7"
                       >
                         Pinned
                       </Button>
@@ -721,33 +715,33 @@ export const Hero = () => {
                     {/* Search Bar */}
                     <div className="relative mb-4">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                      <Input
-                        placeholder="Search styles..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-10 bg-background/50 border-border/50"
-                      />
+                    <Input
+                      placeholder="Search styles..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10 bg-black/40 border-primary/30 text-white placeholder:text-gray-500"
+                    />
                     </div>
 
                     {/* Category Tabs */}
                     <div className="flex items-center gap-4 mb-4">
-                      <Button variant="ghost" className="text-foreground font-semibold text-sm">All</Button>
-                      <Button variant="ghost" className="text-muted-foreground hover:text-foreground text-sm">Fantasy</Button>
-                      <Button variant="ghost" className="text-muted-foreground hover:text-foreground text-sm">Portrait</Button>
-                      <Button variant="ghost" className="text-muted-foreground hover:text-foreground text-sm">Abstract</Button>
-                      <Button variant="ghost" className="text-muted-foreground hover:text-foreground text-sm">Vintage</Button>
+                      <Button variant="ghost" className="text-white bg-primary/20 font-semibold text-sm">All</Button>
+                      <Button variant="ghost" className="text-gray-400 hover:text-white hover:bg-primary/10 text-sm">Fantasy</Button>
+                      <Button variant="ghost" className="text-gray-400 hover:text-white hover:bg-primary/10 text-sm">Portrait</Button>
+                      <Button variant="ghost" className="text-gray-400 hover:text-white hover:bg-primary/10 text-sm">Abstract</Button>
+                      <Button variant="ghost" className="text-gray-400 hover:text-white hover:bg-primary/10 text-sm">Vintage</Button>
                     </div>
 
                     {/* Styles Grid - Smaller thumbnails */}
                     <div className="grid grid-cols-6 gap-2">
                       {/* Create Style Card */}
                       <div 
-                        className="aspect-square bg-muted/30 rounded-xl border-2 border-dashed border-border/50 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-all"
+                        className="aspect-square bg-black/40 rounded-xl border-2 border-dashed border-primary/30 flex flex-col items-center justify-center cursor-pointer hover:bg-primary/20 hover:border-primary/50 transition-all"
                       >
-                        <div className="text-xl mb-1">+</div>
+                        <div className="text-xl mb-1 text-white">+</div>
                         <div className="text-xs text-center px-2">
-                          <div className="text-muted-foreground">Train a style</div>
-                          <div className="font-semibold">Create style</div>
+                          <div className="text-gray-400">Train a style</div>
+                          <div className="font-semibold text-white">Create style</div>
                         </div>
                       </div>
 
@@ -759,7 +753,7 @@ export const Hero = () => {
                           onClick={() => setSelectedStylePreview(style)}
                         >
                           <img src={style.image} alt={style.name} className="w-full h-full object-cover" />
-                          <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all" />
+                          <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all" />
                           <div className="absolute bottom-0 left-0 right-0 p-2 text-xs bg-gradient-to-t from-black/70 to-transparent text-white">
                             <div className="font-semibold">{style.name}</div>
                           </div>
@@ -769,15 +763,15 @@ export const Hero = () => {
                   </div>
 
                   {/* Side Preview Panel */}
-                  <div className="w-80 bg-muted/30 border-l border-border/30 p-4 overflow-hidden flex flex-col">
+                  <div className="w-80 bg-black/40 border-l border-primary/20 p-4 overflow-hidden flex flex-col">
                     <div className="flex flex-col h-full">
                       <div className="flex-1 flex flex-col justify-center pt-8">
-                        <h3 className="text-lg font-bold text-foreground mb-4">
+                        <h3 className="text-lg font-bold text-white mb-4">
                           {uploadedImage ? 'Custom Style' : selectedStylePreview ? selectedStylePreview.name : 'Select a style to preview'}
                         </h3>
                         {uploadedImage ? (
                           <div className="mb-6">
-                            <div className="relative bg-muted/50 rounded-xl overflow-hidden h-64">
+                            <div className="relative bg-black/50 border border-primary/20 rounded-xl overflow-hidden h-64">
                               <img 
                                 src={uploadedImage} 
                                 alt="Uploaded style"
@@ -787,7 +781,7 @@ export const Hero = () => {
                           </div>
                         ) : selectedStylePreview ? (
                           <div className="mb-6">
-                            <div className="relative bg-muted/50 rounded-xl overflow-hidden h-64">
+                            <div className="relative bg-black/50 border border-primary/20 rounded-xl overflow-hidden h-64">
                               <img 
                                 src={selectedStylePreview.image} 
                                 alt={selectedStylePreview.name}
@@ -825,8 +819,7 @@ export const Hero = () => {
                             />
                             <Button 
                               type="button"
-                              variant="outline" 
-                              className="w-full border-primary/30 text-foreground hover:bg-primary/10 py-3 rounded-xl text-sm"
+                              className="w-full bg-black/40 border-2 border-primary/30 text-white hover:bg-primary/20 py-3 rounded-xl text-sm"
                               onClick={(e) => {
                                 e.preventDefault();
                                 (e.currentTarget.parentElement?.querySelector('input[type="file"]') as HTMLInputElement)?.click();
