@@ -98,12 +98,14 @@ export interface StudioProject {
     currentStage?: string;
     progress?: number;
     errorMessage?: string;
-    model?: string;  // Replicate model name (sync-labs, sadtalker, wav2lip)
-    replicateUrl?: string;  // Original Replicate video URL
-    storageSuccess?: boolean;  // Whether Supabase storage upload succeeded
-    engineAttempt?: number;  // Current engine being tried (1, 2, 3)
-    totalEngines?: number;  // Total number of engines in cascade (3)
-    lastError?: string;  // Last error message from failed engine
+    model?: string;
+    replicateUrl?: string;
+    storageSuccess?: boolean;
+    engineAttempt?: number;
+    totalEngines?: number;
+    lastError?: string;
+    width?: number;
+    height?: number;
   };
   } | null;
   
@@ -115,6 +117,16 @@ export interface StudioProject {
     deliveryMethod: 'download' | 'email' | 'cloud';
     status: 'pending' | 'processing' | 'completed' | 'error';
     urls?: Record<string, string>;
+    videos?: Array<{
+      aspectRatio: string;
+      url: string;
+      width: number;
+      height: number;
+      size: string;
+    }>;
+    pack?: string;
+    exportId?: string;
+    timestamp?: string;
   } | null;
   
   qualitySettings: {
@@ -672,7 +684,21 @@ export const useStudioProject = () => {
   }, [project.avatar, project.voice, project.style, project.qualitySettings, toast]);
 
   const exportProject = useCallback(async (config: any) => {
+    if (!project.video?.videoUrl) {
+      toast({
+        title: "Error",
+        description: "No video to export",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
+      toast({
+        title: "Processing Export",
+        description: `Generating ${config.ratios.length} video(s)...`,
+      });
+
       setProject(prev => ({
         ...prev,
         export: { ...prev.export, status: 'processing' } as any
@@ -681,12 +707,15 @@ export const useStudioProject = () => {
       const { data, error } = await supabase.functions.invoke('export-studio-project', {
         body: {
           projectId: project.id,
-          videoUrl: project.video?.videoUrl,
-          formats: config.formats,
-          qualities: config.qualities,
-          watermark: config.watermark,
-          subtitles: config.subtitles,
-          deliveryMethod: config.deliveryMethod
+          videoUrl: project.video.videoUrl,
+          pack: config.pack,
+          aspectRatios: config.ratios,
+          contentCredentials: config.contentCredentials,
+          sourceVideo: {
+            width: project.video.metadata?.width || 1920,
+            height: project.video.metadata?.height || 1080,
+            duration: project.video.duration
+          }
         }
       });
 
@@ -695,22 +724,22 @@ export const useStudioProject = () => {
       setProject(prev => ({
         ...prev,
         export: {
-          formats: config.formats,
-          qualities: config.qualities,
-          watermark: config.watermark,
-          subtitles: config.subtitles,
-          deliveryMethod: config.deliveryMethod,
           status: 'completed',
-          urls: data.urls
-        }
+          pack: config.pack,
+          videos: data.videos,
+          exportId: data.exportId,
+          timestamp: new Date().toISOString()
+        } as any
       }));
 
       toast({
-        title: "Export Completed",
-        description: "Your video is ready for download",
+        title: "Export Completed!",
+        description: `${data.videos.length} video(s) ready for download`,
       });
 
+      return data.videos;
     } catch (error: any) {
+      console.error('Export error:', error);
       setProject(prev => ({
         ...prev,
         export: { ...prev.export, status: 'error' } as any

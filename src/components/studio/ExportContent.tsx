@@ -74,21 +74,17 @@ export const ExportContent: React.FC<ExportContentProps> = ({
     const config = {
       pack: selectedPack,
       ratios: selectedRatios,
-      contentCredentials,
-      projectId: project?.id,
-      videoUrl: project?.video?.videoUrl
+      contentCredentials
     };
 
     if (onExport) {
-      // Use Video Pro custom export handler
-      await onExport(config);
+      try {
+        await onExport(config);
+      } catch (error) {
+        console.error('Export error:', error);
+      }
     } else {
-      // Standalone export logic
-      setLocalProcessing(true);
-      setTimeout(() => {
-        setLocalProcessing(false);
-        toast.success(`${exportPacks[selectedPack].name} exported successfully!`);
-      }, 3000);
+      toast.error("No project available. Please create a video in Video Pro first.");
     }
   };
 
@@ -225,7 +221,7 @@ export const ExportContent: React.FC<ExportContentProps> = ({
       {/* Export Button */}
       <Button 
         onClick={handleExport}
-        disabled={processing || selectedRatios.length === 0}
+        disabled={processing || selectedRatios.length === 0 || !project?.video?.videoUrl}
         className="w-full h-12 text-base bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90"
       >
         {processing ? (
@@ -240,6 +236,45 @@ export const ExportContent: React.FC<ExportContentProps> = ({
           </>
         )}
       </Button>
+
+      {/* Display Exported Videos */}
+      {project?.export?.videos && project.export.videos.length > 0 && (
+        <Card className="p-6 space-y-4">
+          <h3 className="text-lg font-semibold flex items-center">
+            <Sparkles className="w-5 h-5 mr-2 text-primary" />
+            Exported Videos
+          </h3>
+          <div className="grid sm:grid-cols-2 gap-4">
+            {project.export.videos.map((video: any, index: number) => (
+              <Card key={index} className="p-4 space-y-3">
+                <video controls className="w-full rounded-lg">
+                  <source src={video.url} type="video/mp4" />
+                </video>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <p className="text-sm font-medium">{video.aspectRatio}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {video.width}x{video.height} • {video.size}
+                    </p>
+                  </div>
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      const a = document.createElement('a');
+                      a.href = video.url;
+                      a.download = `export_${video.aspectRatio.replace(':', 'x')}.mp4`;
+                      a.click();
+                      toast.success(`Downloading ${video.aspectRatio} video`);
+                    }}
+                  >
+                    <Download className="h-4 w-4" />
+                  </Button>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </Card>
+      )}
     </div>
   );
 };

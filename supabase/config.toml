@@ -71,3 +71,6 @@ verify_jwt = false
 
 [functions.voice-transcribe-whisper]
 verify_jwt = true
+
+[functions.export-studio-project]
+verify_jwt = true
