@@ -53,7 +53,7 @@ export default function VideoProPage() {
     saveToLibrary,
     projectProgress,
     qualityMetrics
-  } = useStudioProject();
+  } = useStudioProject(false); // Start fresh, don't load old projects
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 

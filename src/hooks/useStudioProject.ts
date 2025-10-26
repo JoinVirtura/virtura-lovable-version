@@ -158,7 +158,7 @@ export interface StudioProject {
   };
 }
 
-export const useStudioProject = () => {
+export const useStudioProject = (loadLastProject: boolean = true) => {
   const { toast } = useToast();
   const [project, setProject] = useState<StudioProject>({
     id: '',
@@ -195,8 +195,13 @@ export const useStudioProject = () => {
     style: 87
   });
 
-  // Load most recent project on mount
+  // Load most recent project on mount - ONLY if loadLastProject is true
   useEffect(() => {
+    if (!loadLastProject) {
+      console.log('🆕 Starting with fresh project (loadLastProject=false)');
+      return;
+    }
+
     const loadProject = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
@@ -227,7 +232,7 @@ export const useStudioProject = () => {
     };
 
     loadProject();
-  }, []);
+  }, [loadLastProject]);
 
   // Auto-save project changes
   useEffect(() => {
@@ -673,18 +678,25 @@ export const useStudioProject = () => {
 
       // Auto-save to library after successful generation
       const autoSaveEnabled = localStorage.getItem('virtura_auto_save_videos') !== 'false';
-      if (autoSaveEnabled && data.videoUrl && data.videoUrl.includes('supabase.co')) {
-        setTimeout(async () => {
-          try {
-            await saveToLibrary();
-            toast({
-              title: "Auto-saved to Library",
-              description: "Your video has been automatically saved",
-            });
-          } catch (error) {
-            console.error('Auto-save failed:', error);
-          }
-        }, 1000);
+      
+      if (autoSaveEnabled && data.videoUrl) {
+        console.log('💾 Auto-saving video to library...');
+        
+        try {
+          // Call saveToLibrary immediately (no setTimeout)
+          await saveToLibrary(true);
+          
+          sonnerToast.success("Auto-saved to Library", {
+            description: "Your video is now in your library",
+            duration: 3000
+          });
+        } catch (error) {
+          console.error('❌ Auto-save failed:', error);
+          // Don't show error toast - video generation succeeded, save is bonus
+          console.warn('⚠️ Auto-save failed, but video is still accessible in preview');
+        }
+      } else if (!autoSaveEnabled) {
+        console.log('ℹ️ Auto-save disabled by user preference');
       }
 
     } catch (error: any) {
@@ -848,22 +860,27 @@ export const useStudioProject = () => {
     }
   }, [project.video?.videoUrl, toast]);
 
-  const saveToLibrary = useCallback(async () => {
+  const saveToLibrary = useCallback(async (isAutoSave: boolean = false) => {
     if (!project.video?.videoUrl) {
-      toast({ title: "Error", description: "No video available to save", variant: "destructive" });
+      if (!isAutoSave) {
+        toast({ title: "Error", description: "No video available to save", variant: "destructive" });
+      }
       return;
     }
 
     console.log('💾 Starting save to library:', {
       videoUrl: project.video.videoUrl,
       hasAvatar: !!project.avatar?.originalUrl,
-      hasVoice: !!project.voice?.script
+      hasVoice: !!project.voice?.script,
+      isAutoSave
     });
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        toast({ title: "Error", description: "Please sign in to save to library", variant: "destructive" });
+        if (!isAutoSave) {
+          toast({ title: "Error", description: "Please sign in to save to library", variant: "destructive" });
+        }
         return;
       }
 
@@ -915,20 +932,27 @@ export const useStudioProject = () => {
 
       if (error) throw error;
 
-      toast({ 
-        title: "Success", 
-        description: "Video saved to your library!",
-        duration: 3000
-      });
+      // Only show toast if manually triggered
+      if (!isAutoSave) {
+        toast({ 
+          title: "Success", 
+          description: "Video saved to your library!",
+          duration: 3000
+        });
+      }
       
       console.log('✅ Video saved to library successfully');
     } catch (error: any) {
       console.error('❌ Save to library failed:', error);
-      toast({ 
-        title: "Save Failed", 
-        description: error.message || "Failed to save video to library",
-        variant: "destructive" 
-      });
+      
+      // Only show error toast if manually triggered
+      if (!isAutoSave) {
+        toast({ 
+          title: "Save Failed", 
+          description: error.message || "Failed to save video to library",
+          variant: "destructive" 
+        });
+      }
     }
   }, [project, toast]);
 
