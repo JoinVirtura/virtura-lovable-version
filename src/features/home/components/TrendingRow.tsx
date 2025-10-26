@@ -471,7 +471,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                   repeat: Infinity,
                 }}
               >
-                Experience the future of viral creativity — where innovation meets imagination.
+                Experience the future — where innovation meets imagination.
               </motion.p>
             </motion.div>
           </div>
