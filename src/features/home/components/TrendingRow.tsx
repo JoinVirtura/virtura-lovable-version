@@ -20,8 +20,34 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isExpanded, setIsExpanded] = useState(false);
   const [displayCount, setDisplayCount] = useState(50);
+  const [scrollY, setScrollY] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  
+  // Track scroll for parallax effects
+  useEffect(() => {
+    const handleScroll = () => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        const scrollProgress = Math.max(0, Math.min(1, (window.innerHeight - rect.top) / window.innerHeight));
+        setScrollY(scrollProgress);
+      }
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+  
+  // Track global mouse position for magnetic effects
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+    
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
   
   const handleShuffle = () => {
     setIsShuffling(true);
@@ -88,116 +114,395 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
 
   return (
     <section className={cn('relative py-8 px-4 md:px-6 lg:px-8', className)} ref={containerRef}>
-      {/* Hero-Matched Background */}
+      {/* Ultra-Advanced Background System */}
       <div className="absolute inset-0 overflow-hidden">
-        {/* Deep Space Gradient Foundation */}
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-background/90 to-background" />
+        {/* Deep Space Gradient with Parallax */}
+        <motion.div 
+          className="absolute inset-0 bg-gradient-to-br from-background via-purple-950/10 to-background"
+          style={{
+            transform: `translateY(${scrollY * 50}px)`,
+          }}
+        />
         
-        {/* Morphing Geometric Shapes */}
-        <div className="absolute top-1/4 left-1/6 w-64 h-64 opacity-30">
-          <div className="w-full h-full bg-gradient-to-br from-primary/20 to-transparent animate-morph-1 blur-xl" />
-        </div>
-        <div className="absolute bottom-1/3 right-1/6 w-80 h-80 opacity-25">
-          <div className="w-full h-full bg-gradient-to-tl from-primary/15 to-transparent animate-morph-2 blur-2xl" />
+        {/* Dynamic Morphing Shapes with 3D Rotation */}
+        <motion.div 
+          className="absolute top-1/4 left-1/6 w-96 h-96 opacity-40"
+          animate={{
+            scale: [1, 1.2, 1],
+            rotate: [0, 180, 360],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+        >
+          <div className="w-full h-full bg-gradient-to-br from-purple-500/30 via-violet-500/20 to-fuchsia-500/30 animate-morph-1 blur-3xl" />
+        </motion.div>
+        
+        <motion.div 
+          className="absolute bottom-1/3 right-1/6 w-[500px] h-[500px] opacity-30"
+          animate={{
+            scale: [1, 1.3, 1],
+            rotate: [360, 180, 0],
+          }}
+          transition={{
+            duration: 25,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+        >
+          <div className="w-full h-full bg-gradient-to-tl from-fuchsia-500/25 via-purple-500/15 to-cyan-500/25 animate-morph-2 blur-3xl" />
+        </motion.div>
+        
+        {/* Advanced Particle System - More Particles */}
+        <div className="absolute inset-0 pointer-events-none">
+          {[...Array(20)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-1 h-1 bg-purple-400 rounded-full"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+              }}
+              animate={{
+                x: [0, Math.random() * 200 - 100, 0],
+                y: [0, Math.random() * 200 - 100, 0],
+                scale: [0, 1, 0],
+                opacity: [0, 1, 0],
+              }}
+              transition={{
+                duration: 3 + Math.random() * 2,
+                repeat: Infinity,
+                delay: Math.random() * 2,
+                ease: "easeInOut"
+              }}
+            />
+          ))}
         </div>
         
-        {/* Advanced Particle Trail System */}
-        <div className="absolute inset-0">
-          <div className="absolute top-20 left-20 w-1 h-1 bg-primary animate-particle-trail-1" />
-          <div className="absolute top-32 left-24 w-0.5 h-0.5 bg-primary/80 animate-particle-trail-2" />
-          <div className="absolute top-40 right-32 w-1 h-1 bg-primary animate-particle-trail-4" />
-          <div className="absolute bottom-32 left-1/3 w-1.5 h-1.5 bg-primary animate-particle-trail-6" />
-          <div className="absolute bottom-20 right-20 w-1 h-1 bg-primary animate-particle-trail-8" />
-        </div>
+        {/* Holographic Grid with Animation */}
+        <motion.div 
+          className="absolute inset-0 opacity-10"
+          animate={{
+            opacity: [0.05, 0.15, 0.05],
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        >
+          <div className="absolute inset-0 bg-grid-holographic" />
+        </motion.div>
         
-        {/* Holographic Grid System */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0 bg-grid-holographic animate-grid-pulse" />
-        </div>
-        
-        {/* Revolutionary Rotating Energy Rings */}
+        {/* Rotating Energy Rings with Glow */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-[800px] h-[800px] border border-primary/10 rounded-full animate-ring-rotate-1" />
-          <div className="absolute w-[600px] h-[600px] border border-primary/8 rounded-full animate-ring-rotate-2" />
+          <motion.div 
+            className="w-[1000px] h-[1000px] border border-purple-500/20 rounded-full shadow-2xl shadow-purple-500/10"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+          />
+          <motion.div 
+            className="absolute w-[700px] h-[700px] border border-violet-500/15 rounded-full shadow-2xl shadow-violet-500/10"
+            animate={{ rotate: -360 }}
+            transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+          />
+          <motion.div 
+            className="absolute w-[400px] h-[400px] border border-fuchsia-500/10 rounded-full shadow-2xl shadow-fuchsia-500/10"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          />
         </div>
         
-        {/* Advanced Scanning Matrix */}
-        <div className="absolute inset-0">
-          <div className="absolute w-full h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent animate-scan-matrix-1" />
-          <div className="absolute h-full w-px bg-gradient-to-b from-transparent via-primary/15 to-transparent animate-scan-vertical-1" />
-        </div>
+        {/* Animated Scanning Matrix */}
+        <motion.div 
+          className="absolute w-full h-px bg-gradient-to-r from-transparent via-purple-400/40 to-transparent"
+          animate={{
+            top: ['0%', '100%'],
+          }}
+          transition={{
+            duration: 6,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+        />
         
-        {/* Depth-Creating Parallax Layers */}
-        <div className="absolute inset-0">
-          <div className="absolute top-10 left-10 w-2 h-2 bg-primary/40 rounded-full animate-parallax-1" />
-          <div className="absolute top-20 right-16 w-1.5 h-1.5 bg-primary/50 rounded-full animate-parallax-2" />
-          <div className="absolute bottom-16 left-1/4 w-1 h-1 bg-primary/60 rounded-full animate-parallax-3" />
-          <div className="absolute bottom-10 right-1/3 w-2.5 h-2.5 bg-primary/30 rounded-full animate-parallax-4" />
-        </div>
+        <motion.div 
+          className="absolute h-full w-px bg-gradient-to-b from-transparent via-purple-400/30 to-transparent"
+          animate={{
+            left: ['0%', '100%'],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+        />
         
-        {/* Cinematic Corner Illumination */}
-        <div className="absolute top-0 left-0 w-48 h-48 bg-gradient-to-br from-primary/15 via-primary/5 to-transparent animate-corner-glow-1" />
-        <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-primary/12 via-primary/4 to-transparent animate-corner-glow-2" />
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-primary/15 via-primary/5 to-transparent animate-corner-glow-3" />
-        <div className="absolute bottom-0 right-0 w-48 h-48 bg-gradient-to-tl from-primary/12 via-primary/4 to-transparent animate-corner-glow-4" />
+        {/* Dynamic Parallax Orbs */}
+        <motion.div 
+          className="absolute w-3 h-3 bg-purple-400 rounded-full blur-sm"
+          style={{
+            top: '10%',
+            left: '10%',
+            transform: `translate(${scrollY * 30}px, ${scrollY * 40}px)`,
+          }}
+          animate={{
+            scale: [1, 1.5, 1],
+            opacity: [0.3, 0.7, 0.3],
+          }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+          }}
+        />
+        <motion.div 
+          className="absolute w-2 h-2 bg-fuchsia-400 rounded-full blur-sm"
+          style={{
+            top: '30%',
+            right: '15%',
+            transform: `translate(${-scrollY * 40}px, ${scrollY * 30}px)`,
+          }}
+          animate={{
+            scale: [1, 2, 1],
+            opacity: [0.4, 0.8, 0.4],
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+          }}
+        />
+        
+        {/* Cinematic Corner Illumination with Pulse */}
+        <motion.div 
+          className="absolute top-0 left-0 w-64 h-64 bg-gradient-to-br from-purple-500/20 via-purple-500/10 to-transparent"
+          animate={{
+            opacity: [0.3, 0.6, 0.3],
+            scale: [1, 1.2, 1],
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+          }}
+        />
+        <motion.div 
+          className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-fuchsia-500/20 via-fuchsia-500/10 to-transparent"
+          animate={{
+            opacity: [0.3, 0.6, 0.3],
+            scale: [1, 1.2, 1],
+          }}
+          transition={{
+            duration: 5,
+            repeat: Infinity,
+          }}
+        />
       </div>
 
       <div className="relative max-w-7xl mx-auto">
-        {/* Enhanced Header Section */}
+        {/* Ultra-Enhanced Header with Staggered Animation */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="mb-8 space-y-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+          className="mb-12 space-y-8"
         >
-          {/* Main Title with Holographic Effect */}
+          {/* Holographic Title System */}
           <div className="relative">
-            <div className="flex items-center gap-6 mb-8">
-              {/* Pulsing Energy Bar */}
-              <div className="relative w-2 h-24">
-                <div className="absolute inset-0 bg-gradient-to-b from-purple-400 via-violet-500 to-fuchsia-600 rounded-full shadow-2xl shadow-purple-500/50 animate-pulse" />
+            <motion.div 
+              className="flex items-center gap-6 mb-8"
+              initial={{ x: -100, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+            >
+              {/* Ultra-Animated Energy Bar */}
+              <motion.div 
+                className="relative w-2 h-24"
+                animate={{
+                  boxShadow: [
+                    '0 0 20px rgba(168, 85, 247, 0.4)',
+                    '0 0 60px rgba(168, 85, 247, 0.8)',
+                    '0 0 20px rgba(168, 85, 247, 0.4)',
+                  ],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                }}
+              >
+                <motion.div 
+                  className="absolute inset-0 bg-gradient-to-b from-purple-400 via-violet-500 to-fuchsia-600 rounded-full"
+                  animate={{
+                    scale: [1, 1.1, 1],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                  }}
+                />
                 <div className="absolute inset-0 bg-gradient-to-b from-cyan-400 to-purple-600 rounded-full blur-xl opacity-60 animate-pulse" />
-              </div>
+                <motion.div
+                  className="absolute inset-0 bg-white rounded-full"
+                  animate={{
+                    opacity: [0, 0.5, 0],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                  }}
+                />
+              </motion.div>
               
               <div className="relative">
-                {/* Holographic Glitch Title */}
+                {/* Multi-Layer Holographic Title */}
                 <div className="relative">
-                  <h2 className="relative text-6xl md:text-7xl lg:text-8xl font-black leading-tight tracking-tighter">
-                    {/* Main gradient text */}
-                    <span className="relative inline-block bg-gradient-to-r from-purple-400 via-violet-500 via-fuchsia-500 to-cyan-400 bg-clip-text text-transparent animate-gradient-flow bg-[length:200%_auto]">
+                  <motion.h2 
+                    className="relative text-7xl md:text-8xl lg:text-9xl font-black leading-tight tracking-tighter"
+                    initial={{ y: 50, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                  >
+                    {/* Animated gradient text */}
+                    <motion.span 
+                      className="relative inline-block bg-gradient-to-r from-purple-400 via-violet-500 via-fuchsia-500 to-cyan-400 bg-clip-text text-transparent"
+                      style={{
+                        backgroundSize: '200% auto',
+                      }}
+                      animate={{
+                        backgroundPosition: ['0% center', '200% center'],
+                      }}
+                      transition={{
+                        duration: 5,
+                        repeat: Infinity,
+                        ease: "linear"
+                      }}
+                    >
                       Trending
-                    </span>
-                    {/* Holographic overlay effect */}
-                    <span className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-purple-500 to-fuchsia-500 bg-clip-text text-transparent opacity-40 blur-sm animate-pulse" aria-hidden="true">
+                    </motion.span>
+                    
+                    {/* Holographic overlay with pulse */}
+                    <motion.span 
+                      className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-purple-500 to-fuchsia-500 bg-clip-text text-transparent blur-sm" 
+                      aria-hidden="true"
+                      animate={{
+                        opacity: [0.2, 0.6, 0.2],
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                      }}
+                    >
                       Trending
-                    </span>
-                    {/* Glitch shadow */}
-                    <span className="absolute -inset-0.5 bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent opacity-20 blur-md animate-glitch-1" aria-hidden="true">
+                    </motion.span>
+                    
+                    {/* Electric glitch effect */}
+                    <motion.span 
+                      className="absolute -inset-1 bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent blur-lg" 
+                      aria-hidden="true"
+                      animate={{
+                        opacity: [0, 0.3, 0],
+                        x: [0, 2, -2, 0],
+                      }}
+                      transition={{
+                        duration: 0.3,
+                        repeat: Infinity,
+                        repeatDelay: 3,
+                      }}
+                    >
                       Trending
-                    </span>
-                  </h2>
+                    </motion.span>
+                  </motion.h2>
                 </div>
                 
-                <div className="flex items-center gap-3 mt-3">
-                  <div className="h-px w-16 bg-gradient-to-r from-transparent via-purple-500 to-transparent" />
-                  <p className="text-xl md:text-2xl font-light bg-gradient-to-r from-purple-300 to-violet-400 bg-clip-text text-transparent tracking-[0.3em] uppercase">
+                {/* Animated Subtitle with Line Decoration */}
+                <motion.div 
+                  className="flex items-center gap-4 mt-4"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8, delay: 0.4 }}
+                >
+                  <motion.div 
+                    className="h-px w-20 bg-gradient-to-r from-transparent via-purple-500 to-transparent"
+                    animate={{
+                      width: [80, 100, 80],
+                      opacity: [0.5, 1, 0.5],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                    }}
+                  />
+                  <p className="text-2xl md:text-3xl font-light bg-gradient-to-r from-purple-300 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent tracking-[0.3em] uppercase">
                     Creations
                   </p>
-                  <div className="h-px flex-1 bg-gradient-to-r from-transparent via-purple-500/50 to-transparent" />
-                </div>
+                  <motion.div 
+                    className="h-px flex-1 bg-gradient-to-r from-transparent via-purple-500/50 to-transparent"
+                    animate={{
+                      opacity: [0.3, 0.7, 0.3],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                    }}
+                  />
+                </motion.div>
               </div>
-            </div>
+            </motion.div>
             
-            {/* Enhanced Description with Neon Effect */}
-            <div className="relative max-w-4xl">
-              <div className="absolute -inset-4 bg-gradient-to-r from-purple-500/10 via-transparent to-cyan-500/10 blur-2xl" />
-              <p className="relative text-xl md:text-2xl text-foreground/90 leading-relaxed font-light">
-                Experience the future of <span className="relative inline-block font-bold bg-gradient-to-r from-purple-400 via-fuchsia-500 to-cyan-400 bg-clip-text text-transparent">
-                  viral creativity
-                  <span className="absolute inset-0 bg-gradient-to-r from-purple-400 to-cyan-400 blur-lg opacity-30 animate-pulse" aria-hidden="true" />
-                </span> — where innovation meets imagination in stunning detail
-              </p>
-            </div>
+            {/* Mind-Blowing Description */}
+            <motion.div 
+              className="relative max-w-5xl"
+              initial={{ y: 30, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+            >
+              <div className="absolute -inset-6 bg-gradient-to-r from-purple-500/10 via-transparent to-cyan-500/10 blur-3xl" />
+              <motion.p 
+                className="relative text-2xl md:text-3xl text-foreground/90 leading-relaxed font-light"
+                animate={{
+                  textShadow: [
+                    '0 0 20px rgba(168, 85, 247, 0)',
+                    '0 0 20px rgba(168, 85, 247, 0.3)',
+                    '0 0 20px rgba(168, 85, 247, 0)',
+                  ],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                }}
+              >
+                Experience the future of{' '}
+                <span className="relative inline-block font-black">
+                  <motion.span
+                    className="relative z-10 bg-gradient-to-r from-purple-400 via-fuchsia-500 to-cyan-400 bg-clip-text text-transparent"
+                    style={{ backgroundSize: '200% auto' }}
+                    animate={{
+                      backgroundPosition: ['0% center', '200% center'],
+                    }}
+                    transition={{
+                      duration: 4,
+                      repeat: Infinity,
+                      ease: "linear"
+                    }}
+                  >
+                    viral creativity
+                  </motion.span>
+                  <motion.span
+                    className="absolute inset-0 bg-gradient-to-r from-purple-400 to-cyan-400 blur-xl opacity-40"
+                    animate={{
+                      scale: [1, 1.2, 1],
+                      opacity: [0.2, 0.6, 0.2],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                    }}
+                    aria-hidden="true"
+                  />
+                </span>
+                {' '}— where innovation meets imagination in stunning detail
+              </motion.p>
+            </motion.div>
           </div>
 
           {/* Revolutionary Action Buttons */}
@@ -258,36 +563,30 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
             return (
               <motion.div
                 key={`${tile.id}-${index}`}
-                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                initial={{ opacity: 0, scale: 0.8, y: 40 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ 
                   duration: 0.6, 
-                  delay: (index % 12) * 0.05,
-                  ease: "easeOut"
+                  delay: (index % 16) * 0.03,
+                  ease: [0.25, 0.1, 0.25, 1]
                 }}
                 className={cn(
                   'relative group cursor-pointer overflow-hidden',
                   getCardSize(index)
                 )}
                 whileHover={{ 
-                  scale: 1.02,
-                  transition: { duration: 0.2 }
+                  scale: 1.03,
+                  zIndex: 50,
+                  transition: { duration: 0.3, ease: "easeOut" }
                 }}
                 onHoverStart={() => {
                   setHoveredCard(tile.id);
                 }}
                 onHoverEnd={() => setHoveredCard(null)}
-                onMouseMove={(e) => {
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  setMousePosition({
-                    x: e.clientX - rect.left,
-                    y: e.clientY - rect.top
-                  });
-                }}
               >
                 <ContentCard 
                   tile={tile} 
-                  className="h-full w-full border-0 rounded-2xl overflow-hidden bg-card/80 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="h-full w-full border-0 rounded-2xl overflow-hidden bg-card/80 backdrop-blur-sm"
                   size="md"
                 />
                 
