@@ -2922,8 +2922,8 @@ export default function Dashboard() {
                                   </div>
                                 </div>
                                
-                                {/* Hover Action Buttons - Share & Delete overlay on image (only visible when sidebar expanded) */}
-                                <div className="xl:hidden absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-3">
+                                {/* Hover Action Buttons - Share & Delete overlay on image */}
+                                <div className="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-3">
                                   <Button 
                                     size="sm" 
                                     variant="outline"
@@ -3011,46 +3011,6 @@ export default function Dashboard() {
                                      <span className="2xl:hidden">Download</span>
                                    </Button>
                                    
-                                   {/* Three-dot menu - only visible when sidebar collapsed (large screens) */}
-                                   <DropdownMenu>
-                                     <DropdownMenuTrigger asChild>
-                                       <Button 
-                                         size="sm" 
-                                         variant="outline"
-                                         className="hidden xl:flex h-8 w-8 p-0 hover:bg-violet-500/10 hover:border-violet-500/50 transition-all flex-shrink-0"
-                                         onClick={(e) => e.stopPropagation()}
-                                       >
-                                         <MoreVertical className="w-4 h-4" />
-                                       </Button>
-                                     </DropdownMenuTrigger>
-                                     <DropdownMenuContent align="end" className="w-40">
-                                       <DropdownMenuItem 
-                                         onClick={(e) => {
-                                           e.stopPropagation();
-                                           handleShare(asset);
-                                         }}
-                                         className="cursor-pointer"
-                                       >
-                                         <Share2 className="w-4 h-4 mr-2" />
-                                         Share
-                                       </DropdownMenuItem>
-                                       <DropdownMenuItem 
-                                         onClick={(e) => {
-                                           e.stopPropagation();
-                                           handleDelete(asset);
-                                         }}
-                                         className="cursor-pointer text-destructive focus:text-destructive"
-                                         disabled={deletingAssetId === asset.dbId}
-                                       >
-                                         {deletingAssetId === asset.dbId ? (
-                                           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                         ) : (
-                                           <Trash2 className="w-4 h-4 mr-2" />
-                                         )}
-                                         Delete
-                                       </DropdownMenuItem>
-                                     </DropdownMenuContent>
-                                   </DropdownMenu>
                                 </div>
                               
                               {/* Generation Stats */}
