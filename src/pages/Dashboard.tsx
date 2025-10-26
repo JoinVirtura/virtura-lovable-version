@@ -2883,7 +2883,7 @@ export default function Dashboard() {
                         </div>
                       </div>
                     ) : viewMode === "grid" ? (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
                          {filteredAssets.map((asset) => (
                            <Card 
                              key={asset.id} 
@@ -2955,68 +2955,66 @@ export default function Dashboard() {
                                   <div className="h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-60 shadow-[0_0_12px_rgba(168,85,247,0.6)]" />
                                 </div>
 
-                                {/* Action Buttons - Always Visible */}
-                                <div className="flex items-center justify-between mt-4 pt-4">
-                                  <div className="flex gap-2">
-                                    <Button 
-                                      size="sm" 
-                                      variant="outline"
-                                      className="h-8 px-3 hover:bg-violet-500/10 hover:border-violet-500/50 transition-all"
-                                      onClick={() => handleEdit(asset)}
-                                    >
-                                      <Edit className="w-3 h-3 mr-1" />
-                                      Edit
-                                    </Button>
-                                    <Button 
-                                      size="sm" 
-                                      variant="outline"
-                                      className="h-8 px-3 hover:bg-purple-500/10 hover:border-purple-500/50 transition-all"
-                                      onClick={() => handleDownload(asset)}
-                                    >
-                                      <Download className="w-3 h-3 mr-1" />
-                                      Download
-                                    </Button>
-                                  </div>
-                                  <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                      <Button 
-                                        size="sm" 
-                                        variant="outline"
-                                        className="h-8 w-8 p-0 hover:bg-violet-500/10 hover:border-violet-500/50 transition-all"
-                                        onClick={(e) => e.stopPropagation()}
-                                      >
-                                        <MoreVertical className="w-4 h-4" />
-                                      </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end" className="w-40">
-                                      <DropdownMenuItem 
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          handleShare(asset);
-                                        }}
-                                        className="cursor-pointer"
-                                      >
-                                        <Share2 className="w-4 h-4 mr-2" />
-                                        Share
-                                      </DropdownMenuItem>
-                                      <DropdownMenuItem 
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          handleDelete(asset);
-                                        }}
-                                        className="cursor-pointer text-destructive focus:text-destructive"
-                                        disabled={deletingAssetId === asset.dbId}
-                                      >
-                                        {deletingAssetId === asset.dbId ? (
-                                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                        ) : (
-                                          <Trash2 className="w-4 h-4 mr-2" />
-                                        )}
-                                        Delete
-                                      </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                  </DropdownMenu>
-                               </div>
+                                 {/* Action Buttons - Always Visible */}
+                                 <div className="flex items-center gap-2 mt-4 pt-4">
+                                   <Button 
+                                     size="sm" 
+                                     variant="outline"
+                                     className="h-8 px-3 hover:bg-violet-500/10 hover:border-violet-500/50 transition-all whitespace-nowrap"
+                                     onClick={() => handleEdit(asset)}
+                                   >
+                                     <Edit className="w-3 h-3 mr-1" />
+                                     Edit
+                                   </Button>
+                                   <Button 
+                                     size="sm" 
+                                     variant="outline"
+                                     className="h-8 px-3 hover:bg-purple-500/10 hover:border-purple-500/50 transition-all whitespace-nowrap"
+                                     onClick={() => handleDownload(asset)}
+                                   >
+                                     <Download className="w-3 h-3 mr-1" />
+                                     Download
+                                   </Button>
+                                   <DropdownMenu>
+                                     <DropdownMenuTrigger asChild>
+                                       <Button 
+                                         size="sm" 
+                                         variant="outline"
+                                         className="h-8 w-8 p-0 hover:bg-violet-500/10 hover:border-violet-500/50 transition-all flex-shrink-0"
+                                         onClick={(e) => e.stopPropagation()}
+                                       >
+                                         <MoreVertical className="w-4 h-4" />
+                                       </Button>
+                                     </DropdownMenuTrigger>
+                                     <DropdownMenuContent align="end" className="w-40">
+                                       <DropdownMenuItem 
+                                         onClick={(e) => {
+                                           e.stopPropagation();
+                                           handleShare(asset);
+                                         }}
+                                         className="cursor-pointer"
+                                       >
+                                         <Share2 className="w-4 h-4 mr-2" />
+                                         Share
+                                       </DropdownMenuItem>
+                                       <DropdownMenuItem 
+                                         onClick={(e) => {
+                                           e.stopPropagation();
+                                           handleDelete(asset);
+                                         }}
+                                         className="cursor-pointer text-destructive focus:text-destructive"
+                                         disabled={deletingAssetId === asset.dbId}
+                                       >
+                                         {deletingAssetId === asset.dbId ? (
+                                           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                         ) : (
+                                           <Trash2 className="w-4 h-4 mr-2" />
+                                         )}
+                                         Delete
+                                       </DropdownMenuItem>
+                                     </DropdownMenuContent>
+                                   </DropdownMenu>
+                                </div>
                               
                               {/* Generation Stats */}
                               <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t border-border/50">
