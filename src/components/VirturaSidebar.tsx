@@ -177,7 +177,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
         <div className={isCollapsed ? "px-2 pb-3" : "px-3 pb-3"}>
           <SidebarMenuButton 
             onClick={handleLogout}
-            className={`w-full ${isCollapsed ? "justify-center px-2" : "justify-start gap-3 pl-2"} text-destructive hover:bg-destructive/10 h-auto py-2`}
+            className={`w-full ${isCollapsed ? "justify-center px-2" : "justify-start gap-3 pl-5"} text-destructive hover:bg-destructive/10 h-auto py-2`}
           >
             <LogOut className="w-4 h-4 shrink-0" />
             {!isCollapsed && <span className="font-medium">Logout</span>}
