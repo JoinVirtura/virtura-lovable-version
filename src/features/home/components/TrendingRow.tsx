@@ -568,15 +568,15 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.2 }}
-                      className="absolute inset-0 rounded-2xl flex items-start justify-end p-4"
+                      className="absolute inset-0 rounded-2xl flex items-center justify-center p-4"
                     >
                       <motion.div 
                         className="flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-2 rounded-full border border-purple-400/30"
                         whileHover={{ scale: 1.05, borderColor: 'rgba(168, 85, 247, 0.6)' }}
-                        initial={{ opacity: 0, y: -10 }}
+                        initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ 
                           opacity: 1, 
-                          y: 0,
+                          scale: 1,
                           boxShadow: [
                             '0 0 10px rgba(168, 85, 247, 0.3)',
                             '0 0 20px rgba(168, 85, 247, 0.5)',
@@ -585,12 +585,11 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                         }}
                         transition={{
                           opacity: { duration: 0.3 },
-                          y: { duration: 0.3 },
+                          scale: { duration: 0.3 },
                           boxShadow: {
                             duration: 2,
                             repeat: Infinity,
-                          },
-                          scale: { duration: 0.2 }
+                          }
                         }}
                       >
                         <Eye className="w-4 h-4 text-purple-400" />
