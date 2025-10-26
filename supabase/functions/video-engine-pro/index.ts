@@ -88,7 +88,7 @@ serve(async (req) => {
       );
     }
     
-    console.log('🎬 Video Engine Pro: Starting Replicate generation with SSE...');
+    console.log('🎬 Video Engine Pro: Starting Replicate generation...');
     console.log('Avatar URL:', avatarImageUrl);
     console.log('Audio URL:', audioUrl);
     console.log('Settings:', JSON.stringify(settings, null, 2));
@@ -106,56 +106,26 @@ serve(async (req) => {
 
     console.log('🎯 Processing with enhanced settings:', videoSettings);
 
-    // Return SSE stream for real-time progress
-    const encoder = new TextEncoder();
-    const stream = new ReadableStream({
-      async start(controller) {
-        const send = (data: any) => {
-          const message = `data: ${JSON.stringify(data)}\n\n`;
-          controller.enqueue(encoder.encode(message));
-        };
+    // Generate video synchronously and return JSON
+    const videoResult = await generateRealVideo(
+      avatarImageUrl, 
+      audioUrl, 
+      prompt, 
+      videoSettings
+    );
 
-        try {
-          send({ stage: 'initializing', progress: 5, message: 'Initializing Replicate video synthesis...' });
-
-          const videoResult = await generateRealVideo(
-            avatarImageUrl, 
-            audioUrl, 
-            prompt, 
-            videoSettings,
-            send
-          );
-
-          send({ 
-            stage: 'complete', 
-            progress: 100, 
-            videoUrl: videoResult.videoUrl,
-            provider: videoResult.provider,
-            video_id: videoResult.video_id,
-            duration: videoResult.duration,
-            quality: videoResult.quality,
-            metadata: videoResult.metadata
-          });
-        } catch (error: any) {
-          console.error('Video generation error:', error);
-          send({ 
-            stage: 'error', 
-            progress: 0, 
-            error: error.message,
-            code: 'VIDEO_ENGINE_ERROR'
-          });
-        } finally {
-          controller.close();
-        }
-      }
-    });
-
-    return new Response(stream, {
+    return new Response(JSON.stringify({
+      success: true,
+      videoUrl: videoResult.videoUrl,
+      provider: videoResult.provider,
+      video_id: videoResult.video_id,
+      duration: videoResult.duration,
+      quality: videoResult.quality,
+      metadata: videoResult.metadata
+    }), {
       headers: { 
         ...corsHeaders, 
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive'
+        'Content-Type': 'application/json'
       }
     });
 
@@ -180,8 +150,7 @@ async function generateRealVideo(
   avatarImageUrl: string,
   audioUrl: string,
   prompt: string,
-  settings: any,
-  sendProgress: (data: any) => void
+  settings: any
 ) {
   console.log('🚀 Starting Replicate Video Generation with Cascade...');
   
@@ -207,22 +176,13 @@ async function generateRealVideo(
     try {
       const engineIndex = engines.indexOf(engine);
       const isLastEngine = engineIndex === engines.length - 1;
-      const nextEngine = isLastEngine ? null : engines[engineIndex + 1];
       
       console.log(`🎯 Attempt ${engineIndex + 1}/${engines.length}: ${engine.name} ${engine.quality}...`);
-      sendProgress({ 
-        stage: 'engine_selection', 
-        progress: 10 + (engineIndex * 5), 
-        message: `Trying ${engine.name} for video generation...`,
-        engineAttempt: engineIndex + 1,
-        totalEngines: engines.length
-      });
 
       const result = await engine.fn(
         avatarImageUrl, 
         audioUrl, 
         settings, 
-        sendProgress, 
         supabase,
         REPLICATE_API_KEY
       );
@@ -236,23 +196,12 @@ async function generateRealVideo(
       
       const engineIndex = engines.indexOf(engine);
       const isLastEngine = engineIndex === engines.length - 1;
-      const nextEngine = isLastEngine ? null : engines[engineIndex + 1];
-      
-      sendProgress({ 
-        stage: 'engine_fallback', 
-        progress: 10 + (engineIndex * 5), 
-        message: isLastEngine 
-          ? `All models failed. Last error: ${error.message}`
-          : `${engine.name} failed, trying ${nextEngine?.name}...`,
-        error: error.message,
-        engineAttempt: engineIndex + 1,
-        totalEngines: engines.length
-      });
       
       if (isLastEngine) {
         throw new Error(`All Replicate engines failed. Last error: ${lastError?.message || 'Unknown error'}`);
       }
       
+      console.log(`⚠️ ${engine.name} failed, trying next model...`);
       continue;
     }
   }
@@ -266,17 +215,10 @@ async function generateWithOmniHuman(
   avatarImageUrl: string,
   audioUrl: string,
   settings: any,
-  sendProgress: (data: any) => void,
   supabase: any,
   replicateApiKey: string
 ) {
   const replicate = new Replicate({ auth: replicateApiKey });
-
-  sendProgress({ 
-    stage: 'generating', 
-    progress: 30, 
-    message: '🎬 Generating with ByteDance Omni-Human (Premium Quality)...' 
-  });
 
   console.log('🎯 Running ByteDance Omni-Human model');
 
@@ -294,12 +236,6 @@ async function generateWithOmniHuman(
       }
     );
 
-    sendProgress({ 
-      stage: 'processing', 
-      progress: 60, 
-      message: '🎭 Processing ultra-quality lip-sync...' 
-    });
-
     const videoUrl = Array.isArray(output) ? output[0] : output;
     console.log('✅ ByteDance Omni-Human success:', videoUrl.substring(0, 60) + '...');
 
@@ -307,7 +243,6 @@ async function generateWithOmniHuman(
       videoUrl,
       'bytedance-omni-human',
       settings,
-      sendProgress,
       supabase
     );
 
@@ -322,17 +257,10 @@ async function generateWithSynthesysWav2Lip(
   avatarImageUrl: string,
   audioUrl: string,
   settings: any,
-  sendProgress: (data: any) => void,
   supabase: any,
   replicateApiKey: string
 ) {
   const replicate = new Replicate({ auth: replicateApiKey });
-
-  sendProgress({ 
-    stage: 'generating', 
-    progress: 30, 
-    message: '🎬 Generating with Synthesys Wav2Lip (High Quality)...' 
-  });
 
   console.log('🎯 Running Synthesys Wav2Lip model');
 
@@ -347,12 +275,6 @@ async function generateWithSynthesysWav2Lip(
       }
     );
 
-    sendProgress({ 
-      stage: 'processing', 
-      progress: 65, 
-      message: '🎭 Applying professional lip synchronization...' 
-    });
-
     const videoUrl = Array.isArray(output) ? output[0] : output;
     console.log('✅ Synthesys Wav2Lip generated video:', videoUrl);
 
@@ -360,7 +282,6 @@ async function generateWithSynthesysWav2Lip(
       videoUrl,
       'synthesys-wav2lip',
       settings,
-      sendProgress,
       supabase
     );
 
@@ -375,17 +296,10 @@ async function generateWithSonic(
   avatarImageUrl: string,
   audioUrl: string,
   settings: any,
-  sendProgress: (data: any) => void,
   supabase: any,
   replicateApiKey: string
 ) {
   const replicate = new Replicate({ auth: replicateApiKey });
-
-  sendProgress({ 
-    stage: 'generating', 
-    progress: 35, 
-    message: '⚡ Fast generation with zsxkib Sonic...' 
-  });
 
   console.log('🎯 Running zsxkib Sonic budget model');
 
@@ -400,12 +314,6 @@ async function generateWithSonic(
       }
     );
 
-    sendProgress({ 
-      stage: 'processing', 
-      progress: 70, 
-      message: '🎭 Finalizing video...' 
-    });
-
     const videoUrl = Array.isArray(output) ? output[0] : output;
     console.log('✅ zsxkib Sonic generated video:', videoUrl);
 
@@ -413,7 +321,6 @@ async function generateWithSonic(
       videoUrl,
       'zsxkib-sonic',
       settings,
-      sendProgress,
       supabase
     );
 
@@ -428,16 +335,9 @@ async function downloadAndUploadVideo(
   replicateVideoUrl: string,
   provider: string,
   settings: any,
-  sendProgress: (data: any) => void,
   supabase: any
 ) {
   console.log(`⬇️ Starting download from Replicate: ${replicateVideoUrl}`);
-  
-  sendProgress({ 
-    stage: 'downloading', 
-    progress: 75, 
-    message: '⬇️ Downloading generated video from Replicate...' 
-  });
 
   console.log(`⬇️ Fetching video with streaming download...`);
   const videoResponse = await fetch(replicateVideoUrl);
@@ -592,11 +492,6 @@ async function downloadAndUploadVideo(
   // Log final result
   if (!uploadSuccess) {
     console.warn(`⚠️ Using Replicate URL as fallback (storage upload failed)`);
-    sendProgress({ 
-      stage: 'fallback', 
-      progress: 95, 
-      message: '⚠️ Using direct link (storage upload failed, video still playable)' 
-    });
   } else {
     console.log(`✅ Video successfully stored in Supabase Storage`);
   }
