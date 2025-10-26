@@ -351,43 +351,6 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Header with View Toggle */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Library className="h-5 w-5 text-primary" />
-          <h3 className="text-lg font-semibold">Your Avatar Library</h3>
-          <Badge variant="secondary">{avatars.length}</Badge>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="flex gap-1 border border-border rounded-lg p-1">
-            <Button
-              variant={viewMode === 'grid' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setViewMode('grid')}
-              className="h-8 px-3"
-            >
-              <Grid3x3 className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={viewMode === 'list' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setViewMode('list')}
-              className="h-8 px-3"
-            >
-              <List className="h-4 w-4" />
-            </Button>
-          </div>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={refreshLibrary}
-            disabled={refreshing}
-          >
-            <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-            Refresh
-          </Button>
-        </div>
-      </div>
 
       {/* Extended Filter Tabs */}
       <div className="flex gap-2 flex-wrap">
