@@ -487,7 +487,6 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
               {/* Animated background shimmer */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
               <span className="relative flex items-center gap-2">
-                <span className={isShuffling ? 'animate-spin' : ''}>✨</span>
                 {isShuffling ? 'REGENERATING...' : 'REGENERATE'}
               </span>
             </Button>

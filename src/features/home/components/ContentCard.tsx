@@ -275,12 +275,13 @@ export const ContentCard = ({ tile, className = "", size = 'md' }: ContentCardPr
             {tile.title}
           </motion.h3>
           
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
             {/* Views Counter with Glow */}
             <motion.div 
               className="flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-2 rounded-full border border-purple-400/30"
               whileHover={{ scale: 1.05, borderColor: 'rgba(168, 85, 247, 0.6)' }}
               animate={{
+                opacity: isHovered ? 1 : 0,
                 boxShadow: isHovered ? [
                   '0 0 10px rgba(168, 85, 247, 0.3)',
                   '0 0 20px rgba(168, 85, 247, 0.5)',
@@ -288,6 +289,7 @@ export const ContentCard = ({ tile, className = "", size = 'md' }: ContentCardPr
                 ] : '0 0 0px rgba(168, 85, 247, 0)',
               }}
               transition={{
+                opacity: { duration: 0.3 },
                 boxShadow: {
                   duration: 2,
                   repeat: Infinity,
@@ -297,43 +299,6 @@ export const ContentCard = ({ tile, className = "", size = 'md' }: ContentCardPr
             >
               <Eye className="w-4 h-4 text-purple-400" />
               <span className="text-white font-bold text-sm">{formatViews(tile.views)}</span>
-            </motion.div>
-            
-            {/* Hot Badge with Animation */}
-            <motion.div 
-              className="flex items-center gap-2 bg-gradient-to-r from-purple-500/30 to-fuchsia-500/30 backdrop-blur-md px-3 py-2 rounded-full border border-purple-400/40"
-              whileHover={{ scale: 1.05 }}
-              animate={{
-                borderColor: isHovered ? [
-                  'rgba(168, 85, 247, 0.4)',
-                  'rgba(217, 70, 239, 0.6)',
-                  'rgba(168, 85, 247, 0.4)',
-                ] : 'rgba(168, 85, 247, 0.3)',
-                boxShadow: isHovered ? [
-                  '0 0 15px rgba(168, 85, 247, 0.4)',
-                  '0 0 25px rgba(217, 70, 239, 0.6)',
-                  '0 0 15px rgba(168, 85, 247, 0.4)',
-                ] : '0 0 0px rgba(168, 85, 247, 0)',
-              }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                scale: { duration: 0.2 }
-              }}
-            >
-              <motion.div
-                animate={{
-                  scale: [1, 1.2, 1],
-                  rotate: [0, 10, -10, 0],
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                }}
-              >
-                <Sparkles className="w-4 h-4 text-purple-300" />
-              </motion.div>
-              <span className="text-purple-200 font-black text-xs tracking-wider">HOT</span>
             </motion.div>
           </div>
         </motion.div>
