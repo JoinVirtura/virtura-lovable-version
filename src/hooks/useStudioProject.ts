@@ -478,14 +478,9 @@ export const useStudioProject = () => {
         } as any
       }));
 
-      // Get authenticated user session token
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        throw new Error('Authentication required. Please sign in to generate videos.');
-      }
-
+      // Priority 2: Use SSE for real-time progress
       const supabaseUrl = 'https://ujaoziqnxhjqlmnvlxav.supabase.co';
-      const authToken = session.access_token; // Use JWT token instead of anon key
+      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqYW96aXFueGhqcWxtbnZseGF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1ODYwMDMsImV4cCI6MjA3MTE2MjAwM30.jbBjuZPRyc2CDonO7JJstuhBUlRxgX2K1qgDhpXrIHU';
       
       // Convert blob URLs to public Supabase URLs
       let publicAvatarUrl = avatarUrl;
@@ -519,7 +514,7 @@ export const useStudioProject = () => {
         const healthResponse = await fetch(`${supabaseUrl}/functions/v1/video-engine-pro`, {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${authToken}`
+            'Authorization': `Bearer ${supabaseKey}`
           }
         });
         
@@ -556,7 +551,7 @@ export const useStudioProject = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${authToken}`
+            'Authorization': `Bearer ${supabaseKey}`
           },
           body: JSON.stringify({
             avatarImageUrl: publicAvatarUrl,

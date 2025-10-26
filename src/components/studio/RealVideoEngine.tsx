@@ -227,6 +227,38 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
         </Card>
       )}
 
+      {/* Engine Selection - Simplified */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm flex items-center gap-2">
+            <Brain className="h-4 w-4" />
+            Select Engine
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          {VIDEO_ENGINES.map((engine) => (
+            <div
+              key={engine.id}
+              className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                selectedEngine === engine.id 
+                  ? 'border-primary bg-primary/5' 
+                  : 'border-border hover:border-primary/50'
+              }`}
+              onClick={() => setSelectedEngine(engine.id)}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <engine.icon className="h-4 w-4 text-primary" />
+                  <span className="font-medium text-sm">{engine.name}</span>
+                </div>
+                <Badge className={`text-xs text-white ${engine.badgeColor}`}>
+                  {engine.badge}
+                </Badge>
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
 
       {/* Advanced Settings Accordion */}
       <Accordion 
@@ -235,69 +267,38 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
         value={advancedSettingsOpen}
         onValueChange={setAdvancedSettingsOpen}
       >
-        <AccordionItem value="advanced" className="border-0">
-          <AccordionTrigger className="hover:no-underline py-4 px-0 hover:bg-slate-800/30 hover:px-6 rounded-lg transition-all data-[state=open]:bg-slate-800/20 data-[state=open]:px-6">
-            <div className="flex items-center gap-3 w-full justify-center">
-              <Settings className="h-5 w-5 text-slate-400" />
-              <span className="font-medium text-base text-slate-300">Advanced Settings</span>
+        <AccordionItem value="advanced" className="border rounded-lg px-4">
+          <AccordionTrigger className="hover:no-underline py-4">
+            <div className="flex items-center gap-2">
+              <Settings className="h-4 w-4" />
+              <span className="font-semibold">Advanced Settings</span>
             </div>
           </AccordionTrigger>
-          <AccordionContent className="space-y-6 pb-6 px-6 pt-6 bg-slate-800/10 rounded-b-lg">
-            {/* Select Engine */}
-            <div className="space-y-3">
-              <h3 className="font-semibold text-lg text-white mb-3 flex items-center gap-2">
-                <Brain className="h-5 w-5 text-white" />
-                Select Engine
-              </h3>
-              <div className="space-y-3">
-                {VIDEO_ENGINES.map((engine) => (
-                  <div
-                    key={engine.id}
-                    className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                      selectedEngine === engine.id 
-                        ? 'border-purple-500 bg-purple-500/10' 
-                        : 'border-slate-700 hover:border-purple-500/50 bg-slate-800/50'
-                    }`}
-                    onClick={() => setSelectedEngine(engine.id)}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <engine.icon className="h-5 w-5 text-purple-400" />
-                        <span className="font-semibold text-white text-base">{engine.name}</span>
-                      </div>
-                      <Badge className={`text-xs text-white px-4 py-1 ${engine.badgeColor}`}>
-                        {engine.badge}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
+          <AccordionContent className="space-y-6 pb-4">
             {/* Professional Video Direction */}
             <div className="space-y-2">
-              <h3 className="font-semibold text-lg text-white mb-3">Professional Video Direction</h3>
+              <h3 className="font-semibold">Professional Video Direction</h3>
               <Textarea
                 placeholder="Professional presentation with natural head movements and engaging body language."
                 value={videoPrompt}
                 onChange={(e) => setVideoPrompt(e.target.value)}
-                className="min-h-32 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-400 focus:border-purple-500 transition-colors"
+                className="min-h-32 bg-black/40 border-border"
                 maxLength={500}
               />
-              <div className="flex justify-between text-xs mt-2">
-                <span className="text-slate-400">{videoPrompt.length}/500</span>
-                <span className="text-emerald-400">Professional direction</span>
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>{videoPrompt.length}/500</span>
+                <span className="text-green-500">Professional direction</span>
               </div>
             </div>
 
             {/* Motion & Expression Controls */}
             <div className="space-y-3">
-              <h3 className="font-semibold text-lg text-white mb-3">Motion & Expression Controls</h3>
+              <h3 className="font-semibold">Motion & Expression Controls</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <div className="flex justify-between text-sm mb-3">
-                    <span className="text-slate-300 font-medium">Head Movement</span>
-                    <span className="text-purple-400 font-semibold">{motionSettings.headMovement}%</span>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span>Head Movement</span>
+                    <span>{motionSettings.headMovement}%</span>
                   </div>
                   <Slider
                     value={[motionSettings.headMovement]}
@@ -307,9 +308,9 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
                   />
                 </div>
                 <div>
-                  <div className="flex justify-between text-sm mb-3">
-                    <span className="text-slate-300 font-medium">Eye Contact</span>
-                    <span className="text-purple-400 font-semibold">{motionSettings.eyeContact}%</span>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span>Eye Contact</span>
+                    <span>{motionSettings.eyeContact}%</span>
                   </div>
                   <Slider
                     value={[motionSettings.eyeContact]}
@@ -319,9 +320,9 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
                   />
                 </div>
                 <div>
-                  <div className="flex justify-between text-sm mb-3">
-                    <span className="text-slate-300 font-medium">Expressions</span>
-                    <span className="text-purple-400 font-semibold">{motionSettings.expressions}%</span>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span>Expressions</span>
+                    <span>{motionSettings.expressions}%</span>
                   </div>
                   <Slider
                     value={[motionSettings.expressions]}
@@ -331,9 +332,9 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
                   />
                 </div>
                 <div>
-                  <div className="flex justify-between text-sm mb-3">
-                    <span className="text-slate-300 font-medium">Lip Sync</span>
-                    <span className="text-purple-400 font-semibold">{motionSettings.lipSync}%</span>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span>Lip Sync</span>
+                    <span>{motionSettings.lipSync}%</span>
                   </div>
                   <Slider
                     value={[motionSettings.lipSync]}
@@ -347,12 +348,12 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
 
             {/* Quality & Format */}
             <div className="space-y-3">
-              <h3 className="font-semibold text-lg text-white mb-3">Quality & Format</h3>
+              <h3 className="font-semibold">Quality & Format</h3>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label className="text-sm mb-2 block text-slate-300 font-medium">Quality</Label>
+                  <Label className="text-xs mb-2 block">Quality</Label>
                   <Select value={quality} onValueChange={setQuality}>
-                    <SelectTrigger className="bg-slate-800/50 border-slate-700 text-white hover:border-purple-500 transition-colors h-11">
+                    <SelectTrigger className="bg-black/40">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-background border-border">
@@ -363,9 +364,9 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
                   </Select>
                 </div>
                 <div>
-                  <Label className="text-sm mb-2 block text-slate-300 font-medium">FPS</Label>
+                  <Label className="text-xs mb-2 block">FPS</Label>
                   <Select value={fps.toString()} onValueChange={(v) => setFps(parseInt(v))}>
-                    <SelectTrigger className="bg-slate-800/50 border-slate-700 text-white hover:border-purple-500 transition-colors h-11">
+                    <SelectTrigger className="bg-black/40">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-background border-border">
