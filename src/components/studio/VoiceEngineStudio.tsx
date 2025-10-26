@@ -162,20 +162,56 @@ export const VoiceEngineStudio: React.FC<VoiceEngineStudioProps> = ({
       if (error) throw error;
 
       if (audioRef.current && data.audioData) {
-        // Simple approach - just set the source and play
-        audioRef.current.src = data.audioData;
+        const audio = audioRef.current;
         
-        // Wait a tiny bit for browser to process the data URL
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // Set the source
+        audio.src = data.audioData;
         
-        await audioRef.current.play();
-        setIsPlaying(true);
+        // Wait for audio to be ready using loadeddata event
+        await new Promise<void>((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            reject(new Error('Audio loading timeout after 3 seconds'));
+          }, 3000);
+          
+          const handleLoaded = () => {
+            clearTimeout(timeout);
+            audio.removeEventListener('loadeddata', handleLoaded);
+            audio.removeEventListener('error', handleError);
+            resolve();
+          };
+          
+          const handleError = (e: Event) => {
+            clearTimeout(timeout);
+            audio.removeEventListener('loadeddata', handleLoaded);
+            audio.removeEventListener('error', handleError);
+            reject(new Error(`Audio load failed: ${(e as ErrorEvent).message || 'Unknown error'}`));
+          };
+          
+          audio.addEventListener('loadeddata', handleLoaded);
+          audio.addEventListener('error', handleError);
+          
+          // Trigger load
+          audio.load();
+        });
+        
+        // Now play - wrap in try/catch to catch browser autoplay blocks
+        try {
+          await audio.play();
+          setIsPlaying(true);
+        } catch (playError) {
+          throw new Error(`Playback blocked: ${playError instanceof Error ? playError.message : 'Unknown error'}`);
+        }
       }
     } catch (error) {
       console.error('Preview failed:', error);
+      
+      // Log detailed error info
+      const errorMessage = error instanceof Error ? error.message : 'Could not load voice preview';
+      console.error('Detailed error:', errorMessage);
+      
       toast({
         title: "Preview unavailable",
-        description: "Could not load voice preview",
+        description: errorMessage,
         variant: "destructive"
       });
       setIsPlaying(false);
