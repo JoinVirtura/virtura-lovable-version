@@ -602,14 +602,14 @@ export const Hero = () => {
         {/* Input Interface - Studio Pro Style */}
         <div className="w-full max-w-5xl mb-12 animate-fade-in">
           <Card className="backdrop-blur-xl bg-black/60 border-2 border-primary/30 shadow-2xl overflow-hidden">
-            <div className="p-6">
+            <div className="p-4">
               {/* Main Input Row */}
-              <div className="flex items-center gap-4 mb-4">
+              <div className="flex items-center gap-3">
                 <Textarea
                   placeholder="Describe the image you want to create..."
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  className="flex-1 min-h-[44px] max-h-[44px] text-base bg-transparent border-0 focus:ring-0 placeholder:text-muted-foreground/70 resize-none"
+                  className="flex-1 min-h-[32px] max-h-[32px] text-sm bg-transparent border-0 focus:ring-0 placeholder:text-muted-foreground/70 resize-none py-2"
                   style={{ outline: 'none' }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
@@ -625,9 +625,9 @@ export const Hero = () => {
                   <button
                     type="button"
                     onClick={() => document.getElementById('reference-upload')?.click()}
-                    className="w-11 h-11 rounded-full bg-black/40 backdrop-blur-md border border-primary/30 hover:bg-primary/20 hover:border-primary/50 transition-all flex items-center justify-center"
+                    className="w-9 h-9 rounded-full bg-black/40 backdrop-blur-md border border-primary/30 hover:bg-primary/20 hover:border-primary/50 transition-all flex items-center justify-center"
                   >
-                    <Camera className="h-5 w-5 text-white" />
+                    <Camera className="h-4 w-4 text-white" />
                   </button>
                   <input
                     id="reference-upload"
@@ -651,13 +651,13 @@ export const Hero = () => {
                   <button
                     type="button"
                     onClick={handleVoiceInput}
-                    className={`w-11 h-11 rounded-full backdrop-blur-md border transition-all flex items-center justify-center ${
+                    className={`w-9 h-9 rounded-full backdrop-blur-md border transition-all flex items-center justify-center ${
                       isRecording 
                         ? 'bg-red-500 border-red-400 animate-pulse' 
                         : 'bg-black/40 border-primary/30 hover:bg-primary/20 hover:border-primary/50'
                     }`}
                   >
-                    <Mic className="h-5 w-5 text-white" />
+                    <Mic className="h-4 w-4 text-white" />
                   </button>
                   
                   {/* Generate Button */}
@@ -665,12 +665,12 @@ export const Hero = () => {
                     type="button"
                     onClick={handleGenerate}
                     disabled={isGenerating || !inputValue.trim()}
-                    className="w-12 h-12 rounded-full bg-gradient-to-r from-primary to-secondary hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-secondary hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isGenerating ? (
-                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
                     ) : (
-                      <Send className="h-5 w-5 text-white" />
+                      <Send className="h-4 w-4 text-white" />
                     )}
                   </button>
                 </div>
