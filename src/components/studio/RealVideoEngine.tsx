@@ -18,8 +18,15 @@ import {
   Brain,
   CheckCircle,
   AlertCircle,
-  Download
+  Download,
+  Settings
 } from 'lucide-react';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import type { StudioProject } from '@/hooks/useStudioProject';
 
 interface RealVideoEngineProps {
@@ -77,6 +84,7 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
   const [quality, setQuality] = useState('4K');
   const [fps, setFps] = useState(30);
   const [duration, setDuration] = useState(30);
+  const [advancedSettingsOpen, setAdvancedSettingsOpen] = useState<string | undefined>(undefined);
   
   const [motionSettings, setMotionSettings] = useState({
     headMovement: 75,
@@ -219,157 +227,160 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
         </Card>
       )}
 
-      {/* Engine Selection */}
+      {/* Engine Selection - Simplified */}
       <Card>
         <CardHeader>
           <CardTitle className="text-sm flex items-center gap-2">
             <Brain className="h-4 w-4" />
-            Replicate Engine Selection
+            Select Engine
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-2">
           {VIDEO_ENGINES.map((engine) => (
             <div
               key={engine.id}
               className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                selectedEngine === engine.id ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'
+                selectedEngine === engine.id 
+                  ? 'border-primary bg-primary/5' 
+                  : 'border-border hover:border-primary/50'
               }`}
               onClick={() => setSelectedEngine(engine.id)}
             >
-              <div className="flex items-start justify-between">
+              <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <engine.icon className="h-4 w-4 text-primary" />
-                  <div>
-                    <div className="font-medium text-sm">{engine.name}</div>
-                    <div className="text-xs text-muted-foreground">{engine.description}</div>
-                  </div>
+                  <span className="font-medium text-sm">{engine.name}</span>
                 </div>
-                <div className="flex items-center gap-1">
-                  <Badge className={`text-xs text-white ${engine.badgeColor}`}>{engine.badge}</Badge>
-                  <Badge className="text-xs bg-green-500 text-white">Real</Badge>
-                </div>
-              </div>
-              <div className="flex gap-1 mt-2">
-                {engine.features.map((feature) => (
-                  <Badge key={feature} variant="secondary" className="text-xs">{feature}</Badge>
-                ))}
+                <Badge className={`text-xs text-white ${engine.badgeColor}`}>
+                  {engine.badge}
+                </Badge>
               </div>
             </div>
           ))}
         </CardContent>
       </Card>
 
-      {/* Video Direction */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm">Professional Video Direction</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Textarea
-            placeholder="Describe the professional video style..."
-            value={videoPrompt}
-            onChange={(e) => setVideoPrompt(e.target.value)}
-            className="min-h-24"
-            maxLength={500}
-          />
-          <div className="flex justify-between text-xs text-muted-foreground mt-2">
-            <span>{videoPrompt.length}/500</span>
-            <span className="text-green-500">Professional direction</span>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Advanced Settings Accordion */}
+      <Accordion 
+        type="single" 
+        collapsible 
+        value={advancedSettingsOpen}
+        onValueChange={setAdvancedSettingsOpen}
+      >
+        <AccordionItem value="advanced" className="border rounded-lg px-4">
+          <AccordionTrigger className="hover:no-underline py-4">
+            <div className="flex items-center gap-2">
+              <Settings className="h-4 w-4" />
+              <span className="font-semibold">Advanced Settings</span>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="space-y-6 pb-4">
+            {/* Professional Video Direction */}
+            <div className="space-y-2">
+              <h3 className="font-semibold">Professional Video Direction</h3>
+              <Textarea
+                placeholder="Professional presentation with natural head movements and engaging body language."
+                value={videoPrompt}
+                onChange={(e) => setVideoPrompt(e.target.value)}
+                className="min-h-32 bg-black/40 border-border"
+                maxLength={500}
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>{videoPrompt.length}/500</span>
+                <span className="text-green-500">Professional direction</span>
+              </div>
+            </div>
 
-      {/* Motion Controls */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm">Motion & Expression Controls</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <div className="flex justify-between text-sm mb-1">
-                <span>Head Movement</span>
-                <span>{motionSettings.headMovement}%</span>
+            {/* Motion & Expression Controls */}
+            <div className="space-y-3">
+              <h3 className="font-semibold">Motion & Expression Controls</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span>Head Movement</span>
+                    <span>{motionSettings.headMovement}%</span>
+                  </div>
+                  <Slider
+                    value={[motionSettings.headMovement]}
+                    onValueChange={([value]) => setMotionSettings(prev => ({ ...prev, headMovement: value }))}
+                    max={100}
+                    className="[&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-purple-500 [&_[role=slider]]:to-pink-500"
+                  />
+                </div>
+                <div>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span>Eye Contact</span>
+                    <span>{motionSettings.eyeContact}%</span>
+                  </div>
+                  <Slider
+                    value={[motionSettings.eyeContact]}
+                    onValueChange={([value]) => setMotionSettings(prev => ({ ...prev, eyeContact: value }))}
+                    max={100}
+                    className="[&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-purple-500 [&_[role=slider]]:to-pink-500"
+                  />
+                </div>
+                <div>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span>Expressions</span>
+                    <span>{motionSettings.expressions}%</span>
+                  </div>
+                  <Slider
+                    value={[motionSettings.expressions]}
+                    onValueChange={([value]) => setMotionSettings(prev => ({ ...prev, expressions: value }))}
+                    max={100}
+                    className="[&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-purple-500 [&_[role=slider]]:to-pink-500"
+                  />
+                </div>
+                <div>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span>Lip Sync</span>
+                    <span>{motionSettings.lipSync}%</span>
+                  </div>
+                  <Slider
+                    value={[motionSettings.lipSync]}
+                    onValueChange={([value]) => setMotionSettings(prev => ({ ...prev, lipSync: value }))}
+                    max={100}
+                    className="[&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-purple-500 [&_[role=slider]]:to-pink-500"
+                  />
+                </div>
               </div>
-              <Slider
-                value={[motionSettings.headMovement]}
-                onValueChange={([value]) => setMotionSettings(prev => ({ ...prev, headMovement: value }))}
-                max={100}
-              />
             </div>
-            <div>
-              <div className="flex justify-between text-sm mb-1">
-                <span>Eye Contact</span>
-                <span>{motionSettings.eyeContact}%</span>
-              </div>
-              <Slider
-                value={[motionSettings.eyeContact]}
-                onValueChange={([value]) => setMotionSettings(prev => ({ ...prev, eyeContact: value }))}
-                max={100}
-              />
-            </div>
-            <div>
-              <div className="flex justify-between text-sm mb-1">
-                <span>Expressions</span>
-                <span>{motionSettings.expressions}%</span>
-              </div>
-              <Slider
-                value={[motionSettings.expressions]}
-                onValueChange={([value]) => setMotionSettings(prev => ({ ...prev, expressions: value }))}
-                max={100}
-              />
-            </div>
-            <div>
-              <div className="flex justify-between text-sm mb-1">
-                <span>Lip Sync</span>
-                <span>{motionSettings.lipSync}%</span>
-              </div>
-              <Slider
-                value={[motionSettings.lipSync]}
-                onValueChange={([value]) => setMotionSettings(prev => ({ ...prev, lipSync: value }))}
-                max={100}
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
-      {/* Quality Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm">Quality & Format</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <Label className="text-xs">Quality</Label>
-              <Select value={quality} onValueChange={setQuality}>
-                <SelectTrigger className="mt-1">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="720p">720p HD</SelectItem>
-                  <SelectItem value="1080p">1080p Full HD</SelectItem>
-                  <SelectItem value="4K">4K Ultra HD</SelectItem>
-                </SelectContent>
-              </Select>
+            {/* Quality & Format */}
+            <div className="space-y-3">
+              <h3 className="font-semibold">Quality & Format</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-xs mb-2 block">Quality</Label>
+                  <Select value={quality} onValueChange={setQuality}>
+                    <SelectTrigger className="bg-black/40">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background border-border">
+                      <SelectItem value="720p">720p HD</SelectItem>
+                      <SelectItem value="1080p">1080p Full HD</SelectItem>
+                      <SelectItem value="4K">4K Ultra HD</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label className="text-xs mb-2 block">FPS</Label>
+                  <Select value={fps.toString()} onValueChange={(v) => setFps(parseInt(v))}>
+                    <SelectTrigger className="bg-black/40">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background border-border">
+                      <SelectItem value="24">24 FPS</SelectItem>
+                      <SelectItem value="30">30 FPS</SelectItem>
+                      <SelectItem value="60">60 FPS</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </div>
-            <div>
-              <Label className="text-xs">FPS</Label>
-              <Select value={fps.toString()} onValueChange={(v) => setFps(parseInt(v))}>
-                <SelectTrigger className="mt-1">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="24">24 FPS</SelectItem>
-                  <SelectItem value="30">30 FPS</SelectItem>
-                  <SelectItem value="60">60 FPS</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
 
       {/* Generate Button */}
       <Button
