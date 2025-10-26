@@ -101,7 +101,7 @@ export const MasonryGrid: React.FC<MasonryGridProps> = ({ tiles, className }) =>
                 
                 <div className="space-y-1">
                   <motion.h2 
-                    className="text-5xl md:text-6xl font-black relative leading-normal py-2"
+                    className="text-5xl md:text-6xl font-black relative leading-relaxed py-3 pb-4"
                     style={{
                       background: 'linear-gradient(135deg, #FFD700 0%, #B8860B 100%)',
                       WebkitBackgroundClip: 'text',
