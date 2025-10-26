@@ -1,6 +1,24 @@
 import { Tile } from './types';
 
-// Import new style images
+// Import high-quality AI-generated trending images
+import trending90sAnime from '../../assets/trending-90s-anime.jpg';
+import trendingMinimalistArch from '../../assets/trending-minimalist-arch.jpg';
+import trendingFantasyCreature from '../../assets/trending-fantasy-creature.jpg';
+import trendingCyberpunkCity from '../../assets/trending-cyberpunk-city.jpg';
+import trendingWatercolorLandscape from '../../assets/trending-watercolor-landscape.jpg';
+import trendingSteampunkMech from '../../assets/trending-steampunk-mech.jpg';
+import trendingPopArtPortrait from '../../assets/trending-pop-art-portrait.jpg';
+import trendingGothicCathedral from '../../assets/trending-gothic-cathedral.jpg';
+import trendingSurrealDream from '../../assets/trending-surreal-dream.jpg';
+import trendingFilmNoir from '../../assets/trending-film-noir.jpg';
+import trendingFashionPortrait from '../../assets/trending-fashion-portrait.jpg';
+import trendingWildlifeLeopard from '../../assets/trending-wildlife-leopard.jpg';
+import trendingAbstractDigital from '../../assets/trending-abstract-digital.jpg';
+import trendingSpaceStation from '../../assets/trending-space-station.jpg';
+import trendingCulinaryArt from '../../assets/trending-culinary-art.jpg';
+import trendingFantasyLandscape from '../../assets/trending-fantasy-landscape.jpg';
+
+// Import legacy style images
 import style90sAnime from '../../assets/style-90s-anime-new.jpg';
 import styleMinimalist from '../../assets/style-minimalist-new.jpg';
 import styleFantasyCreature from '../../assets/style-fantasy-creature-new.jpg';
@@ -25,215 +43,152 @@ import styleSurreal from '../../assets/style-surreal-new.jpg';
 import styleDigitalGlitch from '../../assets/style-digital-glitch-new.jpg';
 import styleOilPainting from '../../assets/style-oil-painting-new.jpg';
 
-// Ultra-diverse style showcase for creative inspiration
+// Ultra-diverse trending showcase across all creative categories
 export const mockTiles: Tile[] = [
-  // AI STYLE SHOWCASE - Different artistic styles
+  // HIGH-QUALITY AI-GENERATED TRENDING IMAGES
   {
-    id: 'style-90s-anime',
+    id: 'trending-90s-anime',
     kind: 'image',
-    posterUrl: style90sAnime,
-    title: "90's Anime",
+    posterUrl: trending90sAnime,
+    title: "90's Anime Portrait",
     tag: 'ANIME',
-    views: 8947291,
+    views: 9847291,
     byline: 'Retro Animation Studio'
   },
   {
-    id: 'style-minimalist',
+    id: 'trending-minimalist-arch',
     kind: 'image',
-    posterUrl: styleMinimalist,
+    posterUrl: trendingMinimalistArch,
     title: 'Minimalist Architecture',
     tag: 'ARCHITECTURE',
-    views: 7629384,
+    views: 8629384,
     byline: 'Clean Design Co'
   },
   {
-    id: 'style-fantasy-creature',
+    id: 'trending-fantasy-creature',
     kind: 'image',
-    posterUrl: styleFantasyCreature,
-    title: 'Fantasy Creature',
+    posterUrl: trendingFantasyCreature,
+    title: 'Epic Fantasy Dragon',
     tag: 'FANTASY',
-    views: 9847391,
+    views: 10847391,
     byline: 'Mythical Studios'
   },
   {
-    id: 'style-child-animal',
+    id: 'trending-cyberpunk-city',
     kind: 'image',
-    posterUrl: styleChildAnimal,
-    title: 'Illustrated Child with Animal',
-    tag: 'ILLUSTRATION',
-    views: 6527391,
-    byline: 'Storybook Arts'
-  },
-  {
-    id: 'style-long-exposure',
-    kind: 'image',
-    posterUrl: styleLongExposure,
-    title: 'Long Exposure Emotion',
-    tag: 'PHOTOGRAPHY',
-    views: 5847291,
-    byline: 'Motion Blur Studio'
-  },
-  {
-    id: 'style-street-fashion',
-    kind: 'image',
-    posterUrl: styleStreetFashion,
-    title: 'Kontext Street',
-    tag: 'STREET FASHION',
-    views: 7329384,
-    byline: 'Urban Style Co'
-  },
-  {
-    id: 'style-moskvichka',
-    kind: 'image',
-    posterUrl: styleMoskvichka,
-    title: 'Moskvichka Aesthetic',
-    tag: 'VINTAGE',
-    views: 4847291,
-    byline: 'Soviet Era Films'
-  },
-  {
-    id: 'style-fantasy-portraits',
-    kind: 'image',
-    posterUrl: styleFantasyPortraits,
-    title: 'Fantasy Portraits',
-    tag: 'FANTASY',
-    views: 8647391,
-    byline: 'Ethereal Studios'
-  },
-  {
-    id: 'style-hok-tech',
-    kind: 'image',
-    posterUrl: styleHokTech,
-    title: 'HOK (Technically Superior)',
-    tag: 'ARCHITECTURE',
-    views: 6947291,
-    byline: 'Tech Architecture'
-  },
-  {
-    id: 'style-photoset',
-    kind: 'image',
-    posterUrl: stylePhotoset,
-    title: 'Kontext Photoset',
-    tag: 'PHOTOGRAPHY',
-    views: 5729384,
-    byline: 'Professional Studio'
-  },
-  {
-    id: 'style-fluff-world',
-    kind: 'image',
-    posterUrl: styleFluffWorld,
-    title: 'Fluff World',
-    tag: 'KAWAII',
-    views: 7847291,
-    byline: 'Fluffy Dreams Co'
-  },
-  {
-    id: 'style-fantasy-landscape',
-    kind: 'image',
-    posterUrl: styleFantasyLandscape,
-    title: 'Fantasy Landscape Epic',
-    tag: 'LANDSCAPE',
-    views: 9527391,
-    byline: 'Epic Worlds Studio'
-  },
-  {
-    id: 'style-art-nouveau',
-    kind: 'image',
-    posterUrl: styleArtNouveau,
-    title: 'Art Nouveau Portraits',
-    tag: 'ART NOUVEAU',
-    views: 6847291,
-    byline: 'Classical Arts'
-  },
-  {
-    id: 'style-nighttime-dreams',
-    kind: 'image',
-    posterUrl: styleNighttimeDreams,
-    title: 'Nighttime Dreams, Moon',
-    tag: 'SURREAL',
-    views: 8329384,
-    byline: 'Dream Weavers'
-  },
-  {
-    id: 'style-cyberpunk',
-    kind: 'image',
-    posterUrl: styleCyberpunk,
-    title: 'Cyberpunk Neon',
+    posterUrl: trendingCyberpunkCity,
+    title: 'Cyberpunk Cityscape',
     tag: 'CYBERPUNK',
-    views: 9647291,
+    views: 11647291,
     byline: 'Neon Future Labs'
   },
   {
-    id: 'style-watercolor',
+    id: 'trending-watercolor-landscape',
     kind: 'image',
-    posterUrl: styleWatercolor,
+    posterUrl: trendingWatercolorLandscape,
     title: 'Watercolor Dreams',
     tag: 'WATERCOLOR',
-    views: 5947291,
+    views: 7947291,
     byline: 'Aqua Art Studio'
   },
   {
-    id: 'style-film-noir',
+    id: 'trending-steampunk-mech',
     kind: 'image',
-    posterUrl: styleFilmNoir,
-    title: 'Film Noir Classic',
-    tag: 'NOIR',
-    views: 7147291,
-    byline: 'Classic Cinema Co'
-  },
-  {
-    id: 'style-steampunk',
-    kind: 'image',
-    posterUrl: styleSteampunk,
-    title: 'Steampunk Mechanical',
+    posterUrl: trendingSteampunkMech,
+    title: 'Steampunk Machinery',
     tag: 'STEAMPUNK',
-    views: 6647291,
+    views: 8647291,
     byline: 'Brass Gear Studios'
   },
   {
-    id: 'style-pop-art',
+    id: 'trending-pop-art-portrait',
     kind: 'image',
-    posterUrl: stylePopArt,
-    title: 'Pop Art Vibrant',
+    posterUrl: trendingPopArtPortrait,
+    title: 'Pop Art Icon',
     tag: 'POP ART',
-    views: 8747291,
+    views: 9747291,
     byline: 'Pop Culture Arts'
   },
   {
-    id: 'style-gothic',
+    id: 'trending-gothic-cathedral',
     kind: 'image',
-    posterUrl: styleGothic,
-    title: 'Gothic Architecture',
+    posterUrl: trendingGothicCathedral,
+    title: 'Gothic Cathedral Light',
     tag: 'GOTHIC',
-    views: 6347291,
+    views: 8347291,
     byline: 'Dark Cathedral Co'
   },
   {
-    id: 'style-surreal',
+    id: 'trending-surreal-dream',
     kind: 'image',
-    posterUrl: styleSurreal,
+    posterUrl: trendingSurrealDream,
     title: 'Surreal Dreamscape',
     tag: 'SURREAL',
-    views: 9247291,
+    views: 10247291,
     byline: 'Dream Logic Studio'
   },
   {
-    id: 'style-digital-glitch',
+    id: 'trending-film-noir',
     kind: 'image',
-    posterUrl: styleDigitalGlitch,
-    title: 'Digital Glitch',
-    tag: 'GLITCH ART',
-    views: 7547291,
-    byline: 'Pixel Corruption Co'
+    posterUrl: trendingFilmNoir,
+    title: 'Film Noir Mystery',
+    tag: 'NOIR',
+    views: 8147291,
+    byline: 'Classic Cinema Co'
   },
   {
-    id: 'style-oil-painting',
+    id: 'trending-fashion-portrait',
     kind: 'image',
-    posterUrl: styleOilPainting,
-    title: 'Oil Painting Master',
-    tag: 'CLASSICAL',
-    views: 8147291,
-    byline: 'Renaissance Studios'
+    posterUrl: trendingFashionPortrait,
+    title: 'High Fashion Editorial',
+    tag: 'FASHION',
+    views: 9347391,
+    byline: 'Vogue Studios'
+  },
+  {
+    id: 'trending-wildlife-leopard',
+    kind: 'image',
+    posterUrl: trendingWildlifeLeopard,
+    title: 'Majestic Snow Leopard',
+    tag: 'WILDLIFE',
+    views: 8728394,
+    byline: 'Wild Photography'
+  },
+  {
+    id: 'trending-abstract-digital',
+    kind: 'image',
+    posterUrl: trendingAbstractDigital,
+    title: 'Abstract Digital Flow',
+    tag: 'ABSTRACT',
+    views: 7749281,
+    byline: 'Digital Dreamscape'
+  },
+  {
+    id: 'trending-space-station',
+    kind: 'image',
+    posterUrl: trendingSpaceStation,
+    title: 'Orbital Space Station',
+    tag: 'SCI-FI',
+    views: 9847291,
+    byline: 'Cosmic Renders'
+  },
+  {
+    id: 'trending-culinary-art',
+    kind: 'image',
+    posterUrl: trendingCulinaryArt,
+    title: 'Molecular Gastronomy',
+    tag: 'CULINARY',
+    views: 6928374,
+    byline: 'Chef Artistry'
+  },
+  {
+    id: 'trending-fantasy-landscape',
+    kind: 'image',
+    posterUrl: trendingFantasyLandscape,
+    title: 'Floating Castle Isle',
+    tag: 'LANDSCAPE',
+    views: 11527391,
+    byline: 'Epic Worlds Studio'
   },
   {
     id: 'char-2',
