@@ -150,56 +150,95 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="mb-8 space-y-6"
         >
-          {/* Main Title with Gradient and Accent */}
+          {/* Main Title with Holographic Effect */}
           <div className="relative">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-1 h-16 bg-gradient-to-b from-purple-400 via-violet-500 to-fuchsia-600 rounded-full shadow-lg shadow-purple-500/30" />
-              <div>
-                <h2 className="text-5xl md:text-6xl lg:text-7xl font-black bg-gradient-to-r from-purple-400 via-violet-500 to-fuchsia-600 bg-clip-text text-transparent leading-tight tracking-tight">
-                  Trending
-                </h2>
-                <p className="text-2xl md:text-3xl font-light text-muted-foreground/80 tracking-[0.2em] uppercase mt-2">
-                  Creations
-                </p>
+            <div className="flex items-center gap-6 mb-8">
+              {/* Pulsing Energy Bar */}
+              <div className="relative w-2 h-24">
+                <div className="absolute inset-0 bg-gradient-to-b from-purple-400 via-violet-500 to-fuchsia-600 rounded-full shadow-2xl shadow-purple-500/50 animate-pulse" />
+                <div className="absolute inset-0 bg-gradient-to-b from-cyan-400 to-purple-600 rounded-full blur-xl opacity-60 animate-pulse" />
+              </div>
+              
+              <div className="relative">
+                {/* Holographic Glitch Title */}
+                <div className="relative">
+                  <h2 className="relative text-6xl md:text-7xl lg:text-8xl font-black leading-tight tracking-tighter">
+                    {/* Main gradient text */}
+                    <span className="relative inline-block bg-gradient-to-r from-purple-400 via-violet-500 via-fuchsia-500 to-cyan-400 bg-clip-text text-transparent animate-gradient-flow bg-[length:200%_auto]">
+                      Trending
+                    </span>
+                    {/* Holographic overlay effect */}
+                    <span className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-purple-500 to-fuchsia-500 bg-clip-text text-transparent opacity-40 blur-sm animate-pulse" aria-hidden="true">
+                      Trending
+                    </span>
+                    {/* Glitch shadow */}
+                    <span className="absolute -inset-0.5 bg-gradient-to-r from-fuchsia-500 to-cyan-500 bg-clip-text text-transparent opacity-20 blur-md animate-glitch-1" aria-hidden="true">
+                      Trending
+                    </span>
+                  </h2>
+                </div>
+                
+                <div className="flex items-center gap-3 mt-3">
+                  <div className="h-px w-16 bg-gradient-to-r from-transparent via-purple-500 to-transparent" />
+                  <p className="text-xl md:text-2xl font-light bg-gradient-to-r from-purple-300 to-violet-400 bg-clip-text text-transparent tracking-[0.3em] uppercase">
+                    Creations
+                  </p>
+                  <div className="h-px flex-1 bg-gradient-to-r from-transparent via-purple-500/50 to-transparent" />
+                </div>
               </div>
             </div>
             
-            {/* Description */}
-            <div className="max-w-4xl">
-              <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
-                Discover the most <span className="font-semibold bg-gradient-to-r from-purple-400 via-violet-500 to-fuchsia-600 bg-clip-text text-transparent">viral creations</span> shaping digital culture — from stunning visuals to groundbreaking concepts
+            {/* Enhanced Description with Neon Effect */}
+            <div className="relative max-w-4xl">
+              <div className="absolute -inset-4 bg-gradient-to-r from-purple-500/10 via-transparent to-cyan-500/10 blur-2xl" />
+              <p className="relative text-xl md:text-2xl text-foreground/90 leading-relaxed font-light">
+                Experience the future of <span className="relative inline-block font-bold bg-gradient-to-r from-purple-400 via-fuchsia-500 to-cyan-400 bg-clip-text text-transparent">
+                  viral creativity
+                  <span className="absolute inset-0 bg-gradient-to-r from-purple-400 to-cyan-400 blur-lg opacity-30 animate-pulse" aria-hidden="true" />
+                </span> — where innovation meets imagination in stunning detail
               </p>
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-wrap items-center gap-4 pt-4">
+          {/* Revolutionary Action Buttons */}
+          <div className="flex flex-wrap items-center gap-4 pt-6">
             <Button
               onClick={handleShuffle}
               disabled={isShuffling}
               size="lg"
-              className="bg-gradient-to-r from-purple-500 to-violet-600 hover:from-purple-600 hover:to-violet-700 text-white font-semibold px-8 py-4 h-auto border-2 border-purple-400/20 shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all duration-300"
+              className="group relative overflow-hidden bg-gradient-to-r from-purple-600 via-violet-600 to-fuchsia-600 hover:from-purple-500 hover:via-violet-500 hover:to-fuchsia-500 text-white font-bold px-10 py-6 h-auto border-2 border-purple-400/30 shadow-2xl shadow-purple-500/40 hover:shadow-purple-500/60 transition-all duration-300 hover:scale-105"
             >
-              {isShuffling ? 'REGENERATING...' : 'REGENERATE'}
+              {/* Animated background shimmer */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+              <span className="relative flex items-center gap-2">
+                <span className={isShuffling ? 'animate-spin' : ''}>✨</span>
+                {isShuffling ? 'REGENERATING...' : 'REGENERATE'}
+              </span>
             </Button>
             
             <Button
               variant="outline"
               size="lg"
-              className="border-2 border-muted-foreground/20 hover:border-purple-400/50 px-6 py-4 h-auto font-semibold text-foreground hover:text-purple-400 transition-all duration-300"
+              className="group relative overflow-hidden bg-transparent backdrop-blur-sm border-2 border-purple-400/40 hover:border-purple-400 px-8 py-6 h-auto font-bold text-foreground hover:text-white transition-all duration-300 hover:bg-purple-500/20 hover:shadow-lg hover:shadow-purple-500/30"
             >
-              <Filter className="w-5 h-5 mr-2" />
-              FILTER
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-purple-500/20 to-purple-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <span className="relative flex items-center gap-2">
+                <Filter className="w-5 h-5" />
+                FILTER
+              </span>
             </Button>
             
             <Button
               variant="ghost"
               size="lg"
-              className="text-purple-400 hover:text-purple-300 font-semibold px-6 py-4 h-auto hover:bg-purple-400/10 transition-all duration-300 group"
+              className="group relative text-purple-400 hover:text-white font-bold px-8 py-6 h-auto hover:bg-gradient-to-r hover:from-purple-500/20 hover:to-fuchsia-500/20 transition-all duration-300"
               onClick={handleViewAll}
             >
-              {isExpanded ? 'SHOW LESS' : 'VIEW ALL'}
-              <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
+              <span className="relative flex items-center gap-2">
+                {isExpanded ? 'SHOW LESS' : 'VIEW ALL'}
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
+              </span>
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-400 to-fuchsia-400 scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
             </Button>
           </div>
         </motion.div>
@@ -317,9 +356,15 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
               onClick={() => setDisplayCount(prev => prev + 50)}
               size="lg"
               variant="outline"
-              className="px-8 py-6 text-lg font-semibold hover:bg-purple-500 hover:text-white transition-all duration-300 border-2 border-purple-400/30 hover:border-purple-400 hover:shadow-lg hover:shadow-purple-500/30"
+              className="group relative overflow-hidden px-12 py-8 text-xl font-black bg-gradient-to-r from-purple-500/10 to-fuchsia-500/10 backdrop-blur-md hover:from-purple-500/20 hover:to-fuchsia-500/20 text-white transition-all duration-500 border-2 border-purple-400/40 hover:border-purple-400 hover:shadow-2xl hover:shadow-purple-500/40 hover:scale-105"
             >
-              Load More Creations
+              {/* Animated background shimmer */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-400/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+              <span className="relative flex items-center gap-3">
+                <span className="text-2xl">⚡</span>
+                Load More Creations
+                <span className="text-2xl">⚡</span>
+              </span>
             </Button>
           </motion.div>
         )}
