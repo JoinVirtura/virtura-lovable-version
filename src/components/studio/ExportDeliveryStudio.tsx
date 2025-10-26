@@ -1,6 +1,5 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Download } from 'lucide-react';
+import { ExportContent } from './ExportContent';
 import type { StudioProject } from '@/hooks/useStudioProject';
 
 interface ExportDeliveryStudioProps {
@@ -10,16 +9,15 @@ interface ExportDeliveryStudioProps {
   isProcessing: boolean;
 }
 
-export const ExportDeliveryStudio: React.FC<ExportDeliveryStudioProps> = ({ project, onUpdate, onExport, isProcessing }) => (
-  <Card>
-    <CardHeader>
-      <CardTitle className="flex items-center gap-2">
-        <Download className="h-5 w-5" />
-        Export & Delivery
-      </CardTitle>
-    </CardHeader>
-    <CardContent>
-      <p className="text-muted-foreground">Export features coming soon...</p>
-    </CardContent>
-  </Card>
+export const ExportDeliveryStudio: React.FC<ExportDeliveryStudioProps> = ({
+  project,
+  onUpdate,
+  onExport,
+  isProcessing
+}) => (
+  <ExportContent
+    project={project}
+    onExport={onExport}
+    isProcessing={isProcessing}
+  />
 );
