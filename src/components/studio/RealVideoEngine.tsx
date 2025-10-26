@@ -326,7 +326,7 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
       <Card className="p-6 bg-gradient-to-br from-purple-500/5 to-pink-500/5 border-purple-500/20">
         <div className="flex items-center gap-2 mb-4">
           <Package className="w-5 h-5 text-purple-400" />
-          <h3 className="text-lg font-semibold">Target Export Pack</h3>
+          <h3 className="text-lg font-semibold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">Target Export Pack</h3>
           <Badge variant="outline" className="ml-auto">Determines Video Dimensions</Badge>
         </div>
         
@@ -344,19 +344,8 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
                 }`}
                 onClick={() => setSelectedExportPack(key as any)}
               >
-                <div className="text-2xl mb-2">{pack.icon}</div>
                 <div className="font-medium mb-1">{pack.name}</div>
-                <p className="text-xs text-muted-foreground mb-3">{pack.description}</p>
-                
-                {/* Features */}
-                <div className="space-y-1 mb-3">
-                  {pack.features.map((feature, idx) => (
-                    <div key={idx} className="text-xs text-muted-foreground flex items-center gap-1">
-                      <span className="text-purple-400">•</span>
-                      {feature}
-                    </div>
-                  ))}
-                </div>
+                <p className="text-xs text-muted-foreground mb-3">{pack.features.join(' • ')}</p>
 
                 {/* Available Formats */}
                 <div className="pt-2 border-t border-border/50">
@@ -411,15 +400,6 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
           </div>
         )}
 
-        <Alert className="mt-4">
-          <Sparkles className="w-4 h-4" />
-          <AlertDescription>
-            Video will be generated natively at <strong>{getRatioDimensions(primaryRatio)}</strong> ({primaryRatio}) for perfect composition. 
-            {selectedExportPack && exportPacks[selectedExportPack as keyof typeof exportPacks].formats.length > 1 && (
-              <> All {exportPacks[selectedExportPack as keyof typeof exportPacks].formats.length} pack formats will be available during export with intelligent cropping.</>
-            )}
-          </AlertDescription>
-        </Alert>
       </Card>
 
       {/* Engine Selection - Simplified */}
