@@ -710,9 +710,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
               {/* Animated background shimmer */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-400/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
               <span className="relative flex items-center gap-3">
-                <span className="text-2xl">⚡</span>
                 Load More Creations
-                <span className="text-2xl">⚡</span>
               </span>
             </Button>
           </motion.div>
