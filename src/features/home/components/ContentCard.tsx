@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Badge } from "@/components/ui/badge";
 import { ContentCardProps } from "../types";
-import { Heart, Share2, Play, Eye, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 export const ContentCard = ({ tile, className = "", size = 'md' }: ContentCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -10,13 +10,6 @@ export const ContentCard = ({ tile, className = "", size = 'md' }: ContentCardPr
   const [imageLoaded, setImageLoaded] = useState(false);
   const [glowIntensity, setGlowIntensity] = useState(0);
   const cardRef = useRef<HTMLDivElement>(null);
-
-  const formatViews = (views?: number) => {
-    if (!views) return '0';
-    if (views >= 1000000) return `${(views / 1000000).toFixed(1)}M`;
-    if (views >= 1000) return `${(views / 1000).toFixed(1)}K`;
-    return views.toString();
-  };
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!cardRef.current) return;
@@ -275,32 +268,6 @@ export const ContentCard = ({ tile, className = "", size = 'md' }: ContentCardPr
             {tile.title}
           </motion.h3>
           
-          <div className="flex items-center gap-3">
-            {/* Views Counter with Glow */}
-            <motion.div 
-              className="flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-2 rounded-full border border-purple-400/30"
-              whileHover={{ scale: 1.05, borderColor: 'rgba(168, 85, 247, 0.6)' }}
-              animate={{
-                opacity: isHovered ? 1 : 0,
-                boxShadow: isHovered ? [
-                  '0 0 10px rgba(168, 85, 247, 0.3)',
-                  '0 0 20px rgba(168, 85, 247, 0.5)',
-                  '0 0 10px rgba(168, 85, 247, 0.3)',
-                ] : '0 0 0px rgba(168, 85, 247, 0)',
-              }}
-              transition={{
-                opacity: { duration: 0.3 },
-                boxShadow: {
-                  duration: 2,
-                  repeat: Infinity,
-                },
-                scale: { duration: 0.2 }
-              }}
-            >
-              <Eye className="w-4 h-4 text-purple-400" />
-              <span className="text-white font-bold text-sm">{formatViews(tile.views)}</span>
-            </motion.div>
-          </div>
         </motion.div>
       </div>
 

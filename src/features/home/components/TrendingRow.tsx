@@ -568,43 +568,34 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.2 }}
-                      className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-2xl flex items-end p-4"
+                      className="absolute inset-0 rounded-2xl flex items-end justify-end p-4"
                     >
-                      <div className="w-full space-y-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2 text-white">
-                            <Eye className="w-4 h-4" />
-                            <span className="text-sm font-medium">{tile.views.toLocaleString()}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Button
-                              size="sm"
-                              variant="secondary"
-                              className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white border-0 h-8 w-8 p-0"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleLike(tile.id);
-                              }}
-                            >
-                              <Heart className={cn(
-                                "w-4 h-4",
-                                likedItems.has(tile.id) ? "fill-red-500 text-red-500" : ""
-                              )} />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="secondary"
-                              className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white border-0 h-8 w-8 p-0"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleShare(tile);
-                              }}
-                            >
-                              <Share2 className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
+                      <motion.div 
+                        className="flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-2 rounded-full border border-purple-400/30"
+                        whileHover={{ scale: 1.05, borderColor: 'rgba(168, 85, 247, 0.6)' }}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ 
+                          opacity: 1, 
+                          y: 0,
+                          boxShadow: [
+                            '0 0 10px rgba(168, 85, 247, 0.3)',
+                            '0 0 20px rgba(168, 85, 247, 0.5)',
+                            '0 0 10px rgba(168, 85, 247, 0.3)',
+                          ]
+                        }}
+                        transition={{
+                          opacity: { duration: 0.3 },
+                          y: { duration: 0.3 },
+                          boxShadow: {
+                            duration: 2,
+                            repeat: Infinity,
+                          },
+                          scale: { duration: 0.2 }
+                        }}
+                      >
+                        <Eye className="w-4 h-4 text-purple-400" />
+                        <span className="text-white font-bold text-sm">{tile.views.toLocaleString()}</span>
+                      </motion.div>
                     </motion.div>
                   )}
                 </AnimatePresence>
