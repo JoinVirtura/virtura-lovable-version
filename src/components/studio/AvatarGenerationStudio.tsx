@@ -467,16 +467,25 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
     <div className="space-y-6">
       {/* Main Generation Interface */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="upload" className="flex items-center gap-2">
+        <TabsList className="grid w-full grid-cols-3 bg-black/40 backdrop-blur-md border-2 border-primary/30 p-1">
+          <TabsTrigger 
+            value="upload" 
+            className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary/20 data-[state=active]:to-secondary/20 data-[state=active]:border data-[state=active]:border-primary/40 data-[state=active]:shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all duration-300"
+          >
             <Upload className="h-4 w-4" />
             Upload Image
           </TabsTrigger>
-          <TabsTrigger value="generate" className="flex items-center gap-2">
+          <TabsTrigger 
+            value="generate" 
+            className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary/20 data-[state=active]:to-secondary/20 data-[state=active]:border data-[state=active]:border-primary/40 data-[state=active]:shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all duration-300"
+          >
             <Wand2 className="h-4 w-4" />
             AI Generate
           </TabsTrigger>
-          <TabsTrigger value="library" className="flex items-center gap-2">
+          <TabsTrigger 
+            value="library" 
+            className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary/20 data-[state=active]:to-secondary/20 data-[state=active]:border data-[state=active]:border-primary/40 data-[state=active]:shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all duration-300"
+          >
             <Library className="h-4 w-4" />
             Avatar Library
           </TabsTrigger>
@@ -485,8 +494,8 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
         {/* Upload Tab */}
         <TabsContent value="upload" className="space-y-6">
           <Card 
-            className={`h-64 relative cursor-pointer transition-all duration-300 border-2 ${
-              isDragOver ? 'border-violet-400 bg-violet-500/10 scale-[1.02] shadow-[0_0_25px_rgba(212,110,255,0.25)]' : 'border-dashed border-violet-500/40 hover:border-violet-400 hover:shadow-[0_0_25px_rgba(212,110,255,0.25)]'
+            className={`h-64 relative cursor-pointer transition-all duration-300 border-2 backdrop-blur-xl bg-black/60 ${
+              isDragOver ? 'border-primary/50 bg-primary/10 scale-[1.02] shadow-[0_0_30px_rgba(139,92,246,0.4)]' : 'border-dashed border-primary/30 hover:border-primary/50 hover:shadow-[0_0_25px_rgba(139,92,246,0.25)] hover:scale-[1.01]'
             }`}
             onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
             onDragLeave={(e) => { e.preventDefault(); setIsDragOver(false); }}
@@ -495,14 +504,14 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
           >
             <CardContent className="h-full flex items-center justify-center">
               <div className="text-center space-y-4">
-                <div className={`p-4 rounded-full border-2 border-dashed transition-all ${
-                  isDragOver ? 'border-violet-400 bg-violet-500/10 scale-110' : 'border-violet-500/40'
+                <div className={`p-4 rounded-full border-2 border-dashed transition-all backdrop-blur-md ${
+                  isDragOver ? 'border-primary/60 bg-primary/20 scale-110 shadow-[0_0_20px_rgba(139,92,246,0.4)]' : 'border-primary/40 bg-black/40'
                 }`}>
-                  <Upload className="h-8 w-8 text-violet-400" />
+                  <Upload className="h-8 w-8 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-1">Upload Avatar Image</h3>
-                  <p className="text-sm text-muted-foreground">
+                  <h3 className="font-semibold mb-1 text-white">Upload Avatar Image</h3>
+                  <p className="text-sm text-gray-400">
                     Drop image here or click to upload • PNG, JPG, WebP up to 10MB
                   </p>
                 </div>
@@ -539,18 +548,18 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
 
         {/* AI Generation Tab */}
         <TabsContent value="generate" className="space-y-6">
-          <Card className="w-full">
+          <Card className="w-full border-2 border-primary/30 backdrop-blur-xl bg-black/60 shadow-2xl hover:shadow-[0_0_40px_rgba(139,92,246,0.2)] transition-all duration-300">
             <CardContent className="pt-6 space-y-6">
               {/* Chat-style Input with Action Buttons */}
               <div className="space-y-3">
-                <div className="relative flex items-center gap-2">
+                <div className="relative flex items-center gap-3">
                   {/* Input field - takes remaining space */}
-                  <Input
+                  <Textarea
                     id="prompt"
                     placeholder="Describe the image you want to create..."
                     value={generationPrompt}
                     onChange={(e) => setGenerationPrompt(e.target.value)}
-                    className="flex-1 h-14 text-base pl-4 pr-4"
+                    className="flex-1 min-h-[56px] max-h-[120px] resize-none bg-transparent border-0 focus-visible:ring-0 text-base text-white placeholder:text-gray-400 px-4 py-4"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && !e.shiftKey && generationPrompt.trim()) {
                         e.preventDefault();
@@ -564,10 +573,10 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                     variant="outline"
                     size="icon"
                     onClick={() => imageInputRef.current?.click()}
-                    className="h-14 w-14 rounded-full border-violet-500/40 hover:border-violet-400 hover:bg-violet-500/10 transition-all duration-300"
+                    className="h-14 w-14 rounded-full bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300 flex-shrink-0"
                     title="Upload reference image"
                   >
-                    <ImagePlus className="h-5 w-5 text-violet-400" />
+                    <ImagePlus className="h-5 w-5 text-primary" />
                   </Button>
                   
                   {/* Hidden file input */}
@@ -584,14 +593,14 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                     variant="outline"
                     size="icon"
                     onClick={handleVoiceInput}
-                    className={`h-14 w-14 rounded-full border-violet-500/40 transition-all duration-300 ${
+                    className={`h-14 w-14 rounded-full backdrop-blur-md border-2 transition-all duration-300 flex-shrink-0 ${
                       isRecording 
-                        ? 'bg-red-500/20 border-red-400 hover:bg-red-500/30' 
-                        : 'hover:border-violet-400 hover:bg-violet-500/10'
+                        ? 'bg-red-500/20 border-red-400 hover:bg-red-500/30 shadow-[0_0_20px_rgba(239,68,68,0.5)]' 
+                        : 'bg-black/40 border-primary/30 hover:border-primary/50 hover:bg-primary/20 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)]'
                     }`}
                     title={isRecording ? "Stop recording" : "Voice input"}
                   >
-                    <Mic className={`h-5 w-5 ${isRecording ? 'text-red-400 animate-pulse' : 'text-violet-400'}`} />
+                    <Mic className={`h-5 w-5 ${isRecording ? 'text-red-400 animate-pulse' : 'text-primary'}`} />
                   </Button>
                   
                   {/* Send/Generate Button with Progress */}
@@ -609,7 +618,7 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                       onClick={handleGeneratePerfectAvatar}
                       disabled={!generationPrompt.trim() || isProcessing || processingStage !== ''}
                       size="icon"
-                      className="h-14 w-14 rounded-full bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
+                      className="h-14 w-14 rounded-full bg-gradient-to-r from-primary to-secondary hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                       title="Generate Avatar (Enter)"
                     >
                       {isProcessing || processingStage !== '' ? (
@@ -629,7 +638,7 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="w-full justify-center gap-2 text-muted-foreground hover:text-foreground"
+                    className="w-full justify-center gap-2 text-gray-400 hover:text-primary hover:bg-primary/10 transition-all duration-300"
                   >
                     <Settings className="h-4 w-4" />
                     Advanced Settings
@@ -639,13 +648,13 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                 
                 <CollapsibleContent className="space-y-6 pt-6">
                   {/* Quality Indicators */}
-                  <div className="flex items-center justify-between pb-4 border-b border-violet-500/20">
-                    <span className="text-sm text-muted-foreground">Quality Settings</span>
+                  <div className="flex items-center justify-between pb-4 border-b border-primary/20">
+                    <span className="text-sm text-gray-400">Quality Settings</span>
                     <div className="flex items-center gap-2">
-                      <Badge variant="secondary" className="text-xs bg-violet-500/10 border-violet-500/20">
+                      <Badge variant="secondary" className="text-xs bg-primary/10 border-primary/30 text-primary shadow-[0_0_10px_rgba(139,92,246,0.2)]">
                         Neural Enhanced
                       </Badge>
-                      <Badge variant="secondary" className="text-xs bg-violet-500/10 border-violet-500/20">
+                      <Badge variant="secondary" className="text-xs bg-primary/10 border-primary/30 text-primary shadow-[0_0_10px_rgba(139,92,246,0.2)]">
                         {quality}
                       </Badge>
                     </div>
@@ -653,7 +662,7 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                   
                   {/* Content Type Selection */}
                   <div>
-                    <Label className="text-sm font-medium mb-3 block">Content Type</Label>
+                    <Label className="text-sm font-medium mb-3 block text-white">Content Type</Label>
                     <div className="grid grid-cols-3 gap-2">
                       {[
                         { id: 'portrait' as const, name: 'Portrait', icon: Camera, description: 'People & avatars' },
@@ -668,7 +677,11 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                           variant={contentType === type.id ? "default" : "outline"}
                           size="sm"
                           onClick={() => setContentType(type.id)}
-                          className="justify-start h-10 px-3"
+                          className={`justify-start h-10 px-3 transition-all duration-300 ${
+                            contentType === type.id 
+                              ? 'bg-gradient-to-r from-primary/20 to-secondary/20 border-primary/40 shadow-[0_0_15px_rgba(139,92,246,0.3)]' 
+                              : 'bg-black/40 backdrop-blur-md border-primary/30 hover:bg-primary/10 hover:border-primary/50'
+                          }`}
                           title={type.description}
                         >
                           <type.icon className="h-4 w-4 mr-2" />
@@ -680,7 +693,7 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
 
                   {/* Aspect Ratio Selection */}
                   <div>
-                    <Label className="text-sm font-medium mb-3 block">Aspect Ratio</Label>
+                    <Label className="text-sm font-medium mb-3 block text-white">Aspect Ratio</Label>
                     <div className="grid grid-cols-4 gap-2">
                       {[
                         { value: '1:1' as const, label: 'Square', emoji: '□' },
@@ -693,7 +706,11 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                           variant={aspectRatio === ratio.value ? "default" : "outline"}
                           size="sm"
                           onClick={() => setAspectRatio(ratio.value)}
-                          className="h-10"
+                          className={`h-10 transition-all duration-300 ${
+                            aspectRatio === ratio.value 
+                              ? 'bg-gradient-to-r from-primary/20 to-secondary/20 border-primary/40 shadow-[0_0_15px_rgba(139,92,246,0.3)]' 
+                              : 'bg-black/40 backdrop-blur-md border-primary/30 hover:bg-primary/10 hover:border-primary/50'
+                          }`}
                         >
                           <span className="text-lg mr-1">{ratio.emoji}</span>
                           <span className="text-xs">{ratio.label}</span>
@@ -704,7 +721,7 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
 
                   {/* Style Preset */}
                   <div>
-                    <Label className="text-sm font-medium mb-3 block">Style Preset</Label>
+                    <Label className="text-sm font-medium mb-3 block text-white">Style Preset</Label>
                     <div className="grid grid-cols-2 gap-2">
                       {STYLE_PRESETS.map((style) => (
                         <Button
@@ -712,7 +729,11 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                           variant={selectedStyle === style.id ? "default" : "outline"}
                           size="sm"
                           onClick={() => setSelectedStyle(style.id)}
-                          className="justify-start h-10 px-3"
+                          className={`justify-start h-10 px-3 transition-all duration-300 ${
+                            selectedStyle === style.id 
+                              ? 'bg-gradient-to-r from-primary/20 to-secondary/20 border-primary/40 shadow-[0_0_15px_rgba(139,92,246,0.3)]' 
+                              : 'bg-black/40 backdrop-blur-md border-primary/30 hover:bg-primary/10 hover:border-primary/50'
+                          }`}
                         >
                           <style.icon className="h-4 w-4 mr-2" />
                           <span className="text-sm">{style.name}</span>
@@ -723,14 +744,18 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
 
                   {/* Quality Settings */}
                   <div>
-                    <Label className="text-sm font-medium">Quality Settings</Label>
+                    <Label className="text-sm font-medium text-white">Quality Settings</Label>
                     <Select value={quality} onValueChange={(value) => setQuality(value as 'HD' | '4K' | '8K')}>
-                      <SelectTrigger className="mt-2">
+                      <SelectTrigger className="mt-2 bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:border-primary/50 transition-all duration-300">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-black/95 backdrop-blur-xl border-2 border-primary/30">
                         {QUALITY_SETTINGS.map((setting) => (
-                          <SelectItem key={setting.value} value={setting.value}>
+                          <SelectItem 
+                            key={setting.value} 
+                            value={setting.value}
+                            className="hover:bg-primary/10 focus:bg-primary/20"
+                          >
                             {setting.label}
                           </SelectItem>
                         ))}
@@ -741,7 +766,7 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                   {/* Face Consistency - only show for portrait mode */}
                   {contentType === 'portrait' && (
                     <div>
-                      <Label className="text-sm font-medium">
+                      <Label className="text-sm font-medium text-white">
                         Face Consistency: {faceConsistency}%
                       </Label>
                       <Slider
@@ -750,7 +775,7 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
                         max={100}
                         min={50}
                         step={5}
-                        className="mt-2"
+                        className="mt-2 [&_[role=slider]]:bg-primary [&_[role=slider]]:border-primary/50 [&_[role=slider]]:shadow-[0_0_15px_rgba(139,92,246,0.4)]"
                       />
                     </div>
                   )}
