@@ -31,7 +31,8 @@ import {
   Camera,
   Mountain,
   Square,
-  BookOpen
+  BookOpen,
+  X
 } from "lucide-react";
 import { ImageGenerationService, type ImageGenerationParams } from "@/services/imageGenerationService";
 import { PromptLibrary } from "./PromptLibrary";
@@ -364,7 +365,7 @@ export const AIImageStudio = () => {
 
         {/* Main Input Card - Hide after generation */}
         {showInputCard && (
-          <Card className="mb-8 backdrop-blur-sm bg-background/80 border-primary/20 shadow-xl">
+          <Card className="mb-8 border-2 border-primary/30 backdrop-blur-xl bg-black/60 shadow-2xl hover:shadow-[0_0_40px_rgba(139,92,246,0.2)] transition-all duration-300">
             <div className="p-6">
               <div className="space-y-6">
                 {/* Prompt Input */}
@@ -374,7 +375,7 @@ export const AIImageStudio = () => {
                     <div className="flex gap-2">
                       <Dialog open={showPromptLibrary} onOpenChange={setShowPromptLibrary}>
                         <DialogTrigger asChild>
-                          <Button variant="outline" size="sm">
+                          <Button variant="ghost" size="sm" className="h-10 rounded-full bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300">
                             <BookOpen className="h-4 w-4 mr-2" />
                             Prompt Library
                           </Button>
@@ -390,10 +391,14 @@ export const AIImageStudio = () => {
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button
-                              variant="outline"
-                              size="sm"
+                              variant="ghost"
+                              size="icon"
                               onClick={toggleVoiceInput}
-                              className={isRecording ? "bg-red-500 text-white" : ""}
+                              className={`h-10 w-10 rounded-full backdrop-blur-md border-2 transition-all duration-300 ${
+                                isRecording 
+                                  ? 'bg-red-500/20 border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.5)]' 
+                                  : 'bg-black/40 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)]'
+                              }`}
                             >
                               {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
                             </Button>
@@ -411,24 +416,18 @@ export const AIImageStudio = () => {
                       placeholder="A majestic mountain landscape at sunset, snow-capped peaks, dramatic clouds, photorealistic, 8K quality..."
                       value={prompt}
                       onChange={(e) => setPrompt(e.target.value)}
-                      className="min-h-[100px] pr-12 resize-none"
+                      className="min-h-[100px] pr-14 resize-none bg-transparent border-0 focus-visible:ring-0 text-white placeholder:text-gray-400 px-4 py-4"
                     />
                     <Button
                       onClick={generatePreviews}
                       disabled={isGenerating || !prompt.trim()}
-                      className="absolute bottom-3 right-3"
-                      size="sm"
+                      className="absolute bottom-3 right-3 h-12 w-12 rounded-full bg-gradient-to-r from-primary to-secondary hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] transition-all duration-300"
+                      size="icon"
                     >
                       {isGenerating ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                          Generating...
-                        </>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
                       ) : (
-                        <>
-                          <Send className="h-4 w-4 mr-2" />
-                          Generate
-                        </>
+                        <Send className="h-5 w-5" />
                       )}
                     </Button>
                   </div>
@@ -439,10 +438,10 @@ export const AIImageStudio = () => {
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Content Type</label>
                     <Select value={contentType} onValueChange={setContentType}>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:border-primary/50 transition-all duration-300">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-black/95 backdrop-blur-xl border-2 border-primary/30">
                         {contentTypes.map((type) => (
                           <SelectItem key={type.value} value={type.value}>
                             <div className="flex items-center gap-2">
@@ -458,10 +457,10 @@ export const AIImageStudio = () => {
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Style</label>
                     <Select value={style} onValueChange={setStyle}>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:border-primary/50 transition-all duration-300">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-black/95 backdrop-blur-xl border-2 border-primary/30">
                         {styles.map((styleOption) => (
                           <SelectItem key={styleOption} value={styleOption}>
                             {styleOption}
@@ -474,10 +473,10 @@ export const AIImageStudio = () => {
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Quality</label>
                     <Select value={quality} onValueChange={setQuality}>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:border-primary/50 transition-all duration-300">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-black/95 backdrop-blur-xl border-2 border-primary/30">
                         {qualityPresets.map((preset) => (
                           <SelectItem key={preset.value} value={preset.value}>
                             <div className="flex flex-col">
@@ -501,6 +500,7 @@ export const AIImageStudio = () => {
                     variant="ghost"
                     size="sm"
                     onClick={() => setShowAdvanced(!showAdvanced)}
+                    className="hover:text-primary hover:bg-primary/10 transition-all duration-300"
                   >
                     {showAdvanced ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </Button>
@@ -514,10 +514,10 @@ export const AIImageStudio = () => {
                         <div className="space-y-2">
                           <label className="text-sm font-medium">Aspect Ratio</label>
                           <Select value={aspectRatio} onValueChange={setAspectRatio}>
-                            <SelectTrigger>
+                            <SelectTrigger className="bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:border-primary/50 transition-all duration-300">
                               <SelectValue />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="bg-black/95 backdrop-blur-xl border-2 border-primary/30">
                               <SelectItem value="1:1">Square (1:1)</SelectItem>
                               <SelectItem value="16:9">Landscape (16:9)</SelectItem>
                               <SelectItem value="9:16">Portrait (9:16)</SelectItem>
@@ -530,10 +530,10 @@ export const AIImageStudio = () => {
                         <div className="space-y-2">
                           <label className="text-sm font-medium">Resolution</label>
                           <Select value={resolution} onValueChange={setResolution}>
-                            <SelectTrigger>
+                            <SelectTrigger className="bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:border-primary/50 transition-all duration-300">
                               <SelectValue />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="bg-black/95 backdrop-blur-xl border-2 border-primary/30">
                               <SelectItem value="512x512">512×512 (Fast)</SelectItem>
                               <SelectItem value="1024x1024">1024×1024 (Standard)</SelectItem>
                               <SelectItem value="1536x1536">1536×1536 (High Quality)</SelectItem>
@@ -551,7 +551,7 @@ export const AIImageStudio = () => {
                             max={12}
                             min={1}
                             step={0.5}
-                            className="w-full"
+                            className="w-full [&_[role=slider]]:bg-primary [&_[role=slider]]:border-primary/50 [&_[role=slider]]:shadow-[0_0_15px_rgba(139,92,246,0.4)]"
                           />
                         </div>
 
@@ -563,7 +563,7 @@ export const AIImageStudio = () => {
                             max={100}
                             min={20}
                             step={5}
-                            className="w-full"
+                            className="w-full [&_[role=slider]]:bg-primary [&_[role=slider]]:border-primary/50 [&_[role=slider]]:shadow-[0_0_15px_rgba(139,92,246,0.4)]"
                           />
                         </div>
                       </div>
@@ -576,7 +576,7 @@ export const AIImageStudio = () => {
                           placeholder="What you don't want in the image..."
                           value={negativePrompt}
                           onChange={(e) => setNegativePrompt(e.target.value)}
-                          className="min-h-[60px]"
+                          className="min-h-[60px] bg-transparent border-0 focus-visible:ring-0 text-white placeholder:text-gray-400"
                         />
                       </div>
 
@@ -586,6 +586,7 @@ export const AIImageStudio = () => {
                             id="enhance"
                             checked={enhanceEnabled}
                             onCheckedChange={setEnhanceEnabled}
+                            className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-primary data-[state=checked]:to-secondary"
                           />
                           <label htmlFor="enhance" className="text-sm font-medium">
                             AI Enhancement
@@ -598,20 +599,21 @@ export const AIImageStudio = () => {
                         <label className="text-sm font-medium">Reference Image (Optional)</label>
                         <div className="flex gap-4">
                           <Button
-                            variant="outline"
+                            variant="ghost"
                             onClick={() => fileInputRef.current?.click()}
                             disabled={isUploading}
-                            className="flex items-center gap-2"
+                            className="h-10 rounded-full bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
                           >
-                            <Upload className="h-4 w-4" />
+                            <Upload className="h-4 w-4 mr-2" />
                             {isUploading ? "Uploading..." : "Upload Reference"}
                           </Button>
                           {referenceImage && (
                             <Button
-                              variant="outline"
+                              variant="ghost"
                               onClick={removeReferenceImage}
-                              className="text-red-600 hover:text-red-700"
+                              className="h-10 rounded-full bg-black/40 backdrop-blur-md border-2 border-red-500/30 text-red-400 hover:bg-red-500/20 hover:border-red-500/50 hover:shadow-[0_0_20px_rgba(239,68,68,0.5)] transition-all duration-300"
                             >
+                              <X className="h-4 w-4 mr-2" />
                               Remove
                             </Button>
                           )}
@@ -646,11 +648,10 @@ export const AIImageStudio = () => {
           <div className="mb-8 text-center">
             <Button
               onClick={() => setShowInputCard(true)}
-              variant="outline"
               size="lg"
-              className="backdrop-blur-sm bg-background/80 border-primary/20"
+              className="rounded-full bg-gradient-to-r from-primary to-secondary border-2 border-primary/30 hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] backdrop-blur-md transition-all duration-300"
             >
-              <Sparkles className="h-4 w-4 mr-2" />
+              <Sparkles className="h-5 w-5 mr-2" />
               New Generation
             </Button>
           </div>
@@ -658,7 +659,7 @@ export const AIImageStudio = () => {
 
         {/* Results Section */}
         {previewCards.length > 0 && (
-          <Card className="backdrop-blur-sm bg-background/80 border-primary/20 shadow-xl">
+          <Card className="border-2 border-primary/30 backdrop-blur-xl bg-black/60 shadow-2xl hover:shadow-[0_0_40px_rgba(139,92,246,0.2)] transition-all duration-300">
             <div className="p-6">
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <Sparkles className="h-5 w-5" />
@@ -670,8 +671,10 @@ export const AIImageStudio = () => {
                   {previewCards.map((card) => (
                     <Card 
                       key={card.id} 
-                      className={`overflow-hidden transition-all duration-200 hover:shadow-lg ${
-                        selectedVariant === card.id ? 'ring-2 ring-primary' : ''
+                      className={`overflow-hidden transition-all duration-300 hover:shadow-lg border-2 backdrop-blur-md bg-black/40 ${
+                        selectedVariant === card.id 
+                          ? 'ring-2 ring-primary border-primary/50 shadow-[0_0_30px_rgba(139,92,246,0.4)]' 
+                          : 'border-primary/20'
                       }`}
                     >
                       <div className="aspect-square relative group">
@@ -695,8 +698,8 @@ export const AIImageStudio = () => {
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <Button
-                                      size="sm"
-                                      variant="secondary"
+                                      size="icon"
+                                      className="h-9 w-9 rounded-full bg-black/60 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
                                       onClick={() => handleDownloadVariant(card.id)}
                                     >
                                       <Download className="h-4 w-4" />
@@ -710,8 +713,8 @@ export const AIImageStudio = () => {
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <Button
-                                      size="sm"
-                                      variant="secondary"
+                                      size="icon"
+                                      className="h-9 w-9 rounded-full bg-black/60 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
                                       onClick={() => handleShareVariant(card.id)}
                                     >
                                       <Share2 className="h-4 w-4" />
@@ -725,8 +728,8 @@ export const AIImageStudio = () => {
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <Button
-                                      size="sm"
-                                      variant="secondary"
+                                      size="icon"
+                                      className="h-9 w-9 rounded-full bg-black/60 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
                                       onClick={() => handleSaveToLibrary(card.id)}
                                       disabled={savingToLibrary === card.id}
                                     >
@@ -778,7 +781,7 @@ export const AIImageStudio = () => {
 
         {/* Studio Chat - Show below Generated Previews */}
         {previewCards.length > 0 && (
-          <Card className="mb-8 backdrop-blur-sm bg-background/80 border-primary/20 shadow-xl">
+          <Card className="mb-8 border-2 border-primary/30 backdrop-blur-xl bg-black/60 shadow-2xl hover:shadow-[0_0_40px_rgba(139,92,246,0.2)] transition-all duration-300">
             <div className="p-6">
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <MessageCircle className="h-5 w-5" />
@@ -788,19 +791,19 @@ export const AIImageStudio = () => {
               <div className="space-y-4">
                 {/* Quick Edit Suggestions */}
                 <div className="flex flex-wrap gap-2">
-                  <Button variant="outline" size="sm" onClick={() => setChatInput("Change the lighting to vibrant neon")}>
+                  <Button variant="ghost" size="sm" onClick={() => setChatInput("Change the lighting to vibrant neon")} className="bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/10 hover:border-primary/50 hover:shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all duration-300">
                     <Wand2 className="h-3 w-3 mr-1" />
                     Vibrant Light
                   </Button>
-                  <Button variant="outline" size="sm" onClick={() => setChatInput("Make it more dramatic")}>
+                  <Button variant="ghost" size="sm" onClick={() => setChatInput("Make it more dramatic")} className="bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/10 hover:border-primary/50 hover:shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all duration-300">
                     <Camera className="h-3 w-3 mr-1" />
                     More Dramatic
                   </Button>
-                  <Button variant="outline" size="sm" onClick={() => setChatInput("Change the camera angle")}>
+                  <Button variant="ghost" size="sm" onClick={() => setChatInput("Change the camera angle")} className="bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/10 hover:border-primary/50 hover:shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all duration-300">
                     <Eye className="h-3 w-3 mr-1" />
                     Different Angle
                   </Button>
-                  <Button variant="outline" size="sm" onClick={() => setChatInput("Enhance the colors")}>
+                  <Button variant="ghost" size="sm" onClick={() => setChatInput("Enhance the colors")} className="bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/10 hover:border-primary/50 hover:shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all duration-300">
                     <Palette className="h-3 w-3 mr-1" />
                     Enhance Colors
                   </Button>
@@ -829,7 +832,7 @@ export const AIImageStudio = () => {
                     placeholder="Ask for refinements: 'Make it more cinematic', 'Change the mood', 'Different composition'..."
                     value={chatInput}
                     onChange={(e) => setChatInput(e.target.value)}
-                    className="min-h-[60px] pr-12 resize-none"
+                    className="min-h-[60px] pr-14 resize-none bg-transparent border-0 focus-visible:ring-0 text-white placeholder:text-gray-400"
                   />
                   <Button
                     onClick={() => {
@@ -840,8 +843,8 @@ export const AIImageStudio = () => {
                       }
                     }}
                     disabled={!chatInput.trim()}
-                    className="absolute bottom-2 right-2"
-                    size="sm"
+                    className="absolute bottom-2 right-2 h-10 w-10 rounded-full bg-gradient-to-r from-primary to-secondary hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] transition-all duration-300"
+                    size="icon"
                   >
                     <Send className="h-4 w-4" />
                   </Button>
@@ -854,7 +857,7 @@ export const AIImageStudio = () => {
         {/* Format Options and Safety Settings - Bottom Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Format Options */}
-          <Card className="backdrop-blur-sm bg-background/80 border-primary/20 shadow-xl">
+          <Card className="border-2 border-primary/30 backdrop-blur-xl bg-black/60 shadow-2xl hover:shadow-[0_0_40px_rgba(139,92,246,0.2)] transition-all duration-300">
             <div className="p-6">
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <FileImage className="h-5 w-5" />
@@ -866,10 +869,10 @@ export const AIImageStudio = () => {
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Aspect Ratio</label>
                     <Select value={aspectRatio} onValueChange={setAspectRatio}>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:border-primary/50 transition-all duration-300">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-black/95 backdrop-blur-xl border-2 border-primary/30">
                         <SelectItem value="1:1">Square (1:1)</SelectItem>
                         <SelectItem value="16:9">Landscape (16:9)</SelectItem>
                         <SelectItem value="9:16">Portrait (9:16)</SelectItem>
@@ -882,10 +885,10 @@ export const AIImageStudio = () => {
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Resolution</label>
                     <Select value={resolution} onValueChange={setResolution}>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:border-primary/50 transition-all duration-300">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-black/95 backdrop-blur-xl border-2 border-primary/30">
                         <SelectItem value="512x512">512×512 (Fast)</SelectItem>
                         <SelectItem value="1024x1024">1024×1024 (Standard)</SelectItem>
                         <SelectItem value="1536x1536">1536×1536 (High Quality)</SelectItem>
@@ -903,7 +906,7 @@ export const AIImageStudio = () => {
                       max={12}
                       min={1}
                       step={0.5}
-                      className="w-full"
+                      className="w-full [&_[role=slider]]:bg-primary [&_[role=slider]]:border-primary/50 [&_[role=slider]]:shadow-[0_0_15px_rgba(139,92,246,0.4)]"
                     />
                   </div>
 
@@ -915,7 +918,7 @@ export const AIImageStudio = () => {
                       max={100}
                       min={20}
                       step={5}
-                      className="w-full"
+                      className="w-full [&_[role=slider]]:bg-primary [&_[role=slider]]:border-primary/50 [&_[role=slider]]:shadow-[0_0_15px_rgba(139,92,246,0.4)]"
                     />
                   </div>
                 </div>
@@ -924,7 +927,7 @@ export const AIImageStudio = () => {
           </Card>
 
           {/* Safety Settings */}
-          <Card className="backdrop-blur-sm bg-background/80 border-primary/20 shadow-xl">
+          <Card className="border-2 border-primary/30 backdrop-blur-xl bg-black/60 shadow-2xl hover:shadow-[0_0_40px_rgba(139,92,246,0.2)] transition-all duration-300">
             <div className="p-6">
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <Shield className="h-5 w-5" />
@@ -938,6 +941,7 @@ export const AIImageStudio = () => {
                       id="enhance-bottom"
                       checked={enhanceEnabled}
                       onCheckedChange={setEnhanceEnabled}
+                      className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-primary data-[state=checked]:to-secondary"
                     />
                     <label htmlFor="enhance-bottom" className="text-sm font-medium">
                       AI Enhancement
@@ -951,17 +955,17 @@ export const AIImageStudio = () => {
                     placeholder="What you don't want in the image..."
                     value={negativePrompt}
                     onChange={(e) => setNegativePrompt(e.target.value)}
-                    className="min-h-[80px]"
+                    className="min-h-[80px] bg-transparent border-0 focus-visible:ring-0 text-white placeholder:text-gray-400"
                   />
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Quality Preset</label>
                   <Select value={quality} onValueChange={setQuality}>
-                    <SelectTrigger>
+                    <SelectTrigger className="bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:border-primary/50 transition-all duration-300">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-black/95 backdrop-blur-xl border-2 border-primary/30">
                       {qualityPresets.map((preset) => (
                         <SelectItem key={preset.value} value={preset.value}>
                           <div className="flex flex-col">
