@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sparkles, Mic, Send, Crown, Lock, Zap, Camera, Shuffle, Star, X, Circle, Search, Target, Image, Palette, RectangleHorizontal, Diamond, Upload, ChevronDown, Download, Heart, Share2, Shield, Settings } from "lucide-react";
+import { Sparkles, Mic, Send, Crown, Lock, Zap, Camera, Shuffle, Star, X, Circle, Search, Target, Image, Palette, RectangleHorizontal, Diamond, Upload, ChevronDown, Download, Heart, Share2, Shield, Settings, Wand2, Save, RefreshCw, AlertCircle, Loader2 } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ImageGenerationService, type ImageGenerationParams } from "@/services/imageGenerationService";
@@ -296,7 +296,7 @@ export const Hero = () => {
 
       const results = await ImageGenerationService.generateVariants(inputValue, params, 3);
       
-      // Update cards with results and filter out failed ones
+      // Update cards with results, keep all 3 slots
       setGeneratedImages(prev => 
         prev.map(card => {
           if (newCardIds.includes(card.id)) {
@@ -311,18 +311,17 @@ export const Hero = () => {
                 metadata: result.metadata
               };
             } else {
-              // Mark as failed so we can filter it out
+              // Mark as failed but keep the slot
               return {
                 ...card,
                 isGenerating: false,
-                failed: true
+                failed: true,
+                error: result?.error || 'Generation failed'
               };
             }
           }
           return card;
         })
-        // Remove failed cards
-        .filter(card => !(card as any).failed)
       );
 
       toast.success("Images generated successfully!");
@@ -512,99 +511,87 @@ export const Hero = () => {
         {/* Output Display Section - ABOVE input */}
         {generatedImages.length > 0 && (
           <div className="w-full max-w-5xl mb-8 animate-fade-in">
-            <Card className="backdrop-blur-xl bg-card/90 border-2 border-primary/30 shadow-[0_0_40px_rgba(139,92,246,0.3)] overflow-hidden">
-              <div className="p-6">
-                <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                  <Sparkles className="h-6 w-6 text-primary" />
-                  Generated Images
-                </h3>
-                
-                <ScrollArea className="max-h-[600px]">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {generatedImages.map((card) => (
-                      <Card 
-                        key={card.id} 
-                        className="overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] border-primary/20 bg-background/50 backdrop-blur-sm"
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {generatedImages.map((card) => (
+                <Card 
+                  key={card.id} 
+                  className="group overflow-hidden hover:shadow-[0_0_30px_rgba(139,92,246,0.4)] transition-all duration-300"
+                >
+                  {card.isGenerating ? (
+                    <div className="aspect-video bg-gradient-to-br from-violet-600/20 to-fuchsia-600/20 flex flex-col items-center justify-center p-8">
+                      <div className="relative">
+                        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                        <Sparkles className="absolute top-0 left-0 h-12 w-12 animate-pulse text-primary/50" />
+                      </div>
+                      <p className="text-white mt-6 text-center font-medium">Creating magic...</p>
+                      <p className="text-white/60 text-sm mt-2">This may take a moment</p>
+                    </div>
+                  ) : (card as any).failed ? (
+                    <div className="aspect-video bg-gradient-to-br from-red-500/10 to-orange-500/10 flex flex-col items-center justify-center p-8">
+                      <AlertCircle className="h-12 w-12 text-red-400 mb-4" />
+                      <p className="text-white text-center font-medium mb-2">Generation Failed</p>
+                      <p className="text-white/60 text-sm text-center mb-4">{(card as any).error}</p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setGeneratedImages(prev => prev.filter(c => c.id !== card.id));
+                          handleGenerate();
+                        }}
                       >
-                        <div className="aspect-square relative group">
-                          {card.isGenerating ? (
-                            <div className="w-full h-full bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
-                              <div className="text-center">
-                                <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent mx-auto mb-4" />
-                                <p className="text-sm text-muted-foreground">Creating magic...</p>
-                              </div>
-                            </div>
-                          ) : (
-                            <>
-                              <img
-                                src={card.imageUrl}
-                                alt={card.prompt}
-                                className="w-full h-full object-cover"
-                              />
-                              <div className="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-3">
-                                <button
-                                  onClick={() => {
-                                    const link = document.createElement('a');
-                                    link.href = card.imageUrl;
-                                    link.download = `virtura-${card.id}.png`;
-                                    link.click();
-                                    toast.success("Download started!");
-                                  }}
-                                  className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all flex items-center justify-center"
-                                >
-                                  <Download className="h-5 w-5 text-white" />
-                                </button>
-                                <button
-                                  onClick={() => handleSaveToLibrary(card)}
-                                  disabled={savingImageId === card.id}
-                                  className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all flex items-center justify-center disabled:opacity-50"
-                                >
-                                  {savingImageId === card.id ? (
-                                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
-                                  ) : (
-                                    <Heart className="h-5 w-5 text-white" />
-                                  )}
-                                </button>
-                                <button
-                                  onClick={() => {
-                                    navigator.clipboard.writeText(window.location.href);
-                                    toast.success("Sharing link copied to clipboard!");
-                                  }}
-                                  className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all flex items-center justify-center"
-                                >
-                                  <Share2 className="h-5 w-5 text-white" />
-                                </button>
-                              </div>
-                            </>
-                          )}
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        Retry
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="aspect-video relative overflow-hidden">
+                      <img
+                        src={card.imageUrl}
+                        alt={card.prompt}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      
+                      {/* Overlaid metadata */}
+                      <div className="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black/90 via-black/70 to-transparent">
+                        <div className="flex items-start gap-2 mb-2">
+                          <Wand2 className="h-3 w-3 text-primary mt-0.5 flex-shrink-0" />
+                          <p className="text-xs text-white/90 line-clamp-2">{card.prompt}</p>
                         </div>
                         
-                        <div className="p-4">
-                          <div className="flex items-center justify-between">
-                            <div className="flex gap-1 flex-wrap">
-                              {card.metadata && (
-                                <>
-                                  <Badge variant="outline" className="text-xs">
-                                    {card.metadata.resolution}
-                                  </Badge>
-                                  <Badge variant="outline" className="text-xs">
-                                    {card.metadata.style}
-                                  </Badge>
-                                </>
-                              )}
-                            </div>
-                            <Badge variant="outline" className="text-xs flex items-center gap-1">
-                              <Shield className="h-3 w-3" />
-                              Safe
-                            </Badge>
+                        <div className="flex items-center justify-between">
+                          <div className="flex flex-wrap gap-1">
+                            {card.metadata?.resolution && (
+                              <Badge variant="secondary" className="text-[10px] px-1.5 py-0.5 bg-black/40">
+                                {card.metadata.resolution}
+                              </Badge>
+                            )}
+                            {card.metadata?.provider && (
+                              <Badge variant="secondary" className="text-[10px] px-1.5 py-0.5 bg-black/40">
+                                {card.metadata.provider}
+                              </Badge>
+                            )}
                           </div>
+                          
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 px-2 text-xs hover:bg-white/10"
+                            onClick={() => handleSaveToLibrary(card)}
+                            disabled={savingImageId === card.id}
+                          >
+                            {savingImageId === card.id ? (
+                              <Loader2 className="h-3 w-3 animate-spin" />
+                            ) : (
+                              <Save className="h-3 w-3" />
+                            )}
+                          </Button>
                         </div>
-                      </Card>
-                    ))}
-                  </div>
-                </ScrollArea>
-              </div>
-            </Card>
+                      </div>
+                    </div>
+                  )}
+                </Card>
+              ))}
+            </div>
           </div>
         )}
 

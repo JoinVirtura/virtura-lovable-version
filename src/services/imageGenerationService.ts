@@ -567,61 +567,88 @@ export class ImageGenerationService {
     // Quality anchor - core elements that must be preserved
     const qualityAnchor = 'ultra-realistic, professional photography, sharp focus, high quality, detailed, 8K resolution';
     
-    // Sequential generation with strategic delays for quality preservation
-    const results: GeneratedImage[] = [];
-    
-    // Variant configurations for Urban fashion scenario
+    // Variant configurations for different styles
     const variantConfigs = [
       {
         name: 'Original Enhanced',
-        modifier: `${qualityAnchor}, cinematic lighting, editorial style`,
-        delay: 0
+        modifier: `${qualityAnchor}, cinematic lighting, editorial style`
       },
       {
         name: 'Different Angle',
-        modifier: `${qualityAnchor}, low angle shot, dramatic perspective, urban atmosphere`,
-        delay: 2000
+        modifier: `${qualityAnchor}, low angle shot, dramatic perspective, urban atmosphere`
       },
       {
         name: 'Different Lighting',
-        modifier: `${qualityAnchor}, golden hour lighting, warm tones, atmospheric mood`,
-        delay: 4000
+        modifier: `${qualityAnchor}, golden hour lighting, warm tones, atmospheric mood`
       }
     ];
 
-    for (let i = 0; i < Math.min(count, variantConfigs.length); i++) {
-      const config = variantConfigs[i];
-      
-      // Add strategic delay to prevent server overload
-      if (config.delay > 0) {
-        await new Promise(resolve => setTimeout(resolve, config.delay));
-      }
-      
+    // Generate all variants in parallel using Promise.allSettled
+    const promises = variantConfigs.slice(0, count).map(async (config, i) => {
       const variantPrompt = `${basePrompt}, ${config.modifier}`;
       
       try {
         console.log(`Generating variant ${i + 1}: ${config.name}`);
+        
         const result = await this.generateImage({
           ...params,
           prompt: variantPrompt,
           contentType: contentType as any,
-          enhance: true, // Force enhancement for quality
-          quality: 'ultra' // Force ultra quality
+          enhance: true,
+          quality: 'ultra' as const
         });
-        
-        results.push(result);
         
         if (!result.success) {
-          console.warn(`Variant ${i + 1} failed, but continuing...`);
+          console.warn(`Variant ${i + 1} failed, attempting retry...`);
+          // Retry once with slight delay
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          return await this.generateImage({
+            ...params,
+            prompt: variantPrompt,
+            contentType: contentType as any,
+            enhance: true,
+            quality: 'ultra' as const
+          });
         }
+        
+        return result;
       } catch (error) {
         console.error(`Error generating variant ${i + 1}:`, error);
-        results.push({
-          success: false,
-          error: `Variant ${i + 1} generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`
-        });
+        // Attempt one retry
+        try {
+          console.log(`Retrying variant ${i + 1}...`);
+          await new Promise(resolve => setTimeout(resolve, 500));
+          return await this.generateImage({
+            ...params,
+            prompt: variantPrompt,
+            contentType: contentType as any,
+            enhance: true,
+            quality: 'ultra' as const
+          });
+        } catch (retryError) {
+          return {
+            success: false,
+            error: `Variant ${i + 1} failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+          };
+        }
       }
-    }
+    });
+
+    // Wait for all promises to settle (parallel generation)
+    const settled = await Promise.allSettled(promises);
+    
+    // Extract results, ensuring we always have exactly the requested count
+    const results: GeneratedImage[] = settled.map((result, i) => {
+      if (result.status === 'fulfilled') {
+        return result.value;
+      } else {
+        console.error(`Variant ${i + 1} rejected:`, result.reason);
+        return {
+          success: false,
+          error: `Generation failed: ${result.reason?.message || 'Unknown error'}`
+        };
+      }
+    });
 
     return results;
   }
