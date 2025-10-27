@@ -287,10 +287,10 @@ export const Hero = () => {
         style: selectedImageStyle?.name || selectedStyle === "Style" ? "photorealistic" : selectedStyle,
         aspectRatio: "9:16" as any,
         resolution: "1080x1920",
-        quality: "balanced",
-        adherence: 8.5,
+        quality: "8k",
+        adherence: 9.5,
         steps: 50,
-        enhance: true,
+        enhance: false,
         referenceImage: uploadedImagePrompt || referenceImage || undefined
       };
 
@@ -329,11 +329,13 @@ export const Hero = () => {
     } catch (error) {
       console.error('Generation error:', error);
       toast.error("Generation failed. Please try again.");
+      setInputValue(""); // Clear input even on error
       
       // Remove placeholder cards on error
       setGeneratedImages(prev => prev.filter(card => !newCardIds.includes(card.id)));
     } finally {
       setIsGenerating(false);
+      setInputValue(""); // Ensure input always clears
     }
   };
 

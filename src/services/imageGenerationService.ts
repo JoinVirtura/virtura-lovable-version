@@ -564,38 +564,20 @@ export class ImageGenerationService {
       ? this.detectContentType(basePrompt) 
       : params.contentType;
 
-    // Ultra-minimal quality anchor that won't override art style
-    const qualityAnchor = 'high quality, detailed';
+    console.log(`🎨 Generating ${count} variants with EXACT prompt (no modifications)`);
     
-    // Variant configurations that preserve user's intended style
-    const variantConfigs = [
-      {
-        name: 'Original Enhanced',
-        modifier: `${qualityAnchor}`
-      },
-      {
-        name: 'Variation 2',
-        modifier: `${qualityAnchor}, dynamic composition`
-      },
-      {
-        name: 'Variation 3',
-        modifier: `${qualityAnchor}, beautiful lighting`
-      }
-    ];
-
-    // Generate all variants in parallel using Promise.allSettled
-    const promises = variantConfigs.slice(0, count).map(async (config, i) => {
-      const variantPrompt = `${basePrompt}, ${config.modifier}`;
-      
+    // DO NOT modify the user's prompt - they know exactly what they want
+    // Generate exact same prompt multiple times for consistency
+    const promises = Array.from({ length: Math.min(count, 3) }, async (_, i) => {
       try {
-        console.log(`Generating variant ${i + 1}: ${config.name}`);
+        console.log(`Generating image ${i + 1}/${count} with EXACT user prompt`);
         
         const result = await this.generateImage({
           ...params,
-          prompt: variantPrompt,
+          prompt: basePrompt, // EXACT prompt, no modifications
           contentType: contentType as any,
-          enhance: true,
-          quality: 'ultra' as const
+          enhance: false, // Don't enhance - user prompt is king
+          quality: '8k' // Maximum quality
         });
         
         if (!result.success) {
@@ -604,10 +586,10 @@ export class ImageGenerationService {
           await new Promise(resolve => setTimeout(resolve, 1000));
           return await this.generateImage({
             ...params,
-            prompt: variantPrompt,
+            prompt: basePrompt, // Use exact base prompt
             contentType: contentType as any,
-            enhance: true,
-            quality: 'ultra' as const
+            enhance: false, // No enhancement
+            quality: '8k'
           });
         }
         
@@ -620,10 +602,10 @@ export class ImageGenerationService {
           await new Promise(resolve => setTimeout(resolve, 500));
           return await this.generateImage({
             ...params,
-            prompt: variantPrompt,
+            prompt: basePrompt, // Use exact base prompt
             contentType: contentType as any,
-            enhance: true,
-            quality: 'ultra' as const
+            enhance: false, // No enhancement
+            quality: '8k'
           });
         } catch (retryError) {
           return {

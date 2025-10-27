@@ -190,15 +190,16 @@ serve(async (req) => {
     
     try {
       if (model === 'black-forest-labs/flux-schnell' || model === 'black-forest-labs/flux-1.1-pro') {
-        // FLUX models
+        // FLUX models - optimized for maximum quality
         output = await replicate.run(model, {
           input: {
             prompt: enhancedPrompt,
             num_outputs: 1,
             aspect_ratio: aspectRatio === '1:1' ? '1:1' : aspectRatio === '16:9' ? '16:9' : aspectRatio === '9:16' ? '9:16' : '1:1',
             output_format: "png",
-            output_quality: quality === '8K' ? 100 : quality === '4K' ? 90 : 80,
-            num_inference_steps: finalSteps
+            output_quality: 100, // Maximum quality for all
+            num_inference_steps: model === 'black-forest-labs/flux-1.1-pro' ? 50 : 4, // More steps for Pro
+            guidance_scale: 3.5 // Add guidance for prompt adherence
           }
         });
       } else if (model === 'stability-ai/stable-diffusion-xl-base-1.0') {
