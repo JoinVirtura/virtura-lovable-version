@@ -366,21 +366,9 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
       <div className="relative z-10 container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-4 mb-4">
-            {onBackToLibrary && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onBackToLibrary}
-                className="text-muted-foreground hover:text-foreground hover:bg-accent"
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-            )}
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              AI Image Studio
-            </h1>
-          </div>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-4">
+            AI Image Studio
+          </h1>
           <p className="text-lg text-muted-foreground">
             Create stunning, professional-quality images with advanced AI technology
           </p>
@@ -395,9 +383,6 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                 alt={editImage.title}
                 className="w-full h-auto rounded-lg shadow-lg"
               />
-              <p className="text-sm text-gray-400 mt-3 text-center">
-                Original: {editImage.prompt}
-              </p>
             </Card>
           </div>
         )}
@@ -918,134 +903,6 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
           </Card>
         )}
 
-        {/* Format Options and Safety Settings - Bottom Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Format Options */}
-          <Card className="border-2 border-primary/30 backdrop-blur-xl bg-black/60 shadow-2xl hover:shadow-[0_0_40px_rgba(139,92,246,0.2)] transition-all duration-300">
-            <div className="p-6">
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <FileImage className="h-5 w-5" />
-                Format Options
-              </h3>
-              
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Aspect Ratio</label>
-                    <Select value={aspectRatio} onValueChange={setAspectRatio}>
-                      <SelectTrigger className="bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:border-primary/50 transition-all duration-300">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-black/95 backdrop-blur-xl border-2 border-primary/30">
-                        <SelectItem value="1:1">Square (1:1)</SelectItem>
-                        <SelectItem value="16:9">Landscape (16:9)</SelectItem>
-                        <SelectItem value="9:16">Portrait (9:16)</SelectItem>
-                        <SelectItem value="4:3">Classic (4:3)</SelectItem>
-                        <SelectItem value="3:4">Classic Portrait (3:4)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Resolution</label>
-                    <Select value={resolution} onValueChange={setResolution}>
-                      <SelectTrigger className="bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:border-primary/50 transition-all duration-300">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-black/95 backdrop-blur-xl border-2 border-primary/30">
-                        <SelectItem value="512x512">512×512 (Fast)</SelectItem>
-                        <SelectItem value="1024x1024">1024×1024 (Standard)</SelectItem>
-                        <SelectItem value="1536x1536">1536×1536 (High Quality)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Prompt Adherence: {adherence[0]}</label>
-                    <Slider
-                      value={adherence}
-                      onValueChange={setAdherence}
-                      max={12}
-                      min={1}
-                      step={0.5}
-                      className="w-full [&_[role=slider]]:bg-primary [&_[role=slider]]:border-primary/50 [&_[role=slider]]:shadow-[0_0_15px_rgba(139,92,246,0.4)]"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Quality Steps: {steps[0]}</label>
-                    <Slider
-                      value={steps}
-                      onValueChange={setSteps}
-                      max={100}
-                      min={20}
-                      step={5}
-                      className="w-full [&_[role=slider]]:bg-primary [&_[role=slider]]:border-primary/50 [&_[role=slider]]:shadow-[0_0_15px_rgba(139,92,246,0.4)]"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Card>
-
-          {/* Safety Settings */}
-          <Card className="border-2 border-primary/30 backdrop-blur-xl bg-black/60 shadow-2xl hover:shadow-[0_0_40px_rgba(139,92,246,0.2)] transition-all duration-300">
-            <div className="p-6">
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Shield className="h-5 w-5" />
-                Safety Settings
-              </h3>
-              
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      id="enhance-bottom"
-                      checked={enhanceEnabled}
-                      onCheckedChange={setEnhanceEnabled}
-                      className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-primary data-[state=checked]:to-secondary"
-                    />
-                    <label htmlFor="enhance-bottom" className="text-sm font-medium">
-                      AI Enhancement
-                    </label>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Negative Prompt</label>
-                  <Textarea
-                    placeholder="What you don't want in the image..."
-                    value={negativePrompt}
-                    onChange={(e) => setNegativePrompt(e.target.value)}
-                    className="min-h-[80px] bg-transparent border-0 focus-visible:ring-0 text-white placeholder:text-gray-400"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Quality Preset</label>
-                  <Select value={quality} onValueChange={setQuality}>
-                    <SelectTrigger className="bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:border-primary/50 transition-all duration-300">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-black/95 backdrop-blur-xl border-2 border-primary/30">
-                      {qualityPresets.map((preset) => (
-                        <SelectItem key={preset.value} value={preset.value}>
-                          <div className="flex flex-col">
-                            <span>{preset.label}</span>
-                            <span className="text-xs text-muted-foreground">{preset.description}</span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </div>
-        
         <div ref={messagesEndRef} />
       </div>
     </div>
