@@ -420,7 +420,7 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
 
         {/* Main Input Card - Hide after generation */}
         {showInputCard && (
-          <Card className="max-w-4xl mx-auto mb-8 border-2 border-primary/30 backdrop-blur-xl bg-black/60 shadow-2xl hover:shadow-[0_0_40px_rgba(139,92,246,0.2)] transition-all duration-300">
+          <Card className="max-w-4xl mx-auto mb-8 border-2 border-primary/30 backdrop-blur-xl bg-black/60 shadow-2xl hover:shadow-[0_0_40px_rgba(139,92,246,0.2)] focus-within:border-primary focus-within:shadow-[0_0_40px_rgba(139,92,246,0.4)] transition-all duration-300">
             <div className="p-6">
               <div className="space-y-6">
                 {/* Prompt Input */}
