@@ -512,7 +512,7 @@ export const Hero = () => {
         {/* Output Display Section - ABOVE input */}
         {generatedImages.length > 0 && (
           <div className="w-full max-w-5xl mb-8 animate-fade-in">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {generatedImages.map((card) => (
                 <Card 
                   key={card.id} 
