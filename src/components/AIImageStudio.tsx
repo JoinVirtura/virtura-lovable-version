@@ -736,17 +736,17 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
 
         {/* Results Section */}
         {previewCards.length > 0 && (
-          <Card className="border-2 border-primary/30 backdrop-blur-xl bg-black/60 shadow-2xl hover:shadow-[0_0_40px_rgba(139,92,246,0.2)] transition-all duration-300">
+          <Card className="border-2 border-primary/30 backdrop-blur-xl bg-black/60 shadow-2xl hover:shadow-[0_0_40px_rgba(139,92,246,0.2)] transition-all duration-300 mb-4">
             <div className="p-6">
               <ScrollArea className="h-[600px]">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {previewCards.map((card) => (
                     <Card 
                       key={card.id} 
-                      className={`overflow-hidden transition-all duration-300 hover:shadow-lg border-2 backdrop-blur-md bg-black/40 ${
+                      className={`overflow-hidden transition-all duration-300 hover:shadow-lg border-0 bg-transparent ${
                         selectedVariant === card.id 
-                          ? 'ring-2 ring-primary border-primary/50 shadow-[0_0_30px_rgba(139,92,246,0.4)]' 
-                          : 'border-primary/20'
+                          ? 'ring-2 ring-primary shadow-[0_0_30px_rgba(139,92,246,0.4)]' 
+                          : ''
                       }`}
                     >
                       <div className="aspect-square relative group">
@@ -762,7 +762,7 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                             <img
                               src={card.imageUrl}
                               alt={card.prompt}
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-cover rounded-2xl"
                               onClick={() => handleVariantSelect(card.id)}
                             />
                             <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
@@ -820,15 +820,15 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                         )}
                       </div>
                       
-                      <div className="p-4">
+                      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent rounded-b-2xl">
                         <div className="flex items-center justify-between">
                           <div className="flex gap-1">
                             {card.metadata && (
                               <>
-                                <Badge variant="outline" className="text-xs">
+                                <Badge variant="outline" className="text-xs bg-transparent border-0">
                                   {card.metadata.contentType}
                                 </Badge>
-                                <Badge variant="outline" className="text-xs">
+                                <Badge variant="outline" className="text-xs bg-transparent border-0">
                                   {card.metadata.resolution}
                                 </Badge>
                               </>
@@ -836,7 +836,7 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                           </div>
                           
                           {card.safetyPassed && (
-                            <Badge variant="outline" className="text-xs flex items-center gap-1">
+                            <Badge variant="outline" className="text-xs flex items-center gap-1 bg-transparent border-0">
                               <Shield className="h-3 w-3" />
                               Safe
                             </Badge>
