@@ -471,7 +471,7 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                       placeholder="A majestic mountain landscape at sunset, snow-capped peaks, dramatic clouds, photorealistic, 8K quality..."
                       value={prompt}
                       onChange={(e) => setPrompt(e.target.value)}
-                      className="min-h-[60px] max-h-[200px] pr-14 resize-y bg-transparent border-2 border-primary/30 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/50 outline-none text-white placeholder:text-gray-400 px-4 py-4 overflow-y-auto whitespace-pre-wrap break-words transition-all duration-300"
+                      className="min-h-[60px] max-h-[200px] pr-14 resize-y bg-transparent border-0 outline-none focus-visible:ring-0 text-white placeholder:text-gray-400 px-4 py-4 overflow-y-auto whitespace-pre-wrap break-words"
                     />
                     <Button
                       onClick={generatePreviews}
