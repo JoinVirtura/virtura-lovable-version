@@ -64,7 +64,7 @@ interface AIImageStudioProps {
 }
 
 export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps = {}) => {
-  const [prompt, setPrompt] = useState(editImage?.prompt || "");
+  const [prompt, setPrompt] = useState("");
   const [negativePrompt, setNegativePrompt] = useState("blurry, low quality, distorted, unrealistic, text, watermark, signature");
   const [contentType, setContentType] = useState<string>("auto");
   const [style, setStyle] = useState("photorealistic");
