@@ -1,14 +1,11 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { useToast } from "@/hooks/use-toast";
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { CircularProgress } from '@/components/ui/circular-progress';
 import {
   Upload,
   Check,
-  ArrowRight,
-  ImageIcon
+  FileImage
 } from 'lucide-react';
 import type { StudioProject } from '@/hooks/useStudioProject';
 
@@ -100,108 +97,108 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
   }, [handleFileUpload]);
 
   return (
-    <div className="space-y-6">
-      {/* Upload Card */}
-      <Card 
-        className={`glass-card border-2 transition-all duration-300 cursor-pointer ${
-          isDragOver 
-            ? 'border-primary shadow-[0_0_30px_rgba(139,92,246,0.6)] scale-[1.02]' 
-            : uploadProgress === 100
-            ? 'border-green-500/50 shadow-[0_0_20px_rgba(34,197,94,0.3)]'
-            : 'border-primary/30 hover:border-primary/50'
-        }`}
-        onDrop={handleDrop}
-        onDragOver={(e) => {
-          e.preventDefault();
-          setIsDragOver(true);
-        }}
-        onDragLeave={() => setIsDragOver(false)}
-        onClick={() => uploadProgress !== 100 && fileInputRef.current?.click()}
-      >
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            {uploadProgress === 100 ? (
-              <>
-                <Check className="h-5 w-5 text-green-400" />
-                Avatar Uploaded Successfully!
-              </>
-            ) : (
-              <>
-                <Upload className="h-5 w-5 text-primary" />
-                Upload Your Avatar Image
-              </>
-            )}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {uploadProgress === 100 && uploadedImage ? (
-            <div className="space-y-4">
-              <div className="relative aspect-square rounded-xl overflow-hidden border-2 border-green-500/30">
-                <img 
-                  src={uploadedImage} 
-                  alt="Uploaded avatar" 
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-2 right-2 bg-green-500/90 backdrop-blur-sm rounded-full p-2">
-                  <Check className="h-4 w-4 text-white" />
-                </div>
-              </div>
-              <div className="flex items-center justify-between p-4 bg-green-500/10 border border-green-500/30 rounded-xl">
-                <div className="flex items-center gap-2">
-                  <Check className="h-5 w-5 text-green-400" />
-                  <span className="text-sm text-green-400 font-medium">Ready for Style Transfer</span>
-                </div>
-                <ArrowRight className="h-5 w-5 text-green-400 animate-pulse" />
-              </div>
-              <Button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setUploadProgress(0);
-                  setUploadedImage(null);
-                }}
-                variant="outline"
-                className="w-full"
-              >
-                Upload Different Image
-              </Button>
+    <div 
+      className={`min-h-[600px] flex items-center justify-center transition-all duration-300 ${
+        isDragOver ? 'bg-primary/5' : ''
+      }`}
+      onDrop={handleDrop}
+      onDragOver={(e) => {
+        e.preventDefault();
+        setIsDragOver(true);
+      }}
+      onDragLeave={() => setIsDragOver(false)}
+    >
+      {uploadProgress === 100 && uploadedImage ? (
+        // Success State
+        <div className="w-full max-w-md space-y-6 text-center">
+          <div className="relative aspect-square rounded-2xl overflow-hidden border-2 border-green-500/30 shadow-[0_0_20px_rgba(34,197,94,0.2)]">
+            <img 
+              src={uploadedImage} 
+              alt="Uploaded avatar" 
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute top-4 right-4 bg-green-500/90 backdrop-blur-sm rounded-full p-2.5">
+              <Check className="h-5 w-5 text-white" />
             </div>
-          ) : (
-            <>
-              <div className="flex flex-col items-center justify-center py-12 px-4 border-2 border-dashed border-primary/30 rounded-xl bg-black/20 hover:bg-black/30 transition-colors">
-                <div className="p-4 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 mb-4">
-                  <Upload className="h-8 w-8 text-primary" />
-                </div>
-                <h3 className="text-lg font-semibold text-white mb-2">
-                  {isDragOver ? 'Drop image here!' : 'Drag & Drop or Click to Upload'}
-                </h3>
-                <p className="text-sm text-gray-400 text-center max-w-xs mb-4">
-                  Upload a high-quality photo for best results
-                </p>
-                <div className="flex flex-wrap gap-2 justify-center">
-                  <Badge variant="outline" className="bg-primary/10 border-primary/30">
-                    JPG, PNG, WEBP
-                  </Badge>
-                  <Badge variant="outline" className="bg-primary/10 border-primary/30">
-                    Max: 10MB
-                  </Badge>
-                  <Badge variant="outline" className="bg-primary/10 border-primary/30">
-                    Recommended: 1024x1024+
-                  </Badge>
-                </div>
-              </div>
+          </div>
+          
+          <div className="space-y-3">
+            <h3 className="text-xl font-semibold text-white flex items-center justify-center gap-2">
+              <Check className="h-5 w-5 text-green-400" />
+              Avatar Uploaded Successfully
+            </h3>
+            <p className="text-sm text-gray-400">Proceeding to style transfer...</p>
+          </div>
 
+          <Button
+            onClick={() => {
+              setUploadProgress(0);
+              setUploadedImage(null);
+            }}
+            variant="outline"
+            size="lg"
+            className="w-full"
+          >
+            Upload Different Image
+          </Button>
+        </div>
+      ) : (
+        // Upload State
+        <div className="w-full max-w-md space-y-6 text-center px-6">
+          {/* Dashed Circle Upload Icon */}
+          <div className="flex justify-center">
+            <div className="relative">
+              <div className="w-24 h-24 rounded-full border-2 border-dashed border-primary/40 flex items-center justify-center bg-primary/5">
+                <Upload className="h-10 w-10 text-primary" />
+              </div>
               {uploadProgress > 0 && uploadProgress < 100 && (
-                <div className="space-y-2">
-                  <div className="flex items-center justify-center gap-3">
-                    <CircularProgress value={uploadProgress} size={60} className="text-primary" />
-                    <div>
-                      <p className="text-sm font-medium text-white">Uploading...</p>
-                      <p className="text-xs text-gray-400">{uploadProgress}% complete</p>
-                    </div>
-                  </div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <CircularProgress value={uploadProgress} size={96} className="text-primary" />
                 </div>
               )}
-            </>
+            </div>
+          </div>
+
+          {/* Heading */}
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold text-white">Upload Avatar Image</h2>
+            <p className="text-sm text-gray-400">
+              {isDragOver ? 'Drop your image here' : 'Drag and drop or click to browse'}
+            </p>
+          </div>
+
+          {/* Info Badges */}
+          <div className="flex items-center justify-center gap-4 text-xs text-gray-400">
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 rounded-full bg-green-400" />
+              <span>PNG, JPG, WebP</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 rounded-full bg-blue-400" />
+              <span>Max 10MB</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 rounded-full bg-purple-400" />
+              <span>4K Support</span>
+            </div>
+          </div>
+
+          {/* Choose File Button */}
+          <Button
+            onClick={() => fileInputRef.current?.click()}
+            size="lg"
+            className="w-full max-w-xs"
+            disabled={uploadProgress > 0 && uploadProgress < 100}
+          >
+            <FileImage className="h-5 w-5 mr-2" />
+            Choose File
+          </Button>
+
+          {/* Upload Progress */}
+          {uploadProgress > 0 && uploadProgress < 100 && (
+            <div className="space-y-2 pt-4">
+              <p className="text-sm font-medium text-white">Uploading... {uploadProgress}%</p>
+            </div>
           )}
 
           <input
@@ -214,8 +211,8 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
             }}
             className="hidden"
           />
-        </CardContent>
-      </Card>
+        </div>
+      )}
     </div>
   );
 };
