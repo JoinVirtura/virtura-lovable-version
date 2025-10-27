@@ -149,8 +149,8 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
 
     setIsGenerating(true);
     
-    // Create placeholder cards
-    const newCardIds = Array.from({ length: 3 }, (_, i) => `card-${Date.now()}-${i}`);
+    // Create single placeholder card for side-by-side comparison
+    const newCardIds = Array.from({ length: 1 }, (_, i) => `card-${Date.now()}-${i}`);
     const placeholderCards: PreviewCard[] = newCardIds.map((id, index) => ({
       id,
       imageUrl: "",
@@ -176,8 +176,8 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
         referenceImage
       };
 
-      // Generate variants
-      const results = await ImageGenerationService.generateVariants(prompt, params, 3);
+      // Generate single variant for side-by-side comparison
+      const results = await ImageGenerationService.generateVariants(prompt, params, 1);
       
       // Update cards with results
       setPreviewCards(prev => 
@@ -772,119 +772,125 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
 
         {/* Results Section */}
         {previewCards.length > 0 && (
-          <Card className="border-2 border-primary/30 backdrop-blur-xl bg-black/60 shadow-2xl hover:shadow-[0_0_40px_rgba(139,92,246,0.2)] transition-all duration-300 mb-4">
-            <div className="p-2">
-              <ScrollArea className="max-h-[600px]">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {previewCards.map((card) => (
-                    <Card 
-                      key={card.id} 
-                      className={`overflow-hidden transition-all duration-300 hover:shadow-lg border-0 bg-transparent ${
-                        selectedVariant === card.id 
-                          ? 'ring-2 ring-primary shadow-[0_0_30px_rgba(139,92,246,0.4)]' 
-                          : ''
-                      }`}
-                    >
-                      <div className="aspect-square relative group">
-                        {card.isGenerating ? (
-                          <div className="w-full h-full bg-muted flex items-center justify-center">
-                            <div className="text-center">
-                              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2" />
-                              <p className="text-sm text-muted-foreground">Generating...</p>
-                            </div>
-                          </div>
-                        ) : (
-                          <>
-                            <img
-                              src={card.imageUrl}
-                              alt={card.prompt}
-                              className="w-full h-full object-cover rounded-2xl"
-                              onClick={() => handleVariantSelect(card.id)}
-                            />
-                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <Button
-                                      size="icon"
-                                      className="h-9 w-9 rounded-full bg-black/60 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
-                                      onClick={() => handleDownloadVariant(card.id)}
-                                    >
-                                      <Download className="h-4 w-4" />
-                                    </Button>
-                                  </TooltipTrigger>
-                                  <TooltipContent>Download</TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <Button
-                                      size="icon"
-                                      className="h-9 w-9 rounded-full bg-black/60 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
-                                      onClick={() => handleShareVariant(card.id)}
-                                    >
-                                      <Share2 className="h-4 w-4" />
-                                    </Button>
-                                  </TooltipTrigger>
-                                  <TooltipContent>Share</TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <Button
-                                      size="icon"
-                                      className="h-9 w-9 rounded-full bg-black/60 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
-                                      onClick={() => handleSaveToLibrary(card.id)}
-                                      disabled={savingToLibrary === card.id}
-                                    >
-                                      {savingToLibrary === card.id ? (
-                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
-                                      ) : (
-                                        <Heart className="h-4 w-4" />
-                                      )}
-                                    </Button>
-                                  </TooltipTrigger>
-                                  <TooltipContent>Save to Library</TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-                            </div>
-                          </>
-                        )}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-4">
+            {/* Left: Original/Reference Image */}
+            <Card className="border-2 border-primary/30 backdrop-blur-xl bg-black/60 shadow-2xl hover:shadow-[0_0_40px_rgba(139,92,246,0.2)] transition-all duration-300">
+              <div className="p-4">
+                <h3 className="text-lg font-semibold mb-4 text-center">Original Image</h3>
+                <div className="aspect-square relative bg-muted rounded-lg overflow-hidden">
+                  {referenceImage ? (
+                    <img
+                      src={referenceImage}
+                      alt="Original"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                      <div className="text-center">
+                        <FileImage className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                        <p className="text-sm">No reference image</p>
                       </div>
-                      
-                      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent rounded-b-2xl">
-                        <div className="flex items-center justify-between">
-                          <div className="flex gap-1">
-                            {card.metadata && (
-                              <>
-                                <Badge variant="outline" className="text-xs bg-transparent border-0">
-                                  {card.metadata.contentType}
-                                </Badge>
-                                <Badge variant="outline" className="text-xs bg-transparent border-0">
-                                  {card.metadata.resolution}
-                                </Badge>
-                              </>
-                            )}
-                          </div>
-                          
-                          {card.safetyPassed && (
-                            <Badge variant="outline" className="text-xs flex items-center gap-1 bg-transparent border-0">
-                              <Shield className="h-3 w-3" />
-                              Safe
-                            </Badge>
-                          )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </Card>
+
+            {/* Right: Generated Result */}
+            {previewCards[0] && (
+              <Card className="border-2 border-primary/30 backdrop-blur-xl bg-black/60 shadow-2xl hover:shadow-[0_0_40px_rgba(139,92,246,0.2)] transition-all duration-300">
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold mb-4 text-center">Generated Result</h3>
+                  <div className="aspect-square relative group">
+                    {previewCards[0].isGenerating ? (
+                      <div className="w-full h-full bg-muted rounded-lg flex items-center justify-center">
+                        <div className="text-center">
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2" />
+                          <p className="text-sm text-muted-foreground">Generating...</p>
                         </div>
                       </div>
-                    </Card>
-                  ))}
+                    ) : (
+                      <>
+                        <img
+                          src={previewCards[0].imageUrl}
+                          alt={previewCards[0].prompt}
+                          className="w-full h-full object-cover rounded-lg"
+                        />
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  size="icon"
+                                  className="h-10 w-10 rounded-full bg-black/60 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
+                                  onClick={() => handleDownloadVariant(previewCards[0].id)}
+                                >
+                                  <Download className="h-4 w-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>Download</TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  size="icon"
+                                  className="h-10 w-10 rounded-full bg-black/60 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
+                                  onClick={() => handleShareVariant(previewCards[0].id)}
+                                >
+                                  <Share2 className="h-4 w-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>Share</TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  size="icon"
+                                  className="h-10 w-10 rounded-full bg-black/60 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
+                                  onClick={() => handleSaveToLibrary(previewCards[0].id)}
+                                  disabled={savingToLibrary === previewCards[0].id}
+                                >
+                                  {savingToLibrary === previewCards[0].id ? (
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                                  ) : (
+                                    <Heart className="h-4 w-4" />
+                                  )}
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>Save to Library</TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  
+                  {previewCards[0].metadata && (
+                    <div className="mt-3 flex gap-2 justify-center">
+                      <Badge variant="outline" className="text-xs">
+                        {previewCards[0].metadata.contentType}
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        {previewCards[0].metadata.resolution}
+                      </Badge>
+                      {previewCards[0].safetyPassed && (
+                        <Badge variant="outline" className="text-xs flex items-center gap-1">
+                          <Shield className="h-3 w-3" />
+                          Safe
+                        </Badge>
+                      )}
+                    </div>
+                  )}
                 </div>
-              </ScrollArea>
-            </div>
-          </Card>
+              </Card>
+            )}
+          </div>
         )}
 
         {/* Studio Chat - Show below Generated Previews */}
