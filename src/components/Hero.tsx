@@ -573,19 +573,38 @@ export const Hero = () => {
                             )}
                           </div>
                           
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-7 px-2 text-xs hover:bg-white/10"
-                            onClick={() => handleSaveToLibrary(card)}
-                            disabled={savingImageId === card.id}
-                          >
-                            {savingImageId === card.id ? (
-                              <Loader2 className="h-3 w-3 animate-spin" />
-                            ) : (
-                              <Save className="h-3 w-3" />
-                            )}
-                          </Button>
+                          <div className="flex gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 px-2 text-xs hover:bg-white/10 bg-white/5"
+                              onClick={() => {
+                                const link = document.createElement('a');
+                                link.href = card.imageUrl;
+                                link.download = `virtura-${Date.now()}.png`;
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                                toast.success("Image downloaded!");
+                              }}
+                            >
+                              <Download className="h-3 w-3" />
+                            </Button>
+                            
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 px-2 text-xs hover:bg-white/10 bg-white/5"
+                              onClick={() => handleSaveToLibrary(card)}
+                              disabled={savingImageId === card.id}
+                            >
+                              {savingImageId === card.id ? (
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                              ) : (
+                                <Save className="h-3 w-3" />
+                              )}
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     </div>
