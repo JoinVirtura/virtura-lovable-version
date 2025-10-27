@@ -367,10 +367,10 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-4">
-            AI Image Studio
+            Copilot
           </h1>
           <p className="text-lg text-muted-foreground">
-            Create stunning, professional-quality images with advanced AI technology
+            Edit and enhance your images with AI-powered transformations
           </p>
         </div>
 
