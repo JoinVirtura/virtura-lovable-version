@@ -142,7 +142,8 @@ export class ImageGenerationService {
             contentType,
             quality: replicateQuality,
             aspectRatio: params.aspectRatio || '1:1',
-            style: params.style || 'photorealistic'
+            style: params.style || 'photorealistic',
+            referenceImage: params.referenceImage
           }
         });
 
