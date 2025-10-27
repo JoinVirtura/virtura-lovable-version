@@ -110,6 +110,17 @@ serve(async (req) => {
     const body = await req.json();
     const { prompt, contentType = 'auto', quality = 'HD', aspectRatio = '1:1', style, referenceImage } = body;
 
+    // 🔍 DEBUG: Check what edge function received
+    console.log('📥 EDGE FUNCTION: Received request:', {
+      hasReferenceImage: !!referenceImage,
+      isDataURI: referenceImage?.startsWith('data:'),
+      length: referenceImage?.length || 0,
+      first100Chars: referenceImage?.substring(0, 100) || 'EMPTY',
+      prompt: prompt?.substring(0, 50) + '...',
+      contentType,
+      quality
+    });
+
     // Input validation
     if (!prompt || typeof prompt !== 'string') {
       return new Response(

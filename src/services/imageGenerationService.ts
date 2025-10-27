@@ -136,6 +136,14 @@ export class ImageGenerationService {
         // Map quality to Replicate format
         const replicateQuality = quality === 'ultra' ? '8K' : quality === 'balanced' ? '4K' : 'HD';
         
+        // 🔍 DEBUG: Check reference image before sending to edge function
+        console.log('📤 SERVICE: Sending to edge function:', {
+          hasReferenceImage: !!params.referenceImage,
+          isDataURI: params.referenceImage?.startsWith('data:'),
+          length: params.referenceImage?.length || 0,
+          first50Chars: params.referenceImage?.substring(0, 50) || 'EMPTY'
+        });
+        
         const replicateResp = await supabase.functions.invoke('generate-image-replicate', {
           body: {
             prompt: params.prompt,

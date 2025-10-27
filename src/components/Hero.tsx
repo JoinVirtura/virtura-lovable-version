@@ -280,6 +280,17 @@ export const Hero = () => {
     setGeneratedImages(prev => [...placeholderCards, ...prev]);
 
     try {
+      // 🔍 DEBUG: Check reference image state before generating
+      const refImage = uploadedImagePrompt || referenceImage || undefined;
+      console.log('🖼️ HERO: Reference image state:', {
+        uploadedImagePrompt: uploadedImagePrompt ? 'SET' : 'NOT SET',
+        referenceImage: referenceImage ? 'SET' : 'NOT SET',
+        finalRefImage: refImage ? 'SET' : 'NOT SET',
+        hasData: refImage?.startsWith('data:') ? 'YES' : 'NO',
+        length: refImage?.length || 0,
+        first50Chars: refImage?.substring(0, 50) || 'EMPTY'
+      });
+
       const params: ImageGenerationParams = {
         prompt: inputValue,
         negativePrompt: "blurry, low quality, distorted",
@@ -291,7 +302,7 @@ export const Hero = () => {
         adherence: 9.5,
         steps: 50,
         enhance: false,
-        referenceImage: uploadedImagePrompt || referenceImage || undefined
+        referenceImage: refImage
       };
 
       const results = await ImageGenerationService.generateVariants(inputValue, params, 3);
