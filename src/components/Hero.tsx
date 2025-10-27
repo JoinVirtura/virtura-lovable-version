@@ -538,7 +538,7 @@ export const Hero = () => {
         <div className="absolute bottom-0 right-0 w-48 h-48 bg-gradient-to-tl from-primary/12 via-primary/4 to-transparent animate-corner-glow-4" />
       </div>
       
-      <div className="relative z-10 container mx-auto px-12 py-20 flex flex-col items-center justify-center min-h-screen text-center max-w-6xl">
+      <div className="relative z-10 container mx-auto px-12 py-8 flex flex-col items-center min-h-screen text-center max-w-6xl">
         {/* Header Badge */}
         <Badge className="bg-card/80 border-primary/20 text-foreground px-6 py-3 text-base font-semibold mb-8 animate-fade-in backdrop-blur-sm">
           Virtura AI
@@ -556,7 +556,7 @@ export const Hero = () => {
 
         {/* Output Display Section - ABOVE input */}
         {generatedImages.length > 0 && (
-          <div className="w-full max-w-[1800px] mb-4 animate-fade-in px-4">
+          <div className="w-full max-w-[1800px] mb-6 animate-fade-in px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {generatedImages.map((card) => (
             <Card 
@@ -564,7 +564,7 @@ export const Hero = () => {
               className="group overflow-hidden hover:shadow-[0_0_30px_rgba(139,92,246,0.4)] transition-all duration-300 p-0"
             >
                   {card.isGenerating ? (
-                    <div className="aspect-square bg-gradient-to-br from-violet-600/20 to-fuchsia-600/20 flex flex-col items-center justify-center">
+                    <div className="aspect-square bg-gradient-to-br from-violet-600/20 to-fuchsia-600/20 flex flex-col items-center justify-center rounded-2xl">
                       <div className="relative">
                         <Loader2 className="h-12 w-12 animate-spin text-primary" />
                         <Sparkles className="absolute top-0 left-0 h-12 w-12 animate-pulse text-primary/50" />
@@ -573,7 +573,7 @@ export const Hero = () => {
                       <p className="text-white/60 text-sm mt-2">This may take a moment</p>
                     </div>
                   ) : (card as any).failed ? (
-                    <div className="aspect-[9/16] bg-gradient-to-br from-red-500/10 to-orange-500/10 flex flex-col items-center justify-center p-8">
+                    <div className="aspect-square bg-gradient-to-br from-red-500/10 to-orange-500/10 flex flex-col items-center justify-center p-8 rounded-2xl">
                       <AlertCircle className="h-12 w-12 text-red-400 mb-4" />
                       <p className="text-white text-center font-medium mb-2">Generation Failed</p>
                       <p className="text-white/60 text-sm text-center mb-4">{(card as any).error}</p>
@@ -594,7 +594,7 @@ export const Hero = () => {
                       <img
                         src={card.imageUrl}
                         alt={card.prompt}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-2xl"
                       />
                       
                       {/* Overlaid metadata */}
@@ -656,7 +656,7 @@ export const Hero = () => {
         )}
 
         {/* Input Interface - Studio Pro Style */}
-        <div className="w-full max-w-5xl mb-6 animate-fade-in">
+        <div className="w-full max-w-5xl mb-4 animate-fade-in">
           <Card className="backdrop-blur-xl bg-black/60 border-2 border-primary/30 shadow-2xl overflow-hidden">
             <div className="p-4">
               {/* Main Input Row */}
