@@ -209,7 +209,7 @@ serve(async (req) => {
         console.log('🎭 Using FLUX Redux with reference image');
         output = await replicate.run(model, {
           input: {
-            image: referenceImage, // The reference photo
+            redux_image: referenceImage, // The reference photo
             prompt: finalPrompt, // Transformation instructions
             num_outputs: 1,
             output_format: "png",
@@ -236,7 +236,7 @@ serve(async (req) => {
         // SDXL model - CORRECTED MODEL NAME
         output = await replicate.run(model, {
           input: {
-            prompt: enhancedPrompt,
+            prompt: finalPrompt,
             negative_prompt: negativePrompt,
             width: dimensions.width,
             height: dimensions.height,
@@ -333,7 +333,7 @@ serve(async (req) => {
         metadata: {
           contentType,
           style: style || 'photorealistic',
-          resolution: `${dimensions.width}x${dimensions.height}`,
+          resolution: dimensions ? `${dimensions.width}x${dimensions.height}` : 'N/A',
           processingTime,
           model,
           quality,
