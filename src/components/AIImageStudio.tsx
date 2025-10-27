@@ -386,6 +386,22 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
           </p>
         </div>
 
+        {/* Edit Mode - Display the original image being edited */}
+        {editImage && (
+          <div className="mb-8">
+            <Card className="max-w-md mx-auto p-4 bg-black/40 backdrop-blur-md border-2 border-primary/30 shadow-[0_0_40px_rgba(212,110,255,0.3)]">
+              <img 
+                src={editImage.imageUrl} 
+                alt={editImage.title}
+                className="w-full h-auto rounded-lg shadow-lg"
+              />
+              <p className="text-sm text-gray-400 mt-3 text-center">
+                Original: {editImage.prompt}
+              </p>
+            </Card>
+          </div>
+        )}
+
         {/* Main Input Card - Hide after generation */}
         {showInputCard && (
           <Card className="mb-8 border-2 border-primary/30 backdrop-blur-xl bg-black/60 shadow-2xl hover:shadow-[0_0_40px_rgba(139,92,246,0.2)] transition-all duration-300">
