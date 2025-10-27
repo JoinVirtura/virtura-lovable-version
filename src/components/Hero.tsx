@@ -540,20 +540,14 @@ export const Hero = () => {
       
       <div className="relative z-10 container mx-auto px-12 py-20 flex flex-col items-center justify-center min-h-screen text-center max-w-6xl">
         {/* Header Badge */}
-        <Badge className="bg-gradient-to-r from-violet-600 to-purple-600 border-transparent text-white px-6 py-3 text-base font-bold mb-8 animate-fade-in backdrop-blur-sm shadow-lg shadow-violet-500/30 animate-pulse">
-          <span className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4" />
-            Virtura AI
-            <Sparkles className="h-4 w-4" />
-          </span>
+        <Badge className="bg-card/80 border-primary/20 text-foreground px-6 py-3 text-base font-semibold mb-8 animate-fade-in backdrop-blur-sm">
+          Virtura AI
         </Badge>
 
         {/* Main Heading - Futuristic Aesthetic */}
         {generatedImages.length === 0 && !isGenerating && (
           <div className="mb-8 animate-fade-in">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight">
-              <span className="text-white font-light">Virtura</span>
-              <br />
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight">
               <span className="text-white font-light">Where Identity </span>
               <span className="text-gradient-primary font-bold animate-glow-text">Evolves</span>
             </h1>
