@@ -92,6 +92,7 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
   const [editImageRemoved, setEditImageRemoved] = useState(false);
   const [chatMessages, setChatMessages] = useState<Array<{role: 'user' | 'assistant', content: string}>>([]);
   const [chatInput, setChatInput] = useState("");
+  const [showInitialHero, setShowInitialHero] = useState(true);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -241,6 +242,8 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
       const reader = new FileReader();
       reader.onload = (e) => {
         setReferenceImage(e.target?.result as string);
+        setShowInitialHero(false);
+        setShowInputCard(true);
         toast.success("Reference image uploaded successfully");
       };
       reader.readAsDataURL(file);
@@ -456,7 +459,7 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
         )}
 
         {/* Main Input Card - Hide after generation */}
-        {showInputCard && (
+        {showInputCard && !showInitialHero && (
           <Card className="max-w-4xl mx-auto mb-8 border-2 border-primary/30 backdrop-blur-xl bg-black/60 shadow-2xl hover:shadow-[0_0_40px_rgba(139,92,246,0.2)] focus-within:border-primary focus-within:shadow-[0_0_40px_rgba(139,92,246,0.4)] transition-all duration-300">
             <div className="p-6">
               <div className="space-y-6">
@@ -757,8 +760,61 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
           </Card>
         )}
 
+        {/* Initial Hero Section */}
+        {showInitialHero && (
+          <div className="min-h-[80vh] flex items-center justify-center p-8">
+            <div className="max-w-2xl w-full text-center space-y-8">
+              <h1 className="text-6xl font-bold bg-gradient-to-r from-primary via-purple-400 to-secondary bg-clip-text text-transparent">
+                Copilot
+              </h1>
+              <p className="text-xl text-muted-foreground">
+                Edit and enhance your images with AI-powered transformations
+              </p>
+              
+              {/* Single centered portrait image */}
+              <div className="relative w-full max-w-[480px] aspect-[3/4] mx-auto rounded-3xl overflow-hidden border-2 border-primary/40 shadow-2xl">
+                {referenceImage ? (
+                  <img 
+                    src={referenceImage}
+                    alt="Preview"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-primary/20 via-purple-500/20 to-secondary/20 flex items-center justify-center">
+                    <div className="text-center text-muted-foreground">
+                      <FileImage className="h-20 w-20 mx-auto mb-4 opacity-40" />
+                      <p className="text-lg font-medium">Upload an image to get started</p>
+                    </div>
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+              </div>
+              
+              {/* Upload Button */}
+              <Button 
+                size="lg"
+                onClick={() => {
+                  fileInputRef.current?.click();
+                }}
+                className="h-14 px-8 text-lg bg-gradient-to-r from-primary to-secondary hover:shadow-[0_0_40px_rgba(139,92,246,0.6)] transition-all duration-300"
+              >
+                <Upload className="h-5 w-5 mr-2" />
+                Upload & Edit Image
+              </Button>
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+              />
+            </div>
+          </div>
+        )}
+
         {/* Hero Section - Image Comparison */}
-        {previewCards.length > 0 && (
+        {previewCards.length > 0 && !showInitialHero && (
           <div className="mb-8 relative overflow-hidden rounded-3xl border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 backdrop-blur-xl p-8">
             {/* Header */}
             <div className="text-center mb-8">
