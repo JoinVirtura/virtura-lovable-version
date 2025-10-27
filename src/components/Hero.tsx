@@ -599,11 +599,6 @@ export const Hero = () => {
                       
                       {/* Overlaid metadata */}
                       <div className="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black/90 via-black/70 to-transparent">
-                        <div className="flex items-start gap-2 mb-2">
-                          <Wand2 className="h-3 w-3 text-primary mt-0.5 flex-shrink-0" />
-                          <p className="text-xs text-white/90 line-clamp-2">{card.prompt}</p>
-                        </div>
-                        
                         <div className="flex items-center justify-between">
                           <div className="flex flex-wrap gap-1">
                             {card.metadata?.resolution && (
