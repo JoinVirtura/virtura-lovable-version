@@ -296,7 +296,7 @@ export const Hero = () => {
 
       const results = await ImageGenerationService.generateVariants(inputValue, params, 3);
       
-      // Update cards with results
+      // Update cards with results and filter out failed ones
       setGeneratedImages(prev => 
         prev.map(card => {
           if (newCardIds.includes(card.id)) {
@@ -310,10 +310,19 @@ export const Hero = () => {
                 isGenerating: false,
                 metadata: result.metadata
               };
+            } else {
+              // Mark as failed so we can filter it out
+              return {
+                ...card,
+                isGenerating: false,
+                failed: true
+              };
             }
           }
           return card;
         })
+        // Remove failed cards
+        .filter(card => !(card as any).failed)
       );
 
       toast.success("Images generated successfully!");
@@ -504,14 +513,14 @@ export const Hero = () => {
         {generatedImages.length > 0 && (
           <div className="w-full max-w-5xl mb-8 animate-fade-in">
             <Card className="backdrop-blur-xl bg-card/90 border-2 border-primary/30 shadow-[0_0_40px_rgba(139,92,246,0.3)] overflow-hidden">
-              <div className="p-8">
+              <div className="p-6">
                 <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
                   <Sparkles className="h-6 w-6 text-primary" />
                   Generated Images
                 </h3>
                 
-                <ScrollArea className="h-[500px]">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <ScrollArea className="max-h-[600px]">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {generatedImages.map((card) => (
                       <Card 
                         key={card.id} 
