@@ -556,15 +556,15 @@ export const Hero = () => {
 
         {/* Output Display Section - ABOVE input */}
         {generatedImages.length > 0 && (
-          <div className="w-full max-w-[1800px] mb-8 animate-fade-in px-4">
+          <div className="w-full max-w-[1800px] mb-4 animate-fade-in px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {generatedImages.map((card) => (
-                <Card 
-                  key={card.id} 
-                  className="group overflow-hidden hover:shadow-[0_0_30px_rgba(139,92,246,0.4)] transition-all duration-300"
-                >
+            <Card 
+              key={card.id} 
+              className="group overflow-hidden hover:shadow-[0_0_30px_rgba(139,92,246,0.4)] transition-all duration-300 p-0"
+            >
                   {card.isGenerating ? (
-                    <div className="aspect-square bg-gradient-to-br from-violet-600/20 to-fuchsia-600/20 flex flex-col items-center justify-center p-8">
+                    <div className="aspect-square bg-gradient-to-br from-violet-600/20 to-fuchsia-600/20 flex flex-col items-center justify-center">
                       <div className="relative">
                         <Loader2 className="h-12 w-12 animate-spin text-primary" />
                         <Sparkles className="absolute top-0 left-0 h-12 w-12 animate-pulse text-primary/50" />
@@ -590,7 +590,7 @@ export const Hero = () => {
                       </Button>
                     </div>
                   ) : (
-                    <div className="aspect-square relative overflow-hidden">
+                    <div className="aspect-square relative overflow-hidden w-full">
                       <img
                         src={card.imageUrl}
                         alt={card.prompt}
@@ -656,7 +656,7 @@ export const Hero = () => {
         )}
 
         {/* Input Interface - Studio Pro Style */}
-        <div className="w-full max-w-5xl mb-12 animate-fade-in">
+        <div className="w-full max-w-5xl mb-6 animate-fade-in">
           <Card className="backdrop-blur-xl bg-black/60 border-2 border-primary/30 shadow-2xl overflow-hidden">
             <div className="p-4">
               {/* Main Input Row */}
