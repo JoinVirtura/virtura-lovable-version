@@ -87,6 +87,7 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   const [audioChunks, setAudioChunks] = useState<Blob[]>([]);
   const [showInputCard, setShowInputCard] = useState(true);
+  const [editImageRemoved, setEditImageRemoved] = useState(false);
   const [chatMessages, setChatMessages] = useState<Array<{role: 'user' | 'assistant', content: string}>>([]);
   const [chatInput, setChatInput] = useState("");
   
@@ -266,6 +267,9 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
     // Clear selected variant
     setSelectedVariant(null);
     
+    // Mark edit image as removed
+    setEditImageRemoved(true);
+    
     // Show success message
     toast.success("Reference image removed. Ready for new generation!");
   };
@@ -390,7 +394,7 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
         </div>
 
         {/* Edit Mode - Display the original image being edited */}
-        {editImage && (
+        {editImage && !editImageRemoved && (
           <div className="mb-8">
             <Card className="max-w-md mx-auto p-4 bg-black/40 backdrop-blur-md border-2 border-primary/30 shadow-[0_0_40px_rgba(212,110,255,0.3)]">
               <img 
