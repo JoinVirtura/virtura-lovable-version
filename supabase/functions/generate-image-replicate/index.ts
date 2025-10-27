@@ -62,6 +62,20 @@ function getSimplifiedNegativePrompt(contentType: string): string {
   return `${baseNegative}, watermark, text, logo`;
 }
 
+// Detect if user wants to MODIFY the subject (not style transfer)
+function detectModificationIntent(prompt: string): boolean {
+  const modificationKeywords = [
+    'look at', 'looking at', 'look straight', 'facing',
+    'smile', 'smiling', 'grin', 'expression', 'facial',
+    'wear', 'wearing', 'with', 'holding', 'has',
+    'add', 'remove', 'change', 'make', 'transform',
+    'gold teeth', 'teeth', 'eyes', 'hair', 'clothing'
+  ];
+  
+  const lowerPrompt = prompt.toLowerCase();
+  return modificationKeywords.some(keyword => lowerPrompt.includes(keyword));
+}
+
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
@@ -160,36 +174,29 @@ serve(async (req) => {
     let negativePrompt;
     
     if (referenceImage) {
-      // Detect if user wants face-only output (no body/background)
-      const wantsFaceOnly = prompt.toLowerCase().includes('face and head') || 
-                            prompt.toLowerCase().includes('no body') ||
-                            prompt.toLowerCase().includes('no background') ||
-                            prompt.toLowerCase().includes('headshot') ||
-                            prompt.toLowerCase().includes('portrait only') ||
-                            prompt.toLowerCase().includes('focusing only on the face');
-
-      if (wantsFaceOnly) {
-        // Use FLUX 1.1 Pro for face-only generations to prevent body/background artifacts
+      const wantsModification = detectModificationIntent(prompt);
+      
+      if (wantsModification) {
+        // Use FLUX 1.1 Pro for prompt-based modifications
         model = 'black-forest-labs/flux-1.1-pro';
         
-        // Enhance prompt with strong face-only directives
-        finalPrompt = `Professional headshot portrait: ${prompt}. CRITICAL: Close-up facial portrait only, no hands visible, no body parts, no arms, no torso, clean minimal background. Sharp facial features, photorealistic skin texture, centered face composition, professional studio lighting.`;
+        // Enhanced prompt for modifications
+        finalPrompt = `Using the reference image as a base, apply these changes: ${prompt}. Maintain the same person's identity and overall composition, but modify as requested. High quality, photorealistic.`;
         
-        // Strong negative prompt to prevent anatomical errors (6 fingers, etc.)
-        negativePrompt = "full body, hands, arms, torso, fingers, body parts, legs, shoulders, elbows, wrists, complex background, multiple people, grid layout, collage, six fingers, extra fingers, deformed hands, blurry, low quality, distorted";
+        negativePrompt = "multiple people, extra limbs, distorted face, blurry, low quality, deformed";
         
-        console.log('🎯 FACE-ONLY MODE: Using FLUX 1.1 Pro for isolated face generation');
-        console.log('🚫 Strong negative prompt:', negativePrompt);
+        console.log('✏️ MODIFICATION MODE: Using FLUX 1.1 Pro for prompted edits');
       } else {
-        // Use Redux for style transfer when keeping full composition
+        // Use Redux for style transfer (artistic styles)
         model = 'black-forest-labs/flux-redux-schnell';
-        finalPrompt = prompt; // Raw prompt for Redux transformation control
+        finalPrompt = prompt;
         negativePrompt = getSimplifiedNegativePrompt(contentType);
         
-        console.log('🎨 STYLE TRANSFER MODE: Using FLUX Redux for composition preservation');
+        console.log('🎨 STYLE TRANSFER MODE: Using FLUX Redux');
       }
       
-      console.log('🖼️ Reference image mode active');
+      console.log('🖼️ Reference image provided');
+      console.log('🎯 Intent detected:', wantsModification ? 'MODIFICATION' : 'STYLE TRANSFER');
     } else {
       // Normal text-to-image generation
       model = modelMap[contentType] || modelMap['auto'];
@@ -260,12 +267,19 @@ serve(async (req) => {
           num_outputs: 1,
           aspect_ratio: aspectRatio === '1:1' ? '1:1' : aspectRatio === '16:9' ? '16:9' : aspectRatio === '9:16' ? '9:16' : '1:1',
           output_format: "png",
-          output_quality: 100, // Maximum quality
+          output_quality: 100,
           num_inference_steps: model === 'black-forest-labs/flux-1.1-pro' ? 50 : 4,
-          guidance_scale: 3.5 // Prompt adherence
+          guidance_scale: 3.5
         };
         
-        // Add negative prompt if available (critical for face-only mode)
+        // Add reference image for FLUX 1.1 Pro if provided
+        if (referenceImage && model === 'black-forest-labs/flux-1.1-pro') {
+          fluxInput.image = referenceImage; // Reference image for modifications
+          fluxInput.prompt_strength = 0.8; // Balance between prompt and image (0.8 = strong prompt influence)
+          console.log('🖼️ Using reference image with FLUX 1.1 Pro');
+        }
+        
+        // Add negative prompt if available
         if (negativePrompt && model === 'black-forest-labs/flux-1.1-pro') {
           fluxInput.negative_prompt = negativePrompt;
           console.log('🚫 Using negative prompt with FLUX 1.1 Pro');
