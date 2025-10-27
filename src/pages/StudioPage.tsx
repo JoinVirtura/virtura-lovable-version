@@ -163,14 +163,6 @@ export default function StudioPage() {
 
       {/* Main Studio Interface */}
       <div className="max-w-7xl mx-auto px-6 py-6">
-        {/* Info Banner */}
-        <Alert className="border-violet-500/30 bg-violet-500/10 mb-6">
-          <Sparkles className="h-4 w-4 text-violet-400" />
-          <AlertDescription className="text-sm text-gray-300">
-            Create stunning avatars and apply artistic styles. Then use your styled avatar in the <strong className="text-violet-300">Video</strong> page to create talking avatar videos!
-          </AlertDescription>
-        </Alert>
-
         <div className="grid lg:grid-cols-12 gap-6">
           {/* Main Studio Panel */}
           <div className="lg:col-span-8">

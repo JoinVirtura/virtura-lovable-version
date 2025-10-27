@@ -101,19 +101,6 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Info Banner */}
-      <Card className="glass-card border-2 border-violet-500/30">
-        <CardContent className="p-4">
-          <div className="flex items-center gap-3">
-            <ImageIcon className="h-5 w-5 text-violet-400" />
-            <div>
-              <p className="text-sm font-medium text-white">Upload Your Avatar</p>
-              <p className="text-xs text-gray-400">Upload an image to apply stunning artistic styles in the next step</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Upload Card */}
       <Card 
         className={`glass-card border-2 transition-all duration-300 cursor-pointer ${
