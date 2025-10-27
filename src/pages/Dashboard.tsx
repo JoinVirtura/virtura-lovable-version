@@ -6,6 +6,7 @@ import { OverviewPage } from "@/components/OverviewPage";
 import virturaLogo from "/lovable-uploads/f264298f-2877-485b-affc-d705994fc848.png";
 import { CreateAvatar } from "@/components/CreateAvatar";
 import { AvatarStudio } from "@/components/AvatarStudio";
+import { AIImageStudio } from "@/components/AIImageStudio";
 import { UploadSection } from "@/components/UploadSection";
 import { ExportSection } from "@/components/ExportSection";
 import { ChatInterface } from "@/components/ChatInterface";
@@ -1263,7 +1264,7 @@ export default function Dashboard() {
       case "studio":
         return (
           <StudioBackground>
-            <AvatarStudio editImage={selectedEditImage} onBackToLibrary={() => { setSelectedEditImage(null); setActiveView('library'); }} />
+            <AIImageStudio />
           </StudioBackground>
         );
       case "individuals":
