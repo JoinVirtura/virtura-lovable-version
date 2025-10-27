@@ -193,12 +193,33 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedType, setSelectedType] = useState<'all' | 'free' | 'premium'>('all');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedBadge, setSelectedBadge] = useState<'all' | 'popular' | 'trending' | 'new'>('all');
 
-  // Filter styles based on search
-  const filteredStyles = STYLE_PRESETS.filter(style => 
-    style.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    style.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Filter styles based on search, type, category, and badge
+  const filteredStyles = STYLE_PRESETS.filter(style => {
+    // Search filter
+    const matchesSearch = style.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      style.description.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // Type filter (Free/Premium)
+    const matchesType = selectedType === 'all' || 
+      (selectedType === 'free' && (style.type === 'Free' || style.type === 'Standard')) ||
+      (selectedType === 'premium' && style.type === 'Premium');
+    
+    // Category filter
+    const matchesCategory = selectedCategory === 'all' || style.category === selectedCategory;
+    
+    // Badge filter (Popular/Trending/New)
+    const styleBadge = getStyleBadge(style);
+    const matchesBadge = selectedBadge === 'all' || 
+      (selectedBadge === 'popular' && styleBadge?.label === 'Popular') ||
+      (selectedBadge === 'trending' && styleBadge?.label === 'Trending') ||
+      (selectedBadge === 'new' && styleBadge?.label === 'New');
+    
+    return matchesSearch && matchesType && matchesCategory && matchesBadge;
+  });
 
   // Auto-open settings when style is selected
   React.useEffect(() => {
@@ -474,7 +495,7 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
       )}
 
       {/* Search Bar */}
-      <div className="max-w-md">
+      <div className="max-w-md mb-4">
         <Input
           type="search"
           placeholder="Search styles... (e.g., cyberpunk, watercolor)"
@@ -482,6 +503,85 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
           onChange={(e) => setSearchQuery(e.target.value)}
           className="h-12 bg-black/40 border-violet-500/30 focus:border-violet-400 transition-colors"
         />
+      </div>
+
+      {/* Advanced Filters */}
+      <div className="mb-6 space-y-3">
+        {/* Filter Chips Row */}
+        <div className="flex flex-wrap gap-2">
+          {/* Type Filters */}
+          <Button
+            size="sm"
+            variant={selectedType === 'all' ? 'default' : 'outline'}
+            onClick={() => setSelectedType('all')}
+            className="h-8"
+          >
+            All
+          </Button>
+          <Button
+            size="sm"
+            variant={selectedBadge === 'popular' ? 'default' : 'outline'}
+            onClick={() => setSelectedBadge(selectedBadge === 'popular' ? 'all' : 'popular')}
+            className="h-8 gap-1"
+          >
+            <Zap className="h-3 w-3" />
+            Popular
+          </Button>
+          <Button
+            size="sm"
+            variant={selectedBadge === 'trending' ? 'default' : 'outline'}
+            onClick={() => setSelectedBadge(selectedBadge === 'trending' ? 'all' : 'trending')}
+            className="h-8 gap-1"
+          >
+            <TrendingUp className="h-3 w-3" />
+            Trending
+          </Button>
+          <Button
+            size="sm"
+            variant={selectedBadge === 'new' ? 'default' : 'outline'}
+            onClick={() => setSelectedBadge(selectedBadge === 'new' ? 'all' : 'new')}
+            className="h-8 gap-1"
+          >
+            <Sparkles className="h-3 w-3" />
+            New
+          </Button>
+          <Button
+            size="sm"
+            variant={selectedType === 'free' ? 'default' : 'outline'}
+            onClick={() => setSelectedType(selectedType === 'free' ? 'all' : 'free')}
+            className="h-8 gap-1"
+          >
+            <CheckCircle className="h-3 w-3" />
+            Free
+          </Button>
+          <Button
+            size="sm"
+            variant={selectedType === 'premium' ? 'default' : 'outline'}
+            onClick={() => setSelectedType(selectedType === 'premium' ? 'all' : 'premium')}
+            className="h-8 gap-1"
+          >
+            <Crown className="h-3 w-3" />
+            Premium
+          </Button>
+
+          {/* Category Dropdown */}
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="h-8 px-3 rounded-md bg-black/20 border border-violet-500/30 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
+          >
+            <option value="all">All Categories</option>
+            <option value="original">Original</option>
+            <option value="artistic">Artistic</option>
+            <option value="futuristic">Futuristic</option>
+            <option value="animation">Animation</option>
+            <option value="modern">Modern</option>
+            <option value="vintage">Vintage</option>
+            <option value="fantasy">Fantasy</option>
+            <option value="nature">Nature</option>
+            <option value="photography">Photography</option>
+          </select>
+        </div>
       </div>
 
       {/* Large Style Gallery Grid */}

@@ -227,29 +227,22 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                     className="w-full h-full object-cover"
                   />
                   
-                  {/* Upload Success Overlay - Minimal Bottom Bar */}
+                  {/* Centered Hover Upload Button */}
                   {showUploadOverlay && (
-                    <div className="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-md border-t border-violet-500/20 animate-fade-in">
-                      <div className="flex items-center justify-between gap-2 px-3 py-2">
-                        {/* Left: Green Checkmark Circle */}
-                        <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
-                          <CheckCircle className="h-3 w-3 text-white" />
-                        </div>
-                        
-                        {/* Right: Change Button */}
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="h-6 px-2 text-[10px] bg-white/10 border-white/20 hover:bg-white/20 text-white flex-shrink-0"
-                          onClick={() => {
-                            const fileInput = document.getElementById('avatar-upload-input') as HTMLInputElement;
-                            fileInput?.click();
-                          }}
-                        >
-                          <Upload className="h-3 w-3 mr-1" />
-                          Change
-                        </Button>
-                      </div>
+                    <div 
+                      className="absolute inset-0 bg-black/0 hover:bg-black/40 transition-all duration-300 flex items-center justify-center opacity-0 hover:opacity-100 cursor-pointer group/upload"
+                      onClick={() => {
+                        const fileInput = document.getElementById('avatar-upload-input') as HTMLInputElement;
+                        fileInput?.click();
+                      }}
+                    >
+                      <Button
+                        size="lg"
+                        className="bg-white/10 backdrop-blur-md border-2 border-white/30 hover:bg-white/20 hover:border-white/50 transition-all"
+                      >
+                        <Upload className="h-5 w-5 mr-2" />
+                        Change Image
+                      </Button>
                     </div>
                   )}
                   
@@ -389,15 +382,6 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
           
           <div className="grid grid-cols-1 gap-3 text-xs">
             <div className="grid grid-cols-2 gap-x-8 gap-y-2">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground w-20">Engine:</span>
-                <span className="font-medium text-right">{project.video?.engine || 'Not selected'}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground w-24">Face Alignment:</span>
-                <span className="font-medium text-right">{project.avatar?.metadata?.faceAlignment || 0}%</span>
-              </div>
-              
               <div className="flex justify-between">
                 <span className="text-muted-foreground w-20">Quality:</span>
                 <span className="font-medium text-right">{project.video?.quality || project.avatar?.quality || 'Standard'}</span>
