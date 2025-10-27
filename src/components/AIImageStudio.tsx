@@ -302,9 +302,21 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
   };
 
   const handleUsePromptFromLibrary = (newPrompt: string, newContentType?: string, newStyle?: string) => {
-    setPrompt(newPrompt);
+    // If we have a reference image, don't fill the prompt (editing mode)
+    // User wants to describe their edit, not use the full prompt
+    if (!referenceImage) {
+      setPrompt(newPrompt);
+    }
+    // Always apply content type and style settings
     if (newContentType) setContentType(newContentType);
     if (newStyle) setStyle(newStyle);
+    
+    // Show helpful toast based on mode
+    if (referenceImage) {
+      toast.success("Style applied! Now describe your edit.");
+    } else {
+      toast.success("Prompt applied successfully!");
+    }
   };
 
   const toggleVoiceInput = () => {

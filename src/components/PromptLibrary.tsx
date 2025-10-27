@@ -26,6 +26,8 @@ interface PromptLibraryProps {
 export const PromptLibrary = ({ onUsePrompt, onClose }: PromptLibraryProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedContentTypes, setSelectedContentTypes] = useState<string[]>([]);
+  const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
 
   // Process the prompt library data
   const prompts: PromptItem[] = useMemo(() => {
@@ -49,6 +51,16 @@ export const PromptLibrary = ({ onUsePrompt, onClose }: PromptLibraryProps) => {
     return cats;
   }, [prompts]);
 
+  // Get unique content types
+  const contentTypes = useMemo(() => {
+    return [...new Set(prompts.map(p => p.contentType).filter(Boolean))].sort();
+  }, [prompts]);
+
+  // Get unique styles
+  const styles = useMemo(() => {
+    return [...new Set(prompts.map(p => p.style).filter(Boolean))].sort();
+  }, [prompts]);
+
   // Filter prompts
   const filteredPrompts = useMemo(() => {
     return prompts.filter(prompt => {
@@ -59,9 +71,15 @@ export const PromptLibrary = ({ onUsePrompt, onClose }: PromptLibraryProps) => {
       
       const matchesCategory = selectedCategory === "all" || prompt.category === selectedCategory;
       
-      return matchesSearch && matchesCategory;
+      const matchesContentType = selectedContentTypes.length === 0 || 
+        selectedContentTypes.includes(prompt.contentType || 'auto');
+      
+      const matchesStyle = selectedStyles.length === 0 || 
+        selectedStyles.includes(prompt.style || '');
+      
+      return matchesSearch && matchesCategory && matchesContentType && matchesStyle;
     });
-  }, [prompts, searchTerm, selectedCategory]);
+  }, [prompts, searchTerm, selectedCategory, selectedContentTypes, selectedStyles]);
 
   const handleCopyPrompt = (prompt: string) => {
     navigator.clipboard.writeText(prompt);
@@ -104,10 +122,82 @@ export const PromptLibrary = ({ onUsePrompt, onClose }: PromptLibraryProps) => {
             />
           </div>
         </div>
+
+        {/* Quick Filters */}
+        <div className="flex flex-col gap-3 mt-4">
+          {/* Content Type Filters */}
+          <div className="flex flex-wrap gap-2 items-center">
+            <span className="text-sm font-medium text-muted-foreground min-w-fit">Content:</span>
+            {contentTypes.map((contentType) => (
+              <Badge
+                key={contentType}
+                variant={selectedContentTypes.includes(contentType) ? "default" : "outline"}
+                className="cursor-pointer transition-all"
+                onClick={() => {
+                  setSelectedContentTypes(prev => 
+                    prev.includes(contentType)
+                      ? prev.filter(ct => ct !== contentType)
+                      : [...prev, contentType]
+                  );
+                }}
+              >
+                {contentType}
+              </Badge>
+            ))}
+            {selectedContentTypes.length > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedContentTypes([])}
+                className="h-6 px-2 text-xs"
+              >
+                Clear
+              </Button>
+            )}
+          </div>
+
+          {/* Style Filters */}
+          <div className="flex flex-wrap gap-2 items-center">
+            <span className="text-sm font-medium text-muted-foreground min-w-fit">Style:</span>
+            {styles.slice(0, 10).map((style) => (
+              <Badge
+                key={style}
+                variant={selectedStyles.includes(style) ? "default" : "outline"}
+                className="cursor-pointer transition-all"
+                onClick={() => {
+                  setSelectedStyles(prev => 
+                    prev.includes(style)
+                      ? prev.filter(s => s !== style)
+                      : [...prev, style]
+                  );
+                }}
+              >
+                {style}
+              </Badge>
+            ))}
+            {selectedStyles.length > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedStyles([])}
+                className="h-6 px-2 text-xs"
+              >
+                Clear
+              </Button>
+            )}
+          </div>
+
+          {/* Active Filter Count */}
+          {(selectedContentTypes.length > 0 || selectedStyles.length > 0 || searchTerm) && (
+            <div className="text-sm text-muted-foreground">
+              {filteredPrompts.length} prompt{filteredPrompts.length !== 1 ? 's' : ''} found
+            </div>
+          )}
+        </div>
       </CardHeader>
       <CardContent>
         <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
-          <TabsList className="grid w-full grid-cols-auto overflow-x-auto">
+          <TabsList className="w-full flex flex-wrap justify-start gap-1">
             {categories.map((category) => (
               <TabsTrigger key={category} value={category} className="capitalize">
                 {category}
