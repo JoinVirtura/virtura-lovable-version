@@ -6,7 +6,7 @@ export interface ImageGenerationParams {
   contentType?: 'portrait' | 'landscape' | 'object' | 'abstract' | 'scene' | 'auto';
   style?: string;
   aspectRatio?: '1:1' | '16:9' | '9:16' | '4:3' | '3:4';
-  resolution?: '512x512' | '1024x1024' | '1536x1536';
+  resolution?: '512x512' | '1024x1024' | '1536x1536' | '1080x1920';
   quality?: 'speed' | 'balanced' | 'ultra' | 'hd' | '4k' | '8k';
   adherence?: number;
   steps?: number;
@@ -564,22 +564,22 @@ export class ImageGenerationService {
       ? this.detectContentType(basePrompt) 
       : params.contentType;
 
-    // Style-agnostic quality anchor that enhances without changing artistic style
-    const qualityAnchor = 'highly detailed, sharp focus, high quality, 8K resolution, masterpiece';
+    // Ultra-minimal quality anchor that won't override art style
+    const qualityAnchor = 'high quality, detailed';
     
     // Variant configurations that preserve user's intended style
     const variantConfigs = [
       {
         name: 'Original Enhanced',
-        modifier: `${qualityAnchor}, perfect composition`
+        modifier: `${qualityAnchor}`
       },
       {
-        name: 'Dynamic Angle',
-        modifier: `${qualityAnchor}, dynamic angle, interesting perspective`
+        name: 'Variation 2',
+        modifier: `${qualityAnchor}, dynamic composition`
       },
       {
-        name: 'Enhanced Lighting',
-        modifier: `${qualityAnchor}, beautiful lighting, atmospheric`
+        name: 'Variation 3',
+        modifier: `${qualityAnchor}, beautiful lighting`
       }
     ];
 

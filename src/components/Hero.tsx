@@ -285,8 +285,8 @@ export const Hero = () => {
         negativePrompt: "blurry, low quality, distorted",
         contentType: "auto",
         style: selectedImageStyle?.name || selectedStyle === "Style" ? "photorealistic" : selectedStyle,
-        aspectRatio: selectedAspect as any,
-        resolution: "1024x1024",
+        aspectRatio: "9:16" as any,
+        resolution: "1080x1920",
         quality: "balanced",
         adherence: 8.5,
         steps: 50,
@@ -325,6 +325,7 @@ export const Hero = () => {
       );
 
       toast.success("Images generated successfully!");
+      setInputValue(""); // Clear input after generation
     } catch (error) {
       console.error('Generation error:', error);
       toast.error("Generation failed. Please try again.");
@@ -511,14 +512,14 @@ export const Hero = () => {
         {/* Output Display Section - ABOVE input */}
         {generatedImages.length > 0 && (
           <div className="w-full max-w-5xl mb-8 animate-fade-in">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {generatedImages.map((card) => (
                 <Card 
                   key={card.id} 
                   className="group overflow-hidden hover:shadow-[0_0_30px_rgba(139,92,246,0.4)] transition-all duration-300"
                 >
                   {card.isGenerating ? (
-                    <div className="aspect-square bg-gradient-to-br from-violet-600/20 to-fuchsia-600/20 flex flex-col items-center justify-center p-8">
+                    <div className="aspect-[9/16] bg-gradient-to-br from-violet-600/20 to-fuchsia-600/20 flex flex-col items-center justify-center p-8">
                       <div className="relative">
                         <Loader2 className="h-12 w-12 animate-spin text-primary" />
                         <Sparkles className="absolute top-0 left-0 h-12 w-12 animate-pulse text-primary/50" />
@@ -527,7 +528,7 @@ export const Hero = () => {
                       <p className="text-white/60 text-sm mt-2">This may take a moment</p>
                     </div>
                   ) : (card as any).failed ? (
-                    <div className="aspect-square bg-gradient-to-br from-red-500/10 to-orange-500/10 flex flex-col items-center justify-center p-8">
+                    <div className="aspect-[9/16] bg-gradient-to-br from-red-500/10 to-orange-500/10 flex flex-col items-center justify-center p-8">
                       <AlertCircle className="h-12 w-12 text-red-400 mb-4" />
                       <p className="text-white text-center font-medium mb-2">Generation Failed</p>
                       <p className="text-white/60 text-sm text-center mb-4">{(card as any).error}</p>
@@ -544,7 +545,7 @@ export const Hero = () => {
                       </Button>
                     </div>
                   ) : (
-                    <div className="aspect-square relative overflow-hidden">
+                    <div className="aspect-[9/16] relative overflow-hidden">
                       <img
                         src={card.imageUrl}
                         alt={card.prompt}
