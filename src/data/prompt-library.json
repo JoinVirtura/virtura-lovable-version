@@ -1,367 +1,610 @@
 [
   {
-    "Title": "Add Natural Freckles",
-    "Prompt": "Add natural, subtle freckles across nose and cheeks, realistic skin texture, maintain original lighting and composition, photorealistic detail, 8K quality",
-    "Style": "Portrait Enhancement"
+    "category": "Editing & Enhancement",
+    "title": "Add Natural Freckles",
+    "prompt": "Add natural, subtle freckles across nose and cheeks, realistic skin texture, maintain original lighting and composition, photorealistic detail",
+    "style": "Portrait Enhancement",
+    "contentType": "portrait",
+    "tags": ["portrait", "enhancement", "freckles", "skin"]
+  },
+  {
+    "category": "Editing & Enhancement",
+    "title": "Golden Hour Lighting",
+    "prompt": "Add warm golden hour lighting effect, soft orange and pink tones, sunset atmosphere, long shadows, cinematic color grading, photorealistic",
+    "style": "Lighting Enhancement",
+    "contentType": "portrait",
+    "tags": ["lighting", "golden hour", "warm", "cinematic"]
+  },
+  {
+    "category": "Editing & Enhancement",
+    "title": "Enhance Colors & Contrast",
+    "prompt": "Enhance vibrant colors, increase contrast and saturation, professional color grading, maintain natural look, sharp details, 8K quality",
+    "style": "Color Enhancement",
+    "contentType": "auto",
+    "tags": ["color", "contrast", "enhancement", "professional"]
+  },
+  {
+    "category": "Editing & Enhancement",
+    "title": "Add Bokeh Effect",
+    "prompt": "Add beautiful bokeh effect to background, soft circular light orbs, shallow depth of field, subject in sharp focus, dreamy atmosphere",
+    "style": "Depth Enhancement",
+    "contentType": "portrait",
+    "tags": ["bokeh", "blur", "depth", "dreamy"]
+  },
+  {
+    "category": "Editing & Enhancement",
+    "title": "Soft Glow Portrait",
+    "prompt": "Add soft ethereal glow to portrait, dreamy atmosphere, gentle light diffusion, maintain skin detail, romantic aesthetic",
+    "style": "Glow Effect",
+    "contentType": "portrait",
+    "tags": ["glow", "soft", "dreamy", "romantic"]
+  },
+  {
+    "category": "Background Changes",
+    "title": "Professional Studio Background",
+    "prompt": "Remove current background, replace with professional studio gradient backdrop, soft lighting, clean modern aesthetic, maintain subject in focus",
+    "style": "Background Replacement",
+    "contentType": "portrait",
+    "tags": ["background", "studio", "professional", "gradient"]
+  },
+  {
+    "category": "Background Changes",
+    "title": "Nature Background",
+    "prompt": "Replace background with beautiful natural landscape, lush greenery, soft bokeh effect, warm natural lighting, photorealistic",
+    "style": "Background Replacement",
+    "contentType": "portrait",
+    "tags": ["background", "nature", "landscape", "outdoor"]
+  },
+  {
+    "category": "Background Changes",
+    "title": "Urban Background",
+    "prompt": "Replace background with modern urban cityscape, blurred bokeh city lights, evening atmosphere, professional depth of field",
+    "style": "Background Replacement",
+    "contentType": "portrait",
+    "tags": ["background", "urban", "city", "modern"]
+  },
+  {
+    "category": "Background Changes",
+    "title": "Beach Sunset Background",
+    "prompt": "Replace background with beautiful beach at sunset, golden sky, soft waves, tropical palm trees, warm ambient lighting",
+    "style": "Background Replacement",
+    "contentType": "portrait",
+    "tags": ["background", "beach", "sunset", "tropical"]
+  },
+  {
+    "category": "Background Changes",
+    "title": "Remove Background - Transparent",
+    "prompt": "Remove background completely, create clean transparent PNG, maintain subject edges, professional cutout quality",
+    "style": "Background Removal",
+    "contentType": "object",
+    "tags": ["background", "removal", "transparent", "cutout"]
+  },
+  {
+    "category": "Weather & Atmosphere",
+    "title": "Change to Sunny Day",
+    "prompt": "Replace rainy or cloudy weather with bright sunny day, add fluffy white clouds, warm golden sunlight, blue sky, maintain original composition",
+    "style": "Weather Transformation",
+    "contentType": "landscape",
+    "tags": ["weather", "sunny", "bright", "sky"]
+  },
+  {
+    "category": "Weather & Atmosphere",
+    "title": "Add Dramatic Storm",
+    "prompt": "Transform into dramatic stormy atmosphere, dark moody clouds, lightning strikes, rain effects, cinematic tension, high contrast",
+    "style": "Weather Transformation",
+    "contentType": "landscape",
+    "tags": ["weather", "storm", "dramatic", "moody"]
+  },
+  {
+    "category": "Weather & Atmosphere",
+    "title": "Snowy Winter Scene",
+    "prompt": "Transform into winter wonderland, add falling snow, snow-covered ground, frosted trees, cool blue tones, magical atmosphere",
+    "style": "Weather Transformation",
+    "contentType": "landscape",
+    "tags": ["weather", "snow", "winter", "cold"]
   },
   {
-    "Title": "Change Weather - Rainy to Sunny",
-    "Prompt": "Replace rainy weather with bright sunny day, add fluffy white clouds, warm golden sunlight, blue sky, maintain original composition and subjects",
-    "Style": "Weather Transformation"
+    "category": "Weather & Atmosphere",
+    "title": "Misty Morning Fog",
+    "prompt": "Add atmospheric morning fog, soft diffused lighting, dreamy ethereal mood, muted colors, mysterious ambiance",
+    "style": "Atmosphere Enhancement",
+    "contentType": "landscape",
+    "tags": ["fog", "misty", "morning", "atmospheric"]
   },
   {
-    "Title": "Professional Studio Background",
-    "Prompt": "Remove current background, replace with professional studio gradient backdrop, soft lighting, clean modern aesthetic, maintain subject in focus",
-    "Style": "Background Replacement"
+    "category": "Weather & Atmosphere",
+    "title": "Golden Sunset Hour",
+    "prompt": "Transform to sunset time, warm golden orange sky, long dramatic shadows, purple and pink cloud highlights, cinematic mood",
+    "style": "Time of Day",
+    "contentType": "landscape",
+    "tags": ["sunset", "golden hour", "warm", "dramatic"]
   },
   {
-    "Title": "Golden Hour Lighting",
-    "Prompt": "Add warm golden hour lighting effect, soft orange and pink tones, sunset atmosphere, long shadows, cinematic color grading, photorealistic",
-    "Style": "Lighting Enhancement"
+    "category": "Style Transformations",
+    "title": "Watercolor Painting",
+    "prompt": "Convert to beautiful watercolor painting style, soft flowing colors, artistic brush strokes, paper texture, dreamy aesthetic",
+    "style": "Artistic Conversion",
+    "contentType": "auto",
+    "tags": ["watercolor", "painting", "artistic", "soft"]
   },
   {
-    "Title": "Blue Hour Photography",
-    "Prompt": "Transform to blue hour timing, deep blue sky, subtle twilight glow, ambient street lights, moody atmospheric lighting, professional photography",
-    "Style": "Lighting Enhancement"
+    "category": "Style Transformations",
+    "title": "Oil Painting Classic",
+    "prompt": "Transform into classical oil painting style, rich textured brush strokes, Renaissance aesthetic, warm palette, museum quality",
+    "style": "Artistic Conversion",
+    "contentType": "auto",
+    "tags": ["oil painting", "classical", "renaissance", "artistic"]
   },
   {
-    "Title": "Add Bokeh Background Effect",
-    "Prompt": "Add beautiful bokeh background blur with circular light spots, maintain sharp subject focus, shallow depth of field, professional portrait photography",
-    "Style": "Depth Enhancement"
+    "category": "Style Transformations",
+    "title": "Pop Art Style",
+    "prompt": "Convert to vibrant pop art style, bold colors, Ben-Day dots, high contrast, Andy Warhol aesthetic, graphic design feel",
+    "style": "Artistic Conversion",
+    "contentType": "portrait",
+    "tags": ["pop art", "vibrant", "bold", "graphic"]
   },
   {
-    "Title": "Watercolor Painting Conversion",
-    "Prompt": "Convert photo to watercolor painting style, soft brush strokes, flowing colors, artistic interpretation, maintain composition, fine art quality",
-    "Style": "Artistic Transformation"
+    "category": "Style Transformations",
+    "title": "Anime Style",
+    "prompt": "Transform into beautiful anime art style, large expressive eyes, soft cel shading, vibrant colors, studio ghibli quality",
+    "style": "Artistic Conversion",
+    "contentType": "portrait",
+    "tags": ["anime", "manga", "japanese", "cartoon"]
   },
   {
-    "Title": "Oil Painting Style",
-    "Prompt": "Transform into classical oil painting, thick visible brush strokes, rich colors, Renaissance style, museum quality artwork, detailed textures",
-    "Style": "Artistic Transformation"
+    "category": "Style Transformations",
+    "title": "Cyberpunk Neon",
+    "prompt": "Transform into cyberpunk aesthetic, neon lights, futuristic atmosphere, purple and cyan colors, rain-soaked streets, blade runner vibes",
+    "style": "Artistic Conversion",
+    "contentType": "scene",
+    "tags": ["cyberpunk", "neon", "futuristic", "sci-fi"]
   },
   {
-    "Title": "Vintage Film Look",
-    "Prompt": "Apply vintage film photography aesthetic, slight grain, faded colors, nostalgic atmosphere, 70s or 80s film quality, analog photography",
-    "Style": "Retro Effect"
+    "category": "Style Transformations",
+    "title": "Film Noir Black & White",
+    "prompt": "Convert to classic film noir style, dramatic black and white, high contrast lighting, shadow play, 1940s detective movie aesthetic",
+    "style": "Artistic Conversion",
+    "contentType": "portrait",
+    "tags": ["film noir", "black and white", "dramatic", "vintage"]
   },
   {
-    "Title": "Black and White Dramatic Portrait",
-    "Prompt": "Convert to high-contrast black and white, dramatic shadows, fine art photography, timeless aesthetic, studio quality monochrome",
-    "Style": "Monochrome Conversion"
+    "category": "Professional Photography",
+    "title": "Professional Headshot",
+    "prompt": "Create professional business headshot, clean white or gray background, soft studio lighting, sharp focus on face, confident expression, LinkedIn quality",
+    "style": "Professional Portrait",
+    "contentType": "portrait",
+    "tags": ["headshot", "professional", "business", "corporate"]
   },
   {
-    "Title": "Corporate Headshot Professional",
-    "Prompt": "Professional corporate headshot, business attire, clean background, confident expression, studio lighting, LinkedIn profile quality, 8K resolution",
-    "Style": "Professional Business"
+    "category": "Professional Photography",
+    "title": "Fashion Editorial",
+    "prompt": "High-fashion editorial photography, dramatic pose, professional studio lighting, magazine quality, sharp details, contemporary fashion aesthetic",
+    "style": "Fashion Photography",
+    "contentType": "portrait",
+    "tags": ["fashion", "editorial", "magazine", "professional"]
   },
   {
-    "Title": "Executive Leadership Portrait",
-    "Prompt": "Executive business portrait, formal attire, office environment, confident posture, professional lighting, corporate photography, high-end quality",
-    "Style": "Professional Business"
+    "category": "Professional Photography",
+    "title": "Corporate Event",
+    "prompt": "Professional corporate event photography, business environment, professional attire, clean composition, natural lighting, candid yet polished",
+    "style": "Corporate Photography",
+    "contentType": "scene",
+    "tags": ["corporate", "business", "event", "professional"]
   },
   {
-    "Title": "Business Team Photo",
-    "Prompt": "Professional business team photo, diverse group, modern office setting, confident poses, corporate attire, professional photography, high resolution",
-    "Style": "Professional Business"
+    "category": "Professional Photography",
+    "title": "Beauty Portrait",
+    "prompt": "Professional beauty photography, flawless skin retouching, soft glamour lighting, sharp eyes, magazine cover quality, elegant composition",
+    "style": "Beauty Photography",
+    "contentType": "portrait",
+    "tags": ["beauty", "glamour", "retouching", "professional"]
   },
   {
-    "Title": "Conference Speaker Portrait",
-    "Prompt": "Professional speaker portrait, confident expression, business casual attire, stage or podium background, dynamic lighting, professional quality",
-    "Style": "Professional Business"
+    "category": "Professional Photography",
+    "title": "Lifestyle Portrait",
+    "prompt": "Natural lifestyle portrait, authentic candid moment, soft natural lighting, warm atmosphere, genuine emotion, documentary style",
+    "style": "Lifestyle Photography",
+    "contentType": "portrait",
+    "tags": ["lifestyle", "candid", "natural", "authentic"]
   },
   {
-    "Title": "Instagram Story Template",
-    "Prompt": "Vertical 9:16 Instagram story design, vibrant colors, modern aesthetic, mobile-friendly layout, eye-catching composition, social media optimized",
-    "Style": "Social Media Content"
+    "category": "Product & Commercial",
+    "title": "Product Photography White Background",
+    "prompt": "Professional product photography, pure white background, soft even lighting, sharp details, commercial quality, no shadows, catalog ready",
+    "style": "Product Photography",
+    "contentType": "object",
+    "tags": ["product", "commercial", "white background", "professional"]
   },
   {
-    "Title": "Instagram Feed Post Square",
-    "Prompt": "Square 1:1 Instagram feed post, aesthetically pleasing, clean composition, vibrant colors, engaging visual, high quality, social media ready",
-    "Style": "Social Media Content"
+    "category": "Product & Commercial",
+    "title": "Luxury Product Showcase",
+    "prompt": "High-end luxury product photography, dramatic lighting, reflective surface, premium aesthetic, 8K detail, magazine advertisement quality",
+    "style": "Luxury Photography",
+    "contentType": "object",
+    "tags": ["luxury", "product", "premium", "advertisement"]
   },
   {
-    "Title": "YouTube Thumbnail Eye-Catching",
-    "Prompt": "16:9 YouTube thumbnail design, bold text, vibrant colors, high contrast, attention-grabbing, professional quality, clickable aesthetic",
-    "Style": "Social Media Content"
+    "category": "Product & Commercial",
+    "title": "Lifestyle Product Shot",
+    "prompt": "Lifestyle product photography, natural setting, authentic usage scenario, soft natural light, aspirational yet relatable, editorial style",
+    "style": "Lifestyle Product",
+    "contentType": "scene",
+    "tags": ["product", "lifestyle", "natural", "editorial"]
   },
   {
-    "Title": "TikTok Video Cover",
-    "Prompt": "Vertical 9:16 TikTok cover image, trendy aesthetic, bold colors, dynamic composition, mobile-optimized, attention-grabbing, social media quality",
-    "Style": "Social Media Content"
+    "category": "Product & Commercial",
+    "title": "E-commerce Product Image",
+    "prompt": "E-commerce ready product photo, clean neutral background, multiple angles view, consistent lighting, sharp focus, online store optimized",
+    "style": "E-commerce Photography",
+    "contentType": "object",
+    "tags": ["ecommerce", "product", "online store", "commercial"]
   },
   {
-    "Title": "Facebook Ad Creative",
-    "Prompt": "Professional Facebook ad image, clear focal point, compelling visual, product or service focused, high conversion design, marketing optimized",
-    "Style": "Marketing & Advertising"
+    "category": "Architecture & Interior",
+    "title": "Modern Interior Design",
+    "prompt": "Professional interior design photography, modern minimalist aesthetic, natural daylight, wide angle, clean lines, architectural digest quality",
+    "style": "Interior Photography",
+    "contentType": "scene",
+    "tags": ["interior", "architecture", "modern", "design"]
   },
   {
-    "Title": "Billboard Advertisement Design",
-    "Prompt": "Large format billboard advertisement, bold text, simple composition, high contrast, readable from distance, professional marketing quality",
-    "Style": "Marketing & Advertising"
+    "category": "Architecture & Interior",
+    "title": "Architectural Exterior",
+    "prompt": "Professional architectural photography, dramatic sky, golden hour lighting, symmetrical composition, sharp lines, magazine quality",
+    "style": "Architectural Photography",
+    "contentType": "scene",
+    "tags": ["architecture", "exterior", "building", "professional"]
   },
   {
-    "Title": "Magazine Ad Full Page",
-    "Prompt": "Full page magazine advertisement, premium aesthetic, sophisticated composition, professional photography, print-ready quality, high resolution",
-    "Style": "Marketing & Advertising"
+    "category": "Architecture & Interior",
+    "title": "Cozy Living Space",
+    "prompt": "Warm cozy interior, soft ambient lighting, comfortable furniture, lived-in aesthetic, inviting atmosphere, home magazine style",
+    "style": "Interior Photography",
+    "contentType": "scene",
+    "tags": ["interior", "cozy", "home", "warm"]
   },
   {
-    "Title": "Product Launch Hero Image",
-    "Prompt": "Hero image for product launch, dramatic lighting, clean composition, product focused, professional commercial photography, 8K quality",
-    "Style": "Marketing & Advertising"
+    "category": "Architecture & Interior",
+    "title": "Luxury Hotel Interior",
+    "prompt": "Five-star luxury hotel interior, elegant design, sophisticated lighting, opulent details, high-end furniture, architectural photography",
+    "style": "Luxury Interior",
+    "contentType": "scene",
+    "tags": ["luxury", "hotel", "interior", "elegant"]
   },
   {
-    "Title": "White Background Product Photo",
-    "Prompt": "Professional product photography on pure white background, studio lighting, sharp details, e-commerce ready, commercial quality, no shadows",
-    "Style": "Product Photography"
+    "category": "Food & Culinary",
+    "title": "Restaurant Food Photography",
+    "prompt": "Professional food photography, appetizing presentation, natural lighting, shallow depth of field, magazine quality, delicious and inviting",
+    "style": "Food Photography",
+    "contentType": "object",
+    "tags": ["food", "culinary", "restaurant", "photography"]
   },
   {
-    "Title": "Lifestyle Product Context",
-    "Prompt": "Product in lifestyle context, natural setting, real-world usage, appealing composition, professional photography, authentic aesthetic",
-    "Style": "Product Photography"
+    "category": "Food & Culinary",
+    "title": "Rustic Food Styling",
+    "prompt": "Rustic food photography, wooden table setting, natural ingredients, overhead flat lay, warm natural light, farm-to-table aesthetic",
+    "style": "Food Styling",
+    "contentType": "scene",
+    "tags": ["food", "rustic", "natural", "styling"]
   },
   {
-    "Title": "Luxury Product Close-Up",
-    "Prompt": "Luxury product macro photography, premium materials, dramatic lighting, high-end aesthetic, detailed textures, commercial quality",
-    "Style": "Product Photography"
+    "category": "Food & Culinary",
+    "title": "Fine Dining Plating",
+    "prompt": "Fine dining presentation, artistic plating, minimalist elegant composition, professional studio lighting, Michelin star quality",
+    "style": "Fine Dining Photography",
+    "contentType": "object",
+    "tags": ["food", "fine dining", "elegant", "professional"]
   },
   {
-    "Title": "Floating Product on Color",
-    "Prompt": "Product floating on solid color background, studio lighting, clean composition, modern aesthetic, e-commerce photography, professional quality",
-    "Style": "Product Photography"
+    "category": "Food & Culinary",
+    "title": "Dessert Showcase",
+    "prompt": "Beautiful dessert photography, colorful macarons or pastries, soft pastel colors, dreamy bokeh background, Instagram-worthy presentation",
+    "style": "Dessert Photography",
+    "contentType": "object",
+    "tags": ["dessert", "pastry", "sweet", "colorful"]
   },
   {
-    "Title": "Modern Architecture Exterior",
-    "Prompt": "Contemporary architecture exterior, clean lines, modern design, blue sky, professional architectural photography, sharp details, 8K quality",
-    "Style": "Architectural Visualization"
+    "category": "Landscape & Nature",
+    "title": "Epic Mountain Vista",
+    "prompt": "Epic mountain landscape, dramatic peaks, golden hour lighting, vast scale, misty valleys, national geographic quality, 8K detail",
+    "style": "Landscape Photography",
+    "contentType": "landscape",
+    "tags": ["mountain", "landscape", "nature", "epic"]
   },
   {
-    "Title": "Luxury Interior Living Room",
-    "Prompt": "Luxury interior design living room, modern furniture, natural lighting, high-end finishes, professional interior photography, 8K resolution",
-    "Style": "Architectural Visualization"
+    "category": "Landscape & Nature",
+    "title": "Serene Lake Reflection",
+    "prompt": "Peaceful lake scene, perfect mirror reflection, calm water, surrounding mountains, dawn or dusk lighting, tranquil atmosphere",
+    "style": "Landscape Photography",
+    "contentType": "landscape",
+    "tags": ["lake", "reflection", "peaceful", "nature"]
   },
   {
-    "Title": "Minimalist Kitchen Design",
-    "Prompt": "Minimalist modern kitchen interior, clean lines, white cabinets, natural materials, professional architectural visualization, high quality",
-    "Style": "Architectural Visualization"
+    "category": "Landscape & Nature",
+    "title": "Forest Path",
+    "prompt": "Enchanted forest path, dappled sunlight through trees, lush green foliage, mysterious atmosphere, nature trail, fantasy feel",
+    "style": "Nature Photography",
+    "contentType": "landscape",
+    "tags": ["forest", "path", "nature", "green"]
   },
   {
-    "Title": "Office Space Modern Design",
-    "Prompt": "Modern office interior design, open floor plan, natural lighting, contemporary furniture, professional workspace, architectural photography",
-    "Style": "Architectural Visualization"
+    "category": "Landscape & Nature",
+    "title": "Ocean Waves",
+    "prompt": "Dramatic ocean waves, powerful surf, dynamic motion, coastal scene, blue and white foam, action photography style",
+    "style": "Seascape Photography",
+    "contentType": "landscape",
+    "tags": ["ocean", "waves", "sea", "coastal"]
   },
   {
-    "Title": "Gourmet Dish Plating",
-    "Prompt": "Professional gourmet food photography, elegant plating, restaurant quality, dramatic lighting, appetizing presentation, culinary art, 8K detail",
-    "Style": "Food & Beverage"
+    "category": "Landscape & Nature",
+    "title": "Desert Dunes",
+    "prompt": "Sweeping desert sand dunes, golden hour lighting, dramatic shadows, minimalist composition, warm color palette, travel photography",
+    "style": "Desert Photography",
+    "contentType": "landscape",
+    "tags": ["desert", "sand", "dunes", "minimal"]
   },
   {
-    "Title": "Overhead Flat Lay Food",
-    "Prompt": "Overhead flat lay food photography, multiple dishes, clean composition, natural lighting, food styling, Instagram-worthy, professional quality",
-    "Style": "Food & Beverage"
+    "category": "Landscape & Nature",
+    "title": "Wildlife in Nature",
+    "prompt": "Wildlife photography, animal in natural habitat, sharp focus on subject, blurred background, golden hour lighting, national geographic style",
+    "style": "Wildlife Photography",
+    "contentType": "scene",
+    "tags": ["wildlife", "animal", "nature", "photography"]
   },
   {
-    "Title": "Coffee Pour Action Shot",
-    "Prompt": "Dynamic coffee pour action shot, steam rising, motion captured, professional beverage photography, warm lighting, appetizing composition",
-    "Style": "Food & Beverage"
+    "category": "Creative & Artistic",
+    "title": "Abstract Geometric",
+    "prompt": "Abstract geometric art, bold shapes and colors, modern minimalist design, architectural elements, contemporary art style",
+    "style": "Abstract Art",
+    "contentType": "scene",
+    "tags": ["abstract", "geometric", "modern", "art"]
   },
   {
-    "Title": "Fresh Ingredients Macro",
-    "Prompt": "Macro photography of fresh ingredients, water droplets, vibrant colors, detailed textures, food photography, appetizing composition",
-    "Style": "Food & Beverage"
+    "category": "Creative & Artistic",
+    "title": "Double Exposure Effect",
+    "prompt": "Creative double exposure photography, blend portrait with nature scene, ethereal artistic effect, dreamlike composition, surreal aesthetic",
+    "style": "Creative Effect",
+    "contentType": "portrait",
+    "tags": ["double exposure", "creative", "artistic", "surreal"]
   },
   {
-    "Title": "High Fashion Editorial Portrait",
-    "Prompt": "High fashion editorial portrait, dramatic pose, designer clothing, professional makeup, studio lighting, Vogue style, 8K quality",
-    "Style": "Fashion & Beauty"
+    "category": "Creative & Artistic",
+    "title": "Silhouette Sunset",
+    "prompt": "Dramatic silhouette against sunset, bold black shapes, vibrant orange and purple sky, minimalist composition, emotional impact",
+    "style": "Silhouette Photography",
+    "contentType": "scene",
+    "tags": ["silhouette", "sunset", "dramatic", "minimalist"]
   },
   {
-    "Title": "Street Fashion Urban Style",
-    "Prompt": "Urban street fashion photography, trendy outfit, city background, natural lighting, contemporary style, editorial quality",
-    "Style": "Fashion & Beauty"
+    "category": "Creative & Artistic",
+    "title": "Surreal Fantasy Scene",
+    "prompt": "Surreal fantasy artwork, impossible architecture, dreamlike atmosphere, vibrant colors, Salvador Dali inspired, imaginative composition",
+    "style": "Surreal Art",
+    "contentType": "scene",
+    "tags": ["surreal", "fantasy", "dreamlike", "imaginative"]
   },
   {
-    "Title": "Beauty Close-Up Makeup",
-    "Prompt": "Beauty photography close-up, flawless makeup, perfect skin, dramatic eye makeup, professional beauty editorial, cosmetics focused, 8K detail",
-    "Style": "Fashion & Beauty"
+    "category": "Creative & Artistic",
+    "title": "Minimalist Composition",
+    "prompt": "Minimalist photography, negative space, single subject focus, clean simple composition, modern aesthetic, balanced design",
+    "style": "Minimalist Art",
+    "contentType": "auto",
+    "tags": ["minimalist", "simple", "clean", "modern"]
   },
   {
-    "Title": "Runway Fashion Show",
-    "Prompt": "Fashion runway photography, model walking, designer outfit, professional lighting, fashion week aesthetic, high fashion quality",
-    "Style": "Fashion & Beauty"
+    "category": "Creative & Artistic",
+    "title": "Vintage Film Look",
+    "prompt": "Vintage film photography aesthetic, grainy texture, faded colors, nostalgic mood, 1970s or 1980s feel, analog camera style",
+    "style": "Vintage Photography",
+    "contentType": "auto",
+    "tags": ["vintage", "film", "retro", "nostalgic"]
   },
   {
-    "Title": "Mountain Landscape Panorama",
-    "Prompt": "Breathtaking mountain landscape panorama, dramatic peaks, golden hour lighting, expansive vista, professional landscape photography, 8K resolution",
-    "Style": "Nature & Wildlife"
+    "category": "Seasonal & Holiday",
+    "title": "Christmas Holiday Scene",
+    "prompt": "Festive Christmas scene, decorated tree, warm cozy lighting, snow elements, holiday decorations, joyful atmosphere, family-friendly",
+    "style": "Holiday Photography",
+    "contentType": "scene",
+    "tags": ["christmas", "holiday", "festive", "winter"]
   },
   {
-    "Title": "Ocean Sunset Seascape",
-    "Prompt": "Stunning ocean sunset, vibrant colors, calm waters, horizon line, peaceful atmosphere, professional seascape photography, high quality",
-    "Style": "Nature & Wildlife"
+    "category": "Seasonal & Holiday",
+    "title": "Autumn Fall Colors",
+    "prompt": "Beautiful autumn landscape, vibrant fall foliage, red orange yellow leaves, crisp air atmosphere, cozy seasonal feeling",
+    "style": "Seasonal Photography",
+    "contentType": "landscape",
+    "tags": ["autumn", "fall", "leaves", "seasonal"]
   },
   {
-    "Title": "Forest Sunbeams Morning",
-    "Prompt": "Enchanting forest with sunbeams through trees, morning mist, natural lighting, peaceful atmosphere, landscape photography, detailed textures",
-    "Style": "Nature & Wildlife"
+    "category": "Seasonal & Holiday",
+    "title": "Spring Blossom",
+    "prompt": "Spring cherry blossom scene, pink flowers blooming, fresh green leaves, soft pastel colors, renewal and growth atmosphere",
+    "style": "Seasonal Photography",
+    "contentType": "landscape",
+    "tags": ["spring", "blossom", "flowers", "pink"]
   },
   {
-    "Title": "Wildlife Animal Portrait",
-    "Prompt": "Wildlife animal portrait, natural habitat, sharp focus on eyes, detailed fur textures, professional wildlife photography, 8K quality",
-    "Style": "Nature & Wildlife"
+    "category": "Seasonal & Holiday",
+    "title": "Summer Beach Vibes",
+    "prompt": "Summer beach scene, bright sunny day, turquoise water, white sand, palm trees, vacation mood, tropical paradise",
+    "style": "Seasonal Photography",
+    "contentType": "landscape",
+    "tags": ["summer", "beach", "tropical", "vacation"]
   },
   {
-    "Title": "Aliens Walking in City Street",
-    "Prompt": "Ultra-realistic cinematic scene of humanoid aliens walking hand-in-hand down a crowded city street at sunset. Soft dramatic lighting, moody atmosphere, New York–style background, realistic skin textures, 8K film still.",
-    "Style": "Cinematic Sci-Fi Realism"
+    "category": "Seasonal & Holiday",
+    "title": "Halloween Spooky",
+    "prompt": "Halloween themed scene, spooky atmosphere, pumpkins and decorations, orange and purple color scheme, playful scary aesthetic",
+    "style": "Holiday Photography",
+    "contentType": "scene",
+    "tags": ["halloween", "spooky", "holiday", "festive"]
   },
   {
-    "Title": "Modern Bedroom with Forest View",
-    "Prompt": "Hyper-detailed luxury modern bedroom interior with tall stone accent wall, vertical indoor garden, minimalist furniture, warm fire glowing in a built-in fireplace, large windows showing forest view. Ultra-realistic render, 8K HDR.",
-    "Style": "Interior Visualization"
+    "category": "Portrait Styles",
+    "title": "Dramatic Low Key Portrait",
+    "prompt": "Dramatic low key portrait, dark moody lighting, single light source, strong shadows, intense expression, cinematic atmosphere",
+    "style": "Dramatic Portrait",
+    "contentType": "portrait",
+    "tags": ["portrait", "dramatic", "low key", "moody"]
   },
   {
-    "Title": "Woman in Orange Veil",
-    "Prompt": "Artistic cinematic portrait of a mysterious woman draped in a translucent flowing orange veil, facing away from the camera, soft misty background, ethereal atmosphere, painterly cinematic photography, ultra-detailed fabric textures.",
-    "Style": "Cinematic Fine Art"
+    "category": "Portrait Styles",
+    "title": "High Key Bright Portrait",
+    "prompt": "High key bright portrait, soft white background, minimal shadows, fresh clean look, optimistic mood, beauty photography style",
+    "style": "High Key Portrait",
+    "contentType": "portrait",
+    "tags": ["portrait", "bright", "high key", "clean"]
   },
   {
-    "Title": "Freckled Woman Portrait",
-    "Prompt": "Ultra-realistic close-up portrait of a young woman with natural freckles, short auburn hair, soft golden hour sunlight, minimal natural makeup, radiant smile, highly detailed skin texture, 8K DSLR photo realism.",
-    "Style": "Portrait Photography"
+    "category": "Portrait Styles",
+    "title": "Environmental Portrait",
+    "prompt": "Environmental portrait, subject in their natural setting, context and background tell story, documentary style, authentic moment",
+    "style": "Environmental Portrait",
+    "contentType": "portrait",
+    "tags": ["portrait", "environmental", "documentary", "authentic"]
   },
   {
-    "Title": "Puppies at Tea Party",
-    "Prompt": "Adorable hyper-realistic puppies sitting in a pastel-colored toy tea party setup with cups, sweets, and heart-decorated gift boxes. Bright soft lighting, ultra-cute Pixar-level detail, cinematic shallow depth of field.",
-    "Style": "Whimsical Animal Photography"
+    "category": "Portrait Styles",
+    "title": "Vintage Film Portrait",
+    "prompt": "Vintage film portrait, soft muted colors, grain texture, nostalgic 1970s aesthetic, natural lighting, timeless quality",
+    "style": "Vintage Portrait",
+    "contentType": "portrait",
+    "tags": ["portrait", "vintage", "film", "nostalgic"]
   },
   {
-    "Title": "Dinosaur Riding Scooter",
-    "Prompt": "Cartoon-style but ultra-detailed image of a chubby dinosaur joyfully riding a vintage Vespa scooter. Dynamic motion blur, sunny street background, stylized realism, high detail textures.",
-    "Style": "Stylized Cartoon Realism"
+    "category": "Portrait Styles",
+    "title": "Street Portrait Candid",
+    "prompt": "Street photography portrait, candid authentic moment, urban environment, natural expression, documentary style, raw and real",
+    "style": "Street Portrait",
+    "contentType": "portrait",
+    "tags": ["portrait", "street", "candid", "urban"]
   },
   {
-    "Title": "Abstract Geometric Pattern",
-    "Prompt": "Abstract geometric pattern design, vibrant colors, symmetrical composition, modern aesthetic, digital art, high contrast, clean lines",
-    "Style": "Abstract & Artistic"
+    "category": "Text & Graphics",
+    "title": "Bold Typography Design",
+    "prompt": "Bold typography graphic design, modern font, vibrant colors, clean composition, professional poster style, eye-catching",
+    "style": "Graphic Design",
+    "contentType": "scene",
+    "tags": ["typography", "graphic design", "text", "poster"]
   },
   {
-    "Title": "Watercolor Abstract Art",
-    "Prompt": "Abstract watercolor painting, flowing colors, soft transitions, artistic interpretation, organic shapes, contemporary art style, high resolution",
-    "Style": "Abstract & Artistic"
+    "category": "Text & Graphics",
+    "title": "Minimalist Logo Design",
+    "prompt": "Minimalist logo design, simple clean shapes, modern aesthetic, versatile for various sizes, professional branding quality",
+    "style": "Logo Design",
+    "contentType": "object",
+    "tags": ["logo", "branding", "minimalist", "design"]
   },
   {
-    "Title": "Minimalist Line Art",
-    "Prompt": "Minimalist line art illustration, clean simple lines, modern aesthetic, black and white, elegant composition, contemporary design",
-    "Style": "Abstract & Artistic"
+    "category": "Text & Graphics",
+    "title": "Vintage Poster Art",
+    "prompt": "Vintage poster art design, retro typography, distressed textures, warm color palette, 1960s graphic design aesthetic",
+    "style": "Vintage Design",
+    "contentType": "scene",
+    "tags": ["poster", "vintage", "retro", "graphic"]
   },
   {
-    "Title": "Cyberpunk Neon Portrait",
-    "Prompt": "Cyberpunk portrait with neon lighting, futuristic aesthetic, vibrant colors, urban background, sci-fi atmosphere, high-tech style, 8K quality",
-    "Style": "Sci-Fi & Fantasy"
-  },
-  {
-    "Title": "Christmas Winter Scene",
-    "Prompt": "Festive Christmas scene, snow-covered landscape, warm lights, cozy atmosphere, holiday decorations, winter wonderland, professional photography",
-    "Style": "Holiday & Seasonal"
-  },
-  {
-    "Title": "Halloween Spooky Atmosphere",
-    "Prompt": "Halloween themed scene, spooky atmosphere, autumn colors, carved pumpkins, mysterious lighting, festive decorations, cinematic quality",
-    "Style": "Holiday & Seasonal"
-  },
-  {
-    "Title": "Valentines Day Romantic",
-    "Prompt": "Romantic Valentine's Day scene, soft pink and red tones, roses, elegant composition, love-themed, professional photography, beautiful lighting",
-    "Style": "Holiday & Seasonal"
-  },
-  {
-    "Title": "Professional Headshot Studio",
-    "Prompt": "Professional headshot, clean background, studio lighting, confident expression, business appropriate, high resolution, 8K quality portrait",
-    "Style": "Professional Portraits"
-  },
-  {
-    "Title": "Creative Artist Portrait",
-    "Prompt": "Creative artist portrait, artistic background, natural lighting, expressive pose, authentic personality, professional photography, editorial quality",
-    "Style": "Professional Portraits"
-  },
-  {
-    "Title": "Athlete Action Portrait",
-    "Prompt": "Dynamic athlete portrait, action pose, sports environment, dramatic lighting, professional sports photography, high energy composition",
-    "Style": "Professional Portraits"
-  },
-  {
-    "Title": "Bold Typography Design",
-    "Prompt": "Bold typography design, modern font, clean layout, professional graphic design, high contrast, eye-catching composition, print ready",
-    "Style": "Text & Typography"
-  },
-  {
-    "Title": "Vintage Typography Poster",
-    "Prompt": "Vintage typography poster design, retro aesthetic, classic fonts, aged texture, nostalgic style, professional graphic design",
-    "Style": "Text & Typography"
-  },
-  {
-    "Title": "Gaming Character Concept",
-    "Prompt": "Gaming character concept art, detailed armor, fantasy weapons, dynamic pose, professional game art, high detail, 8K quality illustration",
-    "Style": "Gaming & Entertainment"
-  },
-  {
-    "Title": "Movie Poster Dramatic",
-    "Prompt": "Cinematic movie poster design, dramatic composition, bold title placement, professional photography, theatrical quality, high impact visual",
-    "Style": "Gaming & Entertainment"
-  },
-  {
-    "Title": "Medical Illustration Anatomy",
-    "Prompt": "Medical illustration, anatomical accuracy, clean professional style, educational quality, scientific visualization, detailed rendering",
-    "Style": "Scientific & Medical"
-  },
-  {
-    "Title": "Scientific Data Visualization",
-    "Prompt": "Scientific data visualization, clean infographic style, professional charts, educational quality, clear information design, high resolution",
-    "Style": "Scientific & Medical"
-  },
-  {
-    "Title": "Real Estate Property Exterior",
-    "Prompt": "Real estate property exterior photography, blue sky, professional composition, well-lit, appealing curb appeal, real estate marketing quality",
-    "Style": "Real Estate"
-  },
-  {
-    "Title": "Real Estate Interior Staging",
-    "Prompt": "Real estate interior photography, professional staging, bright natural light, wide angle, clean composition, property listing quality",
-    "Style": "Real Estate"
-  },
-  {
-    "Title": "Sci-Fi Wormhole in Clouds",
-    "Prompt": "Dark cinematic sci-fi scene of a massive wormhole tearing open in stormy clouds, glowing with fiery light and swirling energy. Highly detailed volumetric lighting, epic scale, ultra-realistic VFX style.",
-    "Style": "Sci-Fi Concept Art"
-  },
-  {
-    "Title": "Pink Elephant on Nail Polish",
-    "Prompt": "Surreal whimsical pink baby elephant balancing on a giant glittery nail polish bottle against a dreamy pastel sky. Ultra-realistic textures, fantasy surrealism, Pixar-inspired rendering.",
-    "Style": "Surreal Whimsical 3D Art"
-  },
-  {
-    "Title": "Tiny Kitten on Finger",
-    "Prompt": "Ultra-realistic tiny kitten standing on a person's fingertip inside a cozy living room. Shallow depth of field, soft background blur, cinematic lighting, high detail fur textures.",
-    "Style": "Cute Macro Pet Photography"
-  },
-  {
-    "Title": "Streetwear Model on Rooftop",
-    "Prompt": "Urban fashion photo of a young man wearing streetwear hoodie and baggy pants, sitting on top of a skyscraper rooftop in the city. Ultra-realistic editorial style, dramatic background.",
-    "Style": "Street Fashion Editorial"
-  },
-  {
-    "Title": "Giant Cat in City",
-    "Prompt": "Hyper-realistic giant tabby cat towering over a Japanese city street with cars and people around it. Photorealism with playful scale surrealism.",
-    "Style": "Surreal Realism"
-  },
-  {
-    "Title": "Cherry Blossom Bridge",
-    "Prompt": "Serene Japanese garden scene with stone bridge under blooming cherry blossoms. Vibrant colors, tranquil water reflections, ultra-realistic render.",
-    "Style": "Landscape Digital Painting"
-  },
-  {
-    "Title": "Robot Mother with Baby",
-    "Prompt": "Dark futuristic sci-fi scene of a humanoid robot mother with transparent womb showing glowing robotic baby inside. Metallic textures, cinematic dramatic lighting, ultra-realistic detail.",
-    "Style": "Cyberpunk Sci-Fi Concept Art"
+    "category": "Text & Graphics",
+    "title": "Neon Sign Typography",
+    "prompt": "Neon light sign design, glowing text effect, urban nighttime atmosphere, vibrant colors against dark background, modern aesthetic",
+    "style": "Neon Design",
+    "contentType": "scene",
+    "tags": ["neon", "typography", "sign", "glow"]
+  },
+  {
+    "category": "Urban & Street",
+    "title": "City Street Photography",
+    "prompt": "Urban street photography, bustling city life, candid moments, architectural elements, documentary style, authentic urban culture",
+    "style": "Street Photography",
+    "contentType": "scene",
+    "tags": ["urban", "street", "city", "documentary"]
+  },
+  {
+    "category": "Urban & Street",
+    "title": "Night City Lights",
+    "prompt": "Night cityscape, glowing lights and neon signs, long exposure light trails, urban energy, cyberpunk atmosphere",
+    "style": "Night Photography",
+    "contentType": "scene",
+    "tags": ["night", "city", "lights", "urban"]
+  },
+  {
+    "category": "Urban & Street",
+    "title": "Industrial Architecture",
+    "prompt": "Industrial architecture photography, geometric structures, metal and concrete, dramatic angles, modern brutalist aesthetic",
+    "style": "Industrial Photography",
+    "contentType": "scene",
+    "tags": ["industrial", "architecture", "urban", "geometric"]
+  },
+  {
+    "category": "Urban & Street",
+    "title": "Graffiti Street Art",
+    "prompt": "Urban graffiti street art, colorful murals, raw artistic expression, textured walls, contemporary urban culture",
+    "style": "Street Art",
+    "contentType": "scene",
+    "tags": ["graffiti", "street art", "urban", "colorful"]
+  },
+  {
+    "category": "Sci-Fi & Fantasy",
+    "title": "Futuristic Cityscape",
+    "prompt": "Futuristic sci-fi cityscape, towering skyscrapers, flying vehicles, neon lights, advanced technology, cyberpunk aesthetic, 8K detail",
+    "style": "Sci-Fi Art",
+    "contentType": "scene",
+    "tags": ["sci-fi", "futuristic", "city", "technology"]
+  },
+  {
+    "category": "Sci-Fi & Fantasy",
+    "title": "Space Station Interior",
+    "prompt": "Space station interior, high-tech equipment, blue ambient lighting, astronauts, zero gravity effects, realistic sci-fi design",
+    "style": "Space Photography",
+    "contentType": "scene",
+    "tags": ["space", "sci-fi", "technology", "futuristic"]
+  },
+  {
+    "category": "Sci-Fi & Fantasy",
+    "title": "Fantasy Castle Landscape",
+    "prompt": "Epic fantasy castle, towering spires, mystical atmosphere, dramatic clouds, magical lighting, lord of the rings inspired",
+    "style": "Fantasy Art",
+    "contentType": "landscape",
+    "tags": ["fantasy", "castle", "medieval", "epic"]
+  },
+  {
+    "category": "Sci-Fi & Fantasy",
+    "title": "Dragon Fantasy Creature",
+    "prompt": "Majestic dragon creature, detailed scales, powerful wings, fantasy landscape, epic composition, game of thrones quality",
+    "style": "Fantasy Creature",
+    "contentType": "scene",
+    "tags": ["fantasy", "dragon", "creature", "epic"]
+  },
+  {
+    "category": "Sci-Fi & Fantasy",
+    "title": "Alien Planet Landscape",
+    "prompt": "Alien planet landscape, otherworldly terrain, multiple moons in sky, strange rock formations, sci-fi atmosphere, vivid colors",
+    "style": "Sci-Fi Landscape",
+    "contentType": "landscape",
+    "tags": ["alien", "planet", "sci-fi", "otherworldly"]
+  },
+  {
+    "category": "Black & White",
+    "title": "Classic Black & White Portrait",
+    "prompt": "Timeless black and white portrait, high contrast, dramatic lighting, strong shadows, emotional expression, classic photography",
+    "style": "Black & White",
+    "contentType": "portrait",
+    "tags": ["black and white", "portrait", "classic", "dramatic"]
+  },
+  {
+    "category": "Black & White",
+    "title": "Monochrome Landscape",
+    "prompt": "Dramatic black and white landscape, high contrast sky, textured clouds, strong composition, ansel adams inspired",
+    "style": "Black & White",
+    "contentType": "landscape",
+    "tags": ["black and white", "landscape", "monochrome", "dramatic"]
+  },
+  {
+    "category": "Black & White",
+    "title": "Street Photography B&W",
+    "prompt": "Black and white street photography, candid urban moments, strong contrast, documentary style, timeless aesthetic",
+    "style": "Black & White",
+    "contentType": "scene",
+    "tags": ["black and white", "street", "urban", "documentary"]
   }
 ]

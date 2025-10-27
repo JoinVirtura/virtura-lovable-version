@@ -382,7 +382,7 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative z-10 container mx-auto px-4 pt-16 pb-8">
+      <div className="relative z-10 container mx-auto px-4 pt-32 pb-8">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-4">
