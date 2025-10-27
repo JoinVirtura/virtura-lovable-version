@@ -456,6 +456,31 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                   </div>
                 </div>
 
+                {/* Reference Image Preview */}
+                {referenceImage && (
+                  <div className="flex items-center gap-3 p-3 bg-black/40 backdrop-blur-md rounded-lg border-2 border-primary/30">
+                    <div className="w-16 h-16 rounded-lg overflow-hidden bg-black/50 border border-primary/20">
+                      <img 
+                        src={referenceImage} 
+                        alt="Reference" 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-white">Reference Image</p>
+                      <p className="text-xs text-gray-400">This image will guide the generation</p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={removeReferenceImage}
+                      className="h-9 w-9 rounded-full bg-black/60 backdrop-blur-md border-2 border-red-500/30 text-red-400 hover:bg-red-500/20 hover:border-red-500/50 hover:shadow-[0_0_20px_rgba(239,68,68,0.5)] transition-all duration-300"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+
                 {/* Content Type & Style Selectors */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
