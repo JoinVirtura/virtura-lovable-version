@@ -98,7 +98,7 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
 
   return (
     <div 
-      className={`min-h-[600px] flex items-center justify-center transition-all duration-300 ${
+      className={`h-96 flex items-center justify-center transition-all duration-300 ${
         isDragOver ? 'bg-primary/5' : ''
       }`}
       onDrop={handleDrop}
@@ -144,40 +144,40 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
         </div>
       ) : (
         // Upload State
-        <div className="w-full max-w-md space-y-6 text-center px-6">
+        <div className="w-full max-w-md space-y-4 text-center px-6">
           {/* Dashed Circle Upload Icon */}
           <div className="flex justify-center">
             <div className="relative">
-              <div className="w-24 h-24 rounded-full border-2 border-dashed border-primary/40 flex items-center justify-center bg-primary/5">
+              <div className="w-20 h-20 rounded-full border-2 border-dashed border-primary/40 flex items-center justify-center bg-primary/5">
                 <Upload className="h-10 w-10 text-primary" />
               </div>
               {uploadProgress > 0 && uploadProgress < 100 && (
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <CircularProgress value={uploadProgress} size={96} className="text-primary" />
+                  <CircularProgress value={uploadProgress} size={80} className="text-primary" />
                 </div>
               )}
             </div>
           </div>
 
           {/* Heading */}
-          <div className="space-y-2">
-            <h2 className="text-2xl font-bold text-white">Upload Avatar Image</h2>
+          <div className="space-y-1">
+            <h2 className="text-xl font-bold text-white">Upload Avatar Image</h2>
             <p className="text-sm text-gray-400">
               {isDragOver ? 'Drop your image here' : 'Drag and drop or click to browse'}
             </p>
           </div>
 
           {/* Info Badges */}
-          <div className="flex items-center justify-center gap-4 text-xs text-gray-400">
-            <div className="flex items-center gap-1.5">
+          <div className="flex items-center justify-center gap-6 text-xs text-gray-400">
+            <div className="flex items-center gap-1">
               <div className="w-2 h-2 rounded-full bg-green-400" />
               <span>PNG, JPG, WebP</span>
             </div>
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1">
               <div className="w-2 h-2 rounded-full bg-blue-400" />
               <span>Max 10MB</span>
             </div>
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1">
               <div className="w-2 h-2 rounded-full bg-purple-400" />
               <span>4K Support</span>
             </div>
@@ -186,17 +186,17 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
           {/* Choose File Button */}
           <Button
             onClick={() => fileInputRef.current?.click()}
-            size="lg"
-            className="w-full max-w-xs"
+            variant="outline"
+            className="mt-2 bg-violet-500/10 border-violet-500/30 hover:bg-violet-500/20 hover:border-violet-400"
             disabled={uploadProgress > 0 && uploadProgress < 100}
           >
-            <FileImage className="h-5 w-5 mr-2" />
+            <Upload className="h-4 w-4 mr-2" />
             Choose File
           </Button>
 
           {/* Upload Progress */}
           {uploadProgress > 0 && uploadProgress < 100 && (
-            <div className="space-y-2 pt-4">
+            <div className="space-y-2 pt-2">
               <p className="text-sm font-medium text-white">Uploading... {uploadProgress}%</p>
             </div>
           )}
