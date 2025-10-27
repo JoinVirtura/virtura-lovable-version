@@ -1264,7 +1264,13 @@ export default function Dashboard() {
       case "studio":
         return (
           <StudioBackground>
-            <AIImageStudio />
+            <AIImageStudio 
+              editImage={selectedEditImage} 
+              onBackToLibrary={() => { 
+                setSelectedEditImage(null); 
+                setActiveView('library'); 
+              }} 
+            />
           </StudioBackground>
         );
       case "individuals":

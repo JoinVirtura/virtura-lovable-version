@@ -32,7 +32,8 @@ import {
   Mountain,
   Square,
   BookOpen,
-  X
+  X,
+  ArrowLeft
 } from "lucide-react";
 import { ImageGenerationService, type ImageGenerationParams } from "@/services/imageGenerationService";
 import { PromptLibrary } from "./PromptLibrary";
@@ -52,8 +53,18 @@ interface PreviewCard {
   };
 }
 
-export const AIImageStudio = () => {
-  const [prompt, setPrompt] = useState("");
+interface AIImageStudioProps {
+  editImage?: {
+    imageUrl: string;
+    prompt: string;
+    title: string;
+    dbId?: string;
+  } | null;
+  onBackToLibrary?: () => void;
+}
+
+export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps = {}) => {
+  const [prompt, setPrompt] = useState(editImage?.prompt || "");
   const [negativePrompt, setNegativePrompt] = useState("blurry, low quality, distorted, unrealistic, text, watermark, signature");
   const [contentType, setContentType] = useState<string>("auto");
   const [style, setStyle] = useState("photorealistic");
@@ -67,7 +78,7 @@ export const AIImageStudio = () => {
   const [showPromptLibrary, setShowPromptLibrary] = useState(false);
   const [previewCards, setPreviewCards] = useState<PreviewCard[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [referenceImage, setReferenceImage] = useState<string | null>(null);
+  const [referenceImage, setReferenceImage] = useState<string | null>(editImage?.imageUrl || null);
   const [isUploading, setIsUploading] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState<string | null>(null);
   const [savingToLibrary, setSavingToLibrary] = useState<string | null>(null);
@@ -355,9 +366,21 @@ export const AIImageStudio = () => {
       <div className="relative z-10 container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-4">
-            AI Image Studio
-          </h1>
+          <div className="flex items-center justify-center gap-4 mb-4">
+            {onBackToLibrary && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onBackToLibrary}
+                className="text-muted-foreground hover:text-foreground hover:bg-accent"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+            )}
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              AI Image Studio
+            </h1>
+          </div>
           <p className="text-lg text-muted-foreground">
             Create stunning, professional-quality images with advanced AI technology
           </p>
