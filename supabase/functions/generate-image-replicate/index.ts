@@ -177,15 +177,13 @@ serve(async (req) => {
       const wantsModification = detectModificationIntent(prompt);
       
       if (wantsModification) {
-        // Use FLUX 1.1 Pro for prompt-based modifications
-        model = 'black-forest-labs/flux-1.1-pro';
+        // Use FLUX Kontext Pro for identity-preserving image editing
+        model = 'black-forest-labs/flux-kontext-pro';
         
-        // Enhanced prompt for modifications
-        finalPrompt = `Using the reference image as a base, apply these changes: ${prompt}. Maintain the same person's identity and overall composition, but modify as requested. High quality, photorealistic.`;
+        // Direct prompt for editing instructions
+        finalPrompt = prompt;
         
-        negativePrompt = "multiple people, extra limbs, distorted face, blurry, low quality, deformed";
-        
-        console.log('✏️ MODIFICATION MODE: Using FLUX 1.1 Pro for prompted edits');
+        console.log('✏️ MODIFICATION MODE: Using FLUX Kontext Pro for image editing');
       } else {
         // Use Redux for style transfer (artistic styles)
         model = 'black-forest-labs/flux-redux-schnell';
@@ -260,6 +258,23 @@ serve(async (req) => {
             guidance_scale: 2.5 // Redux works better with lower guidance
           }
         });
+      } else if (model === 'black-forest-labs/flux-kontext-pro') {
+        // FLUX Kontext Pro - specialized for image editing with reference
+        console.log('🖌️ Using FLUX Kontext Pro for image editing');
+        
+        output = await replicate.run(model, {
+          input: {
+            prompt: finalPrompt,
+            input_image: referenceImage,
+            aspect_ratio: aspectRatio === '1:1' ? '1:1' : aspectRatio === '16:9' ? '16:9' : aspectRatio === '9:16' ? '9:16' : '1:1',
+            output_format: "png",
+            output_quality: 100,
+            num_inference_steps: 50,
+            guidance_scale: 3.5
+          }
+        });
+        
+        console.log('✅ FLUX Kontext Pro editing complete');
       } else if (model === 'black-forest-labs/flux-schnell' || model === 'black-forest-labs/flux-1.1-pro') {
         // FLUX models - optimized for maximum quality
         const fluxInput: any = {
@@ -271,13 +286,6 @@ serve(async (req) => {
           num_inference_steps: model === 'black-forest-labs/flux-1.1-pro' ? 50 : 4,
           guidance_scale: 3.5
         };
-        
-        // Add reference image for FLUX 1.1 Pro if provided
-        if (referenceImage && model === 'black-forest-labs/flux-1.1-pro') {
-          fluxInput.image = referenceImage; // Reference image for modifications
-          fluxInput.prompt_strength = 0.8; // Balance between prompt and image (0.8 = strong prompt influence)
-          console.log('🖼️ Using reference image with FLUX 1.1 Pro');
-        }
         
         // Add negative prompt if available
         if (negativePrompt && model === 'black-forest-labs/flux-1.1-pro') {
