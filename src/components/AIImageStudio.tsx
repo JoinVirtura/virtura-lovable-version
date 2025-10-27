@@ -363,7 +363,7 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative z-10 container mx-auto px-4 py-8">
+      <div className="relative z-10 container mx-auto px-4 pt-16 pb-8">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-4">
@@ -526,14 +526,11 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-black/95 backdrop-blur-xl border-2 border-primary/30">
-                        {qualityPresets.map((preset) => (
-                          <SelectItem key={preset.value} value={preset.value}>
-                            <div className="flex flex-col">
-                              <span>{preset.label}</span>
-                              <span className="text-xs text-muted-foreground">{preset.description}</span>
-                            </div>
-                          </SelectItem>
-                        ))}
+                    {qualityPresets.map((preset) => (
+                      <SelectItem key={preset.value} value={preset.value}>
+                        {preset.label}
+                      </SelectItem>
+                    ))}
                       </SelectContent>
                     </Select>
                   </div>
