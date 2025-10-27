@@ -1,39 +1,15 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { CircularProgress } from '@/components/ui/circular-progress';
 import {
   Upload,
-  Camera,
-  Sparkles,
-  Wand2,
-  Image as ImageIcon,
-  Library,
-  Zap,
-  Settings,
-  Loader2,
-  RefreshCw,
-  Crown,
-  Star,
-  Heart,
-  ChevronDown,
-  Send,
-  Mic,
-  ImagePlus,
-  X
+  Check,
+  ArrowRight,
+  ImageIcon
 } from 'lucide-react';
-import { AvatarLibrary } from './AvatarLibrary';
-import { RealAvatarLibrary } from './RealAvatarLibrary';
 import type { StudioProject } from '@/hooks/useStudioProject';
 
 interface AvatarGenerationStudioProps {
@@ -41,56 +17,30 @@ interface AvatarGenerationStudioProps {
   onUpdate: (updates: Partial<StudioProject>) => void;
   onGenerate: (config: any) => Promise<void>;
   isProcessing: boolean;
+  onStepComplete?: () => void;
 }
-
-const STYLE_PRESETS = [
-  { id: 'realistic', name: 'Hyper Realistic', icon: Camera, description: 'Photo-realistic quality' },
-  { id: 'pixar', name: 'Pixar Style', icon: Sparkles, description: '3D animated look' },
-  { id: 'cinematic', name: 'Cinematic', icon: Star, description: 'Film-grade quality' },
-  { id: 'anime', name: 'Anime Style', icon: Wand2, description: 'Japanese animation' },
-  { id: 'vintage', name: 'Vintage', icon: Crown, description: 'Classic portrait style' }
-];
-
-const QUALITY_SETTINGS = [
-  { value: 'HD', label: 'HD (1080p)', description: 'High Definition' },
-  { value: '4K', label: '4K Ultra', description: 'Ultra High Definition' },
-  { value: '8K', label: '8K Cinema', description: 'Cinema Grade Quality' }
-];
 
 export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
   project,
   onUpdate,
   onGenerate,
-  isProcessing
+  isProcessing,
+  onStepComplete
 }) => {
-  const [activeTab, setActiveTab] = useState('upload');
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [generationPrompt, setGenerationPrompt] = useState('');
-  const [selectedStyle, setSelectedStyle] = useState('realistic');
-  const [quality, setQuality] = useState<'HD' | '4K' | '8K'>('4K');
-  const [faceConsistency, setFaceConsistency] = useState(85);
-  const [contentType, setContentType] = useState<'portrait' | 'landscape' | 'object' | 'abstract' | 'scene' | 'auto'>('auto');
-  const [aspectRatio, setAspectRatio] = useState<'1:1' | '16:9' | '9:16' | '4:3'>('1:1');
-  const [showAdvanced, setShowAdvanced] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
-  const [processingStage, setProcessingStage] = useState<string>('');
-  const [processingProgress, setProcessingProgress] = useState(0);
-  const [estimatedTime, setEstimatedTime] = useState(0);
-  const [generatedResult, setGeneratedResult] = useState<any>(null);
-  const [savedAvatars, setSavedAvatars] = useState<Set<string>>(new Set());
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const imageInputRef = useRef<HTMLInputElement>(null);
-  const recognitionRef = useRef<any>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
-  const [isRecording, setIsRecording] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { toast } = useToast();
 
   const handleFileUpload = useCallback(async (file: File) => {
     if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload an image file (JPG, PNG, WEBP)",
+        variant: "destructive"
+      });
       return;
     }
 
@@ -109,21 +59,33 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
 
     // Create object URL for preview
     const imageUrl = URL.createObjectURL(file);
+    setUploadedImage(imageUrl);
     
     onUpdate({
       avatar: {
         type: 'upload',
         originalUrl: imageUrl,
         status: 'completed',
-        quality: quality as any,
+        quality: '4K',
         metadata: {
-          resolution: `${quality} (${file.size} bytes)`,
+          resolution: `4K (${Math.round(file.size / 1024)}KB)`,
           faceAlignment: 95,
-          consistency: faceConsistency
+          consistency: 90
         }
       }
     });
-  }, [quality, faceConsistency, onUpdate]);
+
+    // Show success toast
+    toast({
+      title: "✓ Avatar uploaded!",
+      description: "Proceeding to style transfer..."
+    });
+
+    // Auto-advance to Style step after 1 second
+    setTimeout(() => {
+      onStepComplete?.();
+    }, 1000);
+  }, [onUpdate, onStepComplete, toast]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -137,673 +99,136 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
     }
   }, [handleFileUpload]);
 
-  const handleGeneratePerfectAvatar = async () => {
-    if (!generationPrompt.trim()) return;
-
-    try {
-      console.log('🎯 Generation Request:', {
-        userPrompt: generationPrompt,
-        selectedContentType: contentType,
-        selectedQuality: quality,
-        selectedAspectRatio: aspectRatio,
-        selectedStyle: selectedStyle
-      });
-      
-      // Reset states
-      setGeneratedResult(null);
-      setProcessingProgress(0);
-      setProcessingStage('Generating Perfect Avatar...');
-      setEstimatedTime(30);
-
-      const { ImageGenerationService } = await import('@/services/imageGenerationService');
-      
-      const baseParams = {
-        prompt: generationPrompt,
-        contentType: contentType,
-        style: selectedStyle === 'realistic' ? 'photorealistic' : selectedStyle,
-        aspectRatio: aspectRatio,
-        resolution: quality === '8K' ? '1536x1536' as const : 
-                   quality === '4K' ? '1024x1024' as const : '512x512' as const,
-        quality: quality === '8K' ? 'ultra' as const : 
-                 quality === '4K' ? 'balanced' as const : 'speed' as const,
-        enhance: true,
-        steps: quality === '8K' ? 50 : quality === '4K' ? 35 : 20,
-        adherence: quality === '8K' ? 12.0 : quality === '4K' ? 10.0 : 7.5
-      };
-
-      // Simulate progress during generation
-      const progressInterval = setInterval(() => {
-        setProcessingProgress(prev => {
-          if (prev >= 90) {
-            clearInterval(progressInterval);
-            return 90;
-          }
-          return prev + Math.random() * 10;
-        });
-      }, 800);
-
-      // Generate single perfect avatar with Replicate
-      const result = await ImageGenerationService.generateImage({
-        ...baseParams,
-        contentType: contentType,
-        aspectRatio: aspectRatio,
-        provider: 'replicate'
-      });
-      
-      clearInterval(progressInterval);
-      setProcessingProgress(100);
-      setGeneratedResult(result);
-      
-      console.log('✅ Image generated successfully:', result.image);
-      
-      // Save successful generation to library and update preview immediately
-      if (result.success && result.image) {
-        try {
-          const { supabase } = await import('@/integrations/supabase/client');
-          const { data: { user } } = await supabase.auth.getUser();
-          
-          if (user) {
-            await supabase.from('avatar_library').insert({
-              user_id: user.id,
-              image_url: result.image,
-              prompt: generationPrompt,
-              title: `Perfect ${selectedStyle} Avatar - ${quality}`,
-              tags: [selectedStyle, quality, 'AI Generated', 'Perfect', 'Single']
-            });
-            console.log('💾 Saved to library successfully');
-          }
-        } catch (error) {
-          console.warn('⚠️ Failed to save to library:', error);
-        }
-        
-        // ✅ Immediately update the Live Preview with the generated avatar
-        console.log('🎨 Updating Live Preview with generated image');
-        onUpdate({
-          avatar: {
-            type: 'generate',
-            originalUrl: result.image,
-            status: 'completed',
-            quality: quality as any,
-            metadata: {
-              resolution: result.metadata?.resolution || `${quality} (Generated)`,
-              faceAlignment: 98,
-              consistency: faceConsistency,
-              processingTime: result.metadata?.processingTime || '30s'
-            }
-          }
-        });
-      }
-
-      setProcessingStage(result.success ? 'Perfect Avatar Generated!' : 'Generation Failed');
-      setTimeout(() => {
-        setProcessingStage('');
-        setEstimatedTime(0);
-      }, 2000);
-
-    } catch (error) {
-      console.error('Avatar generation failed:', error);
-      setProcessingStage('Generation failed');
-      setTimeout(() => {
-        setProcessingStage('');
-        setEstimatedTime(0);
-      }, 3000);
-    }
-  };
-
-  const selectGeneratedAvatar = () => {
-    if (generatedResult?.success && generatedResult?.image) {
-      onUpdate({
-        avatar: {
-          type: 'generate',
-          originalUrl: generatedResult.image,
-          status: 'completed',
-          quality: quality as any,
-          metadata: {
-            resolution: generatedResult.metadata?.resolution || `${quality} (Generated)`,
-            faceAlignment: 98,
-            consistency: faceConsistency,
-            processingTime: generatedResult.metadata?.processingTime || '30s'
-          }
-        }
-      });
-    }
-  };
-
-  const handleSaveToLibrary = async (imageUrl: string) => {
-    try {
-      const { supabase } = await import('@/integrations/supabase/client');
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        console.error('❌ No user found, cannot save to library');
-        return;
-      }
-      
-      await supabase.from('avatar_library').insert({
-        user_id: user.id,
-        image_url: imageUrl,
-        prompt: generationPrompt,
-        title: `${selectedStyle} Avatar - ${quality}`,
-        tags: [selectedStyle, quality, 'AI Generated', 'Saved']
-      });
-      
-      setSavedAvatars(prev => new Set([...prev, imageUrl]));
-      
-      console.log('✅ Avatar saved to library successfully');
-    } catch (error) {
-      console.error('❌ Failed to save to library:', error);
-    }
-  };
-
-  const handleVoiceInput = async () => {
-    // If already recording, stop it
-    if (isRecording) {
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-        mediaRecorderRef.current.stop();
-      }
-      return;
-    }
-
-    // Check if MediaRecorder is supported (works in all modern browsers)
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      toast({
-        title: "Not Supported",
-        description: "Voice input is not supported in this browser. Please use a modern browser.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    try {
-      // Request microphone access
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      
-      // Create MediaRecorder
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
-      audioChunksRef.current = [];
-
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
-        }
-      };
-
-      mediaRecorder.onstop = async () => {
-        setIsRecording(false);
-        
-        // Stop all audio tracks
-        stream.getTracks().forEach(track => track.stop());
-        
-        // Create blob from recorded chunks
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        
-        // Show processing toast
-        toast({
-          title: "Processing",
-          description: "Transcribing your voice input...",
-        });
-
-        try {
-          // Convert blob to base64
-          const reader = new FileReader();
-          reader.readAsDataURL(audioBlob);
-          
-          reader.onloadend = async () => {
-            const base64Audio = (reader.result as string).split(',')[1];
-            
-            // Call Supabase Edge Function
-            const { data, error } = await supabase.functions.invoke('voice-transcribe-whisper', {
-              body: { audio: base64Audio }
-            });
-
-            if (error) {
-              throw error;
-            }
-
-            if (data?.text) {
-              // Append transcript to existing prompt
-              setGenerationPrompt(prev => {
-                const newPrompt = prev ? `${prev} ${data.text}` : data.text;
-                return newPrompt.trim();
-              });
-              
-              toast({
-                title: "Voice Input Received",
-                description: `Added: "${data.text}"`,
-              });
-            }
-          };
-        } catch (error) {
-          console.error('Transcription error:', error);
-          toast({
-            title: "Transcription Failed",
-            description: "Failed to transcribe audio. Please try again.",
-            variant: "destructive"
-          });
-        }
-      };
-
-      mediaRecorder.onerror = (event) => {
-        console.error('MediaRecorder error:', event);
-        setIsRecording(false);
-        toast({
-          title: "Recording Error",
-          description: "Failed to record audio. Please try again.",
-          variant: "destructive"
-        });
-      };
-
-      // Start recording
-      mediaRecorder.start();
-      setIsRecording(true);
-      
-      toast({
-        title: "Recording",
-        description: "Speak now... Click the mic again to stop.",
-      });
-
-    } catch (error: any) {
-      console.error('Failed to start voice recording:', error);
-      setIsRecording(false);
-      
-      let errorMessage = "Failed to access microphone";
-      if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
-        errorMessage = "Microphone access denied. Please allow microphone access in your browser settings.";
-      } else if (error.name === 'NotFoundError') {
-        errorMessage = "No microphone found. Please connect a microphone.";
-      }
-      
-      toast({
-        title: "Microphone Error",
-        description: errorMessage,
-        variant: "destructive"
-      });
-    }
-  };
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-        mediaRecorderRef.current.stop();
-      }
-      if (recognitionRef.current) {
-        recognitionRef.current.stop();
-        recognitionRef.current = null;
-      }
-    };
-  }, []);
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && file.type.startsWith('image/')) {
-      setSelectedImage(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const imageUrl = reader.result as string;
-        setImagePreview(imageUrl);
-        
-        // Update the live preview on the right side
-        onUpdate({
-          avatar: {
-            type: 'upload',
-            originalUrl: imageUrl,
-            status: 'completed',
-            quality: quality as any,
-            metadata: {
-              resolution: `Reference Image`,
-              faceAlignment: 95,
-              consistency: faceConsistency
-            }
-          }
-        });
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   return (
     <div className="space-y-6">
-      {/* Main Generation Interface */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-3 bg-black/40 backdrop-blur-md border-2 border-primary/30 p-1">
-          <TabsTrigger 
-            value="upload" 
-            className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary/20 data-[state=active]:to-secondary/20 data-[state=active]:border data-[state=active]:border-primary/40 data-[state=active]:shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all duration-300"
-          >
-            <Upload className="h-4 w-4" />
-            Upload Image
-          </TabsTrigger>
-          <TabsTrigger 
-            value="generate" 
-            className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary/20 data-[state=active]:to-secondary/20 data-[state=active]:border data-[state=active]:border-primary/40 data-[state=active]:shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all duration-300"
-          >
-            <Wand2 className="h-4 w-4" />
-            AI Generate
-          </TabsTrigger>
-          <TabsTrigger 
-            value="library" 
-            className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary/20 data-[state=active]:to-secondary/20 data-[state=active]:border data-[state=active]:border-primary/40 data-[state=active]:shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all duration-300"
-          >
-            <Library className="h-4 w-4" />
-            Avatar Library
-          </TabsTrigger>
-        </TabsList>
+      {/* Info Banner */}
+      <Card className="glass-card border-2 border-violet-500/30">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-3">
+            <ImageIcon className="h-5 w-5 text-violet-400" />
+            <div>
+              <p className="text-sm font-medium text-white">Upload Your Avatar</p>
+              <p className="text-xs text-gray-400">Upload an image to apply stunning artistic styles in the next step</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-        {/* Upload Tab */}
-        <TabsContent value="upload" className="space-y-6">
-          <Card 
-            className={`h-64 relative cursor-pointer transition-all duration-300 border-2 backdrop-blur-xl bg-black/60 ${
-              isDragOver ? 'border-primary/50 bg-primary/10 scale-[1.02] shadow-[0_0_30px_rgba(139,92,246,0.4)]' : 'border-dashed border-primary/30 hover:border-primary/50 hover:shadow-[0_0_25px_rgba(139,92,246,0.25)] hover:scale-[1.01]'
-            }`}
-            onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
-            onDragLeave={(e) => { e.preventDefault(); setIsDragOver(false); }}
-            onDrop={handleDrop}
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <CardContent className="h-full flex items-center justify-center">
-              <div className="text-center space-y-4">
-                <div className={`p-4 rounded-full border-2 border-dashed transition-all backdrop-blur-md ${
-                  isDragOver ? 'border-primary/60 bg-primary/20 scale-110 shadow-[0_0_20px_rgba(139,92,246,0.4)]' : 'border-primary/40 bg-black/40'
-                }`}>
+      {/* Upload Card */}
+      <Card 
+        className={`glass-card border-2 transition-all duration-300 cursor-pointer ${
+          isDragOver 
+            ? 'border-primary shadow-[0_0_30px_rgba(139,92,246,0.6)] scale-[1.02]' 
+            : uploadProgress === 100
+            ? 'border-green-500/50 shadow-[0_0_20px_rgba(34,197,94,0.3)]'
+            : 'border-primary/30 hover:border-primary/50'
+        }`}
+        onDrop={handleDrop}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setIsDragOver(true);
+        }}
+        onDragLeave={() => setIsDragOver(false)}
+        onClick={() => uploadProgress !== 100 && fileInputRef.current?.click()}
+      >
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            {uploadProgress === 100 ? (
+              <>
+                <Check className="h-5 w-5 text-green-400" />
+                Avatar Uploaded Successfully!
+              </>
+            ) : (
+              <>
+                <Upload className="h-5 w-5 text-primary" />
+                Upload Your Avatar Image
+              </>
+            )}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {uploadProgress === 100 && uploadedImage ? (
+            <div className="space-y-4">
+              <div className="relative aspect-square rounded-xl overflow-hidden border-2 border-green-500/30">
+                <img 
+                  src={uploadedImage} 
+                  alt="Uploaded avatar" 
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute top-2 right-2 bg-green-500/90 backdrop-blur-sm rounded-full p-2">
+                  <Check className="h-4 w-4 text-white" />
+                </div>
+              </div>
+              <div className="flex items-center justify-between p-4 bg-green-500/10 border border-green-500/30 rounded-xl">
+                <div className="flex items-center gap-2">
+                  <Check className="h-5 w-5 text-green-400" />
+                  <span className="text-sm text-green-400 font-medium">Ready for Style Transfer</span>
+                </div>
+                <ArrowRight className="h-5 w-5 text-green-400 animate-pulse" />
+              </div>
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setUploadProgress(0);
+                  setUploadedImage(null);
+                }}
+                variant="outline"
+                className="w-full"
+              >
+                Upload Different Image
+              </Button>
+            </div>
+          ) : (
+            <>
+              <div className="flex flex-col items-center justify-center py-12 px-4 border-2 border-dashed border-primary/30 rounded-xl bg-black/20 hover:bg-black/30 transition-colors">
+                <div className="p-4 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 mb-4">
                   <Upload className="h-8 w-8 text-primary" />
                 </div>
-                <div>
-                  <h3 className="font-semibold mb-1 text-white">Upload Avatar Image</h3>
-                  <p className="text-sm text-gray-400">
-                    Drop image here or click to upload • PNG, JPG, WebP up to 10MB
-                  </p>
+                <h3 className="text-lg font-semibold text-white mb-2">
+                  {isDragOver ? 'Drop image here!' : 'Drag & Drop or Click to Upload'}
+                </h3>
+                <p className="text-sm text-gray-400 text-center max-w-xs mb-4">
+                  Upload a high-quality photo for best results
+                </p>
+                <div className="flex flex-wrap gap-2 justify-center">
+                  <Badge variant="outline" className="bg-primary/10 border-primary/30">
+                    JPG, PNG, WEBP
+                  </Badge>
+                  <Badge variant="outline" className="bg-primary/10 border-primary/30">
+                    Max: 10MB
+                  </Badge>
+                  <Badge variant="outline" className="bg-primary/10 border-primary/30">
+                    Recommended: 1024x1024+
+                  </Badge>
                 </div>
               </div>
-            </CardContent>
-            
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) handleFileUpload(file);
-              }}
-            />
-          </Card>
 
-          {uploadProgress > 0 && uploadProgress < 100 && (
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>Processing image...</span>
-                <span>{uploadProgress}%</span>
-              </div>
-              <div className="w-full bg-muted rounded-full h-2">
-                <div 
-                  className="bg-gradient-to-r from-violet-500 to-blue-500 h-2 rounded-full transition-all duration-300 shadow-[0_0_15px_rgba(212,110,255,0.5)]"
-                  style={{ width: `${uploadProgress}%` }}
-                />
-              </div>
-            </div>
-          )}
-        </TabsContent>
-
-        {/* AI Generation Tab */}
-        <TabsContent value="generate" className="space-y-6">
-          <Card className="w-full border-2 border-primary/30 backdrop-blur-xl bg-black/60 shadow-2xl hover:shadow-[0_0_40px_rgba(139,92,246,0.2)] transition-all duration-300">
-            <CardContent className="pt-6 space-y-6">
-              {/* Chat-style Input with Action Buttons */}
-              <div className="space-y-3">
-                <div className="relative flex items-center gap-3">
-                  {/* Input field - takes remaining space */}
-                  <Textarea
-                    id="prompt"
-                    placeholder="Describe the image you want to create..."
-                    value={generationPrompt}
-                    onChange={(e) => setGenerationPrompt(e.target.value)}
-                    className="flex-1 min-h-[56px] max-h-[120px] resize-none bg-transparent border-0 focus-visible:ring-0 text-base text-white placeholder:text-gray-400 px-4 py-4"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey && generationPrompt.trim()) {
-                        e.preventDefault();
-                        handleGeneratePerfectAvatar();
-                      }
-                    }}
-                  />
-                  
-                  {/* Image Upload Button */}
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => imageInputRef.current?.click()}
-                    className="h-14 w-14 rounded-full bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300 flex-shrink-0"
-                    title="Upload reference image"
-                  >
-                    <ImagePlus className="h-5 w-5 text-primary" />
-                  </Button>
-                  
-                  {/* Hidden file input */}
-                  <input
-                    ref={imageInputRef}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleImageUpload}
-                  />
-                  
-                  {/* Microphone Button */}
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={handleVoiceInput}
-                    className={`h-14 w-14 rounded-full backdrop-blur-md border-2 transition-all duration-300 flex-shrink-0 ${
-                      isRecording 
-                        ? 'bg-red-500/20 border-red-400 hover:bg-red-500/30 shadow-[0_0_20px_rgba(239,68,68,0.5)]' 
-                        : 'bg-black/40 border-primary/30 hover:border-primary/50 hover:bg-primary/20 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)]'
-                    }`}
-                    title={isRecording ? "Stop recording" : "Voice input"}
-                  >
-                    <Mic className={`h-5 w-5 ${isRecording ? 'text-red-400 animate-pulse' : 'text-primary'}`} />
-                  </Button>
-                  
-                  {/* Send/Generate Button with Progress */}
-                  <div className="relative flex-shrink-0">
-                    {(isProcessing || processingStage !== '') && (
-                      <CircularProgress 
-                        value={processingProgress} 
-                        size={56}
-                        strokeWidth={3}
-                        className="absolute inset-0"
-                      />
-                    )}
-                    
-                    <Button
-                      onClick={handleGeneratePerfectAvatar}
-                      disabled={!generationPrompt.trim() || isProcessing || processingStage !== ''}
-                      size="icon"
-                      className="h-14 w-14 rounded-full bg-gradient-to-r from-primary to-secondary hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                      title="Generate Avatar (Enter)"
-                    >
-                      {isProcessing || processingStage !== '' ? (
-                        <Loader2 className="h-5 w-5 animate-spin text-white" />
-                      ) : (
-                        <Send className="h-5 w-5 text-white" />
-                      )}
-                    </Button>
-                  </div>
-                </div>
-
-              </div>
-
-              {/* Collapsible Advanced Settings */}
-              <Collapsible open={showAdvanced} onOpenChange={setShowAdvanced} className="mt-4">
-                <CollapsibleTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="w-full justify-center gap-2 text-gray-400 hover:text-primary hover:bg-primary/10 transition-all duration-300"
-                  >
-                    <Settings className="h-4 w-4" />
-                    Advanced Settings
-                    <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${showAdvanced ? 'rotate-180' : ''}`} />
-                  </Button>
-                </CollapsibleTrigger>
-                
-                <CollapsibleContent className="space-y-6 pt-6">
-                  {/* Quality Indicators */}
-                  <div className="flex items-center justify-between pb-4 border-b border-primary/20">
-                    <span className="text-sm text-gray-400">Quality Settings</span>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="secondary" className="text-xs bg-primary/10 border-primary/30 text-primary shadow-[0_0_10px_rgba(139,92,246,0.2)]">
-                        Neural Enhanced
-                      </Badge>
-                      <Badge variant="secondary" className="text-xs bg-primary/10 border-primary/30 text-primary shadow-[0_0_10px_rgba(139,92,246,0.2)]">
-                        {quality}
-                      </Badge>
-                    </div>
-                  </div>
-                  
-                  {/* Content Type Selection */}
-                  <div>
-                    <Label className="text-sm font-medium mb-3 block text-white">Content Type</Label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {[
-                        { id: 'portrait' as const, name: 'Portrait', icon: Camera, description: 'People & avatars' },
-                        { id: 'landscape' as const, name: 'Landscape', icon: Sparkles, description: 'Scenic views' },
-                        { id: 'object' as const, name: 'Object', icon: Star, description: 'Products & items' },
-                        { id: 'abstract' as const, name: 'Abstract', icon: Wand2, description: 'Artistic concepts' },
-                        { id: 'scene' as const, name: 'Scene', icon: Crown, description: 'Environmental shots' },
-                        { id: 'auto' as const, name: 'Auto', icon: Zap, description: 'Smart detection' }
-                      ].map((type) => (
-                        <Button
-                          key={type.id}
-                          variant={contentType === type.id ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setContentType(type.id)}
-                          className={`justify-start h-10 px-3 transition-all duration-300 ${
-                            contentType === type.id 
-                              ? 'bg-gradient-to-r from-primary/20 to-secondary/20 border-primary/40 shadow-[0_0_15px_rgba(139,92,246,0.3)]' 
-                              : 'bg-black/40 backdrop-blur-md border-primary/30 hover:bg-primary/10 hover:border-primary/50'
-                          }`}
-                          title={type.description}
-                        >
-                          <type.icon className="h-4 w-4 mr-2" />
-                          <span className="text-sm">{type.name}</span>
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Aspect Ratio Selection */}
-                  <div>
-                    <Label className="text-sm font-medium mb-3 block text-white">Aspect Ratio</Label>
-                    <div className="grid grid-cols-4 gap-2">
-                      {[
-                        { value: '1:1' as const, label: 'Square', emoji: '□' },
-                        { value: '16:9' as const, label: 'Wide', emoji: '▭' },
-                        { value: '9:16' as const, label: 'Tall', emoji: '▯' },
-                        { value: '4:3' as const, label: 'Classic', emoji: '▬' }
-                      ].map((ratio) => (
-                        <Button
-                          key={ratio.value}
-                          variant={aspectRatio === ratio.value ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setAspectRatio(ratio.value)}
-                          className={`h-10 transition-all duration-300 ${
-                            aspectRatio === ratio.value 
-                              ? 'bg-gradient-to-r from-primary/20 to-secondary/20 border-primary/40 shadow-[0_0_15px_rgba(139,92,246,0.3)]' 
-                              : 'bg-black/40 backdrop-blur-md border-primary/30 hover:bg-primary/10 hover:border-primary/50'
-                          }`}
-                        >
-                          <span className="text-lg mr-1">{ratio.emoji}</span>
-                          <span className="text-xs">{ratio.label}</span>
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Style Preset */}
-                  <div>
-                    <Label className="text-sm font-medium mb-3 block text-white">Style Preset</Label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {STYLE_PRESETS.map((style) => (
-                        <Button
-                          key={style.id}
-                          variant={selectedStyle === style.id ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setSelectedStyle(style.id)}
-                          className={`justify-start h-10 px-3 transition-all duration-300 ${
-                            selectedStyle === style.id 
-                              ? 'bg-gradient-to-r from-primary/20 to-secondary/20 border-primary/40 shadow-[0_0_15px_rgba(139,92,246,0.3)]' 
-                              : 'bg-black/40 backdrop-blur-md border-primary/30 hover:bg-primary/10 hover:border-primary/50'
-                          }`}
-                        >
-                          <style.icon className="h-4 w-4 mr-2" />
-                          <span className="text-sm">{style.name}</span>
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Quality Settings */}
-                  <div>
-                    <Label className="text-sm font-medium text-white">Quality Settings</Label>
-                    <Select value={quality} onValueChange={(value) => setQuality(value as 'HD' | '4K' | '8K')}>
-                      <SelectTrigger className="mt-2 bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:border-primary/50 transition-all duration-300">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-black/95 backdrop-blur-xl border-2 border-primary/30">
-                        {QUALITY_SETTINGS.map((setting) => (
-                          <SelectItem 
-                            key={setting.value} 
-                            value={setting.value}
-                            className="hover:bg-primary/10 focus:bg-primary/20"
-                          >
-                            {setting.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Face Consistency - only show for portrait mode */}
-                  {contentType === 'portrait' && (
+              {uploadProgress > 0 && uploadProgress < 100 && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-center gap-3">
+                    <CircularProgress value={uploadProgress} size={60} className="text-primary" />
                     <div>
-                      <Label className="text-sm font-medium text-white">
-                        Face Consistency: {faceConsistency}%
-                      </Label>
-                      <Slider
-                        value={[faceConsistency]}
-                        onValueChange={([value]) => setFaceConsistency(value)}
-                        max={100}
-                        min={50}
-                        step={5}
-                        className="mt-2 [&_[role=slider]]:bg-primary [&_[role=slider]]:border-primary/50 [&_[role=slider]]:shadow-[0_0_15px_rgba(139,92,246,0.4)]"
-                      />
+                      <p className="text-sm font-medium text-white">Uploading...</p>
+                      <p className="text-xs text-gray-400">{uploadProgress}% complete</p>
                     </div>
-                  )}
-                </CollapsibleContent>
-              </Collapsible>
-            </CardContent>
-          </Card>
-        </TabsContent>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
 
-        {/* Library Tab */}
-        <TabsContent value="library" className="space-y-6">
-          <RealAvatarLibrary
-            onSelectAvatar={(avatarUrl, metadata) => {
-              onUpdate({
-                avatar: {
-                  type: 'library',
-                  originalUrl: avatarUrl,
-                  status: 'completed',
-                  quality: '4K' as any,
-                  metadata
-                }
-              });
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handleFileUpload(file);
             }}
-            isProcessing={isProcessing}
+            className="hidden"
           />
-        </TabsContent>
-      </Tabs>
-
+        </CardContent>
+      </Card>
     </div>
   );
 };

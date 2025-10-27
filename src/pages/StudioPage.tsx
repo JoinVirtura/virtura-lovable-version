@@ -184,6 +184,9 @@ export default function StudioPage() {
                         onUpdate={updateProject}
                         onGenerate={generateAvatar}
                         isProcessing={isProcessing}
+                        onStepComplete={() => {
+                          setCurrentStep('style');
+                        }}
                       />
                     </ErrorBoundary>
                   </TabsContent>
