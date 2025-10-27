@@ -1,177 +1,367 @@
 [
   {
-    "Title":"Aliens Walking in City Street",
-    "Prompt":"Ultra-realistic cinematic scene of humanoid aliens walking hand-in-hand down a crowded city street at sunset. Soft dramatic lighting, moody atmosphere, New York\u2013style background, realistic skin textures, 8K film still.",
-    "Style":"Cinematic Sci-Fi Realism"
+    "Title": "Add Natural Freckles",
+    "Prompt": "Add natural, subtle freckles across nose and cheeks, realistic skin texture, maintain original lighting and composition, photorealistic detail, 8K quality",
+    "Style": "Portrait Enhancement"
   },
   {
-    "Title":"Modern Bedroom with Forest View",
-    "Prompt":"Hyper-detailed luxury modern bedroom interior with tall stone accent wall, vertical indoor garden, minimalist furniture, warm fire glowing in a built-in fireplace, large windows showing forest view. Ultra-realistic render, 8K HDR.",
-    "Style":"Interior Visualization"
+    "Title": "Change Weather - Rainy to Sunny",
+    "Prompt": "Replace rainy weather with bright sunny day, add fluffy white clouds, warm golden sunlight, blue sky, maintain original composition and subjects",
+    "Style": "Weather Transformation"
   },
   {
-    "Title":"Woman in Orange Veil",
-    "Prompt":"Artistic cinematic portrait of a mysterious woman draped in a translucent flowing orange veil, facing away from the camera, soft misty background, ethereal atmosphere, painterly cinematic photography, ultra-detailed fabric textures.",
-    "Style":"Cinematic Fine Art \/ Concept Photography"
+    "Title": "Professional Studio Background",
+    "Prompt": "Remove current background, replace with professional studio gradient backdrop, soft lighting, clean modern aesthetic, maintain subject in focus",
+    "Style": "Background Replacement"
   },
   {
-    "Title":"Freckled Woman Portrait",
-    "Prompt":"Ultra-realistic close-up portrait of a young woman with natural freckles, short auburn hair, soft golden hour sunlight, minimal natural makeup, radiant smile, highly detailed skin texture, 8K DSLR photo realism.",
-    "Style":"Portrait Photography \/ Natural Light"
+    "Title": "Golden Hour Lighting",
+    "Prompt": "Add warm golden hour lighting effect, soft orange and pink tones, sunset atmosphere, long shadows, cinematic color grading, photorealistic",
+    "Style": "Lighting Enhancement"
   },
   {
-    "Title":"Puppies at Tea Party",
-    "Prompt":"Adorable hyper-realistic puppies sitting in a pastel-colored toy tea party setup with cups, sweets, and heart-decorated gift boxes. Bright soft lighting, ultra-cute Pixar-level detail, cinematic shallow depth of field.",
-    "Style":"Whimsical Animal Photography"
+    "Title": "Blue Hour Photography",
+    "Prompt": "Transform to blue hour timing, deep blue sky, subtle twilight glow, ambient street lights, moody atmospheric lighting, professional photography",
+    "Style": "Lighting Enhancement"
   },
   {
-    "Title":"Dinosaur Riding Scooter",
-    "Prompt":"Cartoon-style but ultra-detailed image of a chubby dinosaur joyfully riding a vintage Vespa scooter. Dynamic motion blur, sunny street background, stylized realism, high detail textures.",
-    "Style":"Stylized Cartoon Realism"
+    "Title": "Add Bokeh Background Effect",
+    "Prompt": "Add beautiful bokeh background blur with circular light spots, maintain sharp subject focus, shallow depth of field, professional portrait photography",
+    "Style": "Depth Enhancement"
   },
   {
-    "Title":"Map of Europe with Flag + Lights",
-    "Prompt":"Satellite view of Europe at night with glowing city lights, enhanced with an overlay of American flag waving across the continent, futuristic holographic visualization, high detail, digital realism.",
-    "Style":"Futuristic Infographic \/ Digital Art"
+    "Title": "Watercolor Painting Conversion",
+    "Prompt": "Convert photo to watercolor painting style, soft brush strokes, flowing colors, artistic interpretation, maintain composition, fine art quality",
+    "Style": "Artistic Transformation"
   },
   {
-    "Title":"Woman\u2019s Face with Frog",
-    "Prompt":"Macro ultra-realistic portrait of a woman\u2019s face with glowing makeup and shimmering eyeshadow, glitter details, vibrant pink tones, with a small green frog resting near her lips. Sharp textures, high detail 8K photography.",
-    "Style":"Fashion Editorial \/ Hyper-Realism"
+    "Title": "Oil Painting Style",
+    "Prompt": "Transform into classical oil painting, thick visible brush strokes, rich colors, Renaissance style, museum quality artwork, detailed textures",
+    "Style": "Artistic Transformation"
   },
   {
-    "Title":"Sci-Fi Wormhole in Clouds",
-    "Prompt":"Dark cinematic sci-fi scene of a massive wormhole tearing open in stormy clouds, glowing with fiery light and swirling energy. Highly detailed volumetric lighting, epic scale, ultra-realistic VFX style.",
-    "Style":"Sci-Fi Concept Art \/ Cinematic VFX"
+    "Title": "Vintage Film Look",
+    "Prompt": "Apply vintage film photography aesthetic, slight grain, faded colors, nostalgic atmosphere, 70s or 80s film quality, analog photography",
+    "Style": "Retro Effect"
   },
   {
-    "Title":"Pink Elephant on Nail Polish",
-    "Prompt":"Surreal whimsical pink baby elephant balancing on a giant glittery nail polish bottle against a dreamy pastel sky. Ultra-realistic textures, fantasy surrealism, Pixar-inspired rendering.",
-    "Style":"Surreal Whimsical 3D Art"
+    "Title": "Black and White Dramatic Portrait",
+    "Prompt": "Convert to high-contrast black and white, dramatic shadows, fine art photography, timeless aesthetic, studio quality monochrome",
+    "Style": "Monochrome Conversion"
   },
   {
-    "Title":"Snow White Crochet Forest",
-    "Prompt":"Charming handcrafted crochet-style Snow White character running through a fairytale forest with mushrooms, birds, and rabbits. Stylized toy-like realism, colorful and soft textures, cinematic storybook atmosphere.",
-    "Style":"Stylized Toy Photography \/ Fairytale Craft"
+    "Title": "Corporate Headshot Professional",
+    "Prompt": "Professional corporate headshot, business attire, clean background, confident expression, studio lighting, LinkedIn profile quality, 8K resolution",
+    "Style": "Professional Business"
   },
   {
-    "Title":"Tiny Kitten on Finger",
-    "Prompt":"Ultra-realistic tiny kitten standing on a person\u2019s fingertip inside a cozy living room. Shallow depth of field, soft background blur, cinematic lighting, high detail fur textures.",
-    "Style":"Cute Macro Pet Photography"
+    "Title": "Executive Leadership Portrait",
+    "Prompt": "Executive business portrait, formal attire, office environment, confident posture, professional lighting, corporate photography, high-end quality",
+    "Style": "Professional Business"
   },
   {
-    "Title":"Jumping Lamb",
-    "Prompt":"Ultra-detailed photo of a baby lamb leaping joyfully in mid-air against a clean neutral background. Motion freeze, 8K detail, soft fur textures.",
-    "Style":"Studio Animal Photography"
+    "Title": "Business Team Photo",
+    "Prompt": "Professional business team photo, diverse group, modern office setting, confident poses, corporate attire, professional photography, high resolution",
+    "Style": "Professional Business"
   },
   {
-    "Title":"Dancing Rabbit in Dress",
-    "Prompt":"Whimsical hyper-realistic rabbit wearing a flowing white dress dancing in the rain. Droplets in mid-air, dramatic cinematic lighting, 3D Pixar-like textures.",
-    "Style":"Anthropomorphic Fantasy Realism"
+    "Title": "Conference Speaker Portrait",
+    "Prompt": "Professional speaker portrait, confident expression, business casual attire, stage or podium background, dynamic lighting, professional quality",
+    "Style": "Professional Business"
   },
   {
-    "Title":"Pastel Winter Village",
-    "Prompt":"Charming miniature-style winter village with pastel houses, snowy rooftops, and pink car driving through. Dreamy fairy-tale color palette, tilt-shift effect, ultra detailed.",
-    "Style":"Miniature Diorama \/ Dreamlike Illustration"
+    "Title": "Instagram Story Template",
+    "Prompt": "Vertical 9:16 Instagram story design, vibrant colors, modern aesthetic, mobile-friendly layout, eye-catching composition, social media optimized",
+    "Style": "Social Media Content"
   },
   {
-    "Title":"Raspberry Macro",
-    "Prompt":"Macro ultra-realistic shot of a fresh raspberry with dewdrops, hyper-detailed textures, photorealistic food photography at 8K.",
-    "Style":"Food Macro Photography"
+    "Title": "Instagram Feed Post Square",
+    "Prompt": "Square 1:1 Instagram feed post, aesthetically pleasing, clean composition, vibrant colors, engaging visual, high quality, social media ready",
+    "Style": "Social Media Content"
   },
   {
-    "Title":"Streetwear Model on Rooftop",
-    "Prompt":"Urban fashion photo of a young man wearing streetwear hoodie and baggy pants, sitting on top of a skyscraper rooftop in the city. Ultra-realistic editorial style, dramatic background.",
-    "Style":"Street Fashion Editorial"
+    "Title": "YouTube Thumbnail Eye-Catching",
+    "Prompt": "16:9 YouTube thumbnail design, bold text, vibrant colors, high contrast, attention-grabbing, professional quality, clickable aesthetic",
+    "Style": "Social Media Content"
   },
   {
-    "Title":"Kitten Blowing Kiss",
-    "Prompt":"Adorable kitten perched on fingertip blowing a kiss. Cute expression, big glossy eyes, high detail fur, studio lighting.",
-    "Style":"Cute Pet Portrait"
+    "Title": "TikTok Video Cover",
+    "Prompt": "Vertical 9:16 TikTok cover image, trendy aesthetic, bold colors, dynamic composition, mobile-optimized, attention-grabbing, social media quality",
+    "Style": "Social Media Content"
   },
   {
-    "Title":"Sleeping Cat in Pajamas",
-    "Prompt":"Chubby ginger cat wearing plaid pajamas and glasses, peacefully sleeping with cozy warm fairy lights in the background. Whimsical realism, cinematic cozy vibe.",
-    "Style":"Cozy Animal Realism"
+    "Title": "Facebook Ad Creative",
+    "Prompt": "Professional Facebook ad image, clear focal point, compelling visual, product or service focused, high conversion design, marketing optimized",
+    "Style": "Marketing & Advertising"
   },
   {
-    "Title":"Floating Rose Sculpture",
-    "Prompt":"Digital art of vivid red roses breaking apart inside a transparent glass cube, floating petals in mid-air, ultra-detailed surreal 3D render.",
-    "Style":"Surreal Digital Art"
+    "Title": "Billboard Advertisement Design",
+    "Prompt": "Large format billboard advertisement, bold text, simple composition, high contrast, readable from distance, professional marketing quality",
+    "Style": "Marketing & Advertising"
   },
   {
-    "Title":"Knitted Globe",
-    "Prompt":"Detailed knitted globe of the Earth with colorful yarn continents, floating against soft background, macro texture detail.",
-    "Style":"Craft \/ Knitted Diorama"
+    "Title": "Magazine Ad Full Page",
+    "Prompt": "Full page magazine advertisement, premium aesthetic, sophisticated composition, professional photography, print-ready quality, high resolution",
+    "Style": "Marketing & Advertising"
   },
   {
-    "Title":"Cat as Anime Ninja",
-    "Prompt":"Anthropomorphic cat dressed as an anime ninja fighter, pink hair, martial arts stance, detailed costume, fantasy battle background.",
-    "Style":"Anime Anthropomorphism \/ Fantasy"
+    "Title": "Product Launch Hero Image",
+    "Prompt": "Hero image for product launch, dramatic lighting, clean composition, product focused, professional commercial photography, 8K quality",
+    "Style": "Marketing & Advertising"
   },
   {
-    "Title":"Cartoon Influencer Portrait",
-    "Prompt":"Stylized 3D cartoon avatar of a man sitting on a chair surrounded by floating social media logos (Facebook, Instagram, LinkedIn). Bright playful colors, Pixar-inspired digital illustration.",
-    "Style":"3D Cartoon Branding"
+    "Title": "White Background Product Photo",
+    "Prompt": "Professional product photography on pure white background, studio lighting, sharp details, e-commerce ready, commercial quality, no shadows",
+    "Style": "Product Photography"
   },
   {
-    "Title":"Glamorous Woman Portrait",
-    "Prompt":"Ultra-realistic glamorous portrait of a young woman with wavy brunette hair, glowing skin, soft makeup, off-shoulder top. Shot with cinematic lens, bokeh background, high detail 8K.",
-    "Style":"Fashion Beauty Portrait"
+    "Title": "Lifestyle Product Context",
+    "Prompt": "Product in lifestyle context, natural setting, real-world usage, appealing composition, professional photography, authentic aesthetic",
+    "Style": "Product Photography"
   },
   {
-    "Title":"Man Waiting at Train Station",
-    "Prompt":"Cinematic moody scene of a man holding a guitar case, standing alone at a rainy train station platform at night. Dramatic lighting, puddle reflections, misty atmosphere.",
-    "Style":"Cinematic Street Photography"
+    "Title": "Luxury Product Close-Up",
+    "Prompt": "Luxury product macro photography, premium materials, dramatic lighting, high-end aesthetic, detailed textures, commercial quality",
+    "Style": "Product Photography"
   },
   {
-    "Title":"Giant Grapes Harvest Scene",
-    "Prompt":"Surreal miniature farmers climbing ladders and harvesting giant oversized grapes. Hyper-detailed whimsical realism, macro diorama look.",
-    "Style":"Surreal Miniature Diorama"
+    "Title": "Floating Product on Color",
+    "Prompt": "Product floating on solid color background, studio lighting, clean composition, modern aesthetic, e-commerce photography, professional quality",
+    "Style": "Product Photography"
   },
   {
-    "Title":"Girl with Fabric Visor",
-    "Prompt":"Close-up portrait of a young girl with curly hair wearing a textured fabric visor over her eyes. Dreamy expression, painterly realism, soft natural light.",
-    "Style":"Fine Art Portrait Photography"
+    "Title": "Modern Architecture Exterior",
+    "Prompt": "Contemporary architecture exterior, clean lines, modern design, blue sky, professional architectural photography, sharp details, 8K quality",
+    "Style": "Architectural Visualization"
   },
   {
-    "Title":"Monkey in Louis Vuitton",
-    "Prompt":"Anthropomorphic monkey wearing full Louis Vuitton outfit with sunglasses, walking confidently on a fashion runway street. Ultra-detailed humorous realism.",
-    "Style":"Fashion Parody Realism"
+    "Title": "Luxury Interior Living Room",
+    "Prompt": "Luxury interior design living room, modern furniture, natural lighting, high-end finishes, professional interior photography, 8K resolution",
+    "Style": "Architectural Visualization"
   },
   {
-    "Title":"Giant Cat in City",
-    "Prompt":"Hyper-realistic giant tabby cat towering over a Japanese city street with cars and people around it. Photorealism with playful scale surrealism.",
-    "Style":"Surreal Realism \/ Kaiju Animal"
+    "Title": "Minimalist Kitchen Design",
+    "Prompt": "Minimalist modern kitchen interior, clean lines, white cabinets, natural materials, professional architectural visualization, high quality",
+    "Style": "Architectural Visualization"
   },
   {
-    "Title":"Glowing Fire Egg",
-    "Prompt":"Fantasy scene of a giant glowing egg made of molten lava and fiery cracks, floating in darkness. Epic cinematic lighting, ultra-detailed 3D rendering.",
-    "Style":"Fantasy Concept Art"
+    "Title": "Office Space Modern Design",
+    "Prompt": "Modern office interior design, open floor plan, natural lighting, contemporary furniture, professional workspace, architectural photography",
+    "Style": "Architectural Visualization"
   },
   {
-    "Title":"Candle in Glass with Tropical Scene",
-    "Prompt":"Creative surreal candle enclosed in a glass container with a miniature tropical jungle scene inside: waterfall, palm trees, wooden hut. Hyper-detailed, 8K.",
-    "Style":"Surreal Diorama Realism"
+    "Title": "Gourmet Dish Plating",
+    "Prompt": "Professional gourmet food photography, elegant plating, restaurant quality, dramatic lighting, appetizing presentation, culinary art, 8K detail",
+    "Style": "Food & Beverage"
   },
   {
-    "Title":"Cherry Blossom Bridge",
-    "Prompt":"Serene Japanese garden scene with stone bridge under blooming cherry blossoms. Vibrant colors, tranquil water reflections, ultra-realistic render.",
-    "Style":"Landscape Digital Painting"
+    "Title": "Overhead Flat Lay Food",
+    "Prompt": "Overhead flat lay food photography, multiple dishes, clean composition, natural lighting, food styling, Instagram-worthy, professional quality",
+    "Style": "Food & Beverage"
   },
   {
-    "Title":"Rope Caterpillar",
-    "Prompt":"Creative surreal macro of a caterpillar made entirely from twisted rope fibers, crawling across textured surface. Hyper-detailed textures, 8K realism.",
-    "Style":"Surreal Object Realism"
+    "Title": "Coffee Pour Action Shot",
+    "Prompt": "Dynamic coffee pour action shot, steam rising, motion captured, professional beverage photography, warm lighting, appetizing composition",
+    "Style": "Food & Beverage"
   },
   {
-    "Title":"Origami Cat",
-    "Prompt":"Minimalist stylized origami-style cat made of folded paper, sitting in a modern environment. Sharp edges, cartoon-meets-minimalism, flat lighting.",
-    "Style":"Origami Digital Illustration"
+    "Title": "Fresh Ingredients Macro",
+    "Prompt": "Macro photography of fresh ingredients, water droplets, vibrant colors, detailed textures, food photography, appetizing composition",
+    "Style": "Food & Beverage"
   },
   {
-    "Title":"Robot Mother with Baby",
-    "Prompt":"Dark futuristic sci-fi scene of a humanoid robot mother with transparent womb showing glowing robotic baby inside. Metallic textures, cinematic dramatic lighting, ultra-realistic detail.",
-    "Style":"Cyberpunk Sci-Fi Concept Art"
+    "Title": "High Fashion Editorial Portrait",
+    "Prompt": "High fashion editorial portrait, dramatic pose, designer clothing, professional makeup, studio lighting, Vogue style, 8K quality",
+    "Style": "Fashion & Beauty"
+  },
+  {
+    "Title": "Street Fashion Urban Style",
+    "Prompt": "Urban street fashion photography, trendy outfit, city background, natural lighting, contemporary style, editorial quality",
+    "Style": "Fashion & Beauty"
+  },
+  {
+    "Title": "Beauty Close-Up Makeup",
+    "Prompt": "Beauty photography close-up, flawless makeup, perfect skin, dramatic eye makeup, professional beauty editorial, cosmetics focused, 8K detail",
+    "Style": "Fashion & Beauty"
+  },
+  {
+    "Title": "Runway Fashion Show",
+    "Prompt": "Fashion runway photography, model walking, designer outfit, professional lighting, fashion week aesthetic, high fashion quality",
+    "Style": "Fashion & Beauty"
+  },
+  {
+    "Title": "Mountain Landscape Panorama",
+    "Prompt": "Breathtaking mountain landscape panorama, dramatic peaks, golden hour lighting, expansive vista, professional landscape photography, 8K resolution",
+    "Style": "Nature & Wildlife"
+  },
+  {
+    "Title": "Ocean Sunset Seascape",
+    "Prompt": "Stunning ocean sunset, vibrant colors, calm waters, horizon line, peaceful atmosphere, professional seascape photography, high quality",
+    "Style": "Nature & Wildlife"
+  },
+  {
+    "Title": "Forest Sunbeams Morning",
+    "Prompt": "Enchanting forest with sunbeams through trees, morning mist, natural lighting, peaceful atmosphere, landscape photography, detailed textures",
+    "Style": "Nature & Wildlife"
+  },
+  {
+    "Title": "Wildlife Animal Portrait",
+    "Prompt": "Wildlife animal portrait, natural habitat, sharp focus on eyes, detailed fur textures, professional wildlife photography, 8K quality",
+    "Style": "Nature & Wildlife"
+  },
+  {
+    "Title": "Aliens Walking in City Street",
+    "Prompt": "Ultra-realistic cinematic scene of humanoid aliens walking hand-in-hand down a crowded city street at sunset. Soft dramatic lighting, moody atmosphere, New York–style background, realistic skin textures, 8K film still.",
+    "Style": "Cinematic Sci-Fi Realism"
+  },
+  {
+    "Title": "Modern Bedroom with Forest View",
+    "Prompt": "Hyper-detailed luxury modern bedroom interior with tall stone accent wall, vertical indoor garden, minimalist furniture, warm fire glowing in a built-in fireplace, large windows showing forest view. Ultra-realistic render, 8K HDR.",
+    "Style": "Interior Visualization"
+  },
+  {
+    "Title": "Woman in Orange Veil",
+    "Prompt": "Artistic cinematic portrait of a mysterious woman draped in a translucent flowing orange veil, facing away from the camera, soft misty background, ethereal atmosphere, painterly cinematic photography, ultra-detailed fabric textures.",
+    "Style": "Cinematic Fine Art"
+  },
+  {
+    "Title": "Freckled Woman Portrait",
+    "Prompt": "Ultra-realistic close-up portrait of a young woman with natural freckles, short auburn hair, soft golden hour sunlight, minimal natural makeup, radiant smile, highly detailed skin texture, 8K DSLR photo realism.",
+    "Style": "Portrait Photography"
+  },
+  {
+    "Title": "Puppies at Tea Party",
+    "Prompt": "Adorable hyper-realistic puppies sitting in a pastel-colored toy tea party setup with cups, sweets, and heart-decorated gift boxes. Bright soft lighting, ultra-cute Pixar-level detail, cinematic shallow depth of field.",
+    "Style": "Whimsical Animal Photography"
+  },
+  {
+    "Title": "Dinosaur Riding Scooter",
+    "Prompt": "Cartoon-style but ultra-detailed image of a chubby dinosaur joyfully riding a vintage Vespa scooter. Dynamic motion blur, sunny street background, stylized realism, high detail textures.",
+    "Style": "Stylized Cartoon Realism"
+  },
+  {
+    "Title": "Abstract Geometric Pattern",
+    "Prompt": "Abstract geometric pattern design, vibrant colors, symmetrical composition, modern aesthetic, digital art, high contrast, clean lines",
+    "Style": "Abstract & Artistic"
+  },
+  {
+    "Title": "Watercolor Abstract Art",
+    "Prompt": "Abstract watercolor painting, flowing colors, soft transitions, artistic interpretation, organic shapes, contemporary art style, high resolution",
+    "Style": "Abstract & Artistic"
+  },
+  {
+    "Title": "Minimalist Line Art",
+    "Prompt": "Minimalist line art illustration, clean simple lines, modern aesthetic, black and white, elegant composition, contemporary design",
+    "Style": "Abstract & Artistic"
+  },
+  {
+    "Title": "Cyberpunk Neon Portrait",
+    "Prompt": "Cyberpunk portrait with neon lighting, futuristic aesthetic, vibrant colors, urban background, sci-fi atmosphere, high-tech style, 8K quality",
+    "Style": "Sci-Fi & Fantasy"
+  },
+  {
+    "Title": "Christmas Winter Scene",
+    "Prompt": "Festive Christmas scene, snow-covered landscape, warm lights, cozy atmosphere, holiday decorations, winter wonderland, professional photography",
+    "Style": "Holiday & Seasonal"
+  },
+  {
+    "Title": "Halloween Spooky Atmosphere",
+    "Prompt": "Halloween themed scene, spooky atmosphere, autumn colors, carved pumpkins, mysterious lighting, festive decorations, cinematic quality",
+    "Style": "Holiday & Seasonal"
+  },
+  {
+    "Title": "Valentines Day Romantic",
+    "Prompt": "Romantic Valentine's Day scene, soft pink and red tones, roses, elegant composition, love-themed, professional photography, beautiful lighting",
+    "Style": "Holiday & Seasonal"
+  },
+  {
+    "Title": "Professional Headshot Studio",
+    "Prompt": "Professional headshot, clean background, studio lighting, confident expression, business appropriate, high resolution, 8K quality portrait",
+    "Style": "Professional Portraits"
+  },
+  {
+    "Title": "Creative Artist Portrait",
+    "Prompt": "Creative artist portrait, artistic background, natural lighting, expressive pose, authentic personality, professional photography, editorial quality",
+    "Style": "Professional Portraits"
+  },
+  {
+    "Title": "Athlete Action Portrait",
+    "Prompt": "Dynamic athlete portrait, action pose, sports environment, dramatic lighting, professional sports photography, high energy composition",
+    "Style": "Professional Portraits"
+  },
+  {
+    "Title": "Bold Typography Design",
+    "Prompt": "Bold typography design, modern font, clean layout, professional graphic design, high contrast, eye-catching composition, print ready",
+    "Style": "Text & Typography"
+  },
+  {
+    "Title": "Vintage Typography Poster",
+    "Prompt": "Vintage typography poster design, retro aesthetic, classic fonts, aged texture, nostalgic style, professional graphic design",
+    "Style": "Text & Typography"
+  },
+  {
+    "Title": "Gaming Character Concept",
+    "Prompt": "Gaming character concept art, detailed armor, fantasy weapons, dynamic pose, professional game art, high detail, 8K quality illustration",
+    "Style": "Gaming & Entertainment"
+  },
+  {
+    "Title": "Movie Poster Dramatic",
+    "Prompt": "Cinematic movie poster design, dramatic composition, bold title placement, professional photography, theatrical quality, high impact visual",
+    "Style": "Gaming & Entertainment"
+  },
+  {
+    "Title": "Medical Illustration Anatomy",
+    "Prompt": "Medical illustration, anatomical accuracy, clean professional style, educational quality, scientific visualization, detailed rendering",
+    "Style": "Scientific & Medical"
+  },
+  {
+    "Title": "Scientific Data Visualization",
+    "Prompt": "Scientific data visualization, clean infographic style, professional charts, educational quality, clear information design, high resolution",
+    "Style": "Scientific & Medical"
+  },
+  {
+    "Title": "Real Estate Property Exterior",
+    "Prompt": "Real estate property exterior photography, blue sky, professional composition, well-lit, appealing curb appeal, real estate marketing quality",
+    "Style": "Real Estate"
+  },
+  {
+    "Title": "Real Estate Interior Staging",
+    "Prompt": "Real estate interior photography, professional staging, bright natural light, wide angle, clean composition, property listing quality",
+    "Style": "Real Estate"
+  },
+  {
+    "Title": "Sci-Fi Wormhole in Clouds",
+    "Prompt": "Dark cinematic sci-fi scene of a massive wormhole tearing open in stormy clouds, glowing with fiery light and swirling energy. Highly detailed volumetric lighting, epic scale, ultra-realistic VFX style.",
+    "Style": "Sci-Fi Concept Art"
+  },
+  {
+    "Title": "Pink Elephant on Nail Polish",
+    "Prompt": "Surreal whimsical pink baby elephant balancing on a giant glittery nail polish bottle against a dreamy pastel sky. Ultra-realistic textures, fantasy surrealism, Pixar-inspired rendering.",
+    "Style": "Surreal Whimsical 3D Art"
+  },
+  {
+    "Title": "Tiny Kitten on Finger",
+    "Prompt": "Ultra-realistic tiny kitten standing on a person's fingertip inside a cozy living room. Shallow depth of field, soft background blur, cinematic lighting, high detail fur textures.",
+    "Style": "Cute Macro Pet Photography"
+  },
+  {
+    "Title": "Streetwear Model on Rooftop",
+    "Prompt": "Urban fashion photo of a young man wearing streetwear hoodie and baggy pants, sitting on top of a skyscraper rooftop in the city. Ultra-realistic editorial style, dramatic background.",
+    "Style": "Street Fashion Editorial"
+  },
+  {
+    "Title": "Giant Cat in City",
+    "Prompt": "Hyper-realistic giant tabby cat towering over a Japanese city street with cars and people around it. Photorealism with playful scale surrealism.",
+    "Style": "Surreal Realism"
+  },
+  {
+    "Title": "Cherry Blossom Bridge",
+    "Prompt": "Serene Japanese garden scene with stone bridge under blooming cherry blossoms. Vibrant colors, tranquil water reflections, ultra-realistic render.",
+    "Style": "Landscape Digital Painting"
+  },
+  {
+    "Title": "Robot Mother with Baby",
+    "Prompt": "Dark futuristic sci-fi scene of a humanoid robot mother with transparent womb showing glowing robotic baby inside. Metallic textures, cinematic dramatic lighting, ultra-realistic detail.",
+    "Style": "Cyberpunk Sci-Fi Concept Art"
   }
 ]

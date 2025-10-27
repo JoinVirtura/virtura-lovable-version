@@ -459,7 +459,7 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                       placeholder="A majestic mountain landscape at sunset, snow-capped peaks, dramatic clouds, photorealistic, 8K quality..."
                       value={prompt}
                       onChange={(e) => setPrompt(e.target.value)}
-                      className="min-h-[100px] pr-14 resize-none bg-transparent border-0 focus-visible:ring-0 text-white placeholder:text-gray-400 px-4 py-4"
+                      className="min-h-[60px] pr-14 resize-none bg-transparent border-0 focus-visible:ring-0 text-white placeholder:text-gray-400 px-4 py-4"
                     />
                     <Button
                       onClick={generatePreviews}
@@ -501,60 +501,6 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                   </div>
                 )}
 
-                {/* Content Type & Style Selectors */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Content Type</label>
-                    <Select value={contentType} onValueChange={setContentType}>
-                      <SelectTrigger className="bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:border-primary/50 transition-all duration-300">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-black/95 backdrop-blur-xl border-2 border-primary/30">
-                        {contentTypes.map((type) => (
-                          <SelectItem key={type.value} value={type.value}>
-                            <div className="flex items-center gap-2">
-                              <type.icon className="h-4 w-4" />
-                              {type.label}
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Style</label>
-                    <Select value={style} onValueChange={setStyle}>
-                      <SelectTrigger className="bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:border-primary/50 transition-all duration-300">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-black/95 backdrop-blur-xl border-2 border-primary/30">
-                        {styles.map((styleOption) => (
-                          <SelectItem key={styleOption} value={styleOption}>
-                            {styleOption}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Quality</label>
-                    <Select value={quality} onValueChange={setQuality}>
-                      <SelectTrigger className="bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:border-primary/50 transition-all duration-300">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-black/95 backdrop-blur-xl border-2 border-primary/30">
-                    {qualityPresets.map((preset) => (
-                      <SelectItem key={preset.value} value={preset.value}>
-                        {preset.label}
-                      </SelectItem>
-                    ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
                 {/* Advanced Settings Toggle */}
                 <div className="flex items-center justify-between pt-4 border-t">
                   <div className="flex items-center gap-2">
@@ -574,6 +520,60 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                 {/* Advanced Settings */}
                 {showAdvanced && (
                   <div className="space-y-6 pt-4 border-t">
+                    {/* Content Type, Style, Quality */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Content Type</label>
+                        <Select value={contentType} onValueChange={setContentType}>
+                          <SelectTrigger className="bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:border-primary/50 transition-all duration-300">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="bg-black/95 backdrop-blur-xl border-2 border-primary/30 z-50">
+                            {contentTypes.map((type) => (
+                              <SelectItem key={type.value} value={type.value}>
+                                <div className="flex items-center gap-2">
+                                  <type.icon className="h-4 w-4" />
+                                  {type.label}
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Style</label>
+                        <Select value={style} onValueChange={setStyle}>
+                          <SelectTrigger className="bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:border-primary/50 transition-all duration-300">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="bg-black/95 backdrop-blur-xl border-2 border-primary/30 z-50">
+                            {styles.map((styleOption) => (
+                              <SelectItem key={styleOption} value={styleOption}>
+                                {styleOption}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Quality</label>
+                        <Select value={quality} onValueChange={setQuality}>
+                          <SelectTrigger className="bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:border-primary/50 transition-all duration-300">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="bg-black/95 backdrop-blur-xl border-2 border-primary/30 z-50">
+                            {qualityPresets.map((preset) => (
+                              <SelectItem key={preset.value} value={preset.value}>
+                                {preset.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-4">
                         <div className="space-y-2">
