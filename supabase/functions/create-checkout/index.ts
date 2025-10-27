@@ -17,22 +17,30 @@ serve(async (req) => {
       return new Response(JSON.stringify({ error: "Invalid plan" }), { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 });
     }
 
-    // Try to get user email if authenticated; allow guests
-    let customerEmail = "guest@example.com";
+    // Require authenticated user for subscription checkout
     const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
     const supabaseClient = createClient(supabaseUrl, anonKey);
 
     const authHeader = req.headers.get("Authorization");
-    if (authHeader) {
-      try {
-        const token = authHeader.replace("Bearer ", "");
-        const { data } = await supabaseClient.auth.getUser(token);
-        if (data.user?.email) customerEmail = data.user.email;
-      } catch (error) {
-        console.log("Auth failed, using guest email:", error);
-      }
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: "Authentication required for subscription checkout" }), 
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 401 }
+      );
     }
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data, error: authError } = await supabaseClient.auth.getUser(token);
+
+    if (authError || !data.user?.email) {
+      return new Response(
+        JSON.stringify({ error: "Invalid authentication or missing email" }), 
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 401 }
+      );
+    }
+
+    const customerEmail = data.user.email;
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { apiVersion: "2023-10-16" });
 
