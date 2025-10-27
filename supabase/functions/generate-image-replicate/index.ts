@@ -108,7 +108,7 @@ serve(async (req) => {
     const replicate = new Replicate({ auth: REPLICATE_API_KEY });
 
     const body = await req.json();
-    const { prompt, contentType = 'auto', quality = 'HD', aspectRatio = '1:1', style } = body;
+    const { prompt, contentType = 'auto', quality = 'HD', aspectRatio = '1:1', style, referenceImage } = body;
 
     // Input validation
     if (!prompt || typeof prompt !== 'string') {
@@ -141,10 +141,16 @@ serve(async (req) => {
       );
     }
 
-    console.log('🎨 Replicate Image Generation Request:', { contentType, quality, aspectRatio });
+    console.log('🎨 Replicate Image Generation Request:', { contentType, quality, aspectRatio, hasReferenceImage: !!referenceImage });
 
-    // Select appropriate model
-    const model = modelMap[contentType] || modelMap['auto'];
+    // Select appropriate model - use FLUX Redux for image-to-image with identity preservation
+    let model;
+    if (referenceImage) {
+      model = 'black-forest-labs/flux-redux-schnell'; // Use Redux for reference images
+      console.log('🖼️ Reference image detected - using FLUX Redux for identity preservation');
+    } else {
+      model = modelMap[contentType] || modelMap['auto'];
+    }
     console.log('📦 Selected model:', model);
 
     // Select appropriate quality map based on model
@@ -162,11 +168,19 @@ serve(async (req) => {
 
     console.log('📐 Dimensions:', dimensions);
 
-    // Enhance prompt
-    const enhancedPrompt = enhancePromptByContentType(prompt, contentType);
+    // Enhance prompt - for Redux use raw prompt (describes transformation), for text-to-image use enhanced
+    let finalPrompt;
+    if (referenceImage) {
+      // For Redux: prompt describes STYLE transformation, not the subject
+      finalPrompt = prompt; // Use raw prompt for maximum control
+      console.log('🎨 Redux mode - using raw prompt for transformation');
+    } else {
+      // For text-to-image: enhance prompt with content type specifics
+      finalPrompt = enhancePromptByContentType(prompt, contentType);
+    }
     const negativePrompt = getSimplifiedNegativePrompt(contentType);
 
-    console.log('✨ Enhanced prompt:', enhancedPrompt);
+    console.log('✨ Final prompt:', finalPrompt);
     console.log('🚫 Negative prompt:', negativePrompt);
 
     // Generate image with Replicate
@@ -175,9 +189,10 @@ serve(async (req) => {
       model,
       contentType,
       userPrompt: prompt,
-      enhancedPrompt,
+      finalPrompt,
+      referenceImage: referenceImage ? 'provided' : 'none',
       dimensions,
-      steps: model.includes('flux-schnell') ? Math.min(qualitySettings.steps, 4) : qualitySettings.steps
+      steps: model.includes('flux-schnell') || model.includes('flux-redux') ? 4 : qualitySettings.steps
     });
     const startTime = Date.now();
 
@@ -189,11 +204,26 @@ serve(async (req) => {
       : qualitySettings.steps;
     
     try {
-      if (model === 'black-forest-labs/flux-schnell' || model === 'black-forest-labs/flux-1.1-pro') {
+      if (model === 'black-forest-labs/flux-redux-schnell') {
+        // FLUX Redux for image-to-image with identity preservation
+        console.log('🎭 Using FLUX Redux with reference image');
+        output = await replicate.run(model, {
+          input: {
+            image: referenceImage, // The reference photo
+            prompt: finalPrompt, // Transformation instructions
+            num_outputs: 1,
+            output_format: "png",
+            output_quality: 100,
+            aspect_ratio: aspectRatio === '1:1' ? '1:1' : aspectRatio === '16:9' ? '16:9' : aspectRatio === '9:16' ? '9:16' : '1:1',
+            num_inference_steps: 4, // Fast with great quality
+            guidance_scale: 2.5 // Redux works better with lower guidance
+          }
+        });
+      } else if (model === 'black-forest-labs/flux-schnell' || model === 'black-forest-labs/flux-1.1-pro') {
         // FLUX models - optimized for maximum quality
         output = await replicate.run(model, {
           input: {
-            prompt: enhancedPrompt,
+            prompt: finalPrompt,
             num_outputs: 1,
             aspect_ratio: aspectRatio === '1:1' ? '1:1' : aspectRatio === '16:9' ? '16:9' : aspectRatio === '9:16' ? '9:16' : '1:1',
             output_format: "png",
@@ -299,14 +329,15 @@ serve(async (req) => {
       JSON.stringify({
         success: true,
         image: publicUrl,
-        prompt: enhancedPrompt,
+        prompt: finalPrompt,
         metadata: {
           contentType,
           style: style || 'photorealistic',
           resolution: `${dimensions.width}x${dimensions.height}`,
           processingTime,
           model,
-          quality
+          quality,
+          usedReferenceImage: !!referenceImage
         }
       }),
       {
