@@ -154,14 +154,49 @@ serve(async (req) => {
 
     console.log('🎨 Replicate Image Generation Request:', { contentType, quality, aspectRatio, hasReferenceImage: !!referenceImage });
 
-    // Select appropriate model - use FLUX Redux for image-to-image with identity preservation
+    // Intelligent model selection based on user intent
     let model;
+    let finalPrompt;
+    let negativePrompt;
+    
     if (referenceImage) {
-      model = 'black-forest-labs/flux-redux-schnell'; // Use Redux for reference images
-      console.log('🖼️ Reference image detected - using FLUX Redux for identity preservation');
+      // Detect if user wants face-only output (no body/background)
+      const wantsFaceOnly = prompt.toLowerCase().includes('face and head') || 
+                            prompt.toLowerCase().includes('no body') ||
+                            prompt.toLowerCase().includes('no background') ||
+                            prompt.toLowerCase().includes('headshot') ||
+                            prompt.toLowerCase().includes('portrait only') ||
+                            prompt.toLowerCase().includes('focusing only on the face');
+
+      if (wantsFaceOnly) {
+        // Use FLUX 1.1 Pro for face-only generations to prevent body/background artifacts
+        model = 'black-forest-labs/flux-1.1-pro';
+        
+        // Enhance prompt with strong face-only directives
+        finalPrompt = `Professional headshot portrait: ${prompt}. CRITICAL: Close-up facial portrait only, no hands visible, no body parts, no arms, no torso, clean minimal background. Sharp facial features, photorealistic skin texture, centered face composition, professional studio lighting.`;
+        
+        // Strong negative prompt to prevent anatomical errors (6 fingers, etc.)
+        negativePrompt = "full body, hands, arms, torso, fingers, body parts, legs, shoulders, elbows, wrists, complex background, multiple people, grid layout, collage, six fingers, extra fingers, deformed hands, blurry, low quality, distorted";
+        
+        console.log('🎯 FACE-ONLY MODE: Using FLUX 1.1 Pro for isolated face generation');
+        console.log('🚫 Strong negative prompt:', negativePrompt);
+      } else {
+        // Use Redux for style transfer when keeping full composition
+        model = 'black-forest-labs/flux-redux-schnell';
+        finalPrompt = prompt; // Raw prompt for Redux transformation control
+        negativePrompt = getSimplifiedNegativePrompt(contentType);
+        
+        console.log('🎨 STYLE TRANSFER MODE: Using FLUX Redux for composition preservation');
+      }
+      
+      console.log('🖼️ Reference image mode active');
     } else {
+      // Normal text-to-image generation
       model = modelMap[contentType] || modelMap['auto'];
+      finalPrompt = enhancePromptByContentType(prompt, contentType);
+      negativePrompt = getSimplifiedNegativePrompt(contentType);
     }
+    
     console.log('📦 Selected model:', model);
 
     // Select appropriate quality map based on model
@@ -178,18 +213,6 @@ serve(async (req) => {
       : { width: qualitySettings.width, height: qualitySettings.height };
 
     console.log('📐 Dimensions:', dimensions);
-
-    // Enhance prompt - for Redux use raw prompt (describes transformation), for text-to-image use enhanced
-    let finalPrompt;
-    if (referenceImage) {
-      // For Redux: prompt describes STYLE transformation, not the subject
-      finalPrompt = prompt; // Use raw prompt for maximum control
-      console.log('🎨 Redux mode - using raw prompt for transformation');
-    } else {
-      // For text-to-image: enhance prompt with content type specifics
-      finalPrompt = enhancePromptByContentType(prompt, contentType);
-    }
-    const negativePrompt = getSimplifiedNegativePrompt(contentType);
 
     console.log('✨ Final prompt:', finalPrompt);
     console.log('🚫 Negative prompt:', negativePrompt);
@@ -232,17 +255,23 @@ serve(async (req) => {
         });
       } else if (model === 'black-forest-labs/flux-schnell' || model === 'black-forest-labs/flux-1.1-pro') {
         // FLUX models - optimized for maximum quality
-        output = await replicate.run(model, {
-          input: {
-            prompt: finalPrompt,
-            num_outputs: 1,
-            aspect_ratio: aspectRatio === '1:1' ? '1:1' : aspectRatio === '16:9' ? '16:9' : aspectRatio === '9:16' ? '9:16' : '1:1',
-            output_format: "png",
-            output_quality: 100, // Maximum quality for all
-            num_inference_steps: model === 'black-forest-labs/flux-1.1-pro' ? 50 : 4, // More steps for Pro
-            guidance_scale: 3.5 // Add guidance for prompt adherence
-          }
-        });
+        const fluxInput: any = {
+          prompt: finalPrompt,
+          num_outputs: 1,
+          aspect_ratio: aspectRatio === '1:1' ? '1:1' : aspectRatio === '16:9' ? '16:9' : aspectRatio === '9:16' ? '9:16' : '1:1',
+          output_format: "png",
+          output_quality: 100, // Maximum quality
+          num_inference_steps: model === 'black-forest-labs/flux-1.1-pro' ? 50 : 4,
+          guidance_scale: 3.5 // Prompt adherence
+        };
+        
+        // Add negative prompt if available (critical for face-only mode)
+        if (negativePrompt && model === 'black-forest-labs/flux-1.1-pro') {
+          fluxInput.negative_prompt = negativePrompt;
+          console.log('🚫 Using negative prompt with FLUX 1.1 Pro');
+        }
+        
+        output = await replicate.run(model, { input: fluxInput });
       } else if (model === 'stability-ai/stable-diffusion-xl-base-1.0') {
         // SDXL model - CORRECTED MODEL NAME
         output = await replicate.run(model, {
@@ -260,7 +289,7 @@ serve(async (req) => {
         // Kandinsky v3 - CORRECTED MODEL NAME
         output = await replicate.run(model, {
           input: {
-            prompt: enhancedPrompt,
+            prompt: finalPrompt,
             num_outputs: 1,
             width: dimensions.width,
             height: dimensions.height
@@ -270,7 +299,7 @@ serve(async (req) => {
         // Other models
         output = await replicate.run(model, {
           input: {
-            prompt: enhancedPrompt,
+            prompt: finalPrompt,
             num_outputs: 1,
             width: dimensions.width,
             height: dimensions.height
@@ -285,7 +314,7 @@ serve(async (req) => {
         console.log('🔄 Retrying with FLUX 1.1 Pro as universal fallback...');
         output = await replicate.run('black-forest-labs/flux-1.1-pro', {
           input: {
-            prompt: enhancedPrompt,
+            prompt: finalPrompt,
             num_outputs: 1,
             aspect_ratio: aspectRatio === '1:1' ? '1:1' : aspectRatio === '16:9' ? '16:9' : aspectRatio === '9:16' ? '9:16' : '1:1',
             output_format: "png",
