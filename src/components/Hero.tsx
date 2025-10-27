@@ -538,7 +538,7 @@ export const Hero = () => {
         <div className="absolute bottom-0 right-0 w-48 h-48 bg-gradient-to-tl from-primary/12 via-primary/4 to-transparent animate-corner-glow-4" />
       </div>
       
-      <div className="relative z-10 container mx-auto px-12 py-8 flex flex-col items-center min-h-screen text-center max-w-6xl">
+      <div className="relative z-10 container mx-auto px-12 py-4 flex flex-col items-center min-h-screen text-center max-w-6xl">
         {/* Header Badge */}
         <Badge className="bg-card/80 border-primary/20 text-foreground px-6 py-3 text-base font-semibold mb-8 animate-fade-in backdrop-blur-sm">
           Virtura AI
@@ -556,12 +556,12 @@ export const Hero = () => {
 
         {/* Output Display Section - ABOVE input */}
         {generatedImages.length > 0 && (
-          <div className="w-full max-w-[1800px] mb-6 animate-fade-in px-4">
+          <div className="w-full max-w-[1800px] mb-2 animate-fade-in px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {generatedImages.map((card) => (
             <Card 
               key={card.id} 
-              className="group overflow-hidden hover:shadow-[0_0_30px_rgba(139,92,246,0.4)] transition-all duration-300 p-0"
+              className="group overflow-hidden hover:shadow-[0_0_30px_rgba(139,92,246,0.4)] transition-all duration-300 p-0 border-0 bg-transparent"
             >
                   {card.isGenerating ? (
                     <div className="aspect-square bg-gradient-to-br from-violet-600/20 to-fuchsia-600/20 flex flex-col items-center justify-center rounded-2xl">
@@ -602,12 +602,12 @@ export const Hero = () => {
                         <div className="flex items-center justify-between">
                           <div className="flex flex-wrap gap-1">
                             {card.metadata?.resolution && (
-                              <Badge variant="secondary" className="text-[10px] px-1.5 py-0.5 bg-black/40">
+                              <Badge variant="secondary" className="text-[10px] px-1.5 py-0.5 bg-transparent border-0">
                                 {card.metadata.resolution}
                               </Badge>
                             )}
                             {card.metadata?.provider && (
-                              <Badge variant="secondary" className="text-[10px] px-1.5 py-0.5 bg-black/40">
+                              <Badge variant="secondary" className="text-[10px] px-1.5 py-0.5 bg-transparent border-0">
                                 {card.metadata.provider}
                               </Badge>
                             )}
@@ -617,7 +617,7 @@ export const Hero = () => {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-7 px-2 text-xs hover:bg-white/10 bg-white/5"
+                              className="h-7 px-2 text-xs hover:bg-white/10 bg-transparent"
                               onClick={() => {
                                 const link = document.createElement('a');
                                 link.href = card.imageUrl;
@@ -634,7 +634,7 @@ export const Hero = () => {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-7 px-2 text-xs hover:bg-white/10 bg-white/5"
+                              className="h-7 px-2 text-xs hover:bg-white/10 bg-transparent"
                               onClick={() => handleSaveToLibrary(card)}
                               disabled={savingImageId === card.id}
                             >
