@@ -249,10 +249,25 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
   };
 
   const removeReferenceImage = () => {
+    // Clear reference image
     setReferenceImage(null);
+    
+    // Clear file input
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+    
+    // Clear prompt (return to blank state)
+    setPrompt("");
+    
+    // Clear any generated previews
+    setPreviewCards([]);
+    
+    // Clear selected variant
+    setSelectedVariant(null);
+    
+    // Show success message
+    toast.success("Reference image removed. Ready for new generation!");
   };
 
   const handleVariantSelect = (cardId: string) => {
