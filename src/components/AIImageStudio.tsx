@@ -37,6 +37,7 @@ import {
 } from "lucide-react";
 import { ImageGenerationService, type ImageGenerationParams } from "@/services/imageGenerationService";
 import { PromptLibrary } from "./PromptLibrary";
+import { supabase } from "@/integrations/supabase/client";
 
 interface PreviewCard {
   id: string;
@@ -280,10 +281,45 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
 
   const handleSaveToLibrary = async (cardId: string) => {
     setSavingToLibrary(cardId);
-    // Simulate saving
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setSavingToLibrary(null);
-    toast.success("Saved to library!");
+    
+    try {
+      const card = previewCards.find(c => c.id === cardId);
+      if (!card) {
+        toast.error("Image not found");
+        return;
+      }
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("Please sign in to save images");
+        return;
+      }
+
+      // Save image to avatar_library
+      const { error } = await supabase
+        .from('avatar_library')
+        .insert({
+          user_id: user.id,
+          image_url: card.imageUrl,
+          prompt: card.prompt,
+          title: `Generated Image ${new Date().toLocaleDateString()}`,
+          tags: ['ai-generated', card.metadata?.contentType || 'scene'],
+          is_video: false
+        });
+
+      if (error) {
+        console.error('Error saving to library:', error);
+        toast.error("Failed to save to library");
+        return;
+      }
+
+      toast.success("Saved to library!");
+    } catch (error) {
+      console.error('Error saving to library:', error);
+      toast.error("Failed to save to library");
+    } finally {
+      setSavingToLibrary(null);
+    }
   };
 
   const handleShareVariant = (cardId: string) => {
