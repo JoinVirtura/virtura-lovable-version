@@ -290,34 +290,63 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
         </Card>
       )}
 
-      {/* Video Result - Moved to Top for Visibility */}
+      {/* Video Result - Prominent Success Display */}
       {project.video?.status === 'completed' && project.video?.videoUrl && (
-        <Card className="border-green-500/20 bg-green-500/5">
+        <Card className="border-green-500/30 bg-gradient-to-br from-green-500/10 to-emerald-500/5">
           <CardHeader>
-            <CardTitle className="text-sm flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-green-500" />
-              Video Generated Successfully
+            <CardTitle className="flex items-center gap-3">
+              <div className="p-2 rounded-full bg-green-500/20">
+                <CheckCircle className="h-5 w-5 text-green-500" />
+              </div>
+              <div>
+                <div className="text-lg">Video Generated Successfully!</div>
+                <div className="text-sm font-normal text-muted-foreground">Your video is ready to download or save</div>
+              </div>
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-4">
             <video 
               controls 
-              className="w-full rounded-lg"
+              className="w-full rounded-lg border border-green-500/20"
               controlsList="nodownload"
               onContextMenu={(e) => e.preventDefault()}
             >
               <source src={project.video.videoUrl} type="video/mp4" />
             </video>
-            <div className="grid grid-cols-2 gap-2">
-              <Button onClick={onDownload} variant="outline" size="sm">
+            
+            {/* Primary Actions */}
+            <div className="grid grid-cols-2 gap-3">
+              <Button 
+                onClick={onDownload} 
+                size="lg"
+                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+              >
                 <Download className="h-4 w-4 mr-2" />
-                Download
+                Download Video
               </Button>
-              <Button onClick={onSaveToLibrary} variant="outline" size="sm">
+              <Button 
+                onClick={onSaveToLibrary} 
+                size="lg"
+                variant="outline"
+                className="border-green-500/30 hover:bg-green-500/10"
+              >
                 <CheckCircle className="h-4 w-4 mr-2" />
                 Save to Library
               </Button>
             </div>
+
+            {/* Next Steps Info */}
+            <Alert className="border-green-500/30 bg-green-500/5">
+              <Sparkles className="h-4 w-4 text-green-500" />
+              <AlertDescription className="text-sm">
+                <div className="font-medium mb-1">What's Next?</div>
+                <ul className="space-y-1 text-muted-foreground">
+                  <li>• Access your video anytime from the Library</li>
+                  <li>• Need multiple formats? Use the Export page for multi-platform versions</li>
+                  <li>• Share directly or integrate into your workflow</li>
+                </ul>
+              </AlertDescription>
+            </Alert>
           </CardContent>
         </Card>
       )}

@@ -23,7 +23,6 @@ import {
 import { VideoUploadStudio } from '@/components/studio/VideoUploadStudio';
 import { PremiumVoiceEngine } from '@/components/studio/PremiumVoiceEngine';
 import { RealVideoEngine } from '@/components/studio/RealVideoEngine';
-import { ExportDeliveryStudio } from '@/components/studio/ExportDeliveryStudio';
 import { ProjectTimeline } from '@/components/studio/ProjectTimeline';
 import { RealtimePreview } from '@/components/studio/RealtimePreview';
 import { useStudioProject } from '@/hooks/useStudioProject';
@@ -36,8 +35,7 @@ import { useSidebar } from '@/components/ui/sidebar';
 const VIDEO_PRO_STEPS = [
   { id: 'upload', title: 'Upload', icon: Upload, color: 'bg-blue-500' },
   { id: 'voice', title: 'Voice', icon: Mic, color: 'bg-green-500' },
-  { id: 'video', title: 'Video', icon: Film, color: 'bg-orange-500' },
-  { id: 'export', title: 'Export', icon: Download, color: 'bg-pink-500' }
+  { id: 'video', title: 'Video', icon: Film, color: 'bg-orange-500' }
 ];
 
 export default function VideoProPage() {
@@ -130,8 +128,6 @@ export default function VideoProPage() {
         return project.voice?.status || 'pending';
       case 'video':
         return project.video?.status || 'pending';
-      case 'export':
-        return project.export?.status || 'pending';
       default:
         return 'pending';
     }
@@ -260,17 +256,6 @@ export default function VideoProPage() {
                         isProcessing={isProcessing}
                         onDownload={downloadVideo}
                         onSaveToLibrary={saveToLibrary}
-                      />
-                    </ErrorBoundary>
-                  </TabsContent>
-
-                  <TabsContent value="export" className="mt-0">
-                    <ErrorBoundary>
-                      <ExportDeliveryStudio
-                        project={project}
-                        onUpdate={updateProject}
-                        onExport={exportProject}
-                        isProcessing={isProcessing}
                       />
                     </ErrorBoundary>
                   </TabsContent>
