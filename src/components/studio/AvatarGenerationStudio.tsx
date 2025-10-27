@@ -98,8 +98,10 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
 
   return (
     <div 
-      className={`h-96 flex items-center justify-center transition-all duration-300 ${
-        isDragOver ? 'bg-primary/5' : ''
+      className={`h-96 flex items-center justify-center transition-all duration-300 border-2 rounded-lg cursor-pointer ${
+        isDragOver 
+          ? 'border-violet-400 bg-violet-500/10 scale-[1.02] shadow-[0_0_25px_rgba(212,110,255,0.25)]' 
+          : 'border-dashed border-violet-500/40 hover:border-violet-400 hover:shadow-[0_0_25px_rgba(212,110,255,0.25)]'
       }`}
       onDrop={handleDrop}
       onDragOver={(e) => {
