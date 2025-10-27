@@ -622,13 +622,33 @@ export const Hero = () => {
                 {/* Action Buttons */}
                 <div className="flex items-center gap-2">
                   {/* Image Upload Button */}
-                  <button
-                    type="button"
-                    onClick={() => document.getElementById('reference-upload')?.click()}
-                    className="w-9 h-9 rounded-full bg-black/40 backdrop-blur-md border border-primary/30 hover:bg-primary/20 hover:border-primary/50 transition-all flex items-center justify-center"
-                  >
-                    <Camera className="h-4 w-4 text-white" />
-                  </button>
+                  {referenceImage ? (
+                    <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-primary/50 hover:border-primary transition-all">
+                      <img 
+                        src={referenceImage} 
+                        alt="Uploaded reference" 
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setReferenceImage(null);
+                          toast.success("Reference image removed");
+                        }}
+                        className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center transition-colors shadow-lg"
+                      >
+                        <X className="h-3 w-3 text-white" />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => document.getElementById('reference-upload')?.click()}
+                      className="w-9 h-9 rounded-full bg-black/40 backdrop-blur-md border border-primary/30 hover:bg-primary/20 hover:border-primary/50 transition-all flex items-center justify-center"
+                    >
+                      <Camera className="h-4 w-4 text-white" />
+                    </button>
+                  )}
                   <input
                     id="reference-upload"
                     type="file"
@@ -644,6 +664,7 @@ export const Hero = () => {
                         };
                         reader.readAsDataURL(file);
                       }
+                      e.target.value = '';
                     }}
                   />
                   
