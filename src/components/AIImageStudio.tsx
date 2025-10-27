@@ -774,8 +774,8 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
         {previewCards.length > 0 && (
           <Card className="border-2 border-primary/30 backdrop-blur-xl bg-black/60 shadow-2xl hover:shadow-[0_0_40px_rgba(139,92,246,0.2)] transition-all duration-300 mb-4">
             <div className="p-2">
-              <ScrollArea className="h-[600px]">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <ScrollArea className="h-[550px]">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                   {previewCards.map((card) => (
                     <Card 
                       key={card.id} 
@@ -889,7 +889,7 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
 
         {/* Studio Chat - Show below Generated Previews */}
         {previewCards.length > 0 && (
-          <Card className="mb-8 border-2 border-primary/30 backdrop-blur-xl bg-black/60 shadow-2xl hover:shadow-[0_0_40px_rgba(139,92,246,0.2)] transition-all duration-300">
+          <Card className="mb-4 border-2 border-primary/30 backdrop-blur-xl bg-black/60 shadow-2xl hover:shadow-[0_0_40px_rgba(139,92,246,0.2)] transition-all duration-300">
             <div className="p-6">
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <MessageCircle className="h-5 w-5" />
