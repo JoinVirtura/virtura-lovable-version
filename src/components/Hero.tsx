@@ -40,7 +40,6 @@ import styleBiomechanical from '@/assets/style-biomechanical.jpg';
 import styleSynthwave from '@/assets/style-synthwave.jpg';
 import styleAbstractGeo from '@/assets/style-abstract-geo.jpg';
 import styleBotanical from '@/assets/style-botanical.jpg';
-import aiBrainHand from '@/assets/ai-brain-hand.png';
 
 // Style data with high-quality images
 const styleData = [
@@ -538,72 +537,8 @@ export const Hero = () => {
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-primary/15 via-primary/5 to-transparent animate-corner-glow-3" />
         <div className="absolute bottom-0 right-0 w-48 h-48 bg-gradient-to-tl from-primary/12 via-primary/4 to-transparent animate-corner-glow-4" />
       </div>
-
-      {/* AI Brain + Hand Visual - Right Side */}
-      <div className="absolute top-1/2 right-[5%] transform -translate-y-1/2 z-5 hidden lg:block">
-        {/* Main Brain + Hand Image Container */}
-        <div className="relative w-[500px] h-[600px] group">
-          {/* Glow halo behind */}
-          <div className="absolute inset-0 bg-gradient-radial from-violet-500/30 via-purple-500/10 to-transparent blur-3xl animate-pulse-glow" />
-          
-          {/* Rotating particle ring */}
-          <div className="absolute inset-0">
-            <div className="absolute top-1/4 left-1/2 w-2 h-2 bg-violet-400 rounded-full animate-orbit-particle" style={{animationDelay: '0s'}} />
-            <div className="absolute top-1/4 left-1/2 w-1.5 h-1.5 bg-purple-400 rounded-full animate-orbit-particle" style={{animationDelay: '2s'}} />
-            <div className="absolute top-1/4 left-1/2 w-1 h-1 bg-fuchsia-400 rounded-full animate-orbit-particle" style={{animationDelay: '4s'}} />
-            <div className="absolute top-1/4 left-1/2 w-1.5 h-1.5 bg-blue-400 rounded-full animate-orbit-particle" style={{animationDelay: '6s'}} />
-          </div>
-          
-          {/* Energy flow lines from hand to brain */}
-          <div className="absolute bottom-1/4 left-1/2 w-1 h-32 overflow-hidden">
-            <div className="w-full h-8 bg-gradient-to-t from-violet-400 to-transparent animate-energy-flow" style={{animationDelay: '0s'}} />
-            <div className="w-full h-8 bg-gradient-to-t from-purple-400 to-transparent animate-energy-flow" style={{animationDelay: '0.7s'}} />
-            <div className="w-full h-8 bg-gradient-to-t from-fuchsia-400 to-transparent animate-energy-flow" style={{animationDelay: '1.4s'}} />
-          </div>
-          
-          {/* Scan line effect */}
-          <div className="absolute inset-0 overflow-hidden opacity-30">
-            <div className="w-full h-1 bg-gradient-to-r from-transparent via-violet-400 to-transparent animate-scan-line" />
-          </div>
-          
-          {/* Main brain image with floating animation */}
-          <img 
-            src={aiBrainHand}
-            alt="AI Brain Visualization"
-            className="relative z-10 w-full h-full object-contain animate-float-brain
-                       transition-transform duration-500 hover:scale-105 cursor-pointer
-                       drop-shadow-[0_0_50px_rgba(139,92,246,0.6)]"
-          />
-          
-          {/* Interactive glow spots on hover */}
-          <div className="absolute top-[20%] left-[60%] w-16 h-16 bg-violet-400/0 rounded-full blur-2xl 
-                          transition-all duration-300 group-hover:bg-violet-400/40" />
-          <div className="absolute bottom-[30%] right-[50%] w-12 h-12 bg-purple-400/0 rounded-full blur-2xl 
-                          transition-all duration-300 group-hover:bg-purple-400/30" />
-          
-          {/* Floating data points */}
-          <div className="absolute top-[15%] right-[10%] text-xs text-violet-300 font-mono 
-                          animate-fade-in opacity-70" style={{animationDelay: '1s'}}>
-            <div className="bg-black/40 backdrop-blur-sm px-2 py-1 rounded border border-violet-500/30">
-              Neural Processing
-            </div>
-          </div>
-          <div className="absolute bottom-[40%] left-[5%] text-xs text-purple-300 font-mono 
-                          animate-fade-in opacity-70" style={{animationDelay: '1.5s'}}>
-            <div className="bg-black/40 backdrop-blur-sm px-2 py-1 rounded border border-purple-500/30">
-              Identity Matrix
-            </div>
-          </div>
-          <div className="absolute top-[50%] right-[20%] text-xs text-fuchsia-300 font-mono 
-                          animate-fade-in opacity-70" style={{animationDelay: '2s'}}>
-            <div className="bg-black/40 backdrop-blur-sm px-2 py-1 rounded border border-fuchsia-500/30">
-              Consciousness Link
-            </div>
-          </div>
-        </div>
-      </div>
       
-      <div className="relative z-10 container mx-auto px-12 py-20 flex flex-col items-center justify-center min-h-screen text-center max-w-6xl lg:items-start lg:text-left lg:max-w-7xl lg:pl-24">
+      <div className="relative z-10 container mx-auto px-12 py-20 flex flex-col items-center justify-center min-h-screen text-center max-w-6xl">
         {/* Header Badge */}
         <Badge className="bg-card/80 border-primary/20 text-foreground px-6 py-3 text-base font-semibold mb-8 animate-fade-in backdrop-blur-sm">
           Virtura AI
