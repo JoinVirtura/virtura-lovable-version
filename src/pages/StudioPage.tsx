@@ -24,23 +24,18 @@ import {
 } from 'lucide-react';
 
 import { AvatarGenerationStudio } from '@/components/studio/AvatarGenerationStudio';
-import { PremiumVoiceEngine } from '@/components/studio/PremiumVoiceEngine';
-import { RealVideoEngine } from '@/components/studio/RealVideoEngine';
 import { StyleTransferStudio } from '@/components/studio/StyleTransferStudio';
-import { ExportDeliveryStudio } from '@/components/studio/ExportDeliveryStudio';
 import { ProjectTimeline } from '@/components/studio/ProjectTimeline';
 import { RealtimePreview } from '@/components/studio/RealtimePreview';
 import { useStudioProject } from '@/hooks/useStudioProject';
 import { StudioNavigation } from '@/components/studio/StudioNavigation';
 import { QualitySettings } from '@/components/studio/QualitySettings';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const STUDIO_STEPS = [
   { id: 'avatar', title: 'Avatar', icon: Upload, color: 'bg-blue-500' },
-  { id: 'style', title: 'Style', icon: Palette, color: 'bg-purple-500' },
-  { id: 'voice', title: 'Voice', icon: Mic, color: 'bg-green-500' },
-  { id: 'video', title: 'Video', icon: Film, color: 'bg-orange-500' },
-  { id: 'export', title: 'Export', icon: Download, color: 'bg-pink-500' }
+  { id: 'style', title: 'Style', icon: Palette, color: 'bg-purple-500' }
 ];
 
 export default function StudioPage() {
@@ -52,11 +47,6 @@ export default function StudioPage() {
     project,
     updateProject,
     generateAvatar,
-    generateVoice,
-    generateVideo,
-    exportProject,
-    downloadVideo,
-    saveToLibrary,
     projectProgress,
     qualityMetrics
   } = useStudioProject(false);
@@ -87,16 +77,6 @@ export default function StudioPage() {
   }, [updateProject]);
 
   const handleStepChange = (stepId: string) => {
-    // Clear video if navigating away from video step
-    if (currentStep === 'video' && stepId !== 'video') {
-      updateProject({
-        video: {
-          ...project.video,
-          videoUrl: undefined
-        }
-      });
-    }
-    
     setCurrentStep(stepId);
   };
 
@@ -104,14 +84,8 @@ export default function StudioPage() {
     switch (stepId) {
       case 'avatar':
         return project.avatar?.status || 'pending';
-      case 'voice':
-        return project.voice?.status || 'pending';
       case 'style':
         return project.style?.status || 'pending';
-      case 'video':
-        return project.video?.status || 'pending';
-      case 'export':
-        return project.export?.status || 'pending';
       default:
         return 'pending';
     }
@@ -146,9 +120,9 @@ export default function StudioPage() {
                 <Crown className="h-3 w-3 absolute -top-0.5 -right-0.5 text-violet-400" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gradient-primary">AI Studio Pro</h1>
+                <h1 className="text-2xl font-bold text-gradient-primary">Style Transfer Studio</h1>
                 <Badge variant="secondary" className="text-xs mt-1 bg-violet-500/20 text-violet-300 border-violet-500/30">
-                  Ultra-HD
+                  Avatar Styling
                 </Badge>
               </div>
             </div>
@@ -168,10 +142,10 @@ export default function StudioPage() {
             <div className="glass-card px-4 py-3 rounded-xl border border-violet-500/20 flex-shrink-0">
               <div className="flex items-center gap-3">
                 <div className="text-right">
-                  <div className="text-xs text-gray-400">Project Quality</div>
+                  <div className="text-xs text-gray-400">Avatar Quality</div>
                   <div className="flex items-center gap-2 mt-1">
-                    <Progress value={qualityMetrics.overall} className="w-20 h-1.5 bg-gray-800" />
-                    <span className="text-sm font-bold text-violet-400">{qualityMetrics.overall}%</span>
+                    <Progress value={qualityMetrics.avatar} className="w-20 h-1.5 bg-gray-800" />
+                    <span className="text-sm font-bold text-violet-400">{qualityMetrics.avatar}%</span>
                   </div>
                 </div>
                 <QualitySettings 
@@ -189,6 +163,14 @@ export default function StudioPage() {
 
       {/* Main Studio Interface */}
       <div className="max-w-7xl mx-auto px-6 py-6">
+        {/* Info Banner */}
+        <Alert className="border-violet-500/30 bg-violet-500/10 mb-6">
+          <Sparkles className="h-4 w-4 text-violet-400" />
+          <AlertDescription className="text-sm text-gray-300">
+            Create stunning avatars and apply artistic styles. Then use your styled avatar in the <strong className="text-violet-300">Video</strong> page to create talking avatar videos!
+          </AlertDescription>
+        </Alert>
+
         <div className="grid lg:grid-cols-12 gap-6">
           {/* Main Studio Panel */}
           <div className="lg:col-span-8">
@@ -206,46 +188,11 @@ export default function StudioPage() {
                     </ErrorBoundary>
                   </TabsContent>
 
-                  <TabsContent value="voice" className="p-6 space-y-6">
-                    <ErrorBoundary fallbackTitle="Premium Voice Engine Error" fallbackMessage="There was an issue with the premium voice generation component.">
-                      <PremiumVoiceEngine
-                        project={project}
-                        onUpdate={updateProject}
-                        onGenerate={generateVoice}
-                        isProcessing={isProcessing}
-                      />
-                    </ErrorBoundary>
-                  </TabsContent>
-
                   <TabsContent value="style" className="p-6 space-y-6">
                     <ErrorBoundary fallbackTitle="Style Transfer Error" fallbackMessage="There was an issue with the style transfer component.">
                       <StyleTransferStudio
                         project={project}
                         onUpdate={updateProject}
-                        isProcessing={isProcessing}
-                      />
-                    </ErrorBoundary>
-                  </TabsContent>
-
-                  <TabsContent value="video" className="p-6 space-y-6">
-                    <ErrorBoundary fallbackTitle="Real Video Engine Error" fallbackMessage="There was an issue with the real video generation component.">
-                      <RealVideoEngine
-                        project={project}
-                        onUpdate={updateProject}
-                        onGenerate={generateVideo}
-                        isProcessing={isProcessing}
-                        onDownload={downloadVideo}
-                        onSaveToLibrary={saveToLibrary}
-                      />
-                    </ErrorBoundary>
-                  </TabsContent>
-
-                  <TabsContent value="export" className="p-6 space-y-6">
-                    <ErrorBoundary fallbackTitle="Export Studio Error" fallbackMessage="There was an issue with the export component.">
-                      <ExportDeliveryStudio
-                        project={project}
-                        onUpdate={updateProject}
-                        onExport={exportProject}
                         isProcessing={isProcessing}
                       />
                     </ErrorBoundary>
@@ -312,29 +259,12 @@ export default function StudioPage() {
               </Card>
             )}
 
-            {/* Quick Actions */}
-            <Card className="glass-card border border-violet-500/20 rounded-xl">
+            {/* Quick Actions - Disabled for now */}
+            {/* <Card className="glass-card border border-violet-500/20 rounded-xl">
               <CardContent className="p-4">
-                <div className="grid grid-cols-2 gap-3">
-                  <Button size="sm" variant="ghost" className="h-12 flex-col gap-1 hover:bg-violet-500/10 hover:text-violet-300 transition-all">
-                    <Play className="h-4 w-4" />
-                    <span className="text-xs">Preview</span>
-                  </Button>
-                  <Button size="sm" variant="ghost" className="h-12 flex-col gap-1 hover:bg-violet-500/10 hover:text-violet-300 transition-all">
-                    <Share2 className="h-4 w-4" />
-                    <span className="text-xs">Share</span>
-                  </Button>
-                  <Button size="sm" variant="ghost" className="h-12 flex-col gap-1 hover:bg-violet-500/10 hover:text-violet-300 transition-all">
-                    <Download className="h-4 w-4" />
-                    <span className="text-xs">Export</span>
-                  </Button>
-                  <Button size="sm" variant="ghost" className="h-12 flex-col gap-1 hover:bg-violet-500/10 hover:text-violet-300 transition-all">
-                    <Settings className="h-4 w-4" />
-                    <span className="text-xs">Settings</span>
-                  </Button>
-                </div>
+                <p className="text-sm text-muted-foreground text-center">Quick actions coming soon...</p>
               </CardContent>
-            </Card>
+            </Card> */}
           </div>
         </div>
       </div>

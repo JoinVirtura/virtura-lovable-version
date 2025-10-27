@@ -1,7 +1,7 @@
-import { AIImageStudio } from "@/components/AIImageStudio";
+import StudioPage from "@/pages/StudioPage";
 
 const AIImageStudioPage = () => {
-  return <AIImageStudio />;
+  return <StudioPage />;
 };
 
 export default AIImageStudioPage;

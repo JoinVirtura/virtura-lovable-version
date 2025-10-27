@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { 
   Palette, 
   Sparkles, 
@@ -14,11 +16,18 @@ import {
   Brush,
   ImageIcon,
   CheckCircle,
-  Loader2
+  Loader2,
+  Heart,
+  Library,
+  Film,
+  Download,
+  Share2
 } from 'lucide-react';
 import type { StudioProject } from '@/hooks/useStudioProject';
 import { applyStyleTransfer } from './StyleTransferEdge';
 import { useToast } from '@/components/ui/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { toast as sonnerToast } from 'sonner';
 
 // Import ALL style assets - 27+ styles
 import style90sAnime from '@/assets/style-90s-anime.jpg';
@@ -172,12 +181,16 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
   isProcessing 
 }) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [styleStrength, setStyleStrength] = useState(75);
   const [preserveOriginal, setPreserveOriginal] = useState(25);
   const [enhanceDetails, setEnhanceDetails] = useState(80);
   const [isApplying, setIsApplying] = useState(false);
+  const [avatarTitle, setAvatarTitle] = useState('');
+  const [savedToLibrary, setSavedToLibrary] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const filteredStyles = STYLE_PRESETS.filter(style => 
     selectedCategory === 'all' || style.category === selectedCategory
@@ -318,6 +331,96 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
   };
 
   const canApplyStyle = project.avatar?.status === 'completed' && selectedStyle;
+
+  const handleSaveToLibrary = async () => {
+    const styledImageUrl = project.style?.resultUrl || project.avatar?.processedUrl || project.avatar?.originalUrl;
+    if (!styledImageUrl) {
+      toast({
+        title: "No Image to Save",
+        description: "Please apply a style transfer first or generate an avatar.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Authentication Required",
+          description: "Please sign in to save avatars to your library",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      const { error } = await supabase
+        .from('avatar_library')
+        .insert({
+          user_id: user.id,
+          image_url: styledImageUrl,
+          prompt: avatarTitle || `Styled Avatar - ${project.style?.metadata?.styleName || 'Custom'}`,
+          title: avatarTitle || `Styled Avatar - ${project.style?.metadata?.styleName || 'Custom'}`,
+          tags: [
+            'style-transfer',
+            project.style?.preset || 'custom',
+            project.style?.metadata?.category || 'general'
+          ]
+        });
+
+      if (error) throw error;
+
+      setSavedToLibrary(true);
+      sonnerToast.success('Avatar saved to library!');
+      toast({
+        title: "Saved Successfully",
+        description: "Your styled avatar has been saved to your library",
+      });
+    } catch (error: any) {
+      console.error('Error saving to library:', error);
+      toast({
+        title: "Save Failed",
+        description: error.message || 'Failed to save avatar to library',
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleUseInVideo = () => {
+    const styledImageUrl = project.style?.resultUrl || project.avatar?.processedUrl || project.avatar?.originalUrl;
+    if (!styledImageUrl) return;
+
+    // Store avatar data in sessionStorage
+    sessionStorage.setItem('selectedAvatar', JSON.stringify({
+      avatarUrl: styledImageUrl,
+      metadata: {
+        source: 'style-transfer-studio',
+        styleName: project.style?.metadata?.styleName,
+        stylePreset: project.style?.preset,
+        category: project.style?.metadata?.category
+      }
+    }));
+
+    // Navigate to Video Pro page
+    navigate('/dashboard/video-pro');
+    sonnerToast.success('Opening Video Pro with your styled avatar...');
+  };
+
+  const handleDownload = () => {
+    const styledImageUrl = project.style?.resultUrl || project.avatar?.processedUrl || project.avatar?.originalUrl;
+    if (!styledImageUrl) return;
+
+    const link = document.createElement('a');
+    link.href = styledImageUrl;
+    link.download = `styled-avatar-${Date.now()}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    sonnerToast.success('Download started!');
+  };
 
   return (
     <div className="space-y-6">
@@ -556,6 +659,104 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
                   <p className="text-xs text-muted-foreground mt-2">
                     ✨ Styled avatar visible in Live Preview (right panel)
                   </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Save to Library */}
+          {(project.style?.resultUrl || project.avatar?.processedUrl) && (
+            <Card className="glass-card border-2 border-green-500/40">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Heart className="h-5 w-5 text-green-400" />
+                  Save Styled Avatar
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <Input 
+                    placeholder="Enter avatar title (optional)" 
+                    value={avatarTitle}
+                    onChange={(e) => setAvatarTitle(e.target.value)}
+                    disabled={savedToLibrary}
+                  />
+                  <Button 
+                    onClick={handleSaveToLibrary}
+                    disabled={savedToLibrary || isSaving}
+                    className="w-full"
+                  >
+                    {isSaving ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Saving...
+                      </>
+                    ) : savedToLibrary ? (
+                      <>
+                        <CheckCircle className="h-4 w-4 mr-2" />
+                        Saved to Library
+                      </>
+                    ) : (
+                      <>
+                        <Heart className="h-4 w-4 mr-2" />
+                        Save to Library
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Next Steps - Use in Video */}
+          {savedToLibrary && (
+            <Card className="glass-card border-2 border-purple-500/40 animate-fade-in">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-purple-400" />
+                  ✨ Avatar Saved Successfully!
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <p className="text-sm text-gray-300">
+                  Your styled avatar is now in your library. What's next?
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <Button 
+                    variant="outline"
+                    onClick={() => navigate('/dashboard/library')}
+                    className="w-full"
+                  >
+                    <Library className="h-4 w-4 mr-2" />
+                    View Library
+                  </Button>
+                  <Button 
+                    onClick={handleUseInVideo}
+                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                  >
+                    <Film className="h-4 w-4 mr-2" />
+                    Create Video
+                  </Button>
+                </div>
+                <div className="grid grid-cols-2 gap-3 mt-2">
+                  <Button 
+                    variant="ghost"
+                    onClick={handleDownload}
+                    size="sm"
+                    className="w-full"
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Download
+                  </Button>
+                  <Button 
+                    variant="ghost"
+                    size="sm"
+                    className="w-full"
+                    onClick={() => sonnerToast.info('Share feature coming soon!')}
+                  >
+                    <Share2 className="h-4 w-4 mr-2" />
+                    Share
+                  </Button>
                 </div>
               </CardContent>
             </Card>
