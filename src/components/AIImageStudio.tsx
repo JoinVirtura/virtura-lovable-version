@@ -33,7 +33,8 @@ import {
   Square,
   BookOpen,
   X,
-  ArrowLeft
+  ArrowLeft,
+  Save
 } from "lucide-react";
 import { ImageGenerationService, type ImageGenerationParams } from "@/services/imageGenerationService";
 import { PromptLibrary } from "./PromptLibrary";
@@ -756,6 +757,130 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
           </Card>
         )}
 
+        {/* Hero Section - Image Comparison */}
+        {previewCards.length > 0 && (
+          <div className="mb-8 relative overflow-hidden rounded-3xl border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 backdrop-blur-xl p-8">
+            {/* Header */}
+            <div className="text-center mb-8">
+              <h2 className="text-4xl font-bold bg-gradient-to-r from-primary via-purple-400 to-secondary bg-clip-text text-transparent mb-2">
+                Copilot
+              </h2>
+              <p className="text-muted-foreground text-lg">
+                Edit and enhance your images with AI-powered transformations
+              </p>
+            </div>
+
+            {/* Side-by-Side Comparison */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Left: Original Image */}
+              <div className="relative aspect-square overflow-hidden rounded-2xl border-2 border-primary/40 shadow-2xl group">
+                {referenceImage ? (
+                  <>
+                    <img 
+                      src={referenceImage}
+                      alt="Original"
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+                    <div className="absolute bottom-0 left-0 right-0 p-6 pointer-events-none">
+                      <h3 className="text-2xl font-bold tracking-wide text-white drop-shadow-lg">ORIGINAL</h3>
+                    </div>
+                  </>
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center bg-muted/20 backdrop-blur-sm">
+                    <div className="text-center text-muted-foreground">
+                      <FileImage className="h-16 w-16 mx-auto mb-3 opacity-40" />
+                      <p className="text-sm font-medium">No reference image</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Right: Generated Result */}
+              <div className="relative aspect-square overflow-hidden rounded-2xl border-2 border-primary/40 shadow-2xl group">
+                {previewCards[0].isGenerating ? (
+                  <div className="absolute inset-0 flex items-center justify-center bg-muted/20 backdrop-blur-sm">
+                    <div className="text-center">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-3" />
+                      <p className="text-sm text-muted-foreground font-medium">Generating...</p>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <img 
+                      src={previewCards[0].imageUrl}
+                      alt="AI Enhanced"
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+                    <div className="absolute bottom-0 left-0 right-0 p-6 pointer-events-none">
+                      <h3 className="text-2xl font-bold tracking-wide text-white drop-shadow-lg">AI ENHANCED</h3>
+                      {previewCards[0].metadata && (
+                        <div className="flex gap-2 mt-2">
+                          <span className="text-xs bg-primary/20 backdrop-blur-sm border border-primary/30 rounded-full px-3 py-1 text-white">
+                            {previewCards[0].metadata.style}
+                          </span>
+                          <span className="text-xs bg-primary/20 backdrop-blur-sm border border-primary/30 rounded-full px-3 py-1 text-white">
+                            {previewCards[0].metadata.resolution}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Hover Action Buttons */}
+                    <div className="absolute inset-0 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 backdrop-blur-sm">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              size="icon"
+                              className="h-12 w-12 rounded-full bg-black/80 backdrop-blur-md border-2 border-primary/50 hover:bg-primary/30 hover:border-primary hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] transition-all duration-300"
+                              onClick={() => handleDownloadVariant(previewCards[0].id)}
+                            >
+                              <Download className="h-5 w-5" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Download</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              size="icon"
+                              className="h-12 w-12 rounded-full bg-black/80 backdrop-blur-md border-2 border-primary/50 hover:bg-primary/30 hover:border-primary hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] transition-all duration-300"
+                              onClick={() => handleShareVariant(previewCards[0].id)}
+                            >
+                              <Share2 className="h-5 w-5" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Share</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              size="icon"
+                              className="h-12 w-12 rounded-full bg-black/80 backdrop-blur-md border-2 border-primary/50 hover:bg-primary/30 hover:border-primary hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] transition-all duration-300"
+                              onClick={() => handleSaveToLibrary(previewCards[0].id)}
+                            >
+                              <Save className="h-5 w-5" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Save to Library</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* New Generation Button - Show after input is hidden */}
         {!showInputCard && (
           <div className="mb-8 text-center">
@@ -770,128 +895,6 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
           </div>
         )}
 
-        {/* Results Section */}
-        {previewCards.length > 0 && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-4">
-            {/* Left: Original/Reference Image */}
-            <Card className="border-2 border-primary/30 backdrop-blur-xl bg-black/60 shadow-2xl hover:shadow-[0_0_40px_rgba(139,92,246,0.2)] transition-all duration-300">
-              <div className="p-4">
-                <h3 className="text-lg font-semibold mb-4 text-center">Original Image</h3>
-                <div className="aspect-square relative bg-muted rounded-lg overflow-hidden">
-                  {referenceImage ? (
-                    <img
-                      src={referenceImage}
-                      alt="Original"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                      <div className="text-center">
-                        <FileImage className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                        <p className="text-sm">No reference image</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </Card>
-
-            {/* Right: Generated Result */}
-            {previewCards[0] && (
-              <Card className="border-2 border-primary/30 backdrop-blur-xl bg-black/60 shadow-2xl hover:shadow-[0_0_40px_rgba(139,92,246,0.2)] transition-all duration-300">
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold mb-4 text-center">Generated Result</h3>
-                  <div className="aspect-square relative group">
-                    {previewCards[0].isGenerating ? (
-                      <div className="w-full h-full bg-muted rounded-lg flex items-center justify-center">
-                        <div className="text-center">
-                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2" />
-                          <p className="text-sm text-muted-foreground">Generating...</p>
-                        </div>
-                      </div>
-                    ) : (
-                      <>
-                        <img
-                          src={previewCards[0].imageUrl}
-                          alt={previewCards[0].prompt}
-                          className="w-full h-full object-cover rounded-lg"
-                        />
-                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  size="icon"
-                                  className="h-10 w-10 rounded-full bg-black/60 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
-                                  onClick={() => handleDownloadVariant(previewCards[0].id)}
-                                >
-                                  <Download className="h-4 w-4" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>Download</TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  size="icon"
-                                  className="h-10 w-10 rounded-full bg-black/60 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
-                                  onClick={() => handleShareVariant(previewCards[0].id)}
-                                >
-                                  <Share2 className="h-4 w-4" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>Share</TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  size="icon"
-                                  className="h-10 w-10 rounded-full bg-black/60 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
-                                  onClick={() => handleSaveToLibrary(previewCards[0].id)}
-                                  disabled={savingToLibrary === previewCards[0].id}
-                                >
-                                  {savingToLibrary === previewCards[0].id ? (
-                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
-                                  ) : (
-                                    <Heart className="h-4 w-4" />
-                                  )}
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>Save to Library</TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                  
-                  {previewCards[0].metadata && (
-                    <div className="mt-3 flex gap-2 justify-center">
-                      <Badge variant="outline" className="text-xs">
-                        {previewCards[0].metadata.contentType}
-                      </Badge>
-                      <Badge variant="outline" className="text-xs">
-                        {previewCards[0].metadata.resolution}
-                      </Badge>
-                      {previewCards[0].safetyPassed && (
-                        <Badge variant="outline" className="text-xs flex items-center gap-1">
-                          <Shield className="h-3 w-3" />
-                          Safe
-                        </Badge>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </Card>
-            )}
-          </div>
-        )}
 
         {/* Studio Chat - Show below Generated Previews */}
         {previewCards.length > 0 && (
