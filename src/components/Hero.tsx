@@ -165,6 +165,38 @@ export const Hero = () => {
   const removeUploadedGeneralImage = () => {
     setUploadedGeneralImage(null);
   };
+
+  const handleCompleteReset = () => {
+    // Clear all upload states
+    setReferenceImage(null);
+    setUploadedImagePrompt(null);
+    setUploadedImage(null);
+    setUploadedGeneralImage(null);
+    
+    // Clear selection states
+    setSelectedImageStyle(null);
+    setSelectedStylePreview(null);
+    
+    // Clear input
+    setInputValue("");
+    
+    // Reset style and aspect selections
+    setSelectedStyle("Style");
+    setSelectedAspect("2:3");
+    
+    // Clear generated images
+    setGeneratedImages([]);
+    
+    // Reset generation state
+    setIsGenerating(false);
+    
+    // Close any open modals
+    setShowStyleModal(false);
+    setShowImageStylePopup(false);
+    setShowAdvanced(false);
+    
+    toast.success("Reset complete - ready for a new generation!");
+  };
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStylePreview, setSelectedStylePreview] = useState<{name: string, username: string, id: string, image: string} | null>(null);
 
@@ -508,19 +540,25 @@ export const Hero = () => {
       
       <div className="relative z-10 container mx-auto px-12 py-20 flex flex-col items-center justify-center min-h-screen text-center max-w-6xl">
         {/* Header Badge */}
-        <Badge className="bg-card/80 border-primary/20 text-foreground px-6 py-3 text-base font-semibold mb-8 animate-fade-in backdrop-blur-sm">
-          Revolutionary AI Technology
+        <Badge className="bg-gradient-to-r from-violet-600 to-purple-600 border-transparent text-white px-6 py-3 text-base font-bold mb-8 animate-fade-in backdrop-blur-sm shadow-lg shadow-violet-500/30 animate-pulse">
+          <span className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4" />
+            Virtura AI
+            <Sparkles className="h-4 w-4" />
+          </span>
         </Badge>
 
         {/* Main Heading - Futuristic Aesthetic */}
-        <div className="mb-8 animate-fade-in">
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight">
-            <span className="text-white font-light">Virtura</span>
-            <br />
-            <span className="text-white font-light">Where Identity </span>
-            <span className="text-gradient-primary font-bold animate-glow-text">Evolves</span>
-          </h1>
-        </div>
+        {generatedImages.length === 0 && !isGenerating && (
+          <div className="mb-8 animate-fade-in">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight">
+              <span className="text-white font-light">Virtura</span>
+              <br />
+              <span className="text-white font-light">Where Identity </span>
+              <span className="text-gradient-primary font-bold animate-glow-text">Evolves</span>
+            </h1>
+          </div>
+        )}
 
         {/* Output Display Section - ABOVE input */}
         {generatedImages.length > 0 && (
@@ -663,8 +701,7 @@ export const Hero = () => {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          setReferenceImage(null);
-                          toast.success("Reference image removed");
+                          handleCompleteReset();
                         }}
                         className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center transition-colors shadow-lg"
                       >
