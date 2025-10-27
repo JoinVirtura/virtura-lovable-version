@@ -518,7 +518,7 @@ export const Hero = () => {
                   className="group overflow-hidden hover:shadow-[0_0_30px_rgba(139,92,246,0.4)] transition-all duration-300"
                 >
                   {card.isGenerating ? (
-                    <div className="aspect-video bg-gradient-to-br from-violet-600/20 to-fuchsia-600/20 flex flex-col items-center justify-center p-8">
+                    <div className="aspect-square bg-gradient-to-br from-violet-600/20 to-fuchsia-600/20 flex flex-col items-center justify-center p-8">
                       <div className="relative">
                         <Loader2 className="h-12 w-12 animate-spin text-primary" />
                         <Sparkles className="absolute top-0 left-0 h-12 w-12 animate-pulse text-primary/50" />
@@ -527,7 +527,7 @@ export const Hero = () => {
                       <p className="text-white/60 text-sm mt-2">This may take a moment</p>
                     </div>
                   ) : (card as any).failed ? (
-                    <div className="aspect-video bg-gradient-to-br from-red-500/10 to-orange-500/10 flex flex-col items-center justify-center p-8">
+                    <div className="aspect-square bg-gradient-to-br from-red-500/10 to-orange-500/10 flex flex-col items-center justify-center p-8">
                       <AlertCircle className="h-12 w-12 text-red-400 mb-4" />
                       <p className="text-white text-center font-medium mb-2">Generation Failed</p>
                       <p className="text-white/60 text-sm text-center mb-4">{(card as any).error}</p>
@@ -544,7 +544,7 @@ export const Hero = () => {
                       </Button>
                     </div>
                   ) : (
-                    <div className="aspect-video relative overflow-hidden">
+                    <div className="aspect-square relative overflow-hidden">
                       <img
                         src={card.imageUrl}
                         alt={card.prompt}

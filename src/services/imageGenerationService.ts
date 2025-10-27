@@ -564,22 +564,22 @@ export class ImageGenerationService {
       ? this.detectContentType(basePrompt) 
       : params.contentType;
 
-    // Quality anchor - core elements that must be preserved
-    const qualityAnchor = 'ultra-realistic, professional photography, sharp focus, high quality, detailed, 8K resolution';
+    // Style-agnostic quality anchor that enhances without changing artistic style
+    const qualityAnchor = 'highly detailed, sharp focus, high quality, 8K resolution, masterpiece';
     
-    // Variant configurations for different styles
+    // Variant configurations that preserve user's intended style
     const variantConfigs = [
       {
         name: 'Original Enhanced',
-        modifier: `${qualityAnchor}, cinematic lighting, editorial style`
+        modifier: `${qualityAnchor}, perfect composition`
       },
       {
-        name: 'Different Angle',
-        modifier: `${qualityAnchor}, low angle shot, dramatic perspective, urban atmosphere`
+        name: 'Dynamic Angle',
+        modifier: `${qualityAnchor}, dynamic angle, interesting perspective`
       },
       {
-        name: 'Different Lighting',
-        modifier: `${qualityAnchor}, golden hour lighting, warm tones, atmospheric mood`
+        name: 'Enhanced Lighting',
+        modifier: `${qualityAnchor}, beautiful lighting, atmospheric`
       }
     ];
 
