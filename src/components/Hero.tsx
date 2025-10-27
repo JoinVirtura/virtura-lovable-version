@@ -623,19 +623,21 @@ export const Hero = () => {
                 <div className="flex items-center gap-2">
                   {/* Image Upload Button */}
                   {referenceImage ? (
-                    <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-primary/50 hover:border-primary transition-all">
-                      <img 
-                        src={referenceImage} 
-                        alt="Uploaded reference" 
-                        className="w-full h-full object-cover"
-                      />
+                    <div className="relative">
+                      <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-primary/50 hover:border-primary transition-all">
+                        <img 
+                          src={referenceImage} 
+                          alt="Uploaded reference" 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           setReferenceImage(null);
                           toast.success("Reference image removed");
                         }}
-                        className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center transition-colors shadow-lg"
+                        className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center transition-colors shadow-lg"
                       >
                         <X className="h-3 w-3 text-white" />
                       </button>
