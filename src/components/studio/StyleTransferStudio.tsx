@@ -476,63 +476,88 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
       {/* Header with Navigation */}
       <div className="space-y-2">
         {/* Title + Navigation on same line */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-start justify-between gap-4">
           <h2 className="text-3xl font-bold bg-gradient-to-r from-violet-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
             Style Transfer Studio
           </h2>
           
-          {/* Compact Inline Navigation */}
-          <div className="flex items-center gap-1">
-            {/* Step 1: Avatar */}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/10 border border-green-500/30 text-green-400 transition-all hover:bg-green-500/20">
-                    <CheckCircle className="w-3 h-3" />
-                    <span>Avatar</span>
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent><p>Avatar Generation Complete</p></TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            
-            {/* Connector */}
-            <div className="flex gap-0.5 px-1">
-              <div className="w-1 h-1 rounded-full bg-violet-400/60" />
-              <div className="w-1 h-1 rounded-full bg-violet-400/60" />
+          <div className="flex items-center gap-4">
+            {/* Compact Inline Navigation */}
+            <div className="flex items-center gap-1">
+              {/* Step 1: Avatar */}
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/10 border border-green-500/30 text-green-400 transition-all hover:bg-green-500/20">
+                      <CheckCircle className="w-3 h-3" />
+                      <span>Avatar</span>
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent><p>Avatar Generation Complete</p></TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              
+              {/* Connector */}
+              <div className="flex gap-0.5 px-1">
+                <div className="w-1 h-1 rounded-full bg-violet-400/60" />
+                <div className="w-1 h-1 rounded-full bg-violet-400/60" />
+              </div>
+              
+              {/* Step 2: Style (Current) */}
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button className="relative flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-violet-500 to-purple-600 text-white shadow-[0_0_12px_rgba(139,92,246,0.5)] animate-pulse backdrop-blur-sm border border-violet-400/50 transition-all hover:scale-105">
+                      <Sparkles className="w-3 h-3" />
+                      <span>Style</span>
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent><p>Apply Style Transfer</p></TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              
+              {/* Connector */}
+              <div className="flex gap-0.5 px-1">
+                <div className="w-1 h-1 rounded-full bg-gray-600" />
+                <div className="w-1 h-1 rounded-full bg-gray-600" />
+              </div>
+              
+              {/* Step 3: Export (Future) */}
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-800/50 border border-gray-700 text-gray-500 backdrop-blur-sm transition-all hover:bg-gray-800/70">
+                      <Download className="w-3 h-3" />
+                      <span>Export</span>
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent><p>Export (Coming Soon)</p></TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
             
-            {/* Step 2: Style (Current) */}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button className="relative flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-violet-500 to-purple-600 text-white shadow-[0_0_12px_rgba(139,92,246,0.5)] animate-pulse backdrop-blur-sm border border-violet-400/50 transition-all hover:scale-105">
-                    <Sparkles className="w-3 h-3" />
-                    <span>Style</span>
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent><p>Apply Style Transfer</p></TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            
-            {/* Connector */}
-            <div className="flex gap-0.5 px-1">
-              <div className="w-1 h-1 rounded-full bg-gray-600" />
-              <div className="w-1 h-1 rounded-full bg-gray-600" />
-            </div>
-            
-            {/* Step 3: Export (Future) */}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-800/50 border border-gray-700 text-gray-500 backdrop-blur-sm transition-all hover:bg-gray-800/70">
-                    <Download className="w-3 h-3" />
-                    <span>Export</span>
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent><p>Export (Coming Soon)</p></TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            {/* Apply Style Button - Now inline */}
+            {selectedStyle && (
+              <Button 
+                onClick={handleApplyStyle}
+                disabled={!canApplyStyle || isProcessing || isApplying}
+                size="sm"
+                className={`px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 ${
+                  (isProcessing || isApplying || project.style?.status === 'processing')
+                    ? 'animate-pulse'
+                    : ''
+                }`}
+              >
+                {isProcessing || isApplying || project.style?.status === 'processing' ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Applying...
+                  </>
+                ) : (
+                  'Apply Style'
+                )}
+              </Button>
+            )}
           </div>
         </div>
         
@@ -541,31 +566,6 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
           Transform your avatar with 50+ AI-powered artistic styles
         </p>
       </div>
-
-      {/* Apply Style Transfer Button - Top Right */}
-      {selectedStyle && (
-        <div className="flex justify-end animate-fade-in">
-          <Button 
-            onClick={handleApplyStyle}
-            disabled={!canApplyStyle || isProcessing || isApplying}
-            size="sm"
-            className={`px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 ${
-              (isProcessing || isApplying || project.style?.status === 'processing')
-                ? 'animate-pulse'
-                : ''
-            }`}
-          >
-            {isProcessing || isApplying || project.style?.status === 'processing' ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Applying...
-              </>
-            ) : (
-              'Apply Style Transfer'
-            )}
-          </Button>
-        </div>
-      )}
 
       {/* Prerequisites Check */}
       {!project.avatar && (
