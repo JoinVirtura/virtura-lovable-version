@@ -11,9 +11,11 @@ interface OverviewPageProps {
 export function OverviewPage({ onViewChange }: OverviewPageProps) {
   return (
     <StudioBackground>
-      <Hero />
-      <div className="pt-8">
-        <TrendingRow tiles={getMockTiles('trending', 100)} className="px-0" />
+      <div className="pt-64">
+        <Hero />
+        <div className="pt-8">
+          <TrendingRow tiles={getMockTiles('trending', 100)} className="px-0" />
+        </div>
       </div>
     </StudioBackground>
   );
