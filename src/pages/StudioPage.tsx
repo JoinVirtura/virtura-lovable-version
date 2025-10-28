@@ -111,24 +111,24 @@ export default function StudioPage() {
 
       {/* Hero Header */}
       <div className="relative bg-gradient-to-b from-black/40 via-black/20 to-transparent backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-6 py-6">
+        <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="flex items-center justify-between gap-8">
             {/* Left: Minimal Logo & Title */}
-            <div className="flex items-center gap-3 flex-shrink-0">
-              <div className="relative">
+            <div className="flex items-center gap-3 flex-shrink-0 min-w-[240px]">
+              <div className="relative flex-shrink-0">
                 <Sparkles className="h-7 w-7 text-violet-400 drop-shadow-[0_0_8px_rgba(212,110,255,0.6)]" />
                 <Crown className="h-3 w-3 absolute -top-0.5 -right-0.5 text-violet-400" />
               </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gradient-primary">Style Transfer Studio</h1>
-                <Badge variant="secondary" className="text-xs mt-1 bg-violet-500/20 text-violet-300 border-violet-500/30">
+              <div className="flex flex-col">
+                <h1 className="text-2xl font-bold text-gradient-primary leading-tight">Style Transfer Studio</h1>
+                <Badge variant="secondary" className="text-xs mt-1.5 bg-violet-500/20 text-violet-300 border-violet-500/30 w-fit">
                   Avatar Styling
                 </Badge>
               </div>
             </div>
             
             {/* Center: Studio Navigation */}
-            <div className="flex-1 flex justify-center">
+            <div className="flex-1 flex items-center justify-center">
               <StudioNavigation
                 steps={STUDIO_STEPS}
                 currentStep={currentStep}
@@ -139,13 +139,13 @@ export default function StudioPage() {
             </div>
             
             {/* Right: Floating Quality Card */}
-            <div className="glass-card px-4 py-3 rounded-xl border border-violet-500/20 flex-shrink-0">
-              <div className="flex items-center gap-3">
-                <div className="text-right">
-                  <div className="text-xs text-gray-400">Avatar Quality</div>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Progress value={qualityMetrics.avatar} className="w-20 h-1.5 bg-gray-800" />
-                    <span className="text-sm font-bold text-violet-400">{qualityMetrics.avatar}%</span>
+            <div className="glass-card px-5 py-3.5 rounded-xl border border-violet-500/20 flex-shrink-0 min-w-[240px]">
+              <div className="flex items-center gap-4">
+                <div className="flex-1">
+                  <div className="text-xs text-gray-400 mb-1.5">Avatar Quality</div>
+                  <div className="flex items-center gap-2.5">
+                    <Progress value={qualityMetrics.avatar} className="w-24 h-2 bg-gray-800" />
+                    <span className="text-sm font-bold text-violet-400 min-w-[36px]">{qualityMetrics.avatar}%</span>
                   </div>
                 </div>
                 <QualitySettings 
