@@ -6,8 +6,13 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { 
   Sparkles, 
   Crown, 
@@ -202,7 +207,6 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
   const [avatarTitle, setAvatarTitle] = useState('');
   const [savedToLibrary, setSavedToLibrary] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<'all' | 'free' | 'premium'>('all');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -237,13 +241,6 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
     
     return matchesSearch && matchesType && matchesCategory && matchesBadge;
   });
-
-  // Auto-open settings when style is selected
-  React.useEffect(() => {
-    if (selectedStyle && selectedStyle !== 'none') {
-      setSettingsOpen(true);
-    }
-  }, [selectedStyle]);
 
   const handleApplyStyle = async () => {
     const avatarUrl = project.avatar?.processedUrl || project.avatar?.originalUrl;
@@ -652,24 +649,52 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
             Premium
           </Button>
 
-          {/* Category Dropdown */}
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="h-8 px-3 rounded-md bg-violet-500/10 border border-violet-500/30 text-violet-200 hover:bg-violet-500/20 hover:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-400 transition-colors cursor-pointer"
-            style={{ colorScheme: 'dark' }}
-          >
-            <option value="all" style={{ backgroundColor: '#1a1a2e', color: '#c4b5fd' }}>All Categories</option>
-            <option value="original" style={{ backgroundColor: '#1a1a2e', color: '#c4b5fd' }}>Original</option>
-            <option value="artistic" style={{ backgroundColor: '#1a1a2e', color: '#c4b5fd' }}>Artistic</option>
-            <option value="futuristic" style={{ backgroundColor: '#1a1a2e', color: '#c4b5fd' }}>Futuristic</option>
-            <option value="animation" style={{ backgroundColor: '#1a1a2e', color: '#c4b5fd' }}>Animation</option>
-            <option value="modern" style={{ backgroundColor: '#1a1a2e', color: '#c4b5fd' }}>Modern</option>
-            <option value="vintage" style={{ backgroundColor: '#1a1a2e', color: '#c4b5fd' }}>Vintage</option>
-            <option value="fantasy" style={{ backgroundColor: '#1a1a2e', color: '#c4b5fd' }}>Fantasy</option>
-            <option value="nature" style={{ backgroundColor: '#1a1a2e', color: '#c4b5fd' }}>Nature</option>
-            <option value="photography" style={{ backgroundColor: '#1a1a2e', color: '#c4b5fd' }}>Photography</option>
-          </select>
+          {/* Category Dropdown - Using DropdownMenu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-8"
+              >
+                {selectedCategory === 'all' ? 'All Categories' : 
+                 selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}
+                <ChevronDown className="ml-1 h-3 w-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48 bg-violet-950/95 border-violet-500/30 backdrop-blur-xl z-50">
+              <DropdownMenuItem onClick={() => setSelectedCategory('all')} className="cursor-pointer">
+                All Categories
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSelectedCategory('original')} className="cursor-pointer">
+                Original
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSelectedCategory('artistic')} className="cursor-pointer">
+                Artistic
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSelectedCategory('futuristic')} className="cursor-pointer">
+                Futuristic
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSelectedCategory('animation')} className="cursor-pointer">
+                Animation
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSelectedCategory('modern')} className="cursor-pointer">
+                Modern
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSelectedCategory('vintage')} className="cursor-pointer">
+                Vintage
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSelectedCategory('fantasy')} className="cursor-pointer">
+                Fantasy
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSelectedCategory('nature')} className="cursor-pointer">
+                Nature
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSelectedCategory('photography')} className="cursor-pointer">
+                Photography
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
@@ -769,100 +794,6 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
         })}
       </div>
 
-      {/* Collapsible Settings Panel */}
-      {selectedStyle && selectedStyle !== 'none' && (
-        <Collapsible open={settingsOpen} onOpenChange={setSettingsOpen} className="mt-8">
-          <Card className="border-violet-500/30 bg-gradient-to-br from-violet-950/20 to-purple-950/20 backdrop-blur-xl">
-            <CollapsibleTrigger className="w-full">
-              <CardHeader className="cursor-pointer hover:bg-violet-500/5 transition-colors">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-gradient-to-r from-violet-500 to-purple-600 flex items-center justify-center">
-                      <Sparkles className="h-5 w-5 text-white" />
-                    </div>
-                    <div className="text-left">
-                      <CardTitle className="text-xl">Style Settings</CardTitle>
-                      <CardDescription>Fine-tune your style transfer parameters</CardDescription>
-                    </div>
-                  </div>
-                  <ChevronDown 
-                    className={`h-6 w-6 text-violet-400 transition-transform duration-300 ${
-                      settingsOpen ? 'rotate-180' : ''
-                    }`} 
-                  />
-                </div>
-              </CardHeader>
-            </CollapsibleTrigger>
-            
-            <CollapsibleContent>
-              <CardContent className="space-y-8 px-6 pb-6">
-                {/* Style Strength */}
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <Label className="text-base font-semibold">Style Strength</Label>
-                    <Badge variant="outline" className="text-base font-mono">
-                      {styleStrength}%
-                    </Badge>
-                  </div>
-                  <Slider
-                    value={[styleStrength]}
-                    onValueChange={([value]) => setStyleStrength(value)}
-                    max={100}
-                    min={10}
-                    step={5}
-                    className="h-3"
-                  />
-                  <p className="text-sm text-muted-foreground">
-                    Controls how intensely the artistic style is applied to your avatar
-                  </p>
-                </div>
-
-                {/* Preserve Original */}
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <Label className="text-base font-semibold">Preserve Original</Label>
-                    <Badge variant="outline" className="text-base font-mono">
-                      {preserveOriginal}%
-                    </Badge>
-                  </div>
-                  <Slider
-                    value={[preserveOriginal]}
-                    onValueChange={([value]) => setPreserveOriginal(value)}
-                    max={50}
-                    min={0}
-                    step={5}
-                    className="h-3"
-                  />
-                  <p className="text-sm text-muted-foreground">
-                    Maintains more of your original avatar features at higher values
-                  </p>
-                </div>
-
-                {/* Enhance Details */}
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <Label className="text-base font-semibold">Enhance Details</Label>
-                    <Badge variant="outline" className="text-base font-mono">
-                      {enhanceDetails}%
-                    </Badge>
-                  </div>
-                  <Slider
-                    value={[enhanceDetails]}
-                    onValueChange={([value]) => setEnhanceDetails(value)}
-                    max={100}
-                    min={0}
-                    step={10}
-                    className="h-3"
-                  />
-                  <p className="text-sm text-muted-foreground">
-                    AI-powered enhancement of fine details and textures
-                  </p>
-                </div>
-              </CardContent>
-            </CollapsibleContent>
-          </Card>
-        </Collapsible>
-      )}
 
       {/* Style Result */}
       {project.style?.status === 'completed' && (
