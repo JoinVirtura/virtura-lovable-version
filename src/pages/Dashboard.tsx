@@ -74,8 +74,11 @@ import {
   Heart,
   MessageSquare,
   Loader2,
-  MoreVertical
+  MoreVertical,
+  Rocket,
+  Wand2
 } from "lucide-react";
+import { CircularProgress } from "@/components/ui/circular-progress";
 
 // Import diverse avatar images
 import businessExecutiveImg from "@/assets/avatar-business-executive.jpg";
@@ -863,10 +866,10 @@ export default function Dashboard() {
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case "Easy": return "bg-green-500/20 text-green-700 dark:text-green-400";
-      case "Medium": return "bg-yellow-500/20 text-yellow-700 dark:text-yellow-400";
-      case "Advanced": return "bg-red-500/20 text-red-700 dark:text-red-400";
-      default: return "bg-muted";
+      case "Easy": return "bg-green-500/20 text-green-400 border border-green-500/30";
+      case "Medium": return "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30";
+      case "Advanced": return "bg-red-500/20 text-red-400 border border-red-500/30";
+      default: return "bg-gray-500/20 text-gray-400 border border-gray-500/30";
     }
   };
 
@@ -3217,90 +3220,65 @@ export default function Dashboard() {
         );
       case "guide":
         return (
-          <div className="space-y-6 min-h-screen">
-            {/* Confetti Effect */}
-            {showConfetti && (
-              <div className="fixed inset-0 pointer-events-none z-50 flex items-center justify-center">
-                <div className="text-6xl animate-bounce">🎉</div>
-              </div>
-            )}
-            
+          <div className="space-y-6 min-h-screen px-4">
             {/* Header */}
-            <div className="text-center">
-              <h1 className="text-3xl font-display font-bold text-foreground mb-2">
+            <div className="text-center mb-16">
+              <h1 className="text-5xl md:text-6xl font-display font-bold bg-gradient-to-r from-violet-400 via-purple-400 to-blue-400 bg-clip-text text-transparent mb-4">
                 Getting Started with Virtura
               </h1>
-              <p className="text-muted-foreground mb-6">
+              <p className="text-xl text-muted-foreground">
                 Complete these steps to become a Virtura Creator
               </p>
-              
-              {/* Progress */}
-              <Card className="p-6 bg-gradient-card">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
-                      {isFullyComplete ? (
-                        <Trophy className="w-6 h-6 text-primary-foreground" />
-                      ) : (
-                        <span className="text-primary-foreground font-bold">
-                          {completedCount}/{todos.length}
-                        </span>
-                      )}
-                    </div>
-                    <div className="text-left">
-                      <h3 className="font-display font-bold">
-                        {isFullyComplete ? "Congratulations! 🎉" : "Your Progress"}
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
-                        {isFullyComplete 
-                          ? "You're now a certified Virtura Creator!" 
-                          : `${completedCount} of ${todos.length} steps completed`
-                        }
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {isFullyComplete && (
-                    <Badge className="bg-gradient-primary">
-                      <Star className="w-4 h-4 mr-1" />
-                      Virtura Creator Ready ✅
-                    </Badge>
-                  )}
-                </div>
-                
-                {/* Progress Bar */}
-                <div className="w-full bg-muted rounded-full h-3">
-                  <div 
-                    className="bg-gradient-primary h-3 rounded-full transition-all duration-500 shadow-violet-glow"
-                    style={{ width: `${progress}%` }}
-                  ></div>
-                </div>
-              </Card>
             </div>
+            
+            {/* Progress Card */}
+            <Card className="mb-12 bg-[#1a1a2e]/80 border-violet-500/20 backdrop-blur-xl">
+              <div className="flex items-center justify-between p-8">
+                <div className="flex-1">
+                  <h2 className="text-3xl font-display font-bold mb-2">Your Progress</h2>
+                  <p className="text-lg text-muted-foreground">
+                    {isFullyComplete 
+                      ? "🎉 All tasks completed! You're ready to create amazing content!" 
+                      : `Complete ${todos.length - completedCount} more ${todos.length - completedCount === 1 ? 'task' : 'tasks'} to finish your onboarding`
+                    }
+                  </p>
+                </div>
+                <div className="ml-8">
+                  <CircularProgress 
+                    value={progress} 
+                    size={120} 
+                    strokeWidth={8}
+                    className="relative"
+                  />
+                </div>
+              </div>
+            </Card>
 
             {/* Onboarding Videos Section */}
-            <div className="space-y-6">
-              <h2 className="text-2xl font-display font-bold text-center">Onboarding Video Library</h2>
+            <div className="mb-16">
+              <h2 className="text-3xl font-display font-bold mb-8 flex items-center gap-3">
+                <Video className="w-8 h-8 text-violet-400" />
+                Onboarding Video Library
+              </h2>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Main Tutorial Video */}
-                <Card className="overflow-hidden">
-                  <div className="aspect-video relative group cursor-pointer">
+                <Card className="group overflow-hidden bg-[#1a1a2e]/80 border-violet-500/20 hover:border-violet-500/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(139,92,246,0.3)]">
+                  <div className="aspect-video relative group cursor-pointer bg-gradient-to-br from-violet-900/50 to-pink-900/50">
                     <img 
                       src={virturaLogo}
                       alt="Virtura Complete Tutorial"
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover relative z-10"
                     />
-                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center z-20">
                       <Play className="w-16 h-16 text-white opacity-80 group-hover:opacity-100 transition-opacity" />
+                    </div>
+                    <div className="absolute top-3 right-3 z-30">
+                      <Badge className="bg-violet-500/80 text-white backdrop-blur-sm">60s Tutorial</Badge>
                     </div>
                   </div>
                   <div className="p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Video className="w-4 h-4 text-primary" />
-                      <Badge className="bg-primary/20 text-primary">60s Tutorial</Badge>
-                    </div>
-                    <h3 className="font-display font-bold mb-1">Complete Virtura Guide</h3>
+                    <h3 className="font-display font-bold mb-1 text-lg">Complete Virtura Guide</h3>
                     <p className="text-sm text-muted-foreground">
                       Master all Virtura features in 60 seconds
                     </p>
@@ -3308,23 +3286,22 @@ export default function Dashboard() {
                 </Card>
 
                 {/* Avatar Creation Video */}
-                <Card className="overflow-hidden">
-                  <div className="aspect-video relative group cursor-pointer">
+                <Card className="group overflow-hidden bg-[#1a1a2e]/80 border-violet-500/20 hover:border-violet-500/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(139,92,246,0.3)]">
+                  <div className="aspect-video relative group cursor-pointer bg-gradient-to-br from-blue-900/50 to-purple-900/50">
                     <img 
                       src={virturaLogo} 
                       alt="Avatar Creation Tutorial"
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover relative z-10"
                     />
-                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center z-20">
                       <Play className="w-16 h-16 text-white opacity-80 group-hover:opacity-100 transition-opacity" />
+                    </div>
+                    <div className="absolute top-3 right-3 z-30">
+                      <Badge className="bg-green-500/80 text-white backdrop-blur-sm">45s Tutorial</Badge>
                     </div>
                   </div>
                   <div className="p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <User className="w-4 h-4 text-green-600" />
-                      <Badge className="bg-green-500/20 text-green-700">45s Tutorial</Badge>
-                    </div>
-                    <h3 className="font-display font-bold mb-1">Creating Your First Avatar</h3>
+                    <h3 className="font-display font-bold mb-1 text-lg">Creating Your First Avatar</h3>
                     <p className="text-sm text-muted-foreground">
                       Step-by-step avatar generation process
                     </p>
@@ -3332,23 +3309,22 @@ export default function Dashboard() {
                 </Card>
 
                 {/* Enhancement Video */}
-                <Card className="overflow-hidden">
-                  <div className="aspect-video relative group cursor-pointer">
+                <Card className="group overflow-hidden bg-[#1a1a2e]/80 border-violet-500/20 hover:border-violet-500/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(139,92,246,0.3)]">
+                  <div className="aspect-video relative group cursor-pointer bg-gradient-to-br from-pink-900/50 to-blue-900/50">
                     <img 
                       src={virturaLogo} 
                       alt="Content Enhancement Tutorial"
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover relative z-10"
                     />
-                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center z-20">
                       <Play className="w-16 h-16 text-white opacity-80 group-hover:opacity-100 transition-opacity" />
+                    </div>
+                    <div className="absolute top-3 right-3 z-30">
+                      <Badge className="bg-blue-500/80 text-white backdrop-blur-sm">30s Tutorial</Badge>
                     </div>
                   </div>
                   <div className="p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Upload className="w-4 h-4 text-blue-600" />
-                      <Badge className="bg-blue-500/20 text-blue-700">30s Tutorial</Badge>
-                    </div>
-                    <h3 className="font-display font-bold mb-1">Upload & Enhance Content</h3>
+                    <h3 className="font-display font-bold mb-1 text-lg">Upload & Enhance Content</h3>
                     <p className="text-sm text-muted-foreground">
                       Transform existing photos with AI
                     </p>
@@ -3358,206 +3334,228 @@ export default function Dashboard() {
             </div>
 
             {/* Checklist */}
-            <div className="space-y-4">
-              <h2 className="text-xl font-display font-bold mb-4">Your To-Do Checklist</h2>
+            <div>
+              <h2 className="text-3xl font-display font-bold mb-8 flex items-center gap-3">
+                <CheckCircle2 className="w-8 h-8 text-green-400" />
+                Your To-Do Checklist
+              </h2>
               
-              {todos.map((todo, index) => (
-                <Card 
-                  key={todo.id} 
-                  className={`p-6 transition-all duration-200 ${
-                    todo.completed 
-                      ? "bg-primary/10 border-primary/30" 
-                      : "hover:shadow-card hover-glow"
-                  }`}
-                >
-                  <div className="flex items-start gap-4">
-                    {/* Checkbox */}
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => toggleTodo(todo.id)}
-                      className={`flex-shrink-0 ${
-                        todo.completed 
-                          ? "text-primary hover:text-primary" 
-                          : "text-muted-foreground hover:text-foreground"
-                      }`}
-                    >
-                      {todo.completed ? (
-                        <CheckCircle2 className="w-6 h-6" />
-                      ) : (
-                        <Circle className="w-6 h-6" />
-                      )}
-                    </Button>
-
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <h3 className={`font-display font-bold ${
-                            todo.completed ? "line-through text-muted-foreground" : ""
-                          }`}>
-                            Step {index + 1}: {todo.title}
-                          </h3>
-                          <Badge className={getDifficultyColor(todo.difficulty)}>
-                            {todo.difficulty}
-                          </Badge>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Clock className="w-4 h-4 text-muted-foreground" />
-                          <Badge variant="secondary">
-                            {todo.estimatedTime}
-                          </Badge>
-                        </div>
-                      </div>
-                      
-                      <p className={`text-muted-foreground mb-4 ${
-                        todo.completed ? "line-through" : ""
-                      }`}>
-                        {todo.description}
-                      </p>
-
-                      {/* Expandable Section */}
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-3 flex-wrap">
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => window.open(todo.videoUrl, '_blank')}
-                            className="flex items-center gap-2"
-                          >
-                            <Play className="w-4 h-4" />
-                            Watch Tutorial
-                          </Button>
-                          
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => toggleExpanded(todo.id)}
-                            className="flex items-center gap-2"
-                          >
-                            {expandedTodos.has(todo.id) ? (
-                              <>
-                                <ChevronUp className="w-4 h-4" />
-                                Hide Details
-                              </>
-                            ) : (
-                              <>
-                                <ChevronDown className="w-4 h-4" />
-                                Show Details
-                              </>
-                            )}
-                          </Button>
-                          
-                          {/* Action Button */}
-                          {!todo.completed && (
-                            <Button 
-                              size="sm"
-                              onClick={() => {
-                                // Navigate to appropriate page based on step
-                                if (todo.id === "1") setActiveView("create");
-                                if (todo.id === "2") setActiveView("upload");
-                                if (todo.id === "3") setActiveView("library");
-                                if (todo.id === "4") setActiveView("individuals");
-                                if (todo.id === "5") setActiveView("settings");
-                              }}
-                              className="gap-2"
-                            >
-                              {todo.id === "1" && <User className="w-4 h-4" />}
-                              {todo.id === "2" && <Upload className="w-4 h-4" />}
-                              {todo.id === "3" && <Download className="w-4 h-4" />}
-                              {todo.id === "4" && <Sparkles className="w-4 h-4" />}
-                              {todo.id === "5" && <Star className="w-4 h-4" />}
-                              {todo.id === "1" && "Start Creating"}
-                              {todo.id === "2" && "Upload Content"}
-                              {todo.id === "3" && "Export Assets"}
-                              {todo.id === "4" && "Try AI Features"}
-                              {todo.id === "5" && "Open Settings"}
-                            </Button>
+              <div className="space-y-6">
+                {todos.map((todo, index) => (
+                  <Card 
+                    key={todo.id} 
+                    className={`group transition-all duration-300 ${
+                      todo.completed 
+                        ? 'bg-green-900/20 border-green-500/30 shadow-[0_0_20px_rgba(34,197,94,0.2)]' 
+                        : 'bg-[#1a1a2e]/80 border-violet-500/20 hover:border-violet-500/40 hover:shadow-[0_0_30px_rgba(139,92,246,0.2)]'
+                    }`}
+                  >
+                    <div className="p-8">
+                      <div className="flex items-start gap-6">
+                        {/* Checkbox */}
+                        <button
+                          onClick={() => toggleTodo(todo.id)}
+                          className={`flex-shrink-0 mt-1 w-6 h-6 rounded border-2 flex items-center justify-center transition-all ${
+                            todo.completed 
+                              ? "bg-green-500 border-green-500" 
+                              : "border-violet-500/50 hover:border-violet-500"
+                          }`}
+                        >
+                          {todo.completed && (
+                            <CheckCircle2 className="w-4 h-4 text-white" />
                           )}
-                        </div>
+                        </button>
 
-                        {/* Expanded Details */}
-                        {expandedTodos.has(todo.id) && (
-                          <div className="space-y-4 pt-4 border-t border-border/50">
-                            {/* Detailed Steps */}
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-4 mb-3">
                             <div>
-                              <h4 className="font-semibold mb-2 flex items-center gap-2">
-                                <AlertCircle className="w-4 h-4 text-primary" />
-                                Step-by-Step Guide
-                              </h4>
-                              <ol className="space-y-2">
-                                {todo.detailedSteps.map((step, stepIndex) => (
-                                  <li key={stepIndex} className="flex items-start gap-2 text-sm">
-                                    <span className="flex-shrink-0 w-5 h-5 bg-primary/20 text-primary rounded-full flex items-center justify-center text-xs font-medium">
-                                      {stepIndex + 1}
-                                    </span>
-                                    <span className="text-muted-foreground">{step}</span>
-                                  </li>
-                                ))}
-                              </ol>
+                              <span className="text-sm font-semibold text-violet-400 mb-1 block">
+                                Step {index + 1}
+                              </span>
+                              <h3 className={`text-2xl font-display font-bold ${
+                                todo.completed ? "line-through text-muted-foreground" : ""
+                              }`}>
+                                {todo.title}
+                              </h3>
                             </div>
-
-                            {/* Tips */}
-                            <div>
-                              <h4 className="font-semibold mb-2 flex items-center gap-2">
-                                <Lightbulb className="w-4 h-4 text-yellow-500" />
-                                Pro Tips
-                              </h4>
-                              <ul className="space-y-2">
-                                {todo.tips.map((tip, tipIndex) => (
-                                  <li key={tipIndex} className="flex items-start gap-2 text-sm">
-                                    <span className="flex-shrink-0 w-1.5 h-1.5 bg-yellow-500 rounded-full mt-2"></span>
-                                    <span className="text-muted-foreground">{tip}</span>
-                                  </li>
-                                ))}
-                              </ul>
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                              <Badge className={getDifficultyColor(todo.difficulty)}>
+                                {todo.difficulty}
+                              </Badge>
+                              <span className="flex items-center gap-1.5 text-sm text-muted-foreground whitespace-nowrap">
+                                <Clock className="w-4 h-4" />
+                                {todo.estimatedTime}
+                              </span>
                             </div>
+                          </div>
+                          
+                          <p className={`text-base mb-6 text-muted-foreground ${
+                            todo.completed ? "line-through" : ""
+                          }`}>
+                            {todo.description}
+                          </p>
 
-                            {/* Embedded Tutorial Video */}
-                            <div>
-                              <h4 className="font-semibold mb-2 flex items-center gap-2">
-                                <Video className="w-4 h-4 text-blue-500" />
-                                Tutorial Video
-                              </h4>
-                              <div className="aspect-video bg-muted rounded-lg overflow-hidden relative group cursor-pointer">
-                                <img 
-                                  src={virturaLogo} 
-                                  alt={`${todo.title} Tutorial`}
-                                  className="w-full h-full object-cover"
-                                />
-                                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center">
-                                  <Play className="w-12 h-12 text-white opacity-80 group-hover:opacity-100 transition-opacity" />
+                          {/* Buttons */}
+                          <div className="flex flex-wrap gap-3 mb-6">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => window.open(todo.videoUrl, '_blank')}
+                              className="gap-2 border-violet-500/30 hover:border-violet-500/50 hover:bg-violet-500/10"
+                            >
+                              <Play className="w-4 h-4" />
+                              Watch Tutorial
+                            </Button>
+                            
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => toggleExpanded(todo.id)}
+                              className="gap-2 hover:bg-violet-500/10"
+                            >
+                              {expandedTodos.has(todo.id) ? (
+                                <>
+                                  <ChevronUp className="w-4 h-4" />
+                                  Hide Details
+                                </>
+                              ) : (
+                                <>
+                                  <ChevronDown className="w-4 h-4" />
+                                  Show Details
+                                </>
+                              )}
+                            </Button>
+                            
+                            {/* Action Button */}
+                            {!todo.completed && (
+                              <Button 
+                                size="sm"
+                                onClick={() => {
+                                  if (todo.id === "1") setActiveView("individuals");
+                                  if (todo.id === "2") setActiveView("brands");
+                                  if (todo.id === "3") setActiveView("library");
+                                  if (todo.id === "4") setActiveView("library");
+                                  if (todo.id === "5") setActiveView("settings");
+                                }}
+                                className="ml-auto gap-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 shadow-[0_0_20px_rgba(139,92,246,0.3)]"
+                              >
+                                {todo.id === "1" && <Sparkles className="w-4 h-4" />}
+                                {todo.id === "2" && <Upload className="w-4 h-4" />}
+                                {todo.id === "3" && <Download className="w-4 h-4" />}
+                                {todo.id === "4" && <Wand2 className="w-4 h-4" />}
+                                {todo.id === "5" && <Star className="w-4 h-4" />}
+                                {todo.id === "1" && "Start Creating"}
+                                {todo.id === "2" && "Upload Content"}
+                                {todo.id === "3" && "Export Assets"}
+                                {todo.id === "4" && "Try AI Features"}
+                                {todo.id === "5" && "Open Settings"}
+                              </Button>
+                            )}
+                          </div>
+
+                          {/* Expanded Details */}
+                          {expandedTodos.has(todo.id) && (
+                            <div className="space-y-6 pt-6 border-t border-violet-500/20 animate-fade-in">
+                              {/* Detailed Steps */}
+                              <div>
+                                <h4 className="font-display font-semibold text-lg mb-4 flex items-center gap-2">
+                                  <CheckCircle2 className="w-5 h-5 text-violet-400" />
+                                  Detailed Steps
+                                </h4>
+                                <ul className="space-y-3 ml-7">
+                                  {todo.detailedSteps.map((step, stepIndex) => (
+                                    <li key={stepIndex} className="text-muted-foreground flex items-start gap-3">
+                                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-violet-500/20 flex items-center justify-center text-xs font-semibold text-violet-400 mt-0.5">
+                                        {stepIndex + 1}
+                                      </span>
+                                      <span className="pt-0.5">{step}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+
+                              {/* Tips */}
+                              <div>
+                                <h4 className="font-display font-semibold text-lg mb-4 flex items-center gap-2">
+                                  <Sparkles className="w-5 h-5 text-yellow-400" />
+                                  Pro Tips
+                                </h4>
+                                <ul className="space-y-3 ml-7">
+                                  {todo.tips.map((tip, tipIndex) => (
+                                    <li key={tipIndex} className="text-muted-foreground flex items-start gap-3">
+                                      <Sparkles className="w-4 h-4 text-yellow-400 flex-shrink-0 mt-1" />
+                                      <span>{tip}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+
+                              {/* Embedded Tutorial Video */}
+                              <div>
+                                <h4 className="font-display font-semibold text-lg mb-4 flex items-center gap-2">
+                                  <Video className="w-5 h-5 text-blue-400" />
+                                  Tutorial Video
+                                </h4>
+                                <div className="aspect-video rounded-xl overflow-hidden border border-violet-500/20 shadow-[0_0_20px_rgba(139,92,246,0.2)] relative group cursor-pointer">
+                                  <img 
+                                    src={virturaLogo} 
+                                    alt={`${todo.title} Tutorial`}
+                                    className="w-full h-full object-cover"
+                                  />
+                                  <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+                                    <Play className="w-12 h-12 text-white opacity-80 group-hover:opacity-100 transition-opacity" />
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Card>
-              ))}
+                  </Card>
+                ))}
+              </div>
             </div>
 
             {/* Next Steps */}
             {isFullyComplete && (
-              <Card className="p-6 bg-gradient-card border-primary/30">
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-primary rounded-full mx-auto mb-4 flex items-center justify-center">
-                    <Sparkles className="w-8 h-8 text-primary-foreground" />
-                  </div>
-                  <h3 className="text-xl font-display font-bold mb-2">
-                    What's Next?
-                  </h3>
-                  <p className="text-muted-foreground mb-6">
-                    Now that you're all set up, explore advanced features and create amazing content!
-                  </p>
-                  <div className="flex gap-4 justify-center">
-                    <Button onClick={() => setActiveView("individuals")}>
-                      Explore Advanced Features
-                    </Button>
-                    <Button variant="outline">
-                      Join Community
+              <Card className="mt-12 bg-gradient-to-br from-violet-900/40 via-purple-900/40 to-blue-900/40 border-violet-500/30 shadow-[0_0_40px_rgba(139,92,246,0.3)] animate-fade-in">
+                <div className="p-8">
+                  <div className="text-center">
+                    <div className="w-20 h-20 bg-gradient-to-br from-violet-600 to-purple-600 rounded-full mx-auto mb-6 flex items-center justify-center shadow-[0_0_20px_rgba(139,92,246,0.4)]">
+                      <Rocket className="w-10 h-10 text-white" />
+                    </div>
+                    <h3 className="text-3xl font-display font-bold mb-4">
+                      You're All Set! 🎉
+                    </h3>
+                    <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+                      Congratulations on completing the onboarding! You're now ready to create amazing content with Virtura.
+                    </p>
+                    <div className="space-y-6 mb-8">
+                      <p className="text-lg font-semibold">Here's what you can do next:</p>
+                      <ul className="space-y-3 max-w-md mx-auto text-left">
+                        <li className="flex items-center gap-3 text-muted-foreground">
+                          <div className="w-2 h-2 rounded-full bg-violet-400" />
+                          Explore advanced features and settings
+                        </li>
+                        <li className="flex items-center gap-3 text-muted-foreground">
+                          <div className="w-2 h-2 rounded-full bg-violet-400" />
+                          Join our community to share your creations
+                        </li>
+                        <li className="flex items-center gap-3 text-muted-foreground">
+                          <div className="w-2 h-2 rounded-full bg-violet-400" />
+                          Check out our blog for tips and inspiration
+                        </li>
+                      </ul>
+                    </div>
+                    <Button 
+                      onClick={() => setActiveView("individuals")}
+                      className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 shadow-[0_0_20px_rgba(139,92,246,0.3)] px-8 py-6 text-lg" 
+                      size="lg"
+                    >
+                      <Rocket className="w-5 h-5 mr-2" />
+                      Start Creating
                     </Button>
                   </div>
                 </div>
