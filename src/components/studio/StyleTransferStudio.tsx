@@ -535,29 +535,6 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
                 </Tooltip>
               </TooltipProvider>
             </div>
-            
-            {/* Apply Style Button - Now inline */}
-            {selectedStyle && (
-              <Button 
-                onClick={handleApplyStyle}
-                disabled={!canApplyStyle || isProcessing || isApplying}
-                size="sm"
-                className={`px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 ${
-                  (isProcessing || isApplying || project.style?.status === 'processing')
-                    ? 'animate-pulse'
-                    : ''
-                }`}
-              >
-                {isProcessing || isApplying || project.style?.status === 'processing' ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Applying...
-                  </>
-                ) : (
-                  'Apply Style'
-                )}
-              </Button>
-            )}
           </div>
         </div>
         
@@ -588,8 +565,8 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
         </Card>
       )}
 
-      {/* Search Bar */}
-      <div className="max-w-md">
+      {/* Search Bar with Apply Button */}
+      <div className="flex items-center gap-3 max-w-2xl">
         <Input
           type="search"
           placeholder="Search styles... (e.g., cyberpunk, watercolor)"
@@ -597,6 +574,28 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
           onChange={(e) => setSearchQuery(e.target.value)}
           className="h-12 bg-black/40 border-violet-500/30 focus:border-violet-400 transition-colors"
         />
+        
+        {selectedStyle && (
+          <Button 
+            onClick={handleApplyStyle}
+            disabled={!canApplyStyle || isProcessing || isApplying}
+            size="sm"
+            className={`px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 whitespace-nowrap ${
+              (isProcessing || isApplying || project.style?.status === 'processing')
+                ? 'animate-pulse'
+                : ''
+            }`}
+          >
+            {isProcessing || isApplying || project.style?.status === 'processing' ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Applying...
+              </>
+            ) : (
+              'Apply'
+            )}
+          </Button>
+        )}
       </div>
 
       {/* Advanced Filters */}
