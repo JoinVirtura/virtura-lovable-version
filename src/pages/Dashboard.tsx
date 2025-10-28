@@ -3311,7 +3311,7 @@ export default function Dashboard() {
             <div>
               <h2 className="text-3xl font-display font-bold mb-8 flex items-center gap-3">
                 <CheckCircle2 className="w-8 h-8 text-green-400" />
-                Your To-Do Checklist
+                To-Do Checklist
               </h2>
               
               <div className="space-y-6">
