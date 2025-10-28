@@ -538,7 +538,7 @@ export const Hero = () => {
         <div className="absolute bottom-0 right-0 w-48 h-48 bg-gradient-to-tl from-primary/12 via-primary/4 to-transparent animate-corner-glow-4" />
       </div>
       
-      <div className="relative z-10 container mx-auto px-12 py-4 flex flex-col items-center min-h-screen text-center max-w-6xl">
+      <div className="relative z-10 container mx-auto px-12 pt-32 pb-4 flex flex-col items-center min-h-screen text-center max-w-6xl">
         {/* Header Badge */}
         <Badge className="bg-card/80 border-primary/20 text-foreground px-6 py-3 text-base font-semibold mb-8 animate-fade-in backdrop-blur-sm">
           Virtura AI
