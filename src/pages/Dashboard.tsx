@@ -3224,9 +3224,8 @@ export default function Dashboard() {
             {/* Onboarding Videos Section */}
             <div className="mb-16">
               <div className="flex items-center justify-between mb-8">
-                <h2 className="text-3xl font-display font-bold flex items-center gap-3">
-                  <Video className="w-8 h-8 text-violet-400" />
-                  Onboarding Video Library
+                <h2 className="text-3xl font-display font-bold">
+                  Video Library
                 </h2>
                 <CircularProgress 
                   value={progress} 
