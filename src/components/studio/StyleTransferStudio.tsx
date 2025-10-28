@@ -7,6 +7,7 @@ import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { 
   Sparkles, 
   Crown, 
@@ -18,7 +19,8 @@ import {
   Download,
   ChevronDown,
   Zap,
-  TrendingUp
+  TrendingUp,
+  Check
 } from 'lucide-react';
 import type { StudioProject } from '@/hooks/useStudioProject';
 import { applyStyleTransfer } from './StyleTransferEdge';
@@ -473,7 +475,7 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
   return (
     <div className="pb-32 space-y-6">
       {/* Header with Navigation */}
-      <div className="flex items-start justify-between gap-6 pb-4 border-b border-border/50">
+      <div className="flex items-center justify-between gap-3 pb-4 border-b border-border/50">
         {/* Left: Title */}
         <div>
           <h2 className="text-3xl font-bold flex items-center gap-3 bg-gradient-to-r from-violet-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
@@ -484,57 +486,48 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
           </p>
         </div>
         
-        {/* Right: Navigation + Badge */}
-        <div className="flex items-center gap-4 shrink-0">
-          {/* Step Navigation - Compact */}
-          <div className="hidden md:flex items-center gap-2">
-            {steps.map((step, index) => (
-              <div key={step.id} className="flex items-center gap-1.5">
-                <button
-                  onClick={() => onStepChange?.(step.id)}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all duration-200 ${
-                    currentStep === step.id
-                      ? 'bg-violet-500/20 border border-violet-500/50'
-                      : step.completed
-                      ? 'hover:bg-accent'
-                      : 'opacity-50 cursor-default'
-                  }`}
-                  disabled={!step.completed && currentStep !== step.id}
-                >
-                  <div className={`flex items-center justify-center w-5 h-5 rounded-full border-2 ${
-                    currentStep === step.id
-                      ? 'border-violet-400 bg-violet-500/20'
-                      : step.completed
-                      ? 'border-green-400 bg-green-500/10'
-                      : 'border-muted-foreground/30'
-                  }`}>
-                    {step.completed ? (
-                      <CheckCircle className="w-3.5 h-3.5 text-green-400" />
-                    ) : currentStep === step.id ? (
-                      <div className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
-                    ) : (
-                      <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
-                    )}
-                  </div>
-                  <span className={`text-xs font-medium ${
-                    currentStep === step.id
-                      ? 'text-violet-300'
-                      : step.completed
-                      ? 'text-foreground'
-                      : 'text-muted-foreground'
-                  }`}>
-                    {step.label}
-                  </span>
-                </button>
-                
-                {index < steps.length - 1 && (
-                  <div className="w-6 h-px bg-border" />
-                )}
-              </div>
-            ))}
-          </div>
+        {/* Right: Ultra-Compact Navigation + Badge */}
+        <div className="flex items-center gap-3 shrink-0">
+          {/* Ultra-Compact Icon-Only Navigation */}
+          <TooltipProvider>
+            <div className="hidden md:flex items-center gap-1">
+              {steps.map((step, index) => (
+                <div key={step.id} className="flex items-center">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => onStepChange?.(step.id)}
+                        className={`relative flex items-center justify-center w-4 h-4 rounded-full transition-all ${
+                          currentStep === step.id
+                            ? 'bg-violet-500/20'
+                            : step.completed
+                            ? 'bg-green-500/20'
+                            : 'bg-muted'
+                        }`}
+                        disabled={!step.completed && currentStep !== step.id}
+                      >
+                        {step.completed ? (
+                          <Check className="w-2.5 h-2.5 text-green-400" />
+                        ) : currentStep === step.id ? (
+                          <div className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
+                        ) : (
+                          <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
+                        )}
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{step.label}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  {index < steps.length - 1 && (
+                    <div className="w-3 h-px bg-border/50 mx-0.5" />
+                  )}
+                </div>
+              ))}
+            </div>
+          </TooltipProvider>
           
-          <Badge className="bg-gradient-to-r from-violet-500 to-purple-500 text-white border-0">
+          <Badge className="bg-gradient-to-r from-violet-500 to-purple-500 text-white border-0 text-xs px-2 py-1">
             <Sparkles className="h-3 w-3 mr-1" />
             AI Powered
           </Badge>
