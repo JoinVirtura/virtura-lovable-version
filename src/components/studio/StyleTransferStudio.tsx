@@ -176,10 +176,20 @@ const getStyleBadge = (style: typeof STYLE_PRESETS[0]) => {
   return null;
 };
 
+interface StyleTransferStudioProps {
+  project: StudioProject;
+  onUpdate: (updates: Partial<StudioProject>) => void;
+  isProcessing: boolean;
+  currentStep?: string;
+  onStepChange?: (step: string) => void;
+}
+
 export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({ 
   project, 
   onUpdate, 
-  isProcessing 
+  isProcessing,
+  currentStep = 'style',
+  onStepChange
 }) => {
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -196,6 +206,12 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
   const [selectedType, setSelectedType] = useState<'all' | 'free' | 'premium'>('all');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedBadge, setSelectedBadge] = useState<'all' | 'popular' | 'trending' | 'new'>('all');
+
+  const steps = [
+    { id: 'avatar', label: 'Avatar', completed: !!project.avatar?.processedUrl },
+    { id: 'style', label: 'Style', completed: !!project.style?.resultUrl },
+    { id: 'export', label: 'Export', completed: false }
+  ];
 
   // Filter styles based on search, type, category, and badge
   const filteredStyles = STYLE_PRESETS.filter(style => {
@@ -456,6 +472,61 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
 
   return (
     <div className="pb-32 space-y-6">
+      {/* Step Navigation */}
+      <div className="flex items-center justify-between px-1 pb-4 border-b border-border/50">
+        <div className="flex items-center gap-6">
+          {steps.map((step, index) => (
+            <div key={step.id} className="flex items-center gap-2">
+              <button
+                onClick={() => onStepChange?.(step.id)}
+                className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 ${
+                  currentStep === step.id
+                    ? 'bg-violet-500/20 border border-violet-500/50'
+                    : step.completed
+                    ? 'hover:bg-accent'
+                    : 'opacity-50 cursor-default'
+                }`}
+                disabled={!step.completed && currentStep !== step.id}
+              >
+                <div className={`flex items-center justify-center w-6 h-6 rounded-full border-2 ${
+                  currentStep === step.id
+                    ? 'border-violet-400 bg-violet-500/20'
+                    : step.completed
+                    ? 'border-green-400 bg-green-500/10'
+                    : 'border-muted-foreground/30'
+                }`}>
+                  {step.completed ? (
+                    <CheckCircle className="w-4 h-4 text-green-400" />
+                  ) : currentStep === step.id ? (
+                    <div className="w-2 h-2 rounded-full bg-violet-400 animate-pulse" />
+                  ) : (
+                    <div className="w-2 h-2 rounded-full bg-muted-foreground/30" />
+                  )}
+                </div>
+                <span className={`text-sm font-medium ${
+                  currentStep === step.id
+                    ? 'text-violet-300'
+                    : step.completed
+                    ? 'text-foreground'
+                    : 'text-muted-foreground'
+                }`}>
+                  {step.label}
+                </span>
+              </button>
+              
+              {index < steps.length - 1 && (
+                <div className="w-8 h-px bg-border" />
+              )}
+            </div>
+          ))}
+        </div>
+        
+        <Badge className="bg-gradient-to-r from-violet-500 to-purple-500 text-white border-0">
+          <Sparkles className="h-3 w-3 mr-1" />
+          AI Powered
+        </Badge>
+      </div>
+      
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -466,11 +537,6 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
             Transform your avatar with 50+ AI-powered artistic styles
           </p>
         </div>
-        
-        <Badge className="bg-gradient-to-r from-violet-500 to-purple-500 text-white border-0">
-          <Sparkles className="h-3 w-3 mr-1" />
-          AI Powered
-        </Badge>
       </div>
 
       {/* Prerequisites Check */}
