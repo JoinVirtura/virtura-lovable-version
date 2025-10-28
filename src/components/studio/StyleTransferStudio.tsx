@@ -244,8 +244,46 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
     return matchesSearch && matchesType && matchesCategory && matchesBadge;
   });
 
+  // Helper function to upload blob URL to Supabase Storage
+  const uploadBlobToStorage = async (blobUrl: string): Promise<string> => {
+    console.log('🔄 [StyleTransfer] Converting blob URL to public URL...');
+    
+    try {
+      // Fetch the blob data
+      const response = await fetch(blobUrl);
+      const blob = await response.blob();
+      
+      // Generate unique filename
+      const filename = `style-transfer-source-${Date.now()}.png`;
+      
+      // Upload to Supabase Storage
+      const { data, error } = await supabase.storage
+        .from('avatars')
+        .upload(filename, blob, {
+          contentType: 'image/png',
+          upsert: false
+        });
+      
+      if (error) {
+        console.error('❌ [StyleTransfer] Upload error:', error);
+        throw error;
+      }
+      
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filename);
+      
+      console.log('✅ [StyleTransfer] Uploaded to:', publicUrl);
+      return publicUrl;
+    } catch (error) {
+      console.error('❌ [StyleTransfer] Failed to upload blob:', error);
+      throw new Error('Failed to upload image to storage');
+    }
+  };
+
   const handleApplyStyle = async () => {
-    const avatarUrl = project.avatar?.processedUrl || project.avatar?.originalUrl;
+    let avatarUrl = project.avatar?.processedUrl || project.avatar?.originalUrl;
     if (!selectedStyle || !avatarUrl) return;
 
     const stylePreset = STYLE_PRESETS.find(s => s.id === selectedStyle);
@@ -307,7 +345,13 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
     });
 
     try {
-      // Apply real style transfer
+      // If blob URL, upload to storage first to get a public URL
+      if (avatarUrl.startsWith('blob:')) {
+        console.log('🔄 [StyleTransfer] Blob URL detected, uploading to storage...');
+        avatarUrl = await uploadBlobToStorage(avatarUrl);
+      }
+
+      // Apply real style transfer with public URL
       const result = await applyStyleTransfer({
         imageUrl: avatarUrl,
         stylePreset: selectedStyle,
