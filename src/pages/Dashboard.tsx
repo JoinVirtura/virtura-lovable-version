@@ -3231,35 +3231,20 @@ export default function Dashboard() {
               </p>
             </div>
             
-            {/* Progress Card */}
-            <Card className="mb-12 bg-[#1a1a2e]/80 border-violet-500/20 backdrop-blur-xl">
-              <div className="flex items-center justify-between p-8">
-                <div className="flex-1">
-                  <h2 className="text-3xl font-display font-bold mb-2">Your Progress</h2>
-                  <p className="text-lg text-muted-foreground">
-                    {isFullyComplete 
-                      ? "🎉 All tasks completed! You're ready to create amazing content!" 
-                      : `Complete ${todos.length - completedCount} more ${todos.length - completedCount === 1 ? 'task' : 'tasks'} to finish your onboarding`
-                    }
-                  </p>
-                </div>
-                <div className="ml-8">
-                  <CircularProgress 
-                    value={progress} 
-                    size={120} 
-                    strokeWidth={8}
-                    className="relative"
-                  />
-                </div>
-              </div>
-            </Card>
-
             {/* Onboarding Videos Section */}
             <div className="mb-16">
-              <h2 className="text-3xl font-display font-bold mb-8 flex items-center gap-3">
-                <Video className="w-8 h-8 text-violet-400" />
-                Onboarding Video Library
-              </h2>
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-3xl font-display font-bold flex items-center gap-3">
+                  <Video className="w-8 h-8 text-violet-400" />
+                  Onboarding Video Library
+                </h2>
+                <CircularProgress 
+                  value={progress} 
+                  size={80} 
+                  strokeWidth={6}
+                  className="relative"
+                />
+              </div>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Main Tutorial Video */}
