@@ -542,6 +542,34 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
         </p>
       </div>
 
+      {/* Apply Style Transfer Button - Top Right */}
+      {selectedStyle && (
+        <div className="flex justify-end animate-fade-in">
+          <Button 
+            onClick={handleApplyStyle}
+            disabled={!canApplyStyle || isProcessing || isApplying}
+            size="lg"
+            className={`px-8 py-4 rounded-full shadow-[0_0_30px_rgba(139,92,246,0.5)] hover:shadow-[0_0_50px_rgba(139,92,246,0.7)] transition-all duration-300 ${
+              (isProcessing || isApplying || project.style?.status === 'processing')
+                ? 'animate-pulse'
+                : 'hover:scale-105'
+            }`}
+          >
+            {isProcessing || isApplying || project.style?.status === 'processing' ? (
+              <>
+                <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                Applying Style Transfer...
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-5 w-5 mr-2" />
+                ✨ Apply Style Transfer
+              </>
+            )}
+          </Button>
+        </div>
+      )}
+
       {/* Prerequisites Check */}
       {!project.avatar && (
         <Card className="border-violet-500/30 bg-violet-950/20 backdrop-blur-xl">
@@ -632,7 +660,7 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="h-8 px-3 rounded-md bg-background border border-input text-sm hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
+            className="h-8 px-3 rounded-md bg-violet-500/10 border border-violet-500/30 text-violet-200 hover:bg-violet-500/20 hover:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-400 transition-colors cursor-pointer"
           >
             <option value="all">All Categories</option>
             <option value="original">Original</option>
@@ -966,33 +994,6 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
         </Card>
       )}
 
-      {/* Floating Apply Button - Fixed at bottom */}
-      {selectedStyle && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 animate-fade-in">
-          <Button 
-            onClick={handleApplyStyle}
-            disabled={!canApplyStyle || isProcessing || isApplying}
-            size="xl"
-            className={`px-10 py-6 text-lg rounded-full shadow-[0_0_50px_rgba(139,92,246,0.6)] hover:shadow-[0_0_70px_rgba(139,92,246,0.8)] transition-all duration-300 ${
-              (isProcessing || isApplying || project.style?.status === 'processing')
-                ? 'animate-pulse'
-                : 'hover:scale-110'
-            }`}
-          >
-            {isProcessing || isApplying || project.style?.status === 'processing' ? (
-              <>
-                <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                Applying Style Transfer...
-              </>
-            ) : (
-              <>
-                <Sparkles className="h-5 w-5 mr-2" />
-                ✨ Apply Style Transfer
-              </>
-            )}
-          </Button>
-        </div>
-      )}
     </div>
   );
 };
