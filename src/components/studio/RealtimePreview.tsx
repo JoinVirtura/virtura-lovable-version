@@ -28,6 +28,7 @@ interface RealtimePreviewProps {
   project: StudioProject;
   isProcessing?: boolean;
   onStepChange?: (stepId: string) => void;
+  onResetAvatar?: () => void;
 }
 
 const PREVIEW_MODES = [
@@ -39,7 +40,8 @@ const PREVIEW_MODES = [
 export const RealtimePreview: React.FC<RealtimePreviewProps> = ({ 
   project, 
   isProcessing = false,
-  onStepChange
+  onStepChange,
+  onResetAvatar
 }) => {
   const [previewMode, setPreviewMode] = useState('desktop');
   const [isPlaying, setIsPlaying] = useState(false);
@@ -232,8 +234,13 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                     <div 
                       className="absolute inset-0 bg-black/0 hover:bg-black/40 transition-all duration-300 flex items-center justify-center opacity-0 hover:opacity-100 cursor-pointer group/upload"
                       onClick={() => {
-                        const fileInput = document.getElementById('avatar-upload-input') as HTMLInputElement;
-                        fileInput?.click();
+                        // Reset avatar and style state, navigate back to avatar step
+                        if (onResetAvatar) {
+                          onResetAvatar();
+                        }
+                        if (onStepChange) {
+                          onStepChange('avatar');
+                        }
                       }}
                     >
                       <Button

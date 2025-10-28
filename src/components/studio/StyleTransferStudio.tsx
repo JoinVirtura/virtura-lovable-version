@@ -90,6 +90,8 @@ interface StyleTransferStudioProps {
   project: StudioProject;
   onUpdate: (updates: Partial<StudioProject>) => void;
   isProcessing: boolean;
+  currentStep?: string;
+  onStepChange?: (stepId: string) => void;
 }
 
 const STYLE_PRESETS = [

@@ -157,6 +157,14 @@ export default function StudioPage() {
                 key={currentStep}
                 project={project}
                 isProcessing={isProcessing}
+                onStepChange={handleStepChange}
+                onResetAvatar={() => {
+                  updateProject({
+                    avatar: undefined,
+                    style: undefined
+                  });
+                  setCurrentStep('avatar');
+                }}
               />
             </div>
 
