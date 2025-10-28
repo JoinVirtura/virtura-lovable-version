@@ -7,7 +7,6 @@ import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { 
   Sparkles, 
   Crown, 
@@ -19,8 +18,7 @@ import {
   Download,
   ChevronDown,
   Zap,
-  TrendingUp,
-  Check
+  TrendingUp
 } from 'lucide-react';
 import type { StudioProject } from '@/hooks/useStudioProject';
 import { applyStyleTransfer } from './StyleTransferEdge';
@@ -475,7 +473,7 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
   return (
     <div className="pb-32 space-y-6">
       {/* Header with Navigation */}
-      <div className="flex items-center justify-between gap-3 pb-4 border-b border-border/50">
+      <div className="flex items-center justify-between gap-3 pb-4">
         {/* Left: Title */}
         <div>
           <h2 className="text-3xl font-bold flex items-center gap-3 bg-gradient-to-r from-violet-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
@@ -484,53 +482,6 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
           <p className="text-sm text-muted-foreground mt-1">
             Transform your avatar with 50+ AI-powered artistic styles
           </p>
-        </div>
-        
-        {/* Right: Ultra-Compact Navigation + Badge */}
-        <div className="flex items-center gap-3 shrink-0">
-          {/* Ultra-Compact Icon-Only Navigation */}
-          <TooltipProvider>
-            <div className="hidden md:flex items-center gap-1">
-              {steps.map((step, index) => (
-                <div key={step.id} className="flex items-center">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        onClick={() => onStepChange?.(step.id)}
-                        className={`relative flex items-center justify-center w-4 h-4 rounded-full transition-all ${
-                          currentStep === step.id
-                            ? 'bg-violet-500/20'
-                            : step.completed
-                            ? 'bg-green-500/20'
-                            : 'bg-muted'
-                        }`}
-                        disabled={!step.completed && currentStep !== step.id}
-                      >
-                        {step.completed ? (
-                          <Check className="w-2.5 h-2.5 text-green-400" />
-                        ) : currentStep === step.id ? (
-                          <div className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
-                        ) : (
-                          <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
-                        )}
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{step.label}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  {index < steps.length - 1 && (
-                    <div className="w-3 h-px bg-border/50 mx-0.5" />
-                  )}
-                </div>
-              ))}
-            </div>
-          </TooltipProvider>
-          
-          <Badge className="bg-gradient-to-r from-violet-500 to-purple-500 text-white border-0 text-xs px-2 py-1">
-            <Sparkles className="h-3 w-3 mr-1" />
-            AI Powered
-          </Badge>
         </div>
       </div>
 
@@ -583,45 +534,40 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
             size="sm"
             variant={selectedBadge === 'popular' ? 'default' : 'outline'}
             onClick={() => setSelectedBadge(selectedBadge === 'popular' ? 'all' : 'popular')}
-            className="h-8 gap-1"
+            className="h-8"
           >
-            <Zap className="h-3 w-3" />
             Popular
           </Button>
           <Button
             size="sm"
             variant={selectedBadge === 'trending' ? 'default' : 'outline'}
             onClick={() => setSelectedBadge(selectedBadge === 'trending' ? 'all' : 'trending')}
-            className="h-8 gap-1"
+            className="h-8"
           >
-            <TrendingUp className="h-3 w-3" />
             Trending
           </Button>
           <Button
             size="sm"
             variant={selectedBadge === 'new' ? 'default' : 'outline'}
             onClick={() => setSelectedBadge(selectedBadge === 'new' ? 'all' : 'new')}
-            className="h-8 gap-1"
+            className="h-8"
           >
-            <Sparkles className="h-3 w-3" />
             New
           </Button>
           <Button
             size="sm"
             variant={selectedType === 'free' ? 'default' : 'outline'}
             onClick={() => setSelectedType(selectedType === 'free' ? 'all' : 'free')}
-            className="h-8 gap-1"
+            className="h-8"
           >
-            <CheckCircle className="h-3 w-3" />
             Free
           </Button>
           <Button
             size="sm"
             variant={selectedType === 'premium' ? 'default' : 'outline'}
             onClick={() => setSelectedType(selectedType === 'premium' ? 'all' : 'premium')}
-            className="h-8 gap-1"
+            className="h-8"
           >
-            <Crown className="h-3 w-3" />
             Premium
           </Button>
 
@@ -629,7 +575,7 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="h-8 px-3 rounded-md bg-black/20 border border-violet-500/30 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
+            className="h-8 px-3 rounded-md bg-background border border-input text-sm hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
           >
             <option value="all">All Categories</option>
             <option value="original">Original</option>
