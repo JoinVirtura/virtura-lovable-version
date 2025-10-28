@@ -1,5 +1,8 @@
 project_id = "ujaoziqnxhjqlmnvlxav"
 
+[functions.style-transfer-replicate]
+verify_jwt = true
+
 [functions.track-usage]
 verify_jwt = true
 

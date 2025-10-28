@@ -23,15 +23,12 @@ export const applyStyleTransfer = async (config: StyleTransferConfig): Promise<S
   try {
     console.log('🎨 Applying style transfer with config:', config);
     
-    const { data, error } = await supabase.functions.invoke('generate-avatar-real', {
+    const { data, error } = await supabase.functions.invoke('style-transfer-replicate', {
       body: {
-        prompt: `Apply ${config.stylePreset} style to this image`,
-        style: config.stylePreset,
-        quality: 'HD',
-        strength: config.strength / 100,
-        preserve_original: config.preserveOriginal / 100,
-        enhance_details: config.enhanceDetails / 100,
-        source_image: config.imageUrl
+        sourceImage: config.imageUrl,
+        stylePreset: config.stylePreset,
+        strength: config.strength / 100, // Convert 0-100 to 0-1
+        quality: 'HD'
       }
     });
 
