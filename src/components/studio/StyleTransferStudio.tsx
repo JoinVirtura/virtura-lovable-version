@@ -548,23 +548,20 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
           <Button 
             onClick={handleApplyStyle}
             disabled={!canApplyStyle || isProcessing || isApplying}
-            size="lg"
-            className={`px-8 py-4 rounded-full shadow-[0_0_30px_rgba(139,92,246,0.5)] hover:shadow-[0_0_50px_rgba(139,92,246,0.7)] transition-all duration-300 ${
+            size="sm"
+            className={`px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 ${
               (isProcessing || isApplying || project.style?.status === 'processing')
                 ? 'animate-pulse'
-                : 'hover:scale-105'
+                : ''
             }`}
           >
             {isProcessing || isApplying || project.style?.status === 'processing' ? (
               <>
-                <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                Applying Style Transfer...
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Applying...
               </>
             ) : (
-              <>
-                <Sparkles className="h-5 w-5 mr-2" />
-                ✨ Apply Style Transfer
-              </>
+              'Apply Style Transfer'
             )}
           </Button>
         </div>
@@ -661,17 +658,18 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
             className="h-8 px-3 rounded-md bg-violet-500/10 border border-violet-500/30 text-violet-200 hover:bg-violet-500/20 hover:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-400 transition-colors cursor-pointer"
+            style={{ colorScheme: 'dark' }}
           >
-            <option value="all">All Categories</option>
-            <option value="original">Original</option>
-            <option value="artistic">Artistic</option>
-            <option value="futuristic">Futuristic</option>
-            <option value="animation">Animation</option>
-            <option value="modern">Modern</option>
-            <option value="vintage">Vintage</option>
-            <option value="fantasy">Fantasy</option>
-            <option value="nature">Nature</option>
-            <option value="photography">Photography</option>
+            <option value="all" style={{ backgroundColor: '#1a1a2e', color: '#c4b5fd' }}>All Categories</option>
+            <option value="original" style={{ backgroundColor: '#1a1a2e', color: '#c4b5fd' }}>Original</option>
+            <option value="artistic" style={{ backgroundColor: '#1a1a2e', color: '#c4b5fd' }}>Artistic</option>
+            <option value="futuristic" style={{ backgroundColor: '#1a1a2e', color: '#c4b5fd' }}>Futuristic</option>
+            <option value="animation" style={{ backgroundColor: '#1a1a2e', color: '#c4b5fd' }}>Animation</option>
+            <option value="modern" style={{ backgroundColor: '#1a1a2e', color: '#c4b5fd' }}>Modern</option>
+            <option value="vintage" style={{ backgroundColor: '#1a1a2e', color: '#c4b5fd' }}>Vintage</option>
+            <option value="fantasy" style={{ backgroundColor: '#1a1a2e', color: '#c4b5fd' }}>Fantasy</option>
+            <option value="nature" style={{ backgroundColor: '#1a1a2e', color: '#c4b5fd' }}>Nature</option>
+            <option value="photography" style={{ backgroundColor: '#1a1a2e', color: '#c4b5fd' }}>Photography</option>
           </select>
         </div>
       </div>
