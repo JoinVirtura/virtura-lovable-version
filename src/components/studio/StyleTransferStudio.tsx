@@ -7,6 +7,7 @@ import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { 
   Sparkles, 
   Crown, 
@@ -473,16 +474,72 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
   return (
     <div className="pb-32 space-y-6">
       {/* Header with Navigation */}
-      <div className="flex items-center justify-between gap-3 pb-4">
-        {/* Left: Title */}
-        <div>
-          <h2 className="text-3xl font-bold flex items-center gap-3 bg-gradient-to-r from-violet-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+      <div className="space-y-2">
+        {/* Title + Navigation on same line */}
+        <div className="flex items-center justify-between">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-violet-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
             Style Transfer Studio
           </h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Transform your avatar with 50+ AI-powered artistic styles
-          </p>
+          
+          {/* Compact Inline Navigation */}
+          <div className="flex items-center gap-1">
+            {/* Step 1: Avatar */}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/10 border border-green-500/30 text-green-400 transition-all hover:bg-green-500/20">
+                    <CheckCircle className="w-3 h-3" />
+                    <span>Avatar</span>
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent><p>Avatar Generation Complete</p></TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            
+            {/* Connector */}
+            <div className="flex gap-0.5 px-1">
+              <div className="w-1 h-1 rounded-full bg-violet-400/60" />
+              <div className="w-1 h-1 rounded-full bg-violet-400/60" />
+            </div>
+            
+            {/* Step 2: Style (Current) */}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button className="relative flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-violet-500 to-purple-600 text-white shadow-[0_0_12px_rgba(139,92,246,0.5)] animate-pulse backdrop-blur-sm border border-violet-400/50 transition-all hover:scale-105">
+                    <Sparkles className="w-3 h-3" />
+                    <span>Style</span>
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent><p>Apply Style Transfer</p></TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            
+            {/* Connector */}
+            <div className="flex gap-0.5 px-1">
+              <div className="w-1 h-1 rounded-full bg-gray-600" />
+              <div className="w-1 h-1 rounded-full bg-gray-600" />
+            </div>
+            
+            {/* Step 3: Export (Future) */}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-800/50 border border-gray-700 text-gray-500 backdrop-blur-sm transition-all hover:bg-gray-800/70">
+                    <Download className="w-3 h-3" />
+                    <span>Export</span>
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent><p>Export (Coming Soon)</p></TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
         </div>
+        
+        {/* Subtitle */}
+        <p className="text-sm text-muted-foreground">
+          Transform your avatar with 50+ AI-powered artistic styles
+        </p>
       </div>
 
       {/* Prerequisites Check */}
@@ -507,7 +564,7 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
       )}
 
       {/* Search Bar */}
-      <div className="max-w-md mb-4">
+      <div className="max-w-md">
         <Input
           type="search"
           placeholder="Search styles... (e.g., cyberpunk, watercolor)"
