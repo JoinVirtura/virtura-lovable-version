@@ -3221,16 +3221,6 @@ export default function Dashboard() {
       case "guide":
         return (
           <div className="space-y-6 min-h-screen px-4">
-            {/* Header */}
-            <div className="text-center mb-16">
-              <h1 className="text-5xl md:text-6xl font-display font-bold bg-gradient-to-r from-violet-400 via-purple-400 to-blue-400 bg-clip-text text-transparent mb-4">
-                Getting Started with Virtura
-              </h1>
-              <p className="text-xl text-muted-foreground">
-                Complete these steps to become a Virtura Creator
-              </p>
-            </div>
-            
             {/* Onboarding Videos Section */}
             <div className="mb-16">
               <div className="flex items-center justify-between mb-8">
