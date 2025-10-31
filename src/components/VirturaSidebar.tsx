@@ -61,7 +61,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
   const navigationTabs = [
     { id: "studio", label: "Copilot", icon: Command },
     { id: "individuals", label: "Individuals", icon: User },
-    { id: "brands", label: "Brands", icon: Building2, route: "/brands" },
+    { id: "brands", label: "Brands", icon: Building2 },
     { id: "guide", label: "Tutorial", icon: BookOpen },
   ];
   
@@ -133,16 +133,10 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
               {navigationTabs.map((item) => (
                 <SidebarMenuItem key={item.id}>
                   <SidebarMenuButton 
-                    onClick={() => {
-                      if (item.route) {
-                        navigate(item.route);
-                      } else {
-                        onViewChange(item.id);
-                      }
-                    }}
-                    isActive={item.route ? window.location.pathname === item.route : activeView === item.id}
+                    onClick={() => onViewChange(item.id)}
+                    isActive={activeView === item.id}
                     className={`w-full ${isCollapsed ? "justify-center px-2" : "justify-start gap-3"} ${
-                      (item.route ? window.location.pathname === item.route : activeView === item.id)
+                      activeView === item.id
                         ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30" 
                         : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
                     }`}

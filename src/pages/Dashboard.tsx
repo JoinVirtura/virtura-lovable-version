@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { VirturaSidebar } from "@/components/VirturaSidebar";
 import { OverviewPage } from "@/components/OverviewPage";
+import { BrandManager } from "@/components/brands/BrandManager";
 import virturaLogo from "/lovable-uploads/f264298f-2877-485b-affc-d705994fc848.png";
 import { CreateAvatar } from "@/components/CreateAvatar";
 import { AvatarStudio } from "@/components/AvatarStudio";
@@ -2172,6 +2173,135 @@ export default function Dashboard() {
         return <UploadSection />;
       case "export":
         return <ExportSection />;
+      case "library":
+        return (
+          <StudioBackground>
+            <div className="space-y-6">
+              {/* Library Header */}
+              <Card className="p-6 border-violet-500/20 bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-2xl font-display font-bold text-white">Avatar Library</h2>
+                    <p className="text-violet-200">View and manage all your created avatars</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      className="gap-2"
+                      onClick={() => setActiveView('individuals')}
+                    >
+                      <Sparkles className="w-4 h-4" />
+                      Generate New
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Library Grid */}
+              {libraryLoading ? (
+                <div className="flex items-center justify-center py-20">
+                  <Loader2 className="w-8 h-8 animate-spin text-violet-400" />
+                </div>
+              ) : libraryError ? (
+                <Card className="p-8 text-center">
+                  <AlertCircle className="w-12 h-12 mx-auto mb-4 text-red-400" />
+                  <p className="text-red-400">{libraryError}</p>
+                </Card>
+              ) : libraryAssets.length === 0 ? (
+                <Card className="p-12 text-center">
+                  <Sparkles className="w-16 h-16 mx-auto mb-4 text-violet-400/50" />
+                  <h3 className="text-xl font-semibold mb-2">No Avatars Yet</h3>
+                  <p className="text-muted-foreground mb-6">
+                    Create your first avatar to see it here
+                  </p>
+                  <Button 
+                    onClick={() => setActiveView('individuals')}
+                    className="gap-2"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    Generate First Avatar
+                  </Button>
+                </Card>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {libraryAssets.map((asset) => (
+                    <Card 
+                      key={asset.id}
+                      className="group overflow-hidden bg-[#1a1a2e]/80 border-violet-500/20 hover:border-violet-500/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(139,92,246,0.3)]"
+                    >
+                      <div className="aspect-square relative overflow-hidden">
+                        <img 
+                          src={asset.thumbnail} 
+                          alt={asset.title}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="absolute bottom-0 left-0 right-0 p-4 space-y-2">
+                            <div className="flex gap-2">
+                              <Button 
+                                variant="secondary" 
+                                size="sm" 
+                                className="flex-1"
+                                onClick={() => {
+                                  setSelectedEditImage(asset);
+                                  setActiveView('studio');
+                                }}
+                              >
+                                <Edit className="w-4 h-4 mr-2" />
+                                Edit
+                              </Button>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="secondary" size="sm">
+                                    <MoreVertical className="w-4 h-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                  <DropdownMenuItem onClick={() => {
+                                    setEditTitleDialog({ open: true, asset });
+                                  }}>
+                                    <Edit className="w-4 h-4 mr-2" />
+                                    Rename
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => {
+                                    const link = document.createElement('a');
+                                    link.href = asset.imageUrl;
+                                    link.download = asset.title + '.png';
+                                    link.click();
+                                  }}>
+                                    <Download className="w-4 h-4 mr-2" />
+                                    Download
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem 
+                                    onClick={() => handleDelete(asset.dbId)}
+                                    className="text-destructive"
+                                  >
+                                    <Trash2 className="w-4 h-4 mr-2" />
+                                    Delete
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="p-4">
+                        <h3 className="font-semibold truncate">{asset.title}</h3>
+                        <p className="text-sm text-muted-foreground">{asset.date}</p>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+          </StudioBackground>
+        );
+      case "brands":
+        return (
+          <div className="h-full">
+            <BrandManager />
+          </div>
+        );
       case "upgrade":
         return <UpgradePage />;
       default:
