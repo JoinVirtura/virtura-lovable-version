@@ -13,6 +13,7 @@ import { ChatInterface } from "@/components/ChatInterface";
 import { TalkingAvatarStudio } from "@/components/TalkingAvatarStudio";
 import { MotionBackground } from "@/components/MotionBackground";
 import BrandManager from "@/components/brands/BrandManager";
+import { RealAvatarLibrary } from "@/components/studio/RealAvatarLibrary";
 import UpgradePage from "./UpgradePage";
 import StudioPage from "./StudioPage";
 import VideoProPage from "./VideoProPage";
@@ -1751,6 +1752,19 @@ export default function Dashboard() {
         );
       case "brands":
         return <BrandManager />;
+      case "library":
+        return (
+          <div className="space-y-6">
+            <RealAvatarLibrary
+              onSelectAvatar={(avatarUrl: string, metadata: any) => {
+                sessionStorage.setItem('selectedAvatar', JSON.stringify({ avatarUrl, metadata }));
+                setActiveView('video-pro');
+                toast({ title: 'Avatar selected!', description: 'Opening Studio Pro...' });
+              }}
+              isProcessing={false}
+            />
+          </div>
+        );
       case "upload":
         return <UploadSection />;
       case "export":
