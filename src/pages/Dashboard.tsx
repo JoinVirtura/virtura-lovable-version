@@ -4,6 +4,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { VirturaSidebar } from "@/components/VirturaSidebar";
 import { OverviewPage } from "@/components/OverviewPage";
 import { BrandManager } from "@/components/brands/BrandManager";
+import { RealAvatarLibrary } from "@/components/studio/RealAvatarLibrary";
 import virturaLogo from "/lovable-uploads/f264298f-2877-485b-affc-d705994fc848.png";
 import { CreateAvatar } from "@/components/CreateAvatar";
 import { AvatarStudio } from "@/components/AvatarStudio";
@@ -113,82 +114,18 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [activeView, setActiveView] = useState("overview");
 
-  // Fetch saved avatars from Supabase for Library view
-  const fetchSavedAvatars = async () => {
-    try {
-      setLibraryLoading(true);
-      setLibraryError(null);
-      
-      const { data, error: fetchError } = await supabase
-        .from('avatar_library')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (fetchError) {
-        console.error('Error fetching avatars:', fetchError);
-        setLibraryError('Failed to load library items');
-        return;
-      }
-
-      const formattedAssets = data?.map((item, index) => ({
-        id: item.id,
-        dbId: item.id, // Keep reference to database ID
-        type: "Avatar",
-        title: item.title || `Generated Avatar ${new Date(item.created_at).toLocaleDateString()}`,
-        date: new Date(item.created_at).toLocaleDateString('en-US', { 
-          year: 'numeric', 
-          month: 'short', 
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        }),
-        format: "PNG",
-        tags: item.tags || ["ai-generated"],
-        thumbnail: item.image_url,
-        imageUrl: item.image_url,
-        prompt: item.prompt,
-        isFavorite: item.tags?.includes("favorite") || false,
-        quality: Math.floor(Math.random() * 10 + 90), // 90-99%
-        generationTime: `${(Math.random() * 2 + 1.5).toFixed(1)}s`,
-        fileSize: `${(Math.random() * 1.5 + 1.5).toFixed(1)} MB`,
-        category: "Avatars"
-      })) || [];
-
-      setLibraryAssets(formattedAssets);
-    } catch (err) {
-      console.error('Error in fetchSavedAvatars:', err);
-      setLibraryError('Failed to load library items');
-    } finally {
-      setLibraryLoading(false);
-    }
+  // Handle avatar selection from library
+  const handleSelectAvatar = (avatarUrl: string, metadata: any) => {
+    sessionStorage.setItem('selectedAvatar', JSON.stringify({ 
+      url: avatarUrl, 
+      ...metadata 
+    }));
+    setActiveView('video-pro');
+    toast({
+      title: "Avatar Selected",
+      description: "Ready to create your video",
+    });
   };
-
-  // Load avatars on component mount
-  useEffect(() => {
-    fetchSavedAvatars();
-  }, []);
-
-  // Set up real-time subscription for new avatars
-  useEffect(() => {
-    const channel = supabase
-      .channel('dashboard-avatar-library-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'avatar_library'
-        },
-        () => {
-          fetchSavedAvatars(); // Refresh the list when new avatars are added
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
   
   // Copilot Flow state
   const [currentPrompt, setCurrentPrompt] = useState("");
@@ -228,12 +165,9 @@ export default function Dashboard() {
   const [selectedOutfit, setSelectedOutfit] = useState("");
   const [selectedAccessories, setSelectedAccessories] = useState("");
   
-  // Library page state
+  // Library page state (minimal for mock assets only)
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
-  const [libraryAssets, setLibraryAssets] = useState<any[]>([]);
-  const [libraryLoading, setLibraryLoading] = useState(true);
-  const [libraryError, setLibraryError] = useState<string | null>(null);
   const [editTitleDialog, setEditTitleDialog] = useState<{ open: boolean; asset: any } | null>(null);
   const [deletingAssetId, setDeletingAssetId] = useState<string | null>(null);
   
@@ -781,7 +715,7 @@ export default function Dashboard() {
 
   // Calculate dynamic stats from library assets
   const calculateStats = () => {
-    const assetsToUse = libraryLoading ? assets : (libraryAssets.length > 0 ? libraryAssets : assets);
+    const assetsToUse = assets;
     const totalAssets = assetsToUse.length;
     
     // Calculate this month's assets (current month)
@@ -824,9 +758,8 @@ export default function Dashboard() {
 
   const stats = calculateStats();
 
-  // Use real library assets for filtering in library view
-  const assetsForFiltering = libraryLoading ? assets : (libraryAssets.length > 0 ? libraryAssets : assets);
-  const filteredAssets = assetsForFiltering.filter(asset => {
+  // Use mock assets for filtering in other views
+  const filteredAssets = assets.filter(asset => {
     const matchesSearch = asset.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          asset.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesCategory = selectedCategory === "All" || asset.category === selectedCategory;
@@ -1100,13 +1033,6 @@ export default function Dashboard() {
 
       if (error) throw error;
 
-      // Update local state
-      setLibraryAssets(prev => prev.map(a => 
-        a.dbId === asset.dbId 
-          ? { ...a, tags: newTags, isFavorite: !asset.isFavorite }
-          : a
-      ));
-
       toast({
         title: asset.isFavorite ? "Removed from Favorites" : "Added to Favorites",
         description: `${asset.title} ${asset.isFavorite ? 'removed from' : 'added to'} your favorites.`,
@@ -1147,9 +1073,6 @@ export default function Dashboard() {
         // Don't throw here as the database deletion was successful
       }
 
-      // Update local state
-      setLibraryAssets(prev => prev.filter(a => a.dbId !== asset.dbId));
-
       toast({
         title: "Avatar Deleted",
         description: `${asset.title} has been permanently deleted.`,
@@ -1180,13 +1103,6 @@ export default function Dashboard() {
         .eq('id', editTitleDialog.asset.dbId);
 
       if (error) throw error;
-
-      // Update local state
-      setLibraryAssets(prev => prev.map(a => 
-        a.dbId === editTitleDialog.asset.dbId 
-          ? { ...a, title: newTitle }
-          : a
-      ));
 
       toast({
         title: "Title Updated",
@@ -2175,126 +2091,12 @@ export default function Dashboard() {
         return <ExportSection />;
       case "library":
         return (
-          <StudioBackground>
-            <div className="space-y-6">
-              {/* Library Header */}
-              <Card className="p-6 border-violet-500/20 bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="text-2xl font-display font-bold text-white">Avatar Library</h2>
-                    <p className="text-violet-200">View and manage all your created avatars</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button 
-                      variant="outline" 
-                      className="gap-2"
-                      onClick={() => setActiveView('individuals')}
-                    >
-                      <Sparkles className="w-4 h-4" />
-                      Generate New
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-
-              {/* Library Grid */}
-              {libraryLoading ? (
-                <div className="flex items-center justify-center py-20">
-                  <Loader2 className="w-8 h-8 animate-spin text-violet-400" />
-                </div>
-              ) : libraryError ? (
-                <Card className="p-8 text-center">
-                  <AlertCircle className="w-12 h-12 mx-auto mb-4 text-red-400" />
-                  <p className="text-red-400">{libraryError}</p>
-                </Card>
-              ) : libraryAssets.length === 0 ? (
-                <Card className="p-12 text-center">
-                  <Sparkles className="w-16 h-16 mx-auto mb-4 text-violet-400/50" />
-                  <h3 className="text-xl font-semibold mb-2">No Avatars Yet</h3>
-                  <p className="text-muted-foreground mb-6">
-                    Create your first avatar to see it here
-                  </p>
-                  <Button 
-                    onClick={() => setActiveView('individuals')}
-                    className="gap-2"
-                  >
-                    <Sparkles className="w-4 h-4" />
-                    Generate First Avatar
-                  </Button>
-                </Card>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {libraryAssets.map((asset) => (
-                    <Card 
-                      key={asset.id}
-                      className="group overflow-hidden bg-[#1a1a2e]/80 border-violet-500/20 hover:border-violet-500/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(139,92,246,0.3)]"
-                    >
-                      <div className="aspect-square relative overflow-hidden">
-                        <img 
-                          src={asset.thumbnail} 
-                          alt={asset.title}
-                          className="w-full h-full object-cover"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                          <div className="absolute bottom-0 left-0 right-0 p-4 space-y-2">
-                            <div className="flex gap-2">
-                              <Button 
-                                variant="secondary" 
-                                size="sm" 
-                                className="flex-1"
-                                onClick={() => {
-                                  setSelectedEditImage(asset);
-                                  setActiveView('studio');
-                                }}
-                              >
-                                <Edit className="w-4 h-4 mr-2" />
-                                Edit
-                              </Button>
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button variant="secondary" size="sm">
-                                    <MoreVertical className="w-4 h-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent>
-                                  <DropdownMenuItem onClick={() => {
-                                    setEditTitleDialog({ open: true, asset });
-                                  }}>
-                                    <Edit className="w-4 h-4 mr-2" />
-                                    Rename
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => {
-                                    const link = document.createElement('a');
-                                    link.href = asset.imageUrl;
-                                    link.download = asset.title + '.png';
-                                    link.click();
-                                  }}>
-                                    <Download className="w-4 h-4 mr-2" />
-                                    Download
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem 
-                                    onClick={() => handleDelete(asset.dbId)}
-                                    className="text-destructive"
-                                  >
-                                    <Trash2 className="w-4 h-4 mr-2" />
-                                    Delete
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="p-4">
-                        <h3 className="font-semibold truncate">{asset.title}</h3>
-                        <p className="text-sm text-muted-foreground">{asset.date}</p>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              )}
-            </div>
-          </StudioBackground>
+          <div className="space-y-6">
+            <RealAvatarLibrary
+              onSelectAvatar={handleSelectAvatar}
+              isProcessing={false}
+            />
+          </div>
         );
       case "brands":
         return (
