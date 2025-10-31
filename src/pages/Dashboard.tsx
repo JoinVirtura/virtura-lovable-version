@@ -1754,15 +1754,17 @@ export default function Dashboard() {
         return <BrandManager />;
       case "library":
         return (
-          <div className="space-y-6">
-            <RealAvatarLibrary
-              onSelectAvatar={(avatarUrl: string, metadata: any) => {
-                sessionStorage.setItem('selectedAvatar', JSON.stringify({ avatarUrl, metadata }));
-                setActiveView('video-pro');
-                toast({ title: 'Avatar selected!', description: 'Opening Studio Pro...' });
-              }}
-              isProcessing={false}
-            />
+          <div className="min-h-screen relative overflow-hidden">
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+              <RealAvatarLibrary
+                onSelectAvatar={(avatarUrl: string, metadata: any) => {
+                  sessionStorage.setItem('selectedAvatar', JSON.stringify({ avatarUrl, metadata }));
+                  setActiveView('video-pro');
+                  toast({ title: 'Avatar selected!', description: 'Opening Studio Pro...' });
+                }}
+                isProcessing={false}
+              />
+            </main>
           </div>
         );
       case "upload":
