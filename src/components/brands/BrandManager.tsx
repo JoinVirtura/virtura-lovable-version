@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { useBrands } from '@/hooks/useBrands';
 import { useBrandAssets } from '@/hooks/useBrandAssets';
+import { useBrandCollections } from '@/hooks/useBrandCollections';
 import { BrandSelector } from './BrandSelector';
 import { CollectionsTree } from './CollectionsTree';
 import { AssetGrid } from './AssetGrid';
+import { CreateCollectionDialog } from './CreateCollectionDialog';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Upload, Sparkles, Calendar, BarChart3 } from 'lucide-react';
+import { Upload, Sparkles, Calendar, BarChart3, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const BrandManager: React.FC = () => {
@@ -15,8 +17,10 @@ export const BrandManager: React.FC = () => {
   const { brands, isLoading: brandsLoading } = useBrands();
   const [selectedBrandId, setSelectedBrandId] = useState<string | undefined>();
   const [selectedCollectionId, setSelectedCollectionId] = useState<string | undefined>();
+  const [createCollectionOpen, setCreateCollectionOpen] = useState(false);
   
   const { assets, isLoading: assetsLoading, toggleFavorite, archiveAsset } = useBrandAssets(selectedBrandId);
+  const { collections } = useBrandCollections(selectedBrandId);
 
   const selectedBrand = brands?.find(b => b.id === selectedBrandId);
 
@@ -48,12 +52,28 @@ export const BrandManager: React.FC = () => {
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
-      <CollectionsTree
-        collections={[]} // TODO: Load from brand_collections
-        selectedCollectionId={selectedCollectionId}
-        onSelectCollection={setSelectedCollectionId}
-        onCreateCollection={() => console.log('Create collection')}
-      />
+      <div className="w-64 border-r bg-muted/10 flex flex-col">
+        <div className="p-4 border-b">
+          <Button
+            onClick={() => setCreateCollectionOpen(true)}
+            variant="outline"
+            size="sm"
+            className="w-full"
+            disabled={!selectedBrandId}
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            New Collection
+          </Button>
+        </div>
+        <div className="flex-1 overflow-auto">
+          <CollectionsTree
+            collections={collections || []}
+            selectedCollectionId={selectedCollectionId}
+            onSelectCollection={setSelectedCollectionId}
+            onCreateCollection={() => setCreateCollectionOpen(true)}
+          />
+        </div>
+      </div>
 
       {/* Main content */}
       <div className="flex-1 overflow-auto">
@@ -137,6 +157,15 @@ export const BrandManager: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Create Collection Dialog */}
+      {selectedBrandId && (
+        <CreateCollectionDialog
+          brandId={selectedBrandId}
+          open={createCollectionOpen}
+          onOpenChange={setCreateCollectionOpen}
+        />
+      )}
     </div>
   );
 };
