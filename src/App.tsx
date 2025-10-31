@@ -15,7 +15,6 @@ import StudioInterface from "./components/StudioInterface";
 import AIImageStudioPage from "./pages/AIImageStudioPage";
 import IndividualsPage from "./pages/IndividualsPage";
 import BrandsPage from "./pages/BrandsPage";
-import BrandCreatePage from "./pages/BrandCreatePage";
 import LibraryPage from "./pages/LibraryPage";
 import GuidePage from "./pages/GuidePage";
 import SettingsPage from "./pages/SettingsPage";
@@ -58,7 +57,10 @@ const AppRoutes = () => {
       {/* Protected Routes */}
       <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       <Route path="/individuals" element={<ProtectedRoute><IndividualsPage /></ProtectedRoute>} />
-        <Route path="/brands/create" element={<ProtectedRoute><BrandCreatePage /></ProtectedRoute>} />
+      <Route path="/brands" element={<ProtectedRoute><BrandsPage /></ProtectedRoute>} />
+      <Route path="/library" element={<ProtectedRoute><LibraryPage /></ProtectedRoute>} />
+      <Route path="/guide" element={<ProtectedRoute><GuidePage /></ProtectedRoute>} />
+      <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       
       <Route path="/talking-avatar" element={<ProtectedRoute><TalkingAvatarPage /></ProtectedRoute>} />

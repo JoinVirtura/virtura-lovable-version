@@ -136,7 +136,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                     onClick={() => onViewChange(item.id)}
                     isActive={activeView === item.id}
                     className={`w-full ${isCollapsed ? "justify-center px-2" : "justify-start gap-3"} ${
-                      activeView === item.id
+                      activeView === item.id 
                         ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30" 
                         : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
                     }`}
