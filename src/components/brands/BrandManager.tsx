@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useBrands } from '@/hooks/useBrands';
 import { useBrandAssets } from '@/hooks/useBrandAssets';
 import { useBrandCollections } from '@/hooks/useBrandCollections';
+import { useDemoBrand } from '@/hooks/useDemoBrand';
+import { useAuth } from '@/hooks/useAuth';
 import { BrandSelector } from './BrandSelector';
 import { CollectionsTree } from './CollectionsTree';
 import { AssetGrid } from './AssetGrid';
@@ -9,12 +11,14 @@ import { CreateCollectionDialog } from './CreateCollectionDialog';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Upload, Sparkles, Calendar, BarChart3, Plus } from 'lucide-react';
+import { Upload, Sparkles, Calendar, BarChart3, Plus, Coffee } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const BrandManager: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { brands, isLoading: brandsLoading } = useBrands();
+  const { createFullDemoBrand } = useDemoBrand();
   const [selectedBrandId, setSelectedBrandId] = useState<string | undefined>();
   const [selectedCollectionId, setSelectedCollectionId] = useState<string | undefined>();
   const [createCollectionOpen, setCreateCollectionOpen] = useState(false);
@@ -23,6 +27,23 @@ export const BrandManager: React.FC = () => {
   const { collections } = useBrandCollections(selectedBrandId);
 
   const selectedBrand = brands?.find(b => b.id === selectedBrandId);
+
+  // Restore last selected brand from localStorage
+  useEffect(() => {
+    const savedBrandId = localStorage.getItem('virtura_selected_brand_id');
+    if (savedBrandId && brands?.find(b => b.id === savedBrandId)) {
+      setSelectedBrandId(savedBrandId);
+    } else if (brands?.[0]) {
+      setSelectedBrandId(brands[0].id);
+      localStorage.setItem('virtura_selected_brand_id', brands[0].id);
+    }
+  }, [brands]);
+
+  // Save selected brand to localStorage
+  const handleBrandChange = (brandId: string) => {
+    setSelectedBrandId(brandId);
+    localStorage.setItem('virtura_selected_brand_id', brandId);
+  };
 
   const stats = {
     totalAssets: assets?.length || 0,
@@ -36,15 +57,45 @@ export const BrandManager: React.FC = () => {
 
   if (!brands?.length) {
     return (
-      <div className="container mx-auto py-12 text-center">
-        <h1 className="text-3xl font-bold mb-4">Welcome to Brand Manager</h1>
-        <p className="text-muted-foreground mb-8">
-          Create your first brand to start managing your content
-        </p>
-        <Button onClick={() => navigate('/brands/create')}>
-          <Sparkles className="w-4 h-4 mr-2" />
-          Create Your First Brand
-        </Button>
+      <div className="container mx-auto py-12 px-4 max-w-4xl">
+        <div className="text-center space-y-6">
+          <div className="space-y-2">
+            <h1 className="text-4xl font-display font-bold bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent">
+              Welcome to Brand Manager
+            </h1>
+            <p className="text-lg text-muted-foreground">
+              Create and manage your brand identity with AI-powered tools
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-4 max-w-2xl mx-auto mt-8">
+            <Card className="p-6 hover:border-violet-500/50 transition-colors cursor-pointer group"
+                  onClick={() => navigate('/brands/create')}>
+              <Sparkles className="w-12 h-12 mx-auto mb-4 text-violet-400 group-hover:scale-110 transition-transform" />
+              <h3 className="font-semibold text-lg mb-2">Start from Scratch</h3>
+              <p className="text-sm text-muted-foreground">
+                Create your own brand with custom identity, assets, and campaigns
+              </p>
+            </Card>
+
+            <Card 
+              className={`p-6 hover:border-pink-500/50 transition-colors cursor-pointer border-pink-500/20 group ${createFullDemoBrand.isPending ? 'opacity-50 pointer-events-none' : ''}`}
+              onClick={() => user && createFullDemoBrand.mutate(user.id)}>
+              <Coffee className="w-12 h-12 mx-auto mb-4 text-pink-400 group-hover:scale-110 transition-transform" />
+              <h3 className="font-semibold text-lg mb-2">
+                {createFullDemoBrand.isPending ? 'Creating Demo Brand...' : 'Explore Demo Brand'}
+              </h3>
+              <p className="text-sm text-muted-foreground mb-2">
+                See a pre-built coffee shop brand with assets, campaigns & analytics
+              </p>
+              <Badge variant="secondary" className="mt-2">Recommended</Badge>
+            </Card>
+          </div>
+
+          <p className="text-xs text-muted-foreground mt-4">
+            💡 Try the demo first to understand how everything works!
+          </p>
+        </div>
       </div>
     );
   }
@@ -84,7 +135,7 @@ export const BrandManager: React.FC = () => {
               <BrandSelector
                 brands={brands}
                 selectedBrand={selectedBrand}
-                onSelectBrand={setSelectedBrandId}
+                onSelectBrand={handleBrandChange}
                 onCreateBrand={() => navigate('/brands/create')}
               />
 
