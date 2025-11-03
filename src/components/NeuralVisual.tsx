@@ -4,10 +4,10 @@ import brainVisual from "@/assets/brain-neural-visual.png";
 export function NeuralVisual() {
   return (
     <motion.div
-      className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+      className="absolute top-[30%] left-1/2 -translate-x-1/2 -translate-y-1/2
                  w-[1000px] md:w-[900px] lg:w-[1000px] xl:w-[1100px] 2xl:w-[1200px]
                  opacity-25 md:opacity-30 lg:opacity-35
-                 pointer-events-none z-[5]
+                 pointer-events-none z-[8]
                  hidden md:block"
       initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
       animate={{ 
