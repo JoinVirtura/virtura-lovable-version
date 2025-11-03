@@ -43,7 +43,6 @@ import {
   Star,
   Clock,
   Upload,
-  Sparkles,
   Library,
   Calendar,
   Grid3X3,
@@ -440,27 +439,90 @@ export function BrandManagerView() {
     toast.success(`Downloaded ${selectedAssets.size} asset(s)`);
   };
 
+  const handleDeleteBrand = async () => {
+    if (!selectedBrand) return;
+    
+    const brand = brands.find(b => b.id === selectedBrand);
+    const confirmed = window.confirm(
+      `Are you sure you want to delete "${brand?.name}"? This will permanently delete all assets, campaigns, and collections associated with this brand.`
+    );
+    
+    if (!confirmed) return;
+    
+    try {
+      const { error } = await supabase
+        .from('brands')
+        .delete()
+        .eq('id', selectedBrand);
+      
+      if (error) throw error;
+      
+      toast.success('Brand deleted successfully');
+      setSelectedBrand(null);
+      await loadBrands();
+    } catch (error) {
+      console.error('Delete brand error:', error);
+      toast.error('Failed to delete brand');
+    }
+  };
+
   return (
     <StudioBackground>
       <div className="flex h-screen">
         {/* Left Sidebar */}
         <div className="w-64 border-r border-violet-500/20 bg-black/40 backdrop-blur-xl p-6 space-y-6 overflow-y-auto overflow-x-hidden">
+          {/* New Campaign Button - Primary Action */}
+          <Button
+            variant="default"
+            disabled={!selectedBrand}
+            className="w-full justify-start gap-3 bg-violet-600 hover:bg-violet-700 text-white"
+            onClick={() => {
+              if (!selectedBrand) {
+                toast.error('Select a brand first to create a campaign');
+                return;
+              }
+              setCampaignCreatorOpen(true);
+            }}
+          >
+            <Calendar className="w-4 h-4" />
+            New Campaign
+          </Button>
+
+          <Separator className="my-4 bg-violet-500/20" />
+
           {/* Brand Selector */}
           <div>
             <Label className="text-sm text-muted-foreground mb-2 block">Active Brand</Label>
-            <Select value={selectedBrand || undefined} onValueChange={handleBrandChange}>
-              <SelectTrigger className="w-full bg-black/60 border-violet-500/30">
-                <SelectValue placeholder="Select a brand" />
-              </SelectTrigger>
-              <SelectContent className="bg-gray-900 border-violet-500/30">
-                {brands.map(brand => (
-                  <SelectItem key={brand.id} value={brand.id}>
-                    {brand.name}
-                  </SelectItem>
-                ))}
-                <SelectItem value="new-brand">+ New Brand</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex gap-2">
+              <Select value={selectedBrand || undefined} onValueChange={handleBrandChange}>
+                <SelectTrigger className="flex-1 bg-black/60 border-violet-500/30">
+                  <SelectValue placeholder="Select a brand" />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-900 border-violet-500/30">
+                  {brands.map(brand => (
+                    <SelectItem key={brand.id} value={brand.id}>
+                      {brand.name}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="new-brand">+ New Brand</SelectItem>
+                </SelectContent>
+              </Select>
+              {selectedBrand && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="icon" className="border-violet-500/30 hover:border-violet-500/50">
+                      <MoreVertical className="w-4 h-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="bg-gray-900 border-violet-500/30">
+                    <DropdownMenuItem onClick={handleDeleteBrand} className="text-red-400">
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete Brand
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+            </div>
           </div>
 
 
@@ -697,27 +759,6 @@ export function BrandManagerView() {
 
           <Separator className="my-4 bg-violet-500/20" />
 
-          {/* Action Buttons */}
-          <div className={`space-y-3 pt-4 border-t border-violet-500/20 ${!selectedBrand ? 'opacity-50' : ''}`}>
-            <Button
-              variant="outline"
-              disabled={!selectedBrand}
-              className="w-full justify-start gap-3 border-violet-500/30 hover:border-violet-500/50 hover:bg-violet-500/10"
-              onClick={() => {
-                if (!selectedBrand) {
-                  toast.error('Create a brand first to create campaigns');
-                  return;
-                }
-                setCampaignCreatorOpen(true);
-              }}
-            >
-              <Calendar className="w-4 h-4" />
-              New Campaign
-            </Button>
-          </div>
-
-          <Separator className="my-4 bg-violet-500/20" />
-
           {/* Campaigns Section */}
           {selectedBrand && campaigns.length > 0 && (
             <div>
@@ -922,7 +963,7 @@ export function BrandManagerView() {
             {/* Content */}
             {!selectedBrand ? (
               <div className="flex flex-col items-center justify-center h-96 text-center">
-                <Sparkles className="w-16 h-16 text-violet-400 mb-4" />
+                <Folder className="w-16 h-16 text-violet-400 mb-4" />
                 <h3 className="text-xl font-semibold text-white mb-2">Welcome to Brand Manager</h3>
                 <p className="text-muted-foreground mb-6">Create your first brand to get started</p>
                 <Button onClick={() => setCreateBrandOpen(true)}>
@@ -934,16 +975,12 @@ export function BrandManagerView() {
               <div className="text-center py-12 text-muted-foreground">Loading...</div>
             ) : assets.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-96 text-center">
-                <Sparkles className="w-16 h-16 text-violet-400 mb-4" />
+                <Folder className="w-16 h-16 text-violet-400 mb-4" />
                 <h3 className="text-xl font-semibold text-white mb-2">No assets yet</h3>
                 <p className="text-muted-foreground mb-6">
-                  Start building your brand by generating, uploading, or importing assets
+                  Start building your brand by uploading or importing assets
                 </p>
                 <div className="flex gap-3">
-                  <Button onClick={() => setGenerateDialogOpen(true)} className="bg-violet-600 hover:bg-violet-700">
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    Generate with AI
-                  </Button>
                   <Button variant="outline" onClick={() => navigate('/upload')} className="border-violet-500/30">
                     <Upload className="w-4 h-4 mr-2" />
                     Upload Files
