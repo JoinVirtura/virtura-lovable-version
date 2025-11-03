@@ -249,10 +249,10 @@ async function startVideoGeneration(
       const prediction = await replicate.predictions.create({
         model: "kwaivgi/kling-v2.1",
         input: {
-          image: avatarImageUrl,
+          start_image: avatarImageUrl,
           prompt: prompt || "natural subtle movements, professional demeanor",
           mode: "standard",
-          duration: "5"
+          duration: 5
         }
       });
       console.log('✅ Kling Motion prediction created:', prediction.id);
@@ -277,10 +277,10 @@ async function startVideoGeneration(
     const prediction = await replicate.predictions.create({
       model: "kwaivgi/kling-v2.1",
       input: {
-        image: avatarImageUrl,
+        start_image: avatarImageUrl,
         prompt: prompt || "natural subtle movements",
         mode: "standard",
-        duration: "5"
+        duration: 5
       }
     });
     console.log('✅ Fallback Kling Motion prediction created:', prediction.id);
