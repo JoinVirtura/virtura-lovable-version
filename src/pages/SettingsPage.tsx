@@ -237,20 +237,43 @@ export default function SettingsPage() {
   };
 
   const openCustomerPortal = async () => {
-    const { data, error } = await supabase.functions.invoke("customer-portal");
-    if (error || !data?.url) {
-      // Check if user hasn't made any purchases yet
-      if (error?.message?.includes("No Stripe customer found")) {
+    try {
+      const { data, error } = await supabase.functions.invoke("customer-portal");
+      
+      if (error) {
+        // Check if user hasn't made any purchases yet
+        const errorMsg = error.message || String(error);
+        if (errorMsg.includes("No Stripe customer found")) {
+          toast({ 
+            title: "No billing history yet", 
+            description: "Complete your first purchase to access billing management.",
+          });
+          return;
+        }
+        throw error;
+      }
+      
+      if (!data?.url) {
+        throw new Error("No portal URL returned");
+      }
+      
+      window.open(data.url, "_blank");
+    } catch (error: any) {
+      console.error("Error opening customer portal:", error);
+      const errorMsg = error.message || String(error);
+      if (errorMsg.includes("No Stripe customer found")) {
         toast({ 
           title: "No billing history yet", 
           description: "Complete your first purchase to access billing management.",
         });
-        return;
+      } else {
+        toast({ 
+          title: "Unable to open billing portal", 
+          description: "Please try again or contact support if the issue persists.", 
+          variant: "destructive" 
+        });
       }
-      toast({ title: "Portal error", description: error?.message || "Please sign in and try again.", variant: "destructive" });
-      return;
     }
-    window.open(data.url, "_blank");
   };
 
   const fetchBillingHistory = async () => {
