@@ -24,8 +24,10 @@ import { LibrarySelectionModal } from '@/components/LibrarySelectionModal';
 import { GenerateAssetDialog } from '@/components/GenerateAssetDialog';
 import { BrandKitDialog } from '@/components/BrandKitDialog';
 import { CampaignCreator } from '@/components/CampaignCreator';
+import { AssetEditDialog } from '@/components/AssetEditDialog';
 import { useBrandAssets, type Brand } from '@/hooks/useBrandAssets';
 import { useCampaigns } from '@/hooks/useCampaigns';
+import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import {
   ChevronRight,
@@ -50,6 +52,8 @@ import {
   Share2,
   Edit3,
   Trash2,
+  CheckSquare,
+  Square,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
@@ -95,6 +99,10 @@ export function BrandManagerView() {
   const [generateDialogOpen, setGenerateDialogOpen] = useState(false);
   const [brandKitOpen, setBrandKitOpen] = useState(false);
   const [campaignCreatorOpen, setCampaignCreatorOpen] = useState(false);
+  const [editAssetDialogOpen, setEditAssetDialogOpen] = useState(false);
+  const [selectedAssetForEdit, setSelectedAssetForEdit] = useState<typeof assets[0] | null>(null);
+  const [batchMode, setBatchMode] = useState(false);
+  const [selectedAssets, setSelectedAssets] = useState<Set<string>>(new Set());
 
   // Load brands on mount
   useEffect(() => {
@@ -306,6 +314,108 @@ export function BrandManagerView() {
       return type.charAt(0).toUpperCase() + type.slice(1);
     }
     return collections.find(c => c.id === currentFolder)?.name || 'Unknown';
+  };
+
+  // Asset Actions Handlers
+  const handleDownload = async (asset: typeof assets[0]) => {
+    try {
+      const response = await fetch(asset.file_url);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const ext = asset.file_url.split('.').pop() || 'png';
+      a.download = `${asset.title}.${ext}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      
+      // Increment usage count
+      await updateAssetMetadata(asset.id, { usage_count: asset.usage_count + 1 });
+      toast.success('Asset downloaded successfully');
+    } catch (error) {
+      console.error('Download error:', error);
+      toast.error('Failed to download asset');
+    }
+  };
+
+  const handleShare = async (asset: typeof assets[0]) => {
+    try {
+      // Generate shareable link (7 days expiry)
+      const path = asset.file_url.split('/').slice(-2).join('/');
+      const { data, error } = await supabase.storage
+        .from('virtura-media')
+        .createSignedUrl(path, 604800); // 7 days
+
+      if (error) throw error;
+
+      if (data?.signedUrl) {
+        await navigator.clipboard.writeText(data.signedUrl);
+        toast.success('Share link copied to clipboard!');
+      } else {
+        // Fallback to public URL
+        await navigator.clipboard.writeText(asset.file_url);
+        toast.success('Asset link copied to clipboard!');
+      }
+    } catch (error) {
+      console.error('Share error:', error);
+      // Fallback: copy public URL
+      try {
+        await navigator.clipboard.writeText(asset.file_url);
+        toast.success('Asset link copied to clipboard!');
+      } catch {
+        toast.error('Failed to copy share link');
+      }
+    }
+  };
+
+  const handleEdit = (asset: typeof assets[0]) => {
+    setSelectedAssetForEdit(asset);
+    setEditAssetDialogOpen(true);
+  };
+
+  const toggleAssetSelection = (assetId: string) => {
+    setSelectedAssets(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(assetId)) {
+        newSet.delete(assetId);
+      } else {
+        newSet.add(assetId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleBatchDelete = async () => {
+    if (selectedAssets.size === 0) return;
+    
+    const confirmed = window.confirm(
+      `Are you sure you want to delete ${selectedAssets.size} asset(s)?`
+    );
+    if (!confirmed) return;
+
+    try {
+      await Promise.all(
+        Array.from(selectedAssets).map(assetId => deleteAsset(assetId))
+      );
+      setSelectedAssets(new Set());
+      setBatchMode(false);
+      toast.success(`${selectedAssets.size} asset(s) deleted successfully`);
+    } catch (error) {
+      console.error('Batch delete error:', error);
+      toast.error('Failed to delete some assets');
+    }
+  };
+
+  const handleBatchDownload = async () => {
+    if (selectedAssets.size === 0) return;
+    
+    const assetsToDownload = assets.filter(a => selectedAssets.has(a.id));
+    for (const asset of assetsToDownload) {
+      await handleDownload(asset);
+    }
+    toast.success(`Downloaded ${selectedAssets.size} asset(s)`);
   };
 
   return (
@@ -627,6 +737,21 @@ export function BrandManagerView() {
 
             {/* Search and Filters */}
             <div className="flex items-center gap-4 mb-6">
+              {/* Batch Mode Toggle */}
+              {assets.length > 0 && (
+                <Button
+                  variant={batchMode ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => {
+                    setBatchMode(!batchMode);
+                    setSelectedAssets(new Set());
+                  }}
+                  className={batchMode ? 'bg-violet-600' : 'border-violet-500/30'}
+                >
+                  {batchMode ? <CheckSquare className="w-4 h-4 mr-2" /> : <Square className="w-4 h-4 mr-2" />}
+                  {batchMode ? 'Batch Mode' : 'Select Multiple'}
+                </Button>
+              )}
 
               <div className="flex-1 max-w-xl">
                 <div className="relative">
@@ -682,6 +807,45 @@ export function BrandManagerView() {
               </div>
             </div>
 
+            {/* Batch Actions Toolbar */}
+            {batchMode && selectedAssets.size > 0 && (
+              <div className="mb-4 p-4 bg-violet-600/20 border border-violet-500/30 rounded-lg flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="text-sm font-medium text-white">
+                    {selectedAssets.size} asset(s) selected
+                  </span>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setSelectedAssets(new Set())}
+                    className="text-violet-300 hover:text-white"
+                  >
+                    Clear
+                  </Button>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={handleBatchDownload}
+                    className="border-violet-500/30"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Download All
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={handleBatchDelete}
+                    className="border-red-500/30 text-red-400 hover:text-red-300"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete
+                  </Button>
+                </div>
+              </div>
+            )}
+
             {/* Breadcrumb */}
             <div className="flex items-center gap-2 text-sm text-violet-200 mb-6">
               <Home className="w-4 h-4" />
@@ -723,9 +887,31 @@ export function BrandManagerView() {
                 {assets.map(asset => (
                   <Card
                     key={asset.id}
-                    className="group bg-gradient-to-br from-gray-900/80 to-gray-800/80 border-violet-500/20 overflow-hidden hover:border-violet-500/50 transition-all"
+                    className="group bg-gradient-to-br from-gray-900/80 to-gray-800/80 border-violet-500/20 overflow-hidden hover:border-violet-500/50 transition-all cursor-pointer"
+                    onClick={() => {
+                      if (batchMode) {
+                        toggleAssetSelection(asset.id);
+                      }
+                    }}
                   >
                     <div className="relative aspect-square">
+                      {/* Batch Mode Checkbox */}
+                      {batchMode && (
+                        <div
+                          className="absolute top-2 left-2 z-10"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleAssetSelection(asset.id);
+                          }}
+                        >
+                          {selectedAssets.has(asset.id) ? (
+                            <CheckSquare className="w-6 h-6 text-violet-400" />
+                          ) : (
+                            <Square className="w-6 h-6 text-white/60 hover:text-white" />
+                          )}
+                        </div>
+                      )}
+
                       <img
                         src={asset.thumbnail_url || asset.file_url || '/placeholder.svg'}
                         alt={asset.title}
@@ -739,7 +925,7 @@ export function BrandManagerView() {
                           size="icon"
                           variant="secondary"
                           className="h-8 w-8 bg-black/60"
-                          onClick={() => toggleFavorite(asset.id)}
+                          onClick={(e) => { e.stopPropagation(); toggleFavorite(asset.id); }}
                         >
                           <Star
                             className={`w-4 h-4 ${
@@ -748,27 +934,27 @@ export function BrandManagerView() {
                           />
                         </Button>
                         <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
+                          <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                             <Button size="icon" variant="secondary" className="h-8 w-8 bg-black/60">
                               <MoreVertical className="w-4 h-4" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent className="bg-gray-900 border-violet-500/30">
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleDownload(asset); }}>
                               <Download className="w-4 h-4 mr-2" />
                               Download
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleShare(asset); }}>
                               <Share2 className="w-4 h-4 mr-2" />
                               Share
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleEdit(asset); }}>
                               <Edit3 className="w-4 h-4 mr-2" />
                               Edit
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               className="text-red-400"
-                              onClick={() => deleteAsset(asset.id)}
+                              onClick={(e) => { e.stopPropagation(); deleteAsset(asset.id); }}
                             >
                               <Trash2 className="w-4 h-4 mr-2" />
                               Delete
@@ -776,9 +962,11 @@ export function BrandManagerView() {
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
-                      <Badge className="absolute top-2 left-2 bg-black/60">
-                        {asset.asset_type}
-                      </Badge>
+                      {!batchMode && (
+                        <Badge className="absolute top-2 left-2 bg-black/60">
+                          {asset.asset_type}
+                        </Badge>
+                      )}
                     </div>
                     <div className="p-3">
                       <h4 className="text-sm font-semibold text-white truncate">{asset.title}</h4>
@@ -799,8 +987,29 @@ export function BrandManagerView() {
                 {assets.map(asset => (
                   <Card
                     key={asset.id}
-                    className="flex items-center gap-4 p-4 bg-gradient-to-r from-gray-900/80 to-gray-800/80 border-violet-500/20 hover:border-violet-500/50 transition-all"
+                    className="flex items-center gap-4 p-4 bg-gradient-to-r from-gray-900/80 to-gray-800/80 border-violet-500/20 hover:border-violet-500/50 transition-all cursor-pointer"
+                    onClick={() => {
+                      if (batchMode) {
+                        toggleAssetSelection(asset.id);
+                      }
+                    }}
                   >
+                    {/* Batch Mode Checkbox */}
+                    {batchMode && (
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleAssetSelection(asset.id);
+                        }}
+                      >
+                        {selectedAssets.has(asset.id) ? (
+                          <CheckSquare className="w-6 h-6 text-violet-400" />
+                        ) : (
+                          <Square className="w-6 h-6 text-white/60 hover:text-white" />
+                        )}
+                      </div>
+                    )}
+
                     <img
                       src={asset.thumbnail_url || asset.file_url}
                       alt={asset.title}
@@ -815,20 +1024,30 @@ export function BrandManagerView() {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <Button size="icon" variant="ghost" onClick={() => toggleFavorite(asset.id)}>
+                      <Button size="icon" variant="ghost" onClick={(e) => { e.stopPropagation(); toggleFavorite(asset.id); }}>
                         <Star className={`w-4 h-4 ${asset.is_favorite ? 'fill-yellow-400 text-yellow-400' : ''}`} />
                       </Button>
                       <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
+                        <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                           <Button size="icon" variant="ghost">
                             <MoreVertical className="w-4 h-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="bg-gray-900 border-violet-500/30">
-                          <DropdownMenuItem>Download</DropdownMenuItem>
-                          <DropdownMenuItem>Share</DropdownMenuItem>
-                          <DropdownMenuItem>Edit</DropdownMenuItem>
-                          <DropdownMenuItem className="text-red-400" onClick={() => deleteAsset(asset.id)}>
+                          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleDownload(asset); }}>
+                            <Download className="w-4 h-4 mr-2" />
+                            Download
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleShare(asset); }}>
+                            <Share2 className="w-4 h-4 mr-2" />
+                            Share
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleEdit(asset); }}>
+                            <Edit3 className="w-4 h-4 mr-2" />
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="text-red-400" onClick={(e) => { e.stopPropagation(); deleteAsset(asset.id); }}>
+                            <Trash2 className="w-4 h-4 mr-2" />
                             Delete
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -841,6 +1060,8 @@ export function BrandManagerView() {
           </div>
         </div>
       </div>
+
+      {/* Modals */}
 
       <CreateBrandDialog
         open={createBrandOpen}
@@ -906,6 +1127,21 @@ export function BrandManagerView() {
             toast.success(`Campaign "${campaign.name}" created successfully!`);
           }}
           onSubmit={createCampaign}
+        />
+      )}
+
+      {selectedAssetForEdit && (
+        <AssetEditDialog
+          open={editAssetDialogOpen}
+          onOpenChange={setEditAssetDialogOpen}
+          asset={selectedAssetForEdit}
+          collections={collections}
+          onSave={async (assetId, updates) => {
+            await updateAssetMetadata(assetId, updates);
+            if (selectedBrand) {
+              loadAssets(selectedBrand, currentFolder === 'all' ? undefined : currentFolder);
+            }
+          }}
         />
       )}
     </StudioBackground>
