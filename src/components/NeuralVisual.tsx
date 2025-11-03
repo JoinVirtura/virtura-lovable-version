@@ -4,19 +4,19 @@ import brainVisual from "@/assets/brain-neural-visual.png";
 export function NeuralVisual() {
   return (
     <motion.div
-      className="fixed top-10 left-1/2 -translate-x-1/2 -ml-[300px]
-                 w-[600px] md:w-[600px] lg:w-[700px] xl:w-[800px]
-                 opacity-70 md:opacity-75 lg:opacity-80
-                 pointer-events-none z-[8] 
+      className="fixed top-0 right-0 translate-x-[20%] -translate-y-[10%]
+                 w-[1000px] md:w-[800px] lg:w-[900px] xl:w-[1100px] 2xl:w-[1200px]
+                 opacity-30 md:opacity-35 lg:opacity-40
+                 pointer-events-none z-[5]
                  hidden md:block"
-      initial={{ opacity: 0, y: -20, rotate: -2 }}
+      initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
       animate={{ 
-        opacity: [0.7, 0.95, 0.7],
-        y: [0, -30, 0],
-        rotate: [-2, 2, -2],
+        opacity: [0.3, 0.45, 0.3],
+        scale: [1, 1.05, 1],
+        rotate: [-5, 5, -5],
       }}
       transition={{
-        duration: 12,
+        duration: 15,
         repeat: Infinity,
         ease: "easeInOut"
       }}
@@ -24,9 +24,9 @@ export function NeuralVisual() {
       <img 
         src={brainVisual} 
         alt="" 
-        className="w-full h-auto drop-shadow-[0_0_80px_rgba(168,85,247,0.9)]"
+        className="w-full h-auto drop-shadow-[0_0_120px_rgba(168,85,247,0.8)]"
         style={{
-          filter: "brightness(1.3) contrast(1.4) saturate(1.2)",
+          filter: "brightness(1.4) contrast(1.5) saturate(1.3) blur(0.5px)",
           mixBlendMode: "screen"
         }}
       />
