@@ -205,6 +205,14 @@ export default function SettingsPage() {
   const openCustomerPortal = async () => {
     const { data, error } = await supabase.functions.invoke("customer-portal");
     if (error || !data?.url) {
+      // Check if user hasn't made any purchases yet
+      if (error?.message?.includes("No Stripe customer found")) {
+        toast({ 
+          title: "No billing history yet", 
+          description: "Complete your first purchase to access billing management.",
+        });
+        return;
+      }
       toast({ title: "Portal error", description: error?.message || "Please sign in and try again.", variant: "destructive" });
       return;
     }
