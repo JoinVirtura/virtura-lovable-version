@@ -2842,21 +2842,8 @@ export default function Dashboard() {
                                 </div>
                               )}
                                 
-                                 {/* Hover Action Buttons - Share & Delete overlay on image */}
-                                <div className="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-3">
-                                  <Button 
-                                    size="sm" 
-                                    variant="outline"
-                                    className="h-9 px-4 bg-black/40 backdrop-blur-md hover:bg-violet-500/30 hover:border-violet-500 transition-all border-violet-500/50"
-                                    onClick={(e) => { 
-                                      e.stopPropagation(); 
-                                      handleShare(asset); 
-                                    }}
-                                    title="Share"
-                                  >
-                                    <Share2 className="w-4 h-4 mr-2" />
-                                    <span className="text-sm font-medium">Share</span>
-                                  </Button>
+                                 {/* Hover Action Buttons - Delete overlay on image */}
+                                <div className="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
                                   <Button 
                                     size="sm" 
                                     variant="outline"
@@ -2986,14 +2973,6 @@ export default function Dashboard() {
                                     >
                                       <Download className="w-4 h-4" />
                                     </Button>
-                                     <Button 
-                                       size="sm" 
-                                       variant="ghost" 
-                                       className="hover:bg-accent/10"
-                                       onClick={() => handleShare(asset)}
-                                     >
-                                       <Share2 className="w-4 h-4" />
-                                     </Button>
                                      <Button 
                                        size="sm" 
                                        variant="ghost"
