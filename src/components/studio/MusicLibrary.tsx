@@ -266,15 +266,6 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({ onSelectMusic, selec
                         {formatDuration(track.duration)}
                         {track.username && ` • by ${track.username}`}
                       </p>
-                      {track.tags && track.tags.length > 0 && (
-                        <div className="flex gap-1 mt-1 flex-wrap">
-                          {track.tags.slice(0, 3).map((tag, i) => (
-                            <span key={i} className="text-xs bg-primary/10 px-1.5 py-0.5 rounded">
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      )}
                     </div>
                     {selectedMusic?.id === track.id && (
                       <Check className="w-4 h-4 text-primary flex-shrink-0" />
