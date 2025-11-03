@@ -29,8 +29,15 @@ export interface StudioProject {
     provider?: 'elevenlabs' | 'openai' | 'heygen';
     emotions?: Record<string, number>;
     audioUrl?: string;
-    status: 'pending' | 'processing' | 'completed' | 'error';
+    status: 'pending' | 'processing' | 'completed' | 'error' | 'skipped';
     language?: string;
+    backgroundMusic?: {
+      url: string;
+      name: string;
+      volume: number;
+      duration: number;
+      mixWithVoice: boolean;
+    };
     metadata?: {
       duration?: number;
       waveform?: number[];

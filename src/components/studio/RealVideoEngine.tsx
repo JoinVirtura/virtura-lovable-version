@@ -156,6 +156,7 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
       prompt: videoPrompt,
       avatarImageUrl: project.avatar?.processedUrl || project.avatar?.originalUrl,
       audioUrl: project.voice?.audioUrl,
+      backgroundMusic: project.voice?.backgroundMusic,
       ratio: primaryRatio,
       exportPack: selectedExportPack,
       settings: {
@@ -190,7 +191,8 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
     await onGenerate(videoConfig);
   };
 
-  const canGenerate = project.avatar?.status === 'completed' && project.voice?.status === 'completed';
+  const canGenerate = project.avatar?.status === 'completed' && 
+    (project.voice?.status === 'completed' || project.voice?.status === 'skipped');
   const selectedEngineData = VIDEO_ENGINES.find(e => e.id === selectedEngine);
 
   return (
@@ -213,12 +215,18 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
                     <span>Avatar: {project.avatar?.status === 'completed' ? 'Ready' : 'Missing'}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    {project.voice?.status === 'completed' ? (
+                    {project.voice?.status === 'completed' || project.voice?.status === 'skipped' ? (
                       <CheckCircle className="h-3 w-3 text-green-600" />
                     ) : (
                       <AlertCircle className="h-3 w-3" />
                     )}
-                    <span>Voice: {project.voice?.status === 'completed' ? 'Ready' : 'Missing'}</span>
+                    <span>
+                      Voice: {project.voice?.status === 'completed' 
+                        ? 'Ready' 
+                        : project.voice?.status === 'skipped' 
+                        ? 'Skipped (Silent)' 
+                        : 'Missing'}
+                    </span>
                   </div>
                 </div>
               </div>

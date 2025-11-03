@@ -38,12 +38,18 @@ export const BottomStepNavigation: React.FC<BottomStepNavigationProps> = ({
   const isStepCompleted = (stepId: string) => {
     if (!getStepStatus) return false;
     const status = getStepStatus(stepId);
-    return status === 'completed';
+    return status === 'completed' || status === 'skipped';
+  };
+
+  const isStepSkipped = (stepId: string) => {
+    if (!getStepStatus) return false;
+    const status = getStepStatus(stepId);
+    return status === 'skipped';
   };
 
   const canNavigateNext = () => {
     if (isProcessing) return false;
-    // Allow navigation if current step is completed
+    // Allow navigation if current step is completed or skipped
     return isStepCompleted(currentStep);
   };
 
@@ -74,6 +80,7 @@ export const BottomStepNavigation: React.FC<BottomStepNavigationProps> = ({
               {steps.map((step, index) => {
                 const isActive = step.id === currentStep;
                 const isCompleted = isStepCompleted(step.id);
+                const isSkipped = isStepSkipped(step.id);
                 const Icon = step.icon;
 
                 return (
@@ -85,12 +92,14 @@ export const BottomStepNavigation: React.FC<BottomStepNavigationProps> = ({
                       className={`relative flex items-center justify-center transition-all ${
                         isActive 
                           ? 'w-11 h-11 rounded-full bg-gradient-to-r from-violet-500 to-purple-600 animate-pulse shadow-[0_0_20px_rgba(139,92,246,0.5)]' 
+                          : isSkipped
+                          ? 'w-9 h-9 rounded-full bg-orange-500 hover:scale-110'
                           : isCompleted
                           ? 'w-9 h-9 rounded-full bg-green-500 hover:scale-110'
                           : 'w-9 h-9 rounded-full bg-gray-700 hover:bg-gray-600'
                       }`}
                     >
-                      {isCompleted && !isActive ? (
+                      {isCompleted && !isActive && !isSkipped ? (
                         <CheckCircle className="h-4 w-4 text-white" />
                       ) : (
                         <Icon className={`h-3.5 w-3.5 ${isActive ? 'text-white' : 'text-gray-400'}`} />
@@ -98,16 +107,16 @@ export const BottomStepNavigation: React.FC<BottomStepNavigationProps> = ({
                       
                       {/* Step Label */}
                       <span className={`absolute -bottom-6 whitespace-nowrap text-xs font-medium transition-colors ${
-                        isActive ? 'text-violet-400' : isCompleted ? 'text-green-400' : 'text-gray-500'
+                        isActive ? 'text-violet-400' : isSkipped ? 'text-orange-400' : isCompleted ? 'text-green-400' : 'text-gray-500'
                       }`}>
-                        {step.title}
+                        {step.title}{isSkipped ? ' (Skipped)' : ''}
                       </span>
                     </button>
 
                     {/* Connecting Line */}
                     {index < steps.length - 1 && (
                       <div className={`w-8 h-0.5 transition-colors ${
-                        isStepCompleted(step.id) ? 'bg-green-500' : 'bg-gray-700'
+                        isStepCompleted(step.id) ? isSkipped ? 'bg-orange-500' : 'bg-green-500' : 'bg-gray-700'
                       }`} />
                     )}
                   </div>
