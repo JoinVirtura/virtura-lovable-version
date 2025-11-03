@@ -138,6 +138,7 @@ export default function VideoProPage() {
       avatar: undefined,
       style: undefined
     });
+    setCurrentStep('upload');
     toast.info('Avatar cleared - select a new image');
   }, [updateProject]);
 
