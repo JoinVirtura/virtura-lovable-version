@@ -251,45 +251,50 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                   {/* Hover Overlay for Naming and Saving - Only show if style is completed */}
                   {isStyleCompleted && isHovering && !isAlreadySaved && (
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-6 transition-all duration-300 z-20">
-                      <div className="w-full max-w-md space-y-4">
-                        <div className="text-center space-y-2">
-                          <Sparkles className="h-8 w-8 text-violet-400 mx-auto" />
-                          <h3 className="text-xl font-semibold text-white">Save Your Styled Avatar</h3>
-                          <p className="text-sm text-gray-300">Give it a name to add to your library</p>
-                        </div>
+                      <div className="w-full max-w-md space-y-3">
+                        <input
+                          type="text"
+                          placeholder="Enter avatar name (optional)"
+                          value={avatarTitle}
+                          onChange={(e) => setAvatarTitle(e.target.value)}
+                          className="w-full px-4 py-3 bg-black/40 border border-violet-500/30 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/20"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && !isSaving) {
+                              handleSaveStyledAvatar();
+                            }
+                          }}
+                        />
                         
-                        <div className="space-y-3">
-                          <input
-                            type="text"
-                            placeholder="Enter avatar name (optional)"
-                            value={avatarTitle}
-                            onChange={(e) => setAvatarTitle(e.target.value)}
-                            className="w-full px-4 py-3 bg-black/40 border border-violet-500/30 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/20"
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter' && !isSaving) {
-                                handleSaveStyledAvatar();
-                              }
-                            }}
-                          />
-                          
-                          <Button
-                            onClick={handleSaveStyledAvatar}
-                            disabled={isSaving}
-                            className="w-full h-12 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white font-semibold"
-                          >
-                            {isSaving ? (
-                              <>
-                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                Saving...
-                              </>
-                            ) : (
-                              <>
-                                <Heart className="h-4 w-4 mr-2" />
-                                Save to Library
-                              </>
-                            )}
-                          </Button>
-                        </div>
+                        <Button
+                          onClick={handleSaveStyledAvatar}
+                          disabled={isSaving}
+                          className="w-full h-12 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white font-semibold"
+                        >
+                          {isSaving ? (
+                            <>
+                              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                              Saving...
+                            </>
+                          ) : (
+                            <>
+                              <Heart className="h-4 w-4 mr-2" />
+                              Save to Library
+                            </>
+                          )}
+                        </Button>
+                        
+                        <Button
+                          onClick={() => {
+                            if (onResetAvatar) onResetAvatar();
+                            if (onStepChange) onStepChange('avatar');
+                            setIsHovering(false);
+                          }}
+                          variant="outline"
+                          className="w-full h-10 border-white/20 hover:border-white/40 text-white hover:bg-white/10"
+                        >
+                          <Upload className="h-4 w-4 mr-2" />
+                          Change Image
+                        </Button>
                       </div>
                     </div>
                   )}
