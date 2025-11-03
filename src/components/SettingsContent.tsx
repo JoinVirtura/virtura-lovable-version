@@ -321,7 +321,7 @@ export function SettingsContent() {
         "Commercial licensing",
       ],
       popular: true,
-      description: "For professionals and small teams"
+      description: "For professionals and teams"
     },
     {
       id: "enterprise",
@@ -336,7 +336,7 @@ export function SettingsContent() {
         "Custom integrations",
       ],
       popular: false,
-      description: "For agencies and high-volume users"
+      description: "For agencies and high-volume"
     },
   ];
 
