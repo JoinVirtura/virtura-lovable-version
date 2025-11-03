@@ -82,10 +82,8 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
       description: "Proceeding to style transfer..."
     });
 
-    // Auto-advance to Style step after 1 second
-    setTimeout(() => {
-      onStepComplete?.();
-    }, 1000);
+    // Auto-advance to Style step immediately
+    onStepComplete?.();
   }, [onUpdate, onStepComplete, toast]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
@@ -126,9 +124,8 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
       description: "Proceeding to style transfer..."
     });
     
-    setTimeout(() => {
-      onStepComplete?.();
-    }, 1000);
+    // Auto-advance to Style step immediately
+    onStepComplete?.();
   }, [onUpdate, onStepComplete, toast]);
 
   return (

@@ -22,6 +22,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { PremiumAudioPlayer } from './PremiumAudioPlayer';
+import { Input } from '@/components/ui/input';
 import type { StudioProject } from '@/hooks/useStudioProject';
 
 interface RealtimePreviewProps {
@@ -49,6 +50,11 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
   const [videoError, setVideoError] = useState<string | null>(null);
   const [videoLoading, setVideoLoading] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
+  
+  // New states for hover-over naming
+  const [isHovering, setIsHovering] = useState(false);
+  const [avatarTitle, setAvatarTitle] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
   const getPreviewDimensions = () => {
     switch (previewMode) {
@@ -153,6 +159,49 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
     loadSavedAvatars();
   }, []);
 
+  // Handle save to library from hover overlay
+  const handleSaveStyledAvatar = async () => {
+    const styledImageUrl = project.style?.resultUrl;
+    if (!styledImageUrl) return;
+
+    setIsSaving(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('Please sign in to save avatars');
+        return;
+      }
+
+      const { error } = await supabase
+        .from('avatar_library')
+        .insert({
+          user_id: user.id,
+          image_url: styledImageUrl,
+          prompt: avatarTitle || `Styled Avatar - ${project.style?.metadata?.styleName || 'Custom'}`,
+          title: avatarTitle || `Styled Avatar - ${project.style?.metadata?.styleName || 'Custom'}`,
+          tags: [
+            'style-transfer',
+            project.style?.preset || 'custom',
+            project.style?.metadata?.category || 'general'
+          ]
+        });
+
+      if (error) throw error;
+
+      setSavedAvatars(prev => new Set([...prev, styledImageUrl]));
+      toast.success('Avatar saved to library!', {
+        description: 'Your styled avatar is now in your library'
+      });
+      setAvatarTitle(''); // Clear input after save
+      setIsHovering(false); // Hide overlay after save
+    } catch (error: any) {
+      console.error('Error saving avatar:', error);
+      toast.error('Failed to save avatar to library');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <Card className="h-full" data-preview-section>
       <CardHeader className="pb-4">
@@ -184,35 +233,77 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
           {(() => {
             // Priority: Style Transfer > Original Avatar (No video in Style Transfer Studio)
             if (project.style?.resultUrl) {
+              const isStyleCompleted = project.style?.status === 'completed';
+              const isAlreadySaved = savedAvatars.has(project.style.resultUrl);
+              
               return (
-                <div className="relative w-full h-full">
+                <div 
+                  className="relative w-full h-full"
+                  onMouseEnter={() => setIsHovering(true)}
+                  onMouseLeave={() => setIsHovering(false)}
+                >
                   <img
                     src={project.style.resultUrl}
                     alt="Styled Avatar"
                     className="w-full h-full object-cover"
                   />
-                  {/* Heart save button overlay */}
-                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
-                    <Button
-                      size="icon"
-                      variant="secondary"
-                      className={`h-8 w-8 rounded-full backdrop-blur-sm ${
-                        savedAvatars.has(project.style.resultUrl) 
-                          ? 'bg-red-500/80 hover:bg-red-600/80 text-white' 
-                          : 'bg-white/80 hover:bg-white/90 text-gray-700'
-                      }`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleToggleLibrary(project.style.resultUrl);
-                      }}
-                    >
-                      <Heart 
-                        className={`h-4 w-4 ${
-                          savedAvatars.has(project.style.resultUrl) ? 'fill-current' : ''
-                        }`} 
-                      />
-                    </Button>
-                  </div>
+                  
+                  {/* Hover Overlay for Naming and Saving - Only show if style is completed */}
+                  {isStyleCompleted && isHovering && !isAlreadySaved && (
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-6 transition-all duration-300 z-20">
+                      <div className="w-full max-w-md space-y-4">
+                        <div className="text-center space-y-2">
+                          <Sparkles className="h-8 w-8 text-violet-400 mx-auto" />
+                          <h3 className="text-xl font-semibold text-white">Save Your Styled Avatar</h3>
+                          <p className="text-sm text-gray-300">Give it a name to add to your library</p>
+                        </div>
+                        
+                        <div className="space-y-3">
+                          <input
+                            type="text"
+                            placeholder="Enter avatar name (optional)"
+                            value={avatarTitle}
+                            onChange={(e) => setAvatarTitle(e.target.value)}
+                            className="w-full px-4 py-3 bg-black/40 border border-violet-500/30 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/20"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' && !isSaving) {
+                                handleSaveStyledAvatar();
+                              }
+                            }}
+                          />
+                          
+                          <Button
+                            onClick={handleSaveStyledAvatar}
+                            disabled={isSaving}
+                            className="w-full h-12 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white font-semibold"
+                          >
+                            {isSaving ? (
+                              <>
+                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                Saving...
+                              </>
+                            ) : (
+                              <>
+                                <Heart className="h-4 w-4 mr-2" />
+                                Save to Library
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Already Saved Indicator */}
+                  {isAlreadySaved && isHovering && (
+                    <div className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center transition-all duration-300 z-20">
+                      <div className="text-center space-y-2">
+                        <CheckCircle className="h-12 w-12 text-green-400 mx-auto" />
+                        <p className="text-lg font-semibold text-white">Already in Library</p>
+                        <p className="text-sm text-gray-300">This avatar is saved to your library</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             }

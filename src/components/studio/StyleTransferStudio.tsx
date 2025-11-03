@@ -465,10 +465,15 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
       if (error) throw error;
 
       setSavedToLibrary(true);
-      sonnerToast.success('Avatar saved to library!');
-      toast({
-        title: "Saved Successfully",
-        description: "Your styled avatar has been saved to your library",
+      
+      // Show rich toast notification with action buttons
+      sonnerToast.success('Avatar Saved Successfully!', {
+        description: 'Your styled avatar is now in your library',
+        duration: 5000,
+        action: {
+          label: 'View Library',
+          onClick: () => navigate('/dashboard/library')
+        }
       });
     } catch (error: any) {
       console.error('Error saving to library:', error);
@@ -863,105 +868,6 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
                 <Sparkles className="h-4 w-4" />
                 Styled avatar visible in Live Preview (right panel)
               </p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Save to Library */}
-      {(project.style?.resultUrl || project.avatar?.processedUrl) && (
-        <Card className="border-emerald-500/30 bg-gradient-to-br from-emerald-950/20 to-teal-950/20 backdrop-blur-xl">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Heart className="h-5 w-5 text-emerald-400" />
-              Save Styled Avatar
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <Input 
-                placeholder="Enter avatar title (optional)" 
-                value={avatarTitle}
-                onChange={(e) => setAvatarTitle(e.target.value)}
-                disabled={savedToLibrary}
-                className="h-12 bg-black/40 border-emerald-500/30"
-              />
-              <Button 
-                onClick={handleSaveToLibrary}
-                disabled={savedToLibrary || isSaving}
-                className="w-full h-12 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700"
-              >
-                {isSaving ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Saving...
-                  </>
-                ) : savedToLibrary ? (
-                  <>
-                    <CheckCircle className="h-4 w-4 mr-2" />
-                    Saved to Library
-                  </>
-                ) : (
-                  <>
-                    <Heart className="h-4 w-4 mr-2" />
-                    Save to Library
-                  </>
-                )}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Next Steps - Use in Video */}
-      {savedToLibrary && (
-        <Card className="border-purple-500/30 bg-gradient-to-br from-purple-950/20 to-pink-950/20 backdrop-blur-xl animate-fade-in">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-purple-400" />
-              ✨ Avatar Saved Successfully!
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <p className="text-sm text-gray-300">
-              Your styled avatar is now in your library. What's next?
-            </p>
-            <div className="grid grid-cols-2 gap-3">
-              <Button 
-                variant="outline"
-                onClick={() => navigate('/dashboard/library')}
-                className="w-full h-12"
-              >
-                <Eye className="h-4 w-4 mr-2" />
-                View Library
-              </Button>
-              <Button 
-                onClick={handleUseInVideo}
-                className="w-full h-12 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-              >
-                <Film className="h-4 w-4 mr-2" />
-                Create Video
-              </Button>
-            </div>
-            <div className="grid grid-cols-2 gap-3 mt-2">
-              <Button 
-                variant="outline"
-                onClick={handleDownload}
-                size="sm"
-                className="w-full h-10"
-              >
-                <Download className="h-4 w-4 mr-2" />
-                Download
-              </Button>
-              <Button 
-                variant="outline"
-                size="sm"
-                className="w-full h-10"
-                onClick={() => sonnerToast.info('Share feature coming soon!')}
-              >
-                <Download className="h-4 w-4 mr-2" />
-                Share
-              </Button>
             </div>
           </CardContent>
         </Card>
