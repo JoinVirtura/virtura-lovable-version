@@ -75,6 +75,11 @@ serve(async (req) => {
     const data: FreesoundResponse = await response.json();
 
     console.log(`Found ${data.count} tracks, returning ${data.results.length} results`);
+    
+    // Log first license for debugging
+    if (data.results.length > 0) {
+      console.log('Sample license value:', data.results[0].license);
+    }
 
     // Helper function to extract license name from URL
     const extractLicenseName = (licenseUrl: string): string => {
