@@ -32,10 +32,13 @@ export interface StudioProject {
     status: 'pending' | 'processing' | 'completed' | 'error' | 'skipped';
     language?: string;
     backgroundMusic?: {
+      id: string;
       url: string;
       name: string;
       volume: number;
       duration: number;
+      license: string;
+      source: 'freesound';
       mixWithVoice: boolean;
     };
     metadata?: {

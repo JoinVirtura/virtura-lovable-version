@@ -16,6 +16,7 @@ import {
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import type { StudioProject } from '@/hooks/useStudioProject';
+import { MusicLibrary, SelectedMusicDisplay } from './MusicLibrary';
 
 interface PremiumVoiceEngineProps {
   project: StudioProject;
@@ -118,15 +119,19 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
   const [uploadedAudioUrl, setUploadedAudioUrl] = useState<string | null>(null);
   
   // Background Music state
-  const [musicFile, setMusicFile] = useState<File | null>(null);
+  const [selectedMusic, setSelectedMusic] = useState<{
+    id: string;
+    name: string;
+    url: string;
+    duration: number;
+    license: string;
+    category: string;
+  } | null>(null);
   const [musicVolume, setMusicVolume] = useState(50);
   const [mixWithVoice, setMixWithVoice] = useState(false);
-  const [isUploadingMusic, setIsUploadingMusic] = useState(false);
-  const [uploadedMusicUrl, setUploadedMusicUrl] = useState<string | null>(null);
   
   const cloneFileInputRef = useRef<HTMLInputElement>(null);
   const audioUploadInputRef = useRef<HTMLInputElement>(null);
-  const musicUploadInputRef = useRef<HTMLInputElement>(null);
   const previewAudioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
@@ -389,49 +394,36 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
     }
   };
 
-  const handleMusicUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (file.size > 20 * 1024 * 1024) {
-      toast.error('Music file must be under 20MB');
-      return;
-    }
-
-    setIsUploadingMusic(true);
-    try {
-      const formData = new FormData();
-      formData.append('audio', file);
-
-      const { data, error } = await supabase.functions.invoke('voice-upload-audio', {
-        body: formData,
-      });
-
-      if (error) throw error;
-
-      setMusicFile(file);
-      setUploadedMusicUrl(data.audioUrl);
-      toast.success('Background music uploaded successfully!');
-      
-      // Update project with background music
-      onUpdate({
-        voice: {
-          ...project.voice,
-          backgroundMusic: {
-            url: data.audioUrl,
-            name: file.name,
-            volume: musicVolume,
-            duration: data.duration || 0,
-            mixWithVoice: mixWithVoice,
-          },
+  const handleMusicSelection = (track: { id: string; name: string; url: string; duration: number; license: string; category: string }) => {
+    setSelectedMusic(track);
+    
+    // Update project with background music
+    onUpdate({
+      voice: {
+        ...project.voice,
+        backgroundMusic: {
+          id: track.id,
+          name: track.name,
+          url: track.url,
+          duration: track.duration,
+          license: track.license,
+          source: 'freesound',
+          volume: musicVolume,
+          mixWithVoice: mixWithVoice,
         },
-      });
-    } catch (error: any) {
-      console.error('Music upload error:', error);
-      toast.error(error.message || 'Failed to upload music');
-    } finally {
-      setIsUploadingMusic(false);
-    }
+      },
+    });
+  };
+
+  const handleRemoveMusic = () => {
+    setSelectedMusic(null);
+    onUpdate({
+      voice: {
+        ...project.voice,
+        backgroundMusic: undefined,
+      },
+    });
+    toast.info('Background music removed');
   };
 
   const handleSkipVoice = () => {
@@ -833,109 +825,46 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
-              <input
-                ref={musicUploadInputRef}
-                type="file"
-                accept="audio/mp3,audio/wav,audio/m4a,audio/ogg"
-                onChange={handleMusicUpload}
-                className="hidden"
+              <MusicLibrary
+                onSelectMusic={handleMusicSelection}
+                selectedMusic={selectedMusic}
               />
-              
-              <Button
-                variant="outline"
-                onClick={() => musicUploadInputRef.current?.click()}
-                disabled={isUploadingMusic}
-                className="w-full h-32 border-dashed"
-              >
-                {isUploadingMusic ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Uploading Music...
-                  </>
-                ) : musicFile ? (
-                  <div className="flex flex-col items-center gap-2">
-                    <Music className="h-8 w-8 text-purple-500" />
-                    <span className="text-sm font-medium">{musicFile.name}</span>
-                    <span className="text-xs text-muted-foreground">
-                      Click to upload different file
-                    </span>
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center gap-2">
-                    <Music className="h-8 w-8" />
-                    <span>Upload Background Music</span>
-                    <span className="text-xs text-muted-foreground">MP3, WAV, M4A (Max 20MB)</span>
-                  </div>
-                )}
-              </Button>
 
-              {musicFile && (
-                <>
-                  <div className="space-y-2">
-                    <Label>Volume: {musicVolume}%</Label>
-                    <div className="flex items-center gap-3">
-                      <Volume2 className="h-4 w-4 text-muted-foreground" />
-                      <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        value={musicVolume}
-                        onChange={(e) => {
-                          const newVolume = parseInt(e.target.value);
-                          setMusicVolume(newVolume);
-                          if (project.voice?.backgroundMusic) {
-                            onUpdate({
-                              voice: {
-                                ...project.voice,
-                                backgroundMusic: {
-                                  ...project.voice.backgroundMusic,
-                                  volume: newVolume,
-                                },
-                              },
-                            });
-                          }
-                        }}
-                        className="flex-1"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-2 p-3 bg-muted rounded-lg">
-                    <input
-                      type="checkbox"
-                      id="mixWithVoice"
-                      checked={mixWithVoice}
-                      onChange={(e) => {
-                        const checked = e.target.checked;
-                        setMixWithVoice(checked);
-                        if (project.voice?.backgroundMusic) {
-                          onUpdate({
-                            voice: {
-                              ...project.voice,
-                              backgroundMusic: {
-                                ...project.voice.backgroundMusic,
-                                mixWithVoice: checked,
-                              },
-                            },
-                          });
-                        }
-                      }}
-                      className="rounded"
-                    />
-                    <Label htmlFor="mixWithVoice" className="cursor-pointer">
-                      Mix with voice narration (use both voice + music)
-                    </Label>
-                  </div>
-
-                  {uploadedMusicUrl && (
-                    <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
-                      <div className="flex items-center gap-2 text-sm text-green-600">
-                        <CheckCircle2 className="h-4 w-4" />
-                        <span>Music ready! Continue to Video step.</span>
-                      </div>
-                    </div>
-                  )}
-                </>
+              {selectedMusic && (
+                <SelectedMusicDisplay
+                  music={selectedMusic}
+                  volume={musicVolume}
+                  mixWithVoice={mixWithVoice}
+                  onVolumeChange={(vol) => {
+                    setMusicVolume(vol);
+                    if (project.voice?.backgroundMusic) {
+                      onUpdate({
+                        voice: {
+                          ...project.voice,
+                          backgroundMusic: {
+                            ...project.voice.backgroundMusic,
+                            volume: vol,
+                          },
+                        },
+                      });
+                    }
+                  }}
+                  onMixToggle={(mix) => {
+                    setMixWithVoice(mix);
+                    if (project.voice?.backgroundMusic) {
+                      onUpdate({
+                        voice: {
+                          ...project.voice,
+                          backgroundMusic: {
+                            ...project.voice.backgroundMusic,
+                            mixWithVoice: mix,
+                          },
+                        },
+                      });
+                    }
+                  }}
+                  onRemove={handleRemoveMusic}
+                />
               )}
             </CardContent>
           </Card>
