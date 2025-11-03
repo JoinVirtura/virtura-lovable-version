@@ -22,6 +22,7 @@ import { StudioBackground } from '@/components/StudioBackground';
 import { CreateBrandDialog } from '@/components/CreateBrandDialog';
 import { LibrarySelectionModal } from '@/components/LibrarySelectionModal';
 import { GenerateAssetDialog } from '@/components/GenerateAssetDialog';
+import { BrandKitDialog } from '@/components/BrandKitDialog';
 import { useBrandAssets, type Brand } from '@/hooks/useBrandAssets';
 import { format } from 'date-fns';
 import {
@@ -83,6 +84,7 @@ export function BrandManagerView() {
   const [newFolderName, setNewFolderName] = useState('');
   const [libraryModalOpen, setLibraryModalOpen] = useState(false);
   const [generateDialogOpen, setGenerateDialogOpen] = useState(false);
+  const [brandKitOpen, setBrandKitOpen] = useState(false);
 
   // Load brands on mount
   useEffect(() => {
@@ -364,6 +366,88 @@ export function BrandManagerView() {
                   <FileText className="w-4 h-4 text-orange-400" />
                   <span className="flex-1 text-left text-sm">Documents</span>
                 </Button>
+              </div>
+            </div>
+          )}
+
+          <Separator className="my-4 bg-violet-500/20" />
+
+          {/* Brand Kit Section */}
+          {selectedBrand && brands.find(b => b.id === selectedBrand) && (
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold text-muted-foreground">Brand Kit</h3>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2 text-violet-400 hover:text-violet-300"
+                  onClick={() => setBrandKitOpen(true)}
+                >
+                  Edit
+                </Button>
+              </div>
+
+              <div className="space-y-3">
+                {/* Logo Preview */}
+                <div className="border border-violet-500/20 rounded-lg p-3 bg-black/40">
+                  <Label className="text-xs text-muted-foreground mb-2 block">Logo</Label>
+                  {brands.find(b => b.id === selectedBrand)?.logo_url ? (
+                    <div className="bg-white/5 rounded p-2 flex items-center justify-center h-16">
+                      <img
+                        src={brands.find(b => b.id === selectedBrand)?.logo_url!}
+                        alt="Brand logo"
+                        className="max-h-full max-w-full object-contain"
+                      />
+                    </div>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full border-violet-500/30"
+                      onClick={() => setBrandKitOpen(true)}
+                    >
+                      <Upload className="w-3 h-3 mr-2" />
+                      Upload Logo
+                    </Button>
+                  )}
+                </div>
+
+                {/* Colors */}
+                <div className="border border-violet-500/20 rounded-lg p-3 bg-black/40">
+                  <Label className="text-xs text-muted-foreground mb-2 block">Colors</Label>
+                  <div className="flex gap-2">
+                    {(() => {
+                      const brand = brands.find(b => b.id === selectedBrand);
+                      const colors = brand?.brand_colors || { primary: '#000000', secondary: '#666666', accent: '#FF0000' };
+                      return Object.entries(colors).slice(0, 3).map(([key, value]: [string, any]) => (
+                        <div
+                          key={key}
+                          className="flex-1 rounded border border-violet-500/20 overflow-hidden cursor-pointer hover:border-violet-500/40 transition-colors"
+                          style={{ backgroundColor: value }}
+                          onClick={() => setBrandKitOpen(true)}
+                          title={`${key}: ${value}`}
+                        >
+                          <div className="h-8" />
+                        </div>
+                      ));
+                    })()}
+                  </div>
+                </div>
+
+                {/* Fonts */}
+                <div className="border border-violet-500/20 rounded-lg p-3 bg-black/40">
+                  <Label className="text-xs text-muted-foreground mb-2 block">Fonts</Label>
+                  <div className="space-y-1">
+                    <div className="text-xs">
+                      <span className="text-muted-foreground">Heading:</span>{' '}
+                      <span className="text-white">{brands.find(b => b.id === selectedBrand)?.brand_fonts?.heading || 'Inter'}</span>
+                    </div>
+                    <div className="text-xs">
+                      <span className="text-muted-foreground">Body:</span>{' '}
+                      <span className="text-white">{brands.find(b => b.id === selectedBrand)?.brand_fonts?.body || 'Inter'}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -739,6 +823,21 @@ export function BrandManagerView() {
             }
           }}
           saveGeneratedAsset={saveGeneratedAsset}
+        />
+      )}
+
+      {selectedBrand && (
+        <BrandKitDialog
+          open={brandKitOpen}
+          onOpenChange={setBrandKitOpen}
+          brand={brands.find(b => b.id === selectedBrand) || null}
+          onBrandUpdated={() => {
+            loadBrands().then(() => {
+              if (selectedBrand) {
+                getBrandStats(selectedBrand).then(setBrandStats);
+              }
+            });
+          }}
         />
       )}
     </StudioBackground>
