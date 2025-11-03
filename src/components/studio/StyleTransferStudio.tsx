@@ -248,18 +248,24 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
   });
 
   // Helper function to upload blob URL to Supabase Storage
-  const uploadBlobToStorage = async (blobUrl: string): Promise<string> => {
-    console.log('🔄 [StyleTransfer] Converting blob URL to public URL...');
+  const ensurePublicUrl = async (imageUrl: string): Promise<string> => {
+    console.log('🔄 [StyleTransfer] Ensuring image is publicly accessible...', imageUrl);
     
     try {
-      // Fetch the blob data
-      const response = await fetch(blobUrl);
+      // Fetch the image data (works for both blob: and https: URLs)
+      const response = await fetch(imageUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch image: ${response.statusText}`);
+      }
+      
       const blob = await response.blob();
       
       // Generate unique filename
-      const filename = `style-transfer-source-${Date.now()}.png`;
+      const filename = `style-transfer-${Date.now()}.png`;
       
-      // Upload to Supabase Storage
+      console.log('📤 [StyleTransfer] Uploading to storage as:', filename);
+      
+      // Upload to Supabase Storage with public access
       const { data, error } = await supabase.storage
         .from('avatars')
         .upload(filename, blob, {
@@ -277,11 +283,16 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
         .from('avatars')
         .getPublicUrl(filename);
       
-      console.log('✅ [StyleTransfer] Uploaded to:', publicUrl);
+      console.log('✅ [StyleTransfer] Public URL created:', publicUrl);
       return publicUrl;
     } catch (error) {
-      console.error('❌ [StyleTransfer] Failed to upload blob:', error);
-      throw new Error('Failed to upload image to storage');
+      console.error('❌ [StyleTransfer] Failed to ensure public URL:', error);
+      toast({
+        variant: "destructive",
+        title: "Upload Failed",
+        description: "Failed to prepare image for style transfer. Please try again.",
+      });
+      throw new Error('Failed to prepare image for style transfer');
     }
   };
 
@@ -370,10 +381,10 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
     });
 
     try {
-      // If blob URL, upload to storage first to get a public URL
-      if (avatarUrl.startsWith('blob:')) {
-        console.log('🔄 [StyleTransfer] Blob URL detected, uploading to storage...');
-        avatarUrl = await uploadBlobToStorage(avatarUrl);
+      // If blob URL or Supabase Storage URL, ensure it's publicly accessible to Replicate
+      if (avatarUrl.startsWith('blob:') || avatarUrl.includes('.supabase.co/storage')) {
+        console.log('🔄 [StyleTransfer] Re-uploading image for external API access...');
+        avatarUrl = await ensurePublicUrl(avatarUrl);
       }
 
       // Apply real style transfer with public URL
