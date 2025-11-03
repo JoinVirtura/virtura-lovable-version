@@ -37,7 +37,10 @@ serve(async (req) => {
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
     const customers = await stripe.customers.list({ email: userEmail, limit: 1 });
     if (customers.data.length === 0) {
-      throw new Error("No Stripe customer found. Please complete a purchase first.");
+      return new Response(
+        JSON.stringify({ error: "No Stripe customer found. Please complete a purchase first." }), 
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 404 }
+      );
     }
     const customerId = customers.data[0].id;
 
