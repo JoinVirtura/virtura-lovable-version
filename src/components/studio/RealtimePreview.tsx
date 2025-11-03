@@ -286,7 +286,6 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                         <Button
                           onClick={() => {
                             if (onResetAvatar) onResetAvatar();
-                            if (onStepChange) onStepChange('avatar');
                             setIsHovering(false);
                           }}
                           variant="outline"
@@ -330,12 +329,9 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                     <div 
                       className="absolute inset-0 bg-black/0 hover:bg-black/40 transition-all duration-300 flex items-center justify-center opacity-0 hover:opacity-100 cursor-pointer group/upload"
                       onClick={() => {
-                        // Reset avatar and style state, navigate back to avatar step
+                        // Reset avatar and style state - parent handles step navigation
                         if (onResetAvatar) {
                           onResetAvatar();
-                        }
-                        if (onStepChange) {
-                          onStepChange('avatar');
                         }
                       }}
                     >
