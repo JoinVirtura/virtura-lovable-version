@@ -21,6 +21,7 @@ import { Separator } from '@/components/ui/separator';
 import { StudioBackground } from '@/components/StudioBackground';
 import { CreateBrandDialog } from '@/components/CreateBrandDialog';
 import { LibrarySelectionModal } from '@/components/LibrarySelectionModal';
+import { GenerateAssetDialog } from '@/components/GenerateAssetDialog';
 import { useBrandAssets, type Brand } from '@/hooks/useBrandAssets';
 import { format } from 'date-fns';
 import {
@@ -67,6 +68,7 @@ export function BrandManagerView() {
     deleteCollection,
     updateCollection,
     getBrandStats,
+    saveGeneratedAsset,
   } = useBrandAssets();
 
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
@@ -80,6 +82,7 @@ export function BrandManagerView() {
   const [brandStats, setBrandStats] = useState({ totalAssets: 0, activeCampaigns: 0, avgPerformance: 0 });
   const [newFolderName, setNewFolderName] = useState('');
   const [libraryModalOpen, setLibraryModalOpen] = useState(false);
+  const [generateDialogOpen, setGenerateDialogOpen] = useState(false);
 
   // Load brands on mount
   useEffect(() => {
@@ -422,6 +425,15 @@ export function BrandManagerView() {
           {selectedBrand && (
             <div className="space-y-3 pt-4 border-t border-violet-500/20">
               <Button
+                variant="default"
+                className="w-full justify-start gap-3 bg-violet-600 hover:bg-violet-700 text-white"
+                onClick={() => setGenerateDialogOpen(true)}
+              >
+                <Sparkles className="w-4 h-4" />
+                Generate with AI
+              </Button>
+
+              <Button
                 variant="outline"
                 className="w-full justify-start gap-3 border-violet-500/30 hover:border-violet-500/50 hover:bg-violet-500/10"
                 onClick={() => navigate('/upload')}
@@ -712,6 +724,23 @@ export function BrandManagerView() {
           }
         }}
       />
+
+      {selectedBrand && (
+        <GenerateAssetDialog
+          open={generateDialogOpen}
+          onOpenChange={setGenerateDialogOpen}
+          brandId={selectedBrand}
+          collectionId={currentFolder === 'all' ? null : currentFolder}
+          collections={collections}
+          onAssetGenerated={() => {
+            if (selectedBrand) {
+              loadAssets(selectedBrand, currentFolder === 'all' ? undefined : currentFolder);
+              getBrandStats(selectedBrand).then(setBrandStats);
+            }
+          }}
+          saveGeneratedAsset={saveGeneratedAsset}
+        />
+      )}
     </StudioBackground>
   );
 }
