@@ -233,8 +233,8 @@ export function BrandManagerView() {
         <div className="flex items-center group">
           <Button
             variant="ghost"
-            style={{ paddingLeft: `${depth * 1}rem` }}
-            className={`flex-1 justify-start gap-2 ${
+            style={{ paddingLeft: `${0.5 + depth * 1}rem` }}
+            className={`flex-1 justify-start ${
               currentFolder === folder.id ? 'bg-violet-500/20 text-violet-300' : 'hover:bg-violet-500/10'
             }`}
             onClick={() => {
@@ -242,13 +242,16 @@ export function BrandManagerView() {
               if (children.length > 0) toggleFolder(folder.id);
             }}
           >
-            {children.length > 0 && (
-              <ChevronRight className={`w-3 h-3 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
-            )}
-            {children.length === 0 && <span className="w-3" />}
-            {isExpanded ? <FolderOpen className="w-4 h-4" /> : <Folder className="w-4 h-4" />}
-            <span className="flex-1 text-left text-sm">{folder.name}</span>
-            <span className="text-xs text-muted-foreground">{assetCount}</span>
+            <div className="flex items-center gap-2 w-full min-w-0">
+              <div className="w-3 h-3 flex items-center justify-center flex-shrink-0">
+                {children.length > 0 && (
+                  <ChevronRight className={`w-3 h-3 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                )}
+              </div>
+              {isExpanded ? <FolderOpen className="w-4 h-4 flex-shrink-0" /> : <Folder className="w-4 h-4 flex-shrink-0" />}
+              <span className="flex-1 text-left text-sm truncate">{folder.name}</span>
+              <span className="text-xs text-muted-foreground flex-shrink-0">{assetCount}</span>
+            </div>
           </Button>
           
           <DropdownMenu>
@@ -294,7 +297,7 @@ export function BrandManagerView() {
     <StudioBackground>
       <div className="flex h-screen">
         {/* Left Sidebar */}
-        <div className="w-64 border-r border-violet-500/20 bg-black/40 backdrop-blur-xl p-6 space-y-6 overflow-y-auto">
+        <div className="w-64 border-r border-violet-500/20 bg-black/40 backdrop-blur-xl p-6 space-y-6 overflow-y-auto overflow-x-hidden">
           {/* Brand Selector */}
           <div>
             <Label className="text-sm text-muted-foreground mb-2 block">Active Brand</Label>
@@ -449,7 +452,7 @@ export function BrandManagerView() {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-auto">
           <div className="p-8">
             {/* Header */}
             <div className="mb-6">
