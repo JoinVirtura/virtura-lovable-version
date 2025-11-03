@@ -25,6 +25,7 @@ import { GenerateAssetDialog } from '@/components/GenerateAssetDialog';
 import { BrandKitDialog } from '@/components/BrandKitDialog';
 import { CampaignCreator } from '@/components/CampaignCreator';
 import { AssetEditDialog } from '@/components/AssetEditDialog';
+import { BrandAnalyticsDashboard } from '@/components/BrandAnalyticsDashboard';
 import { useBrandAssets, type Brand } from '@/hooks/useBrandAssets';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { supabase } from '@/integrations/supabase/client';
@@ -54,6 +55,7 @@ import {
   Trash2,
   CheckSquare,
   Square,
+  BarChart3,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
@@ -103,6 +105,7 @@ export function BrandManagerView() {
   const [selectedAssetForEdit, setSelectedAssetForEdit] = useState<typeof assets[0] | null>(null);
   const [batchMode, setBatchMode] = useState(false);
   const [selectedAssets, setSelectedAssets] = useState<Set<string>>(new Set());
+  const [showAnalytics, setShowAnalytics] = useState(false);
 
   // Load brands on mount
   useEffect(() => {
@@ -331,8 +334,17 @@ export function BrandManagerView() {
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
       
-      // Increment usage count
-      await updateAssetMetadata(asset.id, { usage_count: asset.usage_count + 1 });
+      // Track analytics - increment download count
+      const currentDownloads = asset.metadata?.downloads || 0;
+      const currentShares = asset.metadata?.shares || 0;
+      const newScore = calculatePerformanceScore(currentDownloads + 1, currentShares, asset.usage_count);
+      
+      await updateAssetMetadata(asset.id, { 
+        usage_count: asset.usage_count + 1,
+        metadata: { ...asset.metadata, downloads: currentDownloads + 1 },
+        performance_score: newScore,
+      });
+      
       toast.success('Asset downloaded successfully');
     } catch (error) {
       console.error('Download error:', error);
@@ -358,6 +370,16 @@ export function BrandManagerView() {
         await navigator.clipboard.writeText(asset.file_url);
         toast.success('Asset link copied to clipboard!');
       }
+      
+      // Track analytics - increment share count
+      const currentDownloads = asset.metadata?.downloads || 0;
+      const currentShares = asset.metadata?.shares || 0;
+      const newScore = calculatePerformanceScore(currentDownloads, currentShares + 1, asset.usage_count);
+      
+      await updateAssetMetadata(asset.id, {
+        metadata: { ...asset.metadata, shares: currentShares + 1 },
+        performance_score: newScore,
+      });
     } catch (error) {
       console.error('Share error:', error);
       // Fallback: copy public URL
@@ -368,6 +390,11 @@ export function BrandManagerView() {
         toast.error('Failed to copy share link');
       }
     }
+  };
+
+  const calculatePerformanceScore = (downloads: number, shares: number, usageCount: number): number => {
+    // Weighted formula: downloads (40%), shares (40%), usage (20%)
+    return (downloads * 0.4) + (shares * 0.4) + (usageCount * 0.2);
   };
 
   const handleEdit = (asset: typeof assets[0]) => {
@@ -718,7 +745,7 @@ export function BrandManagerView() {
               
               {/* Stats Row - Horizontal */}
               {selectedBrand && (
-                <div className="grid grid-cols-3 gap-4 mb-6">
+                <div className="grid grid-cols-4 gap-4 mb-6">
                   <Card className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 border-violet-500/20 p-6">
                     <h3 className="text-sm text-muted-foreground mb-2">Total Assets</h3>
                     <p className="text-4xl font-bold text-white">{brandStats.totalAssets}</p>
@@ -731,6 +758,23 @@ export function BrandManagerView() {
                     <h3 className="text-sm text-muted-foreground mb-2">Avg Performance</h3>
                     <p className="text-4xl font-bold text-white">{brandStats.avgPerformance}</p>
                   </Card>
+                  <Card 
+                    className="bg-gradient-to-br from-violet-900/40 to-violet-800/40 border-violet-500/40 p-6 cursor-pointer hover:border-violet-500/60 transition-all"
+                    onClick={() => setShowAnalytics(!showAnalytics)}
+                  >
+                    <h3 className="text-sm text-violet-300 mb-2">Analytics</h3>
+                    <div className="flex items-center justify-between">
+                      <BarChart3 className="w-8 h-8 text-violet-400" />
+                      <span className="text-sm text-violet-300">{showAnalytics ? 'Hide' : 'View'}</span>
+                    </div>
+                  </Card>
+                </div>
+              )}
+
+              {/* Analytics Dashboard */}
+              {selectedBrand && showAnalytics && (
+                <div className="mb-6">
+                  <BrandAnalyticsDashboard brandId={selectedBrand} assets={assets} />
                 </div>
               )}
             </div>
