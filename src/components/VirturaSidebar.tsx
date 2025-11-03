@@ -60,7 +60,6 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
 
   const navigationTabs = [
     { id: "studio", label: "Copilot", icon: Command },
-    { id: "individuals", label: "Individuals", icon: User },
     { id: "brands", label: "Brands", icon: Building2 },
     { id: "guide", label: "Tutorial", icon: BookOpen },
   ];
