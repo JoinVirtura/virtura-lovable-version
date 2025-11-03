@@ -76,13 +76,25 @@ serve(async (req) => {
 
     console.log(`Found ${data.count} tracks, returning ${data.results.length} results`);
 
+    // Helper function to extract license name from URL
+    const extractLicenseName = (licenseUrl: string): string => {
+      if (licenseUrl.includes('creativecommons.org/publicdomain/zero')) return 'CC0';
+      if (licenseUrl.includes('/by-nc-nd/')) return 'CC BY-NC-ND';
+      if (licenseUrl.includes('/by-nc-sa/')) return 'CC BY-NC-SA';
+      if (licenseUrl.includes('/by-nc/')) return 'CC BY-NC';
+      if (licenseUrl.includes('/by-nd/')) return 'CC BY-ND';
+      if (licenseUrl.includes('/by-sa/')) return 'CC BY-SA';
+      if (licenseUrl.includes('/by/')) return 'CC BY';
+      return 'CC License';
+    };
+
     // Transform to our format
     const tracks = data.results.map(track => ({
       id: track.id.toString(),
       name: track.name,
       url: track.previews['preview-lq-mp3'] || track.previews['preview-hq-mp3'],
       duration: Math.round(track.duration),
-      license: track.license,
+      license: extractLicenseName(track.license),
       category: category,
       tags: track.tags?.slice(0, 5) || [],
       username: track.username,
