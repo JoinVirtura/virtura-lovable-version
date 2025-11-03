@@ -154,7 +154,7 @@ export const AvatarLibraryModal = ({ open, onOpenChange, onSelectAvatar }: Avata
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <User className="w-5 h-5" />
-            Avatar Library
+            Library
             <Badge variant="secondary" className="ml-auto">
               {filteredAvatars.length} of 29 avatars
             </Badge>

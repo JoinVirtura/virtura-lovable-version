@@ -2756,7 +2756,7 @@ export default function Dashboard() {
 
                   {/* AI-Powered Category Tags */}
                   <div className="flex flex-wrap gap-3 mb-8">
-                    {["All", "Avatars", "Video", "Favorites"].map((category) => (
+                    {["All", "Favorites"].map((category) => (
                       <Button
                         key={category}
                         variant={selectedCategory === category ? "default" : "outline"}
