@@ -359,6 +359,24 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
         </Card>
       )}
 
+      {/* Professional Video Direction */}
+      <Card className="p-6 bg-gradient-to-br from-blue-500/5 to-blue-900/5 border-blue-500/20">
+        <div className="space-y-2">
+          <h3 className="text-lg font-semibold">Professional Video Direction</h3>
+          <Textarea
+            placeholder="Professional presentation with natural head movements and engaging body language."
+            value={videoPrompt}
+            onChange={(e) => setVideoPrompt(e.target.value)}
+            className="min-h-32 bg-black/40 border-border"
+            maxLength={500}
+          />
+          <div className="flex justify-between text-xs text-muted-foreground">
+            <span>{videoPrompt.length}/500</span>
+            <span className="text-green-500">Professional direction</span>
+          </div>
+        </div>
+      </Card>
+
       {/* Export Pack Selection */}
       <Card className="p-6 bg-gradient-to-br from-purple-500/5 to-purple-900/5 border-purple-500/20">
         <div className="flex items-center gap-2 mb-4">
@@ -473,22 +491,6 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
                     </div>
                   </div>
                 ))}
-              </div>
-            </div>
-
-            {/* Professional Video Direction */}
-            <div className="space-y-2">
-              <h3 className="font-semibold">Professional Video Direction</h3>
-              <Textarea
-                placeholder="Professional presentation with natural head movements and engaging body language."
-                value={videoPrompt}
-                onChange={(e) => setVideoPrompt(e.target.value)}
-                className="min-h-32 bg-black/40 border-border"
-                maxLength={500}
-              />
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>{videoPrompt.length}/500</span>
-                <span className="text-green-500">Professional direction</span>
               </div>
             </div>
 
