@@ -16,7 +16,6 @@ import UpgradePage from "./UpgradePage";
 import StudioPage from "./StudioPage";
 import VideoProPage from "./VideoProPage";
 import { BrandManagerView } from "@/components/BrandManagerView";
-import BrandsPage from "./BrandsPage";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -1771,7 +1770,7 @@ export default function Dashboard() {
           </StudioBackground>
         );
       case "brands":
-        return <BrandsPage />;
+        return <BrandManagerView />;
       case "library":
         return <DashboardLibraryView />;
       case "guide":
