@@ -177,17 +177,6 @@ export default function StudioPage() {
               />
             </div>
 
-            {/* Project Timeline - Only show in sidebar for style step */}
-            {currentStep !== 'avatar' && (
-              <div className="glass-card border border-violet-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] rounded-xl">
-                <ProjectTimeline
-                  project={project}
-                  onUpdate={updateProject}
-                  currentStep={currentStep}
-                />
-              </div>
-            )}
-
             {/* Processing Status */}
             {isProcessing && (
               <Card className="glass-card border border-violet-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] rounded-xl">
