@@ -249,7 +249,7 @@ export function BrandManagerView() {
             ) : (
               <Folder className={`w-4 h-4 flex-shrink-0 ${children.length > 0 ? 'ml-4' : ''}`} />
             )}
-            <span className="flex-1 text-left text-sm truncate min-w-0">{folder.name}</span>
+            <span className="flex-1 text-left text-sm truncate min-w-0 max-w-[180px]">{folder.name}</span>
             <span className="text-xs text-muted-foreground flex-shrink-0">{assetCount}</span>
           </Button>
           
