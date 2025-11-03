@@ -265,9 +265,14 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
 
   const handleDownloadAvatar = async (avatar: AvatarLibraryItem) => {
     try {
-      // Fetch the image as blob to handle CORS
-      const response = await fetch(avatar.image_url);
-      if (!response.ok) throw new Error('Failed to fetch image');
+      // Use video_url for videos, image_url for images
+      const downloadUrl = avatar.is_video && avatar.video_url 
+        ? avatar.video_url 
+        : avatar.image_url;
+      
+      // Fetch the file as blob to handle CORS
+      const response = await fetch(downloadUrl);
+      if (!response.ok) throw new Error('Failed to fetch file');
       
       const blob = await response.blob();
       const blobUrl = URL.createObjectURL(blob);
@@ -291,7 +296,10 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
       
       // Fallback: try opening in new tab
       try {
-        window.open(avatar.image_url, '_blank');
+        const downloadUrl = avatar.is_video && avatar.video_url 
+          ? avatar.video_url 
+          : avatar.image_url;
+        window.open(downloadUrl, '_blank');
         toast.success('Opening in new tab - right-click to save');
       } catch {
         toast.error('Download failed. Please try again.');
@@ -449,14 +457,16 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
                     {/* Dynamic Title with Type */}
                     <div className="space-y-1">
                       <h4 className="font-bold text-base line-clamp-1 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-                        {avatar.is_video ? (
-                          <>AI Video{avatar.duration ? ` • ${avatar.duration}s` : ''}</>
-                        ) : avatar.tags?.some(t => ['headshot', 'professional', 'business'].includes(t.toLowerCase())) ? (
-                          <>Professional Headshot • Ultra HD</>
-                        ) : avatar.tags?.some(t => ['brand', 'logo', 'marketing'].includes(t.toLowerCase())) ? (
-                          <>Brand Asset • 4K Ready</>
-                        ) : (
-                          <>AI Avatar • {avatar.tags?.[0] || 'Realistic'}</>
+                        {avatar.title || (
+                          avatar.is_video ? (
+                            <>AI Video{avatar.duration ? ` • ${avatar.duration}s` : ''}</>
+                          ) : avatar.tags?.some(t => ['headshot', 'professional', 'business'].includes(t.toLowerCase())) ? (
+                            <>Professional Headshot • Ultra HD</>
+                          ) : avatar.tags?.some(t => ['brand', 'logo', 'marketing'].includes(t.toLowerCase())) ? (
+                            <>Brand Asset • 4K Ready</>
+                          ) : (
+                            <>AI Avatar • {avatar.tags?.[0] || 'Realistic'}</>
+                          )
                         )}
                       </h4>
                       <p className="text-xs text-muted-foreground flex items-center gap-1.5">

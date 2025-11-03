@@ -30,7 +30,7 @@ interface RealtimePreviewProps {
   isProcessing?: boolean;
   onStepChange?: (stepId: string) => void;
   onResetAvatar?: () => void;
-  onSaveToLibrary?: () => Promise<void>;
+  onSaveToLibrary?: (customTitle?: string) => Promise<void>;
   isSaved?: boolean;
 }
 
@@ -59,6 +59,8 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
   const [isHovering, setIsHovering] = useState(false);
   const [avatarTitle, setAvatarTitle] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [videoTitle, setVideoTitle] = useState('');
+  const [isHoveringVideo, setIsHoveringVideo] = useState(false);
 
   const getPreviewDimensions = () => {
     switch (previewMode) {
@@ -238,7 +240,11 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
             // Priority 1: Video (if generated)
             if (project.video?.videoUrl) {
               return (
-                <div className="relative w-full h-full">
+                <div 
+                  className="relative w-full h-full"
+                  onMouseEnter={() => setIsHoveringVideo(true)}
+                  onMouseLeave={() => setIsHoveringVideo(false)}
+                >
                   <video
                     controls
                     className="w-full h-full object-cover"
@@ -256,30 +262,54 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                     </Badge>
                   )}
                   
-                  {/* Heart icon button on hover - Icon only, no text */}
-                  <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
-                    <Button 
+                  {/* Naming Overlay - Show when NOT saved and hovering */}
+                  {!isSaved && isHoveringVideo && (
+                    <div className="absolute inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-6 z-20 rounded-lg">
+                      <div className="space-y-4 w-full max-w-sm">
+                        <div className="text-center mb-2">
+                          <h4 className="text-white font-semibold mb-1">Save to Library</h4>
+                          <p className="text-white/60 text-sm">Give your video a name (optional)</p>
+                        </div>
+                        <Input
+                          placeholder="Enter video title..."
+                          value={videoTitle}
+                          onChange={(e) => setVideoTitle(e.target.value)}
+                          className="bg-black/40 border-violet-400/30 text-white"
+                          onClick={(e) => e.stopPropagation()}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && onSaveToLibrary) {
+                              onSaveToLibrary(videoTitle.trim() || undefined);
+                              setVideoTitle('');
+                            }
+                          }}
+                        />
+                        <Button 
+                          className="w-full" 
+                          onClick={async (e) => {
+                            e.stopPropagation();
+                            if (onSaveToLibrary) {
+                              await onSaveToLibrary(videoTitle.trim() || undefined);
+                              setVideoTitle('');
+                            }
+                          }}
+                        >
+                          <Heart className="mr-2 h-4 w-4" /> Save to Library
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Saved Heart Icon - Filled Red, only show when NOT hovering */}
+                  {isSaved && !isHoveringVideo && (
+                    <Button
+                      variant="outline"
                       size="icon"
-                      variant="secondary" 
-                      className={`h-10 w-10 rounded-full backdrop-blur-sm transition-all ${
-                        isSaved 
-                          ? 'bg-red-500/20 hover:bg-red-500/30 border-2 border-red-500/50' 
-                          : 'bg-white/20 hover:bg-white/30 border-2 border-white/30'
-                      }`}
-                      onClick={async () => {
-                        if (onSaveToLibrary) {
-                          await onSaveToLibrary();
-                        }
-                      }}
-                      disabled={!onSaveToLibrary}
+                      className="absolute top-4 right-4 z-20 h-10 w-10 rounded-full bg-black/60 backdrop-blur-md border-red-500/50 hover:bg-black/80 hover:scale-110 transition-all duration-300"
+                      title="Saved to Library"
                     >
-                      <Heart 
-                        className={`h-5 w-5 transition-all ${
-                          isSaved ? 'fill-red-500 text-red-500' : 'text-white'
-                        }`} 
-                      />
+                      <Heart className="h-5 w-5 text-red-500 fill-red-500" />
                     </Button>
-                  </div>
+                  )}
                 </div>
               );
             }

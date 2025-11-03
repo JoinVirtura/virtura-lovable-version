@@ -241,7 +241,12 @@ export default function VideoProPage() {
                 isProcessing={isProcessing}
                 onStepChange={handleStepChange}
                 onResetAvatar={handleResetAvatar}
-                onSaveToLibrary={async () => {
+                onSaveToLibrary={async (customTitle?: string) => {
+                  if (customTitle) {
+                    updateProject({ name: customTitle });
+                    // Wait a tick for state to update
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                  }
                   await saveToLibrary();
                   setIsVideoSaved(true);
                 }}
