@@ -691,10 +691,6 @@ export const useStudioProject = (loadLastProject: boolean = true) => {
         throw new Error(data.error || 'Video generation failed without error message');
       }
 
-      if (!data.videoUrl) {
-        throw new Error('No video URL in response');
-      }
-
       console.log('✅ Prediction started:', data);
 
       if (!data.predictionId) {
