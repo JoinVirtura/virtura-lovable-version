@@ -306,7 +306,7 @@ export function SettingsContent() {
         "Voice cloning",
       ],
       popular: false,
-      description: "For creators, hobbyists, and freelancers"
+      description: "For creators and freelancers"
     },
     {
       id: "pro",
@@ -873,7 +873,7 @@ export function SettingsContent() {
                 <div className="space-y-4">
                   <div>
                     <h3 className="text-xl font-display font-bold">{plan.name}</h3>
-                    <p className="text-sm text-muted-foreground">{plan.description}</p>
+                    <p className="text-sm text-muted-foreground whitespace-nowrap">{plan.description}</p>
                   </div>
                   <div className="text-3xl font-bold">{plan.price}</div>
                   <ul className="space-y-3">
