@@ -260,17 +260,17 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
         </div>
       )}
 
-      <Dialog open={isLibraryOpen} onOpenChange={setIsLibraryOpen}>
-        <DialogContent className="max-w-7xl max-h-[90vh] overflow-hidden flex flex-col p-6">
-          <DashboardLibraryView 
-            onSelectAvatar={(avatarUrl) => {
-              handleLibrarySelect(avatarUrl);
-              setIsLibraryOpen(false);
-            }}
-            isModal={true}
-          />
-        </DialogContent>
-      </Dialog>
+        <Dialog open={isLibraryOpen} onOpenChange={setIsLibraryOpen}>
+          <DialogContent className="max-w-7xl max-h-[90vh] overflow-y-auto flex flex-col p-6">
+            <DashboardLibraryView 
+              onSelectAvatar={(avatarUrl) => {
+                handleLibrarySelect(avatarUrl);
+                setIsLibraryOpen(false);
+              }}
+              isModal={true}
+            />
+          </DialogContent>
+        </Dialog>
     </div>
   );
 };

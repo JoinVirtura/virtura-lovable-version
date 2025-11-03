@@ -55,9 +55,9 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
   
   const mainItems = [
     { id: "overview", label: "Home", icon: Home },
-    { id: "library", label: "Library", icon: Library },
     { id: "talking-avatar", label: "Style", icon: Image },
     { id: "video-pro", label: "Video", icon: Video },
+    { id: "library", label: "Library", icon: Library },
   ];
 
   const navigationTabs = [
