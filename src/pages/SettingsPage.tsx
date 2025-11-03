@@ -240,28 +240,37 @@ export default function SettingsPage() {
     try {
       const { data, error } = await supabase.functions.invoke("customer-portal");
       
+      // Handle error response
       if (error) {
-        // Check if user hasn't made any purchases yet
-        const errorMsg = error.message || String(error);
-        if (errorMsg.includes("No Stripe customer found")) {
+        const errorMessage = error.message || JSON.stringify(error);
+        console.error("Customer portal error:", errorMessage);
+        
+        if (errorMessage.includes("No Stripe customer found") || errorMessage.includes("complete a purchase")) {
           toast({ 
             title: "No billing history yet", 
             description: "Complete your first purchase to access billing management.",
           });
           return;
         }
-        throw error;
+        
+        toast({ 
+          title: "Unable to open billing portal", 
+          description: "Please try again later.", 
+          variant: "destructive" 
+        });
+        return;
       }
       
-      if (!data?.url) {
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      } else {
         throw new Error("No portal URL returned");
       }
-      
-      window.open(data.url, "_blank");
     } catch (error: any) {
       console.error("Error opening customer portal:", error);
-      const errorMsg = error.message || String(error);
-      if (errorMsg.includes("No Stripe customer found")) {
+      const errorMsg = error?.message || error?.error || String(error);
+      
+      if (errorMsg.includes("No Stripe customer") || errorMsg.includes("complete a purchase")) {
         toast({ 
           title: "No billing history yet", 
           description: "Complete your first purchase to access billing management.",
@@ -269,7 +278,7 @@ export default function SettingsPage() {
       } else {
         toast({ 
           title: "Unable to open billing portal", 
-          description: "Please try again or contact support if the issue persists.", 
+          description: "Please try again later.", 
           variant: "destructive" 
         });
       }

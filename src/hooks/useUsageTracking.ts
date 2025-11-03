@@ -47,11 +47,15 @@ export function useUsageTracking() {
       }
 
       // Get subscription data
-      const { data: subData } = await supabase
+      const { data: subData, error: subError } = await supabase
         .from('subscriptions')
         .select('plan_name, status, current_period_end')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
+
+      if (subError && subError.code !== 'PGRST116') {
+        console.error('Error fetching subscription:', subError);
+      }
 
       setSubscription(subData || { plan_name: 'free', status: 'inactive' });
 
