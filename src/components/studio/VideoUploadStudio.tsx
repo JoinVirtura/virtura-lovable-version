@@ -2,9 +2,16 @@ import React, { useState, useRef, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Upload, ImagePlus, X, Sparkles, Zap, Crown } from 'lucide-react';
+import { Upload, ImagePlus, X, Sparkles, Zap, Crown, Library } from 'lucide-react';
 import type { StudioProject } from '@/hooks/useStudioProject';
 import { useToast } from '@/hooks/use-toast';
+import { RealAvatarLibrary } from './RealAvatarLibrary';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 interface VideoUploadStudioProps {
   project: StudioProject;
@@ -22,6 +29,7 @@ export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
   const [isDragOver, setIsDragOver] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [showLibrary, setShowLibrary] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -109,6 +117,36 @@ export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
     });
   };
 
+  const handleLibrarySelect = (avatarUrl: string, metadata?: { title?: string; prompt?: string }) => {
+    setImagePreview(avatarUrl);
+    
+    onUpdate({
+      avatar: {
+        type: 'upload',
+        originalUrl: avatarUrl,
+        status: 'completed',
+        quality: '4K',
+        metadata: {
+          resolution: '4K (Library)',
+          faceAlignment: 95,
+          consistency: 85
+        }
+      }
+    });
+    
+    toast({
+      title: "Avatar Selected",
+      description: "Avatar from library loaded successfully",
+    });
+
+    setShowLibrary(false);
+    
+    // Auto-advance to voice step
+    setTimeout(() => {
+      onStepChange?.('voice');
+    }, 500);
+  };
+
   return (
     <div className="space-y-4">
       {/* File input - always rendered but hidden */}
@@ -171,17 +209,31 @@ export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
                 </div>
               </div>
 
-              <Button 
-                variant="outline" 
-                className="mt-4 bg-violet-500/10 border-violet-500/30 hover:bg-violet-500/20 hover:border-violet-400"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  fileInputRef.current?.click();
-                }}
-              >
-                <Upload className="h-4 w-4 mr-2" />
-                File
-              </Button>
+              <div className="flex gap-3">
+                <Button 
+                  variant="outline" 
+                  className="mt-4 bg-violet-500/10 border-violet-500/30 hover:bg-violet-500/20 hover:border-violet-400"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    fileInputRef.current?.click();
+                  }}
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  File
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  className="mt-4 bg-violet-500/10 border-violet-500/30 hover:bg-violet-500/20 hover:border-violet-400"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowLibrary(true);
+                  }}
+                >
+                  <Library className="h-4 w-4 mr-2" />
+                  Library
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -251,6 +303,19 @@ export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
           </CardContent>
         </Card>
       )}
+
+      {/* Library Modal */}
+      <Dialog open={showLibrary} onOpenChange={setShowLibrary}>
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Choose from Library</DialogTitle>
+          </DialogHeader>
+          <RealAvatarLibrary 
+            onSelectAvatar={handleLibrarySelect}
+            isProcessing={isProcessing}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
