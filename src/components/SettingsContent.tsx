@@ -878,8 +878,9 @@ export function SettingsContent() {
                   <div className="text-3xl font-bold">{plan.price}</div>
                   <ul className="space-y-3">
                     {plan.highlights.map((highlight, idx) => (
-                      <li key={idx} className="text-sm">
-                        {highlight}
+                      <li key={idx} className="flex items-start gap-2 text-sm">
+                        <span className="text-primary">—</span>
+                        <span>{highlight}</span>
                       </li>
                     ))}
                   </ul>
