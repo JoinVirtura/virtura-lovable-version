@@ -632,9 +632,9 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
               <div className="relative flex items-center">
                 <Loader2 className="h-4 w-4 animate-spin" />
               </div>
-              <div className="flex flex-col items-start leading-tight">
-                <span className="text-xs font-medium">{progressPhase}</span>
-                <span className="text-[10px] text-white/70">{Math.round(progressPercentage)}%</span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-medium whitespace-nowrap">{progressPhase}</span>
+                <span className="text-xs font-semibold">{Math.round(progressPercentage)}%</span>
               </div>
             </div>
           ) : (
