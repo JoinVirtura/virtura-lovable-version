@@ -48,6 +48,7 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false }: Dashbo
       const { data, error: fetchError } = await supabase
         .from('avatar_library')
         .select('*')
+        .contains('tags', ['ai-generated'])
         .order('created_at', { ascending: false });
       
       if (fetchError) {
