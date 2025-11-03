@@ -6,11 +6,13 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Skeleton } from '@/components/ui/skeleton';
 import { 
   Music, Play, Pause, Check, X, Search, 
   Cloud, Briefcase, Zap, Film, Radio, Heart, Volume2, Loader2
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 interface MusicTrack {
   id: string;
@@ -19,6 +21,10 @@ interface MusicTrack {
   duration: number;
   license: string;
   category: string;
+  tags?: string[];
+  username?: string;
+  downloadUrl?: string;
+  previewHq?: string;
 }
 
 interface MusicLibraryProps {
@@ -35,53 +41,92 @@ const MUSIC_CATEGORIES = [
   { id: 'calm', label: 'Calm', query: 'calm relaxing music', icon: Heart }
 ];
 
-// Real Freesound.org tracks with working preview URLs (Creative Commons licensed)
-const CURATED_TRACKS: Record<string, MusicTrack[]> = {
-  ambient: [
-    { id: '725612', name: 'Relaxing Light Background', url: 'https://cdn.freesound.org/previews/725/725612_15232790-lq.mp3', duration: 165, license: 'CC0', category: 'ambient' },
-    { id: '717950', name: 'Beautiful Relaxing Ambient', url: 'https://cdn.freesound.org/previews/717/717950_13885614-lq.mp3', duration: 180, license: 'CC0', category: 'ambient' },
-    { id: '726895', name: 'Soothing Soundscapes', url: 'https://cdn.freesound.org/previews/726/726895_13885614-lq.mp3', duration: 142, license: 'CC0', category: 'ambient' },
-  ],
-  corporate: [
-    { id: '711661', name: 'Corporate Business Presentation', url: 'https://cdn.freesound.org/previews/711/711661_15232790-lq.mp3', duration: 156, license: 'CC0', category: 'corporate' },
-    { id: '730253', name: 'Commercial Corporate', url: 'https://cdn.freesound.org/previews/730/730253_15232790-lq.mp3', duration: 178, license: 'CC0', category: 'corporate' },
-    { id: '726510', name: 'Gentle Corporate', url: 'https://cdn.freesound.org/previews/726/726510_15232790-lq.mp3', duration: 163, license: 'CC0', category: 'corporate' },
-  ],
-  upbeat: [
-    { id: '776657', name: 'Upbeat and Fun', url: 'https://cdn.freesound.org/previews/776/776657_15232790-lq.mp3', duration: 148, license: 'CC0', category: 'upbeat' },
-    { id: '767142', name: 'High-Energy Grooves', url: 'https://cdn.freesound.org/previews/767/767142_17091765-lq.mp3', duration: 171, license: 'CC0', category: 'upbeat' },
-    { id: '767575', name: 'Lively Rhythms', url: 'https://cdn.freesound.org/previews/767/767575_17091765-lq.mp3', duration: 158, license: 'CC0', category: 'upbeat' },
-  ],
-  cinematic: [
-    { id: '712455', name: 'Epic Cinematic Trailer', url: 'https://cdn.freesound.org/previews/712/712455_15232790-lq.mp3', duration: 182, license: 'CC0', category: 'cinematic' },
-    { id: '715823', name: 'Dramatic Orchestral', url: 'https://cdn.freesound.org/previews/715/715823_15232790-lq.mp3', duration: 205, license: 'CC0', category: 'cinematic' },
-    { id: '718956', name: 'Grand Adventure', url: 'https://cdn.freesound.org/previews/718/718956_15232790-lq.mp3', duration: 193, license: 'CC0', category: 'cinematic' },
-  ],
-  electronic: [
-    { id: '724387', name: 'Electronic Beat', url: 'https://cdn.freesound.org/previews/724/724387_15232790-lq.mp3', duration: 165, license: 'CC0', category: 'electronic' },
-    { id: '729642', name: 'Synth Wave Dreams', url: 'https://cdn.freesound.org/previews/729/729642_15232790-lq.mp3', duration: 177, license: 'CC0', category: 'electronic' },
-    { id: '731289', name: 'Future Beats', url: 'https://cdn.freesound.org/previews/731/731289_15232790-lq.mp3', duration: 154, license: 'CC0', category: 'electronic' },
-  ],
-  calm: [
-    { id: '725615', name: 'Relaxing Light (Short)', url: 'https://cdn.freesound.org/previews/725/725615_15232790-lq.mp3', duration: 189, license: 'CC0', category: 'calm' },
-    { id: '723891', name: 'Tranquil Piano', url: 'https://cdn.freesound.org/previews/723/723891_15232790-lq.mp3', duration: 201, license: 'CC0', category: 'calm' },
-    { id: '728456', name: 'Serene Moments', url: 'https://cdn.freesound.org/previews/728/728456_15232790-lq.mp3', duration: 176, license: 'CC0', category: 'calm' },
-  ],
-};
-
 export const MusicLibrary: React.FC<MusicLibraryProps> = ({ onSelectMusic, selectedMusic }) => {
   const [activeCategory, setActiveCategory] = useState('ambient');
   const [searchQuery, setSearchQuery] = useState('');
   const [playingTrack, setPlayingTrack] = useState<string | null>(null);
+  const [tracks, setTracks] = useState<MusicTrack[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  const currentTracks = CURATED_TRACKS[activeCategory] || [];
+  // Fetch tracks from Freesound API
+  const fetchTracks = async (category: string, page: number = 1, query?: string, append: boolean = false) => {
+    try {
+      if (page === 1) {
+        setIsLoading(true);
+        setLoadError(null);
+      } else {
+        setIsLoadingMore(true);
+      }
 
-  const filteredTracks = currentTracks.filter(track =>
-    track.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      const params = new URLSearchParams({
+        category,
+        page: page.toString(),
+        pageSize: '30'
+      });
+
+      if (query) {
+        params.set('query', query);
+      }
+
+      const response = await fetch(
+        `https://ujaoziqnxhjqlmnvlxav.supabase.co/functions/v1/fetch-freesound-music?${params}`,
+        {
+          headers: session?.access_token ? {
+            Authorization: `Bearer ${session.access_token}`
+          } : {}
+        }
+      );
+
+      if (!response.ok) throw new Error('Failed to fetch music');
+
+      const { tracks: newTracks, totalCount: count } = await response.json();
+
+      if (append) {
+        setTracks(prev => [...prev, ...newTracks]);
+      } else {
+        setTracks(newTracks);
+      }
+      
+      setTotalCount(count);
+      setCurrentPage(page);
+
+    } catch (err: any) {
+      console.error('Error fetching tracks:', err);
+      setLoadError(err.message || 'Failed to load music tracks');
+      toast.error('Failed to load music. Please try again.');
+    } finally {
+      setIsLoading(false);
+      setIsLoadingMore(false);
+    }
+  };
+
+  // Fetch tracks when category changes
+  useEffect(() => {
+    setCurrentPage(1);
+    fetchTracks(activeCategory, 1);
+  }, [activeCategory]);
+
+  // Search with debounce
+  useEffect(() => {
+    if (!searchQuery) {
+      fetchTracks(activeCategory, 1);
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      setCurrentPage(1);
+      fetchTracks(activeCategory, 1, searchQuery);
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
 
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -134,6 +179,10 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({ onSelectMusic, selec
     toast.success(`Selected: ${track.name}`);
   };
 
+  const handleLoadMore = () => {
+    fetchTracks(activeCategory, currentPage + 1, searchQuery, true);
+  };
+
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -183,24 +232,63 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({ onSelectMusic, selec
 
       {/* Music Grid */}
       <ScrollArea className="h-[400px] pr-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {filteredTracks.map((track) => (
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <Card key={i} className="p-4">
+                <div className="space-y-3">
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-3 w-1/2" />
+                  <div className="flex gap-2">
+                    <Skeleton className="h-8 flex-1" />
+                    <Skeleton className="h-8 flex-1" />
+                  </div>
+                  <Skeleton className="h-5 w-16" />
+                </div>
+              </Card>
+            ))}
+          </div>
+        ) : loadError ? (
+          <div className="text-center py-8 text-destructive">
+            <p>{loadError}</p>
+          </div>
+        ) : tracks.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            <Music className="w-12 h-12 mx-auto mb-2 opacity-50" />
+            <p>No tracks found</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {tracks.map((track) => (
             <Card
               key={track.id}
               className={`p-4 cursor-pointer transition-all hover:border-primary/50 ${
                 selectedMusic?.id === track.id ? 'border-primary bg-primary/5' : ''
               }`}
             >
-              <div className="space-y-3">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-medium text-sm truncate">{track.name}</h4>
-                    <p className="text-xs text-muted-foreground">{formatDuration(track.duration)}</p>
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-medium text-sm truncate">{track.name}</h4>
+                      <p className="text-xs text-muted-foreground">
+                        {formatDuration(track.duration)}
+                        {track.username && ` • by ${track.username}`}
+                      </p>
+                      {track.tags && track.tags.length > 0 && (
+                        <div className="flex gap-1 mt-1 flex-wrap">
+                          {track.tags.slice(0, 3).map((tag, i) => (
+                            <span key={i} className="text-xs bg-primary/10 px-1.5 py-0.5 rounded">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    {selectedMusic?.id === track.id && (
+                      <Check className="w-4 h-4 text-primary flex-shrink-0" />
+                    )}
                   </div>
-                  {selectedMusic?.id === track.id && (
-                    <Check className="w-4 h-4 text-primary flex-shrink-0" />
-                  )}
-                </div>
 
                 <div className="flex items-center gap-2">
                   <Button
@@ -237,21 +325,40 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({ onSelectMusic, selec
                   </Button>
                 </div>
 
-                <Badge variant="secondary" className="text-xs">
-                  {track.license}
-                </Badge>
-              </div>
-            </Card>
-          ))}
-        </div>
-      </ScrollArea>
+                  <Badge variant="secondary" className="text-xs">
+                    {track.license}
+                  </Badge>
+                </div>
+              </Card>
+              ))}
+            </div>
 
-      {filteredTracks.length === 0 && (
-        <div className="text-center py-8 text-muted-foreground">
-          <Music className="w-12 h-12 mx-auto mb-2 opacity-50" />
-          <p>No tracks found</p>
-        </div>
-      )}
+            {/* Load More Button */}
+            {tracks.length < totalCount && (
+              <div className="flex flex-col items-center gap-2 py-4">
+                <p className="text-sm text-muted-foreground">
+                  Showing {tracks.length} of {totalCount} tracks
+                </p>
+                <Button
+                  onClick={handleLoadMore}
+                  disabled={isLoadingMore}
+                  variant="outline"
+                  className="w-full max-w-xs"
+                >
+                  {isLoadingMore ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Loading...
+                    </>
+                  ) : (
+                    'Load More Tracks'
+                  )}
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+      </ScrollArea>
     </div>
   );
 };

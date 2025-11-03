@@ -1,5 +1,8 @@
 project_id = "ujaoziqnxhjqlmnvlxav"
 
+[functions.fetch-freesound-music]
+verify_jwt = true
+
 [functions.style-transfer-replicate]
 verify_jwt = true
 
