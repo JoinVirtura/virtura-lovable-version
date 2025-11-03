@@ -28,6 +28,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -3061,130 +3062,73 @@ export default function Dashboard() {
                   </div>
                   <div className="space-y-3">
                     <Button 
-                      className="w-full justify-start gap-3 h-12 hover:scale-[1.02] transition-all duration-300 group relative overflow-hidden" 
+                      className="w-full justify-start h-12 hover:scale-[1.02] transition-all duration-300 group relative overflow-hidden" 
                       variant={selectedAvatarIds.size > 0 ? "default" : "outline"}
                       onClick={() => setGenerateSimilarOpen(true)}
                       disabled={selectedAvatarIds.size === 0}
                     >
                       <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-                      <Sparkles className="w-5 h-5 relative z-10" />
-                      <span className="relative z-10">Generate Similar</span>
+                      <span className="relative z-10">Generate</span>
                     </Button>
                     <Button 
-                      className="w-full justify-start gap-3 h-12 hover:scale-[1.02] transition-all duration-300 group relative overflow-hidden" 
-                      variant={selectedAvatarIds.size > 0 ? "default" : "outline"}
-                      onClick={() => setBatchProcessOpen(true)}
-                      disabled={selectedAvatarIds.size === 0}
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-                      <Upload className="w-5 h-5 relative z-10" />
-                      <span className="relative z-10">Batch Process</span>
-                    </Button>
-                    <Button 
-                      className="w-full justify-start gap-3 h-12 hover:scale-[1.02] transition-all duration-300 group relative overflow-hidden" 
-                      variant={selectedAvatarIds.size > 0 ? "default" : "outline"}
-                      onClick={() => setCreateCollectionOpen(true)}
-                      disabled={selectedAvatarIds.size === 0}
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-                      <Share2 className="w-5 h-5 relative z-10" />
-                      <span className="relative z-10">Create Collection</span>
-                    </Button>
-                    <Button 
-                      className="w-full justify-start gap-3 h-12 hover:scale-[1.02] transition-all duration-300 group relative overflow-hidden" 
+                      className="w-full justify-start h-12 hover:scale-[1.02] transition-all duration-300 group relative overflow-hidden" 
                       variant="outline"
-                      onClick={() => setViewAnalyticsOpen(true)}
+                      onClick={() => navigate('/dashboard?view=brands')}
                     >
                       <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-                      <TrendingUp className="w-5 h-5 relative z-10" />
-                      <span className="relative z-10">View Analytics</span>
+                      <span className="relative z-10">Create Brand</span>
                     </Button>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button 
+                          className="w-full justify-start h-12 hover:scale-[1.02] transition-all duration-300 group relative overflow-hidden" 
+                          variant={selectedAvatarIds.size > 0 ? "default" : "outline"}
+                          disabled={selectedAvatarIds.size === 0}
+                        >
+                          <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                          <span className="relative z-10">Share</span>
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-48">
+                        <div className="space-y-2">
+                          <Button 
+                            variant="ghost" 
+                            className="w-full justify-start"
+                            onClick={() => toast({ title: "Sharing to Facebook" })}
+                          >
+                            <Facebook className="w-4 h-4 mr-2" />
+                            Facebook
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            className="w-full justify-start"
+                            onClick={() => toast({ title: "Sharing to Instagram" })}
+                          >
+                            <Instagram className="w-4 h-4 mr-2" />
+                            Instagram
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            className="w-full justify-start"
+                            onClick={() => toast({ title: "Sharing to X" })}
+                          >
+                            <X className="w-4 h-4 mr-2" />
+                            X
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            className="w-full justify-start"
+                            onClick={() => toast({ title: "Sharing to TikTok" })}
+                          >
+                            <Video className="w-4 h-4 mr-2" />
+                            TikTok
+                          </Button>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                 </Card>
 
-                <Card className="p-6 border-2 hover:border-accent/20 transition-colors bg-gradient-to-br from-card via-card/98 to-card/95">
-                  <h3 className="font-bold text-lg mb-4 bg-gradient-to-r from-foreground to-primary/80 bg-clip-text text-transparent">
-                    AI Insights
-                  </h3>
-                  <div className="h-[580px] overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent hover:scrollbar-thumb-muted-foreground/30 transition-colors">
-                    <div className="space-y-3 pr-2">
-                      <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border border-primary/20 hover:border-primary/30 transition-colors cursor-pointer group">
-                        <p className="text-sm font-medium text-primary group-hover:text-primary/80 transition-colors">Trending Style</p>
-                        <p className="text-xs text-muted-foreground mt-1">Minimalist portraits are performing 23% better this week</p>
-                      </div>
-                      
-                      <div className="p-4 bg-gradient-to-r from-secondary/10 to-secondary/5 rounded-lg border border-secondary/20 hover:border-secondary/30 transition-colors cursor-pointer group">
-                        <p className="text-sm font-medium text-secondary group-hover:text-secondary/80 transition-colors">Optimize Quality</p>
-                        <p className="text-xs text-muted-foreground mt-1">Try higher resolution settings for better engagement</p>
-                      </div>
-                      
-                      <div className="p-4 bg-gradient-to-r from-green-500/10 to-green-500/5 rounded-lg border border-green-500/20 hover:border-green-500/30 transition-colors cursor-pointer group">
-                        <p className="text-sm font-medium text-green-500 group-hover:text-green-500/80 transition-colors">Popular Lighting</p>
-                        <p className="text-xs text-muted-foreground mt-1">Golden hour lighting increases downloads by 34%</p>
-                      </div>
-                      
-                      <div className="p-4 bg-gradient-to-r from-blue-500/10 to-blue-500/5 rounded-lg border border-blue-500/20 hover:border-blue-500/30 transition-colors cursor-pointer group">
-                        <p className="text-sm font-medium text-blue-500 group-hover:text-blue-500/80 transition-colors">Color Palette</p>
-                        <p className="text-xs text-muted-foreground mt-1">Warm tones are trending in business portraits</p>
-                      </div>
-                      
-                      <div className="p-4 bg-gradient-to-r from-purple-500/10 to-purple-500/5 rounded-lg border border-purple-500/20 hover:border-purple-500/30 transition-colors cursor-pointer group">
-                        <p className="text-sm font-medium text-purple-500 group-hover:text-purple-500/80 transition-colors">Background Focus</p>
-                        <p className="text-xs text-muted-foreground mt-1">Blurred backgrounds improve subject focus by 41%</p>
-                      </div>
-                      
-                      <div className="p-4 bg-gradient-to-r from-orange-500/10 to-orange-500/5 rounded-lg border border-orange-500/20 hover:border-orange-500/30 transition-colors cursor-pointer group">
-                        <p className="text-sm font-medium text-orange-500 group-hover:text-orange-500/80 transition-colors">Expression Analysis</p>
-                        <p className="text-xs text-muted-foreground mt-1">Subtle smiles perform better than serious expressions</p>
-                      </div>
-                      
-                      <div className="p-4 bg-gradient-to-r from-pink-500/10 to-pink-500/5 rounded-lg border border-pink-500/20 hover:border-pink-500/30 transition-colors cursor-pointer group">
-                        <p className="text-sm font-medium text-pink-500 group-hover:text-pink-500/80 transition-colors">Outfit Suggestions</p>
-                        <p className="text-xs text-muted-foreground mt-1">Business casual outfits have 28% higher engagement</p>
-                      </div>
-                      
-                      <div className="p-4 bg-gradient-to-r from-teal-500/10 to-teal-500/5 rounded-lg border border-teal-500/20 hover:border-teal-500/30 transition-colors cursor-pointer group">
-                        <p className="text-sm font-medium text-teal-500 group-hover:text-teal-500/80 transition-colors">AI Model Update</p>
-                        <p className="text-xs text-muted-foreground mt-1">New model v2.1 available with 15% quality improvement</p>
-                      </div>
-                      
-                      <div className="p-4 bg-gradient-to-r from-indigo-500/10 to-indigo-500/5 rounded-lg border border-indigo-500/20 hover:border-indigo-500/30 transition-colors cursor-pointer group">
-                        <p className="text-sm font-medium text-indigo-500 group-hover:text-indigo-500/80 transition-colors">Batch Processing</p>
-                        <p className="text-xs text-muted-foreground mt-1">Process multiple avatars overnight for efficiency</p>
-                      </div>
-                      
-                      <div className="p-4 bg-gradient-to-r from-rose-500/10 to-rose-500/5 rounded-lg border border-rose-500/20 hover:border-rose-500/30 transition-colors cursor-pointer group">
-                        <p className="text-sm font-medium text-rose-500 group-hover:text-rose-500/80 transition-colors">Platform Optimization</p>
-                        <p className="text-xs text-muted-foreground mt-1">LinkedIn prefers 1:1 ratio, Instagram favors 4:5</p>
-                      </div>
-                      
-                      <div className="p-4 bg-gradient-to-r from-cyan-500/10 to-cyan-500/5 rounded-lg border border-cyan-500/20 hover:border-cyan-500/30 transition-colors cursor-pointer group">
-                        <p className="text-sm font-medium text-cyan-500 group-hover:text-cyan-500/80 transition-colors">Creative Trends</p>
-                        <p className="text-xs text-muted-foreground mt-1">Abstract backgrounds are gaining popularity (+18%)</p>
-                      </div>
-                      
-                      <div className="p-4 bg-gradient-to-r from-yellow-500/10 to-yellow-500/5 rounded-lg border border-yellow-500/20 hover:border-yellow-500/30 transition-colors cursor-pointer group">
-                        <p className="text-sm font-medium text-yellow-500 group-hover:text-yellow-500/80 transition-colors">Performance Boost</p>
-                        <p className="text-xs text-muted-foreground mt-1">Clear cache to improve generation speed by 12%</p>
-                      </div>
-                      
-                      <div className="p-4 bg-gradient-to-r from-emerald-500/10 to-emerald-500/5 rounded-lg border border-emerald-500/20 hover:border-emerald-500/30 transition-colors cursor-pointer group">
-                        <p className="text-sm font-medium text-emerald-500 group-hover:text-emerald-500/80 transition-colors">Seasonal Trends</p>
-                        <p className="text-xs text-muted-foreground mt-1">Winter professional looks trending this month</p>
-                      </div>
-                      
-                      <div className="p-4 bg-gradient-to-r from-violet-500/10 to-violet-500/5 rounded-lg border border-violet-500/20 hover:border-violet-500/30 transition-colors cursor-pointer group">
-                        <p className="text-sm font-medium text-violet-500 group-hover:text-violet-500/80 transition-colors">Quality Metrics</p>
-                        <p className="text-xs text-muted-foreground mt-1">Your average quality score improved to 9.2/10</p>
-                      </div>
-                      
-                      <div className="p-4 bg-gradient-to-r from-slate-500/10 to-slate-500/5 rounded-lg border border-slate-500/20 hover:border-slate-500/30 transition-colors cursor-pointer group">
-                        <p className="text-sm font-medium text-slate-500 group-hover:text-slate-500/80 transition-colors">Export Formats</p>
-                        <p className="text-xs text-muted-foreground mt-1">WebP format reduces file size by 40% vs PNG</p>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
               </div>
             </div>
 
