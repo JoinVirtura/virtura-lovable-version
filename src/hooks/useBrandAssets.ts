@@ -373,6 +373,75 @@ export const useBrandAssets = () => {
     }
   };
 
+  // Save a generated image as a brand asset
+  const saveGeneratedAsset = async (
+    brandId: string,
+    imageDataUrl: string,
+    prompt: string,
+    collectionId?: string | null,
+    metadata?: any
+  ) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      // Convert base64 to blob
+      const response = await fetch(imageDataUrl);
+      const blob = await response.blob();
+      
+      // Generate unique filename
+      const timestamp = Date.now();
+      const filename = `brand-assets/${brandId}/${timestamp}-${Math.random().toString(36).substring(7)}.png`;
+      
+      // Upload to Supabase Storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('virtura-media')
+        .upload(filename, blob, {
+          contentType: 'image/png',
+          cacheControl: '3600',
+        });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('virtura-media')
+        .getPublicUrl(filename);
+
+      // Create brand asset record
+      const { data: newAsset, error: insertError } = await supabase
+        .from('brand_assets')
+        .insert({
+          brand_id: brandId,
+          user_id: user.id,
+          collection_id: collectionId,
+          title: `Generated: ${prompt.substring(0, 50)}${prompt.length > 50 ? '...' : ''}`,
+          asset_type: 'image',
+          file_url: publicUrl,
+          thumbnail_url: publicUrl,
+          generation_prompt: prompt,
+          ai_model_used: 'replicate',
+          dimensions: { width: 1024, height: 1024, aspectRatio: '1:1' },
+          tags: ['ai-generated'],
+          metadata: {
+            ...metadata,
+            generated_at: new Date().toISOString(),
+          },
+        })
+        .select()
+        .single();
+
+      if (insertError) throw insertError;
+
+      setAssets([newAsset, ...assets]);
+      return newAsset;
+    } catch (err: any) {
+      console.error('Error saving generated asset:', err);
+      toast.error('Failed to save generated asset');
+      throw err;
+    }
+  };
+
   // Get stats for a brand
   const getBrandStats = async (brandId: string) => {
     try {
@@ -428,5 +497,6 @@ export const useBrandAssets = () => {
     updateCollection,
     deleteCollection,
     getBrandStats,
+    saveGeneratedAsset,
   };
 };

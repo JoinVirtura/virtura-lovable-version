@@ -1,65 +1,70 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { VirturaNavigation } from "@/components/VirturaNavigation";
 import { MotionBackground } from "@/components/MotionBackground";
 import { ChatInterface } from "@/components/ChatInterface";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Upload, Palette, Type, TrendingUp, Download, Share2, Sparkles } from "lucide-react";
+import { Upload, Palette, Type, TrendingUp, Download, Share2, Sparkles, Plus, FolderOpen } from "lucide-react";
 import { toast } from "sonner";
 import { AvatarService } from "@/services/avatarService";
-
-interface BrandAsset {
-  id: string;
-  image: string;
-  prompt: string;
-  timestamp: Date;
-}
-
-// Placeholder high-quality brand assets
-const placeholderBrandAssets: BrandAsset[] = [
-  {
-    id: "brand-placeholder-1",
-    image: "/src/assets/brand-marketing-campaign.jpg",
-    prompt: "Professional marketing campaign imagery",
-    timestamp: new Date()
-  },
-  {
-    id: "brand-placeholder-2", 
-    image: "/src/assets/brand-social-media.jpg",
-    prompt: "Social media brand content",
-    timestamp: new Date()
-  },
-  {
-    id: "brand-placeholder-3",
-    image: "/src/assets/brand-presentation-kit.jpg", 
-    prompt: "Corporate presentation materials",
-    timestamp: new Date()
-  },
-  {
-    id: "brand-placeholder-4",
-    image: "/src/assets/brand-logo-suite.jpg",
-    prompt: "Brand logo and identity suite",
-    timestamp: new Date()
-  },
-  {
-    id: "brand-placeholder-5",
-    image: "/src/assets/brand-signature-kit.jpg",
-    prompt: "Brand signature kit design",
-    timestamp: new Date()
-  }
-];
+import { useBrandAssets } from "@/hooks/useBrandAssets";
+import { CreateBrandDialog } from "@/components/CreateBrandDialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function BrandsPage() {
-  const [brandAssets, setBrandAssets] = useState<BrandAsset[]>(placeholderBrandAssets);
+  const {
+    brands,
+    collections,
+    assets,
+    loading,
+    loadBrands,
+    loadCollections,
+    loadAssets,
+    saveGeneratedAsset,
+  } = useBrandAssets();
+
+  const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
+  const [selectedCollection, setSelectedCollection] = useState<string | undefined>(undefined);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showCreateBrand, setShowCreateBrand] = useState(false);
+
+  // Load brands on mount
+  useEffect(() => {
+    loadBrands();
+  }, []);
+
+  // Load collections when brand changes
+  useEffect(() => {
+    if (selectedBrand) {
+      loadCollections(selectedBrand);
+      loadAssets(selectedBrand);
+    }
+  }, [selectedBrand]);
+
+  // Auto-select first brand
+  useEffect(() => {
+    if (brands.length > 0 && !selectedBrand) {
+      setSelectedBrand(brands[0].id);
+    }
+  }, [brands]);
+
+  // Reload assets when collection changes
+  useEffect(() => {
+    if (selectedBrand) {
+      loadAssets(selectedBrand, selectedCollection === 'all' ? undefined : selectedCollection);
+    }
+  }, [selectedCollection]);
 
   const handleGenerate = async (prompt: string) => {
+    if (!selectedBrand) {
+      toast.error("Please select a brand first");
+      return;
+    }
+
     console.log("Generating brand content with prompt:", prompt);
     setIsGenerating(true);
     
     try {
-      // Brand-focused generation parameters
       const studioNegative = "blurry, low quality, text, watermark, logos, distorted, unrealistic, plastic";
       const brandPrompt = `${prompt}, professional commercial photography, high quality brand content, commercial advertising style, clean composition, professional lighting, marketing ready`;
       
@@ -95,31 +100,75 @@ export default function BrandsPage() {
 
       console.log("Brand generation results:", results);
 
-      const newAssets: BrandAsset[] = results
-        .filter(result => result.success && result.image)
-        .map((result, index) => ({
-          id: `${Date.now()}_${index}`,
-          image: result.image!,
-          prompt: prompt,
-          timestamp: new Date()
-        }));
+      const successfulResults = results.filter(result => result.success && result.image);
+      
+      if (successfulResults.length > 0) {
+        // Save each generated image to the database
+        const savePromises = successfulResults.map((result, index) =>
+          saveGeneratedAsset(
+            selectedBrand,
+            result.image!,
+            prompt,
+            selectedCollection === 'all' ? null : selectedCollection,
+            {
+              style: index === 0 ? 'corporate' : index === 1 ? 'creative' : 'lifestyle',
+              resolution: '1024x1024',
+            }
+          )
+        );
 
-      console.log("Filtered brand assets:", newAssets);
-
-      if (newAssets.length > 0) {
-        setBrandAssets(prev => [...newAssets, ...prev]);
-        toast.success(`Generated ${newAssets.length} brand assets!`);
+        await Promise.all(savePromises);
+        
+        toast.success(`Generated and saved ${successfulResults.length} brand assets!`);
+        
+        // Reload assets to show the new ones
+        if (selectedBrand) {
+          await loadAssets(selectedBrand, selectedCollection === 'all' ? undefined : selectedCollection);
+        }
       } else {
-        // Show more detailed error information
         const errors = results.filter(r => !r.success).map(r => r.error).join(", ");
         console.error("All brand generations failed. Errors:", errors);
-        toast.error(`Failed to generate brand assets. Errors: ${errors || "Unknown error"}`);
+        toast.error(`Failed to generate brand assets. ${errors || "Unknown error"}`);
       }
     } catch (error) {
       console.error('Brand asset generation error:', error);
-      toast.error(`An error occurred while generating brand assets: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      toast.error(`An error occurred: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  const handleDownload = async (asset: any) => {
+    try {
+      const response = await fetch(asset.file_url);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${asset.title || 'brand-asset'}.png`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+      toast.success('Asset downloaded!');
+    } catch (error) {
+      console.error('Download error:', error);
+      toast.error('Failed to download asset');
+    }
+  };
+
+  const handleShare = async (asset: any) => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: asset.title,
+          url: asset.file_url
+        });
+      } else {
+        await navigator.clipboard.writeText(asset.file_url);
+        toast.success('Asset URL copied to clipboard!');
+      }
+    } catch (error) {
+      console.error('Share error:', error);
+      toast.error('Failed to share asset');
     }
   };
 
@@ -147,6 +196,65 @@ export default function BrandsPage() {
           </div>
         </Card>
 
+        {/* Brand & Collection Selectors */}
+        {brands.length === 0 && !loading ? (
+          <Card className="mb-6 p-6 text-center">
+            <h3 className="text-lg font-semibold mb-2">No Brands Yet</h3>
+            <p className="text-muted-foreground mb-4">Create your first brand to start generating assets</p>
+            <Button onClick={() => setShowCreateBrand(true)}>
+              <Plus className="w-4 h-4 mr-2" />
+              Create Brand
+            </Button>
+          </Card>
+        ) : (
+          <Card className="mb-6 p-4">
+            <div className="flex gap-4 items-center">
+              <div className="flex-1">
+                <label className="text-sm font-medium mb-2 block">Select Brand</label>
+                <Select value={selectedBrand || undefined} onValueChange={setSelectedBrand}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose a brand..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {brands.map((brand) => (
+                      <SelectItem key={brand.id} value={brand.id}>
+                        {brand.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="flex-1">
+                <label className="text-sm font-medium mb-2 block">Save to Folder</label>
+                <Select value={selectedCollection || 'all'} onValueChange={setSelectedCollection}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Assets" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Assets</SelectItem>
+                    {collections.map((collection) => (
+                      <SelectItem key={collection.id} value={collection.id}>
+                        <div className="flex items-center gap-2">
+                          <FolderOpen className="w-4 h-4" />
+                          {collection.name}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="pt-6">
+                <Button onClick={() => setShowCreateBrand(true)} variant="outline">
+                  <Plus className="w-4 h-4 mr-2" />
+                  New Brand
+                </Button>
+              </div>
+            </div>
+          </Card>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Chat Interface */}
           <div className="lg:col-span-2">
@@ -154,7 +262,9 @@ export default function BrandsPage() {
             
             {/* Generated Previews */}
             <div className="mt-8">
-              <h3 className="text-lg font-display font-bold mb-4">Generated Previews</h3>
+              <h3 className="text-lg font-display font-bold mb-4">
+                {selectedBrand ? 'Brand Assets' : 'Select a brand to view assets'}
+              </h3>
               
               {isGenerating && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -172,67 +282,58 @@ export default function BrandsPage() {
                 </div>
               )}
               
-              {brandAssets.length > 0 && (
+              {loading && !isGenerating && (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">Loading assets...</p>
+                </div>
+              )}
+
+              {!loading && !isGenerating && assets.length === 0 && selectedBrand && (
+                <Card className="p-8 text-center">
+                  <p className="text-muted-foreground">No assets yet. Generate your first brand asset above!</p>
+                </Card>
+              )}
+              
+              {assets.length > 0 && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {brandAssets.map((asset) => (
+                  {assets.map((asset) => (
                     <Card key={asset.id} className="group overflow-hidden hover-zoom">
                       <div className="aspect-video bg-muted relative">
                         <img 
-                          src={asset.image} 
-                          alt={asset.prompt}
+                          src={asset.file_url} 
+                          alt={asset.title}
                           className="w-full h-full object-cover"
                         />
                         
                         {/* Quick Actions Overlay */}
                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
                           <div className="flex gap-2">
-                            <Button size="sm" variant="outline" className="text-white border-white/50">
-                              Brand Colors
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="text-white border-white/50"
+                              onClick={() => handleDownload(asset)}
+                            >
+                              <Download className="w-4 h-4" />
                             </Button>
                             <Button 
                               size="sm" 
                               variant="outline" 
                               className="text-white border-white/50"
-                              onClick={() => {
-                                const link = document.createElement('a');
-                                link.href = asset.image;
-                                link.download = `brand-asset-${asset.id}.png`;
-                                link.click();
-                                toast.success('Brand asset downloaded!');
-                              }}
+                              onClick={() => handleShare(asset)}
                             >
-                              <Download className="w-4 h-4" />
+                              <Share2 className="w-4 h-4" />
                             </Button>
                           </div>
                         </div>
                       </div>
                       
                       <div className="p-4">
-                        <div className="flex items-center justify-between">
-                          <p className="text-sm text-muted-foreground truncate flex-1">
-                            {asset.prompt}
-                          </p>
-                          <Button 
-                            size="icon" 
-                            variant="ghost" 
-                            className="h-8 w-8 ml-2"
-                            onClick={() => {
-                              if (navigator.share) {
-                                navigator.share({
-                                  title: 'AI Generated Brand Asset',
-                                  url: asset.image
-                                });
-                              } else {
-                                navigator.clipboard.writeText(asset.image);
-                                toast.success('Image URL copied!');
-                              }
-                            }}
-                          >
-                            <Share2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {asset.timestamp.toLocaleTimeString()}
+                        <p className="text-sm font-medium truncate mb-1">
+                          {asset.title}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(asset.created_at).toLocaleDateString()}
                         </p>
                       </div>
                     </Card>
@@ -266,16 +367,30 @@ export default function BrandsPage() {
               </div>
               
               {/* Brand Preview */}
-              <div className="mt-4 p-3 bg-muted/30 rounded-lg">
-                <p className="text-xs text-muted-foreground mb-2">Current Brand</p>
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-primary rounded"></div>
-                  <div>
-                    <p className="text-sm font-medium">Your Brand</p>
-                    <p className="text-xs text-muted-foreground">No logo uploaded</p>
+              {selectedBrand && brands.find(b => b.id === selectedBrand) && (
+                <div className="mt-4 p-3 bg-muted/30 rounded-lg">
+                  <p className="text-xs text-muted-foreground mb-2">Current Brand</p>
+                  <div className="flex items-center gap-2">
+                    {brands.find(b => b.id === selectedBrand)?.logo_url ? (
+                      <img 
+                        src={brands.find(b => b.id === selectedBrand)!.logo_url!} 
+                        alt="Brand logo"
+                        className="w-8 h-8 rounded object-cover"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 bg-primary rounded"></div>
+                    )}
+                    <div>
+                      <p className="text-sm font-medium">
+                        {brands.find(b => b.id === selectedBrand)?.name}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {brands.find(b => b.id === selectedBrand)?.logo_url ? 'Logo set' : 'No logo uploaded'}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </Card>
 
             {/* Campaign Templates */}
@@ -311,27 +426,45 @@ export default function BrandsPage() {
 
             {/* Recent Projects */}
             <Card className="p-6">
-              <h3 className="text-lg font-display font-bold mb-4">Recent Projects</h3>
+              <h3 className="text-lg font-display font-bold mb-4">Recent Assets</h3>
               <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-8 bg-muted rounded"></div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">Summer Campaign</p>
-                    <p className="text-xs text-muted-foreground">3 hours ago</p>
+                {assets.slice(0, 3).map((asset) => (
+                  <div key={asset.id} className="flex items-center gap-3">
+                    <div className="w-12 h-8 bg-muted rounded overflow-hidden">
+                      <img 
+                        src={asset.thumbnail_url || asset.file_url} 
+                        alt={asset.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{asset.title}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(asset.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-8 bg-muted rounded"></div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">Product Mockups</p>
-                    <p className="text-xs text-muted-foreground">1 day ago</p>
-                  </div>
-                </div>
+                ))}
+                {assets.length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center py-4">
+                    No recent assets
+                  </p>
+                )}
               </div>
             </Card>
           </div>
         </div>
       </main>
+
+      <CreateBrandDialog 
+        open={showCreateBrand} 
+        onOpenChange={setShowCreateBrand}
+        onBrandCreated={(brandId) => {
+          loadBrands();
+          setSelectedBrand(brandId);
+          setShowCreateBrand(false);
+        }}
+      />
     </div>
   );
 }
