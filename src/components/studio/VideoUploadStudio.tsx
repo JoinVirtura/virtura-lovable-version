@@ -218,7 +218,7 @@ export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
                 </div>
               </div>
 
-              <div className="flex gap-3">
+              <div className="flex gap-3 justify-center">
                 <Button 
                   variant="outline" 
                   className="mt-4 bg-violet-500/10 border-violet-500/30 hover:bg-violet-500/20 hover:border-violet-400"
