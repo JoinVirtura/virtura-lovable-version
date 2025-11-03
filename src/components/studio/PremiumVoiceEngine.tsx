@@ -819,10 +819,22 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
         <TabsContent value="music" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm">Background Music</CardTitle>
-              <p className="text-xs text-muted-foreground">
-                Add background music to your video. Can be used alone or mixed with voice narration.
-              </p>
+              <div className="flex items-start justify-between">
+                <div className="space-y-1">
+                  <CardTitle className="text-sm">Background Music</CardTitle>
+                  <p className="text-xs text-muted-foreground">
+                    Add background music to your video. Can be used alone or mixed with voice narration.
+                  </p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleSkipVoice}
+                  className="ml-2 shrink-0"
+                >
+                  Skip
+                </Button>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <MusicLibrary
@@ -871,36 +883,6 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
         </TabsContent>
       </Tabs>
 
-      {/* Skip Voice Section */}
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">or</span>
-        </div>
-      </div>
-
-      <Card className="border-dashed border-violet-500/30 bg-violet-500/5">
-        <CardContent className="p-6 space-y-3">
-          <div className="flex items-center gap-2">
-            <AlertCircle className="h-5 w-5 text-violet-400" />
-            <h3 className="font-semibold">Skip Voice Generation</h3>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Generate a silent animated avatar video with just visual motion (blinking, subtle movements).
-            Perfect for adding your own audio later.
-          </p>
-          <Button
-            variant="outline"
-            onClick={handleSkipVoice}
-            className="w-full border-violet-500/30 hover:bg-violet-500/10"
-          >
-            <SkipForward className="mr-2 h-4 w-4" />
-            Skip & Generate Silent Video
-          </Button>
-        </CardContent>
-      </Card>
 
       <audio
         ref={previewAudioRef}
