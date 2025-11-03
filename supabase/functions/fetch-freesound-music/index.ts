@@ -30,11 +30,8 @@ serve(async (req) => {
   }
 
   try {
-    const url = new URL(req.url);
-    const category = url.searchParams.get('category') || 'ambient';
-    const page = parseInt(url.searchParams.get('page') || '1');
-    const pageSize = parseInt(url.searchParams.get('pageSize') || '30');
-    const searchQuery = url.searchParams.get('query');
+    // Parse the request body
+    const { category = 'ambient', page = 1, pageSize = 30, query: searchQuery } = await req.json();
 
     const FREESOUND_API_KEY = Deno.env.get('FREESOUND_API_KEY');
     if (!FREESOUND_API_KEY) {

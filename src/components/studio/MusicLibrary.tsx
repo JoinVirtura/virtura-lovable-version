@@ -63,30 +63,23 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({ onSelectMusic, selec
         setIsLoadingMore(true);
       }
 
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      const params = new URLSearchParams({
+      const params: Record<string, string> = {
         category,
         page: page.toString(),
         pageSize: '30'
-      });
+      };
 
       if (query) {
-        params.set('query', query);
+        params.query = query;
       }
 
-      const response = await fetch(
-        `https://ujaoziqnxhjqlmnvlxav.supabase.co/functions/v1/fetch-freesound-music?${params}`,
-        {
-          headers: session?.access_token ? {
-            Authorization: `Bearer ${session.access_token}`
-          } : {}
-        }
-      );
+      const { data, error } = await supabase.functions.invoke('fetch-freesound-music', {
+        body: params
+      });
 
-      if (!response.ok) throw new Error('Failed to fetch music');
+      if (error) throw error;
 
-      const { tracks: newTracks, totalCount: count } = await response.json();
+      const { tracks: newTracks, totalCount: count } = data;
 
       if (append) {
         setTracks(prev => [...prev, ...newTracks]);
