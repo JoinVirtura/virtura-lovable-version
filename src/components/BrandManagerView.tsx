@@ -23,7 +23,9 @@ import { CreateBrandDialog } from '@/components/CreateBrandDialog';
 import { LibrarySelectionModal } from '@/components/LibrarySelectionModal';
 import { GenerateAssetDialog } from '@/components/GenerateAssetDialog';
 import { BrandKitDialog } from '@/components/BrandKitDialog';
+import { CampaignCreator } from '@/components/CampaignCreator';
 import { useBrandAssets, type Brand } from '@/hooks/useBrandAssets';
+import { useCampaigns } from '@/hooks/useCampaigns';
 import { format } from 'date-fns';
 import {
   ChevronRight,
@@ -72,6 +74,13 @@ export function BrandManagerView() {
     saveGeneratedAsset,
   } = useBrandAssets();
 
+  const {
+    campaigns,
+    loading: campaignsLoading,
+    loadCampaigns,
+    createCampaign,
+  } = useCampaigns();
+
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
   const [currentFolder, setCurrentFolder] = useState<string>('all');
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
@@ -85,18 +94,20 @@ export function BrandManagerView() {
   const [libraryModalOpen, setLibraryModalOpen] = useState(false);
   const [generateDialogOpen, setGenerateDialogOpen] = useState(false);
   const [brandKitOpen, setBrandKitOpen] = useState(false);
+  const [campaignCreatorOpen, setCampaignCreatorOpen] = useState(false);
 
   // Load brands on mount
   useEffect(() => {
     loadBrands();
   }, []);
 
-  // Load collections and assets when brand changes
+  // Load collections, assets, and campaigns when brand changes
   useEffect(() => {
     if (selectedBrand) {
       loadCollections(selectedBrand);
       loadAssets(selectedBrand, currentFolder === 'all' ? undefined : currentFolder);
       getBrandStats(selectedBrand).then(setBrandStats);
+      loadCampaigns(selectedBrand);
     }
   }, [selectedBrand]);
 
@@ -538,10 +549,52 @@ export function BrandManagerView() {
               <Button
                 variant="outline"
                 className="w-full justify-start gap-3 border-violet-500/30 hover:border-violet-500/50 hover:bg-violet-500/10"
+                onClick={() => setCampaignCreatorOpen(true)}
               >
-                <Plus className="w-4 h-4" />
+                <Calendar className="w-4 h-4" />
                 New Campaign
               </Button>
+            </div>
+          )}
+
+          <Separator className="my-4 bg-violet-500/20" />
+
+          {/* Campaigns Section */}
+          {selectedBrand && campaigns.length > 0 && (
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold text-muted-foreground">Campaigns</h3>
+                <Badge variant="secondary" className="text-xs">
+                  {campaigns.length}
+                </Badge>
+              </div>
+
+              <div className="space-y-1 max-h-48 overflow-y-auto">
+                {campaigns.slice(0, 10).map((campaign) => (
+                  <Button
+                    key={campaign.id}
+                    variant="ghost"
+                    className="w-full justify-start gap-2 pl-2 hover:bg-violet-500/10 text-left"
+                    onClick={() => navigate(`/campaigns?id=${campaign.id}`)}
+                  >
+                    <Calendar className="w-4 h-4 flex-shrink-0 text-violet-400" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm truncate">{campaign.name}</p>
+                      <p className="text-xs text-muted-foreground capitalize">{campaign.status}</p>
+                    </div>
+                  </Button>
+                ))}
+              </div>
+
+              {campaigns.length > 10 && (
+                <Button
+                  variant="ghost"
+                  className="w-full text-xs text-violet-400 hover:text-violet-300 mt-2"
+                  onClick={() => navigate('/campaigns')}
+                >
+                  View all campaigns →
+                </Button>
+              )}
             </div>
           )}
         </div>
@@ -838,6 +891,21 @@ export function BrandManagerView() {
               }
             });
           }}
+        />
+      )}
+
+      {selectedBrand && (
+        <CampaignCreator
+          open={campaignCreatorOpen}
+          onOpenChange={setCampaignCreatorOpen}
+          brandId={selectedBrand}
+          onCampaignCreated={(campaign) => {
+            setCampaignCreatorOpen(false);
+            loadCampaigns(selectedBrand);
+            getBrandStats(selectedBrand).then(setBrandStats);
+            toast.success(`Campaign "${campaign.name}" created successfully!`);
+          }}
+          onSubmit={createCampaign}
         />
       )}
     </StudioBackground>
