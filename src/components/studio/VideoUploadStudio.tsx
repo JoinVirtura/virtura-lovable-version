@@ -149,7 +149,7 @@ export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
               
               <div className="space-y-2">
                 <h3 className="text-xl font-semibold text-white">
-                  {isDragOver ? 'Drop your image here' : 'Upload Avatar Image'}
+                  {isDragOver ? 'Drop your image here' : 'Upload Image'}
                 </h3>
                 <p className="text-sm text-muted-foreground">
                   Drag and drop or click to browse
@@ -180,7 +180,7 @@ export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
                 }}
               >
                 <Upload className="h-4 w-4 mr-2" />
-                Choose File
+                File
               </Button>
             </div>
           </CardContent>

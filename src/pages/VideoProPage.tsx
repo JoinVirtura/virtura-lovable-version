@@ -177,23 +177,6 @@ export default function VideoProPage() {
                 getStepStatus={getStepStatus}
               />
             </div>
-            
-            {/* Right: Quality Card */}
-            <div className="glass-card px-3 py-2 rounded-xl border border-violet-500/20 flex-shrink-0">
-              <div className="flex items-center gap-2">
-                <div className="text-right">
-                  <div className="text-xs text-gray-400">Project Quality</div>
-                  <div className="flex items-center gap-2">
-                    <Progress value={qualityMetrics.overall} className="w-20 h-1.5 bg-gray-800" />
-                    <span className="text-sm font-bold text-violet-400">{qualityMetrics.overall}%</span>
-                  </div>
-                </div>
-                <QualitySettings 
-                  settings={project.qualitySettings}
-                  onUpdate={(settings) => updateProject({ qualitySettings: settings })}
-                />
-              </div>
-            </div>
           </div>
         </div>
         
@@ -274,16 +257,6 @@ export default function VideoProPage() {
                 onStepChange={handleStepChange}
               />
             </div>
-
-            {/* Project Timeline */}
-            <div className="glass-card border border-violet-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] rounded-xl">
-              <ProjectTimeline
-                project={project}
-                onUpdate={updateProject}
-                currentStep={currentStep}
-              />
-            </div>
-
             {/* Processing Status */}
             {isProcessing && (
               <Card className="glass-card border border-violet-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] rounded-xl">
@@ -312,30 +285,6 @@ export default function VideoProPage() {
                 </CardContent>
               </Card>
             )}
-
-            {/* Quick Actions */}
-            <Card className="glass-card border border-violet-500/20 rounded-xl">
-              <CardContent className="p-4">
-                <div className="grid grid-cols-2 gap-3">
-                  <Button size="sm" variant="ghost" className="h-12 flex-col gap-1 hover:bg-violet-500/10 hover:text-violet-300 transition-all">
-                    <Play className="h-4 w-4" />
-                    <span className="text-xs">Preview</span>
-                  </Button>
-                  <Button size="sm" variant="ghost" className="h-12 flex-col gap-1 hover:bg-violet-500/10 hover:text-violet-300 transition-all">
-                    <Share2 className="h-4 w-4" />
-                    <span className="text-xs">Share</span>
-                  </Button>
-                  <Button size="sm" variant="ghost" className="h-12 flex-col gap-1 hover:bg-violet-500/10 hover:text-violet-300 transition-all">
-                    <Download className="h-4 w-4" />
-                    <span className="text-xs">Export</span>
-                  </Button>
-                  <Button size="sm" variant="ghost" className="h-12 flex-col gap-1 hover:bg-violet-500/10 hover:text-violet-300 transition-all">
-                    <Settings className="h-4 w-4" />
-                    <span className="text-xs">Settings</span>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </div>
