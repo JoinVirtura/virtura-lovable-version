@@ -841,24 +841,42 @@ export type Database = {
       }
       profiles: {
         Row: {
+          ai_training_opt_in: boolean | null
+          auto_delete_old_projects: boolean | null
           avatar_url: string | null
+          content_visibility_default: string | null
           created_at: string
           display_name: string | null
+          download_protection: boolean | null
           id: string
+          library_public: boolean | null
+          save_voice_clones: boolean | null
           updated_at: string
         }
         Insert: {
+          ai_training_opt_in?: boolean | null
+          auto_delete_old_projects?: boolean | null
           avatar_url?: string | null
+          content_visibility_default?: string | null
           created_at?: string
           display_name?: string | null
+          download_protection?: boolean | null
           id: string
+          library_public?: boolean | null
+          save_voice_clones?: boolean | null
           updated_at?: string
         }
         Update: {
+          ai_training_opt_in?: boolean | null
+          auto_delete_old_projects?: boolean | null
           avatar_url?: string | null
+          content_visibility_default?: string | null
           created_at?: string
           display_name?: string | null
+          download_protection?: boolean | null
           id?: string
+          library_public?: boolean | null
+          save_voice_clones?: boolean | null
           updated_at?: string
         }
         Relationships: []

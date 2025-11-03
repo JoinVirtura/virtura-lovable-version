@@ -18,7 +18,14 @@ import {
   Crown,
   Zap,
   Upload,
-  Loader2
+  Loader2,
+  Eye,
+  Library,
+  Brain,
+  Clock,
+  Mic,
+  ShieldCheck,
+  Monitor
 } from "lucide-react";
 import {
   Dialog,
@@ -54,11 +61,27 @@ export default function SettingsPage() {
   });
   const [changingPassword, setChangingPassword] = useState(false);
 
+  // Privacy & Security settings
+  const [contentVisibility, setContentVisibility] = useState('private');
+  const [libraryPublic, setLibraryPublic] = useState(false);
+  const [aiTrainingOptIn, setAiTrainingOptIn] = useState(false);
+  const [autoDeleteOld, setAutoDeleteOld] = useState(false);
+  const [saveVoiceClones, setSaveVoiceClones] = useState(true);
+  const [downloadProtection, setDownloadProtection] = useState(false);
+
   // Pre-fill form when profile loads
   useEffect(() => {
     if (profile) {
       setDisplayName(profile.display_name || "");
       setPreviewUrl(profile.avatar_url);
+      
+      // Load privacy settings
+      setContentVisibility(profile.content_visibility_default || 'private');
+      setLibraryPublic(profile.library_public || false);
+      setAiTrainingOptIn(profile.ai_training_opt_in || false);
+      setAutoDeleteOld(profile.auto_delete_old_projects || false);
+      setSaveVoiceClones(profile.save_voice_clones !== false); // Default true
+      setDownloadProtection(profile.download_protection || false);
     }
   }, [profile]);
 
@@ -440,41 +463,155 @@ export default function SettingsPage() {
             </div>
             
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Content Credentials</Label>
-                  <p className="text-sm text-muted-foreground">Add watermark to prove AI generation</p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-              
-              <Separator />
-              
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Public Profile</Label>
-                  <p className="text-sm text-muted-foreground">Allow others to see your profile</p>
-                </div>
-                <Switch />
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Analytics Collection</Label>
-                  <p className="text-sm text-muted-foreground">Help us improve by sharing usage data</p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-              
-              <Separator />
-              
-              <div className="space-y-3">
+              {/* Password Management */}
+              <div>
                 <Label>Password</Label>
-                <div className="flex gap-3">
-                  <Button variant="outline" onClick={() => setShowPasswordDialog(true)}>
-                    Change Password
-                  </Button>
-                  <Button variant="outline">Two-Factor Authentication</Button>
+                <p className="text-sm text-muted-foreground mb-3">Update your account password</p>
+                <Button variant="outline" onClick={() => setShowPasswordDialog(true)}>
+                  Change Password
+                </Button>
+              </div>
+              
+              <Separator />
+              
+              {/* Content Privacy */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Eye className="w-4 h-4 text-primary" />
+                  <Label className="text-base font-semibold">Content Privacy</Label>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Default Content Visibility</Label>
+                    <p className="text-sm text-muted-foreground">Set default visibility for new avatars and videos</p>
+                  </div>
+                  <select
+                    value={contentVisibility}
+                    onChange={(e) => {
+                      setContentVisibility(e.target.value);
+                      updateProfile({ content_visibility_default: e.target.value });
+                    }}
+                    className="h-10 rounded-xl border-2 border-violet-500/30 bg-black/40 backdrop-blur-md px-4 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
+                  >
+                    <option value="private">Private</option>
+                    <option value="unlisted">Unlisted</option>
+                    <option value="public">Public</option>
+                  </select>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Make Library Public</Label>
+                    <p className="text-sm text-muted-foreground">Allow others to view your generated content library</p>
+                  </div>
+                  <Switch 
+                    checked={libraryPublic}
+                    onCheckedChange={(checked) => {
+                      setLibraryPublic(checked);
+                      updateProfile({ library_public: checked });
+                    }}
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Download Protection</Label>
+                    <p className="text-sm text-muted-foreground">Add download protection to shared content</p>
+                  </div>
+                  <Switch 
+                    checked={downloadProtection}
+                    onCheckedChange={(checked) => {
+                      setDownloadProtection(checked);
+                      updateProfile({ download_protection: checked });
+                    }}
+                  />
+                </div>
+              </div>
+              
+              <Separator />
+              
+              {/* Data & AI Usage */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Brain className="w-4 h-4 text-primary" />
+                  <Label className="text-base font-semibold">Data & AI Usage</Label>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Use My Content for AI Training</Label>
+                    <p className="text-sm text-muted-foreground">Allow your generations to improve our AI models</p>
+                  </div>
+                  <Switch 
+                    checked={aiTrainingOptIn}
+                    onCheckedChange={(checked) => {
+                      setAiTrainingOptIn(checked);
+                      updateProfile({ ai_training_opt_in: checked });
+                    }}
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Save Voice Clones</Label>
+                    <p className="text-sm text-muted-foreground">Keep voice clones in your library after generation</p>
+                  </div>
+                  <Switch 
+                    checked={saveVoiceClones}
+                    onCheckedChange={(checked) => {
+                      setSaveVoiceClones(checked);
+                      updateProfile({ save_voice_clones: checked });
+                    }}
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Auto-Delete Old Projects</Label>
+                    <p className="text-sm text-muted-foreground">Automatically remove projects older than 90 days</p>
+                  </div>
+                  <Switch 
+                    checked={autoDeleteOld}
+                    onCheckedChange={(checked) => {
+                      setAutoDeleteOld(checked);
+                      updateProfile({ auto_delete_old_projects: checked });
+                    }}
+                  />
+                </div>
+              </div>
+              
+              <Separator />
+              
+              {/* Profile & Tracking */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <User className="w-4 h-4 text-primary" />
+                  <Label className="text-base font-semibold">Profile & Tracking</Label>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Content Credentials</Label>
+                    <p className="text-sm text-muted-foreground">Add watermark to prove AI generation</p>
+                  </div>
+                  <Switch defaultChecked />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Public Profile</Label>
+                    <p className="text-sm text-muted-foreground">Allow others to see your profile</p>
+                  </div>
+                  <Switch />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Analytics Collection</Label>
+                    <p className="text-sm text-muted-foreground">Help us improve by sharing usage data</p>
+                  </div>
+                  <Switch defaultChecked />
                 </div>
               </div>
             </div>

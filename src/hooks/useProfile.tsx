@@ -9,6 +9,12 @@ export interface Profile {
   avatar_url: string | null;
   created_at: string;
   updated_at: string;
+  content_visibility_default?: string | null;
+  library_public?: boolean | null;
+  ai_training_opt_in?: boolean | null;
+  auto_delete_old_projects?: boolean | null;
+  save_voice_clones?: boolean | null;
+  download_protection?: boolean | null;
 }
 
 export const useProfile = () => {
