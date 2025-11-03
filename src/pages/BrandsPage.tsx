@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { AvatarService } from "@/services/avatarService";
 import { useBrandAssets } from "@/hooks/useBrandAssets";
 import { CreateBrandDialog } from "@/components/CreateBrandDialog";
+import { BrandKitDialog } from "@/components/BrandKitDialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function BrandsPage() {
@@ -27,6 +28,7 @@ export default function BrandsPage() {
   const [selectedCollection, setSelectedCollection] = useState<string | undefined>(undefined);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showCreateBrand, setShowCreateBrand] = useState(false);
+  const [showBrandKit, setShowBrandKit] = useState(false);
 
   // Load brands on mount
   useEffect(() => {
@@ -352,15 +354,30 @@ export default function BrandsPage() {
                 Brand Kit
               </h3>
               <div className="space-y-4">
-                <Button variant="outline" className="w-full justify-start gap-3">
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start gap-3"
+                  onClick={() => setShowBrandKit(true)}
+                  disabled={!selectedBrand}
+                >
                   <Upload className="w-4 h-4" />
                   Upload Logo
                 </Button>
-                <Button variant="outline" className="w-full justify-start gap-3">
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start gap-3"
+                  onClick={() => setShowBrandKit(true)}
+                  disabled={!selectedBrand}
+                >
                   <Palette className="w-4 h-4" />
                   Brand Colors
                 </Button>
-                <Button variant="outline" className="w-full justify-start gap-3">
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start gap-3"
+                  onClick={() => setShowBrandKit(true)}
+                  disabled={!selectedBrand}
+                >
                   <Type className="w-4 h-4" />
                   Brand Fonts
                 </Button>
@@ -463,6 +480,18 @@ export default function BrandsPage() {
           loadBrands();
           setSelectedBrand(brandId);
           setShowCreateBrand(false);
+        }}
+      />
+
+      <BrandKitDialog
+        open={showBrandKit}
+        onOpenChange={setShowBrandKit}
+        brand={brands.find(b => b.id === selectedBrand) || null}
+        onBrandUpdated={() => {
+          loadBrands();
+          if (selectedBrand) {
+            loadAssets(selectedBrand, selectedCollection === 'all' ? undefined : selectedCollection);
+          }
         }}
       />
     </div>
