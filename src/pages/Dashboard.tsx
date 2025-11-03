@@ -81,7 +81,8 @@ import {
   Loader2,
   MoreVertical,
   Rocket,
-  Wand2
+  Wand2,
+  Plus
 } from "lucide-react";
 import { CircularProgress } from "@/components/ui/circular-progress";
 
@@ -1758,957 +1759,153 @@ export default function Dashboard() {
       case "brands":
         return (
           <StudioBackground>
-            <div className="space-y-6">
-              {/* Welcome Banner */}
-              <Card className="p-6 border-violet-500/20 bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-2">
-                    <h2 className="text-xl font-display font-bold text-white">
-                      🚀 Build ready-to-use commercials and campaigns powered by AI.
-                    </h2>
-                    <p className="text-violet-200">
-                      Create professional brand content, advertisements, and marketing materials
-                    </p>
-                  </div>
-                  <Button variant="outline" className="flex items-center gap-2 border-violet-500/30 hover:border-violet-500/50 hover:bg-violet-500/10">
-                    <Play className="w-4 h-4" />
-                    View Examples
+            <div className="flex h-screen">
+              {/* Left Sidebar - Brand Stats & Actions */}
+              <div className="w-80 border-r border-violet-500/20 bg-black/40 backdrop-blur-xl p-6 space-y-6 overflow-y-auto">
+                {/* Active Brand Selector */}
+                <div>
+                  <Label className="text-sm text-muted-foreground mb-2 block">Active Brand</Label>
+                  <Select defaultValue="active-brand">
+                    <SelectTrigger className="w-full bg-black/60 border-violet-500/30">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active-brand">Active Brand</SelectItem>
+                      <SelectItem value="new-brand">+ New Brand</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Stats Cards */}
+                <Card className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 border-violet-500/20 p-4">
+                  <h3 className="text-sm text-muted-foreground mb-4">Total Assets</h3>
+                  <p className="text-4xl font-bold text-white">0</p>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 border-violet-500/20 p-4">
+                  <h3 className="text-sm text-muted-foreground mb-4">Active Campaigns</h3>
+                  <p className="text-4xl font-bold text-white">3</p>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 border-violet-500/20 p-4">
+                  <h3 className="text-sm text-muted-foreground mb-4">Avg Performance</h3>
+                  <p className="text-4xl font-bold text-white">0.0</p>
+                </Card>
+
+                {/* Collections */}
+                <div>
+                  <h3 className="text-sm font-semibold text-muted-foreground mb-3">Collections</h3>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start bg-violet-500/20 text-violet-300 hover:bg-violet-500/30"
+                  >
+                    All Assets
                   </Button>
                 </div>
-              </Card>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Main Content */}
-              <div className="lg:col-span-2 space-y-6">
-                {/* Copilot Input */}
-                <Card className="p-6 border-violet-500/20 bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
-                  <div className="space-y-4">
-                    <div className="relative">
-                      <Input
-                        value={currentPrompt}
-                        onChange={(e) => setCurrentPrompt(e.target.value)}
-                        placeholder="Describe what you want: 'Make a smiling teacher in a bright classroom'..."
-                        className="pr-12 h-12 text-base bg-black/40 backdrop-blur-md border-2 border-violet-500/30 focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:shadow-[0_0_20px_rgba(168,85,247,0.4)]"
-                        onKeyPress={(e) => e.key === 'Enter' && handleGenerate(currentPrompt)}
-                      />
-                      <Button 
-                        onClick={() => handleGenerate(currentPrompt)}
-                        className="absolute right-2 top-2 h-8 w-8 p-0 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.4)]"
-                        disabled={isGenerating || !currentPrompt.trim()}
-                      >
-                        <Sparkles className="w-4 h-4" />
-                      </Button>
-                    </div>
-
-                    {/* Quick Presets */}
-                    <div className="space-y-2">
-                      <p className="text-sm font-medium text-violet-300">Quick Presets</p>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        {[
-                          { icon: Star, label: "Commercial" },
-                          { icon: Sparkles, label: "Campaign" },
-                          { icon: Tag, label: "Product Mockup" },
-                          { icon: Star, label: "Ad Pack" }
-                        ].map((preset) => (
-                          <Button
-                            key={preset.label}
-                            variant="outline"
-                            className="h-16 flex-col gap-2 border-violet-500/30 hover:border-violet-500/50 hover:bg-violet-500/10 transition-all duration-300"
-                            onClick={() => setCurrentPrompt(`Create a ${preset.label.toLowerCase()}`)}
-                          >
-                            <preset.icon className="w-5 h-5 text-violet-400" />
-                            <span className="text-xs">{preset.label}</span>
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Advanced Options */}
-                    <Button
-                      variant="ghost"
-                      onClick={() => setShowAdvanced(!showAdvanced)}
-                      className="flex items-center gap-2 text-violet-300 hover:text-violet-200 hover:bg-violet-500/10"
-                    >
-                      <SettingsIcon className="w-4 h-4" />
-                      Advanced Options ({showAdvanced ? 'Hide' : 'Show'})
-                    </Button>
-
-                    {showAdvanced && (
-                      <div className="space-y-6 p-6 bg-muted/30 rounded-lg">
-                        <h4 className="text-lg font-semibold">Advanced Customization</h4>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          {/* Left Column */}
-                          <div className="space-y-4">
-                            {/* Gender */}
-                            <div>
-                              <Label className="text-sm font-medium mb-2 block">Gender</Label>
-                              <div className="flex gap-2">
-                                {["Woman", "Man", "Trans"].map((gender) => (
-                                  <Button
-                                    key={gender}
-                                    variant={selectedGender === gender ? "default" : "outline"}
-                                    size="sm"
-                                    onClick={() => setSelectedGender(gender)}
-                                    className="flex-1"
-                                  >
-                                    {gender}
-                                  </Button>
-                                ))}
-                              </div>
-                            </div>
-
-                            {/* Age Range */}
-                            <div>
-                              <Label className="text-sm font-medium mb-2 block">Age Range</Label>
-                              <Select value={selectedAge} onValueChange={setSelectedAge}>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select age range" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="teens">Teens</SelectItem>
-                                  <SelectItem value="20s">20s</SelectItem>
-                                  <SelectItem value="30s">30s</SelectItem>
-                                  <SelectItem value="40s">40s</SelectItem>
-                                  <SelectItem value="50s">50s</SelectItem>
-                                  <SelectItem value="60s+">60s+</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-
-                            {/* Body Type */}
-                            <div>
-                              <Label className="text-sm font-medium mb-2 block">Body Type</Label>
-                              <Select value={selectedBodyType} onValueChange={setSelectedBodyType}>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select body type" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="slim">Slim</SelectItem>
-                                  <SelectItem value="athletic">Athletic</SelectItem>
-                                  <SelectItem value="average">Average</SelectItem>
-                                  <SelectItem value="curvy">Curvy</SelectItem>
-                                  <SelectItem value="plus-size">Plus Size</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-
-                            {/* Facial Expression */}
-                            <div>
-                              <Label className="text-sm font-medium mb-2 block">Facial Expression</Label>
-                              <Select value={selectedExpression} onValueChange={setSelectedExpression}>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select expression" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="smile">Smile</SelectItem>
-                                  <SelectItem value="serious">Serious</SelectItem>
-                                  <SelectItem value="laugh">Laugh</SelectItem>
-                                  <SelectItem value="neutral">Neutral</SelectItem>
-                                  <SelectItem value="confident">Confident</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-
-                            {/* Creativity Level */}
-                            <div>
-                              <Label className="text-sm font-medium mb-2 block">
-                                Creativity Level: {creativityLevel}%
-                              </Label>
-                              <Slider
-                                value={[creativityLevel]}
-                                onValueChange={(value) => setCreativityLevel(value[0])}
-                                max={100}
-                                step={10}
-                                className="w-full"
-                              />
-                              <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                                <span>Conservative</span>
-                                <span>Experimental</span>
-                              </div>
-                            </div>
-
-                            {/* Resolution */}
-                            <div>
-                              <Label className="text-sm font-medium mb-2 block">Resolution</Label>
-                              <div className="space-y-2">
-                                {["512x512", "1024x1024", "1536x1536"].map((resolution) => (
-                                  <Button
-                                    key={resolution}
-                                    variant={selectedResolution === resolution ? "default" : "outline"}
-                                    onClick={() => setSelectedResolution(resolution)}
-                                    className="w-full"
-                                  >
-                                    {resolution}
-                                  </Button>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Right Column */}
-                          <div className="space-y-4">
-                            {/* Hair */}
-                            <div>
-                              <Label className="text-sm font-medium mb-2 block">Hair</Label>
-                              <div className="space-y-2">
-                                <Select value={selectedHairColor} onValueChange={setSelectedHairColor}>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Color" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="black">Black</SelectItem>
-                                    <SelectItem value="brown">Brown</SelectItem>
-                                    <SelectItem value="blonde">Blonde</SelectItem>
-                                    <SelectItem value="red">Red</SelectItem>
-                                    <SelectItem value="gray">Gray</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                <Select value={selectedHairStyle} onValueChange={setSelectedHairStyle}>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Style" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="short">Short</SelectItem>
-                                    <SelectItem value="medium">Medium</SelectItem>
-                                    <SelectItem value="long">Long</SelectItem>
-                                    <SelectItem value="curly">Curly</SelectItem>
-                                    <SelectItem value="straight">Straight</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            </div>
-
-                            {/* Eyes */}
-                            <div>
-                              <Label className="text-sm font-medium mb-2 block">Eyes</Label>
-                              <Select value={selectedEyeColor} onValueChange={setSelectedEyeColor}>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Eye color" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="brown">Brown</SelectItem>
-                                  <SelectItem value="blue">Blue</SelectItem>
-                                  <SelectItem value="green">Green</SelectItem>
-                                  <SelectItem value="hazel">Hazel</SelectItem>
-                                  <SelectItem value="gray">Gray</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-
-                            {/* Setting */}
-                            <div>
-                              <Label className="text-sm font-medium mb-2 block">Setting</Label>
-                              <div className="space-y-2">
-                                <Select value={selectedLocation} onValueChange={setSelectedLocation}>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Location" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="studio">Studio</SelectItem>
-                                    <SelectItem value="office">Office</SelectItem>
-                                    <SelectItem value="outdoor">Outdoor</SelectItem>
-                                    <SelectItem value="home">Home</SelectItem>
-                                    <SelectItem value="cafe">Cafe</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                <Select value={selectedLighting} onValueChange={setSelectedLighting}>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Lighting" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="natural">Natural</SelectItem>
-                                    <SelectItem value="studio">Studio</SelectItem>
-                                    <SelectItem value="golden-hour">Golden Hour</SelectItem>
-                                    <SelectItem value="dramatic">Dramatic</SelectItem>
-                                    <SelectItem value="soft">Soft</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            </div>
-
-                            {/* Body Pose */}
-                            <div>
-                              <Label className="text-sm font-medium mb-2 block">Body Pose</Label>
-                              <Select value={selectedPose} onValueChange={setSelectedPose}>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select pose" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="front">Front Facing</SelectItem>
-                                  <SelectItem value="side">Side Profile</SelectItem>
-                                  <SelectItem value="three-quarter">Three Quarter</SelectItem>
-                                  <SelectItem value="dynamic">Dynamic</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-
-                            {/* Clothing Style */}
-                            <div>
-                              <Label className="text-sm font-medium mb-2 block">Clothing Style</Label>
-                              <Select value={selectedOutfit} onValueChange={setSelectedOutfit}>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select outfit" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="business">Business</SelectItem>
-                                  <SelectItem value="casual">Casual</SelectItem>
-                                  <SelectItem value="formal">Formal</SelectItem>
-                                  <SelectItem value="creative">Creative</SelectItem>
-                                  <SelectItem value="sporty">Sporty</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-
-                            {/* Accessories */}
-                            <div>
-                              <Label className="text-sm font-medium mb-2 block">Accessories</Label>
-                              <Select value={selectedAccessories} onValueChange={setSelectedAccessories}>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select accessories" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="none">None</SelectItem>
-                                  <SelectItem value="glasses">Glasses</SelectItem>
-                                  <SelectItem value="jewelry">Jewelry</SelectItem>
-                                  <SelectItem value="watch">Watch</SelectItem>
-                                  <SelectItem value="hat">Hat</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </Card>
-
-                {/* Generated Previews */}
-                {isGenerating && (
-                  <Card className="p-6">
-                    <div className="flex items-center justify-center py-8">
-                      <div className="flex items-center gap-3">
-                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                        <span className="text-muted-foreground">Generating your brand content...</span>
-                      </div>
-                    </div>
-                  </Card>
-                )}
-
-                {generatedPreviews.length > 0 && !isGenerating && (
-                  <Card className="p-6">
-                    <h3 className="text-lg font-semibold mb-4">Generated Previews</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {generatedPreviews.map((preview) => (
-                        <Card key={preview.id} className="overflow-hidden">
-                          <div className="aspect-square bg-muted relative">
-                            <img
-                              src={preview.imageUrl}
-                              alt={preview.title}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                          <div className="p-4 space-y-3">
-                            <h4 className="font-medium text-sm">{preview.title}</h4>
-                            <p className="text-xs text-muted-foreground">{preview.description}</p>
-                            <div className="flex gap-1.5">
-                              <Button size="sm" variant="outline" className="flex-1 text-xs h-8 px-2">
-                                <Edit className="w-3 h-3 mr-1" />
-                                <span className="truncate">Quick Edit</span>
-                              </Button>
-                              <Button size="sm" className="flex-1 text-xs h-8 px-2">
-                                <Download className="w-3 h-3 mr-1" />
-                                <span className="truncate">Save</span>
-                              </Button>
-                            </div>
-                          </div>
-                        </Card>
-                      ))}
-                    </div>
-
-                    {/* Chat Refinement */}
-                    <div className="mt-6 pt-4 border-t">
-                      <p className="text-sm font-medium mb-2">Refine with chat</p>
-                      <div className="flex gap-2">
-                        <Input
-                          placeholder="Change colors to match brand, add logo..."
-                          className="flex-1"
-                          onKeyPress={(e) => {
-                            if (e.key === 'Enter') {
-                              handleChatRefine((e.target as HTMLInputElement).value);
-                              (e.target as HTMLInputElement).value = '';
-                            }
-                          }}
-                        />
-                        <Button size="sm">Send</Button>
-                      </div>
-                    </div>
-                  </Card>
-                )}
-              </div>
-
-              {/* Sidebar - Brand Kit */}
-              <div className="space-y-6">
-                <Card className="p-6 flex flex-col h-full">
-                  <h3 className="text-lg font-display font-bold mb-6 flex items-center gap-2">
-                    <SettingsIcon className="w-5 h-5 text-primary" />
-                    Brand Kit
-                  </h3>
+                {/* Action Buttons */}
+                <div className="space-y-3 pt-4">
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start gap-3 border-violet-500/30 hover:border-violet-500/50 hover:bg-violet-500/10"
+                  >
+                    <Upload className="w-4 h-4" />
+                    Upload
+                  </Button>
                   
-                  <div className="space-y-6 flex-1">
-                    {/* Logo Upload */}
-                    <div>
-                      <Label className="text-sm font-medium mb-3 block">Logo</Label>
-                      <div className="relative">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              const reader = new FileReader();
-                              reader.onload = (e) => {
-                                setBrandLogo(e.target?.result as string);
-                                toast({
-                                  title: "Success",
-                                  description: "Logo uploaded successfully!",
-                                });
-                              };
-                              reader.readAsDataURL(file);
-                            }
-                          }}
-                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                        />
-                        <Button variant="outline" className="w-full justify-start gap-3 h-12 border-dashed relative">
-                          <Upload className="w-4 h-4" />
-                          {brandLogo ? "Change Logo" : "Upload Logo"}
-                        </Button>
-                      </div>
-                      {brandLogo && (
-                        <div className="mt-3 p-3 bg-muted rounded-lg">
-                          <img src={brandLogo} alt="Brand Logo" className="w-20 h-20 object-contain mx-auto" />
-                        </div>
-                      )}
-                    </div>
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start gap-3 border-violet-500/30 hover:border-violet-500/50 hover:bg-violet-500/10"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    Generate AI Content
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start gap-3 border-violet-500/30 hover:border-violet-500/50 hover:bg-violet-500/10"
+                  >
+                    <Calendar className="w-4 h-4" />
+                    Schedule Post
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start gap-3 border-violet-500/30 hover:border-violet-500/50 hover:bg-violet-500/10"
+                  >
+                    <Plus className="w-4 h-4" />
+                    New Campaign
+                  </Button>
+                </div>
+              </div>
 
-                    {/* Brand Colors */}
+              {/* Main Content Area */}
+              <div className="flex-1 overflow-y-auto">
+                <div className="p-8">
+                  {/* Header */}
+                  <div className="flex items-center justify-between mb-8">
                     <div>
-                      <Label className="text-sm font-medium mb-4 block">Brand Colors</Label>
-                      <div className="bg-gradient-to-br from-card via-card/95 to-card/90 p-6 rounded-xl border border-border/50 shadow-sm space-y-6">
-                        
-                        {/* Main Brand Colors */}
-                        <div>
-                          <div className="flex items-center gap-2 mb-4">
-                            <div className="w-2 h-2 bg-primary rounded-full"></div>
-                            <span className="text-sm font-medium text-foreground">Select Color to Modify</span>
-                          </div>
-                          
-                          <div className="grid grid-cols-2 gap-4">
-                            {Object.entries(brandColors).map(([key, color]) => (
-                              <div 
-                                key={key} 
-                                className={`group cursor-pointer transition-all duration-200 ${selectedColorSlot === key ? 'scale-105' : 'hover:scale-102'}`}
-                                onClick={() => setSelectedColorSlot(key as keyof typeof brandColors)}
-                              >
-                                <div className="relative">
-                                  <div 
-                                    className={`w-16 h-16 rounded-xl border-3 shadow-lg transition-all duration-200 relative overflow-hidden ${
-                                      selectedColorSlot === key 
-                                        ? 'border-primary shadow-lg shadow-primary/25' 
-                                        : 'border-background group-hover:border-border'
-                                    }`}
-                                    style={{ backgroundColor: color }}
-                                  >
-                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-200"></div>
-                                    {selectedColorSlot === key && (
-                                      <div className="absolute top-1 right-1">
-                                        <div className="w-3 h-3 bg-primary rounded-full border-2 border-white shadow-sm"></div>
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                                <div className="mt-2 text-center">
-                                  <span className={`text-xs font-medium capitalize block transition-colors ${
-                                    selectedColorSlot === key ? 'text-primary' : 'text-foreground'
-                                  }`}>
-                                    {key}
-                                  </span>
-                                  <span className="text-xs text-muted-foreground uppercase block">{color}</span>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                        
-                        {/* Color Suggestions */}
-                        <div className="pt-4 border-t border-border/30">
-                           <div className="flex items-center gap-2 mb-3">
-                             <div className="w-2 h-2 bg-accent rounded-full"></div>
-                             <span className="text-sm font-medium text-foreground">Quick Colors</span>
-                           </div>
-                          
-                           <div className="overflow-x-auto h-14">
-                             <div className="flex gap-2 pb-2 min-w-max h-full items-center">
-                               {[
-                                 "#FF6B35", "#FF8E53", "#FF6B6B", "#C44569", "#F8B500", "#FFD93D", 
-                                 "#6BCF7F", "#4BCFFA", "#74B9FF", "#0984E3", "#A29BFE", "#6C5CE7",
-                                 "#FD79A8", "#E84393", "#00B894", "#00CEC9", "#FF5722", "#E91E63",
-                                 "#9C27B0", "#673AB7", "#3F51B5", "#2196F3", "#03A9F4", "#00BCD4",
-                                 "#009688", "#4CAF50", "#8BC34A", "#CDDC39", "#FFEB3B", "#FFC107",
-                                 "#FF9800", "#795548", "#607D8B", "#455A64", "#263238", "#37474F",
-                                 "#546E7A", "#78909C", "#90A4AE", "#B0BEC5", "#CFD8DC", "#ECEFF1",
-                                 "#F44336", "#E57373", "#EF5350", "#F48FB1", "#CE93D8", "#B39DDB",
-                                 "#9FA8DA", "#90CAF9", "#81D4FA", "#80DEEA", "#80CBC4", "#A5D6A7",
-                                 "#C8E6C9", "#DCEDC8", "#F0F4C3", "#FFF9C4", "#FFECB3", "#FFE0B2"
-                               ].map((color, idx) => (
-                                 <div
-                                   key={idx}
-                                   className="relative group cursor-pointer flex-shrink-0"
-                                   onClick={() => {
-                                     setBrandColors(prev => ({...prev, [selectedColorSlot]: color}));
-                                     toast({
-                                       title: "Color Updated",
-                                       description: `Applied ${color} to ${selectedColorSlot}`,
-                                     });
-                                   }}
-                                 >
-                                   <div 
-                                     className="w-10 h-10 rounded-lg border-2 border-background shadow-sm group-hover:scale-110 group-hover:shadow-md transition-all duration-200 group-hover:border-primary/30"
-                                     style={{ backgroundColor: color }}
-                                   />
-                                 </div>
-                               ))}
-                             </div>
-                           </div>
-                        </div>
-                        
-                        {/* Color Harmony Suggestions */}
-                        <div className="pt-4 border-t border-border/30">
-                           <div className="flex items-center gap-2 mb-4">
-                             <div className="w-2 h-2 bg-secondary rounded-full"></div>
-                             <span className="text-sm font-medium text-foreground">Color Harmonies</span>
-                           </div>
-                          
-                          <div className="max-h-64 overflow-y-auto scrollbar-thin scrollbar-track-muted/20 scrollbar-thumb-border hover:scrollbar-thumb-border/80">
-                            <div className="grid grid-cols-1 gap-3 pr-2">
-                              {[
-                                // Analogous Harmonies
-                                { 
-                                  name: "Ocean Analogous", 
-                                  type: "Analogous",
-                                  colors: { primary: "#003f5c", secondary: "#2f4b7c", accent: "#665191", support: "#a05195" }
-                                },
-                                { 
-                                  name: "Sunset Analogous", 
-                                  type: "Analogous",
-                                  colors: { primary: "#ff6361", secondary: "#ff8531", accent: "#ffa600", support: "#ffc649" }
-                                },
-                                { 
-                                  name: "Forest Analogous", 
-                                  type: "Analogous",
-                                  colors: { primary: "#2d5016", secondary: "#4a6741", accent: "#6b8e5a", support: "#c4d6b0" }
-                                },
-                                
-                                // Complementary Harmonies
-                                { 
-                                  name: "Blue Orange Complementary", 
-                                  type: "Complementary",
-                                  colors: { primary: "#1f77b4", secondary: "#ff7f0e", accent: "#aec7e8", support: "#ffbb78" }
-                                },
-                                { 
-                                  name: "Purple Yellow Complementary", 
-                                  type: "Complementary",
-                                  colors: { primary: "#6a4c93", secondary: "#ffca3a", accent: "#c589e8", support: "#fff3cd" }
-                                },
-                                { 
-                                  name: "Red Green Complementary", 
-                                  type: "Complementary",
-                                  colors: { primary: "#d62728", secondary: "#2ca02c", accent: "#ff9896", support: "#98df8a" }
-                                },
-                                
-                                // Triadic Harmonies
-                                { 
-                                  name: "Primary Triadic", 
-                                  type: "Triadic",
-                                  colors: { primary: "#ff4757", secondary: "#3742fa", accent: "#2ed573", support: "#ffffff" }
-                                },
-                                { 
-                                  name: "Vibrant Triadic", 
-                                  type: "Triadic",
-                                  colors: { primary: "#ff3838", secondary: "#ff9500", accent: "#17c0eb", support: "#f1f2f6" }
-                                },
-                                { 
-                                  name: "Muted Triadic", 
-                                  type: "Triadic",
-                                  colors: { primary: "#8395a7", secondary: "#ff6b6b", accent: "#4834d4", support: "#ddd" }
-                                },
-                                
-                                // Monochromatic Harmonies
-                                { 
-                                  name: "Blue Monochromatic", 
-                                  type: "Monochromatic",
-                                  colors: { primary: "#0c2340", secondary: "#1e3a8a", accent: "#3b82f6", support: "#93c5fd" }
-                                },
-                                { 
-                                  name: "Green Monochromatic", 
-                                  type: "Monochromatic",
-                                  colors: { primary: "#052e16", secondary: "#166534", accent: "#22c55e", support: "#86efac" }
-                                },
-                                { 
-                                  name: "Purple Monochromatic", 
-                                  type: "Monochromatic",
-                                  colors: { primary: "#3c1361", secondary: "#7c3aed", accent: "#a855f7", support: "#c4b5fd" }
-                                },
-                                
-                                // Compound Harmonies
-                                { 
-                                  name: "Corporate Professional", 
-                                  type: "Compound",
-                                  colors: { primary: "#1a365d", secondary: "#2c5282", accent: "#63b3ed", support: "#bee3f8" }
-                                },
-                                { 
-                                  name: "Creative Agency", 
-                                  type: "Compound",
-                                  colors: { primary: "#d53f8c", secondary: "#ed64a6", accent: "#f687b3", support: "#fed7e2" }
-                                },
-                                { 
-                                  name: "Tech Startup", 
-                                  type: "Compound",
-                                  colors: { primary: "#2d3748", secondary: "#4a5568", accent: "#68d391", support: "#c6f6d5" }
-                                },
-                                
-                                // Seasonal Palettes
-                                { 
-                                  name: "Spring Bloom", 
-                                  type: "Seasonal",
-                                  colors: { primary: "#e91e63", secondary: "#8bc34a", accent: "#ffeb3b", support: "#f8bbd9" }
-                                },
-                                { 
-                                  name: "Summer Vibes", 
-                                  type: "Seasonal",
-                                  colors: { primary: "#ff5722", secondary: "#ffc107", accent: "#03a9f4", support: "#ffe0b2" }
-                                },
-                                { 
-                                  name: "Autumn Leaves", 
-                                  type: "Seasonal",
-                                  colors: { primary: "#d84315", secondary: "#ff8f00", accent: "#689f38", support: "#ffcc02" }
-                                },
-                                { 
-                                  name: "Winter Frost", 
-                                  type: "Seasonal",
-                                  colors: { primary: "#263238", secondary: "#607d8b", accent: "#b0bec5", support: "#eceff1" }
-                                },
-                                
-                                // Modern Trends
-                                { 
-                                  name: "Neon Dark", 
-                                  type: "Modern",
-                                  colors: { primary: "#0f0f23", secondary: "#00d4aa", accent: "#ff006e", support: "#8338ec" }
-                                },
-                                { 
-                                  name: "Pastel Dream", 
-                                  type: "Modern",
-                                  colors: { primary: "#ffc8dd", secondary: "#bde0ff", accent: "#a2d2ff", support: "#cdb4db" }
-                                },
-                                { 
-                                  name: "Cyberpunk", 
-                                  type: "Modern",
-                                  colors: { primary: "#0a0a0a", secondary: "#ff0080", accent: "#00ffff", support: "#8000ff" }
-                                }
-                              ].map((harmony, idx) => (
-                                <div 
-                                  key={idx}
-                                  className="group cursor-pointer p-3 bg-muted/10 hover:bg-muted/25 rounded-lg transition-all duration-200"
-                                  onClick={() => {
-                                    setBrandColors(harmony.colors);
-                                    toast({
-                                      title: "Harmony Applied",
-                                      description: `Applied ${harmony.name} (${harmony.type}) to your brand`,
-                                    });
-                                  }}
-                                >
-                                  <div className="flex gap-1.5 mb-2">
-                                    {Object.values(harmony.colors).map((color, colorIdx) => (
-                                      <div 
-                                        key={colorIdx}
-                                        className="flex-1 h-6 rounded-md shadow-sm group-hover:shadow transition-shadow"
-                                        style={{ backgroundColor: color }}
-                                      />
-                                    ))}
-                                  </div>
-                                   <div className="flex items-center">
-                                     <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors">
-                                       {harmony.name}
-                                     </span>
-                                   </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                      <h1 className="text-4xl font-display font-bold text-white mb-2">Brand Manager</h1>
+                      <p className="text-violet-200">0 assets</p>
                     </div>
-
-                    {/* Typography */}
-                    <div>
-                      <Label className="text-sm font-medium mb-3 block">Typography</Label>
-                      <div className="space-y-3">
-                        <Select value={primaryFont} onValueChange={setPrimaryFont}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Primary Font" />
-                          </SelectTrigger>
-                           <SelectContent>
-                             <SelectItem value="playfair" style={{ fontFamily: 'Playfair Display, serif' }}>Playfair Display</SelectItem>
-                             <SelectItem value="roboto" style={{ fontFamily: 'Roboto, sans-serif' }}>Roboto</SelectItem>
-                             <SelectItem value="inter" style={{ fontFamily: 'Inter, sans-serif' }}>Inter</SelectItem>
-                             <SelectItem value="montserrat" style={{ fontFamily: 'Montserrat, sans-serif' }}>Montserrat</SelectItem>
-                             <SelectItem value="lato" style={{ fontFamily: 'Lato, sans-serif' }}>Lato</SelectItem>
-                             <SelectItem value="opensans" style={{ fontFamily: 'Open Sans, sans-serif' }}>Open Sans</SelectItem>
-                             <SelectItem value="poppins" style={{ fontFamily: 'Poppins, sans-serif' }}>Poppins</SelectItem>
-                             <SelectItem value="nunito" style={{ fontFamily: 'Nunito, sans-serif' }}>Nunito</SelectItem>
-                             <SelectItem value="sourcesans" style={{ fontFamily: 'Source Sans Pro, sans-serif' }}>Source Sans Pro</SelectItem>
-                             <SelectItem value="raleway" style={{ fontFamily: 'Raleway, sans-serif' }}>Raleway</SelectItem>
-                             <SelectItem value="oswald" style={{ fontFamily: 'Oswald, sans-serif' }}>Oswald</SelectItem>
-                             <SelectItem value="merriweather" style={{ fontFamily: 'Merriweather, serif' }}>Merriweather</SelectItem>
-                           </SelectContent>
-                        </Select>
-                        <Select value={secondaryFont} onValueChange={setSecondaryFont}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Secondary Font" />
-                          </SelectTrigger>
-                           <SelectContent>
-                             <SelectItem value="lato" style={{ fontFamily: 'Lato, sans-serif' }}>Lato</SelectItem>
-                             <SelectItem value="opensans" style={{ fontFamily: 'Open Sans, sans-serif' }}>Open Sans</SelectItem>
-                             <SelectItem value="poppins" style={{ fontFamily: 'Poppins, sans-serif' }}>Poppins</SelectItem>
-                             <SelectItem value="roboto" style={{ fontFamily: 'Roboto, sans-serif' }}>Roboto</SelectItem>
-                             <SelectItem value="inter" style={{ fontFamily: 'Inter, sans-serif' }}>Inter</SelectItem>
-                             <SelectItem value="nunito" style={{ fontFamily: 'Nunito, sans-serif' }}>Nunito</SelectItem>
-                             <SelectItem value="sourcesans" style={{ fontFamily: 'Source Sans Pro, sans-serif' }}>Source Sans Pro</SelectItem>
-                             <SelectItem value="raleway" style={{ fontFamily: 'Raleway, sans-serif' }}>Raleway</SelectItem>
-                             <SelectItem value="ubuntu" style={{ fontFamily: 'Ubuntu, sans-serif' }}>Ubuntu</SelectItem>
-                             <SelectItem value="worksans" style={{ fontFamily: 'Work Sans, sans-serif' }}>Work Sans</SelectItem>
-                             <SelectItem value="dmsans" style={{ fontFamily: 'DM Sans, sans-serif' }}>DM Sans</SelectItem>
-                             <SelectItem value="firasans" style={{ fontFamily: 'Fira Sans, sans-serif' }}>Fira Sans</SelectItem>
-                           </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    {/* Brand Guidelines */}
-                    <div>
-                      <Label className="text-sm font-medium mb-3 block">Brand Guidelines</Label>
-                      <div className="space-y-3">
-                        <div>
-                           <Label className="text-xs text-muted-foreground mb-1 block">Brand Voice</Label>
-                           <Select value={brandVoice} onValueChange={setBrandVoice}>
-                             <SelectTrigger className="h-9">
-                               <SelectValue placeholder="Select brand voice" />
-                             </SelectTrigger>
-                             <SelectContent>
-                               <SelectItem value="professional-authoritative">Professional & Authoritative</SelectItem>
-                               <SelectItem value="friendly-approachable">Friendly & Approachable</SelectItem>
-                               <SelectItem value="innovative-forward">Innovative & Forward-thinking</SelectItem>
-                               <SelectItem value="luxury-premium">Luxury & Premium</SelectItem>
-                               <SelectItem value="casual-relatable">Casual & Relatable</SelectItem>
-                               <SelectItem value="expert-trustworthy">Expert & Trustworthy</SelectItem>
-                               <SelectItem value="creative-inspiring">Creative & Inspiring</SelectItem>
-                               <SelectItem value="playful-energetic">Playful & Energetic</SelectItem>
-                               <SelectItem value="minimalist-clean">Minimalist & Clean</SelectItem>
-                               <SelectItem value="bold-confident">Bold & Confident</SelectItem>
-                             </SelectContent>
-                           </Select>
-                        </div>
-                        <div>
-                          <Label className="text-xs text-muted-foreground mb-1 block">Target Audience</Label>
-                          <Select value={targetAudience} onValueChange={setTargetAudience}>
-                            <SelectTrigger className="h-9">
-                              <SelectValue placeholder="Select target audience" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="young-professionals">Young Professionals (25-35)</SelectItem>
-                              <SelectItem value="executives-leaders">Executives & Leaders (35-50)</SelectItem>
-                              <SelectItem value="entrepreneurs">Entrepreneurs & Startups</SelectItem>
-                              <SelectItem value="creative-professionals">Creative Professionals</SelectItem>
-                              <SelectItem value="tech-industry">Tech Industry</SelectItem>
-                              <SelectItem value="healthcare-professionals">Healthcare Professionals</SelectItem>
-                              <SelectItem value="students-academics">Students & Academics</SelectItem>
-                              <SelectItem value="retail-consumers">General Consumers</SelectItem>
-                              <SelectItem value="luxury-market">Luxury Market</SelectItem>
-                              <SelectItem value="b2b-enterprise">B2B Enterprise</SelectItem>
-                              <SelectItem value="small-business">Small Business Owners</SelectItem>
-                              <SelectItem value="consultants-coaches">Consultants & Coaches</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Content Templates */}
-                    <div>
-                      <Label className="text-sm font-medium mb-3 block">Content Templates</Label>
-                      <div className="grid grid-cols-2 gap-2">
-                        <Button variant="outline" size="sm" className="text-xs h-8">
-                          Social Media
-                        </Button>
-                        <Button variant="outline" size="sm" className="text-xs h-8">
-                          Email Header
-                        </Button>
-                        <Button variant="outline" size="sm" className="text-xs h-8">
-                          Business Card
-                        </Button>
-                        <Button variant="outline" size="sm" className="text-xs h-8">
-                          Letterhead
-                        </Button>
-                        <Button variant="outline" size="sm" className="text-xs h-8">
-                          Presentation
-                        </Button>
-                        <Button variant="outline" size="sm" className="text-xs h-8">
-                          Website Header
-                        </Button>
-                      </div>
-                    </div>
-
-                    {/* Brand Assets */}
-                    <div>
-                      <Label className="text-sm font-medium mb-3 block">Brand Assets</Label>
-                      <div className="space-y-2">
-                        <Button 
-                          variant="ghost" 
-                          className="w-full justify-between gap-3 h-10 text-sm"
-                          onClick={() => {
-                            const newExpanded = new Set(expandedBrandAssets);
-                            if (newExpanded.has('style-guide')) {
-                              newExpanded.delete('style-guide');
-                            } else {
-                              newExpanded.add('style-guide');
-                            }
-                            setExpandedBrandAssets(newExpanded);
-                          }}
-                        >
-                          <div className="flex items-center gap-3">
-                            <Calendar className="w-4 h-4" />
-                            Style Guide (PDF)
-                          </div>
-                          {expandedBrandAssets.has('style-guide') ? 
-                            <ChevronUp className="w-4 h-4" /> : 
-                            <ChevronDown className="w-4 h-4" />
-                          }
-                        </Button>
-                        {expandedBrandAssets.has('style-guide') && (
-                          <div className="pl-7 space-y-1">
-                            <Button variant="ghost" size="sm" className="w-full justify-start text-xs h-8">
-                              Download Complete Guide
-                            </Button>
-                            <Button variant="ghost" size="sm" className="w-full justify-start text-xs h-8">
-                              Color Palette Only
-                            </Button>
-                            <Button variant="ghost" size="sm" className="w-full justify-start text-xs h-8">
-                              Typography Guidelines
-                            </Button>
-                          </div>
-                        )}
-                        
-                        <Button 
-                          variant="ghost" 
-                          className="w-full justify-between gap-3 h-10 text-sm"
-                          onClick={() => {
-                            const newExpanded = new Set(expandedBrandAssets);
-                            if (newExpanded.has('logo-variations')) {
-                              newExpanded.delete('logo-variations');
-                            } else {
-                              newExpanded.add('logo-variations');
-                            }
-                            setExpandedBrandAssets(newExpanded);
-                          }}
-                        >
-                          <div className="flex items-center gap-3">
-                            <Tag className="w-4 h-4" />
-                            Logo Variations
-                          </div>
-                          {expandedBrandAssets.has('logo-variations') ? 
-                            <ChevronUp className="w-4 h-4" /> : 
-                            <ChevronDown className="w-4 h-4" />
-                          }
-                        </Button>
-                        {expandedBrandAssets.has('logo-variations') && (
-                          <div className="pl-7 space-y-1">
-                            <Button variant="ghost" size="sm" className="w-full justify-start text-xs h-8">
-                              Full Color Logo
-                            </Button>
-                            <Button variant="ghost" size="sm" className="w-full justify-start text-xs h-8">
-                              Black & White
-                            </Button>
-                            <Button variant="ghost" size="sm" className="w-full justify-start text-xs h-8">
-                              Icon Only
-                            </Button>
-                            <Button variant="ghost" size="sm" className="w-full justify-start text-xs h-8">
-                              Horizontal Layout
-                            </Button>
-                            <Button variant="ghost" size="sm" className="w-full justify-start text-xs h-8">
-                              Vertical Layout
-                            </Button>
-                          </div>
-                        )}
-                        
-                        <Button 
-                          variant="ghost" 
-                          className="w-full justify-between gap-3 h-10 text-sm"
-                          onClick={() => {
-                            const newExpanded = new Set(expandedBrandAssets);
-                            if (newExpanded.has('brand-templates')) {
-                              newExpanded.delete('brand-templates');
-                            } else {
-                              newExpanded.add('brand-templates');
-                            }
-                            setExpandedBrandAssets(newExpanded);
-                          }}
-                        >
-                          <div className="flex items-center gap-3">
-                            <Star className="w-4 h-4" />
-                            Brand Templates
-                          </div>
-                          {expandedBrandAssets.has('brand-templates') ? 
-                            <ChevronUp className="w-4 h-4" /> : 
-                            <ChevronDown className="w-4 h-4" />
-                          }
-                        </Button>
-                        {expandedBrandAssets.has('brand-templates') && (
-                          <div className="pl-7 space-y-1">
-                            <Button variant="ghost" size="sm" className="w-full justify-start text-xs h-8">
-                              Social Media Templates
-                            </Button>
-                            <Button variant="ghost" size="sm" className="w-full justify-start text-xs h-8">
-                              Presentation Templates
-                            </Button>
-                            <Button variant="ghost" size="sm" className="w-full justify-start text-xs h-8">
-                              Marketing Materials
-                            </Button>
-                            <Button variant="ghost" size="sm" className="w-full justify-start text-xs h-8">
-                              Business Documents
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Save Brand Kit */}
-                    <div className="pt-4 border-t">
+                    <div className="flex gap-3">
                       <Button 
-                        className="w-full"
-                        onClick={() => {
-                          toast({
-                            title: "Success", 
-                            description: "Brand Kit saved successfully!",
-                          });
-                        }}
+                        variant="outline" 
+                        size="icon"
+                        className="border-violet-500/30 hover:border-violet-500/50"
                       >
-                        Save Brand Kit
+                        <Grid3X3 className="w-5 h-5" />
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="icon"
+                        className="border-violet-500/30 hover:border-violet-500/50"
+                      >
+                        <List className="w-5 h-5" />
                       </Button>
                     </div>
                   </div>
-                </Card>
+
+                  {/* Search Bar */}
+                  <div className="mb-8">
+                    <div className="relative">
+                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input 
+                        placeholder="Search assets..."
+                        className="pl-12 h-14 bg-black/40 backdrop-blur-md border-2 border-violet-500/30 focus-visible:ring-2 focus-visible:ring-violet-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Empty State */}
+                  <Card className="bg-gradient-to-br from-gray-900/60 to-gray-800/60 border-violet-500/20 min-h-[500px] flex items-center justify-center">
+                    <div className="text-center space-y-6">
+                      <div className="w-20 h-20 mx-auto rounded-full bg-violet-500/20 flex items-center justify-center">
+                        <Sparkles className="w-10 h-10 text-violet-400" />
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-bold text-white mb-2">No assets yet</h3>
+                        <p className="text-violet-200 mb-6">Upload your first asset or generate content with AI</p>
+                      </div>
+                      <div className="flex gap-4 justify-center">
+                        <Button 
+                          variant="outline"
+                          className="gap-2 border-violet-500/30 hover:border-violet-500/50 hover:bg-violet-500/10"
+                        >
+                          <Upload className="w-4 h-4" />
+                          Upload
+                        </Button>
+                        <Button 
+                          className="gap-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.4)]"
+                        >
+                          <Sparkles className="w-4 h-4" />
+                          Generate
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
               </div>
-            </div>
             </div>
           </StudioBackground>
         );
