@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 
 interface UsageData {
+  image_generation: { used: number; limit: number; };
   voice_generation: { used: number; limit: number; };
   video_generation: { used: number; limit: number; };
   storage: { used: number; limit: number; };
@@ -16,16 +17,19 @@ interface SubscriptionData {
 
 const PLAN_LIMITS = {
   free: {
+    image_generation: 3,
     voice_generation: 10,
     video_generation: 3,
     storage: 100, // MB
   },
   pro: {
+    image_generation: 100,
     voice_generation: 100,
     video_generation: 25,
     storage: 1000, // MB
   },
   enterprise: {
+    image_generation: 1000,
     voice_generation: 1000,
     video_generation: 250,
     storage: 10000, // MB
@@ -69,6 +73,7 @@ export function useUsageTracking() {
 
       // Calculate usage by resource type
       const usageSummary: UsageData = {
+        image_generation: { used: 0, limit: PLAN_LIMITS.free.image_generation },
         voice_generation: { used: 0, limit: PLAN_LIMITS.free.voice_generation },
         video_generation: { used: 0, limit: PLAN_LIMITS.free.video_generation },
         storage: { used: 0, limit: PLAN_LIMITS.free.storage }
@@ -85,6 +90,7 @@ export function useUsageTracking() {
       const planName = subData?.plan_name || 'free';
       if (planName in PLAN_LIMITS) {
         const limits = PLAN_LIMITS[planName as keyof typeof PLAN_LIMITS];
+        usageSummary.image_generation.limit = limits.image_generation;
         usageSummary.voice_generation.limit = limits.voice_generation;
         usageSummary.video_generation.limit = limits.video_generation;
         usageSummary.storage.limit = limits.storage;

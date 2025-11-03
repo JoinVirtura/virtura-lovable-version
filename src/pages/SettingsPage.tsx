@@ -29,7 +29,8 @@ import {
   Calendar,
   Receipt,
   Video,
-  HardDrive
+  HardDrive,
+  Image as ImageIcon
 } from "lucide-react";
 import {
   Dialog,
@@ -721,6 +722,33 @@ export default function SettingsPage() {
                 </div>
               ) : usage ? (
                 <div className="space-y-4">
+                  {/* Image Generation Usage */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <Label className="flex items-center gap-2">
+                        <ImageIcon className="w-4 h-4" />
+                        Image Generation
+                      </Label>
+                      <span className="text-sm text-muted-foreground">
+                        {usage.image_generation.used} / {usage.image_generation.limit}
+                      </span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-2">
+                      <div 
+                        className={`h-2 rounded-full transition-all ${
+                          (usage.image_generation.used / usage.image_generation.limit) > 0.8 
+                            ? 'bg-red-500' 
+                            : (usage.image_generation.used / usage.image_generation.limit) > 0.5 
+                              ? 'bg-yellow-500' 
+                              : 'bg-gradient-primary'
+                        }`}
+                        style={{ 
+                          width: `${Math.min(100, (usage.image_generation.used / usage.image_generation.limit) * 100)}%` 
+                        }}
+                      />
+                    </div>
+                  </div>
+                  
                   {/* Voice Generation Usage */}
                   <div>
                     <div className="flex items-center justify-between mb-2">
@@ -805,35 +833,54 @@ export default function SettingsPage() {
               ) : null}
               
               {/* Action Buttons */}
-              <div className="flex gap-4">
-                <Button onClick={openCustomerPortal} className="flex items-center gap-2">
-                  <CreditCard className="w-4 h-4" />
-                  Manage Billing
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={fetchBillingHistory}
-                  disabled={loadingHistory}
-                  className="flex items-center gap-2"
-                >
-                  {loadingHistory ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Loading...
-                    </>
+              <div className="space-y-3">
+                <div className="flex gap-4">
+                  {subscription?.status === 'active' || subscription?.plan_name !== 'free' ? (
+                    <Button onClick={openCustomerPortal} className="flex items-center gap-2">
+                      <CreditCard className="w-4 h-4" />
+                      Manage Billing
+                    </Button>
                   ) : (
-                    <>
-                      <Receipt className="w-4 h-4" />
-                      View Billing History
-                    </>
+                    <Button 
+                      onClick={() => document.getElementById('upgrade-section')?.scrollIntoView({ behavior: 'smooth' })}
+                      className="flex items-center gap-2"
+                    >
+                      <Crown className="w-4 h-4" />
+                      View Plans
+                    </Button>
                   )}
-                </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={fetchBillingHistory}
+                    disabled={loadingHistory || subscription?.plan_name === 'free'}
+                    className="flex items-center gap-2"
+                  >
+                    {loadingHistory ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Loading...
+                      </>
+                    ) : (
+                      <>
+                        <Receipt className="w-4 h-4" />
+                        View Billing History
+                      </>
+                    )}
+                  </Button>
+                </div>
+                
+                {/* Show helpful message for free users */}
+                {subscription?.plan_name === 'free' && (
+                  <p className="text-sm text-muted-foreground">
+                    Subscribe to a plan to access billing management and history
+                  </p>
+                )}
               </div>
             </div>
           </Card>
 
           {/* Upgrade Plans */}
-          <Card className="p-6">
+          <Card className="p-6" id="upgrade-section">
             <div className="flex items-center gap-3 mb-6">
               <Crown className="w-5 h-5 text-primary" />
               <h2 className="text-xl font-display font-bold">Upgrade Your Plan</h2>
