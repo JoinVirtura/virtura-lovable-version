@@ -621,7 +621,7 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
           onClick={handleApplyStyle}
           disabled={!canApplyStyle || isProcessing || isApplying}
           size="sm"
-          className={`px-6 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 whitespace-nowrap min-w-[140px] ${
+          className={`px-8 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 whitespace-nowrap min-w-[140px] ${
             (isProcessing || isApplying || project.style?.status === 'processing')
               ? 'bg-gradient-to-r from-primary via-purple-500 to-pink-500'
               : ''
