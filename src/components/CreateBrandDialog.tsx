@@ -87,9 +87,9 @@ export function CreateBrandDialog({
       // Create default collections
       const defaultCollections = [
         { name: 'Product Photos', collection_type: 'product', sort_order: 0 },
-        { name: 'Social Media', collection_type: 'social', sort_order: 1 },
-        { name: 'Campaigns', collection_type: 'campaign', sort_order: 2 },
-        { name: 'Brand Assets', collection_type: 'brand', sort_order: 3 },
+        { name: 'Campaign Assets', collection_type: 'campaign', sort_order: 1 },
+        { name: 'Characters', collection_type: 'character', sort_order: 2 },
+        { name: 'Seasonal', collection_type: 'seasonal', sort_order: 3 },
       ];
 
       const { error: collectionsError } = await supabase

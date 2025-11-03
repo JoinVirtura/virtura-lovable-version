@@ -700,54 +700,6 @@ export function BrandManagerView() {
           {/* Action Buttons */}
           <div className={`space-y-3 pt-4 border-t border-violet-500/20 ${!selectedBrand ? 'opacity-50' : ''}`}>
             <Button
-              variant="default"
-              disabled={!selectedBrand}
-              className="w-full justify-start gap-3 bg-violet-600 hover:bg-violet-700 text-white"
-              onClick={() => {
-                if (!selectedBrand) {
-                  toast.error('Create a brand first to generate assets');
-                  return;
-                }
-                setGenerateDialogOpen(true);
-              }}
-            >
-              <Sparkles className="w-4 h-4" />
-              Generate with AI
-            </Button>
-
-            <Button
-              variant="outline"
-              disabled={!selectedBrand}
-              className="w-full justify-start gap-3 border-violet-500/30 hover:border-violet-500/50 hover:bg-violet-500/10"
-              onClick={() => {
-                if (!selectedBrand) {
-                  toast.error('Create a brand first to upload assets');
-                  return;
-                }
-                navigate('/upload');
-              }}
-            >
-              <Upload className="w-4 h-4" />
-              Upload
-            </Button>
-
-            <Button
-              variant="outline"
-              disabled={!selectedBrand}
-              className="w-full justify-start gap-3 border-violet-500/30 hover:border-violet-500/50 hover:bg-violet-500/10"
-              onClick={() => {
-                if (!selectedBrand) {
-                  toast.error('Create a brand first to import from library');
-                  return;
-                }
-                setLibraryModalOpen(true);
-              }}
-            >
-              <Library className="w-4 h-4" />
-              Choose from Library
-            </Button>
-
-            <Button
               variant="outline"
               disabled={!selectedBrand}
               className="w-full justify-start gap-3 border-violet-500/30 hover:border-violet-500/50 hover:bg-violet-500/10"
