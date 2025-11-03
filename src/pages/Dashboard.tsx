@@ -3054,9 +3054,8 @@ export default function Dashboard() {
                   <div className="space-y-3">
                     <Button 
                       className="w-full justify-start h-12 hover:scale-[1.02] transition-all duration-300 group relative overflow-hidden" 
-                      variant={selectedAvatarIds.size > 0 ? "default" : "outline"}
-                      onClick={() => setGenerateSimilarOpen(true)}
-                      disabled={selectedAvatarIds.size === 0}
+                      variant="outline"
+                      onClick={() => navigate('/dashboard')}
                     >
                       <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
                       <span className="relative z-10">Generate</span>
