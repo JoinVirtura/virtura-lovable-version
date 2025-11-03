@@ -64,6 +64,7 @@ export function BrandManagerView() {
     updateAssetMetadata,
     toggleFavorite,
     deleteCollection,
+    updateCollection,
     getBrandStats,
   } = useBrandAssets();
 
@@ -180,6 +181,43 @@ export function BrandManagerView() {
     setCurrentFolder('smart-' + type);
   };
 
+  const handleDeleteFolder = async (folderId: string, folderName: string, assetCount: number) => {
+    if (assetCount > 0) {
+      const confirmed = window.confirm(
+        `"${folderName}" contains ${assetCount} asset(s). Deleting this folder will move them to "All Assets". Continue?`
+      );
+      if (!confirmed) return;
+    }
+
+    try {
+      await deleteCollection(folderId);
+      
+      if (selectedBrand) {
+        loadCollections(selectedBrand);
+        if (currentFolder === folderId) {
+          setCurrentFolder('all');
+        }
+      }
+    } catch (error) {
+      console.error('Delete folder error:', error);
+    }
+  };
+
+  const handleRenameFolder = async (folderId: string, currentName: string) => {
+    const newName = window.prompt(`Rename folder:`, currentName);
+    if (!newName || newName === currentName) return;
+
+    try {
+      await updateCollection(folderId, { name: newName });
+      
+      if (selectedBrand) {
+        loadCollections(selectedBrand);
+      }
+    } catch (error) {
+      console.error('Rename folder error:', error);
+    }
+  };
+
   // Build nested folder tree
   const rootCollections = collections.filter(c => !c.parent_collection_id);
   const getChildren = (parentId: string) => collections.filter(c => c.parent_collection_id === parentId);
@@ -191,24 +229,51 @@ export function BrandManagerView() {
 
     return (
       <div key={folder.id}>
-        <Button
-          variant="ghost"
-          className={`w-full justify-start gap-2 pl-${2 + depth * 4} ${
-            currentFolder === folder.id ? 'bg-violet-500/20 text-violet-300' : 'hover:bg-violet-500/10'
-          }`}
-          onClick={() => {
-            setCurrentFolder(folder.id);
-            if (children.length > 0) toggleFolder(folder.id);
-          }}
-        >
-          {children.length > 0 && (
-            <ChevronRight className={`w-3 h-3 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
-          )}
-          {children.length === 0 && <span className="w-3" />}
-          {isExpanded ? <FolderOpen className="w-4 h-4" /> : <Folder className="w-4 h-4" />}
-          <span className="flex-1 text-left text-sm">{folder.name}</span>
-          <span className="text-xs text-muted-foreground">{assetCount}</span>
-        </Button>
+        <div className="flex items-center group">
+          <Button
+            variant="ghost"
+            className={`flex-1 justify-start gap-2 pl-${2 + depth * 4} ${
+              currentFolder === folder.id ? 'bg-violet-500/20 text-violet-300' : 'hover:bg-violet-500/10'
+            }`}
+            onClick={() => {
+              setCurrentFolder(folder.id);
+              if (children.length > 0) toggleFolder(folder.id);
+            }}
+          >
+            {children.length > 0 && (
+              <ChevronRight className={`w-3 h-3 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+            )}
+            {children.length === 0 && <span className="w-3" />}
+            {isExpanded ? <FolderOpen className="w-4 h-4" /> : <Folder className="w-4 h-4" />}
+            <span className="flex-1 text-left text-sm">{folder.name}</span>
+            <span className="text-xs text-muted-foreground">{assetCount}</span>
+          </Button>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                size="icon" 
+                variant="ghost" 
+                className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <MoreVertical className="w-3 h-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="bg-gray-900 border-violet-500/30">
+              <DropdownMenuItem onClick={() => handleRenameFolder(folder.id, folder.name)}>
+                <Edit3 className="w-4 h-4 mr-2" />
+                Rename
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                className="text-red-400"
+                onClick={() => handleDeleteFolder(folder.id, folder.name, assetCount)}
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
         {isExpanded && children.map(child => renderFolderTree(child, depth + 1))}
       </div>
     );
@@ -227,7 +292,7 @@ export function BrandManagerView() {
     <StudioBackground>
       <div className="flex h-screen">
         {/* Left Sidebar */}
-        <div className="w-80 border-r border-violet-500/20 bg-black/40 backdrop-blur-xl p-6 space-y-6 overflow-y-auto">
+        <div className="w-64 border-r border-violet-500/20 bg-black/40 backdrop-blur-xl p-6 space-y-6 overflow-y-auto">
           {/* Brand Selector */}
           <div>
             <Label className="text-sm text-muted-foreground mb-2 block">Active Brand</Label>
@@ -246,25 +311,6 @@ export function BrandManagerView() {
             </Select>
           </div>
 
-          {/* Stats Cards */}
-          {selectedBrand && (
-            <>
-              <Card className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 border-violet-500/20 p-4">
-                <h3 className="text-sm text-muted-foreground mb-2">Total Assets</h3>
-                <p className="text-3xl font-bold text-white">{brandStats.totalAssets}</p>
-              </Card>
-
-              <Card className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 border-violet-500/20 p-4">
-                <h3 className="text-sm text-muted-foreground mb-2">Active Campaigns</h3>
-                <p className="text-3xl font-bold text-white">{brandStats.activeCampaigns}</p>
-              </Card>
-
-              <Card className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 border-violet-500/20 p-4">
-                <h3 className="text-sm text-muted-foreground mb-2">Avg Performance</h3>
-                <p className="text-3xl font-bold text-white">{brandStats.avgPerformance}</p>
-              </Card>
-            </>
-          )}
 
           {/* Folders Section */}
           {selectedBrand && (
@@ -400,11 +446,30 @@ export function BrandManagerView() {
         <div className="flex-1 overflow-y-auto">
           <div className="p-8">
             {/* Header */}
+            <div className="mb-6">
+              <h1 className="text-3xl font-display font-bold text-white mb-6">Brand Manager</h1>
+              
+              {/* Stats Row - Horizontal */}
+              {selectedBrand && (
+                <div className="grid grid-cols-3 gap-4 mb-6">
+                  <Card className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 border-violet-500/20 p-6">
+                    <h3 className="text-sm text-muted-foreground mb-2">Total Assets</h3>
+                    <p className="text-4xl font-bold text-white">{brandStats.totalAssets}</p>
+                  </Card>
+                  <Card className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 border-violet-500/20 p-6">
+                    <h3 className="text-sm text-muted-foreground mb-2">Active Campaigns</h3>
+                    <p className="text-4xl font-bold text-white">{brandStats.activeCampaigns}</p>
+                  </Card>
+                  <Card className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 border-violet-500/20 p-6">
+                    <h3 className="text-sm text-muted-foreground mb-2">Avg Performance</h3>
+                    <p className="text-4xl font-bold text-white">{brandStats.avgPerformance}</p>
+                  </Card>
+                </div>
+              )}
+            </div>
+
+            {/* Search and Filters */}
             <div className="flex items-center gap-4 mb-6">
-              <div className="flex-shrink-0">
-                <h1 className="text-3xl font-display font-bold text-white">Brand Manager</h1>
-                <p className="text-sm text-violet-200 mt-1">{assets.length} assets</p>
-              </div>
 
               <div className="flex-1 max-w-xl">
                 <div className="relative">
@@ -417,6 +482,8 @@ export function BrandManagerView() {
                   />
                 </div>
               </div>
+
+              <p className="text-sm text-violet-200 whitespace-nowrap">{assets.length} assets</p>
 
               <div className="flex gap-2 flex-shrink-0">
                 <Select value={sortBy} onValueChange={setSortBy}>
@@ -503,9 +570,12 @@ export function BrandManagerView() {
                   >
                     <div className="relative aspect-square">
                       <img
-                        src={asset.thumbnail_url || asset.file_url}
+                        src={asset.thumbnail_url || asset.file_url || '/placeholder.svg'}
                         alt={asset.title}
                         className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = '/placeholder.svg';
+                        }}
                       />
                       <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <Button

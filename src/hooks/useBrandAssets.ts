@@ -328,6 +328,32 @@ export const useBrandAssets = () => {
     await updateAssetMetadata(assetId, { is_favorite: !asset.is_favorite });
   };
 
+  // Update collection
+  const updateCollection = async (
+    collectionId: string,
+    updates: Partial<BrandCollection>
+  ) => {
+    try {
+      const { error } = await supabase
+        .from('brand_collections')
+        .update(updates)
+        .eq('id', collectionId);
+
+      if (error) throw error;
+
+      setCollections(
+        collections.map((c) =>
+          c.id === collectionId ? { ...c, ...updates } : c
+        )
+      );
+      toast.success('Folder updated successfully');
+    } catch (err: any) {
+      console.error('Error updating collection:', err);
+      toast.error('Failed to update folder');
+      throw err;
+    }
+  };
+
   // Delete collection
   const deleteCollection = async (collectionId: string) => {
     try {
@@ -399,6 +425,7 @@ export const useBrandAssets = () => {
     updateAssetMetadata,
     importFromLibrary,
     toggleFavorite,
+    updateCollection,
     deleteCollection,
     getBrandStats,
   };
