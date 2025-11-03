@@ -157,7 +157,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
         <SidebarSeparator className={isCollapsed ? "mx-1" : "mx-3"} />
         
         <button 
-          onClick={() => navigate('/settings')}
+          onClick={() => onViewChange('settings')}
           className={`flex items-center transition-colors rounded-lg ml-3 mr-3 ${isCollapsed ? "px-2 py-3 justify-center" : "pl-4 pr-4 py-3 gap-3"} hover:bg-violet-500/5 hover:text-violet-300 text-white`}
         >
           <Avatar className="w-8 h-8 ring-2 ring-violet-500/30 shrink-0">

@@ -37,6 +37,7 @@ import { EditTitleDialog } from "@/components/EditTitleDialog";
 import { DashboardLibraryView } from "@/components/DashboardLibraryView";
 import { ProjectTimeline } from "@/components/studio/ProjectTimeline";
 import { useStudioProject } from "@/hooks/useStudioProject";
+import { SettingsContent } from "@/components/SettingsContent";
 import { 
   Play, 
   Sparkles, 
@@ -1254,6 +1255,8 @@ export default function Dashboard() {
     switch (activeView) {
       case "overview":
         return <OverviewPage onViewChange={setActiveView} />;
+      case "settings":
+        return <SettingsContent />;
       case "talking-avatar":
         return (
           <div className="h-screen overflow-y-auto">
