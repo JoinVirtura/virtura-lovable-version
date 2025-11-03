@@ -228,7 +228,7 @@ async function startVideoGeneration(
   if (hasAudio) {
     console.log('🎵 Starting lip-sync prediction with audio');
     const prediction = await replicate.predictions.create({
-      version: "bytedance/omni-human:latest",
+      model: "bytedance/omni-human",
       input: {
         image: avatarImageUrl,
         audio: audioUrl,
@@ -241,18 +241,50 @@ async function startVideoGeneration(
   } else {
     console.log('🎬 Starting motion prediction without audio');
     console.log('📝 Motion prompt:', prompt || 'natural subtle movements');
+    console.log('🎯 Selected engine:', settings.engine);
     
+    const selectedEngine = settings.engine || 'kling-motion';
+    
+    if (selectedEngine === 'kling-motion') {
+      const prediction = await replicate.predictions.create({
+        model: "minimax/video-01",
+        input: {
+          prompt: prompt || "natural subtle movements, professional demeanor",
+          first_frame_image: avatarImageUrl,
+          prompt_optimizer: true
+        }
+      });
+      console.log('✅ Kling Motion prediction created:', prediction.id);
+      return prediction.id;
+    }
+    
+    if (selectedEngine === 'stable-video') {
+      const prediction = await replicate.predictions.create({
+        model: "stability-ai/stable-video-diffusion",
+        input: {
+          cond_aug: 0.02,
+          decoding_t: 14,
+          input_image: avatarImageUrl,
+          video_length: "14_frames_with_svd",
+          sizing_strategy: "maintain_aspect_ratio",
+          motion_bucket_id: 127,
+          frames_per_second: 6
+        }
+      });
+      console.log('✅ Stable Video prediction created:', prediction.id);
+      return prediction.id;
+    }
+    
+    // Fallback to Kling Motion
     const prediction = await replicate.predictions.create({
-      version: "minimax/video-01:latest",
+      model: "minimax/video-01",
       input: {
-        image: avatarImageUrl,
-        prompt: prompt || "person with natural subtle movements, professional demeanor",
-        duration: Math.min(settings.duration || 5, 10),
-        aspect_ratio: settings.ratio || '9:16',
-        quality: settings.quality || '4K'
+        prompt: prompt || "natural subtle movements",
+        first_frame_image: avatarImageUrl,
+        prompt_optimizer: true
       }
     });
-    console.log('✅ Motion prediction created:', prediction.id);
+    console.log('✅ Fallback Kling Motion prediction created:', prediction.id);
     return prediction.id;
   }
 }
