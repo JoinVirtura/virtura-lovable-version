@@ -3063,7 +3063,7 @@ export default function Dashboard() {
                     <Button 
                       className="w-full justify-start h-12 hover:scale-[1.02] transition-all duration-300 group relative overflow-hidden" 
                       variant={selectedAvatarIds.size > 0 ? "default" : "outline"}
-                      onClick={() => navigate('/dashboard?view=brands')}
+                      onClick={() => setActiveView("brands")}
                     >
                       <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
                       <span className="relative z-10">Create Brand</span>
