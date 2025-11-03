@@ -195,7 +195,7 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
 
           {/* Heading */}
           <div className="space-y-1">
-            <h2 className="text-xl font-bold text-white">Upload Avatar Image</h2>
+            <h2 className="text-xl font-bold text-white">Upload Image</h2>
             <p className="text-sm text-gray-400">
               {isDragOver ? 'Drop your image here' : 'Drag and drop or click to browse'}
             </p>
@@ -226,7 +226,7 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
               disabled={uploadProgress > 0 && uploadProgress < 100}
             >
               <Upload className="h-4 w-4 mr-2" />
-              Choose File
+              File
             </Button>
             
             <Button
@@ -236,7 +236,7 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
               disabled={uploadProgress > 0 && uploadProgress < 100}
             >
               <Library className="h-4 w-4 mr-2" />
-              Choose from Library
+              Library
             </Button>
           </div>
 
