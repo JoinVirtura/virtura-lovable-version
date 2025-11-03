@@ -13,7 +13,7 @@ serve(async (req) => {
 
   try {
     const { plan } = await req.json();
-    if (!plan || !["basic", "pro", "enterprise"].includes(plan)) {
+    if (!plan || !["individual", "pro", "enterprise"].includes(plan)) {
       return new Response(JSON.stringify({ error: "Invalid plan" }), { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 });
     }
 
@@ -44,7 +44,7 @@ serve(async (req) => {
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { apiVersion: "2023-10-16" });
 
-    const priceMap: Record<string, number> = { basic: 900, pro: 1900, enterprise: 4900 };
+    const priceMap: Record<string, number> = { individual: 2000, pro: 9900, enterprise: 29900 };
 
     const origin = req.headers.get("origin") || "http://localhost:5173";
 
