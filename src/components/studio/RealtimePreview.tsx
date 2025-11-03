@@ -30,6 +30,8 @@ interface RealtimePreviewProps {
   isProcessing?: boolean;
   onStepChange?: (stepId: string) => void;
   onResetAvatar?: () => void;
+  onSaveToLibrary?: () => Promise<void>;
+  isSaved?: boolean;
 }
 
 const PREVIEW_MODES = [
@@ -42,7 +44,9 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
   project, 
   isProcessing = false,
   onStepChange,
-  onResetAvatar
+  onResetAvatar,
+  onSaveToLibrary,
+  isSaved = false
 }) => {
   const [previewMode, setPreviewMode] = useState('desktop');
   const [isPlaying, setIsPlaying] = useState(false);
@@ -252,8 +256,8 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                     </Badge>
                   )}
                   
-                  {/* Download button on hover */}
-                  <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
+                  {/* Action buttons on hover */}
+                  <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 flex gap-2">
                     <Button 
                       size="sm" 
                       variant="secondary" 
@@ -278,6 +282,29 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                     >
                       <Download className="h-3 w-3 mr-1" />
                       Download
+                    </Button>
+                    
+                    <Button 
+                      size="sm" 
+                      variant="secondary" 
+                      className={`backdrop-blur-sm transition-colors ${
+                        isSaved 
+                          ? 'bg-red-500/20 hover:bg-red-500/30 text-red-500' 
+                          : 'bg-white/80 hover:bg-white/90'
+                      }`}
+                      onClick={async () => {
+                        if (onSaveToLibrary) {
+                          await onSaveToLibrary();
+                        }
+                      }}
+                      disabled={!onSaveToLibrary}
+                    >
+                      <Heart 
+                        className={`h-3 w-3 mr-1 transition-all ${
+                          isSaved ? 'fill-red-500' : ''
+                        }`} 
+                      />
+                      {isSaved ? 'Saved' : 'Save'}
                     </Button>
                   </div>
                 </div>

@@ -334,47 +334,6 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
         </Card>
       )}
 
-      {/* Video Result - Compact Success Banner */}
-      {project.video?.status === 'completed' && project.video?.videoUrl && (
-        <Card className="border-green-500/30 bg-gradient-to-br from-green-500/10 to-emerald-500/5">
-          <CardContent className="p-4">
-            <div className="space-y-4">
-              {/* Success Message */}
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-full bg-green-500/20">
-                  <CheckCircle className="h-5 w-5 text-green-500" />
-                </div>
-                <div>
-                  <div className="font-semibold">Video Generated Successfully!</div>
-                  <div className="text-sm text-muted-foreground">
-                    View your video in the Live Preview panel →
-                  </div>
-                </div>
-              </div>
-              
-              {/* Action Buttons */}
-              <div className="grid grid-cols-2 gap-3">
-                <Button 
-                  onClick={onDownload} 
-                  size="default"
-                  className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
-                >
-                  <Download className="h-4 w-4 mr-2" />
-                  Download Video
-                </Button>
-                <Button 
-                  onClick={onSaveToLibrary} 
-                  variant="outline"
-                  className="border-green-500/30 hover:bg-green-500/10"
-                >
-                  <CheckCircle className="h-4 w-4 mr-2" />
-                  Save to Library
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Professional Video Direction */}
       <Card className="p-6 bg-gradient-to-br from-blue-500/5 to-blue-900/5 border-blue-500/20">

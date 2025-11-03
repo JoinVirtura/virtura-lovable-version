@@ -41,6 +41,7 @@ const VIDEO_PRO_STEPS = [
 export default function VideoProPage() {
   const [currentStep, setCurrentStep] = useState('upload');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isVideoSaved, setIsVideoSaved] = useState(false);
   
   const {
     project,
@@ -55,6 +56,13 @@ export default function VideoProPage() {
   } = useStudioProject(false); // Start fresh, don't load old projects
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Track if video URL changes to reset saved state
+  useEffect(() => {
+    if (project.video?.videoUrl) {
+      setIsVideoSaved(false);
+    }
+  }, [project.video?.videoUrl]);
 
   // Load pre-selected avatar from Library
   useEffect(() => {
@@ -233,6 +241,11 @@ export default function VideoProPage() {
                 isProcessing={isProcessing}
                 onStepChange={handleStepChange}
                 onResetAvatar={handleResetAvatar}
+                onSaveToLibrary={async () => {
+                  await saveToLibrary();
+                  setIsVideoSaved(true);
+                }}
+                isSaved={isVideoSaved}
               />
             </div>
             {/* Processing Status */}
