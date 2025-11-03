@@ -299,10 +299,11 @@ export function SettingsContent() {
       price: "$20/mo",
       highlights: [
         "200 tokens/month",
-        "Image & video generations",
+        "Image & Video",
         "Export packs",
         "Tokens never expire",
         "Community support",
+        "Voice cloning",
       ],
       popular: false,
       description: "For creators, hobbyists, and freelancers"
@@ -877,9 +878,8 @@ export function SettingsContent() {
                   <div className="text-3xl font-bold">{plan.price}</div>
                   <ul className="space-y-3">
                     {plan.highlights.map((highlight, idx) => (
-                      <li key={idx} className="flex items-start gap-2">
-                        <Zap className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                        <span className="text-sm">{highlight}</span>
+                      <li key={idx} className="text-sm">
+                        {highlight}
                       </li>
                     ))}
                   </ul>
