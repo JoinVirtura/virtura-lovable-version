@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      api_cost_tracking: {
+        Row: {
+          api_provider: string
+          cost_usd: number
+          created_at: string
+          id: string
+          metadata: Json | null
+          model_used: string | null
+          resource_type: string
+          tokens_charged: number | null
+          user_id: string
+        }
+        Insert: {
+          api_provider: string
+          cost_usd?: number
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          model_used?: string | null
+          resource_type: string
+          tokens_charged?: number | null
+          user_id: string
+        }
+        Update: {
+          api_provider?: string
+          cost_usd?: number
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          model_used?: string | null
+          resource_type?: string
+          tokens_charged?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       avatar_library: {
         Row: {
           audio_url: string | null
