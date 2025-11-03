@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import virturaLogo from "/lovable-uploads/f264298f-2877-485b-affc-d705994fc848.png";
+import { useProfile } from "@/hooks/useProfile";
 import { 
   Sidebar,
   SidebarContent,
@@ -38,6 +39,7 @@ import {
   Image
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { ProfileSettingsDialog } from "./ProfileSettingsDialog";
 
 interface VirturaSidebarProps {
   activeView: string;
@@ -47,9 +49,11 @@ interface VirturaSidebarProps {
 
 export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: VirturaSidebarProps) {
   const { state } = useSidebar();
-  const { signOut } = useAuth();
+  const { user, signOut } = useAuth();
+  const { profile } = useProfile();
   const navigate = useNavigate();
   const isCollapsed = state === "collapsed";
+  const [showProfileDialog, setShowProfileDialog] = useState(false);
   
   const mainItems = [
     { id: "overview", label: "Home", icon: Home },
@@ -155,20 +159,27 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
         <SidebarSeparator className={isCollapsed ? "mx-1" : "mx-3"} />
         
         <button 
-          onClick={() => onViewChange("settings")}
-          className={`flex items-center transition-colors rounded-lg ml-3 mr-3 ${isCollapsed ? "px-2 py-3 justify-center" : "pl-4 pr-4 py-3 gap-3"} ${
-            activeView === "settings" 
-              ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30" 
-              : "hover:bg-violet-500/5 hover:text-violet-300 text-white"
-          }`}
+          onClick={() => setShowProfileDialog(true)}
+          className={`flex items-center transition-colors rounded-lg ml-3 mr-3 ${isCollapsed ? "px-2 py-3 justify-center" : "pl-4 pr-4 py-3 gap-3"} hover:bg-violet-500/5 hover:text-violet-300 text-white`}
         >
           <Avatar className="w-8 h-8 ring-2 ring-violet-500/30 shrink-0">
-            <AvatarImage src="/lovable-uploads/jahi-bentley-logo.png" />
-            <AvatarFallback className="bg-violet-500/20 text-violet-300">JB</AvatarFallback>
+            <AvatarImage src={profile?.avatar_url || undefined} />
+            <AvatarFallback className="bg-violet-500/20 text-violet-300">
+              {profile?.display_name
+                ? profile.display_name
+                    .split(' ')
+                    .map((n) => n[0])
+                    .join('')
+                    .toUpperCase()
+                    .slice(0, 2)
+                : user?.email?.[0].toUpperCase() || 'U'}
+            </AvatarFallback>
           </Avatar>
           {!isCollapsed && (
             <div className="flex-1 min-w-0 text-left">
-              <p className="font-medium text-sm text-white">Jahi Bentley</p>
+              <p className="font-medium text-sm text-white">
+                {profile?.display_name || user?.email?.split('@')[0] || 'User'}
+              </p>
             </div>
           )}
         </button>
@@ -183,6 +194,11 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
           </SidebarMenuButton>
         </div>
       </SidebarFooter>
+
+      <ProfileSettingsDialog 
+        open={showProfileDialog} 
+        onOpenChange={setShowProfileDialog} 
+      />
     </Sidebar>
   );
 }
