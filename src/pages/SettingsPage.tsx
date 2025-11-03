@@ -20,6 +20,14 @@ import {
   Upload,
   Loader2
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { MotionBackground } from "@/components/MotionBackground";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -37,6 +45,14 @@ export default function SettingsPage() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Password change dialog state
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({
+    newPassword: '',
+    confirmPassword: ''
+  });
+  const [changingPassword, setChangingPassword] = useState(false);
 
   // Pre-fill form when profile loads
   useEffect(() => {
@@ -114,6 +130,54 @@ export default function SettingsPage() {
       .join("")
       .toUpperCase()
       .slice(0, 2);
+  };
+
+  const handlePasswordChange = async () => {
+    // Validate passwords match
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      toast({
+        title: "Passwords don't match",
+        description: "Please make sure both passwords are identical",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Validate password strength (min 6 chars)
+    if (passwordForm.newPassword.length < 6) {
+      toast({
+        title: "Password too short",
+        description: "Password must be at least 6 characters",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setChangingPassword(true);
+    
+    try {
+      // Use Supabase auth to update password
+      const { error } = await supabase.auth.updateUser({
+        password: passwordForm.newPassword
+      });
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Password changed",
+        description: "Your password has been updated successfully",
+      });
+      setShowPasswordDialog(false);
+      setPasswordForm({ newPassword: '', confirmPassword: '' });
+    } catch (error: any) {
+      toast({
+        title: "Password change failed",
+        description: error.message || "Failed to change password",
+        variant: "destructive",
+      });
+    } finally {
+      setChangingPassword(false);
+    }
   };
 
   const startSubscription = async (planId: string) => {
@@ -398,8 +462,12 @@ export default function SettingsPage() {
               
               <div className="space-y-3">
                 <Label>Password</Label>
-                <Button variant="outline">Change Password</Button>
-                <Button variant="outline">Two-Factor Authentication</Button>
+                <div className="flex gap-3">
+                  <Button variant="outline" onClick={() => setShowPasswordDialog(true)}>
+                    Change Password
+                  </Button>
+                  <Button variant="outline">Two-Factor Authentication</Button>
+                </div>
               </div>
             </div>
           </Card>
@@ -554,6 +622,65 @@ export default function SettingsPage() {
             </div>
           </Card>
         </div>
+
+        {/* Password Change Dialog */}
+        <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Change Password</DialogTitle>
+              <DialogDescription>
+                Enter your new password below. Make sure it's at least 6 characters long.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="newPassword">New Password</Label>
+                <Input
+                  id="newPassword"
+                  type="password"
+                  value={passwordForm.newPassword}
+                  onChange={(e) => setPasswordForm({...passwordForm, newPassword: e.target.value})}
+                  placeholder="Enter new password"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  value={passwordForm.confirmPassword}
+                  onChange={(e) => setPasswordForm({...passwordForm, confirmPassword: e.target.value})}
+                  placeholder="Confirm new password"
+                />
+              </div>
+            </div>
+            
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setShowPasswordDialog(false)}
+                disabled={changingPassword}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handlePasswordChange}
+                disabled={changingPassword || !passwordForm.newPassword || !passwordForm.confirmPassword}
+              >
+                {changingPassword ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Changing...
+                  </>
+                ) : (
+                  "Change Password"
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
   );
