@@ -160,38 +160,6 @@ export default function VideoProPage() {
         ))}
       </div>
 
-      {/* Hero Header */}
-      <div className="relative bg-gradient-to-b from-black/40 via-black/20 to-transparent backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-6 py-3">
-          <div className="flex items-center justify-between gap-4">
-            {/* Left: Video Pro Branding */}
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-violet-400 via-purple-400 to-fuchsia-400 bg-clip-text text-transparent leading-tight">
-                  Video Pro
-                </h1>
-                <Badge variant="secondary" className="text-xs bg-violet-500/20 text-violet-300 border-violet-500/30">
-                  Ultra-HD
-                </Badge>
-              </div>
-            </div>
-            
-            {/* Center: Step Navigation */}
-            <div className="flex-1 flex justify-center">
-              <BottomStepNavigation
-                currentStep={currentStep}
-                steps={VIDEO_PRO_STEPS}
-                onStepChange={handleStepChange}
-                isProcessing={isProcessing}
-                getStepStatus={getStepStatus}
-              />
-            </div>
-          </div>
-        </div>
-        
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-violet-500/20 to-transparent" />
-      </div>
-
       {/* Main Studio Interface */}
       <div className="w-full px-6 py-6 mb-8">
         <div className="grid lg:grid-cols-12 gap-6">
