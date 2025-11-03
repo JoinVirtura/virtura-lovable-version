@@ -2,10 +2,12 @@ import React, { useState, useRef, useCallback } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { Button } from '@/components/ui/button';
 import { CircularProgress } from '@/components/ui/circular-progress';
+import { AvatarLibraryModal } from '@/components/AvatarLibraryModal';
 import {
   Upload,
   Check,
-  FileImage
+  FileImage,
+  Library
 } from 'lucide-react';
 import type { StudioProject } from '@/hooks/useStudioProject';
 
@@ -27,6 +29,7 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isDragOver, setIsDragOver] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -95,6 +98,37 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
       handleFileUpload(imageFile);
     }
   }, [handleFileUpload]);
+
+  const handleLibrarySelect = useCallback((avatarUrl: string) => {
+    setUploadedImage(avatarUrl);
+    setUploadProgress(100);
+    
+    onUpdate({
+      avatar: {
+        type: 'library',
+        originalUrl: avatarUrl,
+        processedUrl: avatarUrl,
+        status: 'completed',
+        quality: '4K',
+        metadata: {
+          resolution: '4K',
+          faceAlignment: 95,
+          consistency: 90
+        }
+      }
+    });
+    
+    setIsLibraryOpen(false);
+    
+    toast({
+      title: "✓ Avatar loaded from library!",
+      description: "Proceeding to style transfer..."
+    });
+    
+    setTimeout(() => {
+      onStepComplete?.();
+    }, 1000);
+  }, [onUpdate, onStepComplete, toast]);
 
   return (
     <div 
@@ -185,16 +219,28 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
             </div>
           </div>
 
-          {/* Choose File Button */}
-          <Button
-            onClick={() => fileInputRef.current?.click()}
-            variant="outline"
-            className="mt-2 bg-violet-500/10 border-violet-500/30 hover:bg-violet-500/20 hover:border-violet-400"
-            disabled={uploadProgress > 0 && uploadProgress < 100}
-          >
-            <Upload className="h-4 w-4 mr-2" />
-            Choose File
-          </Button>
+          {/* Choose File Buttons */}
+          <div className="flex gap-3 justify-center">
+            <Button
+              onClick={() => fileInputRef.current?.click()}
+              variant="outline"
+              className="mt-2 bg-violet-500/10 border-violet-500/30 hover:bg-violet-500/20 hover:border-violet-400"
+              disabled={uploadProgress > 0 && uploadProgress < 100}
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              Choose File
+            </Button>
+            
+            <Button
+              onClick={() => setIsLibraryOpen(true)}
+              variant="outline"
+              className="mt-2 bg-violet-500/10 border-violet-500/30 hover:bg-violet-500/20 hover:border-violet-400"
+              disabled={uploadProgress > 0 && uploadProgress < 100}
+            >
+              <Library className="h-4 w-4 mr-2" />
+              Choose from Library
+            </Button>
+          </div>
 
           {/* Upload Progress */}
           {uploadProgress > 0 && uploadProgress < 100 && (
@@ -215,6 +261,12 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
           />
         </div>
       )}
+
+      <AvatarLibraryModal
+        open={isLibraryOpen}
+        onOpenChange={setIsLibraryOpen}
+        onSelectAvatar={handleLibrarySelect}
+      />
     </div>
   );
 };

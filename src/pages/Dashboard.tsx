@@ -114,8 +114,6 @@ export default function Dashboard() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [activeView, setActiveView] = useState("overview");
-  const { project, updateProject } = useStudioProject(false);
-  const [currentStep, setCurrentStep] = useState<string>('avatar');
 
   // Fetch saved avatars from Supabase for Library view
   const fetchSavedAvatars = async () => {
@@ -1820,15 +1818,6 @@ export default function Dashboard() {
                           </Button>
                         ))}
                       </div>
-                    </div>
-
-                    {/* Horizontal Project Timeline */}
-                    <div className="mt-6 pt-6 border-t border-violet-500/10">
-                      <ProjectTimeline 
-                        project={project}
-                        onUpdate={updateProject}
-                        currentStep={currentStep}
-                      />
                     </div>
 
                     {/* Advanced Options */}
