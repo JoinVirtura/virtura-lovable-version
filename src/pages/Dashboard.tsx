@@ -520,334 +520,35 @@ export default function Dashboard() {
     return matchesSearch && matchesCategory;
   });
 
-  // Mock library data with diverse avatars and enhanced brand assets
-  const assets = [
-    // Diverse Avatars
-    {
-      id: 1,
-      type: "Avatar",
-      title: "Confident CEO in Modern Office",
-      date: "Dec 15, 2024 2:30 PM",
-      format: "JPG",
-      tags: ["Professional", "Business", "Executive"],
-      thumbnail: businessExecutiveImg,
-      quality: 98,
-      generationTime: "3.2s",
-      fileSize: "2.1 MB",
-      category: "Avatars"
-    },
-    {
-      id: 2,
-      type: "Avatar", 
-      title: "Bold Creative Director Portrait",
-      date: "Dec 14, 2024 4:45 PM",
-      format: "PNG",
-      tags: ["Creative", "Artistic", "Bohemian"],
-      thumbnail: creativeArtistImg,
-      quality: 96,
-      generationTime: "2.8s",
-      fileSize: "3.4 MB",
-      category: "Avatars"
-    },
-    {
-      id: 3,
-      type: "Avatar",
-      title: "Elegant Fashion Editorial Shot",
-      date: "Dec 13, 2024 1:20 PM",
-      format: "JPG",
-      tags: ["Fashion", "Luxury", "Editorial"],
-      thumbnail: fashionModelImg,
-      quality: 97,
-      generationTime: "3.5s",
-      fileSize: "2.3 MB",
-      category: "Avatars"
-    },
-    {
-      id: 4,
-      type: "Avatar",
-      title: "Silicon Valley Visionary",
-      date: "Dec 12, 2024 11:15 AM",
-      format: "PNG",
-      tags: ["Technology", "Startup", "Innovation"],
-      thumbnail: techEntrepreneurImg,
-      quality: 95,
-      generationTime: "3.7s",
-      fileSize: "2.7 MB",
-      category: "Avatars"
-    },
-    {
-      id: 5,
-      type: "Avatar",
-      title: "Trusted Medical Expert",
-      date: "Dec 11, 2024 9:30 AM",
-      format: "JPG",
-      tags: ["Medical", "Healthcare", "Doctor"],
-      thumbnail: healthcareProfessionalImg,
-      quality: 99,
-      generationTime: "2.9s",
-      fileSize: "2.5 MB",
-      category: "Avatars"
-    },
-    {
-      id: 6,
-      type: "Avatar",
-      title: "Dynamic Personal Trainer",
-      date: "Dec 10, 2024 3:22 PM",
-      format: "PNG",
-      tags: ["Fitness", "Health", "Athletic"],
-      thumbnail: fitnessCoachImg,
-      quality: 94,
-      generationTime: "3.1s",
-      fileSize: "2.8 MB",
-      category: "Avatars"
-    },
-    // Professional Headshots
-    {
-      id: 7,
-      type: "Headshot",
-      title: "Executive C-Suite Portrait",
-      date: "Dec 9, 2024 1:20 PM",
-      format: "JPG",
-      tags: ["Corporate", "Executive", "Professional"],
-      thumbnail: corporateExecutiveImg,
-      quality: 97,
-      generationTime: "3.5s",
-      fileSize: "2.3 MB",
-      category: "Headshots"
-    },
-    {
-      id: 8,
-      type: "Headshot",
-      title: "Professional LinkedIn Headshot",
-      date: "Dec 8, 2024 11:15 AM",
-      format: "PNG",
-      tags: ["LinkedIn", "Professional", "Portrait"],
-      thumbnail: linkedinProfileImg,
-      quality: 99,
-      generationTime: "3.7s",
-      fileSize: "2.7 MB",
-      category: "Headshots"
-    },
-    {
-      id: 9,
-      type: "Headshot",
-      title: "Best-Selling Author Bio Photo",
-      date: "Dec 7, 2024 4:45 PM",
-      format: "JPG",
-      tags: ["Author", "Writer", "Creative"],
-      thumbnail: authorPortraitImg,
-      quality: 96,
-      generationTime: "3.2s",
-      fileSize: "2.4 MB",
-      category: "Headshots"
-    },
-    // Enhanced Brand Assets with Multiple Images
-    {
-      id: 10,
-      type: "Brand Asset",
-      title: "Premium Logo Design Collection",
-      date: "Dec 6, 2024 3:22 PM",
-      format: "SVG",
-      tags: ["Logo", "Branding", "Identity"],
-      thumbnail: avatarLogoDesignerImg,
-      quality: 100,
-      generationTime: "1.5s",
-      fileSize: "450 KB",
-      category: "Brand Assets",
-      imageCount: 15,
-      description: "15 logo variations including main, monochrome, icon, and social media versions"
-    },
-    {
-      id: 11,
-      type: "Brand Asset",
-      title: "Q4 Marketing Campaign Assets",
-      date: "Dec 5, 2024 9:30 AM",
-      format: "PNG",
-      tags: ["Marketing", "Campaign", "Templates"],
-      thumbnail: avatarMarketingManagerImg,
-      quality: 95,
-      generationTime: "4.2s",
-      fileSize: "12.9 MB",
-      category: "Brand Assets",
-      imageCount: 24,
-      description: "24 marketing materials: banners, ads, social posts, email headers"
-    },
-    {
-      id: 12,
-      type: "Brand Asset",
-      title: "Multi-Platform Social Media Pack",
-      date: "Dec 4, 2024 2:15 PM",
-      format: "JPG",
-      tags: ["Social", "Instagram", "Facebook", "Twitter"],
-      thumbnail: avatarSocialMediaManagerImg,
-      quality: 94,
-      generationTime: "3.8s",
-      fileSize: "8.2 MB",
-      category: "Brand Assets",
-      imageCount: 32,
-      description: "32 social media assets for all major platforms with various sizes"
-    },
-    {
-      id: 13,
-      type: "Brand Asset",
-      title: "Corporate Presentation Essentials",
-      date: "Dec 3, 2024 11:45 AM",
-      format: "PNG",
-      tags: ["Presentation", "Business", "Professional"],
-      thumbnail: avatarBusinessPresenterImg,
-      quality: 98,
-      generationTime: "5.1s",
-      fileSize: "15.7 MB",
-      category: "Brand Assets",
-      imageCount: 45,
-      description: "45 presentation slides, charts, and business graphics"
-    },
-    // Video Content (Multiple Videos)
-    {
-      id: 14,
-      type: "Video",
-      title: "30-Second Brand Intro Reel",
-      date: "Dec 2, 2024 5:45 PM",
-      format: "MP4",
-      tags: ["Avatar", "Video", "Introduction", "Reel"],
-      thumbnail: avatarVideoCreatorImg,
-      quality: 96,
-      generationTime: "45.2s",
-      fileSize: "25.7 MB",
-      category: "Videos",
-      duration: "5s",
-      description: "Short avatar introduction video for social media"
-    },
-    {
-      id: 15,
-      type: "Video",
-      title: "Executive Testimonial Video",
-      date: "Dec 1, 2024 3:20 PM",
-      format: "MP4",
-      tags: ["Professional", "Business", "Showcase"],
-      thumbnail: avatarVideoProducerImg,
-      quality: 98,
-      generationTime: "52.8s",
-      fileSize: "31.4 MB",
-      category: "Videos",
-      duration: "8s",
-      description: "Professional avatar showcase for corporate use"
-    },
-    {
-      id: 16,
-      type: "Video",
-      title: "Artistic Motion Graphics Showcase",
-      date: "Nov 30, 2024 1:10 PM",
-      format: "MP4",
-      tags: ["Creative", "Portfolio", "Artistic"],
-      thumbnail: avatarCreativeVideoArtistImg,
-      quality: 94,
-      generationTime: "38.7s",
-      fileSize: "22.1 MB",
-      category: "Videos",
-      duration: "6s",
-      description: "Artistic avatar demonstration for creative portfolios"
-    },
-    {
-      id: 17,
-      type: "Video",
-      title: "Viral Instagram Story Template",
-      date: "Nov 29, 2024 4:35 PM",
-      format: "MP4",
-      tags: ["Social", "Story", "Instagram", "TikTok"],
-      thumbnail: avatarSocialInfluencerImg,
-      quality: 92,
-      generationTime: "33.5s",
-      fileSize: "18.9 MB",
-      category: "Videos",
-      duration: "3s",
-      description: "Quick avatar story content for social platforms"
-    },
-    // Favorites (starred items)
-    {
-      id: 18,
-      type: "Avatar",
-      title: "2024 Design Excellence Winner",
-      date: "Nov 28, 2024 12:30 PM",
-      format: "PNG",
-      tags: ["Award", "Professional", "Premium"],
-      thumbnail: avatarAwardPhotographerImg,
-      quality: 100,
-      generationTime: "3.1s",
-      fileSize: "2.9 MB",
-      category: "Favorites",
-      starred: true,
-      description: "Premium quality avatar that won creative excellence award"
-    },
-    {
-      id: 19,
-      type: "Brand Asset",
-      title: "Ultimate Brand Identity System",
-      date: "Nov 27, 2024 10:15 AM",
-      format: "SVG",
-      tags: ["Premium", "Signature", "Complete"],
-      thumbnail: avatarBrandConsultantImg,
-      quality: 100,
-      generationTime: "2.8s",
-      fileSize: "1.2 MB",
-      category: "Favorites",
-      starred: true,
-      imageCount: 28,
-      description: "Complete signature brand kit with 28 premium assets"
-    }
-  ];
+  // All library data now comes from real database via libraryAssets state
 
-  // Calculate dynamic stats from library assets
+  // Calculate dynamic stats from real library assets
   const calculateStats = () => {
-    const assetsToUse = libraryLoading ? assets : (libraryAssets.length > 0 ? libraryAssets : assets);
-    const totalAssets = assetsToUse.length;
+    const totalAssets = libraryAssets.length;
     
     // Calculate this month's assets (current month)
     const currentMonth = new Date().getMonth();
     const currentYear = new Date().getFullYear();
-    const thisMonthAssets = assetsToUse.filter(asset => {
-      const assetDate = new Date(asset.date);
+    const thisMonthAssets = libraryAssets.filter(asset => {
+      const assetDate = new Date(asset.created_at);
       return assetDate.getMonth() === currentMonth && assetDate.getFullYear() === currentYear;
     }).length;
-    
-    // Calculate total storage used (convert MB to GB and sum)
-    const totalStorageBytes = assets.reduce((total, asset) => {
-      const sizeStr = asset.fileSize;
-      const sizeValue = parseFloat(sizeStr);
-      const unit = sizeStr.includes('MB') ? 'MB' : 'KB';
-      const bytesPerMB = 1024 * 1024;
-      const bytesPerKB = 1024;
-      
-      if (unit === 'MB') {
-        return total + (sizeValue * bytesPerMB);
-      } else {
-        return total + (sizeValue * bytesPerKB);
-      }
-    }, 0);
-    
-    const storageGB = (totalStorageBytes / (1024 * 1024 * 1024)).toFixed(1);
-    
-    // Calculate average quality
-    const avgQuality = Math.round(
-      assets.reduce((sum, asset) => sum + asset.quality, 0) / assets.length
-    );
     
     return {
       totalAssets,
       thisMonthAssets,
-      storageUsed: `${storageGB}GB`,
-      avgQuality: `${avgQuality}%`
+      storageUsed: '0GB', // Calculate from actual file sizes if available
+      avgQuality: '95%' // Default quality indicator
     };
   };
 
   const stats = calculateStats();
 
-  // Use real library assets for filtering in library view
-  const assetsForFiltering = libraryLoading ? assets : (libraryAssets.length > 0 ? libraryAssets : assets);
-  const filteredAssets = assetsForFiltering.filter(asset => {
-    const matchesSearch = asset.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         asset.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-    const matchesCategory = selectedCategory === "All" || (selectedCategory === "Favorites" && asset.isFavorite);
+  // Filter real library assets
+  const filteredAssets = libraryAssets.filter(asset => {
+    const matchesSearch = asset.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         asset.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesCategory = selectedCategory === "All" || (selectedCategory === "Favorites" && asset.is_favorite);
     return matchesSearch && matchesCategory;
   });
 

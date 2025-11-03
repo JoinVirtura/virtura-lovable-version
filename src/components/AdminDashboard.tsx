@@ -51,77 +51,73 @@ export function AdminDashboard() {
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      // Mock data since database schema doesn't have all tables yet
-      // In production, you would query the actual tables
-      const mockJobs: JobData[] = [
-        {
-          id: '1',
-          type: 'voice_generation',
-          status: 'completed',
-          progress: 100,
-          user_id: 'user1',
-          created_at: new Date().toISOString(),
-          stage: 'export'
-        },
-        {
-          id: '2',
-          type: 'video_generation',
-          status: 'processing',
-          progress: 75,
-          user_id: 'user2',
-          created_at: new Date().toISOString(),
-          stage: 'render'
-        },
-        {
-          id: '3',
-          type: 'avatar_upload',
-          status: 'error',
-          progress: 0,
-          user_id: 'user1',
-          created_at: new Date().toISOString(),
-          error_message: 'Upload failed',
-          stage: 'upload'
-        }
-      ];
+      // Fetch real jobs data from database
+      const { data: jobsData, error: jobsError } = await supabase
+        .from('jobs')
+        .select('id, type, status, progress, user_id, created_at, error_message, stage')
+        .order('created_at', { ascending: false })
+        .limit(50);
 
-      setJobs(mockJobs);
+      if (jobsError) throw jobsError;
 
-      // Calculate mock stats
+      const fetchedJobs = jobsData || [];
+      setJobs(fetchedJobs);
+
+      // Calculate real stats
       const today = new Date().toISOString().split('T')[0];
-      const todayJobs = mockJobs.filter(job => job.created_at.startsWith(today));
+      const todayJobs = fetchedJobs.filter(job => job.created_at.startsWith(today));
+      
+      // Count unique users
+      const uniqueUsers = new Set(fetchedJobs.map(j => j.user_id)).size;
+
+      // Fetch usage tracking for credits
+      const { data: usageData } = await supabase
+        .from('usage_tracking')
+        .select('resource_type, amount')
+        .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+
+      const voiceCredits = usageData?.filter(u => u.resource_type === 'voice_generation').reduce((sum, u) => sum + u.amount, 0) || 0;
+      const videoCredits = usageData?.filter(u => u.resource_type === 'video_generation').reduce((sum, u) => sum + u.amount, 0) || 0;
       
       setStats({
-        totalUsers: 2,
-        activeJobs: mockJobs.filter(j => j.status === 'processing').length,
-        completedToday: todayJobs.filter(j => j.status === 'completed').length,
-        failedJobs: mockJobs.filter(j => j.status === 'error' || j.status === 'failed').length,
+        totalUsers: uniqueUsers,
+        activeJobs: fetchedJobs.filter(j => j.status === 'processing' || j.status === 'queued').length,
+        completedToday: todayJobs.filter(j => j.status === 'completed' || j.status === 'done').length,
+        failedJobs: fetchedJobs.filter(j => j.status === 'error' || j.status === 'failed').length,
         storageUsed: 0,
         credits: {
-          voice: 15,
-          video: 8,
-          storage: 120
+          voice: voiceCredits,
+          video: videoCredits,
+          storage: 0
         }
       });
 
-      // Mock user activity
-      const mockUsers: UserActivity[] = [
-        {
-          user_id: 'user1',
-          email: 'user1@example.com',
-          totalJobs: 5,
-          creditsUsed: 23,
-          lastActive: new Date().toISOString()
-        },
-        {
-          user_id: 'user2', 
-          email: 'user2@example.com',
-          totalJobs: 3,
-          creditsUsed: 12,
-          lastActive: new Date(Date.now() - 60000).toISOString()
+      // Aggregate user activity
+      const userActivityMap = new Map<string, { totalJobs: number, creditsUsed: number, lastActive: string }>();
+      
+      fetchedJobs.forEach(job => {
+        const existing = userActivityMap.get(job.user_id);
+        if (!existing) {
+          userActivityMap.set(job.user_id, {
+            totalJobs: 1,
+            creditsUsed: 0,
+            lastActive: job.created_at
+          });
+        } else {
+          existing.totalJobs++;
+          if (new Date(job.created_at) > new Date(existing.lastActive)) {
+            existing.lastActive = job.created_at;
+          }
         }
-      ];
+      });
 
-      setUsers(mockUsers);
+      const userActivities: UserActivity[] = Array.from(userActivityMap.entries()).map(([user_id, data]) => ({
+        user_id,
+        email: undefined,
+        ...data
+      }));
+
+      setUsers(userActivities);
 
     } catch (error: any) {
       console.error('Failed to fetch dashboard data:', error);

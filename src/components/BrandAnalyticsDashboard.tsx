@@ -86,11 +86,25 @@ export function BrandAnalyticsDashboard({ brandId, assets }: BrandAnalyticsDashb
         return format(date, 'MMM dd');
       });
 
-      const engagementTimeline = last7Days.map(date => ({
-        date,
-        downloads: Math.floor(Math.random() * 10), // Mock data - replace with actual analytics
-        shares: Math.floor(Math.random() * 5),
-      }));
+      // Fetch real analytics timeline from brand_analytics table
+      const { data: timelineData } = await supabase
+        .from('brand_analytics')
+        .select('date, metric_type, metric_value')
+        .eq('brand_id', brandId)
+        .gte('date', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0])
+        .order('date', { ascending: true });
+
+      const engagementTimeline = last7Days.map(dateStr => {
+        const dayData = timelineData?.filter(d => 
+          format(new Date(d.date), 'MMM dd') === dateStr
+        ) || [];
+        
+        return {
+          date: dateStr,
+          downloads: dayData.filter(d => d.metric_type === 'downloads').reduce((sum, d) => sum + Number(d.metric_value), 0),
+          shares: dayData.filter(d => d.metric_type === 'shares').reduce((sum, d) => sum + Number(d.metric_value), 0),
+        };
+      });
 
       setAnalytics({
         totalDownloads,
