@@ -558,10 +558,10 @@ export const useStudioProject = (loadLastProject: boolean = true) => {
         return;
       }
       
-      if (!project.voice?.audioUrl) {
+      if (!project.voice?.audioUrl && project.voice?.status !== 'skipped') {
         toast({
           title: "Voice Required", 
-          description: "Please generate voice audio before creating video",
+          description: "Please generate voice audio or skip voice step before creating video",
           variant: "destructive"
         });
         return;

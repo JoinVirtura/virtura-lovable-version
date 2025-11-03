@@ -125,21 +125,31 @@ serve(async (req) => {
 // Main video generation function with Replicate cascade
 async function generateRealVideo(
   avatarImageUrl: string,
-  audioUrl: string,
+  audioUrl: string | null,
   prompt: string,
   settings: any
 ) {
   console.log('🚀 Starting Replicate Video Generation with Cascade...');
+  console.log(`🎵 Audio URL: ${audioUrl ? 'Present (Lip-sync mode)' : 'Skipped (Motion mode)'}`);
   
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
   const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
   const supabase = createClient(supabaseUrl, supabaseKey);
 
-  // Working models with correct API parameters
-  const engines = [
-    { name: 'ByteDance Omni-Human', fn: generateWithOmniHuman, quality: '⭐⭐⭐⭐⭐ Premium' },
-    { name: 'Synthesys Wav2Lip', fn: generateWithSynthesysWav2Lip, quality: '⭐⭐⭐⭐ High Quality' }
-  ];
+  // Select engine cascade based on whether audio exists
+  const engines = audioUrl 
+    ? [
+        // Lip-sync models (require audio)
+        { name: 'ByteDance Omni-Human', fn: generateWithOmniHuman, quality: '⭐⭐⭐⭐⭐ Premium Lip-sync' },
+        { name: 'Synthesys Wav2Lip', fn: generateWithSynthesysWav2Lip, quality: '⭐⭐⭐⭐ High Quality Lip-sync' }
+      ]
+    : [
+        // Motion models (no audio needed)
+        { name: 'Kling AI Motion', fn: generateWithKlingMotion, quality: '⭐⭐⭐⭐⭐ Premium Motion' },
+        { name: 'Stable Video Diffusion', fn: generateWithStableVideo, quality: '⭐⭐⭐ Basic Motion' }
+      ];
+
+  console.log(`🎯 Selected ${engines.length} engines for ${audioUrl ? 'LIP-SYNC' : 'MOTION'} mode`);
 
   const REPLICATE_API_KEY = Deno.env.get('REPLICATE_API_KEY');
   if (!REPLICATE_API_KEY) {
@@ -158,6 +168,7 @@ async function generateRealVideo(
       const result = await engine.fn(
         avatarImageUrl, 
         audioUrl, 
+        prompt,
         settings, 
         supabase,
         REPLICATE_API_KEY
@@ -189,7 +200,8 @@ async function generateRealVideo(
 // Primary Engine: ByteDance Omni-Human (Premium Quality)
 async function generateWithOmniHuman(
   avatarImageUrl: string,
-  audioUrl: string,
+  audioUrl: string | null,
+  prompt: string,
   settings: any,
   supabase: any,
   replicateApiKey: string
@@ -228,7 +240,8 @@ async function generateWithOmniHuman(
 // Fallback: Synthesys Wav2Lip (High Quality)
 async function generateWithSynthesysWav2Lip(
   avatarImageUrl: string,
-  audioUrl: string,
+  audioUrl: string | null,
+  prompt: string,
   settings: any,
   supabase: any,
   replicateApiKey: string
@@ -262,6 +275,90 @@ async function generateWithSynthesysWav2Lip(
   } catch (error: any) {
     console.error('Synthesys Wav2Lip generation error:', error);
     throw new Error(`Synthesys Wav2Lip failed: ${error.message}`);
+  }
+}
+
+// Motion Engine 1: Kling AI (Premium text-prompted motion)
+async function generateWithKlingMotion(
+  avatarImageUrl: string,
+  audioUrl: string | null,
+  prompt: string,
+  settings: any,
+  supabase: any,
+  replicateApiKey: string
+) {
+  const replicate = new Replicate({ auth: replicateApiKey });
+
+  console.log('🎯 Running Kling AI Motion model');
+  console.log('📝 Motion prompt:', prompt);
+
+  try {
+    const output: any = await replicate.run(
+      "minimax/video-01",
+      {
+        input: {
+          image: avatarImageUrl,
+          prompt: prompt || "person with natural subtle movements, professional demeanor",
+          duration: Math.min(settings.duration || 5, 10)
+        }
+      }
+    );
+
+    const videoUrl = Array.isArray(output) ? output[0] : output;
+    console.log('✅ Kling AI Motion generated video:', videoUrl);
+
+    return await downloadAndUploadVideo(
+      videoUrl,
+      'kling-motion',
+      settings,
+      supabase
+    );
+
+  } catch (error: any) {
+    console.error('Kling AI Motion error:', error);
+    throw new Error(`Kling AI Motion failed: ${error.message}`);
+  }
+}
+
+// Motion Engine 2: Stable Video Diffusion (Fallback for basic motion)
+async function generateWithStableVideo(
+  avatarImageUrl: string,
+  audioUrl: string | null,
+  prompt: string,
+  settings: any,
+  supabase: any,
+  replicateApiKey: string
+) {
+  const replicate = new Replicate({ auth: replicateApiKey });
+
+  console.log('🎯 Running Stable Video Diffusion model');
+
+  try {
+    const output: any = await replicate.run(
+      "stability-ai/stable-video-diffusion",
+      {
+        input: {
+          image: avatarImageUrl,
+          motion_bucket_id: 127,
+          frames_per_second: settings.fps || 24,
+          num_frames: Math.min((settings.duration || 3) * (settings.fps || 24), 72)
+        }
+      }
+    );
+
+    const videoUrl = Array.isArray(output) ? output[0] : output;
+    console.log('✅ Stable Video Diffusion generated video:', videoUrl);
+
+    return await downloadAndUploadVideo(
+      videoUrl,
+      'stable-video',
+      settings,
+      supabase
+    );
+
+  } catch (error: any) {
+    console.error('Stable Video Diffusion error:', error);
+    throw new Error(`Stable Video Diffusion failed: ${error.message}`);
   }
 }
 

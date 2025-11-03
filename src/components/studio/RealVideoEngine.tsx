@@ -44,30 +44,44 @@ const VIDEO_ENGINES = [
     id: 'bytedance-omni-human',
     name: 'ByteDance Omni-Human',
     description: 'Premium quality lip-sync',
-    badge: 'Premium',
+    badge: 'Lip-sync',
     badgeColor: 'bg-gradient-to-r from-purple-500 to-pink-500',
     icon: Crown,
-    features: ['Best Quality', 'Natural Motion'],
+    features: ['Best Quality', 'Natural Lip-sync'],
+    requiresAudio: true,
     realOutput: true
   },
   {
     id: 'synthesys-wav2lip',
     name: 'Synthesys Wav2Lip',
     description: 'High-quality professional sync',
-    badge: 'Pro',
+    badge: 'Lip-sync',
     badgeColor: 'bg-blue-500',
     icon: Brain,
     features: ['4K Support', 'Fast Processing'],
+    requiresAudio: true,
     realOutput: true
   },
   {
-    id: 'sonic',
-    name: 'Sonic Fast',
-    description: 'Budget-friendly fast generation',
-    badge: 'Budget',
+    id: 'kling-motion',
+    name: 'Kling AI Motion',
+    description: 'Text-prompted motion video',
+    badge: 'Motion',
+    badgeColor: 'bg-gradient-to-r from-green-500 to-emerald-500',
+    icon: Sparkles,
+    features: ['Natural Movement', 'Text Prompts'],
+    requiresAudio: false,
+    realOutput: true
+  },
+  {
+    id: 'stable-video',
+    name: 'Stable Video',
+    description: 'Basic motion animation',
+    badge: 'Motion',
     badgeColor: 'bg-green-500',
     icon: Zap,
-    features: ['Low Cost', 'Fast'],
+    features: ['Simple Motion', 'Fast'],
+    requiresAudio: false,
     realOutput: true
   }
 ];
@@ -100,6 +114,28 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
     gestures: 40,
     lipSync: 95
   });
+
+  // Auto-switch engine based on voice status
+  useEffect(() => {
+    const voiceSkipped = project.voice?.status === 'skipped';
+    const currentEngine = VIDEO_ENGINES.find(e => e.id === selectedEngine);
+    
+    if (voiceSkipped && currentEngine?.requiresAudio) {
+      const motionEngine = VIDEO_ENGINES.find(e => !e.requiresAudio);
+      if (motionEngine) {
+        console.log(`🔄 Voice skipped - auto-switching to ${motionEngine.name}`);
+        setSelectedEngine(motionEngine.id);
+        toast.success(`Switched to ${motionEngine.name} for motion video generation`);
+      }
+    } else if (!voiceSkipped && !currentEngine?.requiresAudio) {
+      const lipsyncEngine = VIDEO_ENGINES.find(e => e.requiresAudio);
+      if (lipsyncEngine) {
+        console.log(`🔄 Voice present - auto-switching to ${lipsyncEngine.name}`);
+        setSelectedEngine(lipsyncEngine.id);
+        toast.success(`Switched to ${lipsyncEngine.name} for lip-sync video generation`);
+      }
+    }
+  }, [project.voice?.status]);
 
   const exportPacks = {
     social: {
@@ -469,8 +505,18 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
                 <Brain className="h-4 w-4" />
                 Select Engine
               </h3>
+              <p className="text-sm text-muted-foreground">
+                {project.voice?.status === 'skipped' 
+                  ? 'Motion engines for silent video generation'
+                  : 'Lip-sync engines for audio synchronization'}
+              </p>
               <div className="space-y-2">
-                {VIDEO_ENGINES.map((engine) => (
+                {VIDEO_ENGINES
+                  .filter(engine => {
+                    const voiceSkipped = project.voice?.status === 'skipped';
+                    return voiceSkipped ? !engine.requiresAudio : engine.requiresAudio;
+                  })
+                  .map((engine) => (
                   <div
                     key={engine.id}
                     className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
