@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { StudioBackground } from '@/components/StudioBackground';
 import { CreateBrandDialog } from '@/components/CreateBrandDialog';
+import { LibrarySelectionModal } from '@/components/LibrarySelectionModal';
 import { useBrandAssets, type Brand } from '@/hooks/useBrandAssets';
 import { format } from 'date-fns';
 import {
@@ -35,6 +36,7 @@ import {
   Clock,
   Upload,
   Sparkles,
+  Library,
   Calendar,
   Grid3X3,
   List,
@@ -75,6 +77,7 @@ export function BrandManagerView() {
   const [createBrandOpen, setCreateBrandOpen] = useState(false);
   const [brandStats, setBrandStats] = useState({ totalAssets: 0, activeCampaigns: 0, avgPerformance: 0 });
   const [newFolderName, setNewFolderName] = useState('');
+  const [libraryModalOpen, setLibraryModalOpen] = useState(false);
 
   // Load brands on mount
   useEffect(() => {
@@ -376,19 +379,10 @@ export function BrandManagerView() {
               <Button
                 variant="outline"
                 className="w-full justify-start gap-3 border-violet-500/30 hover:border-violet-500/50 hover:bg-violet-500/10"
-                onClick={() => navigate('/ai-image-studio')}
+                onClick={() => setLibraryModalOpen(true)}
               >
-                <Sparkles className="w-4 h-4" />
-                Generate AI Content
-              </Button>
-
-              <Button
-                variant="outline"
-                className="w-full justify-start gap-3 border-violet-500/30 hover:border-violet-500/50 hover:bg-violet-500/10"
-                onClick={() => navigate('/library')}
-              >
-                <Upload className="w-4 h-4" />
-                Import from Library
+                <Library className="w-4 h-4" />
+                Choose from Library
               </Button>
 
               <Button
@@ -494,9 +488,9 @@ export function BrandManagerView() {
                     <Upload className="w-4 h-4 mr-2" />
                     Upload Files
                   </Button>
-                  <Button variant="outline" onClick={() => navigate('/ai-image-studio')}>
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    Generate AI Content
+                  <Button variant="outline" onClick={() => setLibraryModalOpen(true)}>
+                    <Library className="w-4 h-4 mr-2" />
+                    Choose from Library
                   </Button>
                 </div>
               </div>
@@ -625,6 +619,20 @@ export function BrandManagerView() {
         open={createBrandOpen}
         onOpenChange={setCreateBrandOpen}
         onBrandCreated={handleBrandCreated}
+      />
+
+      <LibrarySelectionModal
+        open={libraryModalOpen}
+        onClose={() => setLibraryModalOpen(false)}
+        selectedBrandId={selectedBrand || ''}
+        currentCollectionId={currentFolder !== 'all' ? currentFolder : undefined}
+        onImportComplete={() => {
+          setLibraryModalOpen(false);
+          if (selectedBrand) {
+            loadAssets(selectedBrand, currentFolder === 'all' ? undefined : currentFolder);
+            getBrandStats(selectedBrand).then(setBrandStats);
+          }
+        }}
       />
     </StudioBackground>
   );
