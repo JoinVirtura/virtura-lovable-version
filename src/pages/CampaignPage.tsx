@@ -373,12 +373,14 @@ export default function CampaignPage() {
                   <CampaignScheduler
                     campaignContent={campaignContent}
                     assets={assets}
+                    brandId={selectedBrand}
                     onScheduleContent={async (data) => {
-                      await addContentToCampaign({
+                      const result = await addContentToCampaign({
                         ...data,
                         campaign_id: selectedCampaign!,
                       });
                       await loadCampaignContent(selectedCampaign!);
+                      return result;
                     }}
                     onUpdateContent={async (id, data) => {
                       await updateCampaignContent(id, data);

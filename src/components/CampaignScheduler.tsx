@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -20,21 +20,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Clock, Image as ImageIcon, Loader2 } from "lucide-react";
+import { Clock, Image as ImageIcon, Loader2, Send, AlertCircle, CheckCircle2, RefreshCw, Trash2 } from "lucide-react";
 import { format } from "date-fns";
+import { usePublishingQueue } from "@/hooks/usePublishingQueue";
 import type { CampaignContent } from "@/hooks/useCampaigns";
 import type { BrandAsset } from "@/hooks/useBrandAssets";
 
 interface CampaignSchedulerProps {
   campaignContent: CampaignContent[];
   assets: BrandAsset[];
-  onScheduleContent: (data: Partial<CampaignContent>) => Promise<void>;
+  brandId: string;
+  onScheduleContent: (data: Partial<CampaignContent>) => Promise<any>;
   onUpdateContent: (id: string, data: Partial<CampaignContent>) => Promise<void>;
 }
 
 export function CampaignScheduler({
   campaignContent,
   assets,
+  brandId,
   onScheduleContent,
   onUpdateContent,
 }: CampaignSchedulerProps) {
@@ -47,7 +50,23 @@ export function CampaignScheduler({
     caption: "",
     hashtags: "",
     time: "09:00",
+    addToQueue: false,
   });
+
+  const { 
+    queueItems, 
+    loadQueue, 
+    addToQueue, 
+    retryPublish, 
+    deleteQueueItem,
+    publishNow 
+  } = usePublishingQueue();
+
+  useEffect(() => {
+    if (brandId) {
+      loadQueue(brandId);
+    }
+  }, [brandId, loadQueue]);
 
   const getContentForDate = (date: Date) => {
     return campaignContent.filter((content) => {
@@ -75,7 +94,7 @@ export function CampaignScheduler({
       const [hours, minutes] = scheduleForm.time.split(":");
       scheduledDateTime.setHours(parseInt(hours), parseInt(minutes));
 
-      await onScheduleContent({
+      const contentData = {
         asset_id: scheduleForm.asset_id,
         platform: scheduleForm.platform,
         caption: scheduleForm.caption || null,
@@ -84,7 +103,19 @@ export function CampaignScheduler({
           : [],
         scheduled_time: scheduledDateTime.toISOString(),
         status: "scheduled",
-      });
+      };
+
+      const newContent = await onScheduleContent(contentData);
+
+      // Add to publishing queue if selected
+      if (scheduleForm.addToQueue && newContent?.id) {
+        await addToQueue({
+          content_id: newContent.id,
+          brand_id: brandId,
+          platform: scheduleForm.platform,
+          scheduled_time: scheduledDateTime.toISOString(),
+        });
+      }
 
       setShowScheduleDialog(false);
       setScheduleForm({
@@ -93,7 +124,10 @@ export function CampaignScheduler({
         caption: "",
         hashtags: "",
         time: "09:00",
+        addToQueue: false,
       });
+      
+      loadQueue(brandId);
     } catch (err) {
       console.error("Error scheduling content:", err);
     } finally {
@@ -101,59 +135,146 @@ export function CampaignScheduler({
     }
   };
 
+  const handlePublishNow = async (contentId: string, platform: string) => {
+    try {
+      await publishNow(contentId, platform);
+      await onUpdateContent(contentId, { status: 'published', published_at: new Date().toISOString() });
+    } catch (err) {
+      console.error("Error publishing:", err);
+    }
+  };
+
   const selectedDateContent = selectedDate ? getContentForDate(selectedDate) : [];
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* Calendar */}
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold mb-4">Content Calendar</h3>
-        <Calendar
-          mode="single"
-          selected={selectedDate}
-          onSelect={setSelectedDate}
-          className="rounded-md border"
-          modifiers={{
-            scheduled: datesWithContent,
-          }}
-          modifiersStyles={{
-            scheduled: {
-              backgroundColor: "hsl(var(--primary))",
-              color: "white",
-              fontWeight: "bold",
-            },
-          }}
-        />
-        <Button
-          onClick={() => setShowScheduleDialog(true)}
-          className="w-full mt-4"
-          disabled={!selectedDate}
-        >
-          <Clock className="w-4 h-4 mr-2" />
-          Schedule Content
-        </Button>
-      </Card>
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Calendar */}
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold mb-4">Content Calendar</h3>
+          <Calendar
+            mode="single"
+            selected={selectedDate}
+            onSelect={setSelectedDate}
+            className="rounded-md border"
+            modifiers={{
+              scheduled: datesWithContent,
+            }}
+            modifiersStyles={{
+              scheduled: {
+                backgroundColor: "hsl(var(--primary))",
+                color: "white",
+                fontWeight: "bold",
+              },
+            }}
+          />
+          <Button
+            onClick={() => setShowScheduleDialog(true)}
+            className="w-full mt-4"
+            disabled={!selectedDate}
+          >
+            <Clock className="w-4 h-4 mr-2" />
+            Schedule Content
+          </Button>
+        </Card>
 
-      {/* Scheduled Content for Selected Date */}
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold mb-4">
-          {selectedDate ? format(selectedDate, "MMMM d, yyyy") : "Select a date"}
-        </h3>
+        {/* Scheduled Content for Selected Date */}
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold mb-4">
+            {selectedDate ? format(selectedDate, "MMMM d, yyyy") : "Select a date"}
+          </h3>
 
-        {selectedDateContent.length === 0 ? (
+          {selectedDateContent.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">
+              <Clock className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <p>No content scheduled for this date</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {selectedDateContent.map((content) => {
+                const asset = assets.find((a) => a.id === content.asset_id);
+                return (
+                  <Card key={content.id} className="p-4">
+                    <div className="flex gap-3">
+                      {asset && (
+                        <div className="w-16 h-16 rounded overflow-hidden bg-muted flex-shrink-0">
+                          <img
+                            src={asset.thumbnail_url || asset.file_url}
+                            alt={asset.title}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge variant="secondary" className="capitalize">
+                            {content.platform}
+                          </Badge>
+                          <Badge variant="outline">
+                            {content.scheduled_time &&
+                              format(new Date(content.scheduled_time), "h:mm a")}
+                          </Badge>
+                        </div>
+                        {content.caption && (
+                          <p className="text-sm text-muted-foreground line-clamp-2">
+                            {content.caption}
+                          </p>
+                        )}
+                        {content.hashtags && content.hashtags.length > 0 && (
+                          <div className="flex gap-1 mt-1 flex-wrap">
+                            {content.hashtags.slice(0, 3).map((tag, i) => (
+                              <span key={i} className="text-xs text-primary">
+                                #{tag}
+                              </span>
+                            ))}
+                            {content.hashtags.length > 3 && (
+                              <span className="text-xs text-muted-foreground">
+                                +{content.hashtags.length - 3}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                        {content.status !== 'published' && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="mt-2"
+                            onClick={() => handlePublishNow(content.id, content.platform)}
+                          >
+                            <Send className="w-3 h-3 mr-1" />
+                            Publish Now
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+        </Card>
+      </div>
+
+      {/* Publishing Queue */}
+      <Card className="p-6">
+        <h3 className="text-lg font-semibold mb-4">Publishing Queue</h3>
+        
+        {queueItems.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
-            <Clock className="w-12 h-12 mx-auto mb-3 opacity-50" />
-            <p>No content scheduled for this date</p>
+            <Send className="w-12 h-12 mx-auto mb-3 opacity-50" />
+            <p>No items in publishing queue</p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {selectedDateContent.map((content) => {
-              const asset = assets.find((a) => a.id === content.asset_id);
+          <div className="space-y-3">
+            {queueItems.map((item) => {
+              const content = campaignContent.find((c) => c.id === item.content_id);
+              const asset = content ? assets.find((a) => a.id === content.asset_id) : null;
+              
               return (
-                <Card key={content.id} className="p-4">
-                  <div className="flex gap-3">
+                <Card key={item.id} className="p-4">
+                  <div className="flex items-start gap-3">
                     {asset && (
-                      <div className="w-16 h-16 rounded overflow-hidden bg-muted flex-shrink-0">
+                      <div className="w-12 h-12 rounded overflow-hidden bg-muted flex-shrink-0">
                         <img
                           src={asset.thumbnail_url || asset.file_url}
                           alt={asset.title}
@@ -161,37 +282,62 @@ export function CampaignScheduler({
                         />
                       </div>
                     )}
+                    
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2">
+                      <div className="flex items-center gap-2 mb-1">
                         <Badge variant="secondary" className="capitalize">
-                          {content.platform}
+                          {item.platform}
                         </Badge>
-                        <Badge variant="outline">
-                          {content.scheduled_time &&
-                            format(new Date(content.scheduled_time), "h:mm a")}
+                        <Badge
+                          variant={
+                            item.status === 'published' ? 'default' :
+                            item.status === 'failed' ? 'destructive' :
+                            item.status === 'processing' ? 'secondary' :
+                            'outline'
+                          }
+                        >
+                          {item.status === 'published' && <CheckCircle2 className="w-3 h-3 mr-1" />}
+                          {item.status === 'failed' && <AlertCircle className="w-3 h-3 mr-1" />}
+                          {item.status}
                         </Badge>
                       </div>
-                      {content.caption && (
-                        <p className="text-sm text-muted-foreground line-clamp-2">
-                          {content.caption}
+                      
+                      <p className="text-sm text-muted-foreground">
+                        Scheduled: {format(new Date(item.scheduled_time), "MMM d, yyyy 'at' h:mm a")}
+                      </p>
+                      
+                      {item.error_message && (
+                        <p className="text-xs text-destructive mt-1">
+                          {item.error_message}
                         </p>
                       )}
-                      {content.hashtags && content.hashtags.length > 0 && (
-                        <div className="flex gap-1 mt-1 flex-wrap">
-                          {content.hashtags.slice(0, 3).map((tag, i) => (
-                            <span
-                              key={i}
-                              className="text-xs text-primary"
-                            >
-                              #{tag}
-                            </span>
-                          ))}
-                          {content.hashtags.length > 3 && (
-                            <span className="text-xs text-muted-foreground">
-                              +{content.hashtags.length - 3}
-                            </span>
-                          )}
-                        </div>
+                      
+                      {item.retry_count > 0 && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Retries: {item.retry_count}
+                        </p>
+                      )}
+                    </div>
+                    
+                    <div className="flex gap-1">
+                      {item.status === 'failed' && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => retryPublish(item.id).then(() => loadQueue(brandId))}
+                        >
+                          <RefreshCw className="w-3 h-3" />
+                        </Button>
+                      )}
+                      
+                      {item.status !== 'published' && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => deleteQueueItem(item.id).then(() => loadQueue(brandId))}
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
                       )}
                     </div>
                   </div>
@@ -291,6 +437,21 @@ export function CampaignScheduler({
                   setScheduleForm({ ...scheduleForm, hashtags: e.target.value })
                 }
               />
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="addToQueue"
+                checked={scheduleForm.addToQueue}
+                onChange={(e) =>
+                  setScheduleForm({ ...scheduleForm, addToQueue: e.target.checked })
+                }
+                className="rounded"
+              />
+              <Label htmlFor="addToQueue" className="text-sm font-normal cursor-pointer">
+                Add to publishing queue for automatic posting
+              </Label>
             </div>
 
             <div className="flex justify-end gap-3 pt-4">
