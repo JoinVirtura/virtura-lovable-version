@@ -131,15 +131,6 @@ export default function StudioPage() {
                         }}
                       />
                     </ErrorBoundary>
-                    
-                    {/* Horizontal Project Timeline */}
-                    <div className="mt-6 pt-6 border-t border-violet-500/10">
-                      <ProjectTimeline
-                        project={project}
-                        onUpdate={updateProject}
-                        currentStep={currentStep}
-                      />
-                    </div>
                   </TabsContent>
 
                   <TabsContent value="style" className="p-6 space-y-6">
