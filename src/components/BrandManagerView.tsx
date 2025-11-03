@@ -493,7 +493,7 @@ export function BrandManagerView() {
           {/* Brand Selector */}
           <div>
             <Label className="text-sm text-muted-foreground mb-2 block">Active Brand</Label>
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center">
               <Select value={selectedBrand || undefined} onValueChange={handleBrandChange}>
                 <SelectTrigger className="flex-1 bg-black/60 border-violet-500/30">
                   <SelectValue placeholder="Select a brand" />
@@ -510,7 +510,7 @@ export function BrandManagerView() {
               {selectedBrand && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="icon" className="border-violet-500/30 hover:border-violet-500/50">
+                    <Button variant="outline" className="h-9 w-9 p-0 border-violet-500/30 hover:border-violet-500/50">
                       <MoreVertical className="w-4 h-4" />
                     </Button>
                   </DropdownMenuTrigger>
