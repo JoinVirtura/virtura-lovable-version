@@ -233,8 +233,7 @@ export function BrandManagerView() {
         <div className="flex items-center group">
           <Button
             variant="ghost"
-            style={{ paddingLeft: `${0.5 + depth * 1}rem` }}
-            className={`flex-1 justify-start gap-2 ${
+            className={`flex-1 justify-start gap-2 pl-2 relative ${
               currentFolder === folder.id ? 'bg-violet-500/20 text-violet-300' : 'hover:bg-violet-500/10'
             }`}
             onClick={() => {
@@ -242,12 +241,14 @@ export function BrandManagerView() {
               if (children.length > 0) toggleFolder(folder.id);
             }}
           >
-            <div className="w-3 h-3 flex items-center justify-center flex-shrink-0">
-              {children.length > 0 && (
-                <ChevronRight className={`w-3 h-3 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
-              )}
-            </div>
-            {isExpanded ? <FolderOpen className="w-4 h-4 flex-shrink-0" /> : <Folder className="w-4 h-4 flex-shrink-0" />}
+            {children.length > 0 && (
+              <ChevronRight className={`w-3 h-3 transition-transform absolute left-2 ${isExpanded ? 'rotate-90' : ''}`} />
+            )}
+            {isExpanded ? (
+              <FolderOpen className={`w-4 h-4 flex-shrink-0 ${children.length > 0 ? 'ml-4' : ''}`} />
+            ) : (
+              <Folder className={`w-4 h-4 flex-shrink-0 ${children.length > 0 ? 'ml-4' : ''}`} />
+            )}
             <span className="flex-1 text-left text-sm truncate min-w-0">{folder.name}</span>
             <span className="text-xs text-muted-foreground flex-shrink-0">{assetCount}</span>
           </Button>
