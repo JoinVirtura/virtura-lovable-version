@@ -26,9 +26,10 @@ import {
 interface DashboardLibraryViewProps {
   onSelectAvatar?: (avatarUrl: string, metadata?: any) => void;
   isModal?: boolean;
+  hideVideoCategory?: boolean;
 }
 
-export function DashboardLibraryView({ onSelectAvatar, isModal = false }: DashboardLibraryViewProps) {
+export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVideoCategory = false }: DashboardLibraryViewProps) {
   const { toast } = useToast();
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
@@ -312,7 +313,7 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false }: Dashbo
             </div>
 
             <div className="flex flex-wrap gap-3 mb-8">
-              {["All", "Characters", "Videos", "Favorites"].map((category) => (
+              {["All", "Characters", "Videos", "Favorites"].filter(cat => !(hideVideoCategory && cat === "Videos")).map((category) => (
                 <Button
                   key={category}
                   variant={selectedCategory === category ? "default" : "outline"}

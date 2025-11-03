@@ -1004,6 +1004,7 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
               setIsLibraryOpen(false);
             }}
             isModal={true}
+            hideVideoCategory={true}
           />
         </DialogContent>
       </Dialog>
