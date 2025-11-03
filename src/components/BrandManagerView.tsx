@@ -233,7 +233,7 @@ export function BrandManagerView() {
         <div className="flex items-center group">
           <Button
             variant="ghost"
-            style={{ paddingLeft: `${0.5 + depth * 0.75}rem` }}
+            style={{ paddingLeft: `${depth * 1}rem` }}
             className={`flex-1 justify-start gap-2 ${
               currentFolder === folder.id ? 'bg-violet-500/20 text-violet-300' : 'hover:bg-violet-500/10'
             }`}
