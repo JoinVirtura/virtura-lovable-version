@@ -213,6 +213,8 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
   const [selectedType, setSelectedType] = useState<'all' | 'free' | 'premium'>('all');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedBadge, setSelectedBadge] = useState<'all' | 'popular' | 'trending' | 'new'>('all');
+  const [progressPercentage, setProgressPercentage] = useState(0);
+  const [progressPhase, setProgressPhase] = useState('');
 
   const steps = [
     { id: 'avatar', label: 'Avatar', completed: !!project.avatar?.processedUrl },
@@ -322,6 +324,28 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
     }
 
     setIsApplying(true);
+    setProgressPercentage(0);
+    setProgressPhase("Analyzing image...");
+
+    // Simulate smooth progress
+    const progressInterval = setInterval(() => {
+      setProgressPercentage(prev => {
+        if (prev < 20) {
+          setProgressPhase("Analyzing image...");
+          return prev + 2;
+        } else if (prev < 50) {
+          setProgressPhase("Applying style...");
+          return prev + 1.5;
+        } else if (prev < 90) {
+          setProgressPhase("Enhancing details...");
+          return prev + 1;
+        } else if (prev < 95) {
+          setProgressPhase("Finalizing...");
+          return prev + 0.5;
+        }
+        return prev;
+      });
+    }, 100);
 
     // Update project with style transfer processing status
     onUpdate({
@@ -361,6 +385,13 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
         enhanceDetails
       });
 
+      // Complete progress
+      clearInterval(progressInterval);
+      setProgressPercentage(100);
+      setProgressPhase("Complete!");
+
+      await new Promise(resolve => setTimeout(resolve, 500));
+
       if (result.success && result.imageUrl) {
         onUpdate({
           style: {
@@ -392,6 +423,10 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
         throw new Error(result.error || 'Style transfer failed');
       }
     } catch (error: any) {
+      clearInterval(progressInterval);
+      setProgressPercentage(0);
+      setProgressPhase("");
+      
       onUpdate({
         style: {
           preset: selectedStyle,
@@ -416,10 +451,14 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
       toast({
         title: "Style Transfer Failed",
         description: error.message,
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setIsApplying(false);
+      setTimeout(() => {
+        setProgressPercentage(0);
+        setProgressPhase("");
+      }, 1000);
     }
   };
 
@@ -522,75 +561,18 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
 
   return (
     <div className="pb-32 space-y-6">
-      {/* Header with Navigation */}
+      {/* Header */}
       <div className="space-y-2">
-        {/* Title + Navigation on same line */}
         <div className="flex items-start justify-between gap-4">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-violet-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-            Style Transfer Studio
-          </h2>
-          
-          <div className="flex items-center gap-4">
-            {/* Compact Inline Navigation */}
-            <div className="flex items-center gap-1">
-              {/* Step 1: Avatar */}
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/10 border border-green-500/30 text-green-400 transition-all hover:bg-green-500/20">
-                      <CheckCircle className="w-3 h-3" />
-                      <span>Avatar</span>
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent><p>Avatar Generation Complete</p></TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              
-              {/* Connector */}
-              <div className="flex gap-0.5 px-1">
-                <div className="w-1 h-1 rounded-full bg-violet-400/60" />
-                <div className="w-1 h-1 rounded-full bg-violet-400/60" />
-              </div>
-              
-              {/* Step 2: Style (Current) */}
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button className="relative flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-violet-500 to-purple-600 text-white shadow-[0_0_12px_rgba(139,92,246,0.5)] animate-pulse backdrop-blur-sm border border-violet-400/50 transition-all hover:scale-105">
-                      <Sparkles className="w-3 h-3" />
-                      <span>Style</span>
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent><p>Apply Style Transfer</p></TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              
-              {/* Connector */}
-              <div className="flex gap-0.5 px-1">
-                <div className="w-1 h-1 rounded-full bg-gray-600" />
-                <div className="w-1 h-1 rounded-full bg-gray-600" />
-              </div>
-              
-              {/* Step 3: Export (Future) */}
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-800/50 border border-gray-700 text-gray-500 backdrop-blur-sm transition-all hover:bg-gray-800/70">
-                      <Download className="w-3 h-3" />
-                      <span>Export</span>
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent><p>Export (Coming Soon)</p></TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
+          <div>
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-violet-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              Style Transfer Studio
+            </h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Transform your avatar with 50+ AI-powered artistic styles
+            </p>
           </div>
         </div>
-        
-        {/* Subtitle */}
-        <p className="text-sm text-muted-foreground">
-          Transform your avatar with 50+ AI-powered artistic styles
-        </p>
       </div>
 
       {/* Prerequisites Check */}
@@ -628,17 +610,22 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
           onClick={handleApplyStyle}
           disabled={!canApplyStyle || isProcessing || isApplying}
           size="sm"
-          className={`px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 whitespace-nowrap ${
+          className={`px-6 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 whitespace-nowrap min-w-[140px] ${
             (isProcessing || isApplying || project.style?.status === 'processing')
-              ? 'animate-pulse'
+              ? 'bg-gradient-to-r from-primary via-purple-500 to-pink-500'
               : ''
           }`}
         >
           {isProcessing || isApplying || project.style?.status === 'processing' ? (
-            <>
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              Applying...
-            </>
+            <div className="flex items-center justify-center gap-2">
+              <div className="relative flex items-center">
+                <Loader2 className="h-4 w-4 animate-spin" />
+              </div>
+              <div className="flex flex-col items-start leading-tight">
+                <span className="text-xs font-medium">{progressPhase}</span>
+                <span className="text-[10px] text-white/70">{Math.round(progressPercentage)}%</span>
+              </div>
+            </div>
           ) : (
             'Apply'
           )}
