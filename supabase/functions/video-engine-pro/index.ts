@@ -247,11 +247,12 @@ async function startVideoGeneration(
     
     if (selectedEngine === 'kling-motion') {
       const prediction = await replicate.predictions.create({
-        model: "minimax/video-01",
+        model: "kwaivgi/kling-v2.1",
         input: {
+          image: avatarImageUrl,
           prompt: prompt || "natural subtle movements, professional demeanor",
-          first_frame_image: avatarImageUrl,
-          prompt_optimizer: true
+          mode: "standard",
+          duration: "5"
         }
       });
       console.log('✅ Kling Motion prediction created:', prediction.id);
@@ -260,15 +261,12 @@ async function startVideoGeneration(
     
     if (selectedEngine === 'stable-video') {
       const prediction = await replicate.predictions.create({
-        model: "stability-ai/stable-video-diffusion",
+        model: "aicapcut/stable-video-diffusion-img2vid-xt-optimized",
         input: {
-          cond_aug: 0.02,
-          decoding_t: 14,
           input_image: avatarImageUrl,
-          video_length: "14_frames_with_svd",
-          sizing_strategy: "maintain_aspect_ratio",
           motion_bucket_id: 127,
-          frames_per_second: 6
+          fps: 6,
+          num_frames: 25
         }
       });
       console.log('✅ Stable Video prediction created:', prediction.id);
@@ -277,11 +275,12 @@ async function startVideoGeneration(
     
     // Fallback to Kling Motion
     const prediction = await replicate.predictions.create({
-      model: "minimax/video-01",
+      model: "kwaivgi/kling-v2.1",
       input: {
+        image: avatarImageUrl,
         prompt: prompt || "natural subtle movements",
-        first_frame_image: avatarImageUrl,
-        prompt_optimizer: true
+        mode: "standard",
+        duration: "5"
       }
     });
     console.log('✅ Fallback Kling Motion prediction created:', prediction.id);
