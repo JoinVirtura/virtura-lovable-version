@@ -2925,12 +2925,11 @@ export default function Dashboard() {
                                     <Button 
                                       size="sm" 
                                       variant="outline"
-                                      className={`h-8 px-3 hover:bg-yellow-500/10 hover:border-yellow-500/50 transition-all 2xl:w-8 2xl:p-0 ${asset.isFavorite ? 'text-yellow-500 border-yellow-500/50' : ''}`}
+                                      className={`h-8 w-8 p-0 hover:bg-yellow-500/10 hover:border-yellow-500/50 transition-all ${asset.isFavorite ? 'text-yellow-500 border-yellow-500/50' : ''}`}
                                       onClick={() => handleFavorite(asset)}
                                       title={asset.isFavorite ? "Remove from favorites" : "Add to favorites"}
                                     >
-                                      <Heart className={`w-3 h-3 mr-1 2xl:w-4 2xl:h-4 2xl:mr-0 ${asset.isFavorite ? 'fill-current' : ''}`} />
-                                      <span className="2xl:hidden">{asset.isFavorite ? 'Favorited' : 'Favorite'}</span>
+                                      <Star className={`w-4 h-4 ${asset.isFavorite ? 'fill-current' : ''}`} />
                                     </Button>
                                     
                                  </div>
