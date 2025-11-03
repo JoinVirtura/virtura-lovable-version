@@ -214,9 +214,7 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({ onSelectMusic, selec
               variant={activeCategory === category.id ? 'default' : 'outline'}
               size="sm"
               onClick={() => setActiveCategory(category.id)}
-              className="gap-2"
             >
-              <Icon className="w-4 h-4" />
               {category.label}
             </Button>
           );
@@ -317,10 +315,6 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({ onSelectMusic, selec
                     {selectedMusic?.id === track.id ? 'Selected' : 'Select'}
                   </Button>
                 </div>
-
-                  <Badge variant="secondary" className="text-xs">
-                    {track.license}
-                  </Badge>
                 </div>
               </Card>
               ))}
