@@ -134,12 +134,7 @@ export function BrandManagerView() {
     }
   }, [currentFolder, searchQuery, filterType, sortBy]);
 
-  // Set first brand as selected when brands load
-  useEffect(() => {
-    if (brands.length > 0 && !selectedBrand) {
-      setSelectedBrand(brands[0].id);
-    }
-  }, [brands]);
+  // Don't auto-select brands - let user choose their brand
 
   const toggleFolder = (folderId: string) => {
     setExpandedFolders(prev => {
@@ -912,17 +907,23 @@ export function BrandManagerView() {
               <div className="text-center py-12 text-muted-foreground">Loading...</div>
             ) : assets.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-96 text-center">
-                <Folder className="w-16 h-16 text-violet-400 mb-4" />
+                <Sparkles className="w-16 h-16 text-violet-400 mb-4" />
                 <h3 className="text-xl font-semibold text-white mb-2">No assets yet</h3>
-                <p className="text-muted-foreground mb-6">Upload or generate content to get started</p>
+                <p className="text-muted-foreground mb-6">
+                  Start building your brand by generating, uploading, or importing assets
+                </p>
                 <div className="flex gap-3">
-                  <Button onClick={() => navigate('/upload')}>
+                  <Button onClick={() => setGenerateDialogOpen(true)} className="bg-violet-600 hover:bg-violet-700">
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Generate with AI
+                  </Button>
+                  <Button variant="outline" onClick={() => navigate('/upload')} className="border-violet-500/30">
                     <Upload className="w-4 h-4 mr-2" />
                     Upload Files
                   </Button>
-                  <Button variant="outline" onClick={() => setLibraryModalOpen(true)}>
+                  <Button variant="outline" onClick={() => setLibraryModalOpen(true)} className="border-violet-500/30">
                     <Library className="w-4 h-4 mr-2" />
-                    Choose from Library
+                    Import from Library
                   </Button>
                 </div>
               </div>

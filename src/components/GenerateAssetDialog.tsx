@@ -139,7 +139,7 @@ export function GenerateAssetDialog({
             </Label>
             <Textarea
               id="prompt"
-              placeholder="A professional product photo of a modern coffee mug on a wooden table with natural lighting..."
+              placeholder="A professional marketing image for social media with vibrant colors and modern design..."
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               rows={4}
