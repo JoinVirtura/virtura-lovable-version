@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
   User, 
   Bell, 
@@ -15,14 +16,105 @@ import {
   Trash2,
   Settings as SettingsIcon,
   Crown,
-  Zap
+  Zap,
+  Upload,
+  Loader2
 } from "lucide-react";
 import { MotionBackground } from "@/components/MotionBackground";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useProfile } from "@/hooks/useProfile";
+import { useAuth } from "@/hooks/useAuth";
+import { useState, useEffect, useRef } from "react";
 
 export default function SettingsPage() {
   const { toast } = useToast();
+  const { user } = useAuth();
+  const { profile, loading: profileLoading, uploadAvatar, updateProfile, uploading } = useProfile();
+  
+  const [displayName, setDisplayName] = useState("");
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Pre-fill form when profile loads
+  useEffect(() => {
+    if (profile) {
+      setDisplayName(profile.display_name || "");
+      setPreviewUrl(profile.avatar_url);
+    }
+  }, [profile]);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file
+    if (file.size > 2 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "Avatar must be less than 2MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!['image/png', 'image/jpeg', 'image/jpg', 'image/webp'].includes(file.type)) {
+      toast({
+        title: "Invalid file type",
+        description: "Avatar must be PNG, JPG, or WEBP",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setAvatarFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+  };
+
+  const handleSave = async () => {
+    if (!displayName.trim()) {
+      toast({
+        title: "Display name required",
+        description: "Please enter a display name",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSaving(true);
+    try {
+      let avatarUrl = profile?.avatar_url;
+
+      // Upload avatar if changed
+      if (avatarFile) {
+        avatarUrl = await uploadAvatar(avatarFile);
+      }
+
+      // Update profile
+      await updateProfile({
+        display_name: displayName,
+        ...(avatarUrl && { avatar_url: avatarUrl }),
+      });
+
+      setAvatarFile(null);
+    } catch (error: any) {
+      console.error("Error saving profile:", error);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const getInitials = (name: string | null) => {
+    if (!name) return "U";
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
 
   const startSubscription = async (planId: string) => {
     const { data, error } = await supabase.functions.invoke("create-checkout", {
@@ -130,30 +222,98 @@ export default function SettingsPage() {
               <h2 className="text-xl font-display font-bold">Profile</h2>
             </div>
             
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="firstName">First Name</Label>
-                  <Input id="firstName" placeholder="Enter your first name" />
+            {profileLoading ? (
+              <div className="space-y-4">
+                <div className="h-24 bg-muted animate-pulse rounded-lg" />
+                <div className="h-10 bg-muted animate-pulse rounded-md" />
+                <div className="h-10 bg-muted animate-pulse rounded-md" />
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {/* Avatar Upload */}
+                <div className="flex items-center gap-6">
+                  <Avatar className="w-24 h-24">
+                    <AvatarImage src={previewUrl || undefined} alt={displayName} />
+                    <AvatarFallback className="text-2xl font-display bg-gradient-primary text-white">
+                      {getInitials(displayName)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col gap-2">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/png,image/jpeg,image/jpg,image/webp"
+                      onChange={handleFileSelect}
+                      className="hidden"
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploading || saving}
+                    >
+                      {uploading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Uploading...
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-4 h-4 mr-2" />
+                          Change Avatar
+                        </>
+                      )}
+                    </Button>
+                    <p className="text-xs text-muted-foreground">
+                      PNG, JPG or WEBP. Max 2MB.
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <Label htmlFor="lastName">Last Name</Label>
-                  <Input id="lastName" placeholder="Enter your last name" />
+
+                <Separator />
+                
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="displayName">Display Name</Label>
+                    <Input
+                      id="displayName"
+                      placeholder="Enter your display name"
+                      value={displayName}
+                      onChange={(e) => setDisplayName(e.target.value)}
+                      disabled={saving}
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={user?.email || ""}
+                      disabled
+                      className="bg-muted"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Email cannot be changed here
+                    </p>
+                  </div>
+                  
+                  <Button
+                    onClick={handleSave}
+                    disabled={saving || uploading || !displayName.trim()}
+                  >
+                    {saving ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      "Save Changes"
+                    )}
+                  </Button>
                 </div>
               </div>
-              
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="your@email.com" />
-              </div>
-              
-              <div>
-                <Label htmlFor="company">Company (Optional)</Label>
-                <Input id="company" placeholder="Your company name" />
-              </div>
-              
-              <Button>Save Changes</Button>
-            </div>
+            )}
           </Card>
 
           {/* Notification Settings */}
