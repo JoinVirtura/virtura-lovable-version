@@ -2,7 +2,8 @@ import React, { useState, useRef, useCallback } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { Button } from '@/components/ui/button';
 import { CircularProgress } from '@/components/ui/circular-progress';
-import { AvatarLibraryModal } from '@/components/AvatarLibraryModal';
+import { DashboardLibraryView } from '@/components/DashboardLibraryView';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import {
   Upload,
   Check,
@@ -262,11 +263,17 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
         </div>
       )}
 
-      <AvatarLibraryModal
-        open={isLibraryOpen}
-        onOpenChange={setIsLibraryOpen}
-        onSelectAvatar={handleLibrarySelect}
-      />
+      <Dialog open={isLibraryOpen} onOpenChange={setIsLibraryOpen}>
+        <DialogContent className="max-w-7xl max-h-[90vh] overflow-hidden flex flex-col p-6">
+          <DashboardLibraryView 
+            onSelectAvatar={(avatarUrl) => {
+              handleLibrarySelect(avatarUrl);
+              setIsLibraryOpen(false);
+            }}
+            isModal={true}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
