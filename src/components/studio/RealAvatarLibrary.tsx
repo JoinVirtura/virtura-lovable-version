@@ -64,7 +64,7 @@ interface RealAvatarLibraryProps {
   isProcessing?: boolean;
 }
 
-type FilterCategory = 'all' | 'avatars' | 'headshots' | 'brands' | 'videos' | 'favorites';
+type FilterCategory = 'all' | 'avatars' | 'brands' | 'videos' | 'favorites';
 
 export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({ 
   onSelectAvatar, 
@@ -94,21 +94,6 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
     }
   }, []);
 
-  // Calculate quality score for avatar
-  const calculateQualityScore = (avatar: AvatarLibraryItem): number => {
-    let score = 7.0;
-    
-    const daysSinceCreation = (Date.now() - new Date(avatar.created_at).getTime()) / (1000 * 60 * 60 * 24);
-    if (daysSinceCreation < 7) score += 1.5;
-    else if (daysSinceCreation < 30) score += 1.0;
-    
-    if (avatar.is_video) score += 0.5;
-    if (avatar.tags && avatar.tags.length > 2) score += 0.5;
-    if (favorites.has(avatar.id)) score += 0.5;
-    
-    return Math.min(9.5, score);
-  };
-
   // Toggle favorite
   const toggleFavorite = (avatarId: string) => {
     setFavorites(prev => {
@@ -137,7 +122,7 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
       // Apply category filters
       if (filterCategory === 'videos') {
         query = query.eq('is_video', true);
-      } else if (filterCategory === 'avatars' || filterCategory === 'headshots' || filterCategory === 'brands') {
+      } else if (filterCategory === 'avatars' || filterCategory === 'brands') {
         query = query.or('is_video.is.null,is_video.eq.false');
       }
 
@@ -205,12 +190,6 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
       return !avatar.is_video && (!avatar.tags || avatar.tags.length === 0 || 
         avatar.tags.some(tag => 
           ['avatar', 'portrait', 'person', 'character'].includes(tag.toLowerCase())
-        )
-      );
-    } else if (filterCategory === 'headshots') {
-      return !avatar.is_video && (!avatar.tags || avatar.tags.length === 0 ||
-        avatar.tags.some(tag => 
-          ['headshot', 'professional', 'business', 'linkedin'].includes(tag.toLowerCase())
         )
       );
     } else if (filterCategory === 'brands') {
@@ -372,22 +351,13 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
           Avatars
         </Button>
         <Button
-          variant={filterCategory === 'headshots' ? 'default' : 'outline'}
-          onClick={() => setFilterCategory('headshots')}
-          size="sm"
-          className="rounded-full"
-        >
-          <Camera className="h-4 w-4 mr-2" />
-          Headshots
-        </Button>
-        <Button
           variant={filterCategory === 'brands' ? 'default' : 'outline'}
           onClick={() => setFilterCategory('brands')}
           size="sm"
           className="rounded-full"
         >
           <Briefcase className="h-4 w-4 mr-2" />
-          Brand Assets
+          Brands
         </Button>
         <Button
           variant={filterCategory === 'videos' ? 'default' : 'outline'}
@@ -424,9 +394,7 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
       {filteredAvatars.length > 0 ? (
         <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'flex flex-col gap-4'}>
           {filteredAvatars.map((avatar) => {
-            const qualityScore = calculateQualityScore(avatar);
             const isFavorite = favorites.has(avatar.id);
-            const formattedDate = format(new Date(avatar.created_at), 'MMM d, yyyy, h:mm a');
             
             return (
               <Card
@@ -458,18 +426,10 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
                     
                     {/* Gradient Overlay on Hover */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    
-                    {/* Quality Score Badge - Top Right */}
-                    <div className="absolute top-3 right-3 z-10">
-                      <Badge className="bg-gradient-to-r from-violet-500 to-purple-600 text-white px-3 py-1.5 text-sm font-bold shadow-lg border-0">
-                        <Star className="h-3.5 w-3.5 mr-1 fill-current" />
-                        {qualityScore.toFixed(1)}
-                      </Badge>
-                    </div>
 
-                    {/* Favorite Heart - Top Left */}
+                    {/* Favorite Heart - Top Right */}
                     <button
-                      className="absolute top-3 left-3 z-10 p-2 rounded-full bg-black/40 backdrop-blur-md hover:bg-black/60 transition-all duration-200 hover:scale-110"
+                      className="absolute top-3 right-3 z-10 p-2 rounded-full bg-black/40 backdrop-blur-md hover:bg-black/60 transition-all duration-200 hover:scale-110"
                       onClick={(e) => {
                         e.stopPropagation();
                         toggleFavorite(avatar.id);
@@ -517,25 +477,6 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
                         })()}
                       </p>
                     </div>
-                    
-                    {/* Tags with Gradient Backgrounds */}
-                    {avatar.tags && avatar.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5">
-                        {avatar.tags.slice(0, 3).map((tag, index) => (
-                          <Badge
-                            key={index}
-                            className="text-xs px-3 py-1 bg-gradient-to-r from-violet-500/20 to-purple-600/20 border border-violet-500/30 text-foreground hover:from-violet-500/30 hover:to-purple-600/30 transition-all"
-                          >
-                            {tag}
-                          </Badge>
-                        ))}
-                        {avatar.tags.length > 3 && (
-                          <Badge className="text-xs px-3 py-1 bg-gradient-to-r from-blue-500/20 to-cyan-600/20 border border-blue-500/30">
-                            +{avatar.tags.length - 3} more
-                          </Badge>
-                        )}
-                      </div>
-                    )}
                     
                     {/* Divider */}
                     <div className="h-px bg-gradient-to-r from-transparent via-purple-500/60 to-transparent shadow-[0_0_8px_rgba(168,85,247,0.4)]" />
