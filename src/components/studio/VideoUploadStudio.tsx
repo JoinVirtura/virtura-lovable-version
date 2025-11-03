@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -32,6 +32,15 @@ export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
   const [showLibrary, setShowLibrary] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  // Sync imagePreview with project.avatar changes
+  useEffect(() => {
+    if (project.avatar?.originalUrl) {
+      setImagePreview(project.avatar.originalUrl);
+    } else {
+      setImagePreview(null);
+    }
+  }, [project.avatar]);
 
   const handleFileUpload = useCallback(async (file: File) => {
     if (!file.type.startsWith('image/')) {
