@@ -695,69 +695,18 @@ export const useStudioProject = (loadLastProject: boolean = true) => {
         throw new Error('No video URL in response');
       }
 
-      console.log('✅ Video generation complete:', data);
+      console.log('✅ Prediction started:', data);
 
-      const getDimensionsForRatio = (ratio: string) => {
-        const dimensions: Record<string, { width: number; height: number }> = {
-          '1:1': { width: 1080, height: 1080 },
-          '9:16': { width: 1080, height: 1920 },
-          '16:9': { width: 1920, height: 1080 },
-          '4:5': { width: 1080, height: 1350 }
-        };
-        return dimensions[ratio] || { width: 1920, height: 1080 };
-      };
-
-      const dims = getDimensionsForRatio(config.ratio || '16:9');
-
-      // Update project with completed video
-      setProject(prev => ({
-        ...prev,
-        video: {
-          engine: config.engine || 'virtura-pro',
-          quality: config.quality || '4K',
-          fps: config.fps || 30,
-          ratio: config.ratio || '16:9',
-          duration: config.duration || 30,
-          motionSettings: config.motionSettings,
-          videoUrl: data.videoUrl,
-          status: 'completed',
-          metadata: {
-            currentStage: 'Video generation complete',
-            progress: 100,
-            provider: data.provider,
-            model: data.model,
-            processingTime: data.processingTime
-          }
-        }
-      }));
-
-      toast({
-        title: "Video Generated Successfully! 🎉",
-        description: `Created with ${data.provider || 'Replicate'}`,
-      });
-
-      // Auto-save to library after successful generation
-      const autoSaveEnabled = localStorage.getItem('virtura_auto_save_videos') !== 'false';
-      
-      if (autoSaveEnabled && data.videoUrl) {
-        console.log('💾 Auto-saving video to library...');
-        
-        try {
-          // Call saveToLibrary immediately (no setTimeout)
-          await saveToLibrary(true);
-          
-          sonnerToast.success("Auto-saved to Library", {
-            description: "Your video is now in your library",
-            duration: 3000
-          });
-        } catch (error) {
-          console.error('❌ Auto-save failed:', error);
-          // Don't show error toast - video generation succeeded, save is bonus
-          console.warn('⚠️ Auto-save failed, but video is still accessible in preview');
-        }
-      } else if (!autoSaveEnabled) {
-        console.log('ℹ️ Auto-save disabled by user preference');
+      if (!data.predictionId) {
+        throw new Error('No prediction ID received from video engine');
       }
+
+      // Start polling for video status
+      setProjectProgress(50); // Generation started
+      await pollVideoStatus(data.predictionId, requestBody.settings);
+      
+      // After polling completes successfully, the video URL will be in project state
+      return;
 
     } catch (error: any) {
       console.error('❌ Video generation error:', error);
@@ -781,32 +730,147 @@ export const useStudioProject = (loadLastProject: boolean = true) => {
       // Timeout error
       if (error.name === 'AbortError') {
         errorTitle = "Request Timeout";
-        errorMessage = "Video generation request timed out after 10 minutes. The edge function may be experiencing issues. Please check: 1) Edge function is deployed 2) REPLICATE_API_KEY is set in Supabase secrets 3) Replicate account has available credits";
+        errorMessage = "Video generation timed out after 10 minutes. Please try again with a shorter duration.";
       }
       // Network errors
       else if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError')) {
         errorTitle = "Connection Failed";
-        errorMessage = "Unable to connect to video engine. Please check your internet connection and ensure the edge function is deployed.";
+        errorMessage = "Unable to connect to video engine. Please check your internet connection.";
       }
       // Replicate errors
       else if (errorMessage.includes('429') || errorMessage.toLowerCase().includes('rate limit')) {
         errorTitle = "Rate Limit Reached";
-        errorMessage = "Replicate rate limit exceeded. Please wait 60 seconds and try again, or add a payment method to your Replicate account at replicate.com/account/billing";
+        errorMessage = "Replicate rate limit exceeded. Please wait 60 seconds and try again.";
       } else if (errorMessage.includes('402') || errorMessage.toLowerCase().includes('payment')) {
         errorTitle = "Payment Required";
-        errorMessage = "Replicate payment method required. Add a payment method at replicate.com/account/billing to continue.";
-      } else if (errorMessage.toLowerCase().includes('all replicate engines failed')) {
-        errorTitle = "All Engines Failed";
-        errorMessage = "Video generation failed due to Replicate API limits. Please add a payment method at replicate.com/account/billing or wait 60 seconds before retrying.";
+        errorMessage = "Replicate payment method required. Add a payment method at replicate.com/account/billing";
       }
-      
+
       toast({
         title: errorTitle,
         description: errorMessage,
-        variant: "destructive"
+        variant: "destructive",
       });
+      
+      throw error;
+    } finally {
+      setProjectProgress(0); // Reset progress
     }
-  }, [project.avatar, project.voice, project.style, project.qualitySettings, toast]);
+  }, [project, supabase, toast]);
+
+  /**
+   * Poll for video generation status
+   */
+  const pollVideoStatus = async (predictionId: string, settings: any) => {
+    const startTime = Date.now();
+    const maxWaitTime = 10 * 60 * 1000; // 10 minutes
+    let pollCount = 0;
+    
+    console.log('🔄 Starting to poll for video status...');
+    
+    while (Date.now() - startTime < maxWaitTime) {
+      try {
+        pollCount++;
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        console.log(`📊 Poll #${pollCount} - ${elapsed}s elapsed...`);
+        
+        const { data, error } = await supabase.functions.invoke('video-engine-pro', {
+          body: {
+            checkStatus: true,
+            predictionId,
+            settings
+          }
+        });
+        
+        if (error) {
+          console.error('Polling error:', error);
+          throw error;
+        }
+        
+        console.log('Status:', data.status);
+        
+        if (data.status === 'completed') {
+          console.log('✅ Video generation complete!');
+          
+          const getDimensionsForRatio = (ratio: string) => {
+        const dimensions: Record<string, { width: number; height: number }> = {
+          '1:1': { width: 1080, height: 1080 },
+          '9:16': { width: 1080, height: 1920 },
+          '16:9': { width: 1920, height: 1080 },
+          '4:5': { width: 1080, height: 1350 }
+        };
+        return dimensions[ratio] || { width: 1920, height: 1080 };
+      };
+
+          const dims = getDimensionsForRatio(settings.ratio || '16:9');
+
+          // Update project with completed video
+          setProject(prev => ({
+            ...prev,
+            video: {
+              engine: settings.engine || 'virtura-pro',
+              quality: settings.quality || '4K',
+              fps: settings.fps || 30,
+              ratio: settings.ratio || '16:9',
+              duration: settings.duration || 30,
+              motionSettings: settings.motionSettings,
+              videoUrl: data.videoUrl,
+              status: 'completed',
+              metadata: {
+                currentStage: 'Video generation complete',
+                progress: 100,
+                provider: data.provider,
+                completedAt: new Date().toISOString()
+              }
+            }
+          }));
+
+          toast({
+            title: "Video Generated Successfully! 🎉",
+            description: `Created with ${data.provider || 'Replicate'}`,
+          });
+
+          // Auto-save to library
+          const autoSaveEnabled = localStorage.getItem('virtura_auto_save_videos') !== 'false';
+          if (autoSaveEnabled && data.videoUrl) {
+            try {
+              await saveToLibrary(true);
+              sonnerToast.success("Auto-saved to Library", {
+                description: "Your video is now in your library",
+                duration: 3000
+              });
+            } catch (error) {
+              console.error('❌ Auto-save failed:', error);
+            }
+          }
+          
+          return; // Exit polling loop
+        }
+        
+        if (data.status === 'failed') {
+          throw new Error(data.error || 'Video generation failed on Replicate');
+        }
+        
+        // Update progress
+        const progressPercent = Math.min(90, (elapsed / 120) * 100);
+        setProjectProgress(progressPercent);
+        
+        // Wait 5 seconds before next poll
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        
+      } catch (error: any) {
+        console.error('Video status polling error:', error);
+        toast({
+          title: "Video Generation Failed",
+          description: error.message,
+          variant: "destructive"
+        });
+        throw error;
+      }
+    }
+    
+    throw new Error('Video generation timed out after 10 minutes');
+  };
 
   const exportProject = useCallback(async (config: any) => {
     if (!project.video?.videoUrl) {

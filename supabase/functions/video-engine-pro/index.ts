@@ -32,6 +32,68 @@ serve(async (req) => {
     const requestBody = await req.json();
     console.log('📨 Full request body received:', JSON.stringify(requestBody, null, 2));
     
+    const REPLICATE_API_KEY = Deno.env.get('REPLICATE_API_KEY');
+    if (!REPLICATE_API_KEY) {
+      throw new Error('REPLICATE_API_KEY not configured. Please add it in Supabase secrets.');
+    }
+    
+    const replicate = new Replicate({ auth: REPLICATE_API_KEY });
+
+    // Handle status check requests
+    if (requestBody.checkStatus && requestBody.predictionId) {
+      console.log('🔍 Checking status for prediction:', requestBody.predictionId);
+      
+      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+      const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+      const supabase = createClient(supabaseUrl, supabaseKey);
+      
+      const prediction = await replicate.predictions.get(requestBody.predictionId);
+      console.log('📊 Prediction status:', prediction.status);
+      
+      if (prediction.status === 'succeeded' && prediction.output) {
+        console.log('✅ Video generation completed, downloading and uploading to Supabase...');
+        
+        const videoUrl = prediction.output;
+        const result = await downloadAndUploadVideo(
+          videoUrl,
+          'kling-motion',
+          requestBody.settings || {},
+          supabase
+        );
+        
+        return new Response(JSON.stringify({
+          success: true,
+          status: 'completed',
+          videoUrl: result.videoUrl,
+          provider: result.provider,
+          metadata: result.metadata
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+      
+      if (prediction.status === 'failed') {
+        console.error('❌ Prediction failed:', prediction.error);
+        return new Response(JSON.stringify({
+          success: false,
+          status: 'failed',
+          error: prediction.error || 'Video generation failed on Replicate'
+        }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+      
+      // Still processing
+      return new Response(JSON.stringify({
+        success: true,
+        status: prediction.status,
+        progress: prediction.logs
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
     const { avatarImageUrl, audioUrl, prompt, settings = {} } = requestBody;
     
     // Input validation with detailed error messages
@@ -110,22 +172,24 @@ serve(async (req) => {
 
     console.log('🎯 Processing with enhanced settings:', videoSettings);
 
-    // Generate video synchronously and return JSON
-    const videoResult = await generateRealVideo(
-      avatarImageUrl, 
-      audioUrl, 
-      prompt, 
-      videoSettings
+    // Start async video generation and return prediction ID immediately
+    console.log('🚀 Starting async video generation...');
+    
+    const predictionId = await startVideoGeneration(
+      avatarImageUrl,
+      audioUrl,
+      prompt,
+      videoSettings,
+      replicate
     );
-
+    
+    console.log('✅ Prediction started:', predictionId);
+    
     return new Response(JSON.stringify({
       success: true,
-      videoUrl: videoResult.videoUrl,
-      provider: videoResult.provider,
-      video_id: videoResult.video_id,
-      duration: videoResult.duration,
-      quality: videoResult.quality,
-      metadata: videoResult.metadata
+      predictionId,
+      status: 'starting',
+      message: 'Video generation started on Replicate'
     }), {
       headers: { 
         ...corsHeaders, 
@@ -149,7 +213,51 @@ serve(async (req) => {
   }
 });
 
-// Main video generation function with Replicate cascade
+/**
+ * Start video generation and return prediction ID immediately (async pattern)
+ */
+async function startVideoGeneration(
+  avatarImageUrl: string,
+  audioUrl: string | null,
+  prompt: string | null,
+  settings: any,
+  replicate: any
+): Promise<string> {
+  const hasAudio = !!audioUrl;
+  
+  if (hasAudio) {
+    console.log('🎵 Starting lip-sync prediction with audio');
+    const prediction = await replicate.predictions.create({
+      version: "bytedance/omni-human:latest",
+      input: {
+        image: avatarImageUrl,
+        audio: audioUrl,
+        quality: settings.quality || '4K',
+        fps: settings.fps || 30
+      }
+    });
+    console.log('✅ Lip-sync prediction created:', prediction.id);
+    return prediction.id;
+  } else {
+    console.log('🎬 Starting motion prediction without audio');
+    console.log('📝 Motion prompt:', prompt || 'natural subtle movements');
+    
+    const prediction = await replicate.predictions.create({
+      version: "minimax/video-01:latest",
+      input: {
+        image: avatarImageUrl,
+        prompt: prompt || "person with natural subtle movements, professional demeanor",
+        duration: Math.min(settings.duration || 5, 10),
+        aspect_ratio: settings.ratio || '9:16',
+        quality: settings.quality || '4K'
+      }
+    });
+    console.log('✅ Motion prediction created:', prediction.id);
+    return prediction.id;
+  }
+}
+
+// Main video generation function with Replicate cascade (kept for compatibility)
 async function generateRealVideo(
   avatarImageUrl: string,
   audioUrl: string | null,
