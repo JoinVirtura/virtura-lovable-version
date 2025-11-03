@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { VirturaNavigation } from "@/components/VirturaNavigation";
 import { Card } from "@/components/ui/card";
+import neuralBrain from "@/assets/neural-brain.png";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
@@ -250,19 +251,17 @@ export default function GuidePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Main Tutorial Video */}
             <Card className="group overflow-hidden bg-[#1a1a2e]/80 border-violet-500/20 hover:border-violet-500/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(139,92,246,0.3)]">
-              <div className="aspect-video relative bg-gradient-to-br from-violet-900/50 to-pink-900/50">
-                <iframe
-                  src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                  title="Virtura Complete Tutorial"
-                  className="w-full h-full relative z-10"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
+              <div className="aspect-video relative group cursor-pointer bg-gradient-to-br from-violet-900/50 to-pink-900/50">
+                <img 
+                  src={neuralBrain}
+                  alt="Virtura Complete Tutorial"
+                  className="w-full h-full object-cover relative z-10"
                 />
-                <div className="absolute top-3 right-3 z-20">
-                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-violet-500/80 text-white backdrop-blur-sm">
-                    60s Tutorial
-                  </span>
+                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center z-20">
+                  <Play className="w-16 h-16 text-white opacity-80 group-hover:opacity-100 transition-opacity" />
+                </div>
+                <div className="absolute top-3 right-3 z-30">
+                  <Badge className="bg-violet-500/80 text-white backdrop-blur-sm">60s Tutorial</Badge>
                 </div>
               </div>
               <div className="p-4">
@@ -275,19 +274,17 @@ export default function GuidePage() {
 
             {/* Avatar Creation Video */}
             <Card className="group overflow-hidden bg-[#1a1a2e]/80 border-violet-500/20 hover:border-violet-500/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(139,92,246,0.3)]">
-              <div className="aspect-video relative bg-gradient-to-br from-blue-900/50 to-purple-900/50">
-                <iframe
-                  src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                  title="Avatar Creation Tutorial"
-                  className="w-full h-full relative z-10"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
+              <div className="aspect-video relative group cursor-pointer bg-gradient-to-br from-blue-900/50 to-purple-900/50">
+                <img 
+                  src={neuralBrain} 
+                  alt="Avatar Creation Tutorial"
+                  className="w-full h-full object-cover relative z-10"
                 />
-                <div className="absolute top-3 right-3 z-20">
-                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-green-500/80 text-white backdrop-blur-sm">
-                    45s Tutorial
-                  </span>
+                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center z-20">
+                  <Play className="w-16 h-16 text-white opacity-80 group-hover:opacity-100 transition-opacity" />
+                </div>
+                <div className="absolute top-3 right-3 z-30">
+                  <Badge className="bg-green-500/80 text-white backdrop-blur-sm">45s Tutorial</Badge>
                 </div>
               </div>
               <div className="p-4">
@@ -300,19 +297,17 @@ export default function GuidePage() {
 
             {/* Enhancement Video */}
             <Card className="group overflow-hidden bg-[#1a1a2e]/80 border-violet-500/20 hover:border-violet-500/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(139,92,246,0.3)]">
-              <div className="aspect-video relative bg-gradient-to-br from-pink-900/50 to-blue-900/50">
-                <iframe
-                  src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                  title="Content Enhancement Tutorial"
-                  className="w-full h-full relative z-10"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
+              <div className="aspect-video relative group cursor-pointer bg-gradient-to-br from-pink-900/50 to-blue-900/50">
+                <img 
+                  src={neuralBrain} 
+                  alt="Content Enhancement Tutorial"
+                  className="w-full h-full object-cover relative z-10"
                 />
-                <div className="absolute top-3 right-3 z-20">
-                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/80 text-white backdrop-blur-sm">
-                    30s Tutorial
-                  </span>
+                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center z-20">
+                  <Play className="w-16 h-16 text-white opacity-80 group-hover:opacity-100 transition-opacity" />
+                </div>
+                <div className="absolute top-3 right-3 z-30">
+                  <Badge className="bg-blue-500/80 text-white backdrop-blur-sm">30s Tutorial</Badge>
                 </div>
               </div>
               <div className="p-4">

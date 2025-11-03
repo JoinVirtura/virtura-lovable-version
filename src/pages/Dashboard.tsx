@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { VirturaSidebar } from "@/components/VirturaSidebar";
 import { OverviewPage } from "@/components/OverviewPage";
-import virturaLogo from "/lovable-uploads/f264298f-2877-485b-affc-d705994fc848.png";
+import neuralBrain from "@/assets/neural-brain.png";
 import { CreateAvatar } from "@/components/CreateAvatar";
 import { AvatarStudio } from "@/components/AvatarStudio";
 import { AIImageStudio } from "@/components/AIImageStudio";
@@ -1496,7 +1496,7 @@ export default function Dashboard() {
                 <Card className="group overflow-hidden bg-[#1a1a2e]/80 border-violet-500/20 hover:border-violet-500/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(139,92,246,0.3)]">
                   <div className="aspect-video relative group cursor-pointer bg-gradient-to-br from-violet-900/50 to-pink-900/50">
                     <img 
-                      src={virturaLogo}
+                      src={neuralBrain}
                       alt="Virtura Complete Tutorial"
                       className="w-full h-full object-cover relative z-10"
                     />
@@ -1519,7 +1519,7 @@ export default function Dashboard() {
                 <Card className="group overflow-hidden bg-[#1a1a2e]/80 border-violet-500/20 hover:border-violet-500/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(139,92,246,0.3)]">
                   <div className="aspect-video relative group cursor-pointer bg-gradient-to-br from-blue-900/50 to-purple-900/50">
                     <img 
-                      src={virturaLogo} 
+                      src={neuralBrain} 
                       alt="Avatar Creation Tutorial"
                       className="w-full h-full object-cover relative z-10"
                     />
@@ -1542,7 +1542,7 @@ export default function Dashboard() {
                 <Card className="group overflow-hidden bg-[#1a1a2e]/80 border-violet-500/20 hover:border-violet-500/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(139,92,246,0.3)]">
                   <div className="aspect-video relative group cursor-pointer bg-gradient-to-br from-pink-900/50 to-blue-900/50">
                     <img 
-                      src={virturaLogo} 
+                      src={neuralBrain} 
                       alt="Content Enhancement Tutorial"
                       className="w-full h-full object-cover relative z-10"
                     />
@@ -1729,7 +1729,7 @@ export default function Dashboard() {
                                 </h4>
                                 <div className="aspect-video rounded-xl overflow-hidden border border-violet-500/20 shadow-[0_0_20px_rgba(139,92,246,0.2)] relative group cursor-pointer">
                                   <img 
-                                    src={virturaLogo} 
+                                    src={neuralBrain} 
                                     alt={`${todo.title} Tutorial`}
                                     className="w-full h-full object-cover"
                                   />
