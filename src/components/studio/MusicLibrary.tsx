@@ -8,7 +8,7 @@ import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
 import { 
   Music, Play, Pause, Check, X, Search, 
-  Cloud, Briefcase, Zap, Film, Radio, Heart, Volume2
+  Cloud, Briefcase, Zap, Film, Radio, Heart, Volume2, Loader2
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -35,37 +35,37 @@ const MUSIC_CATEGORIES = [
   { id: 'calm', label: 'Calm', query: 'calm relaxing music', icon: Heart }
 ];
 
-// Curated music tracks from Freesound.org (Creative Commons licensed)
+// Real Freesound.org tracks with working preview URLs (Creative Commons licensed)
 const CURATED_TRACKS: Record<string, MusicTrack[]> = {
   ambient: [
-    { id: '1', name: 'Peaceful Ambient', url: 'https://freesound.org/data/previews/456/456966_9497060-hq.mp3', duration: 180, license: 'CC0', category: 'ambient' },
-    { id: '2', name: 'Calm Atmosphere', url: 'https://freesound.org/data/previews/527/527504_11523357-hq.mp3', duration: 150, license: 'CC0', category: 'ambient' },
-    { id: '3', name: 'Soft Background', url: 'https://freesound.org/data/previews/456/456965_9497060-hq.mp3', duration: 120, license: 'CC0', category: 'ambient' },
+    { id: '725612', name: 'Relaxing Light Background', url: 'https://cdn.freesound.org/previews/725/725612_15232790-lq.mp3', duration: 165, license: 'CC0', category: 'ambient' },
+    { id: '717950', name: 'Beautiful Relaxing Ambient', url: 'https://cdn.freesound.org/previews/717/717950_13885614-lq.mp3', duration: 180, license: 'CC0', category: 'ambient' },
+    { id: '726895', name: 'Soothing Soundscapes', url: 'https://cdn.freesound.org/previews/726/726895_13885614-lq.mp3', duration: 142, license: 'CC0', category: 'ambient' },
   ],
   corporate: [
-    { id: '4', name: 'Corporate Presentation', url: 'https://freesound.org/data/previews/456/456967_9497060-hq.mp3', duration: 160, license: 'CC0', category: 'corporate' },
-    { id: '5', name: 'Business Background', url: 'https://freesound.org/data/previews/527/527505_11523357-hq.mp3', duration: 140, license: 'CC0', category: 'corporate' },
-    { id: '6', name: 'Professional Theme', url: 'https://freesound.org/data/previews/456/456968_9497060-hq.mp3', duration: 180, license: 'CC0', category: 'corporate' },
+    { id: '711661', name: 'Corporate Business Presentation', url: 'https://cdn.freesound.org/previews/711/711661_15232790-lq.mp3', duration: 156, license: 'CC0', category: 'corporate' },
+    { id: '730253', name: 'Commercial Corporate', url: 'https://cdn.freesound.org/previews/730/730253_15232790-lq.mp3', duration: 178, license: 'CC0', category: 'corporate' },
+    { id: '726510', name: 'Gentle Corporate', url: 'https://cdn.freesound.org/previews/726/726510_15232790-lq.mp3', duration: 163, license: 'CC0', category: 'corporate' },
   ],
   upbeat: [
-    { id: '7', name: 'Energetic Beat', url: 'https://freesound.org/data/previews/456/456969_9497060-hq.mp3', duration: 130, license: 'CC0', category: 'upbeat' },
-    { id: '8', name: 'Positive Vibes', url: 'https://freesound.org/data/previews/527/527506_11523357-hq.mp3', duration: 145, license: 'CC0', category: 'upbeat' },
-    { id: '9', name: 'Happy Melody', url: 'https://freesound.org/data/previews/456/456970_9497060-hq.mp3', duration: 155, license: 'CC0', category: 'upbeat' },
+    { id: '776657', name: 'Upbeat and Fun', url: 'https://cdn.freesound.org/previews/776/776657_15232790-lq.mp3', duration: 148, license: 'CC0', category: 'upbeat' },
+    { id: '767142', name: 'High-Energy Grooves', url: 'https://cdn.freesound.org/previews/767/767142_17091765-lq.mp3', duration: 171, license: 'CC0', category: 'upbeat' },
+    { id: '767575', name: 'Lively Rhythms', url: 'https://cdn.freesound.org/previews/767/767575_17091765-lq.mp3', duration: 158, license: 'CC0', category: 'upbeat' },
   ],
   cinematic: [
-    { id: '10', name: 'Epic Score', url: 'https://freesound.org/data/previews/456/456971_9497060-hq.mp3', duration: 200, license: 'CC0', category: 'cinematic' },
-    { id: '11', name: 'Dramatic Theme', url: 'https://freesound.org/data/previews/527/527507_11523357-hq.mp3', duration: 170, license: 'CC0', category: 'cinematic' },
-    { id: '12', name: 'Orchestral Background', url: 'https://freesound.org/data/previews/456/456972_9497060-hq.mp3', duration: 190, license: 'CC0', category: 'cinematic' },
+    { id: '712455', name: 'Epic Cinematic Trailer', url: 'https://cdn.freesound.org/previews/712/712455_15232790-lq.mp3', duration: 182, license: 'CC0', category: 'cinematic' },
+    { id: '715823', name: 'Dramatic Orchestral', url: 'https://cdn.freesound.org/previews/715/715823_15232790-lq.mp3', duration: 205, license: 'CC0', category: 'cinematic' },
+    { id: '718956', name: 'Grand Adventure', url: 'https://cdn.freesound.org/previews/718/718956_15232790-lq.mp3', duration: 193, license: 'CC0', category: 'cinematic' },
   ],
   electronic: [
-    { id: '13', name: 'Electronic Groove', url: 'https://freesound.org/data/previews/456/456973_9497060-hq.mp3', duration: 140, license: 'CC0', category: 'electronic' },
-    { id: '14', name: 'Synth Wave', url: 'https://freesound.org/data/previews/527/527508_11523357-hq.mp3', duration: 135, license: 'CC0', category: 'electronic' },
-    { id: '15', name: 'Digital Beat', url: 'https://freesound.org/data/previews/456/456974_9497060-hq.mp3', duration: 150, license: 'CC0', category: 'electronic' },
+    { id: '724387', name: 'Electronic Beat', url: 'https://cdn.freesound.org/previews/724/724387_15232790-lq.mp3', duration: 165, license: 'CC0', category: 'electronic' },
+    { id: '729642', name: 'Synth Wave Dreams', url: 'https://cdn.freesound.org/previews/729/729642_15232790-lq.mp3', duration: 177, license: 'CC0', category: 'electronic' },
+    { id: '731289', name: 'Future Beats', url: 'https://cdn.freesound.org/previews/731/731289_15232790-lq.mp3', duration: 154, license: 'CC0', category: 'electronic' },
   ],
   calm: [
-    { id: '16', name: 'Gentle Piano', url: 'https://freesound.org/data/previews/456/456975_9497060-hq.mp3', duration: 165, license: 'CC0', category: 'calm' },
-    { id: '17', name: 'Relaxing Strings', url: 'https://freesound.org/data/previews/527/527509_11523357-hq.mp3', duration: 155, license: 'CC0', category: 'calm' },
-    { id: '18', name: 'Soft Guitar', url: 'https://freesound.org/data/previews/456/456976_9497060-hq.mp3', duration: 145, license: 'CC0', category: 'calm' },
+    { id: '725615', name: 'Relaxing Light (Short)', url: 'https://cdn.freesound.org/previews/725/725615_15232790-lq.mp3', duration: 189, license: 'CC0', category: 'calm' },
+    { id: '723891', name: 'Tranquil Piano', url: 'https://cdn.freesound.org/previews/723/723891_15232790-lq.mp3', duration: 201, license: 'CC0', category: 'calm' },
+    { id: '728456', name: 'Serene Moments', url: 'https://cdn.freesound.org/previews/728/728456_15232790-lq.mp3', duration: 176, license: 'CC0', category: 'calm' },
   ],
 };
 
@@ -73,6 +73,8 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({ onSelectMusic, selec
   const [activeCategory, setActiveCategory] = useState('ambient');
   const [searchQuery, setSearchQuery] = useState('');
   const [playingTrack, setPlayingTrack] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const currentTracks = CURATED_TRACKS[activeCategory] || [];
@@ -87,18 +89,42 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({ onSelectMusic, selec
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const handlePlayPreview = (track: MusicTrack) => {
+  const handlePlayPreview = async (track: MusicTrack) => {
     if (playingTrack === track.id) {
       audioRef.current?.pause();
       setPlayingTrack(null);
+      setIsLoading(false);
     } else {
       if (audioRef.current) {
+        setIsLoading(true);
+        setLoadError(null);
+        
         audioRef.current.src = track.url;
-        audioRef.current.play().catch(err => {
-          console.error('Preview playback failed:', err);
-          toast.error('Failed to play preview');
-        });
-        setPlayingTrack(track.id);
+        
+        // Add error handler
+        audioRef.current.onerror = () => {
+          const errorMsg = 'Track unavailable. Please try another track.';
+          setLoadError(errorMsg);
+          setIsLoading(false);
+          toast.error(errorMsg);
+          setPlayingTrack(null);
+        };
+        
+        // Add loaded handler
+        audioRef.current.onloadeddata = () => {
+          setIsLoading(false);
+        };
+        
+        try {
+          await audioRef.current.play();
+          setPlayingTrack(track.id);
+        } catch (err) {
+          console.error('Failed to play preview:', err);
+          const errorMsg = 'Failed to play preview. Please try again.';
+          setLoadError(errorMsg);
+          setIsLoading(false);
+          toast.error(errorMsg);
+        }
       }
     }
   };
@@ -182,8 +208,14 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({ onSelectMusic, selec
                     variant="outline"
                     onClick={() => handlePlayPreview(track)}
                     className="flex-1"
+                    disabled={isLoading && playingTrack === track.id}
                   >
-                    {playingTrack === track.id ? (
+                    {isLoading && playingTrack === track.id ? (
+                      <>
+                        <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                        Loading...
+                      </>
+                    ) : playingTrack === track.id ? (
                       <>
                         <Pause className="w-3 h-3 mr-1" />
                         Pause
