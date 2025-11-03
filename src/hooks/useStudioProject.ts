@@ -610,40 +610,90 @@ export const useStudioProject = (loadLastProject: boolean = true) => {
       console.log('Avatar URL:', publicAvatarUrl);
       console.log('Audio URL:', project.voice?.audioUrl);
 
-      // Use supabase.functions.invoke() for automatic authentication (same pattern as all other edge functions)
-      const { data, error } = await supabase.functions.invoke('video-engine-pro', {
-        body: {
-          avatarImageUrl: publicAvatarUrl,
-          audioUrl: project.voice?.audioUrl,
-          prompt: config.prompt,
-          settings: {
-            engine: config.engine || 'virtura-pro',
-            quality: config.quality || '4K',
-            fps: config.fps || 30,
-            ratio: config.ratio || '16:9',
-            duration: config.duration || 30,
-            motionSettings: config.motionSettings,
-            background: project.style?.background || 'studio',
-            backgroundValue: project.style?.effects?.colorGrading,
-            lookMode: project.style?.lookMode,
-            lighting: project.style?.lighting,
-            camera: project.style?.camera,
-            effects: project.style?.effects,
-            talkingStyle: config.talkingStyle || 'stable',
-            voiceEmotions: project.voice?.emotions,
-            voiceLanguage: project.voice?.language,
-            voiceProvider: project.voice?.provider,
-            ultraHD: project.qualitySettings.enableUltraHD,
-            neuralEnhancement: project.qualitySettings.neuralEnhancement,
-            cinematicEffects: project.qualitySettings.cinematicEffects,
-            realTimeSync: project.qualitySettings.realTimeSync,
-            gpuAcceleration: project.qualitySettings.gpuAcceleration
+      // Health check first
+      try {
+        console.log('🏥 Performing health check on video-engine-pro...');
+        const healthResponse = await fetch(
+          `https://ujaoziqnxhjqlmnvlxav.supabase.co/functions/v1/video-engine-pro`,
+          {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`
+            }
           }
+        );
+        const health = await healthResponse.json();
+        console.log('✅ Health check result:', health);
+        
+        if (!health.hasReplicateKey) {
+          throw new Error('Video engine not configured - REPLICATE_API_KEY missing in Supabase secrets');
         }
+      } catch (healthError: any) {
+        console.error('❌ Health check failed:', healthError);
+        throw new Error(`Video engine unavailable: ${healthError.message}`);
+      }
+
+      // Prepare request body with all settings
+      const requestBody = {
+        avatarImageUrl: publicAvatarUrl,
+        audioUrl: project.voice?.audioUrl || null,
+        prompt: config.prompt,
+        settings: {
+          engine: config.engine || 'virtura-pro',
+          quality: config.quality || '4K',
+          fps: config.fps || 30,
+          ratio: config.ratio || '16:9',
+          duration: config.duration || 30,
+          motionSettings: config.motionSettings,
+          background: project.style?.background || 'studio',
+          backgroundValue: project.style?.effects?.colorGrading,
+          lookMode: project.style?.lookMode,
+          lighting: project.style?.lighting,
+          camera: project.style?.camera,
+          effects: project.style?.effects,
+          talkingStyle: config.talkingStyle || 'stable',
+          voiceEmotions: project.voice?.emotions,
+          voiceLanguage: project.voice?.language,
+          voiceProvider: project.voice?.provider,
+          ultraHD: project.qualitySettings.enableUltraHD,
+          neuralEnhancement: project.qualitySettings.neuralEnhancement,
+          cinematicEffects: project.qualitySettings.cinematicEffects,
+          realTimeSync: project.qualitySettings.realTimeSync,
+          gpuAcceleration: project.qualitySettings.gpuAcceleration
+        }
+      };
+
+      console.log('📦 Sending request payload:', JSON.stringify(requestBody, null, 2));
+
+      // Use supabase.functions.invoke() for automatic authentication
+      const { data, error } = await supabase.functions.invoke('video-engine-pro', {
+        body: requestBody
       });
 
-      if (error) throw error;
-      if (!data) throw new Error('No response from video engine');
+      console.log('📥 Raw response data:', data);
+      console.log('📥 Raw response error:', error);
+
+      if (error) {
+        console.error('❌ Edge function error details:', {
+          message: error.message,
+          context: error.context,
+          name: error.name,
+          details: error
+        });
+        throw new Error(`Video generation failed: ${error.message}`);
+      }
+
+      if (!data) {
+        throw new Error('No response from video engine');
+      }
+
+      if (!data.success) {
+        throw new Error(data.error || 'Video generation failed without error message');
+      }
+
+      if (!data.videoUrl) {
+        throw new Error('No video URL in response');
+      }
 
       console.log('✅ Video generation complete:', data);
 

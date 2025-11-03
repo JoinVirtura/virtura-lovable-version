@@ -29,19 +29,46 @@ serve(async (req) => {
   }
 
   try {
-    const { avatarImageUrl, audioUrl, prompt, settings = {} } = await req.json();
+    const requestBody = await req.json();
+    console.log('📨 Full request body received:', JSON.stringify(requestBody, null, 2));
     
-    // Input validation
-    if (!avatarImageUrl || typeof avatarImageUrl !== 'string') {
+    const { avatarImageUrl, audioUrl, prompt, settings = {} } = requestBody;
+    
+    // Input validation with detailed error messages
+    if (!avatarImageUrl) {
+      console.error('❌ Missing avatarImageUrl in request');
+      console.error('Received keys:', Object.keys(requestBody));
       return new Response(
-        JSON.stringify({ error: 'Valid avatarImageUrl is required' }), 
+        JSON.stringify({ 
+          success: false,
+          error: 'avatarImageUrl is required',
+          receivedKeys: Object.keys(requestBody)
+        }), 
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
+    if (typeof avatarImageUrl !== 'string') {
+      console.error('❌ avatarImageUrl is not a string:', typeof avatarImageUrl);
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          error: `avatarImageUrl must be a string, received ${typeof avatarImageUrl}` 
+        }), 
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log('✅ Avatar URL received:', avatarImageUrl);
+    console.log('✅ Audio URL received:', audioUrl || 'null (motion mode)');
+    console.log('✅ Prompt received:', prompt || 'none');
+
     if (prompt && typeof prompt === 'string' && prompt.length > 5000) {
       return new Response(
-        JSON.stringify({ error: 'Prompt too long (max 5000 characters)' }), 
+        JSON.stringify({ 
+          success: false,
+          error: 'Prompt too long (max 5000 characters)' 
+        }), 
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
