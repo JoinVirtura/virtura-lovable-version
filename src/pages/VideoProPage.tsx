@@ -133,6 +133,14 @@ export default function VideoProPage() {
     }
   };
 
+  const handleResetAvatar = useCallback(() => {
+    updateProject({
+      avatar: undefined,
+      style: undefined
+    });
+    toast.info('Avatar cleared - select a new image');
+  }, [updateProject]);
+
   return (
     <div className="w-full min-h-screen pb-32 bg-gradient-to-br from-[#0F0F1A] via-[#1a1a2e] to-[#0F0F1A] relative overflow-hidden">
       {/* Ambient particles */}
@@ -255,6 +263,7 @@ export default function VideoProPage() {
                 project={project}
                 isProcessing={isProcessing}
                 onStepChange={handleStepChange}
+                onResetAvatar={handleResetAvatar}
               />
             </div>
             {/* Processing Status */}
