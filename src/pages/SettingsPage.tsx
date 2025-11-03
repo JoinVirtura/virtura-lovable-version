@@ -25,7 +25,11 @@ import {
   Clock,
   Mic,
   ShieldCheck,
-  Monitor
+  Monitor,
+  Calendar,
+  Receipt,
+  Video,
+  HardDrive
 } from "lucide-react";
 import {
   Dialog,
@@ -40,12 +44,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useProfile } from "@/hooks/useProfile";
 import { useAuth } from "@/hooks/useAuth";
+import { useUsageTracking } from "@/hooks/useUsageTracking";
 import { useState, useEffect, useRef } from "react";
 
 export default function SettingsPage() {
   const { toast } = useToast();
   const { user } = useAuth();
   const { profile, loading: profileLoading, uploadAvatar, updateProfile, uploading } = useProfile();
+  const { usage, subscription, loading: usageLoading } = useUsageTracking();
   
   const [displayName, setDisplayName] = useState("");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -68,6 +74,11 @@ export default function SettingsPage() {
   const [autoDeleteOld, setAutoDeleteOld] = useState(false);
   const [saveVoiceClones, setSaveVoiceClones] = useState(true);
   const [downloadProtection, setDownloadProtection] = useState(false);
+  
+  // Billing history state
+  const [showBillingHistory, setShowBillingHistory] = useState(false);
+  const [billingHistory, setBillingHistory] = useState<any[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
 
   // Pre-fill form when profile loads
   useEffect(() => {
@@ -240,6 +251,25 @@ export default function SettingsPage() {
       return;
     }
     window.open(data.url, "_blank");
+  };
+
+  const fetchBillingHistory = async () => {
+    setLoadingHistory(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("get-billing-history");
+      if (error) throw error;
+      setBillingHistory(data.invoices || []);
+      setShowBillingHistory(true);
+    } catch (error: any) {
+      console.error("Error fetching billing history:", error);
+      toast({
+        title: "Error fetching billing history",
+        description: error.message || "Please try again",
+        variant: "destructive",
+      });
+    } finally {
+      setLoadingHistory(false);
+    }
   };
 
   const plans = [
@@ -625,29 +655,147 @@ export default function SettingsPage() {
             </div>
             
             <div className="space-y-6">
-              {/* Current Plan */}
-              <div className="flex items-center justify-between p-4 bg-gradient-card rounded-lg">
-                <div>
-                  <h3 className="font-display font-bold">Free Plan</h3>
-                  <p className="text-sm text-muted-foreground">50 generations per month</p>
+              {/* Current Plan - DYNAMIC */}
+              {usageLoading ? (
+                <div className="h-24 bg-muted animate-pulse rounded-lg" />
+              ) : (
+                <div className="flex items-center justify-between p-4 bg-gradient-card rounded-lg">
+                  <div>
+                    <h3 className="font-display font-bold capitalize">
+                      {subscription?.plan_name || 'Free'} Plan
+                    </h3>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      {subscription?.status === 'active' && subscription?.current_period_end ? (
+                        <>
+                          <Calendar className="w-3 h-3" />
+                          <span>Renews {new Date(subscription.current_period_end).toLocaleDateString()}</span>
+                        </>
+                      ) : (
+                        <span>No active subscription</span>
+                      )}
+                    </div>
+                  </div>
+                  <Badge className={subscription?.status === 'active' ? "bg-gradient-primary" : "bg-muted"}>
+                    {subscription?.status === 'active' ? 'Active' : 'Inactive'}
+                  </Badge>
                 </div>
-                <Badge className="bg-gradient-primary">Active</Badge>
-              </div>
+              )}
               
-              {/* Usage */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label>This Month's Usage</Label>
-                  <span className="text-sm text-muted-foreground">12 / 50</span>
+              {/* Usage - DYNAMIC */}
+              {usageLoading ? (
+                <div className="space-y-4">
+                  <div className="h-16 bg-muted animate-pulse rounded-lg" />
+                  <div className="h-16 bg-muted animate-pulse rounded-lg" />
                 </div>
-                <div className="w-full bg-muted rounded-full h-2">
-                  <div className="bg-gradient-primary h-2 rounded-full" style={{ width: "24%" }}></div>
+              ) : usage ? (
+                <div className="space-y-4">
+                  {/* Voice Generation Usage */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <Label className="flex items-center gap-2">
+                        <Mic className="w-4 h-4" />
+                        Voice Generation
+                      </Label>
+                      <span className="text-sm text-muted-foreground">
+                        {usage.voice_generation.used} / {usage.voice_generation.limit}
+                      </span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-2">
+                      <div 
+                        className={`h-2 rounded-full transition-all ${
+                          (usage.voice_generation.used / usage.voice_generation.limit) > 0.8 
+                            ? 'bg-red-500' 
+                            : (usage.voice_generation.used / usage.voice_generation.limit) > 0.5 
+                              ? 'bg-yellow-500' 
+                              : 'bg-gradient-primary'
+                        }`}
+                        style={{ 
+                          width: `${Math.min(100, (usage.voice_generation.used / usage.voice_generation.limit) * 100)}%` 
+                        }}
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Video Generation Usage */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <Label className="flex items-center gap-2">
+                        <Video className="w-4 h-4" />
+                        Video Generation
+                      </Label>
+                      <span className="text-sm text-muted-foreground">
+                        {usage.video_generation.used} / {usage.video_generation.limit}
+                      </span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-2">
+                      <div 
+                        className={`h-2 rounded-full transition-all ${
+                          (usage.video_generation.used / usage.video_generation.limit) > 0.8 
+                            ? 'bg-red-500' 
+                            : (usage.video_generation.used / usage.video_generation.limit) > 0.5 
+                              ? 'bg-yellow-500' 
+                              : 'bg-gradient-primary'
+                        }`}
+                        style={{ 
+                          width: `${Math.min(100, (usage.video_generation.used / usage.video_generation.limit) * 100)}%` 
+                        }}
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Storage Usage */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <Label className="flex items-center gap-2">
+                        <HardDrive className="w-4 h-4" />
+                        Storage
+                      </Label>
+                      <span className="text-sm text-muted-foreground">
+                        {usage.storage.used} / {usage.storage.limit} MB
+                      </span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-2">
+                      <div 
+                        className={`h-2 rounded-full transition-all ${
+                          (usage.storage.used / usage.storage.limit) > 0.8 
+                            ? 'bg-red-500' 
+                            : (usage.storage.used / usage.storage.limit) > 0.5 
+                              ? 'bg-yellow-500' 
+                              : 'bg-gradient-primary'
+                        }`}
+                        style={{ 
+                          width: `${Math.min(100, (usage.storage.used / usage.storage.limit) * 100)}%` 
+                        }}
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ) : null}
               
+              {/* Action Buttons */}
               <div className="flex gap-4">
-                <Button onClick={openCustomerPortal}>Manage Billing</Button>
-                <Button variant="outline" onClick={openCustomerPortal}>View Billing History</Button>
+                <Button onClick={openCustomerPortal} className="flex items-center gap-2">
+                  <CreditCard className="w-4 h-4" />
+                  Manage Billing
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={fetchBillingHistory}
+                  disabled={loadingHistory}
+                  className="flex items-center gap-2"
+                >
+                  {loadingHistory ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Loading...
+                    </>
+                  ) : (
+                    <>
+                      <Receipt className="w-4 h-4" />
+                      View Billing History
+                    </>
+                  )}
+                </Button>
               </div>
             </div>
           </Card>
@@ -822,6 +970,82 @@ export default function SettingsPage() {
                 ) : (
                   "Change Password"
                 )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Billing History Dialog */}
+        <Dialog open={showBillingHistory} onOpenChange={setShowBillingHistory}>
+          <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Receipt className="w-5 h-5" />
+                Billing History
+              </DialogTitle>
+              <DialogDescription>
+                View and download your past invoices and payments
+              </DialogDescription>
+            </DialogHeader>
+            
+            {billingHistory.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <Receipt className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                <p>No billing history yet</p>
+                <p className="text-sm">Your invoices will appear here after your first purchase</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="rounded-md border">
+                  <table className="w-full">
+                    <thead className="bg-muted/50">
+                      <tr className="border-b">
+                        <th className="px-4 py-3 text-left text-sm font-medium">Date</th>
+                        <th className="px-4 py-3 text-left text-sm font-medium">Description</th>
+                        <th className="px-4 py-3 text-left text-sm font-medium">Amount</th>
+                        <th className="px-4 py-3 text-left text-sm font-medium">Status</th>
+                        <th className="px-4 py-3 text-right text-sm font-medium">Invoice</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {billingHistory.map((invoice) => (
+                        <tr key={invoice.id} className="border-b last:border-0">
+                          <td className="px-4 py-3 text-sm">
+                            {new Date(invoice.created * 1000).toLocaleDateString()}
+                          </td>
+                          <td className="px-4 py-3 text-sm">{invoice.description}</td>
+                          <td className="px-4 py-3 text-sm">
+                            ${(invoice.amount_paid / 100).toFixed(2)}
+                          </td>
+                          <td className="px-4 py-3 text-sm">
+                            <Badge variant={invoice.status === 'paid' ? 'default' : 'destructive'}>
+                              {invoice.status}
+                            </Badge>
+                          </td>
+                          <td className="px-4 py-3 text-sm text-right">
+                            {invoice.invoice_pdf && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                asChild
+                              >
+                                <a href={invoice.invoice_pdf} target="_blank" rel="noopener noreferrer">
+                                  <Download className="w-4 h-4" />
+                                </a>
+                              </Button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+            
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowBillingHistory(false)}>
+                Close
               </Button>
             </DialogFooter>
           </DialogContent>

@@ -1,5 +1,8 @@
 project_id = "ujaoziqnxhjqlmnvlxav"
 
+[functions.get-billing-history]
+verify_jwt = true
+
 [functions.fetch-freesound-music]
 verify_jwt = true
 
