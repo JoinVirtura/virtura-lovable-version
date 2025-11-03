@@ -63,6 +63,7 @@ import {
   Settings as SettingsIcon,
   ChevronDown,
   ChevronUp,
+  ChevronRight,
   Clock,
   AlertCircle,
   Lightbulb,
@@ -82,7 +83,12 @@ import {
   MoreVertical,
   Rocket,
   Wand2,
-  Plus
+  Plus,
+  Folder,
+  FolderOpen,
+  Image,
+  FileText,
+  Home
 } from "lucide-react";
 import { CircularProgress } from "@/components/ui/circular-progress";
 
@@ -117,6 +123,12 @@ export default function Dashboard() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [activeView, setActiveView] = useState("overview");
+  
+  // Brand Manager state
+  const [currentFolder, setCurrentFolder] = useState<string>('all');
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(['all']));
+  const [sortBy, setSortBy] = useState('name');
+  const [filterType, setFilterType] = useState('all');
 
   // Fetch saved avatars from Supabase for Library view
   const fetchSavedAvatars = async () => {
@@ -1757,6 +1769,44 @@ export default function Dashboard() {
           </StudioBackground>
         );
       case "brands":
+        // Mock folder structure
+        const folderStructure = [
+          {
+            id: 'campaign-2024',
+            name: 'Campaign 2024',
+            color: 'violet',
+            children: [
+              { id: 'q1', name: 'Q1 Materials', color: 'blue', count: 24, lastModified: '2 days ago' },
+              { id: 'q2', name: 'Q2 Materials', color: 'green', count: 18, lastModified: '5 days ago' }
+            ],
+            count: 42,
+            lastModified: '2 days ago'
+          },
+          { id: 'brand-assets', name: 'Brand Assets', color: 'orange', count: 156, lastModified: '1 week ago' },
+          { id: 'social-media', name: 'Social Media', color: 'pink', count: 89, lastModified: '3 days ago' }
+        ];
+
+        const toggleFolder = (folderId: string) => {
+          const newExpanded = new Set(expandedFolders);
+          if (newExpanded.has(folderId)) {
+            newExpanded.delete(folderId);
+          } else {
+            newExpanded.add(folderId);
+          }
+          setExpandedFolders(newExpanded);
+        };
+
+        const getFolderColor = (color: string) => {
+          const colorMap: Record<string, string> = {
+            violet: 'text-violet-400',
+            blue: 'text-blue-400',
+            green: 'text-green-400',
+            orange: 'text-orange-400',
+            pink: 'text-pink-400'
+          };
+          return colorMap[color] || 'text-violet-400';
+        };
+
         return (
           <StudioBackground>
             <div className="flex h-screen">
@@ -1769,7 +1819,7 @@ export default function Dashboard() {
                     <SelectTrigger className="w-full bg-black/60 border-violet-500/30">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-gray-900 border-violet-500/30">
                       <SelectItem value="active-brand">Active Brand</SelectItem>
                       <SelectItem value="new-brand">+ New Brand</SelectItem>
                     </SelectContent>
@@ -1778,33 +1828,123 @@ export default function Dashboard() {
 
                 {/* Stats Cards */}
                 <Card className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 border-violet-500/20 p-4">
-                  <h3 className="text-sm text-muted-foreground mb-4">Total Assets</h3>
-                  <p className="text-4xl font-bold text-white">0</p>
+                  <h3 className="text-sm text-muted-foreground mb-2">Total Assets</h3>
+                  <p className="text-3xl font-bold text-white">267</p>
                 </Card>
 
                 <Card className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 border-violet-500/20 p-4">
-                  <h3 className="text-sm text-muted-foreground mb-4">Active Campaigns</h3>
-                  <p className="text-4xl font-bold text-white">3</p>
+                  <h3 className="text-sm text-muted-foreground mb-2">Active Campaigns</h3>
+                  <p className="text-3xl font-bold text-white">3</p>
                 </Card>
 
                 <Card className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 border-violet-500/20 p-4">
-                  <h3 className="text-sm text-muted-foreground mb-4">Avg Performance</h3>
-                  <p className="text-4xl font-bold text-white">0.0</p>
+                  <h3 className="text-sm text-muted-foreground mb-2">Avg Performance</h3>
+                  <p className="text-3xl font-bold text-white">8.4</p>
                 </Card>
 
-                {/* Collections */}
+                {/* Folders Section */}
                 <div>
-                  <h3 className="text-sm font-semibold text-muted-foreground mb-3">Collections</h3>
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start bg-violet-500/20 text-violet-300 hover:bg-violet-500/30"
-                  >
-                    All Assets
-                  </Button>
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-sm font-semibold text-muted-foreground">Folders</h3>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      className="h-7 px-2 text-violet-400 hover:text-violet-300 hover:bg-violet-500/10"
+                    >
+                      <Plus className="w-3 h-3 mr-1" />
+                      New
+                    </Button>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    {/* All Assets */}
+                    <Button 
+                      variant="ghost" 
+                      className={`w-full justify-start gap-2 ${currentFolder === 'all' ? 'bg-violet-500/20 text-violet-300' : 'hover:bg-violet-500/10'}`}
+                      onClick={() => setCurrentFolder('all')}
+                    >
+                      <Home className="w-4 h-4" />
+                      <span className="flex-1 text-left">All Assets</span>
+                      <span className="text-xs text-muted-foreground">267</span>
+                    </Button>
+
+                    {/* Folder Tree */}
+                    {folderStructure.map(folder => (
+                      <div key={folder.id}>
+                        <Button 
+                          variant="ghost" 
+                          className={`w-full justify-start gap-2 ${currentFolder === folder.id ? 'bg-violet-500/20 text-violet-300' : 'hover:bg-violet-500/10'}`}
+                          onClick={() => {
+                            setCurrentFolder(folder.id);
+                            if (folder.children) toggleFolder(folder.id);
+                          }}
+                        >
+                          {folder.children && (
+                            <ChevronRight className={`w-3 h-3 transition-transform ${expandedFolders.has(folder.id) ? 'rotate-90' : ''}`} />
+                          )}
+                          {!folder.children && <span className="w-3" />}
+                          <Folder className={`w-4 h-4 ${getFolderColor(folder.color)}`} />
+                          <span className="flex-1 text-left text-sm">{folder.name}</span>
+                          <span className="text-xs text-muted-foreground">{folder.count}</span>
+                        </Button>
+
+                        {/* Nested folders */}
+                        {folder.children && expandedFolders.has(folder.id) && (
+                          <div className="ml-4 mt-1 space-y-1">
+                            {folder.children.map(child => (
+                              <Button 
+                                key={child.id}
+                                variant="ghost" 
+                                className={`w-full justify-start gap-2 ${currentFolder === child.id ? 'bg-violet-500/20 text-violet-300' : 'hover:bg-violet-500/10'}`}
+                                onClick={() => setCurrentFolder(child.id)}
+                              >
+                                <span className="w-3" />
+                                <Folder className={`w-4 h-4 ${getFolderColor(child.color)}`} />
+                                <span className="flex-1 text-left text-sm">{child.name}</span>
+                                <span className="text-xs text-muted-foreground">{child.count}</span>
+                              </Button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Smart Collections */}
+                <div>
+                  <h3 className="text-sm font-semibold text-muted-foreground mb-3">Smart Collections</h3>
+                  <div className="space-y-1">
+                    <Button variant="ghost" className="w-full justify-start gap-2 hover:bg-violet-500/10">
+                      <Star className="w-4 h-4 text-yellow-400" />
+                      <span className="flex-1 text-left text-sm">Favorites</span>
+                      <span className="text-xs text-muted-foreground">32</span>
+                    </Button>
+                    <Button variant="ghost" className="w-full justify-start gap-2 hover:bg-violet-500/10">
+                      <Clock className="w-4 h-4 text-blue-400" />
+                      <span className="flex-1 text-left text-sm">Recent</span>
+                      <span className="text-xs text-muted-foreground">15</span>
+                    </Button>
+                    <Button variant="ghost" className="w-full justify-start gap-2 hover:bg-violet-500/10">
+                      <Image className="w-4 h-4 text-green-400" />
+                      <span className="flex-1 text-left text-sm">Images</span>
+                      <span className="text-xs text-muted-foreground">189</span>
+                    </Button>
+                    <Button variant="ghost" className="w-full justify-start gap-2 hover:bg-violet-500/10">
+                      <Video className="w-4 h-4 text-purple-400" />
+                      <span className="flex-1 text-left text-sm">Videos</span>
+                      <span className="text-xs text-muted-foreground">67</span>
+                    </Button>
+                    <Button variant="ghost" className="w-full justify-start gap-2 hover:bg-violet-500/10">
+                      <FileText className="w-4 h-4 text-orange-400" />
+                      <span className="flex-1 text-left text-sm">Documents</span>
+                      <span className="text-xs text-muted-foreground">11</span>
+                    </Button>
+                  </div>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="space-y-3 pt-4">
+                <div className="space-y-3 pt-4 border-t border-violet-500/20">
                   <Button 
                     variant="outline" 
                     className="w-full justify-start gap-3 border-violet-500/30 hover:border-violet-500/50 hover:bg-violet-500/10"
@@ -1842,68 +1982,209 @@ export default function Dashboard() {
               {/* Main Content Area */}
               <div className="flex-1 overflow-y-auto">
                 <div className="p-8">
-                  {/* Header */}
-                  <div className="flex items-center justify-between mb-8">
-                    <div>
-                      <h1 className="text-4xl font-display font-bold text-white mb-2">Brand Manager</h1>
-                      <p className="text-violet-200">0 assets</p>
+                  {/* Horizontal Header - Title, Search, Actions */}
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="flex-shrink-0">
+                      <h1 className="text-3xl font-display font-bold text-white">Brand Manager</h1>
+                      <p className="text-sm text-violet-200 mt-1">267 assets</p>
                     </div>
-                    <div className="flex gap-3">
+                    
+                    <div className="flex-1 max-w-xl">
+                      <div className="relative">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input 
+                          placeholder="Search assets..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="pl-10 h-10 bg-black/40 backdrop-blur-md border border-violet-500/30 focus-visible:ring-2 focus-visible:ring-violet-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2 flex-shrink-0">
+                      <Select value={sortBy} onValueChange={setSortBy}>
+                        <SelectTrigger className="w-32 h-10 bg-black/40 border-violet-500/30">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-900 border-violet-500/30">
+                          <SelectItem value="name">Name</SelectItem>
+                          <SelectItem value="date">Date</SelectItem>
+                          <SelectItem value="size">Size</SelectItem>
+                          <SelectItem value="type">Type</SelectItem>
+                        </SelectContent>
+                      </Select>
+
                       <Button 
                         variant="outline" 
                         size="icon"
-                        className="border-violet-500/30 hover:border-violet-500/50"
+                        className={`h-10 w-10 ${viewMode === 'grid' ? 'bg-violet-500/20 text-violet-300 border-violet-500/50' : 'border-violet-500/30 hover:border-violet-500/50'}`}
+                        onClick={() => setViewMode('grid')}
                       >
-                        <Grid3X3 className="w-5 h-5" />
+                        <Grid3X3 className="w-4 h-4" />
                       </Button>
                       <Button 
                         variant="outline" 
                         size="icon"
-                        className="border-violet-500/30 hover:border-violet-500/50"
+                        className={`h-10 w-10 ${viewMode === 'list' ? 'bg-violet-500/20 text-violet-300 border-violet-500/50' : 'border-violet-500/30 hover:border-violet-500/50'}`}
+                        onClick={() => setViewMode('list')}
                       >
-                        <List className="w-5 h-5" />
+                        <List className="w-4 h-4" />
                       </Button>
                     </div>
                   </div>
 
-                  {/* Search Bar */}
-                  <div className="mb-8">
-                    <div className="relative">
-                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                      <Input 
-                        placeholder="Search assets..."
-                        className="pl-12 h-14 bg-black/40 backdrop-blur-md border-2 border-violet-500/30 focus-visible:ring-2 focus-visible:ring-violet-500"
-                      />
-                    </div>
+                  {/* Breadcrumb Navigation */}
+                  <div className="flex items-center gap-2 text-sm text-violet-200 mb-6">
+                    <Home className="w-4 h-4" />
+                    <ChevronRight className="w-3 h-3 text-muted-foreground" />
+                    <span>
+                      {currentFolder === 'all' ? 'All Assets' : 
+                       folderStructure.find(f => f.id === currentFolder)?.name || 
+                       folderStructure.flatMap(f => f.children || []).find(c => c.id === currentFolder)?.name || 'Unknown'}
+                    </span>
                   </div>
 
-                  {/* Empty State */}
-                  <Card className="bg-gradient-to-br from-gray-900/60 to-gray-800/60 border-violet-500/20 min-h-[500px] flex items-center justify-center">
-                    <div className="text-center space-y-6">
-                      <div className="w-20 h-20 mx-auto rounded-full bg-violet-500/20 flex items-center justify-center">
-                        <Sparkles className="w-10 h-10 text-violet-400" />
-                      </div>
-                      <div>
-                        <h3 className="text-2xl font-bold text-white mb-2">No assets yet</h3>
-                        <p className="text-violet-200 mb-6">Upload your first asset or generate content with AI</p>
-                      </div>
-                      <div className="flex gap-4 justify-center">
-                        <Button 
-                          variant="outline"
-                          className="gap-2 border-violet-500/30 hover:border-violet-500/50 hover:bg-violet-500/10"
+                  {/* Content Grid/List */}
+                  {viewMode === 'grid' ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                      {/* Folder Cards */}
+                      {currentFolder === 'all' && folderStructure.map(folder => (
+                        <Card 
+                          key={folder.id}
+                          className="group bg-gradient-to-br from-gray-900/80 to-gray-800/80 border-violet-500/20 p-5 cursor-pointer hover:border-violet-500/50 hover:shadow-[0_0_30px_rgba(168,85,247,0.2)] transition-all duration-300"
+                          onClick={() => setCurrentFolder(folder.id)}
                         >
-                          <Upload className="w-4 h-4" />
-                          Upload
-                        </Button>
-                        <Button 
-                          className="gap-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.4)]"
+                          <div className="flex items-start justify-between mb-4">
+                            <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${folder.color === 'violet' ? 'from-violet-600/20 to-purple-600/20' : folder.color === 'orange' ? 'from-orange-600/20 to-red-600/20' : 'from-pink-600/20 to-rose-600/20'} flex items-center justify-center`}>
+                              <Folder className={`w-6 h-6 ${getFolderColor(folder.color)}`} />
+                            </div>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <MoreVertical className="w-4 h-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent className="bg-gray-900 border-violet-500/30">
+                                <DropdownMenuItem>Open</DropdownMenuItem>
+                                <DropdownMenuItem>Rename</DropdownMenuItem>
+                                <DropdownMenuItem>Move</DropdownMenuItem>
+                                <DropdownMenuItem className="text-red-400">Delete</DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                          <h3 className="text-white font-semibold mb-1">{folder.name}</h3>
+                          <div className="flex items-center justify-between text-xs text-muted-foreground">
+                            <span>{folder.count} items</span>
+                            <span>{folder.lastModified}</span>
+                          </div>
+                        </Card>
+                      ))}
+
+                      {/* Child Folders */}
+                      {currentFolder !== 'all' && folderStructure.find(f => f.id === currentFolder)?.children?.map(child => (
+                        <Card 
+                          key={child.id}
+                          className="group bg-gradient-to-br from-gray-900/80 to-gray-800/80 border-violet-500/20 p-5 cursor-pointer hover:border-violet-500/50 hover:shadow-[0_0_30px_rgba(168,85,247,0.2)] transition-all duration-300"
+                          onClick={() => setCurrentFolder(child.id)}
                         >
-                          <Sparkles className="w-4 h-4" />
-                          Generate
-                        </Button>
-                      </div>
+                          <div className="flex items-start justify-between mb-4">
+                            <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${child.color === 'blue' ? 'from-blue-600/20 to-cyan-600/20' : 'from-green-600/20 to-emerald-600/20'} flex items-center justify-center`}>
+                              <Folder className={`w-6 h-6 ${getFolderColor(child.color)}`} />
+                            </div>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <MoreVertical className="w-4 h-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent className="bg-gray-900 border-violet-500/30">
+                                <DropdownMenuItem>Open</DropdownMenuItem>
+                                <DropdownMenuItem>Rename</DropdownMenuItem>
+                                <DropdownMenuItem>Move</DropdownMenuItem>
+                                <DropdownMenuItem className="text-red-400">Delete</DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                          <h3 className="text-white font-semibold mb-1">{child.name}</h3>
+                          <div className="flex items-center justify-between text-xs text-muted-foreground">
+                            <span>{child.count} items</span>
+                            <span>{child.lastModified}</span>
+                          </div>
+                        </Card>
+                      ))}
+
+                      {/* Empty State for specific folders */}
+                      {currentFolder !== 'all' && !folderStructure.find(f => f.id === currentFolder)?.children && (
+                        <Card className="col-span-full bg-gradient-to-br from-gray-900/60 to-gray-800/60 border-violet-500/20 min-h-[400px] flex items-center justify-center">
+                          <div className="text-center space-y-6">
+                            <div className="w-20 h-20 mx-auto rounded-full bg-violet-500/20 flex items-center justify-center">
+                              <Sparkles className="w-10 h-10 text-violet-400" />
+                            </div>
+                            <div>
+                              <h3 className="text-2xl font-bold text-white mb-2">No assets yet</h3>
+                              <p className="text-violet-200 mb-6">Upload your first asset or generate content with AI</p>
+                            </div>
+                            <div className="flex gap-4 justify-center">
+                              <Button 
+                                variant="outline"
+                                className="gap-2 border-violet-500/30 hover:border-violet-500/50 hover:bg-violet-500/10"
+                              >
+                                <Upload className="w-4 h-4" />
+                                Upload
+                              </Button>
+                              <Button 
+                                className="gap-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.4)]"
+                              >
+                                <Sparkles className="w-4 h-4" />
+                                Generate
+                              </Button>
+                            </div>
+                          </div>
+                        </Card>
+                      )}
                     </div>
-                  </Card>
+                  ) : (
+                    /* List View */
+                    <div className="space-y-2">
+                      <Card className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 border-violet-500/20 p-3">
+                        <div className="grid grid-cols-[auto_1fr_auto_auto_auto] gap-4 items-center text-sm">
+                          <span className="text-muted-foreground w-8"></span>
+                          <span className="text-muted-foreground font-medium">Name</span>
+                          <span className="text-muted-foreground font-medium">Items</span>
+                          <span className="text-muted-foreground font-medium">Modified</span>
+                          <span className="text-muted-foreground w-8"></span>
+                        </div>
+                      </Card>
+
+                      {currentFolder === 'all' && folderStructure.map(folder => (
+                        <Card 
+                          key={folder.id}
+                          className="group bg-gradient-to-br from-gray-900/80 to-gray-800/80 border-violet-500/20 p-3 cursor-pointer hover:border-violet-500/50 hover:shadow-[0_0_20px_rgba(168,85,247,0.2)] transition-all duration-300"
+                          onClick={() => setCurrentFolder(folder.id)}
+                        >
+                          <div className="grid grid-cols-[auto_1fr_auto_auto_auto] gap-4 items-center">
+                            <Folder className={`w-5 h-5 ${getFolderColor(folder.color)}`} />
+                            <span className="text-white font-medium">{folder.name}</span>
+                            <span className="text-sm text-muted-foreground">{folder.count} items</span>
+                            <span className="text-sm text-muted-foreground">{folder.lastModified}</span>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <MoreVertical className="w-4 h-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent className="bg-gray-900 border-violet-500/30">
+                                <DropdownMenuItem>Open</DropdownMenuItem>
+                                <DropdownMenuItem>Rename</DropdownMenuItem>
+                                <DropdownMenuItem>Move</DropdownMenuItem>
+                                <DropdownMenuItem className="text-red-400">Delete</DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
