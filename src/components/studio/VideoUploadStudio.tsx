@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Upload, ImagePlus, X, Sparkles, Zap, Crown, Library } from 'lucide-react';
 import type { StudioProject } from '@/hooks/useStudioProject';
 import { useToast } from '@/hooks/use-toast';
-import { RealAvatarLibrary } from './RealAvatarLibrary';
+import { DashboardLibraryView } from '@/components/DashboardLibraryView';
 import {
   Dialog,
   DialogContent,
@@ -310,9 +310,10 @@ export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
           <DialogHeader>
             <DialogTitle>Choose from Library</DialogTitle>
           </DialogHeader>
-          <RealAvatarLibrary 
+          <DashboardLibraryView 
             onSelectAvatar={handleLibrarySelect}
-            isProcessing={isProcessing}
+            isModal={true}
+            hideVideoCategory={false}
           />
         </DialogContent>
       </Dialog>
