@@ -31,7 +31,7 @@ import { applyStyleTransfer } from './StyleTransferEdge';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { toast as sonnerToast } from 'sonner';
-import { DashboardLibraryView } from '@/components/DashboardLibraryView';
+import { RealAvatarLibrary } from '@/components/studio/RealAvatarLibrary';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 
 // Import ALL style assets - 27+ styles
@@ -998,13 +998,12 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
       {/* Dashboard Library Modal */}
       <Dialog open={isLibraryOpen} onOpenChange={setIsLibraryOpen}>
         <DialogContent className="max-w-7xl max-h-[90vh] overflow-hidden flex flex-col p-6">
-          <DashboardLibraryView 
+          <RealAvatarLibrary 
             onSelectAvatar={(avatarUrl) => {
               handleLibrarySelect(avatarUrl);
               setIsLibraryOpen(false);
             }}
-            isModal={true}
-            hideVideoCategory={true}
+            isProcessing={false}
           />
         </DialogContent>
       </Dialog>
