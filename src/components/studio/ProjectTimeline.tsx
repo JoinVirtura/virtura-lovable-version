@@ -62,37 +62,32 @@ export const ProjectTimeline: React.FC<ProjectTimelineProps> = ({ project, onUpd
         <h3 className="text-lg font-semibold text-white">Project Timeline</h3>
       </div>
 
-      {/* Timeline */}
-      <div className="relative space-y-5">
-        {/* Connecting vertical line */}
-        <div className="absolute left-2.5 top-8 bottom-8 w-px bg-gradient-to-b from-violet-500/20 via-violet-500/40 to-violet-500/20" />
-
+      {/* Horizontal Timeline */}
+      <div className="flex items-center gap-4 justify-between">
         {steps.map((step, index) => {
           const isActive = currentStep === step.id;
-          const isLastStep = index === steps.length - 1;
 
           return (
-            <div 
-              key={step.id} 
-              className={`relative transition-all duration-300 ${
-                isActive ? 'scale-[1.02]' : ''
-              }`}
-            >
-              {/* Step container */}
-              <div className={`flex items-center gap-4 p-3 rounded-lg border ${
-                getStatusBorder(step.status, isActive)
-              } ${
-                isActive ? 'bg-violet-500/5' : 'bg-black/20'
-              } transition-all duration-300`}>
-                {/* Status indicator */}
-                <div className="relative z-10 flex-shrink-0">
-                  <div className={`w-5 h-5 rounded-full ${getStatusColor(step.status)} transition-all duration-300`} />
+            <React.Fragment key={step.id}>
+              {/* Step container - horizontal */}
+              <div 
+                className={`flex-1 flex flex-col items-center gap-3 p-4 rounded-lg border ${
+                  getStatusBorder(step.status, isActive)
+                } ${
+                  isActive ? 'bg-violet-500/5' : 'bg-black/20'
+                } transition-all duration-300 ${
+                  isActive ? 'scale-[1.02]' : ''
+                }`}
+              >
+                {/* Status indicator on top */}
+                <div className="relative">
+                  <div className={`w-8 h-8 rounded-full ${getStatusColor(step.status)} transition-all duration-300`} />
                   <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/20 to-transparent" />
                 </div>
-
-                {/* Step info */}
-                <div className="flex-1 flex items-center justify-between min-w-0">
-                  <span className={`font-medium truncate transition-colors duration-300 ${
+                
+                {/* Step info below indicator */}
+                <div className="text-center">
+                  <span className={`font-medium text-sm block transition-colors duration-300 ${
                     isActive 
                       ? 'text-violet-300' 
                       : step.status === 'completed'
@@ -103,14 +98,19 @@ export const ProjectTimeline: React.FC<ProjectTimelineProps> = ({ project, onUpd
                   }`}>
                     {step.title}
                   </span>
-                  <span className={`text-xs font-mono ml-3 flex-shrink-0 ${
+                  <span className={`text-xs font-mono block mt-1 ${
                     step.time === '—' ? 'text-gray-600' : 'text-gray-400'
                   }`}>
                     {step.time}
                   </span>
                 </div>
               </div>
-            </div>
+              
+              {/* Horizontal connecting line between steps */}
+              {index < steps.length - 1 && (
+                <div className="h-px w-12 bg-gradient-to-r from-violet-500/40 to-violet-500/20 flex-shrink-0" />
+              )}
+            </React.Fragment>
           );
         })}
       </div>

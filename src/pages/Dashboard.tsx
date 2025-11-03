@@ -34,6 +34,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { AvatarService } from "@/services/avatarService";
 import { EditTitleDialog } from "@/components/EditTitleDialog";
+import { ProjectTimeline } from "@/components/studio/ProjectTimeline";
+import { useStudioProject } from "@/hooks/useStudioProject";
 import { 
   Play, 
   Sparkles, 
@@ -112,6 +114,8 @@ export default function Dashboard() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [activeView, setActiveView] = useState("overview");
+  const { project, updateProject } = useStudioProject(false);
+  const [currentStep, setCurrentStep] = useState<string>('avatar');
 
   // Fetch saved avatars from Supabase for Library view
   const fetchSavedAvatars = async () => {
@@ -1816,6 +1820,15 @@ export default function Dashboard() {
                           </Button>
                         ))}
                       </div>
+                    </div>
+
+                    {/* Horizontal Project Timeline */}
+                    <div className="mt-6 pt-6 border-t border-violet-500/10">
+                      <ProjectTimeline 
+                        project={project}
+                        onUpdate={updateProject}
+                        currentStep={currentStep}
+                      />
                     </div>
 
                     {/* Advanced Options */}

@@ -31,6 +31,7 @@ import { applyStyleTransfer } from './StyleTransferEdge';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { toast as sonnerToast } from 'sonner';
+import { AvatarLibraryModal } from '@/components/AvatarLibraryModal';
 
 // Import ALL style assets - 27+ styles
 import style90sAnime from '@/assets/style-90s-anime.jpg';
@@ -213,12 +214,29 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
   const [selectedType, setSelectedType] = useState<'all' | 'free' | 'premium'>('all');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedBadge, setSelectedBadge] = useState<'all' | 'popular' | 'trending' | 'new'>('all');
+  const [isLibraryOpen, setIsLibraryOpen] = useState(false);
 
   const steps = [
     { id: 'avatar', label: 'Avatar', completed: !!project.avatar?.processedUrl },
     { id: 'style', label: 'Style', completed: !!project.style?.resultUrl },
     { id: 'export', label: 'Export', completed: false }
   ];
+
+  // Handle library avatar selection
+  const handleLibrarySelect = (avatarUrl: string) => {
+    onUpdate({
+      avatar: {
+        type: 'library',
+        originalUrl: avatarUrl,
+        processedUrl: avatarUrl,
+        status: 'completed',
+        quality: 'HD',
+        metadata: {}
+      }
+    });
+    setIsLibraryOpen(false);
+    sonnerToast.success('Avatar loaded from library');
+  };
 
   // Filter styles based on search, type, category, and badge
   const filteredStyles = STYLE_PRESETS.filter(style => {
@@ -608,7 +626,7 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
         </Card>
       )}
 
-      {/* Search Bar with Apply Button */}
+      {/* Search Bar with Library and Apply Buttons */}
       <div className="flex items-center gap-3 max-w-2xl">
         <Input
           type="search"
@@ -618,6 +636,16 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
           className="h-12 bg-black/40 border-violet-500/30 focus:border-violet-400 transition-colors"
         />
         
+        <Button 
+          onClick={() => setIsLibraryOpen(true)}
+          variant="outline"
+          size="sm"
+          className="px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 whitespace-nowrap border-violet-500/30 hover:border-violet-400"
+        >
+          <Library className="h-4 w-4 mr-2" />
+          Choose from Library
+        </Button>
+
         <Button 
           onClick={handleApplyStyle}
           disabled={!canApplyStyle || isProcessing || isApplying}
@@ -965,6 +993,13 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
           </CardContent>
         </Card>
       )}
+
+      {/* Avatar Library Modal */}
+      <AvatarLibraryModal
+        open={isLibraryOpen}
+        onOpenChange={setIsLibraryOpen}
+        onSelectAvatar={handleLibrarySelect}
+      />
 
     </div>
   );
