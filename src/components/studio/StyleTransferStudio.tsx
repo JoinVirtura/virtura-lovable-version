@@ -95,9 +95,6 @@ interface StyleTransferStudioProps {
 }
 
 const STYLE_PRESETS = [
-  // No Style - Use Original Avatar
-  { id: 'none', name: 'No Style (Original)', description: 'Use your avatar as-is without any style modifications', image: null, type: 'Free', strength: 0, category: 'original', badge: 'Default' },
-  
   // Artistic Styles
   { id: 'oil-painting', name: 'Oil Painting', description: 'Classical oil painting style', image: styleOilPainting, type: 'Premium', strength: 85, category: 'artistic' },
   { id: 'oil-painting-new', name: 'Modern Oil', description: 'Contemporary oil painting', image: styleOilPaintingNew, type: 'Premium', strength: 82, category: 'artistic' },
@@ -302,37 +299,6 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
 
     const stylePreset = STYLE_PRESETS.find(s => s.id === selectedStyle);
     if (!stylePreset) return;
-
-    // SPECIAL HANDLING: "No Style" option - skip API call and use original avatar
-    if (selectedStyle === 'none') {
-      onUpdate({
-        style: {
-          preset: 'none',
-          strength: 0,
-          preserveOriginal: 100,
-          enhanceDetails: 0,
-          resultUrl: avatarUrl,
-          lookMode: 'realistic',
-          background: 'studio',
-          lighting: { key: 80, fill: 60, rim: 40, ambient: 20 },
-          camera: { angle: 0, distance: 100, focus: 50 },
-          effects: {},
-          status: 'completed',
-          metadata: {
-            styleName: 'No Style (Original)',
-            styleType: 'Free',
-            category: 'original',
-            processingTime: 'Instant'
-          }
-        }
-      });
-
-      toast({
-        title: "Original Avatar Selected",
-        description: "Using your avatar without any style modifications",
-      });
-      return;
-    }
 
     setIsApplying(true);
     setProgressPercentage(0);
