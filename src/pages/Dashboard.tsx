@@ -829,7 +829,8 @@ export default function Dashboard() {
   const filteredAssets = assetsForFiltering.filter(asset => {
     const matchesSearch = asset.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          asset.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-    const matchesCategory = selectedCategory === "All" || asset.category === selectedCategory;
+    const matchesCategory = selectedCategory === "All" || 
+                           (selectedCategory === "Favorites" ? asset.isFavorite : asset.category === selectedCategory);
     return matchesSearch && matchesCategory;
   });
 
@@ -2847,7 +2848,7 @@ export default function Dashboard() {
                                   <Button 
                                     size="sm" 
                                     variant="outline"
-                                    className={`h-9 w-9 p-0 bg-black/40 backdrop-blur-md hover:bg-yellow-500/10 hover:border-yellow-500/50 transition-all ${asset.isFavorite ? 'text-yellow-500 border-yellow-500/50' : 'border-white/20'}`}
+                                    className={`h-9 w-9 p-0 bg-black/40 backdrop-blur-md hover:bg-violet-500/10 hover:border-violet-500/50 transition-all ${asset.isFavorite ? 'text-violet-500 border-violet-500/50' : 'border-white/20'}`}
                                     onClick={(e) => { 
                                       e.stopPropagation(); 
                                       handleFavorite(asset); 
