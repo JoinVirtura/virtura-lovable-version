@@ -122,7 +122,8 @@ export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
     setImagePreview(null);
     setUploadProgress(0);
     onUpdate({
-      avatar: undefined
+      avatar: undefined,
+      voice: undefined  // Reset voice status to clear "skipped" state
     });
   };
 
