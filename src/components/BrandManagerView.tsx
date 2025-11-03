@@ -17,6 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Separator } from '@/components/ui/separator';
 import { StudioBackground } from '@/components/StudioBackground';
 import { CreateBrandDialog } from '@/components/CreateBrandDialog';
 import { LibrarySelectionModal } from '@/components/LibrarySelectionModal';
@@ -232,7 +233,8 @@ export function BrandManagerView() {
         <div className="flex items-center group">
           <Button
             variant="ghost"
-            className={`flex-1 justify-start gap-2 pl-${2 + depth * 4} ${
+            style={{ paddingLeft: `${0.5 + depth * 0.75}rem` }}
+            className={`flex-1 justify-start gap-2 ${
               currentFolder === folder.id ? 'bg-violet-500/20 text-violet-300' : 'hover:bg-violet-500/10'
             }`}
             onClick={() => {
@@ -312,6 +314,57 @@ export function BrandManagerView() {
           </div>
 
 
+          {/* Smart Collections */}
+          {selectedBrand && (
+            <div>
+              <h3 className="text-sm font-semibold text-muted-foreground mb-3">Smart Collections</h3>
+              <div className="space-y-1">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-2 pl-2 hover:bg-violet-500/10"
+                  onClick={() => handleSmartCollection('favorites')}
+                >
+                  <Star className="w-4 h-4 text-yellow-400" />
+                  <span className="flex-1 text-left text-sm">Favorites</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-2 pl-2 hover:bg-violet-500/10"
+                  onClick={() => handleSmartCollection('recent')}
+                >
+                  <Clock className="w-4 h-4 text-blue-400" />
+                  <span className="flex-1 text-left text-sm">Recent</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-2 pl-2 hover:bg-violet-500/10"
+                  onClick={() => handleSmartCollection('images')}
+                >
+                  <Image className="w-4 h-4 text-green-400" />
+                  <span className="flex-1 text-left text-sm">Images</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-2 pl-2 hover:bg-violet-500/10"
+                  onClick={() => handleSmartCollection('videos')}
+                >
+                  <Video className="w-4 h-4 text-purple-400" />
+                  <span className="flex-1 text-left text-sm">Videos</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-2 pl-2 hover:bg-violet-500/10"
+                  onClick={() => handleSmartCollection('documents')}
+                >
+                  <FileText className="w-4 h-4 text-orange-400" />
+                  <span className="flex-1 text-left text-sm">Documents</span>
+                </Button>
+              </div>
+            </div>
+          )}
+
+          <Separator className="my-4 bg-violet-500/20" />
+
           {/* Folders Section */}
           {selectedBrand && (
             <div>
@@ -346,7 +399,7 @@ export function BrandManagerView() {
               <div className="space-y-1">
                 <Button
                   variant="ghost"
-                  className={`w-full justify-start gap-2 ${
+                  className={`w-full justify-start gap-2 pl-2 ${
                     currentFolder === 'all' ? 'bg-violet-500/20 text-violet-300' : 'hover:bg-violet-500/10'
                   }`}
                   onClick={() => setCurrentFolder('all')}
@@ -361,54 +414,7 @@ export function BrandManagerView() {
             </div>
           )}
 
-          {/* Smart Collections */}
-          {selectedBrand && (
-            <div>
-              <h3 className="text-sm font-semibold text-muted-foreground mb-3">Smart Collections</h3>
-              <div className="space-y-1">
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start gap-2 hover:bg-violet-500/10"
-                  onClick={() => handleSmartCollection('favorites')}
-                >
-                  <Star className="w-4 h-4 text-yellow-400" />
-                  <span className="flex-1 text-left text-sm">Favorites</span>
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start gap-2 hover:bg-violet-500/10"
-                  onClick={() => handleSmartCollection('recent')}
-                >
-                  <Clock className="w-4 h-4 text-blue-400" />
-                  <span className="flex-1 text-left text-sm">Recent</span>
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start gap-2 hover:bg-violet-500/10"
-                  onClick={() => handleSmartCollection('images')}
-                >
-                  <Image className="w-4 h-4 text-green-400" />
-                  <span className="flex-1 text-left text-sm">Images</span>
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start gap-2 hover:bg-violet-500/10"
-                  onClick={() => handleSmartCollection('videos')}
-                >
-                  <Video className="w-4 h-4 text-purple-400" />
-                  <span className="flex-1 text-left text-sm">Videos</span>
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start gap-2 hover:bg-violet-500/10"
-                  onClick={() => handleSmartCollection('documents')}
-                >
-                  <FileText className="w-4 h-4 text-orange-400" />
-                  <span className="flex-1 text-left text-sm">Documents</span>
-                </Button>
-              </div>
-            </div>
-          )}
+          <Separator className="my-4 bg-violet-500/20" />
 
           {/* Action Buttons */}
           {selectedBrand && (
