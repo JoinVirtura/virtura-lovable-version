@@ -1006,6 +1006,7 @@ export const useStudioProject = (loadLastProject: boolean = true) => {
 
       let thumbnailUrl = project.avatar?.processedUrl || project.avatar?.originalUrl;
       
+      // Handle blob URLs - upload to storage
       if (!thumbnailUrl && project.avatar?.originalUrl?.startsWith('blob:')) {
         console.log('📤 Uploading avatar as thumbnail...');
         
@@ -1028,6 +1029,44 @@ export const useStudioProject = (loadLastProject: boolean = true) => {
 
         thumbnailUrl = publicUrl;
         console.log('✅ Thumbnail uploaded:', thumbnailUrl);
+      }
+      
+      // Handle base64 data URLs - convert and upload to storage
+      if (thumbnailUrl?.startsWith('data:')) {
+        console.log('📤 Converting base64 thumbnail to storage...');
+        
+        try {
+          // Convert base64 to blob
+          const base64Response = await fetch(thumbnailUrl);
+          const blob = await base64Response.blob();
+          
+          const fileName = `thumbnail-${Date.now()}.png`;
+          const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('virtura-media')
+            .upload(`thumbnails/${fileName}`, blob, {
+              contentType: 'image/png',
+              cacheControl: '3600'
+            });
+
+          if (uploadError) throw uploadError;
+
+          const { data: { publicUrl } } = supabase.storage
+            .from('virtura-media')
+            .getPublicUrl(`thumbnails/${fileName}`);
+
+          thumbnailUrl = publicUrl;
+          console.log('✅ Base64 thumbnail converted and uploaded:', thumbnailUrl);
+        } catch (error) {
+          console.error('❌ Failed to convert base64 thumbnail:', error);
+          // Fall back to using video URL as thumbnail
+          thumbnailUrl = project.video.videoUrl;
+        }
+      }
+      
+      // If still no thumbnail, use video URL
+      if (!thumbnailUrl) {
+        thumbnailUrl = project.video.videoUrl;
+        console.log('ℹ️ Using video URL as thumbnail');
       }
 
       console.log('📡 Calling save-to-library edge function...');
