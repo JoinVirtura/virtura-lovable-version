@@ -831,8 +831,7 @@ export default function Dashboard() {
   const filteredAssets = assetsForFiltering.filter(asset => {
     const matchesSearch = asset.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          asset.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-    const matchesCategory = selectedCategory === "All" || 
-                           (selectedCategory === "Favorites" ? asset.isFavorite : asset.category === selectedCategory);
+    const matchesCategory = selectedCategory === "All" || (selectedCategory === "Favorites" && asset.isFavorite);
     return matchesSearch && matchesCategory;
   });
 
