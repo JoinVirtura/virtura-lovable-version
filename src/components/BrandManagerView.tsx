@@ -465,53 +465,86 @@ export function BrandManagerView() {
 
 
           {/* Smart Collections */}
-          {selectedBrand && (
-            <div>
-              <h3 className="text-sm font-semibold text-muted-foreground mb-3">Smart Collections</h3>
-              <div className="space-y-1">
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start gap-2 pl-2 hover:bg-violet-500/10"
-                  onClick={() => handleSmartCollection('favorites')}
-                >
-                  <Star className="w-4 h-4 text-yellow-400" />
-                  <span className="flex-1 text-left text-sm">Favorites</span>
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start gap-2 pl-2 hover:bg-violet-500/10"
-                  onClick={() => handleSmartCollection('recent')}
-                >
-                  <Clock className="w-4 h-4 text-blue-400" />
-                  <span className="flex-1 text-left text-sm">Recent</span>
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start gap-2 pl-2 hover:bg-violet-500/10"
-                  onClick={() => handleSmartCollection('images')}
-                >
-                  <Image className="w-4 h-4 text-green-400" />
-                  <span className="flex-1 text-left text-sm">Images</span>
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start gap-2 pl-2 hover:bg-violet-500/10"
-                  onClick={() => handleSmartCollection('videos')}
-                >
-                  <Video className="w-4 h-4 text-purple-400" />
-                  <span className="flex-1 text-left text-sm">Videos</span>
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start gap-2 pl-2 hover:bg-violet-500/10"
-                  onClick={() => handleSmartCollection('documents')}
-                >
-                  <FileText className="w-4 h-4 text-orange-400" />
-                  <span className="flex-1 text-left text-sm">Documents</span>
-                </Button>
-              </div>
+          <div>
+            <h3 className="text-sm font-semibold text-muted-foreground mb-3">Smart Collections</h3>
+            <div className={`space-y-1 ${!selectedBrand ? 'opacity-50' : ''}`}>
+              <Button
+                variant="ghost"
+                disabled={!selectedBrand}
+                className="w-full justify-start gap-2 pl-2 hover:bg-violet-500/10"
+                onClick={() => {
+                  if (!selectedBrand) {
+                    toast.error('Create a brand first to use Smart Collections');
+                    return;
+                  }
+                  handleSmartCollection('favorites');
+                }}
+              >
+                <Star className="w-4 h-4 text-yellow-400" />
+                <span className="flex-1 text-left text-sm">Favorites</span>
+              </Button>
+              <Button
+                variant="ghost"
+                disabled={!selectedBrand}
+                className="w-full justify-start gap-2 pl-2 hover:bg-violet-500/10"
+                onClick={() => {
+                  if (!selectedBrand) {
+                    toast.error('Create a brand first to use Smart Collections');
+                    return;
+                  }
+                  handleSmartCollection('recent');
+                }}
+              >
+                <Clock className="w-4 h-4 text-blue-400" />
+                <span className="flex-1 text-left text-sm">Recent</span>
+              </Button>
+              <Button
+                variant="ghost"
+                disabled={!selectedBrand}
+                className="w-full justify-start gap-2 pl-2 hover:bg-violet-500/10"
+                onClick={() => {
+                  if (!selectedBrand) {
+                    toast.error('Create a brand first to use Smart Collections');
+                    return;
+                  }
+                  handleSmartCollection('images');
+                }}
+              >
+                <Image className="w-4 h-4 text-green-400" />
+                <span className="flex-1 text-left text-sm">Images</span>
+              </Button>
+              <Button
+                variant="ghost"
+                disabled={!selectedBrand}
+                className="w-full justify-start gap-2 pl-2 hover:bg-violet-500/10"
+                onClick={() => {
+                  if (!selectedBrand) {
+                    toast.error('Create a brand first to use Smart Collections');
+                    return;
+                  }
+                  handleSmartCollection('videos');
+                }}
+              >
+                <Video className="w-4 h-4 text-purple-400" />
+                <span className="flex-1 text-left text-sm">Videos</span>
+              </Button>
+              <Button
+                variant="ghost"
+                disabled={!selectedBrand}
+                className="w-full justify-start gap-2 pl-2 hover:bg-violet-500/10"
+                onClick={() => {
+                  if (!selectedBrand) {
+                    toast.error('Create a brand first to use Smart Collections');
+                    return;
+                  }
+                  handleSmartCollection('documents');
+                }}
+              >
+                <FileText className="w-4 h-4 text-orange-400" />
+                <span className="flex-1 text-left text-sm">Documents</span>
+              </Button>
             </div>
-          )}
+          </div>
 
           <Separator className="my-4 bg-violet-500/20" />
 
@@ -598,96 +631,138 @@ export function BrandManagerView() {
           <Separator className="my-4 bg-violet-500/20" />
 
           {/* Folders Section */}
-          {selectedBrand && (
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold text-muted-foreground">Folders</h3>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-7 px-2 text-violet-400 hover:text-violet-300">
-                      <Plus className="w-3 h-3 mr-1" />
-                      New
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-semibold text-muted-foreground">Folders</h3>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    disabled={!selectedBrand}
+                    className="h-7 px-2 text-violet-400 hover:text-violet-300"
+                    onClick={(e) => {
+                      if (!selectedBrand) {
+                        e.preventDefault();
+                        toast.error('Create a brand first to add folders');
+                      }
+                    }}
+                  >
+                    <Plus className="w-3 h-3 mr-1" />
+                    New
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="bg-gray-900 border-violet-500/30 w-56">
+                  <div className="p-2">
+                    <Input
+                      placeholder="Folder name..."
+                      value={newFolderName}
+                      onChange={(e) => setNewFolderName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleCreateFolder();
+                      }}
+                      className="mb-2"
+                    />
+                    <Button size="sm" className="w-full" onClick={handleCreateFolder}>
+                      Create
                     </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="bg-gray-900 border-violet-500/30 w-56">
-                    <div className="p-2">
-                      <Input
-                        placeholder="Folder name..."
-                        value={newFolderName}
-                        onChange={(e) => setNewFolderName(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') handleCreateFolder();
-                        }}
-                        className="mb-2"
-                      />
-                      <Button size="sm" className="w-full" onClick={handleCreateFolder}>
-                        Create
-                      </Button>
-                    </div>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-
-              <div className="space-y-1">
-                <Button
-                  variant="ghost"
-                  className={`w-full justify-start gap-2 pl-2 ${
-                    currentFolder === 'all' ? 'bg-violet-500/20 text-violet-300' : 'hover:bg-violet-500/10'
-                  }`}
-                  onClick={() => setCurrentFolder('all')}
-                >
-                  <Home className="w-4 h-4" />
-                  <span className="flex-1 text-left">All Assets</span>
-                  <span className="text-xs text-muted-foreground">{assets.length}</span>
-                </Button>
-
-                {rootCollections.map(folder => renderFolderTree(folder))}
-              </div>
+                  </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
-          )}
+
+            <div className={`space-y-1 ${!selectedBrand ? 'opacity-50' : ''}`}>
+              <Button
+                variant="ghost"
+                disabled={!selectedBrand}
+                className={`w-full justify-start gap-2 pl-2 ${
+                  currentFolder === 'all' && selectedBrand ? 'bg-violet-500/20 text-violet-300' : 'hover:bg-violet-500/10'
+                }`}
+                onClick={() => {
+                  if (!selectedBrand) {
+                    toast.error('Create a brand first to view assets');
+                    return;
+                  }
+                  setCurrentFolder('all');
+                }}
+              >
+                <Home className="w-4 h-4" />
+                <span className="flex-1 text-left">All Assets</span>
+                <span className="text-xs text-muted-foreground">{selectedBrand ? assets.length : 0}</span>
+              </Button>
+
+              {selectedBrand && rootCollections.map(folder => renderFolderTree(folder))}
+            </div>
+          </div>
 
           <Separator className="my-4 bg-violet-500/20" />
 
           {/* Action Buttons */}
-          {selectedBrand && (
-            <div className="space-y-3 pt-4 border-t border-violet-500/20">
-              <Button
-                variant="default"
-                className="w-full justify-start gap-3 bg-violet-600 hover:bg-violet-700 text-white"
-                onClick={() => setGenerateDialogOpen(true)}
-              >
-                <Sparkles className="w-4 h-4" />
-                Generate with AI
-              </Button>
+          <div className={`space-y-3 pt-4 border-t border-violet-500/20 ${!selectedBrand ? 'opacity-50' : ''}`}>
+            <Button
+              variant="default"
+              disabled={!selectedBrand}
+              className="w-full justify-start gap-3 bg-violet-600 hover:bg-violet-700 text-white"
+              onClick={() => {
+                if (!selectedBrand) {
+                  toast.error('Create a brand first to generate assets');
+                  return;
+                }
+                setGenerateDialogOpen(true);
+              }}
+            >
+              <Sparkles className="w-4 h-4" />
+              Generate with AI
+            </Button>
 
-              <Button
-                variant="outline"
-                className="w-full justify-start gap-3 border-violet-500/30 hover:border-violet-500/50 hover:bg-violet-500/10"
-                onClick={() => navigate('/upload')}
-              >
-                <Upload className="w-4 h-4" />
-                Upload
-              </Button>
+            <Button
+              variant="outline"
+              disabled={!selectedBrand}
+              className="w-full justify-start gap-3 border-violet-500/30 hover:border-violet-500/50 hover:bg-violet-500/10"
+              onClick={() => {
+                if (!selectedBrand) {
+                  toast.error('Create a brand first to upload assets');
+                  return;
+                }
+                navigate('/upload');
+              }}
+            >
+              <Upload className="w-4 h-4" />
+              Upload
+            </Button>
 
-              <Button
-                variant="outline"
-                className="w-full justify-start gap-3 border-violet-500/30 hover:border-violet-500/50 hover:bg-violet-500/10"
-                onClick={() => setLibraryModalOpen(true)}
-              >
-                <Library className="w-4 h-4" />
-                Choose from Library
-              </Button>
+            <Button
+              variant="outline"
+              disabled={!selectedBrand}
+              className="w-full justify-start gap-3 border-violet-500/30 hover:border-violet-500/50 hover:bg-violet-500/10"
+              onClick={() => {
+                if (!selectedBrand) {
+                  toast.error('Create a brand first to import from library');
+                  return;
+                }
+                setLibraryModalOpen(true);
+              }}
+            >
+              <Library className="w-4 h-4" />
+              Choose from Library
+            </Button>
 
-              <Button
-                variant="outline"
-                className="w-full justify-start gap-3 border-violet-500/30 hover:border-violet-500/50 hover:bg-violet-500/10"
-                onClick={() => setCampaignCreatorOpen(true)}
-              >
-                <Calendar className="w-4 h-4" />
-                New Campaign
-              </Button>
-            </div>
-          )}
+            <Button
+              variant="outline"
+              disabled={!selectedBrand}
+              className="w-full justify-start gap-3 border-violet-500/30 hover:border-violet-500/50 hover:bg-violet-500/10"
+              onClick={() => {
+                if (!selectedBrand) {
+                  toast.error('Create a brand first to create campaigns');
+                  return;
+                }
+                setCampaignCreatorOpen(true);
+              }}
+            >
+              <Calendar className="w-4 h-4" />
+              New Campaign
+            </Button>
+          </div>
 
           <Separator className="my-4 bg-violet-500/20" />
 
