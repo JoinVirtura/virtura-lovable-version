@@ -256,41 +256,15 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                     </Badge>
                   )}
                   
-                  {/* Action buttons on hover */}
-                  <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 flex gap-2">
+                  {/* Heart icon button on hover - Icon only, no text */}
+                  <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
                     <Button 
-                      size="sm" 
+                      size="icon"
                       variant="secondary" 
-                      className="backdrop-blur-sm"
-                      onClick={async () => {
-                        try {
-                          const response = await fetch(project.video.videoUrl);
-                          const blob = await response.blob();
-                          const url = window.URL.createObjectURL(blob);
-                          const a = document.createElement('a');
-                          a.href = url;
-                          a.download = `video-${Date.now()}.mp4`;
-                          document.body.appendChild(a);
-                          a.click();
-                          window.URL.revokeObjectURL(url);
-                          document.body.removeChild(a);
-                          toast.success('Downloading video...');
-                        } catch (error) {
-                          toast.error('Failed to download video');
-                        }
-                      }}
-                    >
-                      <Download className="h-3 w-3 mr-1" />
-                      Download
-                    </Button>
-                    
-                    <Button 
-                      size="sm" 
-                      variant="secondary" 
-                      className={`backdrop-blur-sm transition-colors ${
+                      className={`h-10 w-10 rounded-full backdrop-blur-sm transition-all ${
                         isSaved 
-                          ? 'bg-red-500/20 hover:bg-red-500/30 text-red-500' 
-                          : 'bg-white/80 hover:bg-white/90'
+                          ? 'bg-red-500/20 hover:bg-red-500/30 border-2 border-red-500/50' 
+                          : 'bg-white/20 hover:bg-white/30 border-2 border-white/30'
                       }`}
                       onClick={async () => {
                         if (onSaveToLibrary) {
@@ -300,11 +274,10 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                       disabled={!onSaveToLibrary}
                     >
                       <Heart 
-                        className={`h-3 w-3 mr-1 transition-all ${
-                          isSaved ? 'fill-red-500' : ''
+                        className={`h-5 w-5 transition-all ${
+                          isSaved ? 'fill-red-500 text-red-500' : 'text-white'
                         }`} 
                       />
-                      {isSaved ? 'Saved' : 'Save'}
                     </Button>
                   </div>
                 </div>
