@@ -231,7 +231,60 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
         {/* Preview Area */}
         <div className={`${getPreviewDimensions()} bg-black rounded-lg overflow-hidden relative group`}>
           {(() => {
-            // Priority: Style Transfer > Original Avatar (No video in Style Transfer Studio)
+            // Priority 1: Video (if generated)
+            if (project.video?.videoUrl) {
+              return (
+                <div className="relative w-full h-full">
+                  <video
+                    controls
+                    className="w-full h-full object-cover"
+                    src={project.video.videoUrl}
+                    controlsList="nodownload"
+                    onContextMenu={(e) => e.preventDefault()}
+                  >
+                    <source src={project.video.videoUrl} type="video/mp4" />
+                  </video>
+                  
+                  {/* Quality Badge */}
+                  {project.video.quality && (
+                    <Badge className="absolute top-2 right-2 bg-black/50 text-white">
+                      {project.video.quality}
+                    </Badge>
+                  )}
+                  
+                  {/* Download button on hover */}
+                  <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
+                    <Button 
+                      size="sm" 
+                      variant="secondary" 
+                      className="backdrop-blur-sm"
+                      onClick={async () => {
+                        try {
+                          const response = await fetch(project.video.videoUrl);
+                          const blob = await response.blob();
+                          const url = window.URL.createObjectURL(blob);
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.download = `video-${Date.now()}.mp4`;
+                          document.body.appendChild(a);
+                          a.click();
+                          window.URL.revokeObjectURL(url);
+                          document.body.removeChild(a);
+                          toast.success('Downloading video...');
+                        } catch (error) {
+                          toast.error('Failed to download video');
+                        }
+                      }}
+                    >
+                      <Download className="h-3 w-3 mr-1" />
+                      Download
+                    </Button>
+                  </div>
+                </div>
+              );
+            }
+            
+            // Priority 2: Style Transfer > Original Avatar (No video in Style Transfer Studio)
             if (project.style?.resultUrl) {
               const isStyleCompleted = project.style?.status === 'completed';
               const isAlreadySaved = savedAvatars.has(project.style.resultUrl);
