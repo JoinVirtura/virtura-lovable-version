@@ -117,7 +117,18 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false }: Dashbo
   const filteredAssets = libraryAssets.filter(asset => {
     const matchesSearch = asset.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          asset.tags.some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-    const matchesCategory = selectedCategory === "All" || (selectedCategory === "Favorites" && asset.isFavorite);
+    
+    let matchesCategory = false;
+    if (selectedCategory === "All") {
+      matchesCategory = true;
+    } else if (selectedCategory === "Favorites") {
+      matchesCategory = asset.isFavorite;
+    } else if (selectedCategory === "Characters") {
+      matchesCategory = !asset.video_url && asset.type !== "video";
+    } else if (selectedCategory === "Videos") {
+      matchesCategory = asset.video_url || asset.type === "video";
+    }
+    
     return matchesSearch && matchesCategory;
   });
 
@@ -301,7 +312,7 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false }: Dashbo
             </div>
 
             <div className="flex flex-wrap gap-3 mb-8">
-              {["All", "Favorites"].map((category) => (
+              {["All", "Characters", "Videos", "Favorites"].map((category) => (
                 <Button
                   key={category}
                   variant={selectedCategory === category ? "default" : "outline"}
