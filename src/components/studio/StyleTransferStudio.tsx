@@ -31,7 +31,8 @@ import { applyStyleTransfer } from './StyleTransferEdge';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { toast as sonnerToast } from 'sonner';
-import { AvatarLibraryModal } from '@/components/AvatarLibraryModal';
+import { RealAvatarLibrary } from '@/components/studio/RealAvatarLibrary';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 // Import ALL style assets - 27+ styles
 import style90sAnime from '@/assets/style-90s-anime.jpg';
@@ -994,12 +995,23 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
         </Card>
       )}
 
-      {/* Avatar Library Modal */}
-      <AvatarLibraryModal
-        open={isLibraryOpen}
-        onOpenChange={setIsLibraryOpen}
-        onSelectAvatar={handleLibrarySelect}
-      />
+      {/* Real Avatar Library Modal */}
+      <Dialog open={isLibraryOpen} onOpenChange={setIsLibraryOpen}>
+        <DialogContent className="max-w-6xl max-h-[85vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle>Choose from Library</DialogTitle>
+          </DialogHeader>
+          <div className="flex-1 overflow-auto">
+            <RealAvatarLibrary 
+              onSelectAvatar={(avatarUrl) => {
+                handleLibrarySelect(avatarUrl);
+                setIsLibraryOpen(false);
+              }}
+              isProcessing={isProcessing}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
 
     </div>
   );
