@@ -1,6 +1,6 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { User, Building2, Library, BookOpen, Settings, Search } from "lucide-react";
+import { User, Building2, Library, BookOpen, Settings, Search, Target } from "lucide-react";
 
 export function VirturaNavigation() {
   const location = useLocation();
@@ -8,6 +8,7 @@ export function VirturaNavigation() {
   const navItems = [
     { path: "/individuals", label: "Individuals", icon: User },
     { path: "/brands", label: "Brands", icon: Building2 },
+    { path: "/campaigns", label: "Campaigns", icon: Target },
     { path: "/library", label: "My Library", icon: Library },
     { path: "/guide", label: "To-Do Guide", icon: BookOpen },
     { path: "/settings", label: "Settings", icon: Settings },

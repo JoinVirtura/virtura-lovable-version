@@ -15,6 +15,7 @@ import StudioInterface from "./components/StudioInterface";
 import AIImageStudioPage from "./pages/AIImageStudioPage";
 import IndividualsPage from "./pages/IndividualsPage";
 import BrandsPage from "./pages/BrandsPage";
+import CampaignPage from "./pages/CampaignPage";
 import LibraryPage from "./pages/LibraryPage";
 import GuidePage from "./pages/GuidePage";
 import SettingsPage from "./pages/SettingsPage";
@@ -59,6 +60,7 @@ const AppRoutes = () => {
       <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       <Route path="/individuals" element={<ProtectedRoute><IndividualsPage /></ProtectedRoute>} />
       <Route path="/brands" element={<ProtectedRoute><BrandsPage /></ProtectedRoute>} />
+      <Route path="/campaigns" element={<ProtectedRoute><CampaignPage /></ProtectedRoute>} />
       <Route path="/library" element={<ProtectedRoute><LibraryPage /></ProtectedRoute>} />
       <Route path="/guide" element={<ProtectedRoute><GuidePage /></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
