@@ -2752,7 +2752,7 @@ export default function Dashboard() {
 
                   {/* AI-Powered Category Tags */}
                   <div className="flex flex-wrap gap-3 mb-8">
-                    {["All", "Avatars", "Headshots", "Brand Assets", "Videos", "Favorites"].map((category) => (
+                    {["All", "Avatars", "Brands", "Video", "Favorites"].map((category) => (
                       <Button
                         key={category}
                         variant={selectedCategory === category ? "default" : "outline"}
@@ -2840,16 +2840,8 @@ export default function Dashboard() {
                                   </div>
                                 </div>
                               )}
-                              
-                               {/* Quality Score */}
-                                <div className="absolute top-3 right-3">
-                                  <div className="flex items-center gap-1 bg-black/80 rounded-full px-3 py-1.5 backdrop-blur-sm">
-                                    <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
-                                    <span className="text-sm text-white font-semibold">9.2</span>
-                                  </div>
-                                </div>
-                               
-                                {/* Hover Action Buttons - Share & Delete overlay on image */}
+                                
+                                 {/* Hover Action Buttons - Share & Delete overlay on image */}
                                 <div className="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-3">
                                   <Button 
                                     size="sm" 
@@ -2912,19 +2904,10 @@ export default function Dashboard() {
                                       minute: '2-digit',
                                       hour12: true
                                     })}
-                                  </p>
-                                </div>
-                               
-                                {/* AI Tags - Always Visible */}
-                                <div className="flex flex-wrap gap-1.5 mt-2">
-                                  {asset.tags.map((tag, idx) => (
-                                    <Badge key={idx} variant="secondary" className="text-xs py-1 px-2 bg-primary/10 text-primary border-primary/20 font-medium">
-                                      {tag}
-                                    </Badge>
-                                  ))}
-                                </div>
+                                   </p>
+                                 </div>
 
-                                {/* Purple Separator Line */}
+                                 {/* Purple Separator Line */}
                                 <div className="mt-4 mb-4">
                                   <div className="h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-60 shadow-[0_0_12px_rgba(168,85,247,0.6)]" />
                                 </div>
@@ -2977,24 +2960,13 @@ export default function Dashboard() {
                                 <div className="flex items-start justify-between">
                                   <div className="space-y-2">
                                     <h3 className="font-semibold text-lg truncate">{asset.title}</h3>
-                                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                                      <span className="flex items-center gap-1 font-medium">
-                                        <Calendar className="w-3 h-3" />
-                                        {asset.date}
-                                      </span>
-                                      <Badge variant="secondary" className="text-xs">{asset.format}</Badge>
-                                      <span className="flex items-center gap-1">
-                                        <Star className="w-3 h-3 text-yellow-500" />
-                                        9.2
-                                      </span>
-                                    </div>
-                                    <div className="flex gap-1.5">
-                                      {asset.tags.map((tag, idx) => (
-                                        <Badge key={idx} variant="outline" className="text-xs">
-                                          {tag}
-                                        </Badge>
-                                      ))}
-                                    </div>
+                                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                       <span className="flex items-center gap-1 font-medium">
+                                         <Calendar className="w-3 h-3" />
+                                         {asset.date}
+                                       </span>
+                                       <Badge variant="secondary" className="text-xs">{asset.format}</Badge>
+                                     </div>
                                   </div>
                                   <div className="flex items-center gap-2">
                                     <Button 
