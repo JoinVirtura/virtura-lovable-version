@@ -431,15 +431,17 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
       </div>
 
       <div className="relative z-10 container mx-auto px-4 pt-32 pb-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-4">
-            Copilot
-          </h1>
-          <p className="text-lg text-muted-foreground">
-            Edit and enhance your images with AI-powered transformations
-          </p>
-        </div>
+        {/* Header - Only show before first generation */}
+        {previewCards.length === 0 && (
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-4">
+              Copilot
+            </h1>
+            <p className="text-lg text-muted-foreground">
+              Edit and enhance your images with AI-powered transformations
+            </p>
+          </div>
+        )}
 
         {/* Edit Mode - Display the original image being edited */}
         {editImage && !editImageRemoved && (
@@ -756,19 +758,6 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
           </Card>
         )}
 
-        {/* New Generation Button - Show after input is hidden */}
-        {!showInputCard && (
-          <div className="mb-8 text-center">
-            <Button
-              onClick={() => setShowInputCard(true)}
-              size="lg"
-              className="rounded-full bg-gradient-to-r from-primary to-secondary border-2 border-primary/30 hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] backdrop-blur-md transition-all duration-300"
-            >
-              <Sparkles className="h-5 w-5 mr-2" />
-              New Generation
-            </Button>
-          </div>
-        )}
 
         {/* Results Section */}
         {previewCards.length > 0 && (
@@ -960,6 +949,20 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
               </div>
             </div>
           </Card>
+        )}
+
+        {/* New Generation Button - Show after Studio Chat */}
+        {previewCards.length > 0 && !showInputCard && (
+          <div className="mb-8 text-center">
+            <Button
+              onClick={() => setShowInputCard(true)}
+              size="lg"
+              className="rounded-full bg-gradient-to-r from-primary to-secondary border-2 border-primary/30 hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] backdrop-blur-md transition-all duration-300"
+            >
+              <Sparkles className="h-5 w-5 mr-2" />
+              New Generation
+            </Button>
+          </div>
         )}
 
         <div ref={messagesEndRef} />
