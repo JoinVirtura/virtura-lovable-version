@@ -94,6 +94,7 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const chatEndRef = useRef<HTMLDivElement>(null);
 
   const contentTypes = [
     { value: "auto", label: "Auto Detect", icon: Wand2 },
@@ -118,6 +119,10 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [previewCards]);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatMessages]);
 
   const checkPromptSafety = (text: string): { safe: boolean; reframedPrompt?: string } => {
     const unsafeKeywords = ['nude', 'naked', 'explicit', 'nsfw', 'violence', 'weapon'];
@@ -940,18 +945,24 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
 
                 {/* Chat Messages */}
                 {chatMessages.length > 0 && (
-                  <ScrollArea className="h-32 border rounded-md p-2">
-                    {chatMessages.map((message, index) => (
-                      <div key={index} className={`mb-2 ${message.role === 'user' ? 'text-right' : 'text-left'}`}>
-                        <span className={`inline-block px-2 py-1 rounded text-sm ${
-                          message.role === 'user' 
-                            ? 'bg-primary text-primary-foreground' 
-                            : 'bg-muted text-muted-foreground'
-                        }`}>
-                          {message.content}
-                        </span>
-                      </div>
-                    ))}
+                  <ScrollArea className="h-64 border rounded-lg p-4 bg-black/20 backdrop-blur-sm">
+                    <div className="space-y-3">
+                      {chatMessages.map((message, index) => (
+                        <div 
+                          key={index} 
+                          className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                        >
+                          <div className={`max-w-[80%] ${
+                            message.role === 'user' 
+                              ? 'bg-gradient-to-r from-primary to-secondary text-white' 
+                              : 'bg-muted/80 text-foreground border border-primary/20'
+                          } px-4 py-2 rounded-2xl shadow-lg`}>
+                            <p className="text-sm leading-relaxed">{message.content}</p>
+                          </div>
+                        </div>
+                      ))}
+                      <div ref={chatEndRef} />
+                    </div>
                   </ScrollArea>
                 )}
 
@@ -964,14 +975,84 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                     className="min-h-[60px] pr-14 resize-none bg-transparent border-0 focus-visible:ring-0 text-white placeholder:text-gray-400"
                   />
                   <Button
-                    onClick={() => {
+                    onClick={async () => {
                       if (chatInput.trim()) {
-                        setChatMessages(prev => [...prev, { role: 'user', content: chatInput }]);
+                        // Add user message to chat
+                        const userMessage = { role: 'user' as const, content: chatInput };
+                        setChatMessages(prev => [...prev, userMessage]);
+                        
+                        const currentChatInput = chatInput;
                         setChatInput("");
-                        toast.info("Chat refinement coming soon!");
+                        
+                        // Add assistant acknowledgment
+                        const assistantMessage = { 
+                          role: 'assistant' as const, 
+                          content: `Applying: ${currentChatInput}` 
+                        };
+                        setChatMessages(prev => [...prev, assistantMessage]);
+                        
+                        // Generate refined images with the chat modification
+                        const refinedPrompt = `${prompt}. ${currentChatInput}`;
+                        
+                        toast.info("Refining images based on your request...");
+                        
+                        try {
+                          setIsGenerating(true);
+                          
+                          const params: ImageGenerationParams = {
+                            prompt: refinedPrompt,
+                            negativePrompt,
+                            resolution: resolution as any,
+                            contentType: contentType === "auto" ? undefined : contentType as any,
+                            style,
+                            adherence: adherence[0],
+                            steps: steps[0],
+                            referenceImage: referenceImage || undefined,
+                          };
+
+                          const result = await ImageGenerationService.generateImage(params);
+                          
+                          if (result.success && result.image) {
+                            const newCard: PreviewCard = {
+                              id: `refined-${Date.now()}`,
+                              imageUrl: result.image,
+                              prompt: refinedPrompt,
+                              isGenerating: false,
+                              safetyPassed: true,
+                              metadata: {
+                                contentType: contentType === "auto" ? "Refined" : contentType,
+                                style,
+                                resolution
+                              }
+                            };
+                            
+                            setPreviewCards(prev => [...prev, newCard]);
+                            
+                            toast.success("Refined image generated!");
+                            
+                            // Update chat with success message
+                            setChatMessages(prev => [...prev, {
+                              role: 'assistant' as const,
+                              content: "✓ New refined image generated successfully!"
+                            }]);
+                          } else {
+                            throw new Error(result.error || 'Generation failed');
+                          }
+                        } catch (error: any) {
+                          console.error('Refinement error:', error);
+                          toast.error("Failed to refine image");
+                          
+                          // Update chat with error
+                          setChatMessages(prev => [...prev, {
+                            role: 'assistant' as const,
+                            content: "✗ Failed to generate refined image. Please try again."
+                          }]);
+                        } finally {
+                          setIsGenerating(false);
+                        }
                       }
                     }}
-                    disabled={!chatInput.trim()}
+                    disabled={!chatInput.trim() || isGenerating}
                     className="absolute bottom-2 right-2 h-10 w-10 rounded-full bg-gradient-to-r from-primary to-secondary hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] transition-all duration-300"
                     size="icon"
                   >
@@ -991,7 +1072,6 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
               size="lg"
               className="rounded-full bg-gradient-to-r from-primary to-secondary border-2 border-primary/30 hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] backdrop-blur-md transition-all duration-300"
             >
-              <Sparkles className="h-5 w-5 mr-2" />
               New Generation
             </Button>
           </div>
