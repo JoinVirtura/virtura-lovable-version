@@ -165,6 +165,17 @@ export default function StudioPage() {
                   });
                   setCurrentStep('avatar');
                 }}
+                onDownloadStyle={() => {
+                  const styledUrl = project.style?.resultUrl;
+                  if (styledUrl) {
+                    const link = document.createElement('a');
+                    link.href = styledUrl;
+                    link.download = `styled-avatar-${Date.now()}.png`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }
+                }}
               />
             </div>
 

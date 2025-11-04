@@ -809,47 +809,6 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
       </div>
 
 
-      {/* Style Result */}
-      {project.style?.status === 'completed' && (
-        <Card className="border-violet-500/30 bg-gradient-to-br from-violet-950/20 to-purple-950/20 backdrop-blur-xl animate-fade-in">
-          <CardHeader>
-            <CardTitle className="text-xl flex items-center gap-2">
-              <div className="h-10 w-10 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 flex items-center justify-center">
-                <CheckCircle className="h-5 w-5 text-white" />
-              </div>
-              Style Applied Successfully!
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="bg-black/30 rounded-lg p-4 space-y-2">
-              <p className="font-semibold text-violet-300">
-                Style: {project.style.metadata?.styleName}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Processing Time: {project.style.metadata?.processingTime}
-              </p>
-              <p className="text-xs text-violet-300/80 mt-3 flex items-center gap-2">
-                <Sparkles className="h-4 w-4" />
-                Styled avatar visible in Live Preview (right panel)
-              </p>
-            </div>
-            
-            {/* Download Button */}
-            <div className="flex gap-2">
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="flex-1"
-                onClick={handleDownload}
-              >
-                <Download className="h-3 w-3 mr-1" />
-                Download
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
     </div>
   );
 };

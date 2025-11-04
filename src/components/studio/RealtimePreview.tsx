@@ -32,6 +32,7 @@ interface RealtimePreviewProps {
   onResetAvatar?: () => void;
   onSaveToLibrary?: (customTitle?: string) => Promise<void>;
   onDownload?: () => void;
+  onDownloadStyle?: () => void;
   isSaved?: boolean;
 }
 
@@ -48,6 +49,7 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
   onResetAvatar,
   onSaveToLibrary,
   onDownload,
+  onDownloadStyle,
   isSaved = false
 }) => {
   const [previewMode, setPreviewMode] = useState('desktop');
@@ -546,6 +548,21 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
               </div>
             </CardContent>
           </Card>
+        )}
+
+        {/* Style Transfer Download Button */}
+        {project.style?.status === 'completed' && project.style?.resultUrl && onDownloadStyle && (
+          <div className="flex gap-2">
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="flex-1"
+              onClick={onDownloadStyle}
+            >
+              <Download className="h-3 w-3 mr-1" />
+              Download
+            </Button>
+          </div>
         )}
 
         {/* Preview Controls */}
