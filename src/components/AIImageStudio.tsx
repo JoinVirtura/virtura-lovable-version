@@ -453,7 +453,7 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative z-10 container mx-auto px-4 pt-32 pb-8">
+      <div className={`relative z-10 container mx-auto px-4 pb-8 ${previewCards.length === 0 ? 'pt-32' : 'pt-8'}`}>
         {/* Header - Only show before first generation */}
         {previewCards.length === 0 && (
           <div className="text-center mb-8">
