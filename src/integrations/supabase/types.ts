@@ -747,6 +747,54 @@ export type Database = {
         }
         Relationships: []
       }
+      feature_suggestions: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          email: string
+          id: string
+          name: string
+          priority: string
+          status: string
+          title: string
+          updated_at: string
+          use_case: string
+          user_id: string
+          votes: number
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description: string
+          email: string
+          id?: string
+          name: string
+          priority: string
+          status?: string
+          title: string
+          updated_at?: string
+          use_case: string
+          user_id: string
+          votes?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          email?: string
+          id?: string
+          name?: string
+          priority?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          use_case?: string
+          user_id?: string
+          votes?: number
+        }
+        Relationships: []
+      }
       gpu_workers: {
         Row: {
           created_at: string | null
@@ -1214,6 +1262,51 @@ export type Database = {
           status?: string
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      support_tickets: {
+        Row: {
+          attachment_url: string | null
+          created_at: string
+          description: string
+          email: string
+          id: string
+          issue_type: string
+          name: string
+          priority: string
+          status: string
+          subject: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          attachment_url?: string | null
+          created_at?: string
+          description: string
+          email: string
+          id?: string
+          issue_type: string
+          name: string
+          priority: string
+          status?: string
+          subject: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          attachment_url?: string | null
+          created_at?: string
+          description?: string
+          email?: string
+          id?: string
+          issue_type?: string
+          name?: string
+          priority?: string
+          status?: string
+          subject?: string
           updated_at?: string
           user_id?: string
         }

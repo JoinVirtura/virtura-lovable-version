@@ -36,7 +36,8 @@ import {
   Upload,
   Download,
   Menu,
-  Image
+  Image,
+  LifeBuoy
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -64,6 +65,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
     { id: "studio", label: "Copilot", icon: Command },
     { id: "brands", label: "Brands", icon: Building2 },
     { id: "guide", label: "Tutorial", icon: BookOpen },
+    { id: "support", label: "Support", icon: LifeBuoy },
   ];
   
   const handleLogout = async () => {

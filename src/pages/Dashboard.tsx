@@ -35,6 +35,7 @@ import { useToast } from "@/hooks/use-toast";
 import { AvatarService } from "@/services/avatarService";
 import { EditTitleDialog } from "@/components/EditTitleDialog";
 import { DashboardLibraryView } from "@/components/DashboardLibraryView";
+import { SupportPage } from "@/components/SupportPage";
 import { ProjectTimeline } from "@/components/studio/ProjectTimeline";
 import { useStudioProject } from "@/hooks/useStudioProject";
 import { SettingsContent } from "@/components/SettingsContent";
@@ -1793,6 +1794,8 @@ export default function Dashboard() {
             )}
           </div>
         );
+      case "support":
+        return <SupportPage />;
       case "settings":
         return (
           <div className="space-y-8 min-h-screen">
