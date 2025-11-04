@@ -2,9 +2,9 @@ import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Badge } from "@/components/ui/badge";
 import { ContentCardProps } from "../types";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Download, Bookmark } from "lucide-react";
 
-export const ContentCard = ({ tile, className = "", size = 'md' }: ContentCardProps) => {
+export const ContentCard = ({ tile, className = "", size = 'md', onDownload, onSave }: ContentCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -184,6 +184,52 @@ export const ContentCard = ({ tile, className = "", size = 'md' }: ContentCardPr
             </div>
           )}
         </div>
+
+        {/* Action Buttons Overlay */}
+        <AnimatePresence>
+          {isHovered && (onDownload || onSave) && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.2 }}
+              className="absolute inset-0 flex items-center justify-center gap-3 z-30"
+              style={{ transform: 'translateZ(50px)' }}
+            >
+              {onDownload && (
+                <motion.button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    onDownload(tile);
+                  }}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex items-center gap-2 bg-gradient-to-r from-purple-600/95 to-violet-600/95 backdrop-blur-xl px-6 py-3 rounded-full border-2 border-purple-400/50 shadow-[0_0_30px_rgba(168,85,247,0.6)] hover:shadow-[0_0_50px_rgba(168,85,247,0.9)] transition-all duration-300"
+                >
+                  <Download className="w-5 h-5 text-white" />
+                  <span className="text-white font-bold text-sm">Download</span>
+                </motion.button>
+              )}
+              
+              {onSave && (
+                <motion.button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    onSave(tile);
+                  }}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex items-center gap-2 bg-gradient-to-r from-fuchsia-600/95 to-pink-600/95 backdrop-blur-xl px-6 py-3 rounded-full border-2 border-fuchsia-400/50 shadow-[0_0_30px_rgba(236,72,153,0.6)] hover:shadow-[0_0_50px_rgba(236,72,153,0.9)] transition-all duration-300"
+                >
+                  <Bookmark className="w-5 h-5 text-white" />
+                  <span className="text-white font-bold text-sm">Save</span>
+                </motion.button>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Next-Gen Floating Badge with Magnetic Effect */}
         <motion.div 

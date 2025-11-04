@@ -6,6 +6,8 @@ import { ContentCard } from './ContentCard';
 import { Tile } from '../types';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { toast as sonnerToast } from 'sonner';
 
 interface TrendingRowProps {
   tiles: Tile[];
@@ -90,6 +92,77 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
       }
     } catch (error) {
       console.error('Share failed:', error);
+    }
+  };
+
+  const handleDownload = async (tile: Tile) => {
+    try {
+      sonnerToast.info("Downloading...");
+      
+      const response = await fetch(tile.posterUrl);
+      if (!response.ok) throw new Error('Download failed');
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${tile.title.replace(/\s+/g, '_')}_${tile.id}.${tile.kind === 'video' ? 'mp4' : 'png'}`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      sonnerToast.success("Downloaded successfully!");
+    } catch (error) {
+      console.error('Download failed:', error);
+      sonnerToast.error("Failed to download");
+    }
+  };
+
+  const handleSaveToLibrary = async (tile: Tile) => {
+    try {
+      sonnerToast.info("Saving to library...");
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        sonnerToast.error("Please sign in to save items");
+        return;
+      }
+
+      // Check for duplicates
+      const { data: existing } = await supabase
+        .from('avatar_library')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('image_url', tile.posterUrl)
+        .single();
+      
+      if (existing) {
+        sonnerToast.info("Already in your library");
+        return;
+      }
+
+      const { error } = await supabase
+        .from('avatar_library')
+        .insert({
+          user_id: user.id,
+          title: tile.title || 'Untitled',
+          image_url: tile.posterUrl,
+          video_url: tile.kind === 'video' ? tile.posterUrl : null,
+          thumbnail_url: tile.kind === 'video' ? tile.posterUrl : null,
+          prompt: tile.prompt || tile.title,
+          tags: tile.tag ? [tile.tag] : ['saved'],
+          is_video: tile.kind === 'video',
+          duration: tile.duration ? parseInt(tile.duration.replace('s', '')) : null,
+        });
+
+      if (error) throw error;
+      
+      sonnerToast.success("Saved to library!");
+    } catch (error: any) {
+      console.error('Save failed:', error);
+      sonnerToast.error(error.message || "Failed to save");
     }
   };
 
@@ -560,6 +633,8 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                     tile={tile} 
                     className="h-full w-full border-0 rounded-none overflow-hidden bg-card/80 backdrop-blur-sm"
                     size="md"
+                    onDownload={handleDownload}
+                    onSave={handleSaveToLibrary}
                   />
                   
                   {/* Enhanced Hover Overlay */}

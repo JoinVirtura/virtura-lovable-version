@@ -8,10 +8,13 @@ export type Tile = {
   duration?: string;
   views?: number;
   byline?: string;
+  prompt?: string;
 };
 
 export interface ContentCardProps {
   tile: Tile;
   className?: string;
   size?: 'sm' | 'md' | 'lg' | 'hero' | 'wide' | 'tall' | 'standard';
+  onDownload?: (tile: Tile) => void;
+  onSave?: (tile: Tile) => void;
 }
