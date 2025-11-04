@@ -61,8 +61,8 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
       const formattedAssets = data?.map((item) => ({
         id: item.id,
         dbId: item.id,
-        type: "Avatar",
-        title: item.title || `Generated Avatar ${new Date(item.created_at).toLocaleDateString()}`,
+        type: item.is_video ? "video" : "Avatar",
+        title: item.title || `Generated ${item.is_video ? 'Video' : 'Avatar'} ${new Date(item.created_at).toLocaleDateString()}`,
         date: new Date(item.created_at).toLocaleDateString('en-US', { 
           year: 'numeric', 
           month: 'short', 
@@ -70,16 +70,20 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
           hour: '2-digit',
           minute: '2-digit'
         }),
-        format: "PNG",
+        format: item.is_video ? "MP4" : "PNG",
         tags: item.tags || ["ai-generated"],
-        thumbnail: item.image_url,
+        thumbnail: item.thumbnail_url || item.image_url,
         imageUrl: item.image_url,
+        video_url: item.video_url,
+        is_video: item.is_video,
+        audio_url: item.audio_url,
+        duration: item.duration,
         prompt: item.prompt,
         isFavorite: item.tags?.includes("favorite") || false,
         quality: Math.floor(Math.random() * 10 + 90),
         generationTime: `${(Math.random() * 2 + 1.5).toFixed(1)}s`,
         fileSize: `${(Math.random() * 1.5 + 1.5).toFixed(1)} MB`,
-        category: "Avatars"
+        category: item.is_video ? "Videos" : "Avatars"
       })) || [];
 
       setLibraryAssets(formattedAssets);
