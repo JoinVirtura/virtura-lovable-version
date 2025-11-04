@@ -17,6 +17,7 @@ const Index = () => {
     views: 0,
     byline: '',
     duration: item.is_video && item.duration ? `${item.duration}s` : undefined,
+    prompt: item.prompt,
   }));
 
   return (

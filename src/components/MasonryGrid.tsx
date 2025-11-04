@@ -5,6 +5,8 @@ import { Filter, ArrowRight } from 'lucide-react';
 import { ContentCard } from '@/features/home/components/ContentCard';
 import { Tile } from '@/features/home/types';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from "sonner";
 
 interface MasonryGridProps {
   tiles: Tile[];
@@ -21,6 +23,76 @@ export const MasonryGrid: React.FC<MasonryGridProps> = ({ tiles, className }) =>
   useEffect(() => {
     setShuffledTiles(tiles);
   }, [tiles]);
+
+  const handleDownload = async (tile: Tile) => {
+    try {
+      toast.info("Downloading...");
+      
+      const response = await fetch(tile.posterUrl);
+      if (!response.ok) throw new Error('Download failed');
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${tile.title.replace(/\s+/g, '_')}_${tile.id}.${tile.kind === 'video' ? 'mp4' : 'png'}`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      toast.success("Downloaded successfully!");
+    } catch (error) {
+      console.error('Download failed:', error);
+      toast.error("Failed to download");
+    }
+  };
+
+  const handleSaveToLibrary = async (tile: Tile) => {
+    try {
+      toast.info("Saving to library...");
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast.error("Please sign in to save items");
+        return;
+      }
+
+      const { data: existing } = await supabase
+        .from('avatar_library')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('image_url', tile.posterUrl)
+        .single();
+      
+      if (existing) {
+        toast.info("Already in your library");
+        return;
+      }
+
+      const { error } = await supabase
+        .from('avatar_library')
+        .insert({
+          user_id: user.id,
+          title: tile.title || 'Untitled',
+          image_url: tile.posterUrl,
+          video_url: tile.kind === 'video' ? tile.posterUrl : null,
+          thumbnail_url: tile.kind === 'video' ? tile.posterUrl : null,
+          prompt: tile.prompt || tile.title,
+          tags: tile.tag ? [tile.tag] : ['saved'],
+          is_video: tile.kind === 'video',
+          duration: tile.duration ? parseInt(tile.duration.replace('s', '')) : null,
+        });
+
+      if (error) throw error;
+      
+      toast.success("Saved to library!");
+    } catch (error: any) {
+      console.error('Save failed:', error);
+      toast.error(error.message || "Failed to save");
+    }
+  };
 
   const handleShuffle = () => {
     setIsShuffling(true);
@@ -200,6 +272,8 @@ export const MasonryGrid: React.FC<MasonryGridProps> = ({ tiles, className }) =>
                   tile={tile} 
                   className="w-full h-full"
                   size="sm"
+                  onDownload={handleDownload}
+                  onSave={handleSaveToLibrary}
                 />
               </motion.div>
             );
