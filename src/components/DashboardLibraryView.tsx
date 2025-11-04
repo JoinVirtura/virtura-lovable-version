@@ -27,9 +27,10 @@ interface DashboardLibraryViewProps {
   onSelectAvatar?: (avatarUrl: string, metadata?: any) => void;
   isModal?: boolean;
   hideVideoCategory?: boolean;
+  onEdit?: (asset: any) => void;
 }
 
-export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVideoCategory = false }: DashboardLibraryViewProps) {
+export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVideoCategory = false, onEdit }: DashboardLibraryViewProps) {
   const { toast } = useToast();
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
@@ -439,9 +440,13 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                               className="h-6 w-6 p-0 opacity-0 group-hover/title:opacity-100 transition-opacity hover:bg-violet-500/10"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleEditTitle(asset);
+                                if (onEdit) {
+                                  onEdit(asset);
+                                } else {
+                                  handleEditTitle(asset);
+                                }
                               }}
-                              title="Edit title"
+                              title={onEdit ? "Edit in Copilot" : "Edit title"}
                             >
                               <Edit className="w-3 h-3" />
                             </Button>

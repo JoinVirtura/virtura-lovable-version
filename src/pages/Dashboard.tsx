@@ -1473,7 +1473,7 @@ export default function Dashboard() {
       case "brands":
         return <BrandManagerView />;
       case "library":
-        return <DashboardLibraryView />;
+        return <DashboardLibraryView onEdit={handleEdit} />;
       case "guide":
         return (
           <div className="space-y-6 min-h-screen px-4">
