@@ -1121,6 +1121,9 @@ export const useStudioProject = (loadLastProject: boolean = true) => {
       }
       
       console.log('✅ Video saved to library successfully');
+      
+      // Emit event to trigger library refresh
+      window.dispatchEvent(new CustomEvent('library-updated'));
     } catch (error: any) {
       console.error('❌ Save to library failed:', error);
       

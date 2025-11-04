@@ -281,23 +281,23 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
 
       {/* Processing Progress */}
       {project.video?.status === 'processing' && (
-        <Card className="border-blue-200 bg-blue-50/50 dark:bg-blue-950/20">
+        <Card className="border-violet-200 bg-violet-50/50 dark:bg-violet-950/20">
           <CardContent className="p-4">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 flex-1">
-                  <Loader2 className="h-5 w-5 text-blue-500 animate-spin" />
+                  <Loader2 className="h-5 w-5 text-violet-500 animate-spin" />
                   <div>
-                    <p className="font-medium text-blue-800 dark:text-blue-200">
-                      {project.video.metadata?.currentStage || 'Generating video with Replicate...'}
+                    <p className="font-medium text-violet-800 dark:text-violet-200">
+                      {project.video.metadata?.currentStage || 'Generating video...'}
                     </p>
-                    <p className="text-sm text-blue-600 dark:text-blue-300">
+                    <p className="text-sm text-violet-600 dark:text-violet-300">
                       Processing your video - This may take 2-5 minutes
                     </p>
                   </div>
                 </div>
                 {project.video.metadata?.engineAttempt && project.video.metadata?.totalEngines && (
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant="outline" className="text-xs border-violet-300 text-violet-700 dark:text-violet-300">
                     Model {project.video.metadata.engineAttempt}/{project.video.metadata.totalEngines}
                   </Badge>
                 )}
@@ -311,7 +311,7 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
                 </Alert>
               )}
               <Progress value={project.video?.metadata?.progress || 0} className="w-full" />
-              <div className="text-xs text-right text-blue-600 dark:text-blue-400">
+              <div className="text-xs text-right text-violet-600 dark:text-violet-400">
                 {project.video?.metadata?.progress || 0}% complete
               </div>
             </div>

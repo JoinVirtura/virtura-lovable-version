@@ -151,6 +151,17 @@ export const RealAvatarLibrary: React.FC<RealAvatarLibraryProps> = ({
     loadAvatars();
   }, [loadAvatars]);
 
+  // Listen for library updates from save operations
+  useEffect(() => {
+    const handleLibraryUpdate = () => {
+      console.log('📬 Library update event received, refreshing...');
+      loadAvatars();
+    };
+
+    window.addEventListener('library-updated', handleLibraryUpdate);
+    return () => window.removeEventListener('library-updated', handleLibraryUpdate);
+  }, [loadAvatars]);
+
   // Timeout protection - runs once on mount only
   useEffect(() => {
     const timeout = setTimeout(() => {
