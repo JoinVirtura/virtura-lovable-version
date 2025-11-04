@@ -56,7 +56,7 @@ export const ContentCard = ({ tile, className = "", size = 'md', onDownload, onS
       initial={{ opacity: 0, scale: 0.9, rotateX: -10 }}
       animate={{ opacity: 1, scale: 1, rotateX: 0 }}
       transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-      className={`group relative w-full h-full cursor-pointer overflow-visible ${className}`}
+      className={`group relative w-full h-full overflow-visible ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
         setIsHovered(false);
@@ -188,8 +188,12 @@ export const ContentCard = ({ tile, className = "", size = 'md', onDownload, onS
         {/* Always-Visible Bottom Action Bar */}
         {(onDownload || onSave) && (
           <div 
-            className="absolute bottom-0 left-0 right-0 z-30 bg-gradient-to-t from-black/95 via-black/90 to-transparent backdrop-blur-sm"
+            className="absolute bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-black/95 via-black/90 to-transparent backdrop-blur-sm pointer-events-auto"
             style={{ transform: 'translateZ(50px)' }}
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+            }}
           >
             <div className="flex items-center justify-end gap-2 px-4 py-3">
               {onDownload && (
@@ -197,6 +201,7 @@ export const ContentCard = ({ tile, className = "", size = 'md', onDownload, onS
                   onClick={(e) => {
                     e.stopPropagation();
                     e.preventDefault();
+                    console.log('Download clicked', tile);
                     onDownload(tile);
                   }}
                   whileHover={{ scale: 1.1 }}
@@ -213,6 +218,7 @@ export const ContentCard = ({ tile, className = "", size = 'md', onDownload, onS
                   onClick={(e) => {
                     e.stopPropagation();
                     e.preventDefault();
+                    console.log('Save clicked', tile);
                     onSave(tile);
                   }}
                   whileHover={{ scale: 1.1 }}
