@@ -618,14 +618,23 @@ export const Hero = () => {
                               variant="ghost"
                               size="sm"
                               className="h-7 px-2 text-xs hover:bg-white/10 bg-transparent"
-                              onClick={() => {
-                                const link = document.createElement('a');
-                                link.href = card.imageUrl;
-                                link.download = `virtura-${Date.now()}.png`;
-                                document.body.appendChild(link);
-                                link.click();
-                                document.body.removeChild(link);
-                                toast.success("Image downloaded!");
+                              onClick={async () => {
+                                try {
+                                  const response = await fetch(card.imageUrl);
+                                  const blob = await response.blob();
+                                  const url = window.URL.createObjectURL(blob);
+                                  const link = document.createElement('a');
+                                  link.href = url;
+                                  link.download = `virtura-${Date.now()}.png`;
+                                  document.body.appendChild(link);
+                                  link.click();
+                                  document.body.removeChild(link);
+                                  window.URL.revokeObjectURL(url);
+                                  toast.success("Image downloaded!");
+                                } catch (error) {
+                                  console.error('Download failed:', error);
+                                  toast.error("Failed to download image");
+                                }
                               }}
                             >
                               <Download className="h-3 w-3" />
