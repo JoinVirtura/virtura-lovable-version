@@ -432,25 +432,7 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                       
                       <div className="p-6 space-y-4">
                         <div>
-                          <div className="flex items-center gap-2 group/title">
-                            <h3 className="font-semibold text-lg line-clamp-1 flex-1">{asset.title}</h3>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-6 w-6 p-0 opacity-0 group-hover/title:opacity-100 transition-opacity hover:bg-violet-500/10"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (onEdit) {
-                                  onEdit(asset);
-                                } else {
-                                  handleEditTitle(asset);
-                                }
-                              }}
-                              title={onEdit ? "Edit in Copilot" : "Edit title"}
-                            >
-                              <Edit className="w-3 h-3" />
-                            </Button>
-                          </div>
+                          <h3 className="font-semibold text-lg line-clamp-1">{asset.title}</h3>
                           <p className="text-sm text-muted-foreground font-medium flex items-center gap-2 mt-1">
                             <Clock className="w-3 h-3" />
                             {new Date(asset.date).toLocaleDateString('en-US', { 
@@ -475,9 +457,13 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                             className="h-8 px-3 hover:bg-violet-500/10 hover:border-violet-500/50 transition-all 2xl:w-8 2xl:p-0"
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleEditTitle(asset);
+                              if (onEdit) {
+                                onEdit(asset);
+                              } else {
+                                handleEditTitle(asset);
+                              }
                             }}
-                            title="Edit"
+                            title={onEdit ? "Edit in Copilot" : "Edit title"}
                           >
                             <Edit className="w-3 h-3 mr-1 2xl:w-4 2xl:h-4 2xl:mr-0" />
                             <span className="2xl:hidden">Edit</span>
