@@ -95,7 +95,7 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
   onSaveToLibrary
 }) => {
   const [selectedEngine, setSelectedEngine] = useState('bytedance-omni-human');
-  const [videoPrompt, setVideoPrompt] = useState('Professional presentation with natural head movements and engaging body language.');
+  const [videoPrompt, setVideoPrompt] = useState('');
   const [quality, setQuality] = useState('4K');
   const [fps, setFps] = useState(30);
   const [duration, setDuration] = useState(30);
@@ -439,46 +439,6 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
             </div>
           </AccordionTrigger>
           <AccordionContent className="space-y-6 pb-4">
-            {/* Select Engine */}
-            <div className="space-y-2">
-              <h3 className="font-semibold flex items-center gap-2">
-                <Brain className="h-4 w-4" />
-                Select Engine
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                {project.voice?.status === 'skipped' 
-                  ? 'Motion engines for silent video generation'
-                  : 'Lip-sync engines for audio synchronization'}
-              </p>
-              <div className="space-y-2">
-                {VIDEO_ENGINES
-                  .filter(engine => {
-                    const voiceSkipped = project.voice?.status === 'skipped';
-                    return voiceSkipped ? !engine.requiresAudio : engine.requiresAudio;
-                  })
-                  .map((engine) => (
-                  <div
-                    key={engine.id}
-                    className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                      selectedEngine === engine.id 
-                        ? 'border-primary bg-primary/5' 
-                        : 'border-border hover:border-primary/50'
-                    }`}
-                    onClick={() => setSelectedEngine(engine.id)}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <engine.icon className="h-4 w-4 text-primary" />
-                        <span className="font-medium text-sm">{engine.name}</span>
-                      </div>
-                      <Badge className={`text-xs text-white ${engine.badgeColor}`}>
-                        {engine.badge}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
 
             {/* Motion & Expression Controls */}
             <div className="space-y-3">
