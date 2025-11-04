@@ -5,6 +5,7 @@ import { Progress } from '@/components/ui/progress';
 import { CircularProgress } from '@/components/ui/circular-progress';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { toast } from 'sonner';
 import { 
   Upload, 
   Play,
@@ -165,15 +166,37 @@ export default function StudioPage() {
                   });
                   setCurrentStep('avatar');
                 }}
-                onDownloadStyle={() => {
+                onDownloadStyle={async () => {
                   const styledUrl = project.style?.resultUrl;
-                  if (styledUrl) {
+                  if (!styledUrl) {
+                    toast.error("No styled avatar available to download");
+                    return;
+                  }
+
+                  console.log('📥 Starting styled avatar download:', styledUrl);
+
+                  try {
+                    const response = await fetch(styledUrl);
+                    if (!response.ok) throw new Error('Failed to fetch styled avatar');
+
+                    const blob = await response.blob();
+                    console.log('✅ Avatar blob created:', blob.size, 'bytes');
+
+                    const blobUrl = URL.createObjectURL(blob);
                     const link = document.createElement('a');
-                    link.href = styledUrl;
+                    link.href = blobUrl;
                     link.download = `styled-avatar-${Date.now()}.png`;
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
+
+                    setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+
+                    toast.success("Styled avatar downloaded successfully!");
+                    console.log('✅ Styled avatar download complete');
+                  } catch (error: any) {
+                    console.error('❌ Download failed:', error);
+                    toast.error(error.message || "Failed to download styled avatar");
                   }
                 }}
               />
