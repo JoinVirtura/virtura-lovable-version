@@ -326,14 +326,37 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
     toast.success("Sharing link copied to clipboard!");
   };
 
-  const handleDownloadVariant = (cardId: string) => {
+  const handleDownloadVariant = async (cardId: string) => {
     const card = previewCards.find(c => c.id === cardId);
-    if (card?.imageUrl) {
+    if (!card?.imageUrl) {
+      toast.error("Image not available for download");
+      return;
+    }
+
+    console.log('📥 Starting image download:', card.imageUrl);
+
+    try {
+      const response = await fetch(card.imageUrl);
+      if (!response.ok) throw new Error('Failed to fetch image');
+
+      const blob = await response.blob();
+      console.log('✅ Image blob created:', blob.size, 'bytes');
+
+      const blobUrl = URL.createObjectURL(blob);
       const link = document.createElement('a');
-      link.href = card.imageUrl;
-      link.download = `ai-image-${cardId}.png`;
+      link.href = blobUrl;
+      link.download = `ai-image-${cardId}-${Date.now()}.png`;
+      document.body.appendChild(link);
       link.click();
-      toast.success("Download started!");
+      document.body.removeChild(link);
+
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+
+      toast.success("Image downloaded successfully!");
+      console.log('✅ Image download complete');
+    } catch (error: any) {
+      console.error('❌ Download failed:', error);
+      toast.error("Failed to download image");
     }
   };
 
@@ -794,13 +817,16 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                               <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <Button
-                                      size="icon"
-                                      className="h-9 w-9 rounded-full bg-black/60 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
-                                      onClick={() => handleDownloadVariant(card.id)}
-                                    >
-                                      <Download className="h-4 w-4" />
-                                    </Button>
+                    <Button
+                      size="icon"
+                      className="h-9 w-9 rounded-full bg-black/60 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDownloadVariant(card.id);
+                      }}
+                    >
+                      <Download className="h-4 w-4" />
+                    </Button>
                                   </TooltipTrigger>
                                   <TooltipContent>Download</TooltipContent>
                                 </Tooltip>
@@ -809,13 +835,16 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                               <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <Button
-                                      size="icon"
-                                      className="h-9 w-9 rounded-full bg-black/60 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
-                                      onClick={() => handleShareVariant(card.id)}
-                                    >
-                                      <Share2 className="h-4 w-4" />
-                                    </Button>
+                    <Button
+                      size="icon"
+                      className="h-9 w-9 rounded-full bg-black/60 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleShareVariant(card.id);
+                      }}
+                    >
+                      <Share2 className="h-4 w-4" />
+                    </Button>
                                   </TooltipTrigger>
                                   <TooltipContent>Share</TooltipContent>
                                 </Tooltip>
@@ -824,12 +853,15 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                               <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <Button
-                                      size="icon"
-                                      className="h-9 w-9 rounded-full bg-black/60 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
-                                      onClick={() => handleSaveToLibrary(card.id)}
-                                      disabled={savingToLibrary === card.id}
-                                    >
+                    <Button
+                      size="icon"
+                      className="h-9 w-9 rounded-full bg-black/60 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSaveToLibrary(card.id);
+                      }}
+                      disabled={savingToLibrary === card.id}
+                    >
                                       {savingToLibrary === card.id ? (
                                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
                                       ) : (
