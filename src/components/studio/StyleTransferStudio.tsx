@@ -7,25 +7,8 @@ import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { 
-  Sparkles, 
-  Crown, 
-  CheckCircle,
-  Loader2,
-  Heart,
-  Film,
-  Download,
-  ChevronDown,
-  Zap,
-  TrendingUp,
-  Eye
-} from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Sparkles, Crown, CheckCircle, Loader2, Heart, Film, Download, ChevronDown, Zap, TrendingUp, Eye } from 'lucide-react';
 import type { StudioProject } from '@/hooks/useStudioProject';
 import { applyStyleTransfer } from './StyleTransferEdge';
 import { useToast } from '@/components/ui/use-toast';
@@ -85,7 +68,6 @@ import styleSurrealNew from '@/assets/style-surreal-new.jpg';
 import styleSynthwave from '@/assets/style-synthwave.jpg';
 import styleWatercolor from '@/assets/style-watercolor.jpg';
 import styleWatercolorNew from '@/assets/style-watercolor-new.jpg';
-
 interface StyleTransferStudioProps {
   project: StudioProject;
   onUpdate: (updates: Partial<StudioProject>) => void;
@@ -93,94 +75,468 @@ interface StyleTransferStudioProps {
   currentStep?: string;
   onStepChange?: (stepId: string) => void;
 }
-
 const STYLE_PRESETS = [
-  // Artistic Styles
-  { id: 'oil-painting', name: 'Oil Painting', description: 'Classical oil painting style', image: styleOilPainting, type: 'Premium', strength: 85, category: 'artistic' },
-  { id: 'oil-painting-new', name: 'Modern Oil', description: 'Contemporary oil painting', image: styleOilPaintingNew, type: 'Premium', strength: 82, category: 'artistic' },
-  { id: 'watercolor', name: 'Watercolor', description: 'Soft watercolor painting effect', image: styleWatercolor, type: 'Standard', strength: 70, category: 'artistic' },
-  { id: 'watercolor-new', name: 'Vibrant Watercolor', description: 'Enhanced watercolor technique', image: styleWatercolorNew, type: 'Premium', strength: 75, category: 'artistic' },
-  { id: 'impressionist', name: 'Impressionist', description: 'Impressionist painting style', image: styleImpressionist, type: 'Premium', strength: 78, category: 'artistic' },
-  { id: 'art-nouveau', name: 'Art Nouveau', description: 'Decorative Art Nouveau style', image: styleArtNouveau, type: 'Premium', strength: 80, category: 'artistic' },
-  { id: 'art-nouveau-new', name: 'Modern Art Nouveau', description: 'Contemporary Art Nouveau', image: styleArtNouveauNew, type: 'Premium', strength: 83, category: 'artistic' },
-
-  // Futuristic & Sci-Fi
-  { id: 'cyberpunk', name: 'Cyberpunk', description: 'Futuristic neon cyberpunk style', image: styleCyberpunk, type: 'Premium', strength: 90, category: 'futuristic' },
-  { id: 'cyberpunk-new', name: 'Cyberpunk 2077', description: 'Enhanced cyberpunk aesthetic', image: styleCyberpunkNew, type: 'Premium', strength: 92, category: 'futuristic' },
-  { id: 'biomechanical', name: 'Biomechanical', description: 'H.R. Giger inspired organic-tech fusion', image: styleBiomechanical, type: 'Premium', strength: 88, category: 'futuristic' },
-  { id: 'synthwave', name: 'Synthwave', description: 'Retro-futuristic 80s aesthetic', image: styleSynthwave, type: 'Premium', strength: 85, category: 'futuristic' },
-  { id: 'hok-tech', name: 'Hok Tech', description: 'Advanced technological aesthetic', image: styleHokTech, type: 'Premium', strength: 87, category: 'futuristic' },
-  { id: 'hok-tech-new', name: 'Neo Tech', description: 'Next-gen technology style', image: styleHokTechNew, type: 'Premium', strength: 89, category: 'futuristic' },
-  { id: 'digital-glitch', name: 'Digital Glitch', description: 'Digital corruption and glitch effects', image: styleDigitalGlitchNew, type: 'Premium', strength: 86, category: 'futuristic' },
-
-  // Animation & Cartoon
-  { id: '90s-anime', name: '90s Anime', description: 'Classic Japanese animation style', image: style90sAnime, type: 'Premium', strength: 80, category: 'animation' },
-  { id: '90s-anime-new', name: 'Modern Anime', description: 'Contemporary anime style', image: style90sAnimeNew, type: 'Premium', strength: 82, category: 'animation' },
-  { id: 'child-animal', name: 'Child Animal', description: 'Cute animal character style', image: styleChildAnimal, type: 'Standard', strength: 75, category: 'animation' },
-  { id: 'child-animal-new', name: 'Kawaii Animals', description: 'Enhanced cute animal style', image: styleChildAnimalNew, type: 'Premium', strength: 77, category: 'animation' },
-  { id: 'pixel-art', name: 'Pixel Art', description: '8-bit retro gaming aesthetic', image: stylePixelArt, type: 'Standard', strength: 78, category: 'animation' },
-  { id: 'fluff-world', name: 'Fluff World', description: 'Soft, fluffy cartoon world', image: styleFluffWorld, type: 'Standard', strength: 72, category: 'animation' },
-  { id: 'fluff-world-new', name: 'Dreamy Fluff', description: 'Enhanced fluffy dreamscape', image: styleFluffWorldNew, type: 'Premium', strength: 74, category: 'animation' },
-
-  // Modern & Contemporary
-  { id: 'pop-art', name: 'Pop Art', description: 'Bold pop art style', image: stylePopArt, type: 'Standard', strength: 75, category: 'modern' },
-  { id: 'pop-art-new', name: 'Neo Pop Art', description: 'Contemporary pop art', image: stylePopArtNew, type: 'Premium', strength: 78, category: 'modern' },
-  { id: 'minimalist', name: 'Minimalist', description: 'Clean, minimal design', image: styleMinimalist, type: 'Standard', strength: 60, category: 'modern' },
-  { id: 'minimalist-arch', name: 'Architectural', description: 'Architectural minimalism', image: styleMinimalistArch, type: 'Premium', strength: 65, category: 'modern' },
-  { id: 'street-fashion', name: 'Street Fashion', description: 'Urban street style photography', image: styleStreetFashion, type: 'Premium', strength: 80, category: 'modern' },
-  { id: 'street-fashion-new', name: 'Urban Chic', description: 'Enhanced street fashion', image: styleStreetFashionNew, type: 'Premium', strength: 83, category: 'modern' },
-  { id: 'abstract-geo', name: 'Abstract Geometric', description: 'Geometric abstract patterns', image: styleAbstractGeo, type: 'Premium', strength: 76, category: 'modern' },
-  { id: 'glitch', name: 'Glitch Art', description: 'Digital glitch aesthetic', image: styleGlitch, type: 'Premium', strength: 84, category: 'modern' },
-
-  // Vintage & Classic
-  { id: 'film-noir', name: 'Film Noir', description: 'Classic black and white cinema', image: styleFilmNoir, type: 'Premium', strength: 85, category: 'vintage' },
-  { id: 'film-noir-new', name: 'Neo Noir', description: 'Modern film noir style', image: styleFilmNoirNew, type: 'Premium', strength: 87, category: 'vintage' },
-  { id: 'steampunk', name: 'Steampunk', description: 'Victorian-era industrial aesthetic', image: styleSteampunk, type: 'Standard', strength: 80, category: 'vintage' },
-  { id: 'steampunk-new', name: 'Neo Steampunk', description: 'Enhanced steampunk design', image: styleSteampunkNew, type: 'Premium', strength: 83, category: 'vintage' },
-  { id: 'gothic', name: 'Gothic', description: 'Dark gothic aesthetic', image: styleGothic, type: 'Premium', strength: 82, category: 'vintage' },
-  { id: 'gothic-new', name: 'Modern Gothic', description: 'Contemporary gothic style', image: styleGothicNew, type: 'Premium', strength: 84, category: 'vintage' },
-  { id: 'long-exposure', name: 'Long Exposure', description: 'Long exposure photography effect', image: styleLongExposure, type: 'Premium', strength: 78, category: 'vintage' },
-  { id: 'long-exposure-new', name: 'Light Trails', description: 'Enhanced light trail effects', image: styleLongExposureNew, type: 'Premium', strength: 81, category: 'vintage' },
-
-  // Fantasy & Surreal
-  { id: 'fantasy-creature', name: 'Fantasy Creature', description: 'Mythical creature design', image: styleFantasyCreature, type: 'Premium', strength: 85, category: 'fantasy' },
-  { id: 'fantasy-creature-new', name: 'Epic Fantasy', description: 'Enhanced fantasy creatures', image: styleFantasyCreatureNew, type: 'Premium', strength: 88, category: 'fantasy' },
-  { id: 'fantasy-landscape', name: 'Fantasy Landscape', description: 'Magical landscape scenes', image: styleFantasyLandscape, type: 'Premium', strength: 83, category: 'fantasy' },
-  { id: 'fantasy-landscape-new', name: 'Mystical Realm', description: 'Enhanced fantasy worlds', image: styleFantasyLandscapeNew, type: 'Premium', strength: 86, category: 'fantasy' },
-  { id: 'fantasy-portraits', name: 'Fantasy Portrait', description: 'Magical portrait style', image: styleFantasyPortraits, type: 'Premium', strength: 81, category: 'fantasy' },
-  { id: 'fantasy-portraits-new', name: 'Heroic Portrait', description: 'Enhanced fantasy portraits', image: styleFantasyPortraitsNew, type: 'Premium', strength: 84, category: 'fantasy' },
-  { id: 'surreal', name: 'Surreal', description: 'Surrealistic art style', image: styleSurreal, type: 'Premium', strength: 87, category: 'fantasy' },
-  { id: 'surreal-new', name: 'Dreamscape', description: 'Enhanced surreal imagery', image: styleSurrealNew, type: 'Premium', strength: 89, category: 'fantasy' },
-  { id: 'nighttime-dreams', name: 'Nighttime Dreams', description: 'Dreamy nighttime scenes', image: styleNighttimeDreams, type: 'Premium', strength: 79, category: 'fantasy' },
-  { id: 'nighttime-dreams-new', name: 'Lucid Dreams', description: 'Enhanced dream imagery', image: styleNighttimeDreamsNew, type: 'Premium', strength: 82, category: 'fantasy' },
-
-  // Nature & Organic
-  { id: 'botanical', name: 'Botanical', description: 'Natural botanical illustration', image: styleBotanical, type: 'Standard', strength: 73, category: 'nature' },
-  { id: 'moskvichka', name: 'Moskvichka', description: 'Russian folk art style', image: styleMoskvichka, type: 'Premium', strength: 77, category: 'nature' },
-  { id: 'moskvichka-new', name: 'Neo Folk', description: 'Contemporary folk art', image: styleMoskvichkaNew, type: 'Premium', strength: 79, category: 'nature' },
-
-  // Photography Styles
-  { id: 'photoset', name: 'Photoset', description: 'Professional photo series style', image: stylePhotoset, type: 'Standard', strength: 70, category: 'photography' },
-  { id: 'photoset-new', name: 'Studio Photoset', description: 'Enhanced photo series', image: stylePhotosetNew, type: 'Premium', strength: 73, category: 'photography' }
-];
+// Artistic Styles
+{
+  id: 'oil-painting',
+  name: 'Oil Painting',
+  description: 'Classical oil painting style',
+  image: styleOilPainting,
+  type: 'Premium',
+  strength: 85,
+  category: 'artistic'
+}, {
+  id: 'oil-painting-new',
+  name: 'Modern Oil',
+  description: 'Contemporary oil painting',
+  image: styleOilPaintingNew,
+  type: 'Premium',
+  strength: 82,
+  category: 'artistic'
+}, {
+  id: 'watercolor',
+  name: 'Watercolor',
+  description: 'Soft watercolor painting effect',
+  image: styleWatercolor,
+  type: 'Standard',
+  strength: 70,
+  category: 'artistic'
+}, {
+  id: 'watercolor-new',
+  name: 'Vibrant Watercolor',
+  description: 'Enhanced watercolor technique',
+  image: styleWatercolorNew,
+  type: 'Premium',
+  strength: 75,
+  category: 'artistic'
+}, {
+  id: 'impressionist',
+  name: 'Impressionist',
+  description: 'Impressionist painting style',
+  image: styleImpressionist,
+  type: 'Premium',
+  strength: 78,
+  category: 'artistic'
+}, {
+  id: 'art-nouveau',
+  name: 'Art Nouveau',
+  description: 'Decorative Art Nouveau style',
+  image: styleArtNouveau,
+  type: 'Premium',
+  strength: 80,
+  category: 'artistic'
+}, {
+  id: 'art-nouveau-new',
+  name: 'Modern Art Nouveau',
+  description: 'Contemporary Art Nouveau',
+  image: styleArtNouveauNew,
+  type: 'Premium',
+  strength: 83,
+  category: 'artistic'
+},
+// Futuristic & Sci-Fi
+{
+  id: 'cyberpunk',
+  name: 'Cyberpunk',
+  description: 'Futuristic neon cyberpunk style',
+  image: styleCyberpunk,
+  type: 'Premium',
+  strength: 90,
+  category: 'futuristic'
+}, {
+  id: 'cyberpunk-new',
+  name: 'Cyberpunk 2077',
+  description: 'Enhanced cyberpunk aesthetic',
+  image: styleCyberpunkNew,
+  type: 'Premium',
+  strength: 92,
+  category: 'futuristic'
+}, {
+  id: 'biomechanical',
+  name: 'Biomechanical',
+  description: 'H.R. Giger inspired organic-tech fusion',
+  image: styleBiomechanical,
+  type: 'Premium',
+  strength: 88,
+  category: 'futuristic'
+}, {
+  id: 'synthwave',
+  name: 'Synthwave',
+  description: 'Retro-futuristic 80s aesthetic',
+  image: styleSynthwave,
+  type: 'Premium',
+  strength: 85,
+  category: 'futuristic'
+}, {
+  id: 'hok-tech',
+  name: 'Hok Tech',
+  description: 'Advanced technological aesthetic',
+  image: styleHokTech,
+  type: 'Premium',
+  strength: 87,
+  category: 'futuristic'
+}, {
+  id: 'hok-tech-new',
+  name: 'Neo Tech',
+  description: 'Next-gen technology style',
+  image: styleHokTechNew,
+  type: 'Premium',
+  strength: 89,
+  category: 'futuristic'
+}, {
+  id: 'digital-glitch',
+  name: 'Digital Glitch',
+  description: 'Digital corruption and glitch effects',
+  image: styleDigitalGlitchNew,
+  type: 'Premium',
+  strength: 86,
+  category: 'futuristic'
+},
+// Animation & Cartoon
+{
+  id: '90s-anime',
+  name: '90s Anime',
+  description: 'Classic Japanese animation style',
+  image: style90sAnime,
+  type: 'Premium',
+  strength: 80,
+  category: 'animation'
+}, {
+  id: '90s-anime-new',
+  name: 'Modern Anime',
+  description: 'Contemporary anime style',
+  image: style90sAnimeNew,
+  type: 'Premium',
+  strength: 82,
+  category: 'animation'
+}, {
+  id: 'child-animal',
+  name: 'Child Animal',
+  description: 'Cute animal character style',
+  image: styleChildAnimal,
+  type: 'Standard',
+  strength: 75,
+  category: 'animation'
+}, {
+  id: 'child-animal-new',
+  name: 'Kawaii Animals',
+  description: 'Enhanced cute animal style',
+  image: styleChildAnimalNew,
+  type: 'Premium',
+  strength: 77,
+  category: 'animation'
+}, {
+  id: 'pixel-art',
+  name: 'Pixel Art',
+  description: '8-bit retro gaming aesthetic',
+  image: stylePixelArt,
+  type: 'Standard',
+  strength: 78,
+  category: 'animation'
+}, {
+  id: 'fluff-world',
+  name: 'Fluff World',
+  description: 'Soft, fluffy cartoon world',
+  image: styleFluffWorld,
+  type: 'Standard',
+  strength: 72,
+  category: 'animation'
+}, {
+  id: 'fluff-world-new',
+  name: 'Dreamy Fluff',
+  description: 'Enhanced fluffy dreamscape',
+  image: styleFluffWorldNew,
+  type: 'Premium',
+  strength: 74,
+  category: 'animation'
+},
+// Modern & Contemporary
+{
+  id: 'pop-art',
+  name: 'Pop Art',
+  description: 'Bold pop art style',
+  image: stylePopArt,
+  type: 'Standard',
+  strength: 75,
+  category: 'modern'
+}, {
+  id: 'pop-art-new',
+  name: 'Neo Pop Art',
+  description: 'Contemporary pop art',
+  image: stylePopArtNew,
+  type: 'Premium',
+  strength: 78,
+  category: 'modern'
+}, {
+  id: 'minimalist',
+  name: 'Minimalist',
+  description: 'Clean, minimal design',
+  image: styleMinimalist,
+  type: 'Standard',
+  strength: 60,
+  category: 'modern'
+}, {
+  id: 'minimalist-arch',
+  name: 'Architectural',
+  description: 'Architectural minimalism',
+  image: styleMinimalistArch,
+  type: 'Premium',
+  strength: 65,
+  category: 'modern'
+}, {
+  id: 'street-fashion',
+  name: 'Street Fashion',
+  description: 'Urban street style photography',
+  image: styleStreetFashion,
+  type: 'Premium',
+  strength: 80,
+  category: 'modern'
+}, {
+  id: 'street-fashion-new',
+  name: 'Urban Chic',
+  description: 'Enhanced street fashion',
+  image: styleStreetFashionNew,
+  type: 'Premium',
+  strength: 83,
+  category: 'modern'
+}, {
+  id: 'abstract-geo',
+  name: 'Abstract Geometric',
+  description: 'Geometric abstract patterns',
+  image: styleAbstractGeo,
+  type: 'Premium',
+  strength: 76,
+  category: 'modern'
+}, {
+  id: 'glitch',
+  name: 'Glitch Art',
+  description: 'Digital glitch aesthetic',
+  image: styleGlitch,
+  type: 'Premium',
+  strength: 84,
+  category: 'modern'
+},
+// Vintage & Classic
+{
+  id: 'film-noir',
+  name: 'Film Noir',
+  description: 'Classic black and white cinema',
+  image: styleFilmNoir,
+  type: 'Premium',
+  strength: 85,
+  category: 'vintage'
+}, {
+  id: 'film-noir-new',
+  name: 'Neo Noir',
+  description: 'Modern film noir style',
+  image: styleFilmNoirNew,
+  type: 'Premium',
+  strength: 87,
+  category: 'vintage'
+}, {
+  id: 'steampunk',
+  name: 'Steampunk',
+  description: 'Victorian-era industrial aesthetic',
+  image: styleSteampunk,
+  type: 'Standard',
+  strength: 80,
+  category: 'vintage'
+}, {
+  id: 'steampunk-new',
+  name: 'Neo Steampunk',
+  description: 'Enhanced steampunk design',
+  image: styleSteampunkNew,
+  type: 'Premium',
+  strength: 83,
+  category: 'vintage'
+}, {
+  id: 'gothic',
+  name: 'Gothic',
+  description: 'Dark gothic aesthetic',
+  image: styleGothic,
+  type: 'Premium',
+  strength: 82,
+  category: 'vintage'
+}, {
+  id: 'gothic-new',
+  name: 'Modern Gothic',
+  description: 'Contemporary gothic style',
+  image: styleGothicNew,
+  type: 'Premium',
+  strength: 84,
+  category: 'vintage'
+}, {
+  id: 'long-exposure',
+  name: 'Long Exposure',
+  description: 'Long exposure photography effect',
+  image: styleLongExposure,
+  type: 'Premium',
+  strength: 78,
+  category: 'vintage'
+}, {
+  id: 'long-exposure-new',
+  name: 'Light Trails',
+  description: 'Enhanced light trail effects',
+  image: styleLongExposureNew,
+  type: 'Premium',
+  strength: 81,
+  category: 'vintage'
+},
+// Fantasy & Surreal
+{
+  id: 'fantasy-creature',
+  name: 'Fantasy Creature',
+  description: 'Mythical creature design',
+  image: styleFantasyCreature,
+  type: 'Premium',
+  strength: 85,
+  category: 'fantasy'
+}, {
+  id: 'fantasy-creature-new',
+  name: 'Epic Fantasy',
+  description: 'Enhanced fantasy creatures',
+  image: styleFantasyCreatureNew,
+  type: 'Premium',
+  strength: 88,
+  category: 'fantasy'
+}, {
+  id: 'fantasy-landscape',
+  name: 'Fantasy Landscape',
+  description: 'Magical landscape scenes',
+  image: styleFantasyLandscape,
+  type: 'Premium',
+  strength: 83,
+  category: 'fantasy'
+}, {
+  id: 'fantasy-landscape-new',
+  name: 'Mystical Realm',
+  description: 'Enhanced fantasy worlds',
+  image: styleFantasyLandscapeNew,
+  type: 'Premium',
+  strength: 86,
+  category: 'fantasy'
+}, {
+  id: 'fantasy-portraits',
+  name: 'Fantasy Portrait',
+  description: 'Magical portrait style',
+  image: styleFantasyPortraits,
+  type: 'Premium',
+  strength: 81,
+  category: 'fantasy'
+}, {
+  id: 'fantasy-portraits-new',
+  name: 'Heroic Portrait',
+  description: 'Enhanced fantasy portraits',
+  image: styleFantasyPortraitsNew,
+  type: 'Premium',
+  strength: 84,
+  category: 'fantasy'
+}, {
+  id: 'surreal',
+  name: 'Surreal',
+  description: 'Surrealistic art style',
+  image: styleSurreal,
+  type: 'Premium',
+  strength: 87,
+  category: 'fantasy'
+}, {
+  id: 'surreal-new',
+  name: 'Dreamscape',
+  description: 'Enhanced surreal imagery',
+  image: styleSurrealNew,
+  type: 'Premium',
+  strength: 89,
+  category: 'fantasy'
+}, {
+  id: 'nighttime-dreams',
+  name: 'Nighttime Dreams',
+  description: 'Dreamy nighttime scenes',
+  image: styleNighttimeDreams,
+  type: 'Premium',
+  strength: 79,
+  category: 'fantasy'
+}, {
+  id: 'nighttime-dreams-new',
+  name: 'Lucid Dreams',
+  description: 'Enhanced dream imagery',
+  image: styleNighttimeDreamsNew,
+  type: 'Premium',
+  strength: 82,
+  category: 'fantasy'
+},
+// Nature & Organic
+{
+  id: 'botanical',
+  name: 'Botanical',
+  description: 'Natural botanical illustration',
+  image: styleBotanical,
+  type: 'Standard',
+  strength: 73,
+  category: 'nature'
+}, {
+  id: 'moskvichka',
+  name: 'Moskvichka',
+  description: 'Russian folk art style',
+  image: styleMoskvichka,
+  type: 'Premium',
+  strength: 77,
+  category: 'nature'
+}, {
+  id: 'moskvichka-new',
+  name: 'Neo Folk',
+  description: 'Contemporary folk art',
+  image: styleMoskvichkaNew,
+  type: 'Premium',
+  strength: 79,
+  category: 'nature'
+},
+// Photography Styles
+{
+  id: 'photoset',
+  name: 'Photoset',
+  description: 'Professional photo series style',
+  image: stylePhotoset,
+  type: 'Standard',
+  strength: 70,
+  category: 'photography'
+}, {
+  id: 'photoset-new',
+  name: 'Studio Photoset',
+  description: 'Enhanced photo series',
+  image: stylePhotosetNew,
+  type: 'Premium',
+  strength: 73,
+  category: 'photography'
+}];
 
 // Style badges for visual indicators
 const getStyleBadge = (style: typeof STYLE_PRESETS[0]) => {
   // Popular styles
   if (['cyberpunk-new', 'oil-painting', 'fantasy-portraits-new', 'pop-art-new'].includes(style.id)) {
-    return { label: 'Popular', icon: Zap, color: 'from-amber-500 to-orange-500' };
+    return {
+      label: 'Popular',
+      icon: Zap,
+      color: 'from-amber-500 to-orange-500'
+    };
   }
   // Trending styles
   if (['surreal-new', '90s-anime-new', 'street-fashion-new', 'gothic-new'].includes(style.id)) {
-    return { label: 'Trending', icon: TrendingUp, color: 'from-pink-500 to-rose-500' };
+    return {
+      label: 'Trending',
+      icon: TrendingUp,
+      color: 'from-pink-500 to-rose-500'
+    };
   }
   // New styles
   if (style.id.endsWith('-new') && !['cyberpunk-new', 'fantasy-portraits-new', 'pop-art-new', 'surreal-new', '90s-anime-new', 'street-fashion-new', 'gothic-new'].includes(style.id)) {
-    return { label: 'New', icon: Sparkles, color: 'from-emerald-500 to-teal-500' };
+    return {
+      label: 'New',
+      icon: Sparkles,
+      color: 'from-emerald-500 to-teal-500'
+    };
   }
   return null;
 };
-
 interface StyleTransferStudioProps {
   project: StudioProject;
   onUpdate: (updates: Partial<StudioProject>) => void;
@@ -188,15 +544,16 @@ interface StyleTransferStudioProps {
   currentStep?: string;
   onStepChange?: (step: string) => void;
 }
-
-export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({ 
-  project, 
-  onUpdate, 
+export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
+  project,
+  onUpdate,
   isProcessing,
   currentStep = 'style',
   onStepChange
 }) => {
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
   const navigate = useNavigate();
   const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
   const [styleStrength, setStyleStrength] = useState(75);
@@ -212,74 +569,71 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
   const [selectedBadge, setSelectedBadge] = useState<'all' | 'popular' | 'trending' | 'new'>('all');
   const [progressPercentage, setProgressPercentage] = useState(0);
   const [progressPhase, setProgressPhase] = useState('');
-
-  const steps = [
-    { id: 'avatar', label: 'Avatar', completed: !!project.avatar?.processedUrl },
-    { id: 'style', label: 'Style', completed: !!project.style?.resultUrl },
-    { id: 'export', label: 'Export', completed: false }
-  ];
-
+  const steps = [{
+    id: 'avatar',
+    label: 'Avatar',
+    completed: !!project.avatar?.processedUrl
+  }, {
+    id: 'style',
+    label: 'Style',
+    completed: !!project.style?.resultUrl
+  }, {
+    id: 'export',
+    label: 'Export',
+    completed: false
+  }];
 
   // Filter styles based on search, type, category, and badge
   const filteredStyles = STYLE_PRESETS.filter(style => {
     // Search filter
-    const matchesSearch = style.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      style.description.toLowerCase().includes(searchQuery.toLowerCase());
-    
+    const matchesSearch = style.name.toLowerCase().includes(searchQuery.toLowerCase()) || style.description.toLowerCase().includes(searchQuery.toLowerCase());
+
     // Type filter (Free/Premium)
-    const matchesType = selectedType === 'all' || 
-      (selectedType === 'free' && (style.type === 'Free' || style.type === 'Standard')) ||
-      (selectedType === 'premium' && style.type === 'Premium');
-    
+    const matchesType = selectedType === 'all' || selectedType === 'free' && (style.type === 'Free' || style.type === 'Standard') || selectedType === 'premium' && style.type === 'Premium';
+
     // Category filter
     const matchesCategory = selectedCategory === 'all' || style.category === selectedCategory;
-    
+
     // Badge filter (Popular/Trending/New)
     const styleBadge = getStyleBadge(style);
-    const matchesBadge = selectedBadge === 'all' || 
-      (selectedBadge === 'popular' && styleBadge?.label === 'Popular') ||
-      (selectedBadge === 'trending' && styleBadge?.label === 'Trending') ||
-      (selectedBadge === 'new' && styleBadge?.label === 'New');
-    
+    const matchesBadge = selectedBadge === 'all' || selectedBadge === 'popular' && styleBadge?.label === 'Popular' || selectedBadge === 'trending' && styleBadge?.label === 'Trending' || selectedBadge === 'new' && styleBadge?.label === 'New';
     return matchesSearch && matchesType && matchesCategory && matchesBadge;
   });
 
   // Helper function to upload blob URL to Supabase Storage
   const ensurePublicUrl = async (imageUrl: string): Promise<string> => {
     console.log('🔄 [StyleTransfer] Ensuring image is publicly accessible...', imageUrl);
-    
     try {
       // Fetch the image data (works for both blob: and https: URLs)
       const response = await fetch(imageUrl);
       if (!response.ok) {
         throw new Error(`Failed to fetch image: ${response.statusText}`);
       }
-      
       const blob = await response.blob();
-      
+
       // Generate unique filename
       const filename = `style-transfer-${Date.now()}.png`;
-      
       console.log('📤 [StyleTransfer] Uploading to storage as:', filename);
-      
+
       // Upload to Supabase Storage with public access
-      const { data, error } = await supabase.storage
-        .from('avatars')
-        .upload(filename, blob, {
-          contentType: 'image/png',
-          upsert: false
-        });
-      
+      const {
+        data,
+        error
+      } = await supabase.storage.from('avatars').upload(filename, blob, {
+        contentType: 'image/png',
+        upsert: false
+      });
       if (error) {
         console.error('❌ [StyleTransfer] Upload error:', error);
         throw error;
       }
-      
+
       // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(filename);
-      
+      const {
+        data: {
+          publicUrl
+        }
+      } = supabase.storage.from('avatars').getPublicUrl(filename);
       console.log('✅ [StyleTransfer] Public URL created:', publicUrl);
       return publicUrl;
     } catch (error) {
@@ -287,19 +641,16 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
       toast({
         variant: "destructive",
         title: "Upload Failed",
-        description: "Failed to prepare image for style transfer. Please try again.",
+        description: "Failed to prepare image for style transfer. Please try again."
       });
       throw new Error('Failed to prepare image for style transfer');
     }
   };
-
   const handleApplyStyle = async () => {
     let avatarUrl = project.avatar?.processedUrl || project.avatar?.originalUrl;
     if (!selectedStyle || !avatarUrl) return;
-
     const stylePreset = STYLE_PRESETS.find(s => s.id === selectedStyle);
     if (!stylePreset) return;
-
     setIsApplying(true);
     setProgressPercentage(0);
     setProgressPhase("Analyzing image...");
@@ -333,8 +684,17 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
         enhanceDetails,
         lookMode: 'realistic',
         background: 'studio',
-        lighting: { key: 80, fill: 60, rim: 40, ambient: 20 },
-        camera: { angle: 0, distance: 100, focus: 50 },
+        lighting: {
+          key: 80,
+          fill: 60,
+          rim: 40,
+          ambient: 20
+        },
+        camera: {
+          angle: 0,
+          distance: 100,
+          focus: 50
+        },
         effects: {},
         status: 'processing',
         metadata: {
@@ -345,7 +705,6 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
         }
       }
     });
-
     try {
       // If blob URL or Supabase Storage URL, ensure it's publicly accessible to Replicate
       if (avatarUrl.startsWith('blob:') || avatarUrl.includes('.supabase.co/storage')) {
@@ -366,9 +725,7 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
       clearInterval(progressInterval);
       setProgressPercentage(100);
       setProgressPhase("Complete!");
-
       await new Promise(resolve => setTimeout(resolve, 500));
-
       if (result.success && result.imageUrl) {
         onUpdate({
           style: {
@@ -379,8 +736,17 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
             resultUrl: result.imageUrl,
             lookMode: 'realistic',
             background: 'studio',
-            lighting: { key: 80, fill: 60, rim: 40, ambient: 20 },
-            camera: { angle: 0, distance: 100, focus: 50 },
+            lighting: {
+              key: 80,
+              fill: 60,
+              rim: 40,
+              ambient: 20
+            },
+            camera: {
+              angle: 0,
+              distance: 100,
+              focus: 50
+            },
             effects: {},
             status: 'completed',
             metadata: {
@@ -391,10 +757,9 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
             }
           }
         });
-
         toast({
           title: "Style Applied",
-          description: `${stylePreset.name} style applied successfully`,
+          description: `${stylePreset.name} style applied successfully`
         });
       } else {
         throw new Error(result.error || 'Style transfer failed');
@@ -403,7 +768,6 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
       clearInterval(progressInterval);
       setProgressPercentage(0);
       setProgressPhase("");
-      
       onUpdate({
         style: {
           preset: selectedStyle,
@@ -412,8 +776,17 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
           enhanceDetails,
           lookMode: 'realistic',
           background: 'studio',
-          lighting: { key: 80, fill: 60, rim: 40, ambient: 20 },
-          camera: { angle: 0, distance: 100, focus: 50 },
+          lighting: {
+            key: 80,
+            fill: 60,
+            rim: 40,
+            ambient: 20
+          },
+          camera: {
+            angle: 0,
+            distance: 100,
+            focus: 50
+          },
           effects: {},
           status: 'error',
           metadata: {
@@ -424,11 +797,10 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
           }
         }
       });
-
       toast({
         title: "Style Transfer Failed",
         description: error.message,
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setIsApplying(false);
@@ -438,9 +810,7 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
       }, 1000);
     }
   };
-
   const canApplyStyle = project.avatar?.status === 'completed' && selectedStyle;
-
   const handleSaveToLibrary = async () => {
     const styledImageUrl = project.style?.resultUrl || project.avatar?.processedUrl || project.avatar?.originalUrl;
     if (!styledImageUrl) {
@@ -451,10 +821,13 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
       });
       return;
     }
-
     setIsSaving(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: {
+          user
+        }
+      } = await supabase.auth.getUser();
       if (!user) {
         toast({
           title: "Authentication Required",
@@ -463,25 +836,18 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
         });
         return;
       }
-
-      const { error } = await supabase
-        .from('avatar_library')
-        .insert({
-          user_id: user.id,
-          image_url: styledImageUrl,
-          prompt: avatarTitle || `Styled Avatar - ${project.style?.metadata?.styleName || 'Custom'}`,
-          title: avatarTitle || `Styled Avatar - ${project.style?.metadata?.styleName || 'Custom'}`,
-          tags: [
-            'style-transfer',
-            project.style?.preset || 'custom',
-            project.style?.metadata?.category || 'general'
-          ]
-        });
-
+      const {
+        error
+      } = await supabase.from('avatar_library').insert({
+        user_id: user.id,
+        image_url: styledImageUrl,
+        prompt: avatarTitle || `Styled Avatar - ${project.style?.metadata?.styleName || 'Custom'}`,
+        title: avatarTitle || `Styled Avatar - ${project.style?.metadata?.styleName || 'Custom'}`,
+        tags: ['style-transfer', project.style?.preset || 'custom', project.style?.metadata?.category || 'general']
+      });
       if (error) throw error;
-
       setSavedToLibrary(true);
-      
+
       // Show rich toast notification with action buttons
       sonnerToast.success('Avatar Saved Successfully!', {
         description: 'Your styled avatar is now in your library',
@@ -502,7 +868,6 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
       setIsSaving(false);
     }
   };
-
   const handleUseInVideo = () => {
     const styledImageUrl = project.style?.resultUrl || project.avatar?.processedUrl || project.avatar?.originalUrl;
     if (!styledImageUrl) return;
@@ -522,11 +887,9 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
     navigate('/dashboard/video-pro');
     sonnerToast.success('Opening Video Pro with your styled avatar...');
   };
-
   const handleDownload = () => {
     const styledImageUrl = project.style?.resultUrl || project.avatar?.processedUrl || project.avatar?.originalUrl;
     if (!styledImageUrl) return;
-
     const link = document.createElement('a');
     link.href = styledImageUrl;
     link.download = `styled-avatar-${Date.now()}.png`;
@@ -535,9 +898,7 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
     document.body.removeChild(link);
     sonnerToast.success('Download started!');
   };
-
-  return (
-    <div className="pb-32 space-y-6">
+  return <div className="pb-32 space-y-6">
       {/* Header */}
       <div className="space-y-2">
         <div className="flex items-start justify-between gap-4">
@@ -545,16 +906,13 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
             <h2 className="text-3xl font-bold bg-gradient-to-r from-violet-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
               Style Transfer Studio
             </h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              Transform your avatar with 50+ AI-powered artistic styles
-            </p>
+            <p className="text-sm text-muted-foreground mt-1">Transform your image with 50+ AI-powered artistic styles</p>
           </div>
         </div>
       </div>
 
       {/* Prerequisites Check */}
-      {!project.avatar && (
-        <Card className="border-violet-500/30 bg-violet-950/20 backdrop-blur-xl">
+      {!project.avatar && <Card className="border-violet-500/30 bg-violet-950/20 backdrop-blur-xl">
           <CardContent className="p-6">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-full bg-violet-500/20 flex items-center justify-center">
@@ -570,31 +928,14 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
               </div>
             </div>
           </CardContent>
-        </Card>
-      )}
+        </Card>}
 
       {/* Search Bar with Apply Button */}
       <div className="flex items-center gap-3 max-w-2xl">
-        <Input
-          type="search"
-          placeholder="Search styles... (e.g., cyberpunk, watercolor)"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="h-12 bg-black/40 border-violet-500/30 focus:border-violet-400 transition-colors"
-        />
+        <Input type="search" placeholder="Search styles... (e.g., cyberpunk, watercolor)" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="h-12 bg-black/40 border-violet-500/30 focus:border-violet-400 transition-colors" />
 
-        <Button
-          onClick={handleApplyStyle}
-          disabled={!canApplyStyle || isProcessing || isApplying}
-          size="sm"
-          className={`px-8 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 whitespace-nowrap min-w-[140px] ${
-            (isProcessing || isApplying || project.style?.status === 'processing')
-              ? 'bg-gradient-to-r from-primary via-purple-500 to-pink-500'
-              : ''
-          }`}
-        >
-          {isProcessing || isApplying || project.style?.status === 'processing' ? (
-            <div className="flex items-center justify-center gap-2">
+        <Button onClick={handleApplyStyle} disabled={!canApplyStyle || isProcessing || isApplying} size="sm" className={`px-8 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 whitespace-nowrap min-w-[140px] ${isProcessing || isApplying || project.style?.status === 'processing' ? 'bg-gradient-to-r from-primary via-purple-500 to-pink-500' : ''}`}>
+          {isProcessing || isApplying || project.style?.status === 'processing' ? <div className="flex items-center justify-center gap-2">
               <div className="relative flex items-center">
                 <Loader2 className="h-4 w-4 animate-spin" />
               </div>
@@ -602,10 +943,7 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
                 <span className="text-xs font-medium whitespace-nowrap">{progressPhase}</span>
                 <span className="text-xs font-semibold">{Math.round(progressPercentage)}%</span>
               </div>
-            </div>
-          ) : (
-            'Apply'
-          )}
+            </div> : 'Apply'}
         </Button>
       </div>
 
@@ -614,65 +952,30 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
         {/* Filter Chips Row */}
         <div className="flex flex-wrap gap-2">
           {/* Type Filters */}
-          <Button
-            size="sm"
-            variant={selectedType === 'all' ? 'default' : 'outline'}
-            onClick={() => setSelectedType('all')}
-            className="h-8"
-          >
+          <Button size="sm" variant={selectedType === 'all' ? 'default' : 'outline'} onClick={() => setSelectedType('all')} className="h-8">
             All
           </Button>
-          <Button
-            size="sm"
-            variant={selectedBadge === 'popular' ? 'default' : 'outline'}
-            onClick={() => setSelectedBadge(selectedBadge === 'popular' ? 'all' : 'popular')}
-            className="h-8"
-          >
+          <Button size="sm" variant={selectedBadge === 'popular' ? 'default' : 'outline'} onClick={() => setSelectedBadge(selectedBadge === 'popular' ? 'all' : 'popular')} className="h-8">
             Popular
           </Button>
-          <Button
-            size="sm"
-            variant={selectedBadge === 'trending' ? 'default' : 'outline'}
-            onClick={() => setSelectedBadge(selectedBadge === 'trending' ? 'all' : 'trending')}
-            className="h-8"
-          >
+          <Button size="sm" variant={selectedBadge === 'trending' ? 'default' : 'outline'} onClick={() => setSelectedBadge(selectedBadge === 'trending' ? 'all' : 'trending')} className="h-8">
             Trending
           </Button>
-          <Button
-            size="sm"
-            variant={selectedBadge === 'new' ? 'default' : 'outline'}
-            onClick={() => setSelectedBadge(selectedBadge === 'new' ? 'all' : 'new')}
-            className="h-8"
-          >
+          <Button size="sm" variant={selectedBadge === 'new' ? 'default' : 'outline'} onClick={() => setSelectedBadge(selectedBadge === 'new' ? 'all' : 'new')} className="h-8">
             New
           </Button>
-          <Button
-            size="sm"
-            variant={selectedType === 'free' ? 'default' : 'outline'}
-            onClick={() => setSelectedType(selectedType === 'free' ? 'all' : 'free')}
-            className="h-8"
-          >
+          <Button size="sm" variant={selectedType === 'free' ? 'default' : 'outline'} onClick={() => setSelectedType(selectedType === 'free' ? 'all' : 'free')} className="h-8">
             Free
           </Button>
-          <Button
-            size="sm"
-            variant={selectedType === 'premium' ? 'default' : 'outline'}
-            onClick={() => setSelectedType(selectedType === 'premium' ? 'all' : 'premium')}
-            className="h-8"
-          >
+          <Button size="sm" variant={selectedType === 'premium' ? 'default' : 'outline'} onClick={() => setSelectedType(selectedType === 'premium' ? 'all' : 'premium')} className="h-8">
             Premium
           </Button>
 
           {/* Category Dropdown - Using DropdownMenu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                size="sm"
-                variant="outline"
-                className="h-8"
-              >
-                {selectedCategory === 'all' ? 'All Categories' : 
-                 selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}
+              <Button size="sm" variant="outline" className="h-8">
+                {selectedCategory === 'all' ? 'All Categories' : selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}
                 <ChevronDown className="ml-1 h-3 w-3" />
               </Button>
             </DropdownMenuTrigger>
@@ -715,87 +1018,50 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
       {/* Large Style Gallery Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredStyles.map((style, index) => {
-          const styleBadge = getStyleBadge(style);
-          const isSelected = selectedStyle === style.id;
-          
-          return (
-            <div
-              key={style.id}
-              className={`group relative overflow-hidden rounded-2xl bg-black/40 border-2 transition-all duration-300 cursor-pointer animate-fade-in ${
-                isSelected
-                  ? 'border-violet-400 shadow-[0_0_40px_rgba(139,92,246,0.5)] scale-[1.02]'
-                  : 'border-violet-500/20 hover:border-violet-400 hover:shadow-[0_0_25px_rgba(139,92,246,0.3)] hover:scale-[1.01]'
-              }`}
-              style={{ animationDelay: `${index * 30}ms` }}
-              onClick={() => setSelectedStyle(style.id)}
-            >
+        const styleBadge = getStyleBadge(style);
+        const isSelected = selectedStyle === style.id;
+        return <div key={style.id} className={`group relative overflow-hidden rounded-2xl bg-black/40 border-2 transition-all duration-300 cursor-pointer animate-fade-in ${isSelected ? 'border-violet-400 shadow-[0_0_40px_rgba(139,92,246,0.5)] scale-[1.02]' : 'border-violet-500/20 hover:border-violet-400 hover:shadow-[0_0_25px_rgba(139,92,246,0.3)] hover:scale-[1.01]'}`} style={{
+          animationDelay: `${index * 30}ms`
+        }} onClick={() => setSelectedStyle(style.id)}>
               {/* Large Image */}
               <div className="relative h-80 overflow-hidden">
-                {style.image ? (
-                  <img
-                    src={style.image}
-                    alt={style.name}
-                    loading="lazy"
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-violet-950/50 to-purple-950/50 flex items-center justify-center">
-                    {project.avatar?.processedUrl || project.avatar?.originalUrl ? (
-                      <img
-                        src={project.avatar.processedUrl || project.avatar.originalUrl}
-                        alt="Your Avatar"
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <CheckCircle className="h-20 w-20 text-violet-400/50" />
-                    )}
-                  </div>
-                )}
+                {style.image ? <img src={style.image} alt={style.name} loading="lazy" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" /> : <div className="w-full h-full bg-gradient-to-br from-violet-950/50 to-purple-950/50 flex items-center justify-center">
+                    {project.avatar?.processedUrl || project.avatar?.originalUrl ? <img src={project.avatar.processedUrl || project.avatar.originalUrl} alt="Your Avatar" className="w-full h-full object-cover" /> : <CheckCircle className="h-20 w-20 text-violet-400/50" />}
+                  </div>}
                 
                 {/* Gradient Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
                 
                 {/* Badges - Top */}
                 <div className="absolute top-3 left-3 right-3 flex items-start justify-between gap-2">
-                  {styleBadge && (
-                    <Badge className={`bg-gradient-to-r ${styleBadge.color} text-white border-0 shadow-lg`}>
+                  {styleBadge && <Badge className={`bg-gradient-to-r ${styleBadge.color} text-white border-0 shadow-lg`}>
                       <styleBadge.icon className="h-3 w-3 mr-1" />
                       {styleBadge.label}
-                    </Badge>
-                  )}
+                    </Badge>}
                   
-                  {style.type === 'Premium' && (
-                    <Badge className="bg-gradient-to-r from-violet-500 to-purple-600 text-white border-0 shadow-lg ml-auto">
+                  {style.type === 'Premium' && <Badge className="bg-gradient-to-r from-violet-500 to-purple-600 text-white border-0 shadow-lg ml-auto">
                       <Crown className="h-3 w-3 mr-1" />
                       Premium
-                    </Badge>
-                  )}
-                  {style.type === 'Free' && (
-                    <Badge className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white border-0 shadow-lg ml-auto">
+                    </Badge>}
+                  {style.type === 'Free' && <Badge className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white border-0 shadow-lg ml-auto">
                       <CheckCircle className="h-3 w-3 mr-1" />
                       Free
-                    </Badge>
-                  )}
+                    </Badge>}
                 </div>
                 
                 {/* Select Button on Hover */}
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <Button 
-                    size="sm"
-                    className="bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white border-0 shadow-xl"
-                  >
+                  <Button size="sm" className="bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white border-0 shadow-xl">
                     {isSelected ? 'Selected ✓' : 'Select Style'}
                   </Button>
                 </div>
                 
                 {/* Selected Indicator */}
-                {isSelected && (
-                  <div className="absolute inset-0 bg-violet-500/20 flex items-center justify-center pointer-events-none">
+                {isSelected && <div className="absolute inset-0 bg-violet-500/20 flex items-center justify-center pointer-events-none">
                     <div className="bg-violet-500 rounded-full p-3 shadow-[0_0_30px_rgba(139,92,246,0.8)]">
                       <CheckCircle className="h-8 w-8 text-white" />
                     </div>
-                  </div>
-                )}
+                  </div>}
               </div>
               
               {/* Card Footer */}
@@ -803,12 +1069,10 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
                 <h3 className="text-lg font-bold text-white mb-1">{style.name}</h3>
                 <p className="text-sm text-gray-300/80 line-clamp-2">{style.description}</p>
               </div>
-            </div>
-          );
-        })}
+            </div>;
+      })}
       </div>
 
 
-    </div>
-  );
+    </div>;
 };
