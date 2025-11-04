@@ -56,12 +56,20 @@ export default function VideoProPage() {
   } = useStudioProject(false); // Start fresh, don't load old projects
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const previousVideoUrlRef = useRef<string | null>(null);
 
-  // Track if video URL changes to reset saved state
+  // Track if video URL changes to a NEW video to reset saved state
   useEffect(() => {
-    if (project.video?.videoUrl) {
+    const currentVideoUrl = project.video?.videoUrl;
+    
+    // Only reset saved state if this is a completely new video URL
+    if (currentVideoUrl && previousVideoUrlRef.current !== null && currentVideoUrl !== previousVideoUrlRef.current) {
+      console.log('🔄 New video detected, resetting saved state');
       setIsVideoSaved(false);
     }
+    
+    // Update the ref to track the current URL
+    previousVideoUrlRef.current = currentVideoUrl || null;
   }, [project.video?.videoUrl]);
 
   // Load pre-selected avatar from Library
