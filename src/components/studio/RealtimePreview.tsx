@@ -31,6 +31,7 @@ interface RealtimePreviewProps {
   onStepChange?: (stepId: string) => void;
   onResetAvatar?: () => void;
   onSaveToLibrary?: (customTitle?: string) => Promise<void>;
+  onDownload?: () => void;
   isSaved?: boolean;
 }
 
@@ -46,6 +47,7 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
   onStepChange,
   onResetAvatar,
   onSaveToLibrary,
+  onDownload,
   isSaved = false
 }) => {
   const [previewMode, setPreviewMode] = useState('desktop');
@@ -547,13 +549,16 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
         )}
 
         {/* Preview Controls */}
-        {project.video?.videoUrl && (
+        {project.video?.videoUrl && onDownload && (
           <div className="flex gap-2">
-            <Button size="sm" variant="outline" className="flex-1" asChild>
-              <a href={project.video.videoUrl} download="generated-video.mp4">
-                <Download className="h-3 w-3 mr-1" />
-                Download
-              </a>
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="flex-1"
+              onClick={onDownload}
+            >
+              <Download className="h-3 w-3 mr-1" />
+              Download
             </Button>
           </div>
         )}

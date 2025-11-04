@@ -847,9 +847,29 @@ export const useStudioProject = (loadLastProject: boolean = true) => {
           throw new Error(data.error || 'Video generation failed on Replicate');
         }
         
-        // Update progress
+        // Update progress with stage-based messaging
         const progressPercent = Math.min(90, (elapsed / 120) * 100);
         setProjectProgress(progressPercent);
+        
+        // Determine current stage based on progress
+        let currentStage = 'Initializing model...';
+        if (progressPercent > 20) currentStage = 'Processing video frames...';
+        if (progressPercent > 50) currentStage = 'Applying motion effects...';
+        if (progressPercent > 75) currentStage = 'Finalizing video...';
+
+        // Update project state with progress
+        setProject(prev => ({
+          ...prev,
+          video: {
+            ...prev.video,
+            status: 'processing',
+            metadata: {
+              ...prev.video?.metadata,
+              currentStage,
+              progress: Math.round(progressPercent)
+            }
+          } as any
+        }));
         
         // Wait 5 seconds before next poll
         await new Promise(resolve => setTimeout(resolve, 5000));

@@ -241,6 +241,7 @@ export default function VideoProPage() {
                 isProcessing={isProcessing}
                 onStepChange={handleStepChange}
                 onResetAvatar={handleResetAvatar}
+                onDownload={downloadVideo}
                 onSaveToLibrary={async (customTitle?: string) => {
                   if (customTitle) {
                     updateProject({ name: customTitle });

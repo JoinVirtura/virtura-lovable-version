@@ -176,6 +176,14 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
     }
   }, [selectedExportPack]);
 
+  // Clear prompt after successful video generation
+  useEffect(() => {
+    if (project.video?.status === 'completed' && videoPrompt) {
+      console.log('🧹 Video completed - clearing prompt');
+      setVideoPrompt('');
+    }
+  }, [project.video?.status]);
+
   const getRatioDimensions = (ratio: string): string => {
     const dims: Record<string, string> = {
       '1:1': '1080×1080',
@@ -284,7 +292,7 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
                       {project.video.metadata?.currentStage || 'Generating video with Replicate...'}
                     </p>
                     <p className="text-sm text-blue-600 dark:text-blue-300">
-                      Using Replicate AI - This may take 2-5 minutes
+                      Processing your video - This may take 2-5 minutes
                     </p>
                   </div>
                 </div>
