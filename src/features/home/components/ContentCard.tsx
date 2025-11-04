@@ -185,17 +185,13 @@ export const ContentCard = ({ tile, className = "", size = 'md', onDownload, onS
           )}
         </div>
 
-        {/* Action Buttons Overlay */}
-        <AnimatePresence>
-          {isHovered && (onDownload || onSave) && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.2 }}
-              className="absolute inset-0 flex items-center justify-center gap-3 z-30"
-              style={{ transform: 'translateZ(50px)' }}
-            >
+        {/* Always-Visible Bottom Action Bar */}
+        {(onDownload || onSave) && (
+          <div 
+            className="absolute bottom-0 left-0 right-0 z-30 bg-gradient-to-t from-black/95 via-black/90 to-transparent backdrop-blur-sm"
+            style={{ transform: 'translateZ(50px)' }}
+          >
+            <div className="flex items-center justify-end gap-2 px-4 py-3">
               {onDownload && (
                 <motion.button
                   onClick={(e) => {
@@ -205,10 +201,10 @@ export const ContentCard = ({ tile, className = "", size = 'md', onDownload, onS
                   }}
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
-                  className="flex items-center gap-2 bg-gradient-to-r from-purple-600/95 to-violet-600/95 backdrop-blur-xl px-6 py-3 rounded-full border-2 border-purple-400/50 shadow-[0_0_30px_rgba(168,85,247,0.6)] hover:shadow-[0_0_50px_rgba(168,85,247,0.9)] transition-all duration-300"
+                  className="flex items-center justify-center w-10 h-10 bg-purple-600/90 hover:bg-purple-500 backdrop-blur-xl rounded-lg border border-purple-400/30 shadow-lg hover:shadow-purple-500/50 transition-all duration-300"
+                  title="Download"
                 >
                   <Download className="w-5 h-5 text-white" />
-                  <span className="text-white font-bold text-sm">Download</span>
                 </motion.button>
               )}
               
@@ -221,15 +217,15 @@ export const ContentCard = ({ tile, className = "", size = 'md', onDownload, onS
                   }}
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
-                  className="flex items-center gap-2 bg-gradient-to-r from-fuchsia-600/95 to-pink-600/95 backdrop-blur-xl px-6 py-3 rounded-full border-2 border-fuchsia-400/50 shadow-[0_0_30px_rgba(236,72,153,0.6)] hover:shadow-[0_0_50px_rgba(236,72,153,0.9)] transition-all duration-300"
+                  className="flex items-center justify-center w-10 h-10 bg-fuchsia-600/90 hover:bg-fuchsia-500 backdrop-blur-xl rounded-lg border border-fuchsia-400/30 shadow-lg hover:shadow-fuchsia-500/50 transition-all duration-300"
+                  title="Save to Library"
                 >
                   <Bookmark className="w-5 h-5 text-white" />
-                  <span className="text-white font-bold text-sm">Save</span>
                 </motion.button>
               )}
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
+          </div>
+        )}
 
         {/* Next-Gen Floating Badge with Magnetic Effect */}
         <motion.div 
@@ -291,11 +287,10 @@ export const ContentCard = ({ tile, className = "", size = 'md', onDownload, onS
           </div>
         </motion.div>
 
-        {/* Title Overlay with Transparent Background */}
+        {/* Title Overlay - positioned above action bar */}
         <motion.div 
-          className="absolute bottom-0 left-0 right-0 p-5 z-10"
+          className="absolute bottom-16 left-0 right-0 px-4 z-20 pointer-events-none"
           style={{
-            background: 'transparent',
             transform: 'translateZ(30px)',
           }}
           animate={{
@@ -304,7 +299,7 @@ export const ContentCard = ({ tile, className = "", size = 'md', onDownload, onS
           transition={{ duration: 0.3 }}
         >
           <motion.h3 
-            className="text-white font-black text-lg leading-tight mb-3 line-clamp-2 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
+            className="text-white font-black text-base leading-tight line-clamp-2 drop-shadow-[0_2px_12px_rgba(0,0,0,1)]"
             animate={{
               color: isHovered ? '#e9d5ff' : '#ffffff',
             }}
