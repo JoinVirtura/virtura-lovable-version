@@ -451,6 +451,9 @@ export const Hero = () => {
 
       if (error) throw error;
 
+      // Dispatch event to refresh library page if open
+      window.dispatchEvent(new Event('library-updated'));
+      
       toast.success("Image saved to your library!");
     } catch (error: any) {
       console.error('Save to library error:', error);
