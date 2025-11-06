@@ -1,6 +1,8 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.55.0";
+import { deductTokensAndTrackCost, checkTokenBalance } from '../_shared/token-manager.ts';
+import { calculateTokenCost, MODEL_COSTS } from '../_shared/token-costs.ts';
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -21,6 +23,50 @@ serve(async (req) => {
     }
 
     const normalizedScript = String(script).trim().slice(0, 1000);
+    
+    // Get authenticated user
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Authentication required' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+    const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY');
+    const authClient = createClient(SUPABASE_URL!, SUPABASE_ANON_KEY!, {
+      global: { headers: { Authorization: authHeader } }
+    });
+    
+    const { data: { user }, error: authError } = await authClient.auth.getUser();
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Invalid authentication' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    // Calculate token cost (1 token per 1000 characters)
+    const charCount = normalizedScript.length;
+    const requiredTokens = Math.max(1, Math.ceil(charCount / 1000));
+    const estimatedCost = (charCount / 1000) * MODEL_COSTS.elevenlabs['eleven_multilingual_v2'];
+    
+    console.log(`💰 Token cost: ${requiredTokens} tokens for ${charCount} chars (estimated $${estimatedCost.toFixed(4)})`);
+    
+    // Check balance first (quick check)
+    const balanceCheck = await checkTokenBalance(user.id, requiredTokens);
+    if (!balanceCheck.hasBalance) {
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          error: 'Insufficient tokens',
+          requiredTokens,
+          currentBalance: balanceCheck.currentBalance,
+        }),
+        { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     // Accept any provided ElevenLabs voiceId, fall back to Aria if missing
     const selectedVoiceId = (typeof voiceId === 'string' && voiceId.trim().length > 0)
@@ -173,6 +219,27 @@ serve(async (req) => {
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
       );
     }
+    
+    // Deduct tokens AFTER successful generation
+    const tokenResult = await deductTokensAndTrackCost({
+      userId: user.id,
+      resourceType: 'voice_generation',
+      apiProvider: providerUsed.includes('elevenlabs') ? 'elevenlabs' : 'openai',
+      modelUsed: providerUsed,
+      tokensToDeduct: requiredTokens,
+      costUsd: estimatedCost,
+      metadata: {
+        characterCount: charCount,
+        voiceId: selectedVoiceId,
+        provider: providerUsed,
+      },
+    });
+    
+    if (!tokenResult.success) {
+      console.error('Failed to deduct tokens after generation');
+    } else {
+      console.log(`✅ Tokens deducted. Remaining balance: ${tokenResult.remainingBalance}`);
+    }
 
     // Prepare base64 for inline playback
     const chunkSize = 0x8000; // 32KB chunks
@@ -219,7 +286,9 @@ serve(async (req) => {
         provider: providerUsed,
         audioData: `data:audio/mpeg;base64,${base64Audio}`,
         audioUrl: publicUrl,
-        duration: 'estimated_duration'
+        duration: 'estimated_duration',
+        tokensCharged: requiredTokens,
+        remainingBalance: tokenResult.remainingBalance,
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

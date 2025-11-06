@@ -1,6 +1,8 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import Replicate from "https://esm.sh/replicate@0.25.2";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { deductTokensAndTrackCost } from '../_shared/token-manager.ts';
+import { calculateTokenCost, MODEL_COSTS } from '../_shared/token-costs.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -167,6 +169,51 @@ serve(async (req) => {
     }
 
     console.log('🎨 Replicate Image Generation Request:', { contentType, quality, aspectRatio, hasReferenceImage: !!referenceImage });
+
+    // Calculate token cost and check balance BEFORE processing
+    let modelForCost = 'flux-schnell'; // default
+    if (referenceImage) {
+      modelForCost = detectModificationIntent(prompt) ? 'flux-1.1-pro' : 'flux-redux';
+    } else {
+      const selectedModel = modelMap[contentType] || modelMap['auto'];
+      if (selectedModel.includes('flux-1.1-pro')) modelForCost = 'flux-1.1-pro';
+      else if (selectedModel.includes('flux-schnell')) modelForCost = 'flux-schnell';
+      else modelForCost = 'flux-dev';
+    }
+    
+    const requiredTokens = calculateTokenCost('image_generation', modelForCost);
+    const estimatedCost = MODEL_COSTS.replicate[modelForCost] || 0.003;
+    
+    console.log(`💰 Token cost: ${requiredTokens} tokens (estimated $${estimatedCost})`);
+    
+    // Deduct tokens atomically
+    const tokenResult = await deductTokensAndTrackCost({
+      userId: user.id,
+      resourceType: 'image_generation',
+      apiProvider: 'replicate',
+      modelUsed: modelForCost,
+      tokensToDeduct: requiredTokens,
+      costUsd: estimatedCost,
+      metadata: {
+        contentType,
+        quality,
+        aspectRatio,
+        prompt: prompt.substring(0, 100),
+      },
+    });
+    
+    if (!tokenResult.success) {
+      return new Response(
+        JSON.stringify({ 
+          error: tokenResult.error || 'Insufficient tokens',
+          requiredTokens,
+          currentBalance: tokenResult.remainingBalance,
+        }), 
+        { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    console.log(`✅ Tokens deducted. Remaining balance: ${tokenResult.remainingBalance}`);
 
     // Intelligent model selection based on user intent
     let model;
@@ -392,6 +439,8 @@ serve(async (req) => {
         success: true,
         image: publicUrl,
         prompt: finalPrompt,
+        tokensCharged: requiredTokens,
+        remainingBalance: tokenResult.remainingBalance,
         metadata: {
           contentType,
           style: style || 'photorealistic',
@@ -399,7 +448,8 @@ serve(async (req) => {
           processingTime,
           model,
           quality,
-          usedReferenceImage: !!referenceImage
+          usedReferenceImage: !!referenceImage,
+          costUsd: estimatedCost,
         }
       }),
       {

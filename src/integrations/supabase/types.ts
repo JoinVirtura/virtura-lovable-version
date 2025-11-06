@@ -1372,6 +1372,42 @@ export type Database = {
         }
         Relationships: []
       }
+      token_transactions: {
+        Row: {
+          amount: number
+          cost_usd: number | null
+          created_at: string
+          id: string
+          metadata: Json | null
+          resource_id: string | null
+          resource_type: string | null
+          transaction_type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          cost_usd?: number | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          resource_id?: string | null
+          resource_type?: string | null
+          transaction_type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          cost_usd?: number | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          resource_id?: string | null
+          resource_type?: string | null
+          transaction_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       usage_tracking: {
         Row: {
           amount: number
@@ -1427,6 +1463,36 @@ export type Database = {
           organization_id?: string | null
           permissions?: Json | null
           role?: Database["public"]["Enums"]["user_role"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_tokens: {
+        Row: {
+          balance: number
+          created_at: string
+          id: string
+          lifetime_purchased: number
+          lifetime_used: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          id?: string
+          lifetime_purchased?: number
+          lifetime_used?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          id?: string
+          lifetime_purchased?: number
+          lifetime_used?: number
           updated_at?: string
           user_id?: string
         }
@@ -1512,6 +1578,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_tokens: {
+        Args: {
+          p_amount: number
+          p_metadata?: Json
+          p_transaction_type?: string
+          p_user_id: string
+        }
+        Returns: boolean
+      }
       assign_job_to_gpu: {
         Args: { job_id_param: string; required_vram?: number }
         Returns: string
@@ -1521,6 +1596,17 @@ export type Database = {
           daily_limit: number
           resource_type_param: string
           user_uuid: string
+        }
+        Returns: boolean
+      }
+      deduct_tokens: {
+        Args: {
+          p_amount: number
+          p_cost_usd?: number
+          p_metadata?: Json
+          p_resource_id?: string
+          p_resource_type: string
+          p_user_id: string
         }
         Returns: boolean
       }

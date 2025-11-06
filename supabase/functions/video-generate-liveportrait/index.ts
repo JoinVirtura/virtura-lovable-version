@@ -1,6 +1,8 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
+import { deductTokensAndTrackCost } from '../_shared/token-manager.ts';
+import { calculateTokenCost, MODEL_COSTS } from '../_shared/token-costs.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -23,6 +25,56 @@ serve(async (req) => {
     if (!avatarImageUrl || !audioUrl) {
       throw new Error('Avatar image and audio URL are required');
     }
+    
+    // Get authenticated user
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      throw new Error('Authentication required');
+    }
+    
+    const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY');
+    const authClient = createClient(Deno.env.get('SUPABASE_URL')!, SUPABASE_ANON_KEY!, {
+      global: { headers: { Authorization: authHeader } }
+    });
+    
+    const { data: { user }, error: authError } = await authClient.auth.getUser();
+    if (authError || !user) {
+      throw new Error('Invalid authentication');
+    }
+    
+    // Calculate token cost
+    const requiredTokens = calculateTokenCost('video_generation', 'liveportrait');
+    const estimatedCost = MODEL_COSTS.replicateVideo['liveportrait'];
+    
+    console.log(`💰 Token cost: ${requiredTokens} tokens (estimated $${estimatedCost})`);
+    
+    // Deduct tokens BEFORE processing
+    const tokenResult = await deductTokensAndTrackCost({
+      userId: user.id,
+      resourceType: 'video_generation',
+      apiProvider: 'replicate',
+      modelUsed: 'liveportrait',
+      tokensToDeduct: requiredTokens,
+      costUsd: estimatedCost,
+      metadata: {
+        quality: settings.quality || '1080p',
+        duration: settings.duration || 15,
+      },
+    });
+    
+    if (!tokenResult.success) {
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          error: tokenResult.error || 'Insufficient tokens',
+          requiredTokens,
+          currentBalance: tokenResult.remainingBalance,
+        }),
+        { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    console.log(`✅ Tokens deducted. Remaining balance: ${tokenResult.remainingBalance}`);
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
@@ -73,13 +125,16 @@ serve(async (req) => {
         duration: Math.max(10, settings.duration || 15),
         quality: settings.quality || '1080p',
         engine: 'liveportrait',
+        tokensCharged: requiredTokens,
+        remainingBalance: tokenResult.remainingBalance,
         metadata: {
           processingTime: '5.0s',
           resolution: '1080x1080',
           fps: 30,
           engine: 'LivePortrait Enhanced',
           features: ['Enhanced Lip Sync', 'Natural Head Movement', 'Eye Blink Animation'],
-          settings: settings
+          settings: settings,
+          costUsd: estimatedCost,
         }
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
