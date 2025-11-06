@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import virturaLogo from "/lovable-uploads/f264298f-2877-485b-affc-d705994fc848.png";
 import { useProfile } from "@/hooks/useProfile";
@@ -37,9 +37,11 @@ import {
   Download,
   Menu,
   Image,
-  LifeBuoy
+  LifeBuoy,
+  Shield
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 interface VirturaSidebarProps {
   activeView: string;
@@ -53,8 +55,27 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
   const { profile } = useProfile();
   const navigate = useNavigate();
   const isCollapsed = state === "collapsed";
+  const [isAdmin, setIsAdmin] = useState(false);
+  
+  useEffect(() => {
+    const checkAdmin = async () => {
+      if (!user) return;
+      
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+      
+      setIsAdmin(!!data);
+    };
+    
+    checkAdmin();
+  }, [user]);
   
   const mainItems = [
+    ...(isAdmin ? [{ id: "admin-dashboard", label: "Dashboard", icon: Shield }] : []),
     { id: "overview", label: "Home", icon: Home },
     { id: "talking-avatar", label: "Style", icon: Image },
     { id: "video-pro", label: "Video", icon: Video },

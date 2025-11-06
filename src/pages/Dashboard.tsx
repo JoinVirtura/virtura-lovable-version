@@ -130,6 +130,17 @@ export default function Dashboard() {
   const { isOnboardingComplete, loading: onboardingLoading } = useOnboarding();
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   
+  // Import admin dashboard
+  const [AdminDashboardComponent, setAdminDashboardComponent] = useState<any>(null);
+  
+  useEffect(() => {
+    if (activeView === "admin-dashboard") {
+      import("./UnifiedAdminDashboard").then((module) => {
+        setAdminDashboardComponent(() => module.default);
+      });
+    }
+  }, [activeView]);
+  
   // Brand Manager state
   const [currentFolder, setCurrentFolder] = useState<string>('all');
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(['all']));
@@ -1914,6 +1925,12 @@ export default function Dashboard() {
         return <ExportSection />;
       case "upgrade":
         return <UpgradePage />;
+      case "admin-dashboard":
+        return AdminDashboardComponent ? <AdminDashboardComponent /> : (
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        );
       default:
         return <OverviewPage onViewChange={setActiveView} />;
     }

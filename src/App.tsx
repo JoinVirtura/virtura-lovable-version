@@ -27,6 +27,7 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCanceled from "./pages/PaymentCanceled";
 import TokenHistoryPage from "./pages/TokenHistoryPage";
 import AdminCostDashboardPage from "./pages/AdminCostDashboardPage";
+import UnifiedAdminDashboard from "./pages/UnifiedAdminDashboard";
 
 const queryClient = new QueryClient();
 
@@ -88,6 +89,7 @@ const AppRoutes = () => {
       
       {/* Admin Routes */}
       <Route path="/admin/costs" element={<ProtectedRoute><AdminCostDashboardPage /></ProtectedRoute>} />
+      <Route path="/admin/dashboard" element={<ProtectedRoute><UnifiedAdminDashboard /></ProtectedRoute>} />
       
       {/* Catch-all */}
       <Route path="*" element={<NotFound />} />
