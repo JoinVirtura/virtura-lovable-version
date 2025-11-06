@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -65,10 +65,21 @@ const tokenPacks = [
 
 export default function UpgradePage() {
   const { toast } = useToast();
+  const [hasSubscription, setHasSubscription] = useState(false);
 
   useEffect(() => {
     document.title = "Upgrade Plan | Virtura";
+    checkSubscription();
   }, []);
+
+  const checkSubscription = async () => {
+    const { data } = await supabase
+      .from('subscriptions')
+      .select('stripe_customer_id')
+      .maybeSingle();
+    
+    setHasSubscription(!!data?.stripe_customer_id);
+  };
 
   const startSubscription = async (planId: string) => {
     const { data, error } = await supabase.functions.invoke("create-checkout", {
@@ -151,12 +162,14 @@ export default function UpgradePage() {
         </div>
       </section>
 
-      <section aria-labelledby="manage-subscription" className="text-center">
-        <h2 id="manage-subscription" className="sr-only">Manage subscription</h2>
-        <Button variant="secondary" onClick={openCustomerPortal}>
-          Manage subscription & billing
-        </Button>
-      </section>
+      {hasSubscription && (
+        <section aria-labelledby="manage-subscription" className="text-center">
+          <h2 id="manage-subscription" className="sr-only">Manage subscription</h2>
+          <Button variant="secondary" onClick={openCustomerPortal}>
+            Manage subscription & billing
+          </Button>
+        </section>
+      )}
     </main>
   );
 }
