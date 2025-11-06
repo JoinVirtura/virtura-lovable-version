@@ -24,7 +24,8 @@ export function CreditTokensDialog({ open, onOpenChange, user, onSuccess }: Cred
   const [loading, setLoading] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
-  const currentBalance = user?.user_tokens?.[0]?.balance || 0;
+  // Safely get current balance with proper null checking
+  const currentBalance = user?.user_tokens?.[0]?.balance ?? 0;
   const newBalance = currentBalance + (parseInt(amount) || 0);
 
   const handleSubmit = () => {

@@ -48,21 +48,19 @@ export function RetryJobsModal({ open, onOpenChange, onSuccess }: RetryJobsModal
 
       if (error) throw error;
 
-      // Get user emails for each job
-      const jobsWithUsers = await Promise.all(
-        (data || []).map(async (job) => {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('display_name')
-            .eq('id', job.user_id)
-            .single();
-          
-          return {
-            ...job,
-            userEmail: profile?.display_name || job.user_id,
-          };
-        })
-      );
+      // Get user display names for each job - optimized query
+      const userIds = [...new Set(data?.map(job => job.user_id) || [])];
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, display_name')
+        .in('id', userIds);
+      
+      const profileMap = new Map(profiles?.map(p => [p.id, p.display_name]) || []);
+      
+      const jobsWithUsers = (data || []).map(job => ({
+        ...job,
+        userName: profileMap.get(job.user_id) || job.user_id.slice(0, 8) + '...',
+      }));
 
       setFailedJobs(jobsWithUsers);
     } catch (error: any) {
@@ -193,7 +191,7 @@ export function RetryJobsModal({ open, onOpenChange, onSuccess }: RetryJobsModal
                       </Badge>
                     </div>
                     <p className="text-sm text-muted-foreground truncate">
-                      User: {job.userEmail}
+                      User: {job.userName}
                     </p>
                     <p className="text-xs text-red-500 mt-1 line-clamp-2">
                       {job.error_message || 'Unknown error'}
