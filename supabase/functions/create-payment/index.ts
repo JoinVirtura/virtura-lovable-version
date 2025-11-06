@@ -14,14 +14,21 @@ serve(async (req) => {
   try {
     const body = await req.json().catch(() => ({}));
     const tokens = Number(body?.tokens) || 0;
-    if (![100, 500, 1500].includes(tokens)) {
-      return new Response(JSON.stringify({ error: "Invalid token pack" }), { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 });
+    
+    // Support all token pack sizes
+    const validPacks = [100, 500, 1000, 5000, 10000];
+    if (!validPacks.includes(tokens)) {
+      return new Response(JSON.stringify({ error: "Invalid token pack. Valid options: 100, 500, 1000, 5000, 10000" }), { 
+        headers: { ...corsHeaders, "Content-Type": "application/json" }, 
+        status: 400 
+      });
     }
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { apiVersion: "2023-10-16" });
 
-    // Try to get user email if authenticated; allow guests
+    // Get authenticated user
     let customerEmail = "guest@example.com";
+    let userId = null;
     const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
     const supabaseClient = createClient(supabaseUrl, anonKey);
@@ -30,28 +37,46 @@ serve(async (req) => {
     if (authHeader) {
       const token = authHeader.replace("Bearer ", "");
       const { data } = await supabaseClient.auth.getUser(token);
-      if (data.user?.email) customerEmail = data.user.email;
+      if (data.user) {
+        customerEmail = data.user.email || "guest@example.com";
+        userId = data.user.id;
+      }
     }
 
-    const priceMap: Record<number, number> = { 100: 500, 500: 2000, 1500: 5000 };
+    // Price map: token count -> cents (100 tokens = $15.00 = 1500 cents, etc.)
+    const priceMap: Record<number, number> = { 
+      100: 1500,    // $15.00
+      500: 7500,    // $75.00
+      1000: 15000,  // $150.00
+      5000: 75000,  // $750.00
+      10000: 150000 // $1,500.00
+    };
 
     const origin = req.headers.get("origin") || "http://localhost:5173";
 
     const session = await stripe.checkout.sessions.create({
       customer_email: customerEmail,
+      client_reference_id: userId, // Store user ID for webhook
       line_items: [
         {
           price_data: {
             currency: "usd",
             unit_amount: priceMap[tokens],
-            product_data: { name: `${tokens} Tokens Pack` },
+            product_data: { 
+              name: `${tokens} Tokens Pack`,
+              description: `${tokens} tokens for Virtura platform`
+            },
           },
           quantity: 1,
         },
       ],
       mode: "payment",
-      success_url: `${origin}/payment-success`,
+      success_url: `${origin}/payment-success?tokens=${tokens}`,
       cancel_url: `${origin}/payment-canceled`,
+      metadata: {
+        tokens: tokens.toString(),
+        user_id: userId || "unknown",
+      },
     });
 
     return new Response(JSON.stringify({ url: session.url }), { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 });

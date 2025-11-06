@@ -25,6 +25,7 @@ import NotFound from "./pages/NotFound";
 import UpgradePage from "./pages/UpgradePage";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCanceled from "./pages/PaymentCanceled";
+import TokenHistoryPage from "./pages/TokenHistoryPage";
 import AdminCostDashboardPage from "./pages/AdminCostDashboardPage";
 
 const queryClient = new QueryClient();
@@ -83,6 +84,7 @@ const AppRoutes = () => {
       <Route path="/upgrade" element={<ProtectedRoute><UpgradePage /></ProtectedRoute>} />
       <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
       <Route path="/payment-canceled" element={<ProtectedRoute><PaymentCanceled /></ProtectedRoute>} />
+      <Route path="/token-history" element={<ProtectedRoute><TokenHistoryPage /></ProtectedRoute>} />
       
       {/* Admin Routes */}
       <Route path="/admin/costs" element={<ProtectedRoute><AdminCostDashboardPage /></ProtectedRoute>} />

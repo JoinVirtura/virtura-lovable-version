@@ -2,6 +2,32 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.55.0';
 import { trackApiCost } from './cost-tracking.ts';
 import { calculateTokenCost } from './token-costs.ts';
 
+const ADMIN_EMAIL = 'sirjahibentley@gmail.com';
+
+/**
+ * Check if user is admin (unlimited free access)
+ */
+export async function isAdminUser(userId: string): Promise<boolean> {
+  const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+  const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+  const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+  // Check user_roles table for admin role
+  const { data, error } = await supabase
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', userId)
+    .eq('role', 'admin')
+    .maybeSingle();
+
+  if (error) {
+    console.error('Failed to check admin status:', error);
+    return false;
+  }
+
+  return !!data;
+}
+
 /**
  * Check if user has enough tokens for an operation
  */
@@ -43,12 +69,31 @@ export async function deductTokensAndTrackCost(params: {
   costUsd: number;
   metadata?: Record<string, any>;
   resourceId?: string;
-}): Promise<{ success: boolean; remainingBalance: number; error?: string }> {
+}): Promise<{ success: boolean; remainingBalance: number; error?: string; isAdmin?: boolean }> {
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
   const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
   try {
+    // Check if user is admin - skip token deduction but still track costs
+    const isAdmin = await isAdminUser(params.userId);
+    
+    if (isAdmin) {
+      console.log(`[ADMIN] Skipping token deduction for admin user: ${params.userId}`);
+      
+      // Still track API cost for analytics
+      await trackApiCost({
+        userId: params.userId,
+        resourceType: params.resourceType,
+        apiProvider: params.apiProvider,
+        modelUsed: params.modelUsed,
+        costUsd: params.costUsd,
+        tokensCharged: 0, // Admin not charged
+        metadata: { ...params.metadata, admin: true },
+      });
+
+      return { success: true, remainingBalance: 999999, isAdmin: true };
+    }
     // Call database function to deduct tokens atomically
     const { data, error } = await supabase.rpc('deduct_tokens', {
       p_user_id: params.userId,

@@ -1,14 +1,37 @@
-import { Coins, TrendingUp, Clock } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Coins, TrendingUp, Clock, Shield, AlertTriangle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { useTokenBalance } from '@/hooks/useTokenBalance';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 
 export function TokenBalanceDisplay() {
   const { balance, lifetimePurchased, lifetimeUsed, isLoading } = useTokenBalance();
+  const { user } = useAuth();
   const navigate = useNavigate();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    checkAdminStatus();
+  }, [user]);
+
+  const checkAdminStatus = async () => {
+    if (!user) return;
+    
+    const { data } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .eq('role', 'admin')
+      .maybeSingle();
+
+    setIsAdmin(!!data);
+  };
 
   if (isLoading) {
     return (
@@ -32,23 +55,38 @@ export function TokenBalanceDisplay() {
   const isCritical = balance < 5;
 
   return (
-    <Card className={isCritical ? 'border-destructive' : isLow ? 'border-warning' : ''}>
+    <Card className={`${isCritical && !isAdmin ? 'border-destructive' : isLow && !isAdmin ? 'border-warning' : ''} ${isAdmin ? 'bg-gradient-primary border-violet-500' : ''}`}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Coins className="h-5 w-5" />
           Token Balance
+          {isAdmin && (
+            <Badge variant="default" className="ml-auto bg-white/20 text-white">
+              <Shield className="h-3 w-3 mr-1" />
+              ADMIN
+            </Badge>
+          )}
         </CardTitle>
         <CardDescription>
-          Your available credits for AI operations
+          {isAdmin ? 'Unlimited access - No charge for all operations' : 'Your available credits for AI operations'}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-3xl font-bold">{balance}</div>
-            <div className="text-sm text-muted-foreground">tokens available</div>
+            {isAdmin ? (
+              <div className="flex items-center gap-2">
+                <div className="text-4xl font-bold">∞</div>
+                <div className="text-lg text-muted-foreground">Unlimited</div>
+              </div>
+            ) : (
+              <>
+                <div className="text-3xl font-bold">{balance}</div>
+                <div className="text-sm text-muted-foreground">tokens available</div>
+              </>
+            )}
           </div>
-          {(isLow || isCritical) && (
+          {!isAdmin && (isLow || isCritical) && (
             <Button 
               onClick={() => navigate('/upgrade')} 
               variant={isCritical ? "destructive" : "default"}
@@ -58,41 +96,54 @@ export function TokenBalanceDisplay() {
           )}
         </div>
 
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Lifetime Usage</span>
-            <span className="font-medium">{usagePercentage.toFixed(1)}%</span>
-          </div>
-          <Progress value={usagePercentage} className="h-2" />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4 pt-2">
-          <div className="space-y-1">
-            <div className="flex items-center gap-1 text-muted-foreground text-xs">
-              <TrendingUp className="h-3 w-3" />
-              Purchased
+        {!isAdmin && (
+          <>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Lifetime Usage</span>
+                <span className="font-medium">{usagePercentage.toFixed(1)}%</span>
+              </div>
+              <Progress value={usagePercentage} className="h-2" />
             </div>
-            <div className="text-lg font-semibold">{lifetimePurchased}</div>
-          </div>
-          <div className="space-y-1">
-            <div className="flex items-center gap-1 text-muted-foreground text-xs">
-              <Clock className="h-3 w-3" />
-              Used
-            </div>
-            <div className="text-lg font-semibold">{lifetimeUsed}</div>
-          </div>
-        </div>
 
-        {isCritical && (
-          <div className="text-sm text-destructive font-medium pt-2 border-t">
-            ⚠️ Critical: You're running low on tokens!
-          </div>
+            <div className="grid grid-cols-2 gap-4 pt-2">
+              <div className="space-y-1">
+                <div className="flex items-center gap-1 text-muted-foreground text-xs">
+                  <TrendingUp className="h-3 w-3" />
+                  Purchased
+                </div>
+                <div className="text-lg font-semibold">{lifetimePurchased}</div>
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-1 text-muted-foreground text-xs">
+                  <Clock className="h-3 w-3" />
+                  Used
+                </div>
+                <div className="text-lg font-semibold">{lifetimeUsed}</div>
+              </div>
+            </div>
+
+            {isCritical && (
+              <div className="text-sm text-destructive font-medium pt-2 border-t flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4" />
+                Critical: You're running low on tokens!
+              </div>
+            )}
+            {isLow && !isCritical && (
+              <div className="text-sm text-warning font-medium pt-2 border-t">
+                ⚡ Low Balance: Consider purchasing more tokens soon
+              </div>
+            )}
+          </>
         )}
-        {isLow && !isCritical && (
-          <div className="text-sm text-warning font-medium pt-2 border-t">
-            ⚡ Low Balance: Consider purchasing more tokens soon
-          </div>
-        )}
+
+        <Button
+          variant={isAdmin ? "secondary" : "outline"}
+          className="w-full"
+          onClick={() => navigate("/token-history")}
+        >
+          View Transaction History
+        </Button>
       </CardContent>
     </Card>
   );
@@ -101,10 +152,44 @@ export function TokenBalanceDisplay() {
 // Compact version for navigation/header
 export function TokenBalanceCompact() {
   const { balance, isLoading } = useTokenBalance();
+  const { user } = useAuth();
   const navigate = useNavigate();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    checkAdminStatus();
+  }, [user]);
+
+  const checkAdminStatus = async () => {
+    if (!user) return;
+    
+    const { data } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .eq('role', 'admin')
+      .maybeSingle();
+
+    setIsAdmin(!!data);
+  };
 
   if (isLoading) {
     return <Skeleton className="h-8 w-24" />;
+  }
+
+  if (isAdmin) {
+    return (
+      <Button
+        variant="default"
+        size="sm"
+        onClick={() => navigate("/token-history")}
+        className="gap-2 bg-gradient-primary hover:bg-gradient-secondary"
+      >
+        <Shield className="h-4 w-4" />
+        <span className="hidden md:inline">Admin</span>
+        <span className="md:hidden">∞</span>
+      </Button>
+    );
   }
 
   const isLow = balance < 10;

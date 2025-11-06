@@ -51,6 +51,10 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     switch (event.type) {
+      case 'checkout.session.completed':
+        await handleCheckoutCompleted(supabase, event.data.object);
+        break;
+        
       case 'customer.subscription.created':
       case 'customer.subscription.updated':
         await handleSubscriptionUpdate(supabase, event.data.object);
@@ -84,6 +88,43 @@ serve(async (req) => {
     });
   }
 });
+
+async function handleCheckoutCompleted(supabase: any, session: any) {
+  try {
+    console.log('Checkout completed:', session.id);
+    
+    // Get user ID and token amount from metadata
+    const userId = session.client_reference_id || session.metadata?.user_id;
+    const tokens = parseInt(session.metadata?.tokens || '0');
+    
+    if (!userId || !tokens) {
+      console.error('Missing user ID or tokens in checkout session');
+      return;
+    }
+
+    // Credit tokens to user using RPC function
+    const { data, error } = await supabase.rpc('add_tokens', {
+      p_user_id: userId,
+      p_amount: tokens,
+      p_transaction_type: 'purchase',
+      p_metadata: {
+        stripe_session_id: session.id,
+        amount_paid: session.amount_total / 100,
+        currency: session.currency,
+      },
+    });
+
+    if (error) {
+      console.error('Failed to credit tokens:', error);
+      throw error;
+    }
+
+    console.log(`Successfully credited ${tokens} tokens to user ${userId}`);
+  } catch (error) {
+    console.error('Error handling checkout completion:', error);
+    throw error;
+  }
+}
 
 async function handleSubscriptionUpdate(supabase: any, subscription: any) {
   try {
