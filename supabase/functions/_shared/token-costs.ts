@@ -47,8 +47,8 @@ export const TOKEN_COSTS = {
   // Premium Video (High Cost)
   premium_video: {
     'kling-motion': 16,           // $0.16 - avoid loss
-    'heygen-talking-photo': 20,   // $1.93/min - VERY expensive, 20 tokens minimum
-    'default': 20,
+    'heygen-talking-photo': 25,   // $1.93/min - VERY expensive, 25 tokens minimum (30% profit margin)
+    'default': 25,
   },
   
   // Style Transfer

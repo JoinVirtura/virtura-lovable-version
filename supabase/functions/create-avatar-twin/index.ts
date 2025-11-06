@@ -1,5 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { deductTokensAndTrackCost } from '../_shared/token-manager.ts';
+import { calculateTokenCost } from '../_shared/token-costs.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -19,6 +21,29 @@ serve(async (req) => {
   }
 
   try {
+    // Verify authentication first
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Unauthorized' }), 
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Invalid authentication' }), 
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const { sourceImage, promptStyle = "professional portrait", variations = 4 }: CreateAvatarTwinRequest = await req.json();
 
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
@@ -28,6 +53,39 @@ serve(async (req) => {
 
     console.log('Starting avatar twin creation process...');
     console.log('Prompt style:', promptStyle);
+
+    // Calculate total tokens needed (enhanced + variations)
+    const totalGenerations = 1 + variations;
+    const tokensPerImage = calculateTokenCost('openai_image', 'dall-e-3-1024-hd');
+    const tokensNeeded = tokensPerImage * totalGenerations;
+    
+    console.log(`💰 Tokens required: ${tokensNeeded} (${totalGenerations} images × ${tokensPerImage} tokens)`);
+    
+    // Deduct tokens upfront for all generations
+    const tokenResult = await deductTokensAndTrackCost({
+      userId: user.id,
+      resourceType: 'image_generation',
+      apiProvider: 'openai',
+      modelUsed: 'gpt-image-1',
+      tokensToDeduct: tokensNeeded,
+      costUsd: 0.08 * totalGenerations,
+      metadata: { promptStyle, variations, totalGenerations }
+    });
+
+    if (!tokenResult.success) {
+      console.error('❌ Insufficient tokens:', tokenResult.error);
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          error: tokenResult.error || 'Insufficient token balance',
+          required: tokensNeeded,
+          currentBalance: tokenResult.remainingBalance
+        }), 
+        { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log(`✅ Tokens deducted. Remaining balance: ${tokenResult.remainingBalance}`);
 
     // Since we can't process uploaded images directly with the current API setup,
     // we'll create professional avatar variations based on the selected style
@@ -119,35 +177,26 @@ serve(async (req) => {
 
     console.log(`Created ${successfulVariations.length} variations successfully`);
 
-    // Store results in Supabase if user is authenticated
-    const authHeader = req.headers.get('Authorization');
-    if (authHeader) {
-      try {
-        const supabaseClient = createClient(
-          Deno.env.get("SUPABASE_URL") ?? "",
-          Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-          { auth: { persistSession: false } }
-        );
-
-        const token = authHeader.replace("Bearer ", "");
-        const { data: userData } = await supabaseClient.auth.getUser(token);
-        
-        if (userData.user) {
-          // Store the avatar twin creation in the library
-          await supabaseClient.from("avatar_library").insert({
-            user_id: userData.user.id,
-            title: "AI Avatar Twin",
-            prompt: `Avatar twin created with style: ${promptStyle}`,
-            image_url: enhancedUrl,
-            tags: ["avatar-twin", "enhanced", promptStyle]
-          });
-          
-          console.log('Avatar twin saved to user library');
-        }
-      } catch (error) {
-        console.error('Failed to save to library:', error);
-        // Continue without saving to library
-      }
+    // Store results in library
+    try {
+      const serviceClient = createClient(
+        Deno.env.get("SUPABASE_URL") ?? "",
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+        { auth: { persistSession: false } }
+      );
+      
+      await serviceClient.from("avatar_library").insert({
+        user_id: user.id,
+        title: "AI Avatar Twin",
+        prompt: `Avatar twin created with style: ${promptStyle}`,
+        image_url: enhancedUrl,
+        tags: ["avatar-twin", "enhanced", promptStyle]
+      });
+      
+      console.log('Avatar twin saved to user library');
+    } catch (error) {
+      console.error('Failed to save to library:', error);
+      // Continue without saving to library
     }
 
     return new Response(JSON.stringify({
@@ -157,6 +206,8 @@ serve(async (req) => {
         revised_prompt: enhancedImage?.revised_prompt || null
       },
       variations: successfulVariations,
+      tokensCharged: tokensNeeded,
+      remainingBalance: tokenResult.remainingBalance,
       message: `Successfully created enhanced version and ${successfulVariations.length} variations`
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

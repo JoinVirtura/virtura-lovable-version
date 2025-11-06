@@ -2,6 +2,8 @@ import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
 import { HfInference } from 'https://esm.sh/@huggingface/inference@2.3.2';
+import { deductTokensAndTrackCost } from '../_shared/token-manager.ts';
+import { calculateTokenCost } from '../_shared/token-costs.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -37,6 +39,9 @@ serve(async (req) => {
           { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
+      
+      // Store user ID for token deduction later
+      (req as any).userId = user.id;
     }
 
     const { 
@@ -188,6 +193,45 @@ serve(async (req) => {
     console.log('Final enhanced prompt:', finalPrompt);
     console.log('Generation parameters:', { finalSteps, guidanceScale, dimensions });
 
+    // Calculate and deduct tokens before generation
+    const userId = (req as any).userId;
+    if (!userId) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'User ID not found' }), 
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const isHighQuality = quality === '8K' || quality === '4K';
+    const tokensNeeded = calculateTokenCost('avatar_generation', isHighQuality ? 'realistic' : 'basic');
+    
+    console.log(`💰 Tokens required: ${tokensNeeded}`);
+    
+    const tokenResult = await deductTokensAndTrackCost({
+      userId: userId,
+      resourceType: 'avatar_generation',
+      apiProvider: 'huggingface',
+      modelUsed: 'FLUX.1-dev',
+      tokensToDeduct: tokensNeeded,
+      costUsd: isHighQuality ? 0.04 : 0.025,
+      metadata: { quality, resolution: targetResolution }
+    });
+
+    if (!tokenResult.success) {
+      console.error('❌ Insufficient tokens:', tokenResult.error);
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          error: tokenResult.error || 'Insufficient token balance',
+          required: tokensNeeded,
+          currentBalance: tokenResult.remainingBalance
+        }), 
+        { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log(`✅ Tokens deducted. Remaining balance: ${tokenResult.remainingBalance}`);
+    
     // Use the already initialized Hugging Face client
     console.log('Using existing Hugging Face client instance');
     
@@ -260,6 +304,8 @@ serve(async (req) => {
             resolution: `${dimensions.width}x${dimensions.height}`,
             faceAlignment: 98.5,
             consistency: 95,
+            tokensCharged: tokensNeeded,
+            remainingBalance: tokenResult.remainingBalance,
             metadata: {
               style: style || 'hyperrealistic',
               prompt: enhancedPrompt,
@@ -291,6 +337,8 @@ serve(async (req) => {
         resolution: `${dimensions.width}x${dimensions.height}`,
         faceAlignment: 98.5,
         consistency: 95,
+        tokensCharged: tokensNeeded,
+        remainingBalance: tokenResult.remainingBalance,
         metadata: {
           style: style || 'hyperrealistic',
           prompt: enhancedPrompt,

@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
+import { TokenBalanceCompact } from "@/components/TokenBalanceDisplay";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -80,6 +81,7 @@ const Navigation = () => {
 
           {/* Desktop Buttons */}
           <div className="hidden md:flex items-center space-x-4">
+            {user && <TokenBalanceCompact />}
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -158,6 +160,11 @@ const Navigation = () => {
                 </Link>
               ))}
               <div className="border-t border-border/50 pt-3 mt-3 space-y-2">
+                {user && (
+                  <div className="px-3 py-2">
+                    <TokenBalanceCompact />
+                  </div>
+                )}
                 {user ? (
                   <>
                     <Button 

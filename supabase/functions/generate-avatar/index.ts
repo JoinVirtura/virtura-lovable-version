@@ -1,4 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { deductTokensAndTrackCost } from '../_shared/token-manager.ts';
+import { calculateTokenCost } from '../_shared/token-costs.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -34,6 +37,33 @@ serve(async (req) => {
   }
 
   try {
+    // Verify authentication first
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Unauthorized' }), 
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
+    if (!supabaseUrl || !supabaseAnonKey) {
+      throw new Error('Supabase configuration missing');
+    }
+
+    const authClient = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } }
+    });
+
+    const { data: { user }, error: authError } = await authClient.auth.getUser();
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Invalid authentication' }), 
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const env = Deno.env.toObject();
     console.log('All environment variables:', Object.keys(env));
     console.log('Looking for OpenAI key...');
@@ -63,6 +93,38 @@ serve(async (req) => {
     // Map resolution to size - use standard DALL-E sizes
     const imageSize = mapResolutionToSize(body.resolution || 'HD');
     console.log('Using size:', imageSize);
+
+    // Calculate tokens based on size and quality
+    const isHD = body.photoMode || imageSize === '1024x1792';
+    const tokensNeeded = calculateTokenCost('openai_image', isHD ? 'dall-e-3-1024-hd' : 'dall-e-3-1024');
+    
+    console.log(`💰 Tokens required: ${tokensNeeded}`);
+    
+    // Deduct tokens before generation
+    const tokenResult = await deductTokensAndTrackCost({
+      userId: user.id,
+      resourceType: 'image_generation',
+      apiProvider: 'openai',
+      modelUsed: 'gpt-image-1',
+      tokensToDeduct: tokensNeeded,
+      costUsd: isHD ? 0.08 : 0.04,
+      metadata: { resolution: imageSize, photoMode: body.photoMode }
+    });
+
+    if (!tokenResult.success) {
+      console.error('❌ Insufficient tokens:', tokenResult.error);
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          error: tokenResult.error || 'Insufficient token balance',
+          required: tokensNeeded,
+          currentBalance: tokenResult.remainingBalance
+        }), 
+        { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log(`✅ Tokens deducted. Remaining balance: ${tokenResult.remainingBalance}`);
 
     // Helper to call OpenAI Images API
     const callOpenAI = async (payload: any) => {
@@ -146,6 +208,8 @@ serve(async (req) => {
       success: true,
       image,
       prompt: enhancedPrompt,
+      tokensCharged: tokensNeeded,
+      remainingBalance: tokenResult.remainingBalance,
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

@@ -1,5 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
+import { deductTokensAndTrackCost } from '../_shared/token-manager.ts';
+import { calculateTokenCost } from '../_shared/token-costs.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -69,6 +71,41 @@ serve(async (req) => {
       provider 
     });
 
+    // Check if HeyGen will be used and deduct tokens upfront
+    const willUseHeyGen = provider === 'heygen' || (provider === 'auto' && avatarData.heygen_talking_photo_id);
+    
+    if (willUseHeyGen) {
+      const tokensNeeded = calculateTokenCost('premium_video', 'heygen-talking-photo');
+      
+      console.log(`💰 HeyGen video requires ${tokensNeeded} tokens`);
+      
+      const tokenResult = await deductTokensAndTrackCost({
+        userId: user.id,
+        resourceType: 'video_generation',
+        apiProvider: 'heygen',
+        modelUsed: 'talking-photo',
+        tokensToDeduct: tokensNeeded,
+        costUsd: 1.93,
+        metadata: { avatarId, provider: 'heygen' }
+      });
+
+      if (!tokenResult.success) {
+        console.error('❌ Insufficient tokens for HeyGen:', tokenResult.error);
+        return new Response(
+          JSON.stringify({ 
+            success: false,
+            error: tokenResult.error || 'Insufficient token balance for HeyGen video generation',
+            required: tokensNeeded,
+            currentBalance: tokenResult.remainingBalance,
+            suggestion: 'HeyGen video requires 25 tokens. Consider using a different provider or purchase more tokens.'
+          }), 
+          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      console.log(`✅ Tokens deducted for HeyGen. Remaining balance: ${tokenResult.remainingBalance}`);
+    }
+
     let videoResult = null;
     let errors = [];
 
@@ -123,7 +160,8 @@ serve(async (req) => {
         provider: videoResult.provider,
         video_id: videoResult.video_id,
         duration: videoResult.duration,
-        status: 'completed'
+        status: 'completed',
+        tokensCharged: willUseHeyGen ? calculateTokenCost('premium_video', 'heygen-talking-photo') : 0,
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }

@@ -1,6 +1,8 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import Replicate from "https://esm.sh/replicate@0.25.2";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { deductTokensAndTrackCost } from '../_shared/token-manager.ts';
+import { calculateTokenCost } from '../_shared/token-costs.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -160,6 +162,37 @@ serve(async (req) => {
     });
     console.log('🖼️ Source image:', sourceImage.substring(0, 100) + '...');
 
+    // Calculate and check token balance
+    const isAdvanced = quality === '8K' || strength > 0.8;
+    const tokensNeeded = calculateTokenCost('style_transfer', isAdvanced ? 'advanced' : 'basic');
+    
+    console.log(`💰 Tokens required: ${tokensNeeded} (${isAdvanced ? 'advanced' : 'basic'} mode)`);
+    
+    // Deduct tokens before processing
+    const tokenResult = await deductTokensAndTrackCost({
+      userId: user.id,
+      resourceType: 'style_transfer',
+      apiProvider: 'replicate',
+      modelUsed: 'flux-redux-schnell',
+      tokensToDeduct: tokensNeeded,
+      costUsd: isAdvanced ? 0.04 : 0.025,
+      metadata: { stylePreset, quality, strength }
+    });
+
+    if (!tokenResult.success) {
+      console.error('❌ Insufficient tokens:', tokenResult.error);
+      return new Response(
+        JSON.stringify({ 
+          error: tokenResult.error || 'Insufficient token balance',
+          required: tokensNeeded,
+          currentBalance: tokenResult.remainingBalance
+        }), 
+        { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log(`✅ Tokens deducted. Remaining balance: ${tokenResult.remainingBalance}`);
+
     const replicate = new Replicate({ auth: REPLICATE_API_KEY });
 
     // Get style prompt enhancement
@@ -207,6 +240,8 @@ serve(async (req) => {
       JSON.stringify({
         success: true,
         imageUrl,
+        tokensCharged: tokensNeeded,
+        remainingBalance: tokenResult.remainingBalance,
         metadata: {
           processingTime: `${processingTime}s`,
           style: stylePreset,

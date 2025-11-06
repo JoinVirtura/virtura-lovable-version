@@ -1,5 +1,7 @@
-import { Heart, Search, MessageCircle, Image, User, Zap, Upload, Download, Video } from "lucide-react"
-import { NavLink, useLocation } from "react-router-dom"
+import { Heart, Search, MessageCircle, Image, User, Zap, Upload, Download, Video, Coins } from "lucide-react"
+import { NavLink, useLocation, useNavigate } from "react-router-dom"
+import { useTokenBalance } from "@/hooks/useTokenBalance"
+import { Button } from "@/components/ui/button"
 
 import {
   Sidebar,
@@ -25,8 +27,10 @@ const items = [
 export function AppSidebar() {
   const { state } = useSidebar()
   const location = useLocation()
+  const navigate = useNavigate()
   const currentPath = location.pathname
   const collapsed = state === "collapsed"
+  const { balance } = useTokenBalance()
 
   const isActive = (path: string) => {
     if (path === "/" && currentPath === "/") return true
@@ -48,6 +52,21 @@ export function AppSidebar() {
         <div className="flex flex-col items-center pt-6 pb-4">
           <div className="w-8 h-8 bg-gradient-to-r from-primary to-primary/80 rounded-lg flex items-center justify-center mb-6">
             <Zap className="w-5 h-5 text-primary-foreground" />
+          </div>
+          
+          {/* Token Balance Display */}
+          <div className="w-full px-2 mb-4">
+            <Button
+              variant={balance < 10 ? "destructive" : "outline"}
+              size="sm"
+              className={`w-full justify-center gap-2 ${collapsed ? 'px-2' : ''}`}
+              onClick={() => navigate('/upgrade')}
+            >
+              <Coins className="h-4 w-4" />
+              {!collapsed && (
+                <span className="text-xs font-semibold">{balance}</span>
+              )}
+            </Button>
           </div>
         </div>
         

@@ -1,5 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
+import { deductTokensAndTrackCost } from '../_shared/token-manager.ts';
+import { calculateTokenCost } from '../_shared/token-costs.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -35,6 +37,9 @@ serve(async (req) => {
           { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
+      
+      // Store user for token deduction
+      (req as any).userId = user.id;
     }
 
     const { avatarImageUrl, prompt, audioUrl, provider = 'heygen' } = await req.json();
@@ -86,11 +91,50 @@ serve(async (req) => {
       provider 
     });
 
+    const userId = (req as any).userId;
+    if (!userId) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'User ID not found' }), 
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     let videoResult = null;
     const errors: string[] = [];
+    let tokensCharged = 0;
 
-    // Try HeyGen first if requested
+    // Try HeyGen first if requested - deduct tokens upfront
     if (provider === 'heygen' || provider === 'auto') {
+      const tokensNeeded = calculateTokenCost('premium_video', 'heygen-talking-photo');
+      
+      console.log(`💰 HeyGen direct video requires ${tokensNeeded} tokens`);
+      
+      const tokenResult = await deductTokensAndTrackCost({
+        userId: userId,
+        resourceType: 'video_generation',
+        apiProvider: 'heygen',
+        modelUsed: 'talking-photo',
+        tokensToDeduct: tokensNeeded,
+        costUsd: 1.93,
+        metadata: { avatarImageUrl, provider: 'heygen-direct' }
+      });
+
+      if (!tokenResult.success) {
+        console.error('❌ Insufficient tokens for HeyGen:', tokenResult.error);
+        return new Response(
+          JSON.stringify({ 
+            success: false,
+            error: tokenResult.error || 'Insufficient token balance for HeyGen video generation',
+            required: tokensNeeded,
+            currentBalance: tokenResult.remainingBalance,
+            suggestion: 'HeyGen video requires 25 tokens. Purchase more tokens to continue.'
+          }), 
+          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      console.log(`✅ Tokens deducted for HeyGen. Remaining balance: ${tokenResult.remainingBalance}`);
+      tokensCharged = tokensNeeded;
       try {
         console.log('Attempting HeyGen direct generation...');
         videoResult = await generateWithHeyGenDirect(avatarImageUrl, prompt, audioUrl);
@@ -134,6 +178,7 @@ serve(async (req) => {
         video_id: videoResult.video_id,
         duration: videoResult.duration,
         status: 'completed',
+        tokensCharged: tokensCharged,
         note: videoResult.note
       }),
       { 
