@@ -9,6 +9,23 @@ interface Notification {
   message: string;
   read: boolean;
   created_at: string;
+  category?: string;
+  priority?: string;
+}
+
+interface NotificationPreferences {
+  sound_enabled: boolean;
+  sound_file: string;
+  desktop_notifications: boolean;
+  quiet_hours_enabled: boolean;
+  quiet_hours_start: number;
+  quiet_hours_end: number;
+  system_enabled: boolean;
+  account_enabled: boolean;
+  billing_enabled: boolean;
+  marketing_enabled: boolean;
+  product_enabled: boolean;
+  security_enabled: boolean;
 }
 
 export function useNotifications() {
@@ -16,11 +33,13 @@ export function useNotifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [preferences, setPreferences] = useState<NotificationPreferences | null>(null);
 
   useEffect(() => {
     if (!user) return;
 
     fetchNotifications();
+    fetchPreferences();
 
     // Subscribe to realtime updates
     const channel = supabase
@@ -36,11 +55,18 @@ export function useNotifications() {
         (payload) => {
           if (payload.eventType === 'INSERT') {
             const newNotification = payload.new as Notification;
-            setNotifications((prev) => [newNotification, ...prev]);
-            setUnreadCount((prev) => prev + 1);
-            toast.info(newNotification.title, {
-              description: newNotification.message,
-            });
+            
+            if (shouldShowNotification(newNotification)) {
+              setNotifications((prev) => [newNotification, ...prev]);
+              setUnreadCount((prev) => prev + 1);
+              
+              playNotificationSound();
+              showDesktopNotification(newNotification);
+              
+              toast.info(newNotification.title, {
+                description: newNotification.message,
+              });
+            }
           } else if (payload.eventType === 'UPDATE') {
             const updatedNotification = payload.new as Notification;
             setNotifications((prev) =>
@@ -126,6 +152,78 @@ export function useNotifications() {
     } catch (error) {
       console.error('Error marking all as read:', error);
       toast.error('Failed to update notifications');
+    }
+  };
+
+  const fetchPreferences = async () => {
+    if (!user) return;
+    
+    try {
+      const { data } = await supabase
+        .from('notification_preferences')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      
+      if (data) {
+        setPreferences(data as any);
+      }
+    } catch (error) {
+      console.error('Error fetching preferences:', error);
+    }
+  };
+
+  const shouldShowNotification = (notification: Notification): boolean => {
+    if (!preferences) return true;
+    
+    // Check if category is enabled
+    const category = notification.category || 'system';
+    const categoryKey = `${category}_enabled` as keyof NotificationPreferences;
+    if (preferences[categoryKey] === false) return false;
+    
+    // Check quiet hours
+    if (preferences.quiet_hours_enabled) {
+      const now = new Date();
+      const currentMinutes = now.getHours() * 60 + now.getMinutes();
+      const { quiet_hours_start, quiet_hours_end } = preferences;
+      
+      if (quiet_hours_start > quiet_hours_end) {
+        // Wraps midnight (e.g., 10 PM to 8 AM)
+        if (currentMinutes >= quiet_hours_start || currentMinutes < quiet_hours_end) {
+          return false;
+        }
+      } else {
+        // Normal range
+        if (currentMinutes >= quiet_hours_start && currentMinutes < quiet_hours_end) {
+          return false;
+        }
+      }
+    }
+    
+    return true;
+  };
+
+  const playNotificationSound = () => {
+    if (preferences?.sound_enabled && preferences.sound_file !== 'silent') {
+      try {
+        const audio = new Audio(`/sounds/${preferences.sound_file}.mp3`);
+        audio.volume = 0.3;
+        audio.play().catch(() => {});
+      } catch (error) {
+        console.error('Error playing sound:', error);
+      }
+    }
+  };
+
+  const showDesktopNotification = (notification: Notification) => {
+    if (preferences?.desktop_notifications && 'Notification' in window) {
+      if (Notification.permission === 'granted') {
+        new Notification(notification.title, {
+          body: notification.message,
+          icon: '/favicon.ico',
+          badge: '/favicon.ico',
+        });
+      }
     }
   };
 

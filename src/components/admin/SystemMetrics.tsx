@@ -23,6 +23,7 @@ import {
   TrendingUp,
   Users,
 } from "lucide-react";
+import { MetricsExport } from "./MetricsExport";
 import { supabase } from "@/integrations/supabase/client";
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { toast } from "sonner";
@@ -199,7 +200,7 @@ export function SystemMetrics() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" id="metrics-dashboard">
       {/* Controls */}
       <Card>
         <CardHeader>
@@ -239,6 +240,19 @@ export function SystemMetrics() {
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Refresh
               </Button>
+              {metrics && (
+                <MetricsExport
+                  metrics={{
+                    activeUsers: metrics.activeUsers,
+                    avgResponseTime: metrics.avgResponseTime,
+                    tokensLastHour: metrics.tokensLastHour,
+                    revenueToday: metrics.revenueToday,
+                    systemHealth: metrics.systemHealth.toString(),
+                    failedJobs: metrics.failedJobs,
+                    lowBalanceUsers: 0,
+                  }}
+                />
+              )}
             </div>
           </div>
           <p className="text-xs text-muted-foreground mt-2">

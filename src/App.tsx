@@ -88,6 +88,7 @@ const AppRoutes = () => {
       <Route path="/payment-canceled" element={<ProtectedRoute><PaymentCanceled /></ProtectedRoute>} />
       <Route path="/token-history" element={<ProtectedRoute><TokenHistoryPage /></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
+      <Route path="/settings/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
       
       {/* Admin Routes */}
       <Route path="/admin/costs" element={<ProtectedRoute><AdminCostDashboardPage /></ProtectedRoute>} />

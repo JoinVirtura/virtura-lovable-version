@@ -13,6 +13,7 @@ import { UserManagementTools } from "@/components/admin/UserManagementTools";
 import { FinancialReporting } from "@/components/admin/FinancialReporting";
 import { AuditLogViewer } from "@/components/admin/AuditLogViewer";
 import { SystemMetrics } from "@/components/admin/SystemMetrics";
+import { ScheduledNotificationsDialog } from "@/components/admin/ScheduledNotificationsDialog";
 
 export default function UnifiedAdminDashboard() {
   const { user } = useAuth();
@@ -119,7 +120,10 @@ export default function UnifiedAdminDashboard() {
       </div>
 
       {/* Quick Admin Actions */}
-      <QuickAdminActions onActionComplete={fetchOverviewStats} />
+      <div className="flex items-center gap-4">
+        <QuickAdminActions onActionComplete={fetchOverviewStats} />
+        <ScheduledNotificationsDialog />
+      </div>
 
       {/* Overview Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -202,7 +206,7 @@ export default function UnifiedAdminDashboard() {
           <TabsTrigger value="tokens">Token Txns</TabsTrigger>
           <TabsTrigger value="jobs">Jobs & Activity</TabsTrigger>
           <TabsTrigger value="audit">Audit Log</TabsTrigger>
-          <TabsTrigger value="recovery">Video Recovery</TabsTrigger>
+          <TabsTrigger value="recovery">Recovery</TabsTrigger>
         </TabsList>
 
         <TabsContent value="metrics" className="space-y-4">

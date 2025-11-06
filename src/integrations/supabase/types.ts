@@ -53,6 +53,57 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_digest_preferences: {
+        Row: {
+          admin_email: string
+          admin_id: string
+          created_at: string | null
+          daily_enabled: boolean | null
+          id: string
+          include_charts: boolean | null
+          include_failed_jobs: boolean | null
+          include_metrics: boolean | null
+          include_top_users: boolean | null
+          monthly_enabled: boolean | null
+          send_time: number | null
+          timezone: string | null
+          updated_at: string | null
+          weekly_enabled: boolean | null
+        }
+        Insert: {
+          admin_email: string
+          admin_id: string
+          created_at?: string | null
+          daily_enabled?: boolean | null
+          id?: string
+          include_charts?: boolean | null
+          include_failed_jobs?: boolean | null
+          include_metrics?: boolean | null
+          include_top_users?: boolean | null
+          monthly_enabled?: boolean | null
+          send_time?: number | null
+          timezone?: string | null
+          updated_at?: string | null
+          weekly_enabled?: boolean | null
+        }
+        Update: {
+          admin_email?: string
+          admin_id?: string
+          created_at?: string | null
+          daily_enabled?: boolean | null
+          id?: string
+          include_charts?: boolean | null
+          include_failed_jobs?: boolean | null
+          include_metrics?: boolean | null
+          include_top_users?: boolean | null
+          monthly_enabled?: boolean | null
+          send_time?: number | null
+          timezone?: string | null
+          updated_at?: string | null
+          weekly_enabled?: boolean | null
+        }
+        Relationships: []
+      }
       admin_notifications: {
         Row: {
           admin_email: string
@@ -1386,6 +1437,78 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      scheduled_notifications: {
+        Row: {
+          admin_email: string
+          admin_id: string
+          category: Database["public"]["Enums"]["notification_category"] | null
+          created_at: string | null
+          error_message: string | null
+          id: string
+          message: string
+          metadata: Json | null
+          priority: string | null
+          recipient_count: number | null
+          recurrence_end_date: string | null
+          recurrence_pattern: string | null
+          recurring: boolean | null
+          scheduled_for: string
+          sent_at: string | null
+          status: string | null
+          subject: string
+          target_audience: string
+          target_user_ids: Json | null
+          timezone: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          admin_email: string
+          admin_id: string
+          category?: Database["public"]["Enums"]["notification_category"] | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          message: string
+          metadata?: Json | null
+          priority?: string | null
+          recipient_count?: number | null
+          recurrence_end_date?: string | null
+          recurrence_pattern?: string | null
+          recurring?: boolean | null
+          scheduled_for: string
+          sent_at?: string | null
+          status?: string | null
+          subject: string
+          target_audience: string
+          target_user_ids?: Json | null
+          timezone?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          admin_email?: string
+          admin_id?: string
+          category?: Database["public"]["Enums"]["notification_category"] | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          message?: string
+          metadata?: Json | null
+          priority?: string | null
+          recipient_count?: number | null
+          recurrence_end_date?: string | null
+          recurrence_pattern?: string | null
+          recurring?: boolean | null
+          scheduled_for?: string
+          sent_at?: string | null
+          status?: string | null
+          subject?: string
+          target_audience?: string
+          target_user_ids?: Json | null
+          timezone?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       style_templates: {
         Row: {

@@ -91,7 +91,7 @@ export function NotificationBell() {
         {notifications.length > 0 && (
           <>
             <Separator />
-            <div className="p-2">
+            <div className="p-2 space-y-1">
               <Button
                 variant="ghost"
                 size="sm"
@@ -99,6 +99,14 @@ export function NotificationBell() {
                 onClick={() => navigate("/notifications")}
               >
                 View All Notifications
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full"
+                onClick={() => navigate("/settings/notifications")}
+              >
+                Notification Settings
               </Button>
             </div>
           </>
