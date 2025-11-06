@@ -16,6 +16,7 @@ import AIImageStudioPage from "./pages/AIImageStudioPage";
 import IndividualsPage from "./pages/IndividualsPage";
 import BrandsPage from "./pages/BrandsPage";
 import CampaignPage from "./pages/CampaignPage";
+import NotificationsPage from "./pages/NotificationsPage";
 import LibraryPage from "./pages/LibraryPage";
 import GuidePage from "./pages/GuidePage";
 import SettingsPage from "./pages/SettingsPage";
@@ -86,6 +87,7 @@ const AppRoutes = () => {
       <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
       <Route path="/payment-canceled" element={<ProtectedRoute><PaymentCanceled /></ProtectedRoute>} />
       <Route path="/token-history" element={<ProtectedRoute><TokenHistoryPage /></ProtectedRoute>} />
+      <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
       
       {/* Admin Routes */}
       <Route path="/admin/costs" element={<ProtectedRoute><AdminCostDashboardPage /></ProtectedRoute>} />

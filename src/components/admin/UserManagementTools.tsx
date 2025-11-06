@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
+import { UserSearchAutocomplete } from "./UserSearchAutocomplete";
 import { UserDetailsModal } from "./UserDetailsModal";
 import { CreditTokensDialog } from "./CreditTokensDialog";
 import { Users, TrendingUp, UserPlus, Award, Activity, DollarSign, Search, Download } from "lucide-react";
@@ -50,6 +51,7 @@ export function UserManagementTools() {
   const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">("all");
   const [sortBy, setSortBy] = useState<"created_at" | "balance" | "usage">("created_at");
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
+  const [selectedFromSearch, setSelectedFromSearch] = useState<any>(null);
   const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
   const [showUserDetails, setShowUserDetails] = useState(false);
   const [showCreditDialog, setShowCreditDialog] = useState(false);
@@ -330,15 +332,17 @@ export function UserManagementTools() {
       <Card className="p-4">
         <div className="flex flex-wrap gap-3">
           <div className="flex-1 min-w-[200px]">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search by name or ID..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9"
-              />
-            </div>
+            <UserSearchAutocomplete
+              onUserSelect={(user) => {
+                setSelectedFromSearch(user);
+                setSearchTerm(user.display_name || user.email || user.id);
+              }}
+              selectedUser={selectedFromSearch}
+              onClear={() => {
+                setSelectedFromSearch(null);
+                setSearchTerm("");
+              }}
+            />
           </div>
 
           <Select value={statusFilter} onValueChange={(value: any) => setStatusFilter(value)}>

@@ -14,6 +14,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
 import { TokenBalanceCompact } from "@/components/TokenBalanceDisplay";
+import { NotificationBell } from "./NotificationBell";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -81,7 +82,12 @@ const Navigation = () => {
 
           {/* Desktop Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            {user && <TokenBalanceCompact />}
+            {user && (
+              <>
+                <TokenBalanceCompact />
+                <NotificationBell />
+              </>
+            )}
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

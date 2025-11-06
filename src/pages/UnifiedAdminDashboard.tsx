@@ -12,6 +12,7 @@ import { QuickAdminActions } from "@/components/admin/QuickAdminActions";
 import { UserManagementTools } from "@/components/admin/UserManagementTools";
 import { FinancialReporting } from "@/components/admin/FinancialReporting";
 import { AuditLogViewer } from "@/components/admin/AuditLogViewer";
+import { SystemMetrics } from "@/components/admin/SystemMetrics";
 
 export default function UnifiedAdminDashboard() {
   const { user } = useAuth();
@@ -192,8 +193,9 @@ export default function UnifiedAdminDashboard() {
 
       {/* Tabbed Content */}
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-8">
+        <TabsList className="grid w-full grid-cols-9">
           <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="metrics">Metrics</TabsTrigger>
           <TabsTrigger value="users">Users</TabsTrigger>
           <TabsTrigger value="financial">Financial</TabsTrigger>
           <TabsTrigger value="costs">API Costs</TabsTrigger>
@@ -202,6 +204,10 @@ export default function UnifiedAdminDashboard() {
           <TabsTrigger value="audit">Audit Log</TabsTrigger>
           <TabsTrigger value="recovery">Video Recovery</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="metrics" className="space-y-4">
+          <SystemMetrics />
+        </TabsContent>
 
         <TabsContent value="users" className="space-y-4">
           <UserManagementTools />
