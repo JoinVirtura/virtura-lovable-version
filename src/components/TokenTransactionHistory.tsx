@@ -20,7 +20,11 @@ interface Transaction {
   created_at: string;
 }
 
-export function TokenTransactionHistory() {
+interface TokenTransactionHistoryProps {
+  isDialog?: boolean;
+}
+
+export function TokenTransactionHistory({ isDialog = false }: TokenTransactionHistoryProps) {
   const { user } = useAuth();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
@@ -151,7 +155,7 @@ export function TokenTransactionHistory() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className={isDialog ? "space-y-4" : "space-y-6"}>
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>

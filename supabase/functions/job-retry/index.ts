@@ -12,7 +12,27 @@ serve(async (req) => {
   }
 
   try {
-    const { jobId, maxRetries = 3 } = await req.json();
+    const { jobId, jobIds, maxRetries = 3 } = await req.json();
+    
+    // Support batch retry
+    if (jobIds && Array.isArray(jobIds)) {
+      const results = await Promise.allSettled(
+        jobIds.map(id => retryJob(id, maxRetries))
+      );
+      
+      const successful = results.filter(r => r.status === 'fulfilled').length;
+      const failed = results.filter(r => r.status === 'rejected').length;
+      
+      return new Response(JSON.stringify({ 
+        success: true,
+        total: jobIds.length,
+        successful,
+        failed,
+        message: `${successful} jobs queued for retry`
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
     
     if (!jobId) {
       return new Response(JSON.stringify({ error: 'Job ID is required' }), {
@@ -98,6 +118,38 @@ serve(async (req) => {
     });
   }
 });
+
+async function retryJob(jobId: string, maxRetries: number) {
+  const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+  const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+  const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+  const { data: job } = await supabase
+    .from('jobs')
+    .select('*')
+    .eq('id', jobId)
+    .single();
+
+  if (!job || job.retry_count >= maxRetries) {
+    throw new Error(`Cannot retry job ${jobId}`);
+  }
+
+  await supabase
+    .from('jobs')
+    .update({
+      status: 'queued',
+      progress: 0,
+      retry_count: job.retry_count + 1,
+      error_message: null,
+      started_at: null,
+      completed_at: null,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', jobId);
+
+  await triggerJobProcessing(supabase, job);
+  return true;
+}
 
 async function triggerJobProcessing(supabase: any, job: any) {
   try {

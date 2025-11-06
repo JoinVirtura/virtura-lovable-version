@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
 import {
   Select,
   SelectContent,
@@ -20,7 +21,11 @@ import {
   Mic,
   Video,
   Sparkles,
+  Coins,
+  Receipt,
 } from "lucide-react";
+import { useTokenBalance } from "@/hooks/useTokenBalance";
+import { TokenHistoryDialog } from "@/components/TokenHistoryDialog";
 import { useBillingData } from "@/hooks/useBillingData";
 import { format, subDays, startOfMonth, endOfMonth, subMonths } from "date-fns";
 import {
@@ -62,6 +67,8 @@ export function BillingDashboard() {
   } = useBillingData();
 
   const [dateRange, setDateRange] = useState<'7d' | '30d' | 'month' | 'last-month'>('30d');
+  const [showTokenHistory, setShowTokenHistory] = useState(false);
+  const { balance, lifetimePurchased, lifetimeUsed } = useTokenBalance();
 
   useEffect(() => {
     loadInvoices();
@@ -130,6 +137,57 @@ export function BillingDashboard() {
           Manage Subscription
         </Button>
       </div>
+
+      {/* Token Balance Section */}
+      <Card className="p-6 bg-gradient-to-br from-violet-500/10 to-purple-500/10 border-violet-500/30">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-violet-500/20 rounded-lg">
+              <Coins className="w-6 h-6 text-violet-400" />
+            </div>
+            <div>
+              <h3 className="text-lg font-display font-bold mb-1">Token Balance</h3>
+              <p className="text-sm text-muted-foreground">
+                Track your token purchases and usage
+              </p>
+            </div>
+          </div>
+          <Button 
+            onClick={() => setShowTokenHistory(true)} 
+            variant="outline"
+            className="border-violet-500/50 hover:bg-violet-500/10"
+          >
+            <Receipt className="w-4 h-4 mr-2" />
+            View History
+          </Button>
+        </div>
+        
+        <Separator className="my-4" />
+        
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="text-center p-4 bg-black/20 rounded-lg border border-violet-500/20">
+            <p className="text-xs text-muted-foreground mb-1">Current Balance</p>
+            <p className="text-2xl font-bold text-violet-400">{balance || 0}</p>
+            <p className="text-xs text-muted-foreground mt-1">tokens</p>
+          </div>
+          <div className="text-center p-4 bg-black/20 rounded-lg border border-violet-500/20">
+            <p className="text-xs text-muted-foreground mb-1">Lifetime Purchased</p>
+            <p className="text-2xl font-bold text-green-400">{lifetimePurchased || 0}</p>
+            <p className="text-xs text-muted-foreground mt-1">tokens</p>
+          </div>
+          <div className="text-center p-4 bg-black/20 rounded-lg border border-violet-500/20">
+            <p className="text-xs text-muted-foreground mb-1">Lifetime Used</p>
+            <p className="text-2xl font-bold text-orange-400">{lifetimeUsed || 0}</p>
+            <p className="text-xs text-muted-foreground mt-1">tokens</p>
+          </div>
+        </div>
+      </Card>
+
+      {/* Token History Dialog */}
+      <TokenHistoryDialog 
+        open={showTokenHistory} 
+        onOpenChange={setShowTokenHistory} 
+      />
 
       {/* Date Range Selector */}
       <Card className="p-4">
