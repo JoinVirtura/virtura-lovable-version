@@ -28,20 +28,23 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
 
   const fetchQuickStats = async () => {
     try {
-      const { data: failedJobs } = await supabase
+      const { count: failedJobsCount } = await supabase
         .from('jobs')
-        .select('id', { count: 'exact', head: true })
+        .select('*', { count: 'exact', head: true })
         .eq('status', 'failed');
 
-      const { data: lowBalance } = await supabase
+      const { count: lowBalanceCount } = await supabase
         .from('user_tokens')
-        .select('id', { count: 'exact', head: true })
+        .select('*', { count: 'exact', head: true })
         .lt('balance', 10);
 
+      const failedJobs = failedJobsCount || 0;
+      const lowBalance = lowBalanceCount || 0;
+
       setStats({
-        failedJobs: failedJobs || 0,
-        lowBalanceUsers: lowBalance || 0,
-        systemHealth: (failedJobs || 0) > 20 ? 'critical' : (failedJobs || 0) > 5 ? 'warning' : 'good',
+        failedJobs,
+        lowBalanceUsers: lowBalance,
+        systemHealth: failedJobs > 20 ? 'critical' : failedJobs > 5 ? 'warning' : 'good',
       });
     } catch (error) {
       console.error('Fetch quick stats error:', error);

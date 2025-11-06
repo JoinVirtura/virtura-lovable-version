@@ -8,6 +8,9 @@ import { Shield, DollarSign, Coins, Users, Activity } from "lucide-react";
 import { AdminCostDashboard } from "@/components/AdminCostDashboard";
 import { AdminDashboard } from "@/components/AdminDashboard";
 import { AdminTokenTransactionHistory } from "@/components/AdminTokenTransactionHistory";
+import { QuickAdminActions } from "@/components/admin/QuickAdminActions";
+import { UserManagementTools } from "@/components/admin/UserManagementTools";
+import { FinancialReporting } from "@/components/admin/FinancialReporting";
 
 export default function UnifiedAdminDashboard() {
   const { user } = useAuth();
@@ -113,6 +116,9 @@ export default function UnifiedAdminDashboard() {
         </div>
       </div>
 
+      {/* Quick Admin Actions */}
+      <QuickAdminActions onActionComplete={fetchOverviewStats} />
+
       {/* Overview Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <Card>
@@ -185,13 +191,23 @@ export default function UnifiedAdminDashboard() {
 
       {/* Tabbed Content */}
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="users">Users</TabsTrigger>
+          <TabsTrigger value="financial">Financial</TabsTrigger>
           <TabsTrigger value="costs">API Costs</TabsTrigger>
-          <TabsTrigger value="tokens">Token Economy</TabsTrigger>
-          <TabsTrigger value="jobs">Jobs & Users</TabsTrigger>
+          <TabsTrigger value="tokens">Token Txns</TabsTrigger>
+          <TabsTrigger value="jobs">Jobs & Activity</TabsTrigger>
           <TabsTrigger value="recovery">Video Recovery</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="users" className="space-y-4">
+          <UserManagementTools />
+        </TabsContent>
+
+        <TabsContent value="financial" className="space-y-4">
+          <FinancialReporting />
+        </TabsContent>
 
         <TabsContent value="overview" className="space-y-4">
           <Card>
