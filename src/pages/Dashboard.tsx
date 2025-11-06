@@ -40,9 +40,11 @@ import { ProjectTimeline } from "@/components/studio/ProjectTimeline";
 import { useStudioProject } from "@/hooks/useStudioProject";
 import { SettingsContent } from "@/components/SettingsContent";
 import { StudioBackground } from "@/components/StudioBackground";
+import { WelcomeModal } from "@/components/WelcomeModal";
+import { useOnboarding } from "@/hooks/useOnboarding";
 import { 
   Play,
-  Sparkles, 
+  Sparkles,
   Edit, 
   Share2,
   Search, 
@@ -125,6 +127,8 @@ export default function Dashboard() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [activeView, setActiveView] = useState("overview");
+  const { isOnboardingComplete, loading: onboardingLoading } = useOnboarding();
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   
   // Brand Manager state
   const [currentFolder, setCurrentFolder] = useState<string>('all');
@@ -208,6 +212,13 @@ export default function Dashboard() {
       supabase.removeChannel(channel);
     };
   }, []);
+
+  // Check if user needs to see onboarding
+  useEffect(() => {
+    if (!onboardingLoading && !isOnboardingComplete) {
+      setShowWelcomeModal(true);
+    }
+  }, [isOnboardingComplete, onboardingLoading]);
   
   // Copilot Flow state
   const [currentPrompt, setCurrentPrompt] = useState("");
@@ -972,7 +983,7 @@ export default function Dashboard() {
       case "overview":
         return <OverviewPage onViewChange={setActiveView} />;
       case "settings":
-        return <SettingsContent />;
+        return <SettingsContent onRewatchTutorial={() => setShowWelcomeModal(true)} />;
       case "talking-avatar":
         return (
           <div className="h-screen overflow-y-auto">
@@ -1909,14 +1920,20 @@ export default function Dashboard() {
   };
 
   return (
-    <SidebarProvider defaultOpen={true}>
-      <div className="min-h-screen flex w-full bg-background relative overflow-hidden">
-        <MotionBackground />
-          <VirturaSidebar 
-            activeView={activeView} 
-            onViewChange={setActiveView}
-            onClearEditState={() => setSelectedEditImage(null)}
-          />
+    <>
+      <WelcomeModal 
+        open={showWelcomeModal} 
+        onOpenChange={setShowWelcomeModal}
+      />
+      
+      <SidebarProvider defaultOpen={true}>
+        <div className="min-h-screen flex w-full bg-background relative overflow-hidden">
+          <MotionBackground />
+            <VirturaSidebar 
+              activeView={activeView} 
+              onViewChange={setActiveView}
+              onClearEditState={() => setSelectedEditImage(null)}
+            />
         
         <div className="flex-1 flex flex-col relative z-10">
           {/* Main Content */}
@@ -2226,5 +2243,6 @@ export default function Dashboard() {
         />
       )}
     </SidebarProvider>
+    </>
   );
 }

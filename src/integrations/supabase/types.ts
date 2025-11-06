@@ -934,7 +934,10 @@ export type Database = {
           download_protection: boolean | null
           id: string
           library_public: boolean | null
+          onboarding_completed: boolean | null
+          onboarding_step: number | null
           save_voice_clones: boolean | null
+          signup_bonus_claimed: boolean | null
           updated_at: string
         }
         Insert: {
@@ -947,7 +950,10 @@ export type Database = {
           download_protection?: boolean | null
           id: string
           library_public?: boolean | null
+          onboarding_completed?: boolean | null
+          onboarding_step?: number | null
           save_voice_clones?: boolean | null
+          signup_bonus_claimed?: boolean | null
           updated_at?: string
         }
         Update: {
@@ -960,7 +966,10 @@ export type Database = {
           download_protection?: boolean | null
           id?: string
           library_public?: boolean | null
+          onboarding_completed?: boolean | null
+          onboarding_step?: number | null
           save_voice_clones?: boolean | null
+          signup_bonus_claimed?: boolean | null
           updated_at?: string
         }
         Relationships: []

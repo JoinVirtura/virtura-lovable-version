@@ -10,6 +10,8 @@ import { toast } from "sonner";
 import { Loader2, Eye, EyeOff, AlertCircle, CheckCircle, Shield } from "lucide-react";
 import { useRateLimiting } from "@/hooks/useRateLimiting";
 import { useSecurityHeaders } from "@/hooks/useSecurityHeaders";
+import { WelcomeModal } from "@/components/WelcomeModal";
+import { useOnboarding } from "@/hooks/useOnboarding";
 
 export default function AuthPage() {
   const [email, setEmail] = useState("");
@@ -17,6 +19,7 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState({
     hasMinLength: false,
     hasNumber: false,
@@ -24,6 +27,7 @@ export default function AuthPage() {
     isValid: false
   });
   const navigate = useNavigate();
+  const { isOnboardingComplete, loading: onboardingLoading } = useOnboarding();
 
   // Security enhancements
   useSecurityHeaders();
@@ -69,11 +73,16 @@ export default function AuthPage() {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate("/dashboard");
+        // Check if onboarding is complete
+        if (!onboardingLoading && !isOnboardingComplete) {
+          setShowWelcomeModal(true);
+        } else {
+          navigate("/dashboard");
+        }
       }
     };
     checkUser();
-  }, [navigate]);
+  }, [navigate, isOnboardingComplete, onboardingLoading]);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,7 +106,7 @@ export default function AuthPage() {
     try {
       const redirectUrl = `${window.location.origin}/dashboard`;
       
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -117,7 +126,14 @@ export default function AuthPage() {
         throw error;
       }
       
-      toast.success("Check your email for the confirmation link!");
+      // If signup successful and user is created, show success with signup bonus info
+      if (data.user) {
+        toast.success("Welcome! Check your email for the confirmation link. You've received 50 free tokens! 🎉", {
+          duration: 5000,
+        });
+      } else {
+        toast.success("Check your email for the confirmation link!");
+      }
       
       // Reset rate limiting on successful signup
       signUpRateLimit.reset();
@@ -215,8 +231,17 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
-      <Card className="w-full max-w-md">
+    <>
+      <WelcomeModal 
+        open={showWelcomeModal} 
+        onOpenChange={(open) => {
+          setShowWelcomeModal(open);
+          if (!open) navigate("/dashboard");
+        }} 
+      />
+      
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
+        <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex items-center justify-center gap-2 mb-2">
             <Shield className="h-6 w-6 text-primary" />
@@ -433,5 +458,6 @@ export default function AuthPage() {
         </CardContent>
       </Card>
     </div>
+    </>
   );
 }

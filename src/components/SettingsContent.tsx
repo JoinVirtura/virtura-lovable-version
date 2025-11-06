@@ -42,7 +42,11 @@ import { useAuth } from "@/hooks/useAuth";
 import { useUsageTracking } from "@/hooks/useUsageTracking";
 import { useState, useEffect, useRef } from "react";
 
-export function SettingsContent() {
+interface SettingsContentProps {
+  onRewatchTutorial?: () => void;
+}
+
+export function SettingsContent({ onRewatchTutorial }: SettingsContentProps = {}) {
   const { toast } = useToast();
   const { user } = useAuth();
   const { profile, loading: profileLoading, uploadAvatar, updateProfile, uploading } = useProfile();
