@@ -14,6 +14,87 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_logs: {
+        Row: {
+          action_type: string
+          admin_email: string
+          admin_id: string
+          created_at: string | null
+          details: Json | null
+          id: string
+          ip_address: string | null
+          target_id: string | null
+          target_type: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          action_type: string
+          admin_email: string
+          admin_id: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          ip_address?: string | null
+          target_id?: string | null
+          target_type?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          action_type?: string
+          admin_email?: string
+          admin_id?: string
+          created_at?: string | null
+          details?: Json | null
+          id?: string
+          ip_address?: string | null
+          target_id?: string | null
+          target_type?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      admin_notifications: {
+        Row: {
+          admin_email: string
+          admin_id: string
+          created_at: string | null
+          id: string
+          message: string
+          notification_type: string
+          recipient_count: number
+          scheduled_for: string | null
+          sent_at: string | null
+          subject: string
+          target_audience: string
+        }
+        Insert: {
+          admin_email: string
+          admin_id: string
+          created_at?: string | null
+          id?: string
+          message: string
+          notification_type: string
+          recipient_count: number
+          scheduled_for?: string | null
+          sent_at?: string | null
+          subject: string
+          target_audience: string
+        }
+        Update: {
+          admin_email?: string
+          admin_id?: string
+          created_at?: string | null
+          id?: string
+          message?: string
+          notification_type?: string
+          recipient_count?: number
+          scheduled_for?: string | null
+          sent_at?: string | null
+          subject?: string
+          target_audience?: string
+        }
+        Relationships: []
+      }
       api_cost_tracking: {
         Row: {
           api_provider: string
@@ -922,6 +1003,33 @@ export type Database = {
             referencedColumns: ["worker_id"]
           },
         ]
+      }
+      notifications: {
+        Row: {
+          created_at: string | null
+          id: string
+          message: string
+          read: boolean | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          message: string
+          read?: boolean | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          message?: string
+          read?: boolean | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {

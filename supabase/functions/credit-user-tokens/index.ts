@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 import { addTokens } from '../_shared/token-manager.ts';
+import { logAdminAction } from '../_shared/audit-logger.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -71,7 +72,17 @@ serve(async (req) => {
 
     console.log(`Admin ${user.email} credited ${amount} tokens to user ${targetUserId}`);
 
-    return new Response(JSON.stringify({ 
+    // Log audit entry
+    await logAdminAction({
+      adminId: user.id,
+      adminEmail: user.email!,
+      actionType: 'credit_tokens',
+      targetType: 'user',
+      targetId: targetUserId,
+      details: { amount, reason, note },
+    });
+
+    return new Response(JSON.stringify({
       success: true,
       amount,
       targetUserId

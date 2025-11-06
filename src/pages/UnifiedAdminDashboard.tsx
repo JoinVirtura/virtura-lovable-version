@@ -11,6 +11,7 @@ import { AdminTokenTransactionHistory } from "@/components/AdminTokenTransaction
 import { QuickAdminActions } from "@/components/admin/QuickAdminActions";
 import { UserManagementTools } from "@/components/admin/UserManagementTools";
 import { FinancialReporting } from "@/components/admin/FinancialReporting";
+import { AuditLogViewer } from "@/components/admin/AuditLogViewer";
 
 export default function UnifiedAdminDashboard() {
   const { user } = useAuth();
@@ -191,13 +192,14 @@ export default function UnifiedAdminDashboard() {
 
       {/* Tabbed Content */}
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-7">
+        <TabsList className="grid w-full grid-cols-8">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="users">Users</TabsTrigger>
           <TabsTrigger value="financial">Financial</TabsTrigger>
           <TabsTrigger value="costs">API Costs</TabsTrigger>
           <TabsTrigger value="tokens">Token Txns</TabsTrigger>
           <TabsTrigger value="jobs">Jobs & Activity</TabsTrigger>
+          <TabsTrigger value="audit">Audit Log</TabsTrigger>
           <TabsTrigger value="recovery">Video Recovery</TabsTrigger>
         </TabsList>
 
@@ -275,6 +277,10 @@ export default function UnifiedAdminDashboard() {
 
         <TabsContent value="jobs">
           <AdminDashboard />
+        </TabsContent>
+
+        <TabsContent value="audit">
+          <AuditLogViewer />
         </TabsContent>
 
         <TabsContent value="recovery">

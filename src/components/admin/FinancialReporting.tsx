@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { DollarSign, TrendingUp, TrendingDown, Percent, Download } from "lucide-react";
+import { DollarSign, TrendingUp, TrendingDown, Percent, Download, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { format, subDays, startOfMonth, endOfMonth, subMonths } from "date-fns";
+import { generateFinancialPDF } from "@/lib/pdf-generator";
 
 interface DateRange {
   start: Date;
@@ -274,6 +275,57 @@ export function FinancialReporting() {
     toast.success('Financial report exported');
   };
 
+  const exportToPDF = async () => {
+    try {
+      toast.info('Generating PDF report...');
+      
+      const transactions = await fetchTransactionsForExport();
+      
+      await generateFinancialPDF({
+        dateRange: {
+          start: format(dateRange.start, 'yyyy-MM-dd'),
+          end: format(dateRange.end, 'yyyy-MM-dd'),
+        },
+        metrics: {
+          totalRevenue: metrics.totalRevenue,
+          totalCosts: metrics.totalCosts,
+          netProfit: metrics.netProfit,
+          profitMargin: metrics.profitMargin,
+        },
+        chartIds: ['revenue-trends-chart', 'token-economy-chart', 'revenue-pack-chart', 'cost-provider-chart'],
+        transactions,
+        summary: {
+          activeSubscriptions: summary.activeSubscriptions,
+          mrr: summary.mrr,
+          tokenUtilization: summary.tokenUtilization,
+          avgCostPerToken: summary.avgCostPerToken,
+        },
+      });
+      
+      toast.success('PDF report generated successfully');
+    } catch (error) {
+      console.error('PDF export error:', error);
+      toast.error('Failed to generate PDF report');
+    }
+  };
+
+  const fetchTransactionsForExport = async () => {
+    try {
+      const { data: purchases } = await supabase
+        .from('token_transactions')
+        .select('*')
+        .gte('created_at', dateRange.start.toISOString())
+        .lte('created_at', dateRange.end.toISOString())
+        .order('created_at', { ascending: false })
+        .limit(100);
+
+      return purchases || [];
+    } catch (error) {
+      console.error('Fetch transactions error:', error);
+      return [];
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Date Range Selector */}
@@ -292,6 +344,10 @@ export function FinancialReporting() {
           <Button variant="outline" size="sm" onClick={exportToCSV}>
             <Download className="h-4 w-4 mr-2" />
             Export CSV
+          </Button>
+          <Button variant="default" size="sm" onClick={exportToPDF}>
+            <FileText className="h-4 w-4 mr-2" />
+            Export PDF Report
           </Button>
         </div>
         <div className="mt-2 text-sm text-muted-foreground">
@@ -339,8 +395,9 @@ export function FinancialReporting() {
         {/* Revenue Trends Chart */}
         <Card className="p-4">
           <h3 className="text-sm font-semibold mb-4">Revenue Trends</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <LineChart data={revenueTrends}>
+          <div id="revenue-trends-chart">
+            <ResponsiveContainer width="100%" height={250}>
+              <LineChart data={revenueTrends}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" />
               <YAxis />
@@ -351,13 +408,15 @@ export function FinancialReporting() {
               <Line type="monotone" dataKey="profit" stroke="#3b82f6" name="Profit" />
             </LineChart>
           </ResponsiveContainer>
+          </div>
         </Card>
 
         {/* Token Economy Chart */}
         <Card className="p-4">
           <h3 className="text-sm font-semibold mb-4">Token Economy</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={tokenEconomy}>
+          <div id="token-economy-chart">
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={tokenEconomy}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" />
               <YAxis yAxisId="left" />
@@ -369,13 +428,15 @@ export function FinancialReporting() {
               <Line yAxisId="right" type="monotone" dataKey="profitMargin" stroke="#8b5cf6" name="Profit %" />
             </BarChart>
           </ResponsiveContainer>
+          </div>
         </Card>
 
         {/* Revenue by Pack Size */}
         <Card className="p-4">
           <h3 className="text-sm font-semibold mb-4">Revenue by Token Pack</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <PieChart>
+          <div id="revenue-pack-chart">
+            <ResponsiveContainer width="100%" height={250}>
+              <PieChart>
               <Pie
                 data={revenueByPack}
                 cx="50%"
@@ -393,13 +454,15 @@ export function FinancialReporting() {
               <Tooltip />
             </PieChart>
           </ResponsiveContainer>
+          </div>
         </Card>
 
         {/* Cost by Provider */}
         <Card className="p-4">
           <h3 className="text-sm font-semibold mb-4">Cost by Provider</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={costByProvider}>
+          <div id="cost-provider-chart">
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={costByProvider}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="provider" />
               <YAxis />
@@ -411,6 +474,7 @@ export function FinancialReporting() {
               <Bar dataKey="style_transfer" stackId="a" fill="#8b5cf6" name="Style Transfer" />
             </BarChart>
           </ResponsiveContainer>
+          </div>
         </Card>
       </div>
 

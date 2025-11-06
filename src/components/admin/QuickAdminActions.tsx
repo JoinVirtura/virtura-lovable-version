@@ -6,7 +6,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { RetryJobsModal } from "./RetryJobsModal";
 import { CreditTokensDialog } from "./CreditTokensDialog";
 import { SystemHealthModal } from "./SystemHealthModal";
-import { RefreshCw, Coins, Activity, AlertCircle } from "lucide-react";
+import { NotificationDialog } from "./NotificationDialog";
+import { RefreshCw, Coins, Activity, Bell } from "lucide-react";
 
 interface QuickAdminActionsProps {
   onActionComplete?: () => void;
@@ -16,6 +17,7 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
   const [showRetryJobs, setShowRetryJobs] = useState(false);
   const [showCreditTokens, setShowCreditTokens] = useState(false);
   const [showSystemHealth, setShowSystemHealth] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
   const [stats, setStats] = useState({
     failedJobs: 0,
     lowBalanceUsers: 0,
@@ -119,6 +121,16 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
             <Activity className="h-4 w-4" />
             System Health
           </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowNotification(true)}
+            className="flex items-center gap-2"
+          >
+            <Bell className="h-4 w-4" />
+            Send Notification
+          </Button>
         </div>
       </Card>
 
@@ -137,6 +149,12 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
       <SystemHealthModal
         open={showSystemHealth}
         onOpenChange={setShowSystemHealth}
+      />
+
+      <NotificationDialog
+        open={showNotification}
+        onOpenChange={setShowNotification}
+        onSuccess={handleActionComplete}
       />
     </>
   );
