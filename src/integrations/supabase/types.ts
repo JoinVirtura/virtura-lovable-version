@@ -1004,27 +1004,114 @@ export type Database = {
           },
         ]
       }
+      notification_preferences: {
+        Row: {
+          account_enabled: boolean | null
+          billing_enabled: boolean | null
+          created_at: string | null
+          daily_digest: boolean | null
+          desktop_notifications: boolean | null
+          digest_time: number | null
+          email_enabled: boolean | null
+          id: string
+          in_app_enabled: boolean | null
+          marketing_enabled: boolean | null
+          product_enabled: boolean | null
+          push_enabled: boolean | null
+          quiet_hours_enabled: boolean | null
+          quiet_hours_end: number | null
+          quiet_hours_start: number | null
+          quiet_hours_timezone: string | null
+          security_enabled: boolean | null
+          sound_enabled: boolean | null
+          sound_file: string | null
+          system_enabled: boolean | null
+          updated_at: string | null
+          user_id: string
+          weekly_digest: boolean | null
+        }
+        Insert: {
+          account_enabled?: boolean | null
+          billing_enabled?: boolean | null
+          created_at?: string | null
+          daily_digest?: boolean | null
+          desktop_notifications?: boolean | null
+          digest_time?: number | null
+          email_enabled?: boolean | null
+          id?: string
+          in_app_enabled?: boolean | null
+          marketing_enabled?: boolean | null
+          product_enabled?: boolean | null
+          push_enabled?: boolean | null
+          quiet_hours_enabled?: boolean | null
+          quiet_hours_end?: number | null
+          quiet_hours_start?: number | null
+          quiet_hours_timezone?: string | null
+          security_enabled?: boolean | null
+          sound_enabled?: boolean | null
+          sound_file?: string | null
+          system_enabled?: boolean | null
+          updated_at?: string | null
+          user_id: string
+          weekly_digest?: boolean | null
+        }
+        Update: {
+          account_enabled?: boolean | null
+          billing_enabled?: boolean | null
+          created_at?: string | null
+          daily_digest?: boolean | null
+          desktop_notifications?: boolean | null
+          digest_time?: number | null
+          email_enabled?: boolean | null
+          id?: string
+          in_app_enabled?: boolean | null
+          marketing_enabled?: boolean | null
+          product_enabled?: boolean | null
+          push_enabled?: boolean | null
+          quiet_hours_enabled?: boolean | null
+          quiet_hours_end?: number | null
+          quiet_hours_start?: number | null
+          quiet_hours_timezone?: string | null
+          security_enabled?: boolean | null
+          sound_enabled?: boolean | null
+          sound_file?: string | null
+          system_enabled?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+          weekly_digest?: boolean | null
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
+          category: Database["public"]["Enums"]["notification_category"] | null
           created_at: string | null
           id: string
           message: string
+          metadata: Json | null
+          priority: string | null
           read: boolean | null
           title: string
           user_id: string
         }
         Insert: {
+          category?: Database["public"]["Enums"]["notification_category"] | null
           created_at?: string | null
           id?: string
           message: string
+          metadata?: Json | null
+          priority?: string | null
           read?: boolean | null
           title: string
           user_id: string
         }
         Update: {
+          category?: Database["public"]["Enums"]["notification_category"] | null
           created_at?: string | null
           id?: string
           message?: string
+          metadata?: Json | null
+          priority?: string | null
           read?: boolean | null
           title?: string
           user_id?: string
@@ -1758,6 +1845,13 @@ export type Database = {
       }
     }
     Enums: {
+      notification_category:
+        | "system"
+        | "account"
+        | "billing"
+        | "marketing"
+        | "product"
+        | "security"
       user_role: "owner" | "admin" | "editor" | "viewer"
     }
     CompositeTypes: {
@@ -1886,6 +1980,14 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      notification_category: [
+        "system",
+        "account",
+        "billing",
+        "marketing",
+        "product",
+        "security",
+      ],
       user_role: ["owner", "admin", "editor", "viewer"],
     },
   },
