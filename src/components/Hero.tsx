@@ -550,10 +550,13 @@ export const Hero = () => {
         {/* Main Heading - Futuristic Aesthetic */}
         {generatedImages.length === 0 && !isGenerating && (
           <div className="mb-8 animate-fade-in">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight">
-              <span className="text-white font-light">Where Identity </span>
+            <h1 className="text-4xl md:text-7xl font-extrabold leading-tight tracking-tight mb-4">
+              <span className="text-foreground font-light">Where Identity </span>
               <span className="text-gradient-primary font-bold animate-glow-text">Evolves</span>
             </h1>
+            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+              Describe the image you want to create...
+            </p>
           </div>
         )}
 

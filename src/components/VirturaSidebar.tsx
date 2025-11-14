@@ -50,7 +50,7 @@ interface VirturaSidebarProps {
 }
 
 export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: VirturaSidebarProps) {
-  const { state } = useSidebar();
+  const { state, setOpenMobile } = useSidebar();
   const { user, signOut } = useAuth();
   const { profile } = useProfile();
   const navigate = useNavigate();
@@ -131,6 +131,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                         onClearEditState();
                       }
                       onViewChange(item.id);
+                      setOpenMobile(false);
                     }}
                     isActive={activeView === item.id}
                     className={`w-full ${isCollapsed ? "justify-center px-2" : "justify-start gap-3"} ${
@@ -157,7 +158,10 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
               {navigationTabs.map((item) => (
                 <SidebarMenuItem key={item.id}>
                   <SidebarMenuButton 
-                    onClick={() => onViewChange(item.id)}
+                    onClick={() => {
+                      onViewChange(item.id);
+                      setOpenMobile(false);
+                    }}
                     isActive={activeView === item.id}
                     className={`w-full ${isCollapsed ? "justify-center px-2" : "justify-start gap-3"} ${
                       activeView === item.id 
@@ -180,7 +184,10 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
         <SidebarSeparator className={isCollapsed ? "mx-1" : "mx-3"} />
         
         <button 
-          onClick={() => onViewChange('settings')}
+          onClick={() => {
+            onViewChange('settings');
+            setOpenMobile(false);
+          }}
           className={`flex items-center transition-colors rounded-lg ml-3 mr-3 ${isCollapsed ? "px-2 py-3 justify-center" : "pl-4 pr-4 py-3 gap-3"} hover:bg-violet-500/5 hover:text-violet-300 text-white`}
         >
           <Avatar className="w-8 h-8 ring-2 ring-violet-500/30 shrink-0">
