@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { VirturaSidebar } from "@/components/VirturaSidebar";
 import { OverviewPage } from "@/components/OverviewPage";
 import neuralBrain from "@/assets/neural-brain.png";
@@ -1946,15 +1946,27 @@ export default function Dashboard() {
       <SidebarProvider defaultOpen={true}>
         <div className="min-h-screen flex w-full bg-background relative overflow-hidden">
           <MotionBackground />
-            <VirturaSidebar 
-              activeView={activeView} 
-              onViewChange={setActiveView}
-              onClearEditState={() => setSelectedEditImage(null)}
-            />
+          
+          {/* Fixed Mobile Header */}
+          <header className="fixed top-0 left-0 right-0 z-50 md:hidden bg-black/90 backdrop-blur-xl border-b border-violet-500/20">
+            <div className="flex items-center justify-between px-4 h-14">
+              <SidebarTrigger className="h-8 w-8 text-violet-400 hover:text-violet-300" />
+              <h1 className="text-lg font-display font-bold text-gradient-primary drop-shadow-[0_0_10px_rgba(212,110,255,0.6)]">
+                Virtura
+              </h1>
+              <div className="w-8" /> {/* Spacer for centering */}
+            </div>
+          </header>
+          
+          <VirturaSidebar 
+            activeView={activeView} 
+            onViewChange={setActiveView}
+            onClearEditState={() => setSelectedEditImage(null)}
+          />
         
         <div className="flex-1 flex flex-col relative z-10">
-          {/* Main Content */}
-          <main className="flex-1 p-6">
+          {/* Add padding top on mobile to account for fixed header */}
+          <main className="flex-1 p-6 md:pt-6 pt-20">
             {renderContent()}
           </main>
         </div>
