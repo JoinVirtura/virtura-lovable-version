@@ -30,30 +30,18 @@ export function LandingAnalyticsDashboard() {
 
   const loadAnalytics = async () => {
     try {
-      // Get all analytics data with type assertion
-      const { data: rawAnalytics, error } = await (supabase as any)
+      // Get all analytics data
+      const { data: analytics, error } = await supabase
         .from('landing_analytics')
         .select('*')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
 
-      // Type assertion for analytics data
-      type AnalyticsEvent = {
-        id: string;
-        session_id: string;
-        event_type: string;
-        prompt?: string;
-        created_at: string;
-        metadata?: any;
-      };
-      
-      const analytics = (rawAnalytics as unknown as AnalyticsEvent[]) || [];
-
       // Process data
-      const generations = analytics.filter(a => a.event_type === 'images_generated');
-      const signupClicks = analytics.filter(a => a.event_type === 'signup_clicked' || a.event_type === 'gallery_cta_clicked');
-      const signups = analytics.filter(a => a.event_type === 'signup_completed');
+      const generations = analytics?.filter(a => a.event_type === 'images_generated') || [];
+      const signupClicks = analytics?.filter(a => a.event_type === 'signup_clicked' || a.event_type === 'gallery_cta_clicked') || [];
+      const signups = analytics?.filter(a => a.event_type === 'signup_completed') || [];
 
       // Top prompts
       const promptCounts: Record<string, number> = {};

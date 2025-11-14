@@ -207,35 +207,35 @@ export default function GuidePage() {
     <StudioBackground>
       <VirturaNavigation />
       
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 relative z-10">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
         {/* Header */}
-        <div className="text-center mb-8 sm:mb-12 lg:mb-16">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold bg-gradient-to-r from-violet-400 via-purple-400 to-blue-400 bg-clip-text text-transparent mb-4">
+        <div className="text-center mb-16">
+          <h1 className="text-5xl md:text-6xl font-display font-bold bg-gradient-to-r from-violet-400 via-purple-400 to-blue-400 bg-clip-text text-transparent mb-4">
             Getting Started with Virtura
           </h1>
-          <p className="text-base sm:text-lg lg:text-xl text-muted-foreground px-4">
+          <p className="text-xl text-muted-foreground">
             Complete these steps to become a Virtura Creator
           </p>
         </div>
 
           {/* Progress Card */}
-          <Card className="mb-8 sm:mb-12 bg-[#1a1a2e]/80 border-violet-500/20 backdrop-blur-xl">
-            <div className="flex flex-col sm:flex-row items-center justify-between p-4 sm:p-6 lg:p-8 gap-4 sm:gap-6">
-              <div className="flex-1 text-center sm:text-left">
-                <h2 className="text-2xl sm:text-3xl font-display font-bold mb-2">Your Progress</h2>
-                <p className="text-sm sm:text-base lg:text-lg text-muted-foreground">
+          <Card className="mb-12 bg-[#1a1a2e]/80 border-violet-500/20 backdrop-blur-xl">
+            <div className="flex items-center justify-between p-8">
+              <div className="flex-1">
+                <h2 className="text-3xl font-display font-bold mb-2">Your Progress</h2>
+                <p className="text-lg text-muted-foreground">
                   {isFullyComplete 
                     ? "🎉 All tasks completed! You're ready to create amazing content!" 
                     : `Complete ${todos.length - completedCount} more ${todos.length - completedCount === 1 ? 'task' : 'tasks'} to finish your onboarding`
                   }
                 </p>
               </div>
-              <div className="flex-shrink-0">
+              <div className="ml-8">
                 <CircularProgress 
                   value={progress} 
-                  size={100} 
+                  size={120} 
                   strokeWidth={8}
-                  className="relative sm:w-[120px] sm:h-[120px]"
+                  className="relative"
                 />
               </div>
             </div>

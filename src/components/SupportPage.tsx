@@ -173,14 +173,14 @@ export function SupportPage() {
         </div>
 
         {/* Forms Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        <div className="grid md:grid-cols-2 gap-6">
           {/* Support Ticket Form */}
-          <Card className="bg-black/40 backdrop-blur-xl border-violet-500/30 p-4 sm:p-6 space-y-4 sm:space-y-6">
+          <Card className="bg-black/40 backdrop-blur-xl border-violet-500/30 p-6 space-y-6">
             <div className="flex items-center gap-3 border-b border-violet-500/20 pb-4">
-              <LifeBuoy className="w-5 h-5 sm:w-6 sm:h-6 text-violet-400 flex-shrink-0" />
+              <LifeBuoy className="w-6 h-6 text-violet-400" />
               <div>
-                <h2 className="text-xl sm:text-2xl font-bold text-white">Submit a Ticket</h2>
-                <p className="text-xs sm:text-sm text-gray-400">Get help with issues or questions</p>
+                <h2 className="text-2xl font-bold text-white">Submit a Ticket</h2>
+                <p className="text-sm text-gray-400">Get help with issues or questions</p>
               </div>
             </div>
 

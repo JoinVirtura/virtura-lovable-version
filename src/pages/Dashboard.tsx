@@ -1952,9 +1952,9 @@ export default function Dashboard() {
               onClearEditState={() => setSelectedEditImage(null)}
             />
         
-        <div className="flex-1 flex flex-col relative z-10 w-full overflow-hidden">
+        <div className="flex-1 flex flex-col relative z-10">
           {/* Main Content */}
-          <main className="flex-1 p-4 sm:p-6 lg:p-8 w-full">
+          <main className="flex-1 p-6">
             {renderContent()}
           </main>
         </div>

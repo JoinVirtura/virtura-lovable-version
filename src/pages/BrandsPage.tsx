@@ -179,19 +179,19 @@ export default function BrandsPage() {
       <MotionBackground />
       <VirturaNavigation />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 relative z-10">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         {/* Welcome Banner */}
-        <Card className="mb-6 sm:mb-8 p-4 sm:p-6 bg-gradient-card border-primary/20">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <Card className="mb-8 p-6 bg-gradient-card border-primary/20">
+          <div className="flex items-center justify-between">
             <div className="space-y-2">
-              <h2 className="text-lg sm:text-xl font-display font-bold text-foreground">
+              <h2 className="text-xl font-display font-bold text-foreground">
                 🚀 Build ready-to-use commercials and campaigns powered by AI.
               </h2>
-              <p className="text-sm sm:text-base text-muted-foreground">
+              <p className="text-muted-foreground">
                 Create professional brand content, advertisements, and marketing materials
               </p>
             </div>
-            <Button variant="outline" className="flex items-center gap-2 w-full sm:w-auto whitespace-nowrap">
+            <Button variant="outline" className="flex items-center gap-2">
               <TrendingUp className="w-4 h-4" />
               View Examples
             </Button>
@@ -200,17 +200,17 @@ export default function BrandsPage() {
 
         {/* Brand & Collection Selectors */}
         {brands.length === 0 && !loading ? (
-          <Card className="mb-6 p-4 sm:p-6 text-center">
-            <h3 className="text-base sm:text-lg font-semibold mb-2">No Brands Yet</h3>
-            <p className="text-sm sm:text-base text-muted-foreground mb-4">Create your first brand to start generating assets</p>
-            <Button onClick={() => setShowCreateBrand(true)} className="w-full sm:w-auto">
+          <Card className="mb-6 p-6 text-center">
+            <h3 className="text-lg font-semibold mb-2">No Brands Yet</h3>
+            <p className="text-muted-foreground mb-4">Create your first brand to start generating assets</p>
+            <Button onClick={() => setShowCreateBrand(true)}>
               <Plus className="w-4 h-4 mr-2" />
               Create Brand
             </Button>
           </Card>
         ) : (
-          <Card className="mb-6 p-4 sm:p-6">
-            <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
+          <Card className="mb-6 p-4">
+            <div className="flex gap-4 items-center">
               <div className="flex-1">
                 <label className="text-sm font-medium mb-2 block">Select Brand</label>
                 <Select value={selectedBrand || undefined} onValueChange={setSelectedBrand}>

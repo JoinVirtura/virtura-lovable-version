@@ -159,7 +159,7 @@ export default function VideoProPage() {
   }, [updateProject]);
 
   return (
-    <div className="w-full min-h-screen pb-20 sm:pb-32 bg-gradient-to-br from-[#0F0F1A] via-[#1a1a2e] to-[#0F0F1A] relative overflow-hidden">
+    <div className="w-full min-h-screen pb-32 bg-gradient-to-br from-[#0F0F1A] via-[#1a1a2e] to-[#0F0F1A] relative overflow-hidden">
       {/* Ambient particles */}
       <div className="absolute inset-0 pointer-events-none">
         {[...Array(12)].map((_, i) => (
@@ -177,8 +177,8 @@ export default function VideoProPage() {
       </div>
 
       {/* Main Studio Interface */}
-      <div className="w-full px-4 sm:px-6 py-4 sm:py-6 mb-6 sm:mb-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
+      <div className="w-full px-6 py-6 mb-8">
+        <div className="grid lg:grid-cols-12 gap-6">
           {/* Global file input - always available */}
           <input
             ref={fileInputRef}
@@ -196,9 +196,9 @@ export default function VideoProPage() {
           />
 
           {/* Main Studio Panel */}
-          <div className="lg:col-span-8 relative order-2 lg:order-1">
+          <div className="lg:col-span-8 relative">
             <Card className="border-0 shadow-[0_8px_32px_rgba(0,0,0,0.3)] bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl rounded-2xl overflow-visible">
-              <CardContent className="p-4 sm:p-6">
+              <CardContent className="p-6">
                 <Tabs value={currentStep} onValueChange={setCurrentStep}>
                   <TabsContent value="upload" className="mt-0" key={`upload-${currentStep}-${project.avatar?.status || 'empty'}-${project.voice?.status || 'empty'}`}>
                     <ErrorBoundary>
@@ -241,7 +241,7 @@ export default function VideoProPage() {
           </div>
 
           {/* Sidebar - Preview & Controls */}
-          <div className="lg:col-span-4 space-y-4 sm:space-y-6 mb-4 sm:mb-6 order-1 lg:order-2">
+          <div className="lg:col-span-4 space-y-6 mb-6">
             {/* Real-time Preview */}
             <div className="glass-card border border-violet-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] rounded-xl overflow-hidden">
               <RealtimePreview 

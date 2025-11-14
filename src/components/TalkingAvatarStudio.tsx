@@ -163,13 +163,13 @@ export const TalkingAvatarStudio: React.FC<TalkingAvatarStudioProps> = ({ onView
         <div className="absolute bottom-1/6 right-1/2 w-1 h-1 bg-violet-400/60 rounded-full animate-pulse" style={{animationDelay: '1.8s'}}></div>
       </div>
       
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6 relative z-10">
+      <div className="max-w-6xl mx-auto p-6 relative z-10">
         {/* Header */}
-        <div className="text-center mb-6 sm:mb-8 pt-6 sm:pt-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">
+        <div className="text-center mb-8 pt-8">
+          <h1 className="text-4xl font-bold text-foreground mb-2">
             AI <span className="bg-gradient-to-r from-violet-400 to-blue-500 bg-clip-text text-transparent">Video</span> Studio
           </h1>
-          <p className="text-sm sm:text-base lg:text-lg text-muted-foreground px-4">
+          <p className="text-muted-foreground text-lg">
             Create professional talking avatar videos with AI
           </p>
         </div>
