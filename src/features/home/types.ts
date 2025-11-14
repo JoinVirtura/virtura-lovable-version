@@ -3,6 +3,7 @@ export type Tile = {
   kind: 'image' | 'video';
   posterUrl: string;
   previewVideoUrl?: string;
+  videoUrl?: string;
   title: string;
   tag?: string;
   duration?: string;

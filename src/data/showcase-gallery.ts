@@ -1,7 +1,17 @@
 import type { Tile } from '@/features/home/types';
 
-// Curated showcase gallery featuring 65 diverse AI style capabilities
-export const showcaseGallery: Tile[] = [
+// Fisher-Yates shuffle algorithm
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+// Curated showcase gallery featuring diverse AI style capabilities
+const rawShowcaseGallery: Tile[] = [
   // ===== FANTASY & SCI-FI (12 entries) =====
   {
     id: 'fantasy-1',
@@ -11,6 +21,7 @@ export const showcaseGallery: Tile[] = [
     tag: 'Fantasy',
     views: 2847,
     prompt: 'Majestic fantasy creature with intricate details and mythical elements',
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
   },
   {
     id: 'fantasy-2',
@@ -121,6 +132,7 @@ export const showcaseGallery: Tile[] = [
     tag: 'Portrait',
     views: 4325,
     prompt: 'Professional studio portrait with elegant lighting and sophisticated styling',
+    videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
   },
   {
     id: 'portrait-2',
@@ -951,3 +963,22 @@ export const showcaseGallery: Tile[] = [
     prompt: 'Contemporary glitch art with modern digital distortion',
   },
 ];
+
+// Add video URLs to selected entries (25% of gallery)
+const videoUrls = [
+  'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+  'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+  'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+  'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
+  'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
+];
+
+// Add videos to ~25% of entries
+rawShowcaseGallery.forEach((item, index) => {
+  if (index % 4 === 0) {
+    item.videoUrl = videoUrls[index % videoUrls.length];
+  }
+});
+
+// Export shuffled gallery to ensure no two identical styles appear next to each other
+export const showcaseGallery: Tile[] = shuffleArray(rawShowcaseGallery);
