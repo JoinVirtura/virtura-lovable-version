@@ -48,8 +48,8 @@ export function LandingNavigation() {
             ))}
             <Button 
               onClick={() => navigate("/auth")}
-              variant="ghost"
-              className="text-muted-foreground hover:text-foreground"
+              variant="outline"
+              className="border-primary/30 text-primary hover:bg-primary/10 hover:border-primary transition-all hover:shadow-lg"
             >
               Login
             </Button>
@@ -84,9 +84,12 @@ export function LandingNavigation() {
                 </button>
               ))}
               <Button 
-                onClick={() => navigate("/auth")}
-                variant="ghost"
-                className="text-muted-foreground hover:text-foreground w-full justify-start"
+                onClick={() => {
+                  navigate("/auth");
+                  setMobileMenuOpen(false);
+                }}
+                variant="outline"
+                className="border-primary/30 text-primary hover:bg-primary/10 hover:border-primary transition-all w-full"
               >
                 Login
               </Button>
