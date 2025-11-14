@@ -23,8 +23,22 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
   const [isExpanded, setIsExpanded] = useState(false);
   const [displayCount, setDisplayCount] = useState(50);
   const [scrollY, setScrollY] = useState(0);
+  const [activeFilter, setActiveFilter] = useState<string>('All');
   const containerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+
+  // Filter categories for style showcase
+  const filterCategories = [
+    { label: 'All', icon: Sparkles },
+    { label: 'Fantasy', icon: Sparkles },
+    { label: 'Portrait', icon: Eye },
+    { label: 'Artistic', icon: Heart },
+    { label: 'Digital', icon: Film },
+    { label: 'Unique', icon: Sparkles },
+    { label: 'Photography', icon: Eye },
+    { label: 'Fashion', icon: Heart },
+    { label: 'Nature', icon: Sparkles },
+  ];
   
   // Track scroll for parallax effects
   useEffect(() => {
@@ -183,7 +197,12 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
     setShuffledTiles(tiles);
   }, [tiles]);
 
-  const displayedTiles = shuffledTiles.slice(0, displayCount);
+  // Apply filter logic
+  const filteredTiles = activeFilter === 'All' 
+    ? shuffledTiles 
+    : shuffledTiles.filter(tile => tile.tag === activeFilter);
+
+  const displayedTiles = filteredTiles.slice(0, displayCount);
 
   return (
     <section className={cn('relative py-8 px-4 md:px-6 lg:px-8', className)} ref={containerRef}>
@@ -451,7 +470,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                         ease: "linear"
                       }}
                     >
-                      Trending
+                      Style Showcase
                     </motion.span>
                     
                     {/* Holographic overlay with pulse */}
@@ -466,7 +485,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                         repeat: Infinity,
                       }}
                     >
-                      Trending
+                      Style Showcase
                     </motion.span>
                     
                     {/* Electric glitch effect */}
@@ -483,7 +502,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                         repeatDelay: 3,
                       }}
                     >
-                      Trending
+                      Style Showcase
                     </motion.span>
                   </motion.h2>
                 </div>
@@ -507,7 +526,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                     }}
                   />
                   <p className="text-2xl md:text-3xl font-light bg-gradient-to-r from-purple-300 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent tracking-[0.3em] uppercase">
-                    Creations
+                    AI Capabilities
                   </p>
                   <motion.div 
                     className="h-px flex-1 bg-gradient-to-r from-transparent via-purple-500/50 to-transparent"
@@ -545,10 +564,63 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                   repeat: Infinity,
                 }}
               >
-                Experience the future — where innovation meets imagination.
+                Explore 60+ diverse artistic styles powered by Virtura AI. From fantasy to photorealism, discover limitless creative possibilities.
               </motion.p>
             </motion.div>
           </div>
+
+          {/* Advanced Filter System */}
+          <motion.div 
+            className="flex flex-wrap gap-3 justify-center pt-8 pb-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+          >
+            {filterCategories.map((category, index) => {
+              const Icon = category.icon;
+              const isActive = activeFilter === category.label;
+              
+              return (
+                <motion.button
+                  key={category.label}
+                  onClick={() => setActiveFilter(category.label)}
+                  className={cn(
+                    "group relative overflow-hidden px-6 py-3 rounded-full font-bold transition-all duration-300",
+                    "border-2",
+                    isActive 
+                      ? "bg-gradient-to-r from-purple-600 via-violet-600 to-fuchsia-600 border-purple-400/50 text-white shadow-lg shadow-purple-500/50 scale-105" 
+                      : "bg-background/40 backdrop-blur-sm border-purple-400/20 text-foreground/70 hover:border-purple-400/40 hover:text-foreground hover:bg-purple-500/10"
+                  )}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {/* Animated shimmer on active */}
+                  {isActive && (
+                    <motion.div 
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                      animate={{ x: ['-100%', '100%'] }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                    />
+                  )}
+                  
+                  <span className="relative flex items-center gap-2">
+                    <Icon className="w-4 h-4" />
+                    {category.label}
+                  </span>
+                  
+                  {/* Glow effect on hover */}
+                  {!isActive && (
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-violet-500/20 to-fuchsia-500/20 blur-xl" />
+                    </div>
+                  )}
+                </motion.button>
+              );
+            })}
+          </motion.div>
 
           {/* Revolutionary Action Buttons */}
           <div className="flex flex-wrap items-center gap-4 pt-6">
