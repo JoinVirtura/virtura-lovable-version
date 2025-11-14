@@ -35,6 +35,24 @@ const queryClient = new QueryClient();
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/auth" replace />;
+  }
+
+  return <>{children}</>;
+};
+
+const Home = () => {
+  const { user, loading } = useAuth();
   
   if (loading) {
     return (
@@ -44,11 +62,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     );
   }
   
-  if (!user) {
-    return <Navigate to="/auth" replace />;
-  }
-  
-  return <>{children}</>;
+  return user ? <Dashboard /> : <Landing />;
 };
 
 const AppRoutes = () => {
@@ -60,7 +74,7 @@ const AppRoutes = () => {
       <Route path="/landing" element={<Landing />} />
       
       {/* Protected Routes */}
-      <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+      <Route path="/" element={<Home />} />
       <Route path="/individuals" element={<ProtectedRoute><IndividualsPage /></ProtectedRoute>} />
       <Route path="/brands" element={<ProtectedRoute><BrandsPage /></ProtectedRoute>} />
       <Route path="/campaigns" element={<ProtectedRoute><CampaignPage /></ProtectedRoute>} />
