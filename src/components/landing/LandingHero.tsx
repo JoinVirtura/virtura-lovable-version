@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { Sparkles, RotateCcw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { InteractiveHeroInput } from "./InteractiveHeroInput";
 import { WatermarkedImageCard } from "./WatermarkedImageCard";
 import { ImageGenerationSkeleton } from "./ImageGenerationSkeleton";
 import { useLandingImageGeneration } from "@/hooks/useLandingImageGeneration";
+import { useRef, useState } from "react";
 
 interface LandingHeroProps {
   id?: string;
@@ -12,7 +13,17 @@ interface LandingHeroProps {
 
 export function LandingHero({ id }: LandingHeroProps) {
   const navigate = useNavigate();
-  const { images, isGenerating, generateImages } = useLandingImageGeneration();
+  const { images, isGenerating, generateImages, clearImages, sessionId } = useLandingImageGeneration();
+  const inputRef = useRef<HTMLDivElement>(null);
+  const [currentPrompt, setCurrentPrompt] = useState("");
+
+  const handleClearAndFocus = () => {
+    clearImages();
+    setCurrentPrompt("");
+    setTimeout(() => {
+      inputRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
 
   return (
     <section id={id} className="relative min-h-screen flex items-center justify-center overflow-hidden pt-32 pb-20">
@@ -50,10 +61,12 @@ export function LandingHero({ id }: LandingHeroProps) {
           </div>
 
           {/* Interactive Input Section */}
-          <div className="mb-12 animate-fade-in" style={{ animationDelay: "0.3s" }}>
+          <div ref={inputRef} className="mb-12 animate-fade-in" style={{ animationDelay: "0.3s" }}>
             <InteractiveHeroInput 
               onGenerate={generateImages}
               isGenerating={isGenerating}
+              value={currentPrompt}
+              onChange={setCurrentPrompt}
             />
           </div>
 
@@ -75,6 +88,19 @@ export function LandingHero({ id }: LandingHeroProps) {
           {/* Generated Images Grid */}
           {!isGenerating && images.length > 0 && (
             <div className="mb-12">
+              {/* Try Again Button */}
+              <div className="flex justify-center mb-6">
+                <Button
+                  onClick={handleClearAndFocus}
+                  variant="outline"
+                  size="lg"
+                  className="gap-2"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                  Try Again with Different Prompt
+                </Button>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {images.map((img, index) => (
                   <WatermarkedImageCard
@@ -82,28 +108,9 @@ export function LandingHero({ id }: LandingHeroProps) {
                     image={img.image || ''}
                     prompt={img.prompt}
                     index={index}
+                    sessionId={sessionId}
                   />
                 ))}
-              </div>
-
-              {/* Conversion CTA */}
-              <div className="mt-12 text-center animate-fade-in">
-                <div className="inline-block p-6 rounded-2xl bg-gradient-to-br from-primary/10 to-primary-blue/10 border border-border/50 backdrop-blur-sm">
-                  <h3 className="text-xl font-bold mb-2">
-                    <span className="bg-gradient-text bg-clip-text text-transparent">Love what you see?</span>
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-4 max-w-lg mx-auto">
-                    Start your free trial to download watermark-free images
-                  </p>
-                  <Button
-                    onClick={() => navigate("/auth")}
-                    size="lg"
-                    className="bg-gradient-primary hover:shadow-violet-glow transition-all px-6"
-                  >
-                    Start Free Trial
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
-                </div>
               </div>
             </div>
           )}

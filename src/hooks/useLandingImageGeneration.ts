@@ -8,12 +8,14 @@ interface UseLandingImageGenerationReturn {
   progress: number;
   generateImages: (prompt: string, params?: Partial<ImageGenerationParams>) => Promise<void>;
   clearImages: () => void;
+  sessionId: string;
 }
 
 export function useLandingImageGeneration(): UseLandingImageGenerationReturn {
   const [images, setImages] = useState<GeneratedImage[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [sessionId] = useState(() => `session_${Date.now()}_${Math.random()}`);
 
   const generateImages = async (prompt: string, params?: Partial<ImageGenerationParams>) => {
     if (!prompt.trim()) {
@@ -85,6 +87,22 @@ export function useLandingImageGeneration(): UseLandingImageGenerationReturn {
       setProgress(100);
 
       if (variants.length > 0) {
+        // Track analytics
+        try {
+          await fetch('https://ujaoziqnxhjqlmnvlxav.supabase.co/functions/v1/track-landing-analytics', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              event_type: 'images_generated',
+              prompt,
+              session_id: sessionId,
+              metadata: { count: variants.length }
+            })
+          });
+        } catch (error) {
+          console.error('Error tracking analytics:', error);
+        }
+
         toast.success("Images generated! Sign up to download watermark-free.");
       } else {
         toast.error("Failed to generate images. Please try again.");
@@ -110,5 +128,6 @@ export function useLandingImageGeneration(): UseLandingImageGenerationReturn {
     progress,
     generateImages,
     clearImages,
+    sessionId,
   };
 }

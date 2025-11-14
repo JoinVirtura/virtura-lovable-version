@@ -36,18 +36,11 @@ export function GalleryImageCard({ image, prompt, index }: GalleryImageCardProps
           }`}
         >
           <div className="absolute inset-0 flex flex-col justify-end p-4">
-            {prompt && (
-              <p className="text-white text-sm line-clamp-2 mb-3 animate-fade-in">
-                {prompt}
-              </p>
-            )}
-            
             <Button
               onClick={() => navigate("/auth")}
               className="w-full bg-gradient-primary hover:opacity-90 transition-opacity"
               size="sm"
             >
-              <Sparkles className="w-4 h-4 mr-2" />
               Create Your Own
             </Button>
           </div>
