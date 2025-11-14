@@ -1949,7 +1949,10 @@ export default function Dashboard() {
           
           {/* Fixed Mobile Header */}
           <header className="fixed top-0 left-0 right-0 z-50 md:hidden bg-black/90 backdrop-blur-xl border-b border-violet-500/20">
-            <div className="flex items-center px-4 h-14">
+            <div className="flex items-center justify-between px-4 h-14">
+              <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                Virtura AI
+              </h1>
               <SidebarTrigger className="h-8 w-8 text-violet-400 hover:text-violet-300" />
             </div>
           </header>
