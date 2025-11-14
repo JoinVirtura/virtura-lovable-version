@@ -14,7 +14,7 @@ export function LandingHero({ id }: LandingHeroProps) {
   const { images, isGenerating, generateImages } = useLandingImageGeneration();
 
   return (
-    <section id={id} className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16 pb-20">
+    <section id={id} className="relative min-h-screen flex items-center justify-center overflow-hidden pt-32 pb-20">
       {/* Animated Background */}
       <div className="absolute inset-0 bg-gradient-hero">
         <div className="absolute inset-0">
@@ -37,15 +37,14 @@ export function LandingHero({ id }: LandingHeroProps) {
           {/* Main Heading */}
           <div className="text-center mb-10">
             <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
+              <span className="text-foreground">Where Identity </span>
               <span className="bg-gradient-text bg-clip-text text-transparent">
-                Create Stunning AI Content
+                Evolves
               </span>
-              <br />
-              <span className="text-foreground">in Minutes, Not Hours</span>
             </h1>
 
             <p className="text-xl text-muted-foreground mb-4 animate-fade-in max-w-2xl mx-auto" style={{ animationDelay: "0.2s" }}>
-              Try it now! Type what you want to create and see the magic happen instantly.
+              Type what you want to create and see the magic happen
             </p>
           </div>
 
@@ -83,24 +82,21 @@ export function LandingHero({ id }: LandingHeroProps) {
 
               {/* Conversion CTA */}
               <div className="mt-12 text-center animate-fade-in">
-                <div className="inline-block p-8 rounded-2xl bg-gradient-to-br from-primary/10 to-primary-blue/10 border border-border/50 backdrop-blur-sm">
-                  <h3 className="text-2xl font-bold mb-3">
+                <div className="inline-block p-6 rounded-2xl bg-gradient-to-br from-primary/10 to-primary-blue/10 border border-border/50 backdrop-blur-sm">
+                  <h3 className="text-xl font-bold mb-2">
                     <span className="bg-gradient-text bg-clip-text text-transparent">Love what you see?</span>
                   </h3>
-                  <p className="text-muted-foreground mb-6 max-w-lg mx-auto">
-                    Start your free trial to download watermark-free images and create unlimited AI content
+                  <p className="text-sm text-muted-foreground mb-4 max-w-lg mx-auto">
+                    Start your free trial to download watermark-free images
                   </p>
                   <Button
                     onClick={() => navigate("/auth")}
                     size="lg"
-                    className="bg-gradient-primary hover:shadow-violet-glow transition-all text-lg px-8 py-6 h-auto"
+                    className="bg-gradient-primary hover:shadow-violet-glow transition-all px-6"
                   >
                     Start Free Trial
-                    <ArrowRight className="w-5 h-5 ml-2" />
+                    <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
-                  <p className="text-sm text-muted-foreground mt-4">
-                    No credit card required • 7-day free trial • Cancel anytime
-                  </p>
                 </div>
               </div>
             </div>
