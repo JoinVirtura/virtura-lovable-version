@@ -1,38 +1,37 @@
-import { CompanyLogo } from "./CompanyLogo";
-
 interface TrustSectionProps {
   id?: string;
 }
 
 export function TrustSection({ id }: TrustSectionProps) {
-  const companies: Array<'stripe' | 'slack' | 'notion' | 'figma' | 'linear' | 'vercel' | 'supabase' | 'openai' | 'anthropic'> = [
-    "stripe",
-    "slack",
-    "notion",
-    "figma",
-    "linear",
-    "vercel",
-    "supabase",
-    "openai",
-    "anthropic",
+  const companies = [
+    "Company A",
+    "Company B",
+    "Company C",
+    "Company D",
+    "Company E",
+    "Company F",
+    "Company G",
+    "Company H",
+    "Company I",
   ];
 
   return (
-    <section id={id} className="py-24 bg-gradient-to-b from-background via-card/10 to-background relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/4 w-96 h-96 bg-primary/3 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 right-1/4 w-96 h-96 bg-primary-blue/3 rounded-full blur-3xl" />
-      </div>
-
-      <div className="container mx-auto px-6 relative z-10">
-        <p className="text-center text-muted-foreground mb-16 text-lg">
-          Trusted by employees at leading companies
+    <section id={id} className="py-20 bg-card/30">
+      <div className="container mx-auto px-6">
+        <p className="text-center text-muted-foreground mb-12">
+          Trusted by employees at:
         </p>
         
-        <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-8 lg:gap-12 items-center max-w-7xl mx-auto">
+        <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-8 items-center">
           {companies.map((company, index) => (
-            <CompanyLogo key={company} type={company} />
+            <div 
+              key={index}
+              className="flex items-center justify-center p-4 rounded-lg hover:bg-card/50 transition-all duration-300 group"
+            >
+              <div className="text-muted-foreground/50 group-hover:text-muted-foreground transition-colors text-center font-semibold">
+                {company}
+              </div>
+            </div>
           ))}
         </div>
       </div>
