@@ -61,8 +61,7 @@ export function useLandingImageGeneration(): UseLandingImageGenerationReturn {
                 contentType: 'landing',
                 style: 'photorealistic',
                 resolution: '1024x1024',
-                processingTime: 'fast',
-                provider: 'replicate'
+                processingTime: 'fast'
               }
             });
           }
