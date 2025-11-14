@@ -207,48 +207,48 @@ export default function GuidePage() {
     <StudioBackground>
       <VirturaNavigation />
       
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
+      <main className="max-w-6xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8 md:py-12 relative z-10">
         {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="text-5xl md:text-6xl font-display font-bold bg-gradient-to-r from-violet-400 via-purple-400 to-blue-400 bg-clip-text text-transparent mb-4">
+        <div className="text-center mb-8 sm:mb-12 md:mb-16">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold bg-gradient-to-r from-violet-400 via-purple-400 to-blue-400 bg-clip-text text-transparent mb-3 sm:mb-4">
             Getting Started with Virtura
           </h1>
-          <p className="text-xl text-muted-foreground">
+          <p className="text-base sm:text-lg md:text-xl text-muted-foreground px-4">
             Complete these steps to become a Virtura Creator
           </p>
         </div>
 
           {/* Progress Card */}
-          <Card className="mb-12 bg-[#1a1a2e]/80 border-violet-500/20 backdrop-blur-xl">
-            <div className="flex items-center justify-between p-8">
-              <div className="flex-1">
-                <h2 className="text-3xl font-display font-bold mb-2">Your Progress</h2>
-                <p className="text-lg text-muted-foreground">
+          <Card className="mb-8 sm:mb-10 md:mb-12 bg-[#1a1a2e]/80 border-violet-500/20 backdrop-blur-xl">
+            <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-0 sm:justify-between p-4 sm:p-6 md:p-8">
+              <div className="flex-1 text-center sm:text-left">
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-display font-bold mb-2">Your Progress</h2>
+                <p className="text-sm sm:text-base md:text-lg text-muted-foreground">
                   {isFullyComplete 
                     ? "🎉 All tasks completed! You're ready to create amazing content!" 
                     : `Complete ${todos.length - completedCount} more ${todos.length - completedCount === 1 ? 'task' : 'tasks'} to finish your onboarding`
                   }
                 </p>
               </div>
-              <div className="ml-8">
+              <div className="sm:ml-4 md:ml-8">
                 <CircularProgress 
                   value={progress} 
-                  size={120} 
+                  size={100} 
                   strokeWidth={8}
-                  className="relative"
+                  className="relative sm:w-[120px] sm:h-[120px]"
                 />
               </div>
             </div>
           </Card>
 
         {/* Onboarding Videos Section */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-display font-bold mb-8 flex items-center gap-3">
-            <Video className="w-8 h-8 text-violet-400" />
+        <div className="mb-8 sm:mb-12 md:mb-16">
+          <h2 className="text-2xl sm:text-3xl font-display font-bold mb-6 sm:mb-8 flex items-center gap-2 sm:gap-3">
+            <Video className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-violet-400" />
             Onboarding Video Library
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
             {/* Main Tutorial Video */}
             <Card className="group overflow-hidden bg-[#1a1a2e]/80 border-violet-500/20 hover:border-violet-500/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(139,92,246,0.3)]">
               <div className="aspect-video relative group cursor-pointer bg-gradient-to-br from-violet-900/50 to-pink-900/50">

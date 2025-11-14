@@ -109,35 +109,35 @@ export default function UnifiedAdminDashboard() {
     : "0.0";
 
   return (
-    <div className="container mx-auto py-8 px-4 space-y-8">
+    <div className="container mx-auto py-6 sm:py-8 px-3 sm:px-4 space-y-6 sm:space-y-8">
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <Shield className="w-8 h-8 text-primary" />
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
+        <Shield className="w-7 h-7 sm:w-8 sm:h-8 text-primary" />
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Admin Dashboard</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Comprehensive platform monitoring and analytics
           </p>
         </div>
       </div>
 
       {/* Quick Admin Actions */}
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
         <QuickAdminActions onActionComplete={fetchOverviewStats} />
         <ScheduledNotificationsDialog />
       </div>
 
       {/* Overview Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4">
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Users className="h-4 w-4" />
+          <CardHeader className="pb-2 p-4 sm:p-6 sm:pb-2">
+            <CardTitle className="text-xs sm:text-sm font-medium flex items-center gap-2">
+              <Users className="h-3 w-3 sm:h-4 sm:w-4" />
               Total Users
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalUsers}</div>
+          <CardContent className="p-4 sm:p-6 pt-0">
+            <div className="text-xl sm:text-2xl font-bold">{stats.totalUsers}</div>
             <p className="text-xs text-muted-foreground">registered accounts</p>
           </CardContent>
         </Card>
@@ -199,7 +199,8 @@ export default function UnifiedAdminDashboard() {
 
       {/* Tabbed Content */}
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-11">
+        <div className="overflow-x-auto -mx-3 sm:mx-0">
+          <TabsList className="flex-nowrap w-max sm:w-full sm:grid sm:grid-cols-11 px-3 sm:px-0">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="metrics">Metrics</TabsTrigger>
           <TabsTrigger value="users">Users</TabsTrigger>
@@ -212,6 +213,7 @@ export default function UnifiedAdminDashboard() {
           <TabsTrigger value="gallery">Gallery</TabsTrigger>
           <TabsTrigger value="landing">Landing</TabsTrigger>
         </TabsList>
+        </div>
 
         <TabsContent value="metrics" className="space-y-4">
           <SystemMetrics />
