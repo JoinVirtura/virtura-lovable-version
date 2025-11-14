@@ -112,32 +112,9 @@ export function LandingFooter() {
           </div>
         </div>
 
-        {/* Newsletter */}
-        <div className="border-t border-border pt-12 mb-12">
-          <div className="max-w-md mx-auto text-center">
-            <h4 className="font-semibold mb-2">Stay Updated</h4>
-            <p className="text-muted-foreground mb-4">
-              Get the latest AI tips and updates delivered to your inbox
-            </p>
-            <div className="flex gap-2">
-              <Input 
-                type="email" 
-                placeholder="Enter your email"
-                className="flex-1"
-              />
-              <Button className="bg-gradient-primary hover:shadow-violet-glow">
-                Subscribe
-              </Button>
-            </div>
-          </div>
-        </div>
-
         {/* Bottom Bar */}
-        <div className="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
+        <div className="border-t border-border pt-8 text-center text-sm text-muted-foreground">
           <p>© 2024 Virtura AI. All rights reserved.</p>
-          <div className="flex gap-6">
-            <span>Built with ❤️ using AI</span>
-          </div>
         </div>
       </div>
     </footer>

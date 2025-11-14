@@ -48,6 +48,13 @@ export function LandingNavigation() {
             ))}
             <Button 
               onClick={() => navigate("/auth")}
+              variant="ghost"
+              className="text-muted-foreground hover:text-foreground"
+            >
+              Login
+            </Button>
+            <Button 
+              onClick={() => navigate("/auth")}
               className="bg-gradient-primary hover:shadow-violet-glow transition-all"
             >
               Start Free Trial
@@ -76,6 +83,13 @@ export function LandingNavigation() {
                   {link.label}
                 </button>
               ))}
+              <Button 
+                onClick={() => navigate("/auth")}
+                variant="ghost"
+                className="text-muted-foreground hover:text-foreground w-full justify-start"
+              >
+                Login
+              </Button>
               <Button 
                 onClick={() => navigate("/auth")}
                 className="bg-gradient-primary hover:shadow-violet-glow transition-all w-full"
