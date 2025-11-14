@@ -50,7 +50,7 @@ interface VirturaSidebarProps {
 }
 
 export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: VirturaSidebarProps) {
-  const { state, setOpenMobile } = useSidebar();
+  const { state, setOpenMobile, isMobile } = useSidebar();
   const { user, signOut } = useAuth();
   const { profile } = useProfile();
   const navigate = useNavigate();
@@ -101,11 +101,11 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
   return (
     <Sidebar 
       className="bg-black/90 backdrop-blur-xl border-r border-violet-500/20"
-      collapsible="offcanvas"
+      collapsible="icon"
     >
-      <SidebarHeader className={isCollapsed ? "p-2" : "p-4"}>
+      <SidebarHeader className={!isMobile && isCollapsed ? "p-2" : "p-4"}>
         <div className="flex items-center justify-between">
-          {!isCollapsed && (
+          {(!isMobile || !isCollapsed) && (
             <div>
               <h1 className="text-xl font-display font-bold text-gradient-primary drop-shadow-[0_0_10px_rgba(212,110,255,0.6)] leading-tight">
                 Virtura
@@ -117,9 +117,9 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
         </div>
       </SidebarHeader>
 
-      <SidebarContent className={isCollapsed ? "px-1 pb-0" : "px-3 pb-0"}>
+      <SidebarContent className={!isMobile && isCollapsed ? "px-1 pb-0" : "px-3 pb-0"}>
         <SidebarGroup>
-          <SidebarGroupLabel className={`text-muted-foreground px-0 ${isCollapsed ? "hidden" : "block"}`}>Quick Actions</SidebarGroupLabel>
+          <SidebarGroupLabel className={`text-muted-foreground px-0 ${!isMobile && isCollapsed ? "hidden" : "block"}`}>Quick Actions</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {mainItems.map((item) => (
@@ -134,14 +134,14 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                       setOpenMobile(false);
                     }}
                     isActive={activeView === item.id}
-                    className={`w-full ${isCollapsed ? "justify-center px-2" : "justify-start gap-3"} ${
+                    className={`w-full ${!isMobile && isCollapsed ? "justify-center px-2" : "justify-start gap-3"} ${
                       activeView === item.id 
                         ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30" 
                         : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
                     }`}
                   >
                     <item.icon className="w-4 h-4 shrink-0" />
-                    {!isCollapsed && <span className="font-medium">{item.label}</span>}
+                    {(!isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -152,7 +152,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
         <SidebarSeparator />
 
         <SidebarGroup className="pb-0">
-          <SidebarGroupLabel className={`text-muted-foreground px-0 ${isCollapsed ? "hidden" : "block"}`}>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel className={`text-muted-foreground px-0 ${!isMobile && isCollapsed ? "hidden" : "block"}`}>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navigationTabs.map((item) => (
@@ -163,14 +163,14 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                       setOpenMobile(false);
                     }}
                     isActive={activeView === item.id}
-                    className={`w-full ${isCollapsed ? "justify-center px-2" : "justify-start gap-3"} ${
+                    className={`w-full ${!isMobile && isCollapsed ? "justify-center px-2" : "justify-start gap-3"} ${
                       activeView === item.id 
                         ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30" 
                         : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
                     }`}
                   >
                     <item.icon className="w-4 h-4 shrink-0" />
-                    {!isCollapsed && <span className="font-medium">{item.label}</span>}
+                    {(!isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -181,14 +181,14 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
       </SidebarContent>
 
       <SidebarFooter className="p-0">
-        <SidebarSeparator className={isCollapsed ? "mx-1" : "mx-3"} />
+        <SidebarSeparator className={!isMobile && isCollapsed ? "mx-1" : "mx-3"} />
         
         <button 
           onClick={() => {
             onViewChange('settings');
             setOpenMobile(false);
           }}
-          className={`flex items-center transition-colors rounded-lg ml-3 mr-3 ${isCollapsed ? "px-2 py-3 justify-center" : "pl-4 pr-4 py-3 gap-3"} hover:bg-violet-500/5 hover:text-violet-300 text-white`}
+          className={`flex items-center transition-colors rounded-lg ml-3 mr-3 ${!isMobile && isCollapsed ? "px-2 py-3 justify-center" : "pl-4 pr-4 py-3 gap-3"} hover:bg-violet-500/5 hover:text-violet-300 text-white`}
         >
           <Avatar className="w-8 h-8 ring-2 ring-violet-500/30 shrink-0">
             <AvatarImage src={profile?.avatar_url || undefined} />
@@ -203,7 +203,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                 : user?.email?.[0].toUpperCase() || 'U'}
             </AvatarFallback>
           </Avatar>
-          {!isCollapsed && (
+          {(!isMobile || !isCollapsed) && (
             <div className="flex-1 min-w-0 text-left">
               <p className="font-medium text-sm text-white">
                 {profile?.display_name || user?.email?.split('@')[0] || 'User'}
@@ -212,13 +212,13 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
           )}
         </button>
         
-        <div className={isCollapsed ? "px-2 pb-3" : "px-3 pb-3"}>
+        <div className={!isMobile && isCollapsed ? "px-2 pb-3" : "px-3 pb-3"}>
           <SidebarMenuButton 
             onClick={handleLogout}
-            className={`w-full ${isCollapsed ? "justify-center px-2" : "justify-start gap-3 pl-5"} text-destructive hover:bg-destructive/10 h-auto py-2`}
+            className={`w-full ${!isMobile && isCollapsed ? "justify-center px-2" : "justify-start gap-3 pl-5"} text-destructive hover:bg-destructive/10 h-auto py-2`}
           >
             <LogOut className="w-4 h-4 shrink-0" />
-            {!isCollapsed && <span className="font-medium">Logout</span>}
+            {(!isMobile || !isCollapsed) && <span className="font-medium">Logout</span>}
           </SidebarMenuButton>
         </div>
       </SidebarFooter>
