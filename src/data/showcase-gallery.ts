@@ -9,6 +9,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/trending-cyberpunk-city.jpg',
     title: 'Cyberpunk',
     tag: 'Featured',
+    views: 0,
     prompt: 'Neon-lit cyberpunk cityscape with flying vehicles',
   },
   {
@@ -17,6 +18,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/trending-fantasy-landscape.jpg',
     title: 'Fantasy',
     tag: 'Featured',
+    views: 0,
     prompt: 'Epic fantasy landscape with mystical elements',
   },
   {
@@ -25,6 +27,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/trending-surreal-dream.jpg',
     title: 'Surreal',
     tag: 'Featured',
+    views: 0,
     prompt: 'Dreamlike surreal composition',
   },
   {
@@ -33,6 +36,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/trending-fashion-portrait.jpg',
     title: 'Fashion',
     tag: 'Featured',
+    views: 0,
     prompt: 'High fashion portrait photography',
   },
   {
@@ -41,6 +45,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/trending-gothic-cathedral.jpg',
     title: 'Gothic',
     tag: 'Featured',
+    views: 0,
     prompt: 'Gothic cathedral architecture',
   },
   {
@@ -49,6 +54,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/trending-minimalist-arch.jpg',
     title: 'Minimalist',
     tag: 'Featured',
+    views: 0,
     prompt: 'Minimalist architectural design',
   },
   {
@@ -57,6 +63,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/trending-steampunk-mech.jpg',
     title: 'Steampunk',
     tag: 'Featured',
+    views: 0,
     prompt: 'Steampunk mechanical creation',
   },
   {
@@ -65,6 +72,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/trending-watercolor-landscape.jpg',
     title: 'Watercolor',
     tag: 'Featured',
+    views: 0,
     prompt: 'Watercolor painted landscape',
   },
   {
@@ -73,6 +81,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/trending-pop-art-portrait.jpg',
     title: 'Pop Art',
     tag: 'Featured',
+    views: 0,
     prompt: 'Bold pop art style portrait',
   },
   {
@@ -81,6 +90,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/trending-90s-anime.jpg',
     title: '90s Anime',
     tag: 'Featured',
+    views: 0,
     prompt: '90s anime style illustration',
   },
   {
@@ -89,6 +99,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/trending-film-noir.jpg',
     title: 'Film Noir',
     tag: 'Featured',
+    views: 0,
     prompt: 'Classic film noir aesthetic',
   },
   {
@@ -97,6 +108,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/trending-abstract-digital.jpg',
     title: 'Abstract',
     tag: 'Featured',
+    views: 0,
     prompt: 'Abstract digital art',
   },
 
@@ -107,6 +119,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/style-art-nouveau.jpg',
     title: 'Art Nouveau',
     tag: 'Artistic',
+    views: 0,
     prompt: 'Art nouveau decorative style',
   },
   {
@@ -115,6 +128,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/style-oil-painting.jpg',
     title: 'Oil Painting',
     tag: 'Artistic',
+    views: 0,
     prompt: 'Classic oil painting technique',
   },
   {
@@ -123,6 +137,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/style-impressionist.jpg',
     title: 'Impressionist',
     tag: 'Artistic',
+    views: 0,
     prompt: 'Impressionist painting style',
   },
   {
@@ -131,6 +146,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/style-pixel-art.jpg',
     title: 'Pixel Art',
     tag: 'Digital',
+    views: 0,
     prompt: 'Retro pixel art aesthetic',
   },
   {
@@ -139,6 +155,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/style-synthwave.jpg',
     title: 'Synthwave',
     tag: 'Digital',
+    views: 0,
     prompt: 'Retro synthwave aesthetic',
   },
 
@@ -149,6 +166,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/style-fantasy-creature.jpg',
     title: 'Fantasy Creature',
     tag: 'Fantasy',
+    views: 0,
     prompt: 'Mythical fantasy creature',
   },
   {
@@ -157,6 +175,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/style-fantasy-portraits.jpg',
     title: 'Fantasy Portrait',
     tag: 'Fantasy',
+    views: 0,
     prompt: 'Fantasy character portrait',
   },
   {
@@ -165,6 +184,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/style-cyberpunk.jpg',
     title: 'Cyberpunk',
     tag: 'Sci-Fi',
+    views: 0,
     prompt: 'Futuristic cyberpunk scene',
   },
   {
@@ -173,6 +193,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/trending-space-station.jpg',
     title: 'Space Station',
     tag: 'Sci-Fi',
+    views: 0,
     prompt: 'Advanced space station design',
   },
 
@@ -183,6 +204,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/model-aurora.jpg',
     title: 'Portrait',
     tag: 'Portrait',
+    views: 0,
     prompt: 'Professional portrait photography',
   },
   {
@@ -191,6 +213,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/model-luna.jpg',
     title: 'Portrait',
     tag: 'Portrait',
+    views: 0,
     prompt: 'Cinematic portrait',
   },
   {
@@ -199,6 +222,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/model-nova.jpg',
     title: 'Portrait',
     tag: 'Portrait',
+    views: 0,
     prompt: 'Fashion portrait',
   },
 
@@ -209,6 +233,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/style-steampunk.jpg',
     title: 'Steampunk',
     tag: 'Unique',
+    views: 0,
     prompt: 'Victorian steampunk design',
   },
   {
@@ -217,6 +242,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/style-biomechanical.jpg',
     title: 'Biomechanical',
     tag: 'Unique',
+    views: 0,
     prompt: 'Biomechanical fusion art',
   },
   {
@@ -225,6 +251,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/style-botanical.jpg',
     title: 'Botanical',
     tag: 'Nature',
+    views: 0,
     prompt: 'Botanical illustration',
   },
   {
@@ -233,6 +260,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/style-long-exposure.jpg',
     title: 'Long Exposure',
     tag: 'Photography',
+    views: 0,
     prompt: 'Long exposure photography',
   },
   {
@@ -241,6 +269,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/style-street-fashion.jpg',
     title: 'Street Fashion',
     tag: 'Fashion',
+    views: 0,
     prompt: 'Urban street fashion',
   },
   {
@@ -249,6 +278,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/style-nighttime-dreams.jpg',
     title: 'Nighttime Dreams',
     tag: 'Artistic',
+    views: 0,
     prompt: 'Dreamy nighttime atmosphere',
   },
 
@@ -259,6 +289,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/style-gothic.jpg',
     title: 'Gothic',
     tag: 'Dark',
+    views: 0,
     prompt: 'Gothic aesthetic',
   },
   {
@@ -267,6 +298,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/style-fluff-world.jpg',
     title: 'Fluff World',
     tag: 'Whimsical',
+    views: 0,
     prompt: 'Soft fluffy aesthetic',
   },
   {
@@ -275,6 +307,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/style-glitch.jpg',
     title: 'Glitch',
     tag: 'Digital',
+    views: 0,
     prompt: 'Digital glitch art',
   },
   {
@@ -283,6 +316,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/style-minimalist-arch.jpg',
     title: 'Architecture',
     tag: 'Design',
+    views: 0,
     prompt: 'Modern architectural design',
   },
   {
@@ -291,6 +325,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/style-photoset.jpg',
     title: 'Photoset',
     tag: 'Photography',
+    views: 0,
     prompt: 'Professional photo series',
   },
   {
@@ -299,6 +334,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/style-abstract-geo.jpg',
     title: 'Geometric',
     tag: 'Abstract',
+    views: 0,
     prompt: 'Abstract geometric patterns',
   },
 
@@ -309,6 +345,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/trending-wildlife-leopard.jpg',
     title: 'Wildlife',
     tag: 'Nature',
+    views: 0,
     prompt: 'Wildlife photography',
   },
   {
@@ -317,6 +354,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/trending-culinary-art.jpg',
     title: 'Culinary',
     tag: 'Artistic',
+    views: 0,
     prompt: 'Culinary art photography',
   },
 
@@ -327,6 +365,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/model-aria.jpg',
     title: 'Portrait',
     tag: 'Portrait',
+    views: 0,
     prompt: 'Elegant portrait',
   },
   {
@@ -335,6 +374,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/model-sage.jpg',
     title: 'Portrait',
     tag: 'Portrait',
+    views: 0,
     prompt: 'Professional headshot',
   },
   {
@@ -343,6 +383,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/model-zara.jpg',
     title: 'Portrait',
     tag: 'Portrait',
+    views: 0,
     prompt: 'Fashion photography',
   },
   {
@@ -351,6 +392,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/model-bella.jpg',
     title: 'Portrait',
     tag: 'Portrait',
+    views: 0,
     prompt: 'Studio portrait',
   },
 
@@ -361,6 +403,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/style-hok-tech.jpg',
     title: 'Tech',
     tag: 'Futuristic',
+    views: 0,
     prompt: 'High-tech visualization',
   },
   {
@@ -369,6 +412,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/style-moskvichka.jpg',
     title: 'Artistic',
     tag: 'Unique',
+    views: 0,
     prompt: 'Unique artistic style',
   },
   {
@@ -377,6 +421,7 @@ export const showcaseGallery: Tile[] = [
     posterUrl: '/src/assets/style-child-animal.jpg',
     title: 'Whimsical',
     tag: 'Playful',
+    views: 0,
     prompt: 'Playful illustration style',
   },
 ];
