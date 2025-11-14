@@ -5,6 +5,7 @@ import type { Tile } from "@/features/home";
 import { StudioBackground } from "./StudioBackground";
 import { NeuralVisual } from "./NeuralVisual";
 import { usePublicGallery } from "@/hooks/usePublicGallery";
+import { ResponsiveImage } from "./ResponsiveImage";
 
 interface OverviewPageProps {
   onViewChange: (view: string) => void;
