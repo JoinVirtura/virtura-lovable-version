@@ -4,6 +4,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts";
 import { TrendingUp, Users, Sparkles, MousePointer } from "lucide-react";
 
+// Type for landing analytics records
+interface LandingAnalytic {
+  id: string;
+  event_type: string;
+  session_id?: string;
+  prompt?: string;
+  metadata?: any;
+  created_at: string;
+}
+
 interface AnalyticsData {
   totalGenerations: number;
   totalSignupClicks: number;
@@ -30,18 +40,21 @@ export function LandingAnalyticsDashboard() {
 
   const loadAnalytics = async () => {
     try {
-      // Get all analytics data
-      const { data: analytics, error } = await supabase
-        .from('landing_analytics')
+      // Get all analytics data with explicit any type until Supabase types regenerate
+      const { data, error } = await supabase
+        .from('landing_analytics' as any)
         .select('*')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
 
+      // Cast to proper type using 'any' as intermediate
+      const analytics = (data || []) as any[] as LandingAnalytic[];
+
       // Process data
-      const generations = analytics?.filter(a => a.event_type === 'images_generated') || [];
-      const signupClicks = analytics?.filter(a => a.event_type === 'signup_clicked' || a.event_type === 'gallery_cta_clicked') || [];
-      const signups = analytics?.filter(a => a.event_type === 'signup_completed') || [];
+      const generations = analytics.filter(a => a.event_type === 'images_generated');
+      const signupClicks = analytics.filter(a => a.event_type === 'signup_clicked' || a.event_type === 'gallery_cta_clicked');
+      const signups = analytics.filter(a => a.event_type === 'signup_completed');
 
       // Top prompts
       const promptCounts: Record<string, number> = {};
