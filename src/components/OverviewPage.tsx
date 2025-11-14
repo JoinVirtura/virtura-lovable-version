@@ -41,13 +41,15 @@ export function OverviewPage({ onViewChange }: OverviewPageProps) {
   return (
     <StudioBackground>
       <NeuralVisual />
-      <Hero />
-      <div className="pt-8">
+      <div className="px-4 sm:px-6 lg:px-8">
+        <Hero />
+      </div>
+      <div className="pt-4 sm:pt-6 lg:pt-8">
         {tiles.length > 0 ? (
-          <TrendingRow tiles={tiles} className="px-0" />
+          <TrendingRow tiles={tiles} className="px-4 sm:px-6 lg:px-8" />
         ) : (
-          <div className="text-center py-12 px-6">
-            <p className="text-muted-foreground">No content available yet. Start creating to see your work here!</p>
+          <div className="text-center py-8 sm:py-12 px-4 sm:px-6">
+            <p className="text-sm sm:text-base text-muted-foreground">No content available yet. Start creating to see your work here!</p>
           </div>
         )}
       </div>
