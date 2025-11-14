@@ -86,3 +86,6 @@ verify_jwt = true
 
 [functions.brand-asset-operations]
 verify_jwt = true
+
+[functions.generate-landing-image]
+verify_jwt = false
