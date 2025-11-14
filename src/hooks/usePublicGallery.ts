@@ -27,15 +27,40 @@ export const usePublicGallery = (limit: number = 100) => {
   const loadGalleryItems = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      
+      // First, get showcase images (always prioritized)
+      const { data: showcaseData, error: showcaseError } = await supabase
         .from('avatar_library')
         .select('id, image_url, title, tags, created_at, prompt, is_video, video_url, thumbnail_url, duration')
+        .contains('tags', ['showcase'])
+        .eq('is_video', false)
         .order('created_at', { ascending: false })
-        .limit(limit);
+        .limit(12);
 
-      if (error) throw error;
+      if (showcaseError) throw showcaseError;
 
-      setItems(data || []);
+      const showcaseItems = showcaseData || [];
+      
+      // If we have less than 12 showcase images, fill with recent public images
+      if (showcaseItems.length < limit) {
+        const { data: recentData, error: recentError } = await supabase
+          .from('avatar_library')
+          .select('id, image_url, title, tags, created_at, prompt, is_video, video_url, thumbnail_url, duration')
+          .eq('is_video', false)
+          .order('created_at', { ascending: false })
+          .limit(limit - showcaseItems.length);
+
+        if (recentError) throw recentError;
+
+        // Combine showcase + recent, avoiding duplicates
+        const showcaseIds = new Set(showcaseItems.map(item => item.id));
+        const recentFiltered = (recentData || []).filter(item => !showcaseIds.has(item.id));
+        
+        setItems([...showcaseItems, ...recentFiltered]);
+      } else {
+        setItems(showcaseItems);
+      }
+      
     } catch (error: any) {
       console.error('Error loading gallery items:', error);
       toast({

@@ -28,40 +28,58 @@ export function useLandingImageGeneration(): UseLandingImageGenerationReturn {
     try {
       console.log('[Landing] Generation started:', prompt);
 
-      // Generate 3 variants by calling the public edge function
+      // Generate 3 variants using Replicate (same quality as dashboard)
       const variants: GeneratedImage[] = [];
       
       for (let i = 0; i < 3; i++) {
-        setProgress((i / 3) * 100);
+        setProgress(((i + 1) / 3) * 100);
         
         try {
           const { supabase } = await import("@/integrations/supabase/client");
-          const { data, error } = await supabase.functions.invoke('generate-landing-image', {
+          const { data, error } = await supabase.functions.invoke('generate-landing-replicate', {
             body: { prompt }
           });
 
-          if (error) throw error;
+          if (error) {
+            console.error(`[Landing] Variant ${i + 1} error:`, error);
+            
+            // Handle rate limiting
+            if (error.message?.includes('Rate limit')) {
+              toast.error("Rate limit reached. Sign up for unlimited generations!");
+              break; // Stop trying more variants
+            }
+            
+            throw error;
+          }
 
           if (data?.success && data?.image) {
             variants.push({
               success: true,
               image: data.image,
-              prompt: data.prompt,
+              prompt: data.prompt || prompt,
               metadata: {
                 contentType: 'landing',
                 style: 'photorealistic',
                 resolution: '1024x1024',
-                processingTime: 'instant'
+                processingTime: 'fast',
+                provider: 'replicate'
               }
             });
           }
-        } catch (variantError) {
+        } catch (variantError: any) {
           console.error(`[Landing] Variant ${i + 1} failed:`, variantError);
-          // Continue with other variants even if one fails
+          
+          // Show user-friendly error for rate limits
+          if (variantError?.message?.includes('Rate limit') || variantError?.status === 429) {
+            toast.error("Free tier limit reached. Sign up for unlimited access!");
+            break;
+          }
+          
+          // Continue with other variants for other errors
         }
 
-        // Small delay between requests to avoid overwhelming the service
-        if (i < 2) await new Promise(resolve => setTimeout(resolve, 500));
+        // Small delay between requests
+        if (i < 2) await new Promise(resolve => setTimeout(resolve, 800));
       }
 
       setImages(variants.filter(v => v.success));

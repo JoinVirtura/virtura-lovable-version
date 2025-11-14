@@ -1,5 +1,5 @@
 import { usePublicGallery } from "@/hooks/usePublicGallery";
-import { WatermarkedImageCard } from "./WatermarkedImageCard";
+import { GalleryImageCard } from "./GalleryImageCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -53,9 +53,9 @@ export function PublicGallerySection({ id }: PublicGallerySectionProps) {
             ))}
           </div>
         ) : imageItems.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fade-in">
             {imageItems.slice(0, 12).map((item, index) => (
-              <WatermarkedImageCard
+              <GalleryImageCard
                 key={item.id}
                 image={item.image_url}
                 prompt={item.prompt}
