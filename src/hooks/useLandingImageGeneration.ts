@@ -26,41 +26,54 @@ export function useLandingImageGeneration(): UseLandingImageGenerationReturn {
     setImages([]);
 
     try {
-      // Track analytics event
-      if (typeof window !== 'undefined') {
-        console.log('[Landing] Generation started:', prompt);
-      }
+      console.log('[Landing] Generation started:', prompt);
 
-      // Generate 3 variants
-      const defaultParams: ImageGenerationParams = {
-        prompt,
-        style: "photorealistic",
-        contentType: "auto",
-        aspectRatio: "1:1",
-        resolution: "1024x1024",
-        quality: "hd",
-        provider: "replicate",
-      };
-
-      const mergedParams = { ...defaultParams, ...params, prompt };
+      // Generate 3 variants by calling the public edge function
+      const variants: GeneratedImage[] = [];
       
-      const variants = await ImageGenerationService.generateVariants(
-        prompt,
-        mergedParams,
-        3
-      );
+      for (let i = 0; i < 3; i++) {
+        setProgress((i / 3) * 100);
+        
+        try {
+          const { supabase } = await import("@/integrations/supabase/client");
+          const { data, error } = await supabase.functions.invoke('generate-landing-image', {
+            body: { prompt }
+          });
+
+          if (error) throw error;
+
+          if (data?.success && data?.image) {
+            variants.push({
+              success: true,
+              image: data.image,
+              prompt: data.prompt,
+              metadata: {
+                contentType: 'landing',
+                style: 'photorealistic',
+                resolution: '1024x1024',
+                processingTime: 'instant'
+              }
+            });
+          }
+        } catch (variantError) {
+          console.error(`[Landing] Variant ${i + 1} failed:`, variantError);
+          // Continue with other variants even if one fails
+        }
+
+        // Small delay between requests to avoid overwhelming the service
+        if (i < 2) await new Promise(resolve => setTimeout(resolve, 500));
+      }
 
       setImages(variants.filter(v => v.success));
       setProgress(100);
 
-      if (variants.some(v => v.success)) {
+      if (variants.length > 0) {
         toast.success("Images generated! Sign up to download watermark-free.");
+      } else {
+        toast.error("Failed to generate images. Please try again.");
       }
 
-      // Track completion
-      if (typeof window !== 'undefined') {
-        console.log('[Landing] Generation completed:', variants.length);
-      }
+      console.log('[Landing] Generation completed:', variants.length);
     } catch (error) {
       console.error("Image generation error:", error);
       toast.error("Failed to generate images. Please try again.");
