@@ -1949,12 +1949,8 @@ export default function Dashboard() {
           
           {/* Fixed Mobile Header */}
           <header className="fixed top-0 left-0 right-0 z-50 md:hidden bg-black/90 backdrop-blur-xl border-b border-violet-500/20">
-            <div className="flex items-center justify-between px-4 h-14">
+            <div className="flex items-center px-4 h-14">
               <SidebarTrigger className="h-8 w-8 text-violet-400 hover:text-violet-300" />
-              <h1 className="text-lg font-display font-bold text-gradient-primary drop-shadow-[0_0_10px_rgba(212,110,255,0.6)]">
-                Virtura
-              </h1>
-              <div className="w-8" /> {/* Spacer for centering */}
             </div>
           </header>
           

@@ -668,11 +668,11 @@ export const Hero = () => {
         )}
 
         {/* Input Interface - Studio Pro Style */}
-        <div className="w-full max-w-5xl mb-4 animate-fade-in">
-          <Card className="backdrop-blur-xl bg-black/60 border-2 border-primary/30 shadow-2xl overflow-hidden">
-            <div className="p-4">
+        <div className="w-full max-w-4xl mb-4 animate-fade-in">
+          <Card className="backdrop-blur-xl bg-black/60 border-2 border-primary/30 rounded-2xl shadow-2xl overflow-hidden">
+            <div className="p-3 md:p-4">
               {/* Main Input Row */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 md:gap-3">
                 <Textarea
                   placeholder="Describe the image you want to create..."
                   value={inputValue}
@@ -755,7 +755,7 @@ export const Hero = () => {
                     type="button"
                     onClick={handleGenerate}
                     disabled={isGenerating || !inputValue.trim()}
-                    className="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-secondary hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-9 h-9 rounded-full bg-gradient-to-r from-primary to-secondary hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isGenerating ? (
                       <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
