@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Loader2, Eye, EyeOff, AlertCircle, CheckCircle, Shield } from "lucide-react";
+import { Loader2, Eye, EyeOff, AlertCircle, CheckCircle, Shield, ArrowLeft } from "lucide-react";
 import { useRateLimiting } from "@/hooks/useRateLimiting";
 import { useSecurityHeaders } from "@/hooks/useSecurityHeaders";
 import { WelcomeModal } from "@/components/WelcomeModal";
@@ -241,18 +241,27 @@ export default function AuthPage() {
       />
       
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
-        <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <Shield className="h-6 w-6 text-primary" />
-            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              Virtura AI
-            </CardTitle>
-          </div>
-          <CardDescription>
-            Create professional talking avatar videos with AI
-          </CardDescription>
-        </CardHeader>
+        <Card className="w-full max-w-md relative">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate("/")}
+            className="absolute top-4 left-4 text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          
+          <CardHeader className="text-center">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Shield className="h-6 w-6 text-primary" />
+              <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                Virtura AI
+              </CardTitle>
+            </div>
+            <CardDescription>
+              Create professional talking avatar videos with AI
+            </CardDescription>
+          </CardHeader>
         <CardContent>
           <Tabs defaultValue="signin" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
