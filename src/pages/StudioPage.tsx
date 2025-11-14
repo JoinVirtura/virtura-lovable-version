@@ -113,12 +113,12 @@ export default function StudioPage() {
 
 
       {/* Main Studio Interface */}
-      <div className="max-w-7xl mx-auto px-6 py-6">
-        <div className="grid lg:grid-cols-12 gap-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
           {/* Main Studio Panel */}
-          <div className="lg:col-span-8">
+          <div className="lg:col-span-8 order-2 lg:order-1">
             <Card className="border-0 shadow-[0_8px_32px_rgba(0,0,0,0.3)] bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl rounded-2xl overflow-hidden">
-              <CardContent className="p-0">
+              <CardContent className="p-4 sm:p-6">
                 <Tabs value={currentStep} onValueChange={setCurrentStep}>
                   <TabsContent value="avatar" className="p-6 space-y-6">
                     <ErrorBoundary fallbackTitle="Avatar Generation Error" fallbackMessage="There was an issue with the avatar generation component.">
@@ -150,8 +150,8 @@ export default function StudioPage() {
             </Card>
           </div>
 
-          {/* Sidebar - Preview & Controls */}
-          <div className="lg:col-span-4 space-y-6">
+          {/* Sidebar */}
+          <div className="lg:col-span-4 space-y-4 sm:space-y-6 order-1 lg:order-2">
             {/* Real-time Preview */}
             <div className="glass-card border border-violet-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] rounded-xl overflow-hidden">
               <RealtimePreview 
