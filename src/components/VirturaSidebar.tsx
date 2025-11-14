@@ -134,14 +134,14 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                       setOpenMobile(false);
                     }}
                     isActive={activeView === item.id}
-                    className={`w-full ${!isMobile && isCollapsed ? "justify-center px-2" : "justify-start gap-3"} ${
+                    className={`w-full ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
                       activeView === item.id 
                         ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30" 
                         : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
                     }`}
                   >
                     <item.icon className="w-4 h-4 shrink-0" />
-                    {(!isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
+                    {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -163,14 +163,14 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                       setOpenMobile(false);
                     }}
                     isActive={activeView === item.id}
-                    className={`w-full ${!isMobile && isCollapsed ? "justify-center px-2" : "justify-start gap-3"} ${
+                    className={`w-full ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
                       activeView === item.id 
                         ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30" 
                         : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
                     }`}
                   >
                     <item.icon className="w-4 h-4 shrink-0" />
-                    {(!isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
+                    {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -188,7 +188,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
             onViewChange('settings');
             setOpenMobile(false);
           }}
-          className={`flex items-center transition-colors rounded-lg ml-3 mr-3 ${!isMobile && isCollapsed ? "px-2 py-3 justify-center" : "pl-4 pr-4 py-3 gap-3"} hover:bg-violet-500/5 hover:text-violet-300 text-white`}
+          className={`flex items-center transition-colors rounded-lg ml-3 mr-3 ${!isMobile && isCollapsed ? "py-3 justify-center" : "pl-4 pr-4 py-3 gap-3 justify-start"} hover:bg-violet-500/5 hover:text-violet-300 text-white`}
         >
           <Avatar className="w-8 h-8 ring-2 ring-violet-500/30 shrink-0">
             <AvatarImage src={profile?.avatar_url || undefined} />
@@ -215,10 +215,10 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
         <div className={!isMobile && isCollapsed ? "px-2 pb-3" : "px-3 pb-3"}>
           <SidebarMenuButton 
             onClick={handleLogout}
-            className={`w-full ${!isMobile && isCollapsed ? "justify-center px-2" : "justify-start gap-3 pl-5"} text-destructive hover:bg-destructive/10 h-auto py-2`}
+            className={`w-full ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 pl-5"} text-destructive hover:bg-destructive/10 h-auto py-2`}
           >
             <LogOut className="w-4 h-4 shrink-0" />
-            {(!isMobile || !isCollapsed) && <span className="font-medium">Logout</span>}
+            {(isMobile || !isCollapsed) && <span className="font-medium">Logout</span>}
           </SidebarMenuButton>
         </div>
       </SidebarFooter>
