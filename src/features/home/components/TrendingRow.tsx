@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Play, Eye, Sparkles, Heart, Share2, Filter, Film } from 'lucide-react';
+import { ArrowRight, Play, Eye, Sparkles, Heart, Share2, Filter, Film, Search, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { ContentCard } from './ContentCard';
 import { Tile } from '../types';
 import { cn } from '@/lib/utils';
@@ -19,13 +20,24 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
   const [isShuffling, setIsShuffling] = useState(false);
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [likedItems, setLikedItems] = useState<Set<string>>(new Set());
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isExpanded, setIsExpanded] = useState(false);
   const [displayCount, setDisplayCount] = useState(50);
   const [scrollY, setScrollY] = useState(0);
   const [activeFilter, setActiveFilter] = useState<string>('All');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+
+  // Load favorites from localStorage
+  useEffect(() => {
+    const savedFavorites = localStorage.getItem('showcaseFavorites');
+    if (savedFavorites) {
+      setFavorites(new Set(JSON.parse(savedFavorites)));
+    }
+  }, []);
 
   // Filter categories for style showcase
   const filterCategories = [
@@ -37,7 +49,6 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
     { label: 'Unique', icon: Sparkles },
     { label: 'Photography', icon: Eye },
     { label: 'Fashion', icon: Heart },
-    { label: 'Nature', icon: Sparkles },
   ];
   
   // Track scroll for parallax effects
@@ -134,50 +145,22 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
   };
 
   const handleSaveToLibrary = async (tile: Tile) => {
-    try {
-      sonnerToast.info("Saving to library...");
-      
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        sonnerToast.error("Please sign in to save items");
-        return;
+    // ... existing code
+  };
+
+  const toggleFavorite = (tileId: string) => {
+    setFavorites(prev => {
+      const newFavorites = new Set(prev);
+      if (newFavorites.has(tileId)) {
+        newFavorites.delete(tileId);
+        toast({ title: "Removed from favorites ⭐" });
+      } else {
+        newFavorites.add(tileId);
+        toast({ title: "Added to favorites ⭐" });
       }
-
-      // Check for duplicates
-      const { data: existing } = await supabase
-        .from('avatar_library')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('image_url', tile.posterUrl)
-        .single();
-      
-      if (existing) {
-        sonnerToast.info("Already in your library");
-        return;
-      }
-
-      const { error } = await supabase
-        .from('avatar_library')
-        .insert({
-          user_id: user.id,
-          title: tile.title || 'Untitled',
-          image_url: tile.posterUrl,
-          video_url: tile.kind === 'video' ? tile.posterUrl : null,
-          thumbnail_url: tile.kind === 'video' ? tile.posterUrl : null,
-          prompt: tile.prompt || tile.title,
-          tags: tile.tag ? [tile.tag] : ['saved'],
-          is_video: tile.kind === 'video',
-          duration: tile.duration ? parseInt(tile.duration.replace('s', '')) : null,
-        });
-
-      if (error) throw error;
-      
-      sonnerToast.success("Saved to library!");
-    } catch (error: any) {
-      console.error('Save failed:', error);
-      sonnerToast.error(error.message || "Failed to save");
-    }
+      localStorage.setItem('showcaseFavorites', JSON.stringify([...newFavorites]));
+      return newFavorites;
+    });
   };
 
   const handleViewAll = () => {
@@ -197,10 +180,28 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
     setShuffledTiles(tiles);
   }, [tiles]);
 
-  // Apply filter logic
-  const filteredTiles = activeFilter === 'All' 
-    ? shuffledTiles 
-    : shuffledTiles.filter(tile => tile.tag === activeFilter);
+  // Apply comprehensive filtering: category, search, and favorites
+  let filteredTiles = shuffledTiles;
+  
+  // Category filter
+  if (activeFilter !== 'All') {
+    filteredTiles = filteredTiles.filter(tile => tile.tag === activeFilter);
+  }
+  
+  // Search filter
+  if (searchQuery.trim()) {
+    const query = searchQuery.toLowerCase();
+    filteredTiles = filteredTiles.filter(tile => 
+      tile.title.toLowerCase().includes(query) ||
+      tile.prompt?.toLowerCase().includes(query) ||
+      tile.tag?.toLowerCase().includes(query)
+    );
+  }
+  
+  // Favorites filter
+  if (showFavoritesOnly) {
+    filteredTiles = filteredTiles.filter(tile => favorites.has(tile.id));
+  }
 
   const displayedTiles = filteredTiles.slice(0, displayCount);
 
@@ -569,6 +570,42 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
             </motion.div>
           </div>
 
+          {/* Search Bar and Favorites Toggle */}
+          <motion.div 
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8 pb-4 max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.75 }}
+          >
+            {/* Search Input */}
+            <div className="relative flex-1 w-full">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-400" />
+              <Input
+                type="text"
+                placeholder="Search styles by name, description..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-12 pr-4 py-6 bg-background/40 backdrop-blur-sm border-2 border-purple-400/20 focus:border-purple-400/50 rounded-full text-foreground placeholder:text-foreground/50 transition-all duration-300"
+              />
+            </div>
+            
+            {/* Favorites Toggle Button */}
+            <Button
+              onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+              variant={showFavoritesOnly ? "default" : "outline"}
+              size="lg"
+              className={cn(
+                "relative overflow-hidden px-6 py-6 rounded-full font-bold transition-all duration-300 border-2",
+                showFavoritesOnly
+                  ? "bg-gradient-to-r from-yellow-500 via-amber-500 to-orange-500 border-yellow-400/50 text-white shadow-lg shadow-yellow-500/50"
+                  : "bg-background/40 backdrop-blur-sm border-purple-400/20 hover:border-yellow-400/40 hover:bg-yellow-500/10"
+              )}
+            >
+              <Star className={cn("w-5 h-5 mr-2", showFavoritesOnly && "fill-white")} />
+              Favorites {favorites.size > 0 && `(${favorites.size})`}
+            </Button>
+          </motion.div>
+
           {/* Advanced Filter System */}
           <motion.div 
             className="flex flex-wrap gap-3 justify-center pt-8 pb-4"
@@ -717,19 +754,45 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.2 }}
-                        className="absolute inset-0 flex items-center justify-center p-4"
+                        className="absolute inset-0 flex flex-col items-center justify-between p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent"
                       >
+                        {/* Top Bar: Favorites Button */}
+                        <div className="w-full flex justify-end">
+                          <motion.button
+                            initial={{ y: -20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.1 }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleFavorite(tile.id);
+                            }}
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            className="p-2.5 bg-yellow-500/90 hover:bg-yellow-400 backdrop-blur-sm rounded-full border border-yellow-400/40 transition-all duration-200"
+                          >
+                            <Star 
+                              className={cn(
+                                "w-5 h-5 transition-all duration-200",
+                                favorites.has(tile.id) 
+                                  ? "fill-white text-white" 
+                                  : "text-white hover:fill-white"
+                              )} 
+                            />
+                          </motion.button>
+                        </div>
+                        
+                        {/* Center: View Count Badge */}
                         <motion.div 
-                          className="flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-2 rounded-full border border-purple-400/30"
-                          whileHover={{ scale: 1.05, borderColor: 'rgba(168, 85, 247, 0.6)' }}
+                          className="flex items-center gap-2 bg-black/70 backdrop-blur-md px-4 py-2 rounded-full border border-purple-400/40"
+                          whileHover={{ scale: 1.05, borderColor: 'rgba(168, 85, 247, 0.7)' }}
                           initial={{ opacity: 0, scale: 0.8 }}
                           animate={{ 
                             opacity: 1, 
                             scale: 1,
                             boxShadow: [
-                              '0 0 10px rgba(168, 85, 247, 0.3)',
-                              '0 0 20px rgba(168, 85, 247, 0.5)',
-                              '0 0 10px rgba(168, 85, 247, 0.3)',
+                              '0 0 15px rgba(168, 85, 247, 0.3)',
+                              '0 0 25px rgba(168, 85, 247, 0.6)',
+                              '0 0 15px rgba(168, 85, 247, 0.3)',
                             ]
                           }}
                           transition={{
@@ -741,9 +804,13 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                             }
                           }}
                         >
-                          <Eye className="w-4 h-4 text-purple-400" />
-                          <span className="text-white font-bold text-sm">{tile.views.toLocaleString()}</span>
+                          <Eye className="w-5 h-5 text-purple-400" />
+                          <span className="text-white font-bold text-base">{tile.views?.toLocaleString() || 0}</span>
+                          <span className="text-white/70 text-sm">views</span>
                         </motion.div>
+                        
+                        {/* Bottom: Empty space for balance */}
+                        <div />
                       </motion.div>
                     )}
                   </AnimatePresence>
