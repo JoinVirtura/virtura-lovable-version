@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from "react";
-import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Camera, Mic, Sparkles, Wand2 } from "lucide-react";
+import { Camera, Mic, Send } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 
 interface InteractiveHeroInputProps {
@@ -10,19 +10,18 @@ interface InteractiveHeroInputProps {
 }
 
 const PLACEHOLDER_PROMPTS = [
-  "A futuristic city at sunset with flying cars and neon lights...",
-  "Professional headshot of a confident business executive in modern office...",
-  "Abstract geometric art with vibrant purple and blue gradients...",
-  "A serene forest landscape with a mystical glowing lake...",
-  "Portrait of a creative artist in their colorful studio workspace...",
-  "Minimalist product photography of luxury tech device...",
+  "A futuristic city at sunset with flying cars...",
+  "Professional headshot in modern office...",
+  "Abstract art with vibrant gradients...",
+  "Serene forest with mystical glowing lake...",
+  "Creative artist in colorful studio...",
+  "Minimalist luxury tech product...",
 ];
 
 export function InteractiveHeroInput({ onGenerate, isGenerating }: InteractiveHeroInputProps) {
   const [prompt, setPrompt] = useState("");
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Rotate placeholder every 3 seconds
   useEffect(() => {
@@ -32,9 +31,11 @@ export function InteractiveHeroInput({ onGenerate, isGenerating }: InteractiveHe
     return () => clearInterval(interval);
   }, []);
 
+  const currentPlaceholder = PLACEHOLDER_PROMPTS[placeholderIndex];
+
   const handleGenerate = () => {
     if (!prompt.trim()) {
-      toast.error("Please enter a prompt to generate images");
+      toast.error("Please enter a prompt");
       return;
     }
     onGenerate(prompt);
@@ -42,7 +43,7 @@ export function InteractiveHeroInput({ onGenerate, isGenerating }: InteractiveHe
 
   const handleVoiceInput = async () => {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-      toast.error("Voice input not supported in this browser");
+      toast.error("Voice input not supported");
       return;
     }
 
@@ -55,7 +56,7 @@ export function InteractiveHeroInput({ onGenerate, isGenerating }: InteractiveHe
 
     recognition.onstart = () => {
       setIsRecording(true);
-      toast.info("Listening... Speak your prompt");
+      toast.info("Listening...");
     };
 
     recognition.onresult = (event: any) => {
@@ -65,9 +66,8 @@ export function InteractiveHeroInput({ onGenerate, isGenerating }: InteractiveHe
       setIsRecording(false);
     };
 
-    recognition.onerror = (event: any) => {
-      console.error("Speech recognition error:", event.error);
-      toast.error("Failed to capture voice. Please try again.");
+    recognition.onerror = () => {
+      toast.error("Failed to capture voice");
       setIsRecording(false);
     };
 
@@ -78,101 +78,65 @@ export function InteractiveHeroInput({ onGenerate, isGenerating }: InteractiveHe
     recognition.start();
   };
 
-  const handleImageUpload = () => {
-    toast.info("Image upload coming soon!");
-  };
-
-  const characterCount = prompt.length;
-  const maxCharacters = 500;
-
   return (
-    <div className="relative max-w-3xl mx-auto animate-fade-in input-card">
-      {/* Main Input Card */}
-      <div className="relative rounded-2xl border border-primary/30 bg-card/30 backdrop-blur-xl p-6 shadow-elegant">
-        {/* Textarea */}
-        <Textarea
-          ref={textareaRef}
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value.slice(0, maxCharacters))}
-          placeholder={PLACEHOLDER_PROMPTS[placeholderIndex]}
-          disabled={isGenerating}
-          className="min-h-[120px] text-lg resize-none border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-muted-foreground/60 transition-all"
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-              handleGenerate();
-            }
-          }}
-        />
-
-        {/* Character Counter */}
-        <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/50">
-          <div className="text-sm text-muted-foreground">
-            {characterCount} / {maxCharacters} characters
-          </div>
+    <Card className="max-w-4xl mx-auto backdrop-blur-xl bg-black/60 border-2 border-primary/30 shadow-2xl rounded-2xl overflow-hidden">
+      <div className="p-4">
+        <div className="flex items-center gap-3">
+          {/* Single-line Textarea */}
+          <Textarea
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleGenerate();
+              }
+            }}
+            placeholder={currentPlaceholder}
+            className="flex-1 min-h-[32px] max-h-[32px] text-sm bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none py-2 placeholder:text-muted-foreground/60"
+          />
           
-          {/* Action Buttons */}
+          {/* Action Buttons on Right */}
           <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleImageUpload}
-              disabled={isGenerating}
-              className="hover:bg-primary/10"
+            {/* Camera Button */}
+            <button
+              className="w-9 h-9 rounded-full bg-black/40 backdrop-blur-md border border-primary/30 hover:border-primary/60 hover:bg-primary/10 transition-all duration-300 flex items-center justify-center group"
               title="Upload reference image"
             >
-              <Camera className="w-4 h-4" />
-            </Button>
+              <Camera className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+            </button>
 
-            <Button
-              variant="ghost"
-              size="icon"
+            {/* Microphone Button */}
+            <button
               onClick={handleVoiceInput}
-              disabled={isGenerating}
-              className={`hover:bg-primary/10 ${isRecording ? 'animate-pulse bg-red-500/20' : ''}`}
-              title="Voice input"
+              className={`w-9 h-9 rounded-full backdrop-blur-md border transition-all duration-300 flex items-center justify-center group ${
+                isRecording 
+                  ? 'bg-red-500 border-red-400 animate-pulse' 
+                  : 'bg-black/40 border-primary/30 hover:border-primary/60 hover:bg-primary/10'
+              }`}
+              title={isRecording ? "Recording..." : "Voice input"}
             >
-              <Mic className={`w-4 h-4 ${isRecording ? 'text-red-500' : ''}`} />
-            </Button>
+              <Mic className={`h-4 w-4 transition-colors ${
+                isRecording ? 'text-white' : 'text-muted-foreground group-hover:text-primary'
+              }`} />
+            </button>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              disabled={isGenerating}
-              className="hover:bg-primary/10"
-              title="Style options"
+            {/* Generate Button */}
+            <button
+              onClick={handleGenerate}
+              disabled={isGenerating || !prompt.trim()}
+              className="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-primary-blue hover:shadow-violet-glow transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              title="Generate"
             >
-              <Wand2 className="w-4 h-4" />
-            </Button>
+              {isGenerating ? (
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Send className="h-4 w-4 text-white" />
+              )}
+            </button>
           </div>
         </div>
-
-        {/* Generate Button */}
-        <Button
-          onClick={handleGenerate}
-          disabled={isGenerating || !prompt.trim()}
-          className="w-full mt-4 bg-gradient-primary hover:shadow-violet-glow transition-all h-12 text-lg"
-        >
-          {isGenerating ? (
-            <>
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-              Creating Magic...
-            </>
-          ) : (
-            <>
-              <Sparkles className="w-5 h-5 mr-2" />
-              Generate AI Content
-            </>
-          )}
-        </Button>
-
-        {/* Hint */}
-        <p className="text-center text-xs text-muted-foreground mt-3">
-          Press {navigator.platform.includes('Mac') ? '⌘' : 'Ctrl'}+Enter to generate
-        </p>
       </div>
-
-      {/* Floating Glow Effect */}
-      <div className="absolute -inset-0.5 bg-gradient-primary opacity-20 blur-xl -z-10 animate-pulse" />
-    </div>
+    </Card>
   );
 }
