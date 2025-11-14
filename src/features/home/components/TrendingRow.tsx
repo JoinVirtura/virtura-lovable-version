@@ -23,8 +23,13 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
   const [isExpanded, setIsExpanded] = useState(false);
   const [displayCount, setDisplayCount] = useState(50);
   const [scrollY, setScrollY] = useState(0);
+  const [selectedFilter, setSelectedFilter] = useState<string>('All');
+  const [showFilters, setShowFilters] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  
+  // Extract unique categories from tiles
+  const categories = ['All', ...Array.from(new Set(tiles.map(tile => tile.tag).filter(Boolean)))].sort();
   
   // Track scroll for parallax effects
   useEffect(() => {
@@ -50,6 +55,19 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
+
+  // Close filter dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (showFilters && !target.closest('.filter-dropdown-container')) {
+        setShowFilters(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showFilters]);
   
   const handleShuffle = () => {
     setIsShuffling(true);
@@ -183,7 +201,12 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
     setShuffledTiles(tiles);
   }, [tiles]);
 
-  const displayedTiles = shuffledTiles.slice(0, displayCount);
+  // Filter tiles based on selected category
+  const filteredTiles = selectedFilter === 'All' 
+    ? shuffledTiles 
+    : shuffledTiles.filter(tile => tile.tag === selectedFilter);
+
+  const displayedTiles = filteredTiles.slice(0, displayCount);
 
   return (
     <section className={cn('relative py-8 px-4 md:px-6 lg:px-8', className)} ref={containerRef}>
@@ -565,17 +588,72 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
               </span>
             </Button>
             
-            <Button
-              variant="outline"
-              size="lg"
-              className="group relative overflow-hidden bg-transparent backdrop-blur-sm border-2 border-purple-400/40 hover:border-purple-400 px-8 py-6 h-auto font-bold text-foreground hover:text-white transition-all duration-300 hover:bg-purple-500/20 hover:shadow-lg hover:shadow-purple-500/30"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-purple-500/20 to-purple-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <span className="relative flex items-center gap-2">
-                <Filter className="w-5 h-5" />
-                FILTER
-              </span>
-            </Button>
+            <div className="relative filter-dropdown-container">
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => setShowFilters(!showFilters)}
+                className={cn(
+                  "group relative overflow-hidden bg-transparent backdrop-blur-sm border-2 px-8 py-6 h-auto font-bold transition-all duration-300 hover:shadow-lg",
+                  showFilters 
+                    ? "border-purple-400 bg-purple-500/20 text-white shadow-purple-500/30" 
+                    : "border-purple-400/40 hover:border-purple-400 text-foreground hover:text-white hover:bg-purple-500/20 hover:shadow-purple-500/30"
+                )}
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-purple-500/20 to-purple-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <span className="relative flex items-center gap-2">
+                  <Filter className="w-5 h-5" />
+                  FILTER
+                  {selectedFilter !== 'All' && (
+                    <span className="ml-2 px-2 py-0.5 bg-purple-500 text-white text-xs rounded-full">
+                      {selectedFilter}
+                    </span>
+                  )}
+                </span>
+              </Button>
+
+              {/* Filter Dropdown */}
+              <AnimatePresence>
+                {showFilters && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute top-full mt-2 left-0 z-50 min-w-[240px] bg-gray-900/95 backdrop-blur-xl border-2 border-purple-400/40 rounded-xl shadow-2xl shadow-purple-500/20 overflow-hidden"
+                  >
+                    <div className="p-2 space-y-1">
+                      {categories.map((category) => (
+                        <motion.button
+                          key={category}
+                          whileHover={{ x: 4 }}
+                          onClick={() => {
+                            setSelectedFilter(category);
+                            setShowFilters(false);
+                            toast({
+                              title: category === 'All' ? 'Showing all creations' : `Filtered by ${category}`,
+                            });
+                          }}
+                          className={cn(
+                            "w-full px-4 py-3 text-left rounded-lg transition-all duration-200 font-medium",
+                            selectedFilter === category
+                              ? "bg-purple-500 text-white shadow-lg shadow-purple-500/30"
+                              : "text-gray-300 hover:bg-purple-500/20 hover:text-white"
+                          )}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span>{category}</span>
+                            {selectedFilter === category && (
+                              <Sparkles className="w-4 h-4" />
+                            )}
+                          </div>
+                        </motion.button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
             
             <Button
               variant="ghost"
