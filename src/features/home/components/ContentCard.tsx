@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Badge } from "@/components/ui/badge";
 import { ContentCardProps } from "../types";
 import { Sparkles, Download, Bookmark } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export const ContentCard = ({ tile, className = "", size = 'md', onDownload, onSave }: ContentCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -54,9 +55,24 @@ export const ContentCard = ({ tile, className = "", size = 'md', onDownload, onS
     <motion.div
       ref={cardRef}
       initial={{ opacity: 0, scale: 0.9, rotateX: -10 }}
-      animate={{ opacity: 1, scale: 1, rotateX: 0 }}
-      transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-      className={`group relative w-full h-full overflow-visible ${className}`}
+      animate={{ 
+        opacity: 1, 
+        scale: 1, 
+        rotateX: 0,
+        y: isHovered ? -8 : 0
+      }}
+      transition={{ 
+        opacity: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] },
+        scale: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] },
+        rotateX: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] },
+        y: { duration: 0.3, ease: "easeOut" }
+      }}
+      className={cn(
+        "group relative w-full h-full overflow-visible",
+        "hover:shadow-2xl hover:shadow-purple-500/30 transition-shadow duration-300",
+        isHovered && "shadow-[0_20px_60px_-15px_rgba(168,85,247,0.5)]",
+        className
+      )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
         setIsHovered(false);
