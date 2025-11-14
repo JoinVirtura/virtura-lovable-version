@@ -128,6 +128,21 @@ export default function AuthPage() {
       
       // If signup successful and user is created, show success with signup bonus info
       if (data.user) {
+        // Track landing page signup conversion
+        try {
+          await fetch('https://ujaoziqnxhjqlmnvlxav.supabase.co/functions/v1/track-landing-analytics', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              event_type: 'signup_completed',
+              session_id: sessionStorage.getItem('landing_session'),
+              metadata: { email }
+            })
+          });
+        } catch (error) {
+          console.error('Error tracking signup:', error);
+        }
+
         toast.success("Welcome! Check your email for the confirmation link. You've received 50 free tokens! 🎉", {
           duration: 5000,
         });

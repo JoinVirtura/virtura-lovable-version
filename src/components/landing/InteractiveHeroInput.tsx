@@ -7,6 +7,8 @@ import { toast } from "sonner";
 interface InteractiveHeroInputProps {
   onGenerate: (prompt: string) => void;
   isGenerating: boolean;
+  value: string;
+  onChange: (value: string) => void;
 }
 
 const PLACEHOLDER_PROMPTS = [
@@ -18,8 +20,7 @@ const PLACEHOLDER_PROMPTS = [
   "Minimalist luxury tech product...",
 ];
 
-export function InteractiveHeroInput({ onGenerate, isGenerating }: InteractiveHeroInputProps) {
-  const [prompt, setPrompt] = useState("");
+export function InteractiveHeroInput({ onGenerate, isGenerating, value, onChange }: InteractiveHeroInputProps) {
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
 
@@ -34,11 +35,11 @@ export function InteractiveHeroInput({ onGenerate, isGenerating }: InteractiveHe
   const currentPlaceholder = PLACEHOLDER_PROMPTS[placeholderIndex];
 
   const handleGenerate = () => {
-    if (!prompt.trim()) {
+    if (!value.trim()) {
       toast.error("Please enter a prompt");
       return;
     }
-    onGenerate(prompt);
+    onGenerate(value);
   };
 
   const handleVoiceInput = async () => {
@@ -61,7 +62,7 @@ export function InteractiveHeroInput({ onGenerate, isGenerating }: InteractiveHe
 
     recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
-      setPrompt(transcript);
+      onChange(transcript);
       toast.success("Voice captured!");
       setIsRecording(false);
     };
@@ -84,8 +85,8 @@ export function InteractiveHeroInput({ onGenerate, isGenerating }: InteractiveHe
         <div className="flex items-center gap-3">
           {/* Single-line Textarea */}
           <Textarea
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
@@ -124,7 +125,7 @@ export function InteractiveHeroInput({ onGenerate, isGenerating }: InteractiveHe
             {/* Generate Button */}
             <button
               onClick={handleGenerate}
-              disabled={isGenerating || !prompt.trim()}
+              disabled={isGenerating || !value.trim()}
               className="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-primary-blue hover:shadow-violet-glow transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               title="Generate"
             >

@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { usePublicGallery } from "@/hooks/usePublicGallery";
 import { GalleryImageCard } from "./GalleryImageCard";
+import { GalleryImageModal } from "./GalleryImageModal";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -10,9 +12,32 @@ interface PublicGallerySectionProps {
 
 export function PublicGallerySection({ id }: PublicGallerySectionProps) {
   const { items, loading } = usePublicGallery(12);
+  const [selectedImage, setSelectedImage] = useState<typeof items[0] | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Filter to only show images (not videos) for landing page
   const imageItems = items.filter(item => !item.is_video);
+
+  const handleImageClick = (item: typeof items[0]) => {
+    setSelectedImage(item);
+    setIsModalOpen(true);
+  };
+
+  const getRelatedImages = () => {
+    if (!selectedImage) return [];
+    
+    // Get images with matching tags
+    const matchingTags = selectedImage.tags?.filter(tag => 
+      !['showcase', 'gallery', 'featured'].includes(tag)
+    ) || [];
+    
+    return imageItems
+      .filter(img => 
+        img.id !== selectedImage.id &&
+        img.tags?.some(tag => matchingTags.includes(tag))
+      )
+      .slice(0, 6);
+  };
 
   return (
     <section id={id} className="py-24 bg-background relative overflow-hidden">
@@ -55,12 +80,13 @@ export function PublicGallerySection({ id }: PublicGallerySectionProps) {
         ) : imageItems.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fade-in">
             {imageItems.slice(0, 12).map((item, index) => (
-              <GalleryImageCard
-                key={item.id}
-                image={item.image_url}
-                prompt={item.prompt}
-                index={index}
-              />
+              <div key={item.id} onClick={() => handleImageClick(item)} className="cursor-pointer">
+                <GalleryImageCard
+                  image={item.image_url}
+                  prompt={item.prompt}
+                  index={index}
+                />
+              </div>
             ))}
           </div>
         ) : (
@@ -82,6 +108,14 @@ export function PublicGallerySection({ id }: PublicGallerySectionProps) {
           </div>
         )}
       </div>
+
+      {/* Gallery Modal */}
+      <GalleryImageModal
+        image={selectedImage}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        relatedImages={getRelatedImages()}
+      />
     </section>
   );
 }

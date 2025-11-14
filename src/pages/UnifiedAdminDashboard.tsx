@@ -14,6 +14,8 @@ import { FinancialReporting } from "@/components/admin/FinancialReporting";
 import { AuditLogViewer } from "@/components/admin/AuditLogViewer";
 import { SystemMetrics } from "@/components/admin/SystemMetrics";
 import { ScheduledNotificationsDialog } from "@/components/admin/ScheduledNotificationsDialog";
+import { GalleryShowcaseManager } from "@/components/admin/GalleryShowcaseManager";
+import { LandingAnalyticsDashboard } from "@/components/admin/LandingAnalyticsDashboard";
 
 export default function UnifiedAdminDashboard() {
   const { user } = useAuth();
@@ -197,7 +199,7 @@ export default function UnifiedAdminDashboard() {
 
       {/* Tabbed Content */}
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-9">
+        <TabsList className="grid w-full grid-cols-11">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="metrics">Metrics</TabsTrigger>
           <TabsTrigger value="users">Users</TabsTrigger>
@@ -207,6 +209,8 @@ export default function UnifiedAdminDashboard() {
           <TabsTrigger value="jobs">Jobs & Activity</TabsTrigger>
           <TabsTrigger value="audit">Audit Log</TabsTrigger>
           <TabsTrigger value="recovery">Recovery</TabsTrigger>
+          <TabsTrigger value="gallery">Gallery</TabsTrigger>
+          <TabsTrigger value="landing">Landing</TabsTrigger>
         </TabsList>
 
         <TabsContent value="metrics" className="space-y-4">
@@ -308,6 +312,14 @@ export default function UnifiedAdminDashboard() {
               </p>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="gallery" className="space-y-4">
+          <GalleryShowcaseManager />
+        </TabsContent>
+
+        <TabsContent value="landing" className="space-y-4">
+          <LandingAnalyticsDashboard />
         </TabsContent>
       </Tabs>
     </div>
