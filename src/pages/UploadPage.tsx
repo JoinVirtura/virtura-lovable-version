@@ -54,12 +54,12 @@ export default function UploadPage() {
   };
 
   return (
-    <div className="flex-1 p-6 bg-background relative overflow-hidden">
+    <div className="flex-1 p-3 sm:p-4 md:p-6 bg-background relative overflow-hidden">
       <MotionBackground />
-      <div className="max-w-4xl mx-auto space-y-6 relative z-10">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Upload Content</h1>
-          <p className="text-muted-foreground">Transform your photos and videos with AI</p>
+      <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6 relative z-10">
+        <div className="text-center mb-4 sm:mb-6 md:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Upload Content</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Transform your photos and videos with AI</p>
         </div>
 
         {!uploadedFile ? (
@@ -77,30 +77,30 @@ export default function UploadPage() {
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
           >
-            <div className="p-12 text-center">
-              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center">
-                <Upload className="w-10 h-10 text-white" />
+            <div className="p-6 sm:p-8 md:p-12 text-center">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 mx-auto mb-4 sm:mb-6 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center">
+                <Upload className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 text-white" />
               </div>
               
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <div>
-                  <h3 className="text-xl font-semibold text-foreground mb-2">
+                  <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-2">
                     ✨ Upload a photo or video and let Virtura repurpose it instantly
                   </h3>
-                  <p className="text-muted-foreground">
+                  <p className="text-sm sm:text-base text-muted-foreground">
                     Drag and drop your files here or click to browse
                   </p>
                 </div>
                 
-                <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+                <div className="flex flex-col gap-2 sm:gap-3 justify-center items-center">
                   <Button 
                     onClick={() => fileInputRef.current?.click()}
-                    className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white"
+                    className="w-full sm:w-auto bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white"
                   >
                     <Upload className="w-4 h-4 mr-2" />
                     Choose Files
                   </Button>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     Supports: JPG, PNG, MP4, MOV
                   </p>
                 </div>
