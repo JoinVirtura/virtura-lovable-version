@@ -1,6 +1,5 @@
 import { LandingNavigation } from "@/components/landing/LandingNavigation";
 import { LandingHero } from "@/components/landing/LandingHero";
-import { TrustSection } from "@/components/landing/TrustSection";
 import { BenefitsSection } from "@/components/landing/BenefitsSection";
 import { HowItWorksSection } from "@/components/landing/HowItWorksSection";
 import { PricingSection } from "@/components/landing/PricingSection";
@@ -16,7 +15,6 @@ export default function Landing() {
       
       <main>
         <LandingHero id="hero" />
-        <TrustSection id="trust" />
         <BenefitsSection id="services" />
         <HowItWorksSection id="how-it-works" />
         <PricingSection id="pricing" />
