@@ -1,6 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { Play, Sparkles } from "lucide-react";
+import { Sparkles, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { InteractiveHeroInput } from "./InteractiveHeroInput";
+import { WatermarkedImageCard } from "./WatermarkedImageCard";
+import { useLandingImageGeneration } from "@/hooks/useLandingImageGeneration";
 
 interface LandingHeroProps {
   id?: string;
@@ -8,9 +11,10 @@ interface LandingHeroProps {
 
 export function LandingHero({ id }: LandingHeroProps) {
   const navigate = useNavigate();
+  const { images, isGenerating, generateImages } = useLandingImageGeneration();
 
   return (
-    <section id={id} className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
+    <section id={id} className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16 pb-20">
       {/* Animated Background */}
       <div className="absolute inset-0 bg-gradient-hero">
         <div className="absolute inset-0">
@@ -21,69 +25,95 @@ export function LandingHero({ id }: LandingHeroProps) {
       </div>
 
       <div className="container mx-auto px-6 relative z-10">
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="max-w-6xl mx-auto">
           {/* Social Proof Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card/50 backdrop-blur-sm border border-border mb-8 animate-fade-in">
-            <Sparkles className="w-4 h-4 text-primary" />
-            <span className="text-sm text-muted-foreground">Trusted by 10,000+ creators worldwide</span>
+          <div className="flex justify-center mb-8 animate-fade-in">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card/50 backdrop-blur-sm border border-border">
+              <Sparkles className="w-4 h-4 text-primary" />
+              <span className="text-sm text-muted-foreground">Trusted by 10,000+ creators worldwide</span>
+            </div>
           </div>
 
           {/* Main Heading */}
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
-            <span className="bg-gradient-text bg-clip-text text-transparent">
-              Create Stunning AI Content
-            </span>
-            <br />
-            <span className="text-foreground">in Minutes, Not Hours</span>
-          </h1>
+          <div className="text-center mb-10">
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
+              <span className="bg-gradient-text bg-clip-text text-transparent">
+                Create Stunning AI Content
+              </span>
+              <br />
+              <span className="text-foreground">in Minutes, Not Hours</span>
+            </h1>
 
-          {/* Subtitle */}
-          <p className="text-xl text-muted-foreground mb-4 animate-fade-in max-w-2xl mx-auto" style={{ animationDelay: "0.2s" }}>
-            Transform your ideas into professional images, videos, and avatars with the power of AI. No design skills needed.
-          </p>
-
-          {/* Problem Statement */}
-          <p className="text-lg text-muted-foreground/80 mb-8 animate-fade-in" style={{ animationDelay: "0.3s" }}>
-            Tired of spending hours on content creation? Let AI do the heavy lifting.
-          </p>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in" style={{ animationDelay: "0.4s" }}>
-            <Button 
-              size="lg"
-              onClick={() => navigate("/auth")}
-              className="bg-gradient-primary hover:shadow-violet-glow transition-all text-lg px-8 py-6 h-auto"
-            >
-              Start Creating Free
-            </Button>
-            <Button 
-              size="lg"
-              variant="outline"
-              className="border-primary/30 hover:bg-primary/10 text-lg px-8 py-6 h-auto"
-            >
-              <Play className="w-5 h-5 mr-2" />
-              Watch Demo
-            </Button>
+            <p className="text-xl text-muted-foreground mb-4 animate-fade-in max-w-2xl mx-auto" style={{ animationDelay: "0.2s" }}>
+              Try it now! Type what you want to create and see the magic happen instantly.
+            </p>
           </div>
 
-          {/* Trust Indicators */}
-          <p className="text-sm text-muted-foreground mt-8 animate-fade-in" style={{ animationDelay: "0.5s" }}>
-            No credit card required • 7-day free trial • Cancel anytime
-          </p>
+          {/* Interactive Input Section */}
+          <div className="mb-12 animate-fade-in" style={{ animationDelay: "0.3s" }}>
+            <InteractiveHeroInput 
+              onGenerate={generateImages}
+              isGenerating={isGenerating}
+            />
+          </div>
 
-          {/* Product Showcase */}
-          <div className="mt-16 animate-fade-in" style={{ animationDelay: "0.6s" }}>
-            <div className="relative rounded-2xl overflow-hidden border border-border/50 shadow-card bg-card/30 backdrop-blur-sm">
-              <div className="aspect-video bg-gradient-to-br from-primary/10 to-primary-blue/10 flex items-center justify-center">
-                <div className="text-muted-foreground text-center p-8">
-                  <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-primary/20 flex items-center justify-center">
-                    <Play className="w-12 h-12 text-primary" />
-                  </div>
-                  <p className="text-lg">Product Demo Video</p>
+          {/* Loading State */}
+          {isGenerating && (
+            <div className="text-center mb-12 animate-fade-in">
+              <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-card/50 backdrop-blur-sm border border-border">
+                <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                <span className="text-sm text-muted-foreground">Creating your masterpiece...</span>
+              </div>
+            </div>
+          )}
+
+          {/* Generated Images Grid */}
+          {images.length > 0 && (
+            <div className="mb-12">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {images.map((img, index) => (
+                  <WatermarkedImageCard
+                    key={index}
+                    image={img.image || ''}
+                    prompt={img.prompt}
+                    index={index}
+                  />
+                ))}
+              </div>
+
+              {/* Conversion CTA */}
+              <div className="mt-12 text-center animate-fade-in">
+                <div className="inline-block p-8 rounded-2xl bg-gradient-to-br from-primary/10 to-primary-blue/10 border border-border/50 backdrop-blur-sm">
+                  <h3 className="text-2xl font-bold mb-3">
+                    <span className="bg-gradient-text bg-clip-text text-transparent">Love what you see?</span>
+                  </h3>
+                  <p className="text-muted-foreground mb-6 max-w-lg mx-auto">
+                    Start your free trial to download watermark-free images and create unlimited AI content
+                  </p>
+                  <Button
+                    onClick={() => navigate("/auth")}
+                    size="lg"
+                    className="bg-gradient-primary hover:shadow-violet-glow transition-all text-lg px-8 py-6 h-auto"
+                  >
+                    Start Free Trial
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Button>
+                  <p className="text-sm text-muted-foreground mt-4">
+                    No credit card required • 7-day free trial • Cancel anytime
+                  </p>
                 </div>
               </div>
             </div>
-          </div>
+          )}
+
+          {/* Default CTA (when no images) */}
+          {images.length === 0 && !isGenerating && (
+            <div className="text-center animate-fade-in" style={{ animationDelay: "0.4s" }}>
+              <p className="text-sm text-muted-foreground">
+                No credit card required • 7-day free trial • Cancel anytime
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </section>
