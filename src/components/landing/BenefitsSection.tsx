@@ -1,4 +1,4 @@
-import { Clock, Sparkles, Award, DollarSign, Zap, TrendingUp } from "lucide-react";
+import { Rocket, Brain, Shield, Infinity, BarChart3, Users } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface BenefitsSectionProps {
@@ -8,34 +8,34 @@ interface BenefitsSectionProps {
 export function BenefitsSection({ id }: BenefitsSectionProps) {
   const benefits = [
     {
-      icon: Clock,
-      title: "Save Time",
-      description: "Create professional content 10x faster than traditional methods",
+      icon: Rocket,
+      title: "Lightning Fast Creation",
+      description: "Generate professional-grade content in seconds, not hours. 10x faster than traditional creative workflows.",
     },
     {
-      icon: Sparkles,
-      title: "No Skills Required",
-      description: "Anyone can create stunning visuals without design experience",
+      icon: Brain,
+      title: "AI-Powered Intelligence",
+      description: "Advanced neural networks trained on millions of images deliver consistently stunning results every time.",
     },
     {
-      icon: Award,
-      title: "Consistent Quality",
-      description: "AI ensures professional results every time",
+      icon: Shield,
+      title: "Enterprise Security",
+      description: "Bank-level encryption and data privacy. Your creations and intellectual property remain 100% yours.",
     },
     {
-      icon: DollarSign,
-      title: "Cost Effective",
-      description: "Replace expensive designers and studios with AI",
+      icon: Infinity,
+      title: "Unlimited Possibilities",
+      description: "Generate infinite variations, styles, and iterations. Experiment freely without constraints or additional costs.",
     },
     {
-      icon: Zap,
-      title: "Unlimited Creativity",
-      description: "Generate unlimited variations until it's perfect",
+      icon: BarChart3,
+      title: "Data-Driven Insights",
+      description: "Track performance metrics, analyze engagement, and optimize your content strategy with built-in analytics.",
     },
     {
-      icon: TrendingUp,
-      title: "Scale Effortlessly",
-      description: "Produce content at scale without hiring more staff",
+      icon: Users,
+      title: "Team Collaboration",
+      description: "Real-time collaboration tools, shared libraries, and brand consistency across your entire organization.",
     },
   ];
 
@@ -50,10 +50,10 @@ export function BenefitsSection({ id }: BenefitsSectionProps) {
       <div className="container mx-auto px-6 relative z-10">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            Why Choose <span className="bg-gradient-text bg-clip-text text-transparent">Virtura AI</span>?
+            Why <span className="bg-gradient-text bg-clip-text text-transparent">Virtura AI</span>
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Powerful AI tools designed to transform your content creation workflow
+          <p className="text-xl text-muted-foreground">
+            Transform your content creation workflow with enterprise-grade AI technology
           </p>
         </div>
 
