@@ -9,14 +9,12 @@ export function NeuralVisual() {
                  opacity-30 md:opacity-35 lg:opacity-40
                  pointer-events-none z-[5]
                  hidden md:block"
-      initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
+      initial={{ opacity: 0 }}
       animate={{ 
-        opacity: [0.3, 0.45, 0.3],
-        scale: [1, 1.05, 1],
-        rotate: [-5, 5, -5],
+        opacity: [0.3, 0.4, 0.3],
       }}
       transition={{
-        duration: 15,
+        duration: 8,
         repeat: Infinity,
         ease: "easeInOut"
       }}
