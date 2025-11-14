@@ -105,7 +105,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
     >
       <SidebarHeader className={!isMobile && isCollapsed ? "p-2" : "p-4"}>
         <div className="flex items-center justify-between">
-          {(!isMobile || !isCollapsed) && (
+          {(isMobile || !isCollapsed) && (
             <div>
               <h1 className="text-xl font-display font-bold text-gradient-primary drop-shadow-[0_0_10px_rgba(212,110,255,0.6)] leading-tight">
                 Virtura
@@ -113,7 +113,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
               <p className="text-xs text-violet-300">Where Identity Evolves</p>
             </div>
           )}
-          <SidebarTrigger className="h-8 w-8 p-0 ml-auto text-violet-400 hover:text-violet-300" />
+          <SidebarTrigger className={`h-8 w-8 p-0 text-violet-400 hover:text-violet-300 ${!isMobile && isCollapsed ? "mx-auto" : "ml-auto"}`} />
         </div>
       </SidebarHeader>
 
@@ -203,7 +203,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                 : user?.email?.[0].toUpperCase() || 'U'}
             </AvatarFallback>
           </Avatar>
-          {(!isMobile || !isCollapsed) && (
+          {(isMobile || !isCollapsed) && (
             <div className="flex-1 min-w-0 text-left">
               <p className="font-medium text-sm text-white">
                 {profile?.display_name || user?.email?.split('@')[0] || 'User'}
