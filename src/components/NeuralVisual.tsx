@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import brainVisual from "@/assets/brain-neural-visual.png";
-import { ResponsiveImage } from "./ResponsiveImage";
 
 export function NeuralVisual() {
   return (
@@ -22,11 +21,10 @@ export function NeuralVisual() {
         ease: "easeInOut"
       }}
     >
-      <ResponsiveImage 
+      <img 
         src={brainVisual} 
         alt="" 
         className="w-full h-auto drop-shadow-[0_0_120px_rgba(168,85,247,0.8)]"
-        priority={true}
         style={{
           filter: "brightness(1.4) contrast(1.5) saturate(1.3) blur(0.5px)",
           mixBlendMode: "screen"

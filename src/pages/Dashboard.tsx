@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { VirturaSidebar } from "@/components/VirturaSidebar";
-import { useSidebarSwipeGesture } from "@/hooks/useSidebarSwipeGesture";
 import { OverviewPage } from "@/components/OverviewPage";
 import neuralBrain from "@/assets/neural-brain.png";
 import { CreateAvatar } from "@/components/CreateAvatar";
@@ -130,26 +129,6 @@ export default function Dashboard() {
   const [activeView, setActiveView] = useState("overview");
   const { isOnboardingComplete, loading: onboardingLoading } = useOnboarding();
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
-  
-  // Add swipe gesture support for mobile sidebar
-  useSidebarSwipeGesture();
-  
-  // Helper function to get page title based on active view
-  const getPageTitle = (view: string) => {
-    const titles: Record<string, string> = {
-      'admin-dashboard': 'Dashboard',
-      'overview': 'Home',
-      'talking-avatar': 'Style',
-      'video-pro': 'Video',
-      'library': 'Library',
-      'studio': 'Copilot',
-      'brands': 'Brands',
-      'guide': 'Tutorial',
-      'support': 'Support',
-      'settings': 'Settings',
-    };
-    return titles[view] || 'Virtura';
-  };
   
   // Import admin dashboard
   const [AdminDashboardComponent, setAdminDashboardComponent] = useState<any>(null);
@@ -1967,31 +1946,18 @@ export default function Dashboard() {
       <SidebarProvider defaultOpen={true}>
         <div className="min-h-screen flex w-full bg-background relative overflow-hidden">
           <MotionBackground />
-        <VirturaSidebar 
-          activeView={activeView} 
-          onViewChange={setActiveView}
-          onClearEditState={() => setSelectedEditImage(null)}
-        />
-    
-    <div className="flex-1 flex flex-col relative z-10 w-full overflow-hidden">
-      {/* Mobile Header with Sidebar Trigger - Only visible on mobile */}
-      <header className="md:hidden sticky top-0 z-50 w-full border-b border-violet-500/20 bg-black/90 backdrop-blur-xl">
-        <div className="flex h-16 items-center justify-between px-4">
-          {/* Page Title */}
-          <h1 className="text-lg font-display font-bold text-gradient-primary">
-            {getPageTitle(activeView)}
-          </h1>
-          
-          {/* Sidebar Trigger - Right Side */}
-          <SidebarTrigger className="h-10 w-10 p-0 text-violet-400 hover:text-violet-300 hover:bg-violet-500/10 rounded-lg transition-colors" />
+            <VirturaSidebar 
+              activeView={activeView} 
+              onViewChange={setActiveView}
+              onClearEditState={() => setSelectedEditImage(null)}
+            />
+        
+        <div className="flex-1 flex flex-col relative z-10 w-full overflow-hidden">
+          {/* Main Content */}
+          <main className="flex-1 p-4 sm:p-6 lg:p-8 w-full">
+            {renderContent()}
+          </main>
         </div>
-      </header>
-      
-      {/* Main Content */}
-      <main className="flex-1 p-4 sm:p-6 lg:p-8 w-full overflow-auto">
-        {renderContent()}
-      </main>
-    </div>
       </div>
 
       {/* Edit Modal */}

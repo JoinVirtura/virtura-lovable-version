@@ -7,7 +7,6 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { EditTitleDialog } from "@/components/EditTitleDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ResponsiveImage } from "@/components/ResponsiveImage";
 import { 
   Search, 
   Filter, 
@@ -384,10 +383,13 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                       onClick={() => handleAvatarSelect(asset)}
                     >
                       <div className="aspect-square bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 relative overflow-hidden">
-                        <ResponsiveImage 
+                        <img 
                           src={asset.thumbnail} 
                           alt={asset.title}
                           className="w-full h-full object-cover transition-all duration-700 hover:scale-110 hover:brightness-125 hover:rotate-1"
+                          onError={(e) => {
+                            e.currentTarget.src = "/api/placeholder/300/300";
+                          }}
                         />
                        
                         {asset.type === "video" && (
@@ -494,10 +496,13 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                     <Card key={asset.id} className="p-5 hover:shadow-lg transition-all duration-200 hover:bg-muted/20 border-2 hover:border-primary/20">
                       <div className="flex items-center gap-6">
                         <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-xl flex-shrink-0 overflow-hidden">
-                          <ResponsiveImage 
+                          <img 
                             src={asset.thumbnail} 
                             alt={asset.title}
                             className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.src = "/api/placeholder/64/64";
+                            }}
                           />
                         </div>
                         <div className="flex-1 min-w-0">
