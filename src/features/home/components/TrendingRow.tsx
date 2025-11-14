@@ -41,14 +41,18 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
 
   // Filter categories for style showcase
   const filterCategories = [
-    { label: 'All', icon: Sparkles },
-    { label: 'Fantasy', icon: Sparkles },
-    { label: 'Portrait', icon: Eye },
-    { label: 'Artistic', icon: Heart },
-    { label: 'Digital', icon: Film },
-    { label: 'Unique', icon: Sparkles },
-    { label: 'Photography', icon: Eye },
-    { label: 'Fashion', icon: Heart },
+    'All',
+    'Fantasy',
+    'Portrait',
+    'Artistic',
+    'Digital',
+    'Unique',
+    'Photography',
+    'Fashion',
+    'Abstract',
+    'Realistic',
+    'Vintage',
+    'Modern',
   ];
   
   // Track scroll for parallax effects
@@ -105,14 +109,18 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
 
   const handleShare = async (tile: Tile) => {
     try {
+      const shareUrl = `${window.location.origin}?style=${tile.id}`;
+      const shareText = `Check out this amazing ${tile.title} style! ${tile.prompt}`;
+      
       if (navigator.share) {
         await navigator.share({
-          title: tile.title,
-          text: `Check out this amazing ${tile.tag} creation by ${tile.byline}`,
-          url: window.location.href,
+          title: `${tile.title} - Virtura AI`,
+          text: shareText,
+          url: shareUrl,
         });
+        toast({ title: "Shared successfully!" });
       } else {
-        await navigator.clipboard.writeText(window.location.href);
+        await navigator.clipboard.writeText(shareUrl);
         toast({ title: "Link copied to clipboard!" });
       }
     } catch (error) {
@@ -471,7 +479,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                         ease: "linear"
                       }}
                     >
-                      Style Showcase
+                      Style
                     </motion.span>
                     
                     {/* Holographic overlay with pulse */}
@@ -486,7 +494,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                         repeat: Infinity,
                       }}
                     >
-                      Style Showcase
+                      Style
                     </motion.span>
                     
                     {/* Electric glitch effect */}
@@ -503,7 +511,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                         repeatDelay: 3,
                       }}
                     >
-                      Style Showcase
+                      Style
                     </motion.span>
                   </motion.h2>
                 </div>
@@ -565,7 +573,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                   repeat: Infinity,
                 }}
               >
-                Explore 60+ diverse artistic styles powered by Virtura AI. From fantasy to photorealism, discover limitless creative possibilities.
+                Explore 100+ diverse artistic styles powered by Virtura AI. From fantasy to photorealism, discover limitless creative possibilities.
               </motion.p>
             </motion.div>
           </div>
@@ -608,21 +616,20 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
 
           {/* Advanced Filter System */}
           <motion.div 
-            className="flex flex-wrap gap-3 justify-center pt-8 pb-4"
+            className="flex flex-wrap gap-2 sm:gap-3 justify-center pt-8 pb-4 px-2"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
           >
             {filterCategories.map((category, index) => {
-              const Icon = category.icon;
-              const isActive = activeFilter === category.label;
+              const isActive = activeFilter === category;
               
               return (
                 <motion.button
-                  key={category.label}
-                  onClick={() => setActiveFilter(category.label)}
+                  key={category}
+                  onClick={() => setActiveFilter(category)}
                   className={cn(
-                    "group relative overflow-hidden px-6 py-3 rounded-full font-bold transition-all duration-300",
+                    "group relative overflow-hidden px-4 sm:px-6 py-2 sm:py-3 rounded-full font-bold text-sm sm:text-base transition-all duration-300",
                     "border-2",
                     isActive 
                       ? "bg-gradient-to-r from-purple-600 via-violet-600 to-fuchsia-600 border-purple-400/50 text-white shadow-lg shadow-purple-500/50 scale-105" 
@@ -643,9 +650,8 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                     />
                   )}
                   
-                  <span className="relative flex items-center gap-2">
-                    <Icon className="w-4 h-4" />
-                    {category.label}
+                  <span className="relative">
+                    {category}
                   </span>
                   
                   {/* Glow effect on hover */}
@@ -658,52 +664,11 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
               );
             })}
           </motion.div>
-
-          {/* Revolutionary Action Buttons */}
-          <div className="flex flex-wrap items-center gap-4 pt-6">
-            <Button
-              onClick={handleShuffle}
-              disabled={isShuffling}
-              size="lg"
-              className="group relative overflow-hidden bg-gradient-to-r from-purple-600 via-violet-600 to-fuchsia-600 hover:from-purple-500 hover:via-violet-500 hover:to-fuchsia-500 text-white font-bold px-10 py-6 h-auto border-2 border-purple-400/30 shadow-2xl shadow-purple-500/40 hover:shadow-purple-500/60 transition-all duration-300 hover:scale-105"
-            >
-              {/* Animated background shimmer */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-              <span className="relative flex items-center gap-2">
-                {isShuffling ? 'REGENERATING...' : 'REGENERATE'}
-              </span>
-            </Button>
-            
-            <Button
-              variant="outline"
-              size="lg"
-              className="group relative overflow-hidden bg-transparent backdrop-blur-sm border-2 border-purple-400/40 hover:border-purple-400 px-8 py-6 h-auto font-bold text-foreground hover:text-white transition-all duration-300 hover:bg-purple-500/20 hover:shadow-lg hover:shadow-purple-500/30"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-purple-500/20 to-purple-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <span className="relative flex items-center gap-2">
-                <Filter className="w-5 h-5" />
-                FILTER
-              </span>
-            </Button>
-            
-            <Button
-              variant="ghost"
-              size="lg"
-              className="group relative text-purple-400 hover:text-white font-bold px-8 py-6 h-auto hover:bg-gradient-to-r hover:from-purple-500/20 hover:to-fuchsia-500/20 transition-all duration-300"
-              onClick={handleViewAll}
-            >
-              <span className="relative flex items-center gap-2">
-                {isExpanded ? 'SHOW LESS' : 'VIEW ALL'}
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
-              </span>
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-400 to-fuchsia-400 scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
-            </Button>
-          </div>
         </motion.div>
 
-        {/* Innovative Masonry Grid */}
-        <div className="relative">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-0 auto-rows-[200px] md:auto-rows-[240px] lg:auto-rows-[280px]" style={{ gridAutoFlow: 'dense' }}>
+        {/* Innovative Masonry Grid - Mobile Responsive */}
+        <div className="relative px-2 sm:px-0">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-1 sm:gap-2 md:gap-0 auto-rows-[180px] sm:auto-rows-[200px] md:auto-rows-[240px] lg:auto-rows-[280px]" style={{ gridAutoFlow: 'dense' }}>
             {displayedTiles.map((tile, index) => {
               // Dynamic sizing for visual interest
               const getCardSize = (index: number) => {
@@ -756,61 +721,56 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                         transition={{ duration: 0.2 }}
                         className="absolute inset-0 flex flex-col items-center justify-between p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent"
                       >
-                        {/* Top Bar: Favorites Button */}
-                        <div className="w-full flex justify-end">
+                        {/* View Count Badge */}
+                        <motion.div
+                          initial={{ y: -20, opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
+                          transition={{ delay: 0.1 }}
+                          className="absolute top-2 sm:top-4 left-2 sm:left-4 flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-purple-600/90 backdrop-blur-sm rounded-full border border-purple-400/30 pointer-events-auto"
+                        >
+                          <Eye className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                          <span className="text-xs sm:text-sm font-bold text-white">{tile.views?.toLocaleString() || 0}</span>
+                        </motion.div>
+                        
+                        {/* Action Buttons */}
+                        <div className="absolute top-2 sm:top-4 right-2 sm:right-4 flex gap-2">
                           <motion.button
                             initial={{ y: -20, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
-                            transition={{ delay: 0.1 }}
+                            transition={{ delay: 0.15 }}
                             onClick={(e) => {
                               e.stopPropagation();
                               toggleFavorite(tile.id);
                             }}
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
-                            className="p-2.5 bg-yellow-500/90 hover:bg-yellow-400 backdrop-blur-sm rounded-full border border-yellow-400/40 transition-all duration-200"
+                            className="p-1.5 sm:p-2.5 bg-yellow-500/90 hover:bg-yellow-400 backdrop-blur-sm rounded-full border border-yellow-400/40 transition-all duration-200"
                           >
                             <Star 
                               className={cn(
-                                "w-5 h-5 transition-all duration-200",
+                                "w-3.5 h-3.5 sm:w-5 sm:h-5 transition-all duration-200",
                                 favorites.has(tile.id) 
                                   ? "fill-white text-white" 
                                   : "text-white hover:fill-white"
                               )} 
                             />
                           </motion.button>
+                          
+                          <motion.button
+                            initial={{ y: -20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.2 }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleShare(tile);
+                            }}
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            className="p-1.5 sm:p-2.5 bg-blue-500/90 hover:bg-blue-400 backdrop-blur-sm rounded-full border border-blue-400/40 transition-all duration-200"
+                          >
+                            <Share2 className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-white" />
+                          </motion.button>
                         </div>
-                        
-                        {/* Center: View Count Badge */}
-                        <motion.div 
-                          className="flex items-center gap-2 bg-black/70 backdrop-blur-md px-4 py-2 rounded-full border border-purple-400/40"
-                          whileHover={{ scale: 1.05, borderColor: 'rgba(168, 85, 247, 0.7)' }}
-                          initial={{ opacity: 0, scale: 0.8 }}
-                          animate={{ 
-                            opacity: 1, 
-                            scale: 1,
-                            boxShadow: [
-                              '0 0 15px rgba(168, 85, 247, 0.3)',
-                              '0 0 25px rgba(168, 85, 247, 0.6)',
-                              '0 0 15px rgba(168, 85, 247, 0.3)',
-                            ]
-                          }}
-                          transition={{
-                            opacity: { duration: 0.3 },
-                            scale: { duration: 0.3 },
-                            boxShadow: {
-                              duration: 2,
-                              repeat: Infinity,
-                            }
-                          }}
-                        >
-                          <Eye className="w-5 h-5 text-purple-400" />
-                          <span className="text-white font-bold text-base">{tile.views?.toLocaleString() || 0}</span>
-                          <span className="text-white/70 text-sm">views</span>
-                        </motion.div>
-                        
-                        {/* Bottom: Empty space for balance */}
-                        <div />
                       </motion.div>
                     )}
                   </AnimatePresence>
