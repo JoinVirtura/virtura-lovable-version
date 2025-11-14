@@ -117,10 +117,10 @@ export function PricingSection({ id }: PricingSectionProps) {
                 </div>
               )}
               
-              <CardHeader className="text-center pb-8 pt-8">
+              <CardHeader className="text-center pb-12 pt-8">
                 <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                <p className="text-muted-foreground text-sm mb-4">{plan.description}</p>
-                <div className="mb-8">
+                <p className="text-muted-foreground text-sm mb-6">{plan.description}</p>
+                <div className="mb-12">
                   <span className="text-5xl font-bold">
                     ${isAnnual ? plan.annualPrice : plan.monthlyPrice}
                   </span>
@@ -131,13 +131,15 @@ export function PricingSection({ id }: PricingSectionProps) {
                     </div>
                   )}
                 </div>
-                <Button 
-                  onClick={() => plan.cta === "Contact Sales" ? null : navigate("/auth")}
-                  className={plan.popular ? "bg-gradient-primary hover:shadow-violet-glow w-full" : "w-full"}
-                  variant={plan.popular ? "default" : "outline"}
-                >
-                  {plan.cta}
-                </Button>
+                <div className="pt-4">
+                  <Button 
+                    onClick={() => plan.cta === "Contact Sales" ? null : navigate("/auth")}
+                    className={plan.popular ? "bg-gradient-primary hover:shadow-violet-glow w-full" : "w-full"}
+                    variant={plan.popular ? "default" : "outline"}
+                  >
+                    {plan.cta}
+                  </Button>
+                </div>
               </CardHeader>
 
               <CardContent>
