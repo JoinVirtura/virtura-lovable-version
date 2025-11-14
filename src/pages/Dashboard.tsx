@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { VirturaSidebar } from "@/components/VirturaSidebar";
 import { OverviewPage } from "@/components/OverviewPage";
 import neuralBrain from "@/assets/neural-brain.png";
@@ -1946,18 +1946,26 @@ export default function Dashboard() {
       <SidebarProvider defaultOpen={true}>
         <div className="min-h-screen flex w-full bg-background relative overflow-hidden">
           <MotionBackground />
-            <VirturaSidebar 
-              activeView={activeView} 
-              onViewChange={setActiveView}
-              onClearEditState={() => setSelectedEditImage(null)}
-            />
-        
-        <div className="flex-1 flex flex-col relative z-10 w-full overflow-hidden">
-          {/* Main Content */}
-          <main className="flex-1 p-4 sm:p-6 lg:p-8 w-full">
-            {renderContent()}
-          </main>
+        <VirturaSidebar 
+          activeView={activeView} 
+          onViewChange={setActiveView}
+          onClearEditState={() => setSelectedEditImage(null)}
+        />
+    
+    <div className="flex-1 flex flex-col relative z-10 w-full overflow-hidden">
+      {/* Mobile Header with Sidebar Trigger */}
+      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex h-14 items-center gap-4 px-4">
+          <SidebarTrigger className="-ml-1" />
+          <div className="flex-1" />
         </div>
+      </header>
+      
+      {/* Main Content */}
+      <main className="flex-1 p-4 sm:p-6 lg:p-8 w-full overflow-auto">
+        {renderContent()}
+      </main>
+    </div>
       </div>
 
       {/* Edit Modal */}
