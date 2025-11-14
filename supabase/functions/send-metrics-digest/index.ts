@@ -74,20 +74,39 @@ serve(async (req) => {
 
     console.log("Metrics collected:", metrics);
 
-    // In a real implementation, you would send emails here using a service like Resend
-    // For now, we'll just log that we would send the email
+    // Import Resend dynamically
+    const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
+    
+    // Send emails to admins
     for (const admin of admins || []) {
-      console.log(`Would send ${digest_type} digest to ${admin.admin_email}`);
-      console.log("Metrics:", metrics);
-      
-      // TODO: Implement actual email sending using Resend or similar service
-      // const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
-      // await resend.emails.send({
-      //   from: 'System Metrics <metrics@yourdomain.com>',
-      //   to: admin.admin_email,
-      //   subject: `${digest_type.charAt(0).toUpperCase() + digest_type.slice(1)} System Metrics Report`,
-      //   html: generateEmailTemplate(metrics, digest_type),
-      // });
+      try {
+        if (!RESEND_API_KEY) {
+          console.log(`Resend API key not configured. Would send ${digest_type} digest to ${admin.admin_email}`);
+          console.log("Metrics:", metrics);
+          continue;
+        }
+
+        // Import Resend
+        const { Resend } = await import("npm:resend@4.0.0");
+        const resend = new Resend(RESEND_API_KEY);
+
+        console.log(`Sending ${digest_type} digest to ${admin.admin_email}`);
+
+        const { data: emailData, error: emailError } = await resend.emails.send({
+          from: 'Virtura Metrics <metrics@virtura.app>',
+          to: admin.admin_email,
+          subject: `${digest_type.charAt(0).toUpperCase() + digest_type.slice(1)} System Metrics Report - ${new Date().toLocaleDateString()}`,
+          html: generateEmailTemplate(metrics, digest_type),
+        });
+
+        if (emailError) {
+          console.error(`Failed to send email to ${admin.admin_email}:`, emailError);
+        } else {
+          console.log(`Email sent successfully to ${admin.admin_email}. Email ID: ${emailData?.id}`);
+        }
+      } catch (emailError) {
+        console.error(`Error sending email to ${admin.admin_email}:`, emailError);
+      }
     }
 
     return new Response(

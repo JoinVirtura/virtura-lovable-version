@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { useNotificationAnalytics } from "@/hooks/useNotificationAnalytics";
 
 interface Notification {
   id: string;
@@ -34,6 +35,7 @@ export function useNotifications() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [preferences, setPreferences] = useState<NotificationPreferences | null>(null);
+  const { trackRead, trackClick, trackDismiss } = useNotificationAnalytics(user?.id);
 
   useEffect(() => {
     if (!user) return;
@@ -229,6 +231,9 @@ export function useNotifications() {
 
   const deleteNotification = async (notificationId: string) => {
     try {
+      // Track dismiss before deleting
+      trackDismiss(notificationId);
+      
       const { error } = await supabase
         .from('notifications')
         .delete()
@@ -252,5 +257,6 @@ export function useNotifications() {
     markAllAsRead,
     deleteNotification,
     refetch: fetchNotifications,
+    trackClick,
   };
 }
