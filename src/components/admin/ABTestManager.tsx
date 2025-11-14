@@ -70,7 +70,7 @@ export function ABTestManager() {
 
   const fetchTests = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('notification_ab_tests')
         .select('*')
         .order('created_at', { ascending: false });
@@ -106,7 +106,7 @@ export function ABTestManager() {
       if (!user.user) throw new Error('Not authenticated');
 
       // Create test
-      const { data: test, error: testError } = await supabase
+      const { data: test, error: testError} = await (supabase as any)
         .from('notification_ab_tests')
         .insert({
           name: newTest.name,
@@ -123,7 +123,7 @@ export function ABTestManager() {
       if (testError) throw testError;
 
       // Create control variant
-      const { error: controlError } = await supabase
+      const { error: controlError } = await (supabase as any)
         .from('notification_ab_variants')
         .insert([{
           test_id: test.id,
@@ -138,7 +138,7 @@ export function ABTestManager() {
 
       // Create test variants
       for (let i = 0; i < testVariants.length; i++) {
-        const { error: variantError } = await supabase
+        const { error: variantError } = await (supabase as any)
           .from('notification_ab_variants')
           .insert([{
             test_id: test.id,
@@ -198,7 +198,7 @@ export function ABTestManager() {
 
   const updateTestStatus = async (testId: string, status: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('notification_ab_tests')
         .update({ status })
         .eq('id', testId);

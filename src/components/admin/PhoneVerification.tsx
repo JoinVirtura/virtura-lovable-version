@@ -50,7 +50,7 @@ export function PhoneVerification({ userId, onVerified }: PhoneVerificationProps
       // Store code in database with 10-minute expiry
       const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
       
-      const { error: insertError } = await supabase
+      const { error: insertError } = await (supabase as any)
         .from('phone_verification_codes')
         .insert({
           user_id: userId,
@@ -111,7 +111,7 @@ export function PhoneVerification({ userId, onVerified }: PhoneVerificationProps
 
     try {
       // Check if code is valid
-      const { data: codeData, error: codeError } = await supabase
+      const { data: codeData, error: codeError } = await (supabase as any)
         .from('phone_verification_codes')
         .select('*')
         .eq('user_id', userId)
@@ -129,7 +129,7 @@ export function PhoneVerification({ userId, onVerified }: PhoneVerificationProps
       }
 
       // Mark phone as verified
-      const { error: updateError } = await supabase
+      const { error: updateError } = await (supabase as any)
         .from('notification_preferences')
         .update({ 
           phone_number: codeData.phone_number,
@@ -140,7 +140,7 @@ export function PhoneVerification({ userId, onVerified }: PhoneVerificationProps
       if (updateError) throw updateError;
 
       // Delete used verification code
-      await supabase
+      await (supabase as any)
         .from('phone_verification_codes')
         .delete()
         .eq('user_id', userId);

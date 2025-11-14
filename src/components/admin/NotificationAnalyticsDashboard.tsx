@@ -55,16 +55,16 @@ export function NotificationAnalyticsDashboard() {
         .select('id, created_at')
         .gte('created_at', startDate.toISOString());
 
-      const { data: analyticsEvents } = await supabase
+      const { data: analyticsEvents } = await (supabase as any)
         .from('notification_analytics')
         .select('notification_id, event_type, device_type')
         .gte('event_timestamp', startDate.toISOString());
 
       const totalSent = notifications?.length || 0;
-      const readEvents = analyticsEvents?.filter(e => e.event_type === 'read') || [];
-      const clickEvents = analyticsEvents?.filter(e => e.event_type === 'clicked') || [];
-      const totalRead = new Set(readEvents.map(e => e.notification_id)).size;
-      const totalClicked = new Set(clickEvents.map(e => e.notification_id)).size;
+      const readEvents = analyticsEvents?.filter((e: any) => e.event_type === 'read') || [];
+      const clickEvents = analyticsEvents?.filter((e: any) => e.event_type === 'clicked') || [];
+      const totalRead = new Set(readEvents.map((e: any) => e.notification_id)).size;
+      const totalClicked = new Set(clickEvents.map((e: any) => e.notification_id)).size;
 
       const avgOpenRate = totalSent > 0 ? (totalRead / totalSent) * 100 : 0;
       const avgCTR = totalRead > 0 ? (totalClicked / totalRead) * 100 : 0;
@@ -115,7 +115,7 @@ export function NotificationAnalyticsDashboard() {
       }));
 
       // Device breakdown
-      const deviceCounts = analyticsEvents?.reduce((acc, event) => {
+      const deviceCounts = analyticsEvents?.reduce((acc: any, event: any) => {
         const device = event.device_type || 'unknown';
         acc[device] = (acc[device] || 0) + 1;
         return acc;
@@ -124,8 +124,8 @@ export function NotificationAnalyticsDashboard() {
       const totalEvents = analyticsEvents?.length || 0;
       const deviceBreakdown = Object.entries(deviceCounts || {}).map(([device, count]) => ({
         device,
-        count,
-        percentage: totalEvents > 0 ? (count / totalEvents) * 100 : 0,
+        count: count as number,
+        percentage: totalEvents > 0 ? ((count as number) / totalEvents) * 100 : 0,
       }));
 
       // Trends data (daily)

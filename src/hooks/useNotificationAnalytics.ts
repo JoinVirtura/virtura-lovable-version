@@ -32,7 +32,7 @@ export function useNotificationAnalytics(userId: string | undefined) {
     if (!userId) return;
 
     try {
-      await supabase.from('notification_analytics').insert({
+      await (supabase as any).from('notification_analytics').insert({
         notification_id: notificationId,
         user_id: userId,
         event_type: eventType,
