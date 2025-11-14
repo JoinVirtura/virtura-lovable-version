@@ -1,5 +1,6 @@
 import { LandingNavigation } from "@/components/landing/LandingNavigation";
 import { LandingHero } from "@/components/landing/LandingHero";
+import { PublicGallerySection } from "@/components/landing/PublicGallerySection";
 import { BenefitsSection } from "@/components/landing/BenefitsSection";
 import { HowItWorksSection } from "@/components/landing/HowItWorksSection";
 import { PricingSection } from "@/components/landing/PricingSection";
@@ -15,6 +16,7 @@ export default function Landing() {
       
       <main>
         <LandingHero id="hero" />
+        <PublicGallerySection id="gallery" />
         <BenefitsSection id="services" />
         <HowItWorksSection id="how-it-works" />
         <PricingSection id="pricing" />

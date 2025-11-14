@@ -3,6 +3,7 @@ import { Sparkles, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { InteractiveHeroInput } from "./InteractiveHeroInput";
 import { WatermarkedImageCard } from "./WatermarkedImageCard";
+import { ImageGenerationSkeleton } from "./ImageGenerationSkeleton";
 import { useLandingImageGeneration } from "@/hooks/useLandingImageGeneration";
 
 interface LandingHeroProps {
@@ -56,18 +57,23 @@ export function LandingHero({ id }: LandingHeroProps) {
             />
           </div>
 
-          {/* Loading State */}
+          {/* Loading Skeleton */}
           {isGenerating && (
-            <div className="text-center mb-12 animate-fade-in">
-              <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-card/50 backdrop-blur-sm border border-border">
-                <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                <span className="text-sm text-muted-foreground">Creating your masterpiece...</span>
+            <div className="mb-12">
+              <ImageGenerationSkeleton />
+              
+              {/* Loading Status Message */}
+              <div className="text-center mt-6 animate-fade-in">
+                <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-card/50 backdrop-blur-sm border border-border">
+                  <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                  <span className="text-sm text-muted-foreground">Creating your masterpiece...</span>
+                </div>
               </div>
             </div>
           )}
 
           {/* Generated Images Grid */}
-          {images.length > 0 && (
+          {!isGenerating && images.length > 0 && (
             <div className="mb-12">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {images.map((img, index) => (
