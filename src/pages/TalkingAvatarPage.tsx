@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from "react";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -621,8 +621,16 @@ export default function TalkingAvatarStudio() {
           <AppSidebar />
           
           <main className="flex-1 flex flex-col min-h-screen">
+            {/* Mobile Menu Trigger */}
+            <div className="lg:hidden sticky top-0 z-20 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+              <div className="flex items-center h-14 px-4">
+                <SidebarTrigger />
+                <h1 className="ml-4 text-lg font-semibold">Talking Avatar Studio</h1>
+              </div>
+            </div>
+            
             {/* Hero Canvas */}
-            <div className="p-3 sm:p-6">
+            <div className="px-4 sm:px-6 py-4 sm:py-6">
               <HeroCanvas uploadedFile={uploadedFile} onFileUpload={setUploadedFile} />
             </div>
 
@@ -657,7 +665,7 @@ export default function TalkingAvatarStudio() {
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 flex flex-col lg:flex-row gap-3 sm:gap-6 px-3 sm:px-6 py-3 sm:py-6">
+            <div className="flex-1 flex flex-col lg:flex-row gap-4 sm:gap-6 px-4 sm:px-6 py-4 sm:py-6">
               {/* Panels */}
               <div className="flex-1 w-full max-w-4xl">
                 <Tabs value={activeTab} className="w-full">
