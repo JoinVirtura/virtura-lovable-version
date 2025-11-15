@@ -504,12 +504,9 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                           <div className="flex flex-col sm:flex-row items-start sm:items-start justify-between gap-3 sm:gap-4">
                             <div className="space-y-1 sm:space-y-2 min-w-0 w-full sm:w-auto">
                               <h3 className="font-semibold text-base sm:text-lg line-clamp-1">{asset.title}</h3>
-                              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
-                                <span className="flex items-center gap-1 font-medium">
-                                  <Calendar className="w-3 h-3" />
-                                  {asset.date}
-                                </span>
-                                <Badge variant="secondary" className="text-xs w-fit">{asset.format}</Badge>
+                              <div className="flex items-center gap-1 text-xs sm:text-sm text-muted-foreground">
+                                <Calendar className="w-3 h-3" />
+                                <span className="font-medium">{asset.date}</span>
                               </div>
                             </div>
                             <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
