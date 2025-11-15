@@ -1964,7 +1964,7 @@ export default function Dashboard() {
         
         <div className="flex-1 flex flex-col relative z-10">
           {/* Add padding top on mobile to account for fixed header */}
-          <main className={`flex-1 p-4 md:p-6 pt-16 md:pt-6 ${activeView === 'admin-dashboard' ? '' : 'overflow-x-hidden'}`}>
+          <main className={`flex-1 ${activeView === 'admin-dashboard' ? 'pt-16 md:pt-6' : 'p-4 md:p-6 pt-16 md:pt-6 overflow-x-hidden'}`}>
             {renderContent()}
           </main>
         </div>
