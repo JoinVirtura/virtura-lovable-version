@@ -109,7 +109,7 @@ export default function UnifiedAdminDashboard() {
     : "0.0";
 
   return (
-    <div className="container mx-auto py-6 sm:py-8 px-3 sm:px-4 space-y-6 sm:space-y-8">
+    <div className="container mx-auto py-6 sm:py-8 px-4 sm:px-6 space-y-6 sm:space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
         <Shield className="w-7 h-7 sm:w-8 sm:h-8 text-primary" />
