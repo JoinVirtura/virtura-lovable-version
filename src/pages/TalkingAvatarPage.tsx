@@ -657,9 +657,9 @@ export default function TalkingAvatarStudio() {
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 flex flex-col lg:flex-row gap-3 sm:gap-6 p-3 sm:p-6">
+            <div className="flex-1 flex flex-col lg:flex-row gap-3 sm:gap-6 px-3 sm:px-6 py-3 sm:py-6">
               {/* Panels */}
-              <div className="flex-1 max-w-4xl">
+              <div className="flex-1 w-full max-w-4xl">
                 <Tabs value={activeTab} className="w-full">
                   <TabsContent value="avatar" className="mt-0">
                     <AvatarPanel uploadedFile={uploadedFile} onFileUpload={setUploadedFile} />
