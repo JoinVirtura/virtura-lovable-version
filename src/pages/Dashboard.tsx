@@ -1498,7 +1498,7 @@ export default function Dashboard() {
         return <DashboardLibraryView onEdit={handleEdit} />;
       case "guide":
         return (
-          <div className="space-y-6 sm:space-y-8 min-h-screen px-4 sm:px-6 lg:px-8">
+          <div className="space-y-6 sm:space-y-8 min-h-screen">
             {/* Onboarding Videos Section */}
             <div className="mb-8 sm:mb-12 lg:mb-16">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-6 sm:mb-8">
@@ -1587,8 +1587,8 @@ export default function Dashboard() {
 
             {/* Checklist */}
             <div>
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold mb-6 sm:mb-8 flex items-center gap-3">
-                <CheckCircle2 className="w-8 h-8 text-green-400" />
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold mb-6 sm:mb-8 flex items-center gap-2 sm:gap-3">
+                <CheckCircle2 className="w-6 h-6 sm:w-8 sm:h-8 text-green-400" />
                 To-Do Checklist
               </h2>
               
@@ -1602,8 +1602,8 @@ export default function Dashboard() {
                         : 'bg-[#1a1a2e]/80 border-violet-500/20 hover:border-violet-500/40 hover:shadow-[0_0_30px_rgba(139,92,246,0.2)]'
                     }`}
                   >
-                    <div className="p-8">
-                      <div className="flex items-start gap-6">
+                    <div className="p-4 sm:p-6 lg:p-8">
+                      <div className="flex items-start gap-3 sm:gap-4 lg:gap-6">
                         {/* Checkbox */}
                         <button
                           onClick={() => toggleTodo(todo.id)}
@@ -1620,18 +1620,18 @@ export default function Dashboard() {
 
                         {/* Content */}
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between gap-4 mb-3">
+                          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4 mb-3">
                             <div>
-                              <span className="text-sm font-semibold text-violet-400 mb-1 block">
+                              <span className="text-xs sm:text-sm font-semibold text-violet-400 mb-1 block">
                                 Step {index + 1}
                               </span>
-                              <h3 className={`text-2xl font-display font-bold ${
+                              <h3 className={`text-lg sm:text-xl lg:text-2xl font-display font-bold ${
                                 todo.completed ? "line-through text-muted-foreground" : ""
                               }`}>
                                 {todo.title}
                               </h3>
                             </div>
-                            <div className="flex items-center gap-2 flex-shrink-0">
+                            <div className="flex items-center gap-2 flex-shrink-0 self-start">
                               <Badge className={getDifficultyColor(todo.difficulty)}>
                                 {todo.difficulty}
                               </Badge>
@@ -1642,14 +1642,14 @@ export default function Dashboard() {
                             </div>
                           </div>
                           
-                          <p className={`text-base mb-6 text-muted-foreground ${
+                          <p className={`text-sm sm:text-base mb-4 sm:mb-6 text-muted-foreground ${
                             todo.completed ? "line-through" : ""
                           }`}>
                             {todo.description}
                           </p>
 
                           {/* Buttons */}
-                          <div className="flex flex-wrap gap-3 mb-6">
+                          <div className="flex flex-wrap gap-2 sm:gap-3 mb-4 sm:mb-6">
                             <Button 
                               variant="outline" 
                               size="sm"
