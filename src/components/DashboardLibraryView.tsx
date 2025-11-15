@@ -281,8 +281,8 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         <div className="lg:col-span-4">
           <Card className="p-6 border-2 hover:border-primary/20 transition-colors">
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-6">
-              <div className="relative flex-1 w-full sm:w-auto">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="relative flex-1">
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
                   value={searchQuery}
@@ -291,13 +291,31 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                   className="pl-12 pr-4 h-14 text-base bg-muted/30 border-0 focus:bg-background transition-colors"
                 />
               </div>
+            </div>
+
+            <div className="flex items-center justify-between gap-3 mb-8 flex-wrap">
+              <div className="flex flex-wrap gap-3">
+                {["All", "Characters", "Videos", "Favorites"].filter(cat => !(hideVideoCategory && cat === "Videos")).map((category) => (
+                  <Button
+                    key={category}
+                    variant={selectedCategory === category ? "default" : "outline"}
+                    size="sm"
+                    className="h-9 px-4 text-sm font-medium transition-all hover:scale-105 hover:shadow-md"
+                    onClick={() => setSelectedCategory(category)}
+                  >
+                    {category === "Favorites" && <Star className="w-4 h-4 mr-2" />}
+                    {category}
+                    {category === "All" && <Badge variant="secondary" className="ml-2 text-xs">{libraryAssets.length}</Badge>}
+                  </Button>
+                ))}
+              </div>
               
-              <div className="flex border-2 border-violet-500/50 rounded-xl overflow-hidden bg-muted/20 w-auto justify-center">
+              <div className="flex border-2 border-violet-500/50 rounded-xl overflow-hidden bg-muted/20 shrink-0">
                 <Button
                   variant={viewMode === "grid" ? "default" : "ghost"}
                   size="sm"
                   onClick={() => setViewMode("grid")}
-                  className="rounded-none border-0 px-3 sm:px-4 h-10 sm:h-auto"
+                  className="rounded-none border-0 px-3 h-9"
                 >
                   <Grid3X3 className="w-4 h-4" />
                 </Button>
@@ -305,27 +323,11 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                   variant={viewMode === "list" ? "default" : "ghost"}
                   size="sm"
                   onClick={() => setViewMode("list")}
-                  className="rounded-none border-0 px-3 sm:px-4 h-10 sm:h-auto"
+                  className="rounded-none border-0 px-3 h-9"
                 >
                   <List className="w-4 h-4" />
                 </Button>
               </div>
-            </div>
-
-            <div className="flex flex-wrap gap-3 mb-8">
-              {["All", "Characters", "Videos", "Favorites"].filter(cat => !(hideVideoCategory && cat === "Videos")).map((category) => (
-                <Button
-                  key={category}
-                  variant={selectedCategory === category ? "default" : "outline"}
-                  size="sm"
-                  className="h-9 px-4 text-sm font-medium transition-all hover:scale-105 hover:shadow-md"
-                  onClick={() => setSelectedCategory(category)}
-                >
-                  {category === "Favorites" && <Star className="w-4 h-4 mr-2" />}
-                  {category}
-                  {category === "All" && <Badge variant="secondary" className="ml-2 text-xs">{libraryAssets.length}</Badge>}
-                </Button>
-              ))}
             </div>
 
             <div className="space-y-6">
