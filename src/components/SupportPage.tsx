@@ -160,44 +160,45 @@ export function SupportPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-violet-950/20 to-black p-6">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen bg-gradient-to-br from-black via-violet-950/20 to-black p-3 sm:p-4 md:p-6">
+      <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
         {/* Header */}
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl md:text-5xl font-display font-bold text-gradient-primary">
+        <div className="text-center space-y-2 sm:space-y-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-gradient-primary">
             Support Center
           </h1>
-          <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-gray-300 max-w-2xl mx-auto px-4">
             Need help or have ideas? We're here to listen and assist you.
           </p>
         </div>
 
         {/* Forms Grid */}
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           {/* Support Ticket Form */}
-          <Card className="bg-black/40 backdrop-blur-xl border-violet-500/30 p-6 space-y-6">
-            <div className="flex items-center gap-3 border-b border-violet-500/20 pb-4">
-              <LifeBuoy className="w-6 h-6 text-violet-400" />
+          <Card className="bg-black/40 backdrop-blur-xl border-violet-500/30 p-4 sm:p-6 space-y-4 sm:space-y-6">
+            <div className="flex items-center gap-2 sm:gap-3 border-b border-violet-500/20 pb-3 sm:pb-4">
+              <LifeBuoy className="w-5 h-5 sm:w-6 sm:h-6 text-violet-400" />
               <div>
-                <h2 className="text-2xl font-bold text-white">Submit a Ticket</h2>
-                <p className="text-sm text-gray-400">Get help with issues or questions</p>
+                <h2 className="text-xl sm:text-2xl font-bold text-white">Submit a Ticket</h2>
+                <p className="text-xs sm:text-sm text-gray-400">Get help with issues or questions</p>
               </div>
             </div>
 
             {ticketSuccess ? (
-              <div className="flex flex-col items-center justify-center py-12 space-y-4">
-                <CheckCircle2 className="w-16 h-16 text-green-400 animate-in zoom-in duration-300" />
-                <p className="text-lg text-green-400 font-medium">Ticket Submitted Successfully!</p>
-                <p className="text-sm text-gray-400">We'll get back to you soon.</p>
+              <div className="flex flex-col items-center justify-center py-8 sm:py-12 space-y-3 sm:space-y-4">
+                <CheckCircle2 className="w-12 h-12 sm:w-16 sm:h-16 text-green-400 animate-in zoom-in duration-300" />
+                <p className="text-base sm:text-lg text-green-400 font-medium">Ticket Submitted Successfully!</p>
+                <p className="text-xs sm:text-sm text-gray-400">We'll get back to you soon.</p>
               </div>
             ) : (
-              <form onSubmit={ticketForm.handleSubmit(onTicketSubmit)} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="ticket-name">Name</Label>
+              <form onSubmit={ticketForm.handleSubmit(onTicketSubmit)} className="space-y-3 sm:space-y-4">
+                <div className="space-y-1.5 sm:space-y-2">
+                  <Label htmlFor="ticket-name" className="text-sm sm:text-base">Name</Label>
                   <Input
                     id="ticket-name"
                     {...ticketForm.register("name")}
                     placeholder="Your name"
+                    className="h-10 sm:h-11"
                   />
                   {ticketForm.formState.errors.name && (
                     <p className="text-sm text-red-400">{ticketForm.formState.errors.name.message}</p>
@@ -283,7 +284,7 @@ export function SupportPage() {
                 <Button
                   type="submit"
                   disabled={ticketLoading}
-                  className="w-full bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700"
+                  className="w-full h-11 sm:h-10 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700"
                 >
                   {ticketLoading ? (
                     <>
@@ -299,23 +300,23 @@ export function SupportPage() {
           </Card>
 
           {/* Feature Suggestion Form */}
-          <Card className="bg-black/40 backdrop-blur-xl border-violet-500/30 p-6 space-y-6">
-            <div className="flex items-center gap-3 border-b border-violet-500/20 pb-4">
-              <Lightbulb className="w-6 h-6 text-yellow-400" />
+          <Card className="bg-black/40 backdrop-blur-xl border-violet-500/30 p-4 sm:p-6 space-y-4 sm:space-y-6">
+            <div className="flex items-center gap-2 sm:gap-3 border-b border-violet-500/20 pb-3 sm:pb-4">
+              <Lightbulb className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400" />
               <div>
-                <h2 className="text-2xl font-bold text-white">Suggest a Feature</h2>
-                <p className="text-sm text-gray-400">Share your ideas for improvement</p>
+                <h2 className="text-xl sm:text-2xl font-bold text-white">Suggest a Feature</h2>
+                <p className="text-xs sm:text-sm text-gray-400">Share your ideas for improvement</p>
               </div>
             </div>
 
             {suggestionSuccess ? (
-              <div className="flex flex-col items-center justify-center py-12 space-y-4">
-                <CheckCircle2 className="w-16 h-16 text-green-400 animate-in zoom-in duration-300" />
-                <p className="text-lg text-green-400 font-medium">Suggestion Submitted!</p>
-                <p className="text-sm text-gray-400">Thank you for your feedback.</p>
+              <div className="flex flex-col items-center justify-center py-8 sm:py-12 space-y-3 sm:space-y-4">
+                <CheckCircle2 className="w-12 h-12 sm:w-16 sm:h-16 text-green-400 animate-in zoom-in duration-300" />
+                <p className="text-base sm:text-lg text-green-400 font-medium">Suggestion Submitted!</p>
+                <p className="text-xs sm:text-sm text-gray-400">Thank you for your feedback.</p>
               </div>
             ) : (
-              <form onSubmit={suggestionForm.handleSubmit(onSuggestionSubmit)} className="space-y-4">
+              <form onSubmit={suggestionForm.handleSubmit(onSuggestionSubmit)} className="space-y-3 sm:space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="suggestion-name">Name</Label>
                   <Input
@@ -421,7 +422,7 @@ export function SupportPage() {
                 <Button
                   type="submit"
                   disabled={suggestionLoading}
-                  className="w-full bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700"
+                  className="w-full h-11 sm:h-10 bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700"
                 >
                   {suggestionLoading ? (
                     <>
