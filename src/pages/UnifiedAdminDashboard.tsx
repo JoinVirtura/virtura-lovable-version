@@ -108,7 +108,7 @@ export default function UnifiedAdminDashboard() {
     : "0.0";
 
   return (
-    <div className="w-full mx-auto py-6 sm:py-8 space-y-6 sm:space-y-8 sm:max-w-7xl">
+    <div className="w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8 sm:max-w-7xl">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
         <Shield className="w-7 h-7 sm:w-8 sm:h-8 text-primary" />
