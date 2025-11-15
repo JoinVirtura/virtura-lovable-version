@@ -108,7 +108,7 @@ export default function UnifiedAdminDashboard() {
     : "0.0";
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
+    <div className="w-full max-w-7xl mx-auto py-6 sm:py-8 space-y-6 sm:space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
         <Shield className="w-7 h-7 sm:w-8 sm:h-8 text-primary" />
@@ -124,7 +124,7 @@ export default function UnifiedAdminDashboard() {
       <QuickAdminActions onActionComplete={fetchOverviewStats} />
 
       {/* Overview Stats */}
-      <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4">
+      <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4">
         <Card>
           <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-2">
             <CardTitle className="text-xs sm:text-sm font-medium flex items-center gap-2">
@@ -195,7 +195,7 @@ export default function UnifiedAdminDashboard() {
 
       {/* Tabbed Content */}
       <Tabs defaultValue="overview" className="space-y-4">
-        <div className="w-full overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+        <div className="w-full overflow-x-auto pb-2">
           <TabsList className="flex sm:grid sm:w-full sm:grid-cols-11 gap-2 h-auto w-max sm:w-full">
           <TabsTrigger value="overview" className="whitespace-nowrap">Overview</TabsTrigger>
           <TabsTrigger value="metrics" className="whitespace-nowrap">Metrics</TabsTrigger>
