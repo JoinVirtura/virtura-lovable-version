@@ -39,6 +39,7 @@ import { SupportPage } from "@/components/SupportPage";
 import { ProjectTimeline } from "@/components/studio/ProjectTimeline";
 import { useStudioProject } from "@/hooks/useStudioProject";
 import { SettingsContent } from "@/components/SettingsContent";
+import { DashboardSettingsContent } from "@/components/DashboardSettingsContent";
 import { StudioBackground } from "@/components/StudioBackground";
 import { WelcomeModal } from "@/components/WelcomeModal";
 import { useOnboarding } from "@/hooks/useOnboarding";
