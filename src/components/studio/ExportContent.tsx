@@ -104,7 +104,7 @@ export const ExportContent: React.FC<ExportContentProps> = ({
   return (
     <div className={`space-y-6 ${className}`}>
       {/* Export Pack Selection */}
-      <Card className="p-6">
+      <Card className="p-3 sm:p-6">
         <h2 className="text-xl font-semibold mb-4 flex items-center">
           <Package className="w-5 h-5 mr-2" />
           Export Pack
@@ -139,7 +139,7 @@ export const ExportContent: React.FC<ExportContentProps> = ({
       </Card>
 
       {/* Aspect Ratios */}
-      <Card className="p-6">
+      <Card className="p-3 sm:p-6">
         <h2 className="text-xl font-semibold mb-4">Aspect Ratios</h2>
         <p className="text-muted-foreground mb-4">
           Select the aspect ratios you need for your {exportPacks[selectedPack].name.toLowerCase()}
@@ -199,7 +199,7 @@ export const ExportContent: React.FC<ExportContentProps> = ({
       </Card>
 
       {/* Export Options */}
-      <Card className="p-6">
+      <Card className="p-3 sm:p-6">
         <h2 className="text-xl font-semibold mb-4 flex items-center">
           <Shield className="w-5 h-5 mr-2" />
           Export Options
@@ -225,7 +225,7 @@ export const ExportContent: React.FC<ExportContentProps> = ({
       </Card>
 
       {/* Export Summary */}
-      <Card className="p-6 bg-gradient-to-r from-primary/5 to-secondary/5">
+      <Card className="p-3 sm:p-6 bg-gradient-to-r from-primary/5 to-secondary/5">
         <h3 className="text-lg font-semibold mb-3 flex items-center">
           <Sparkles className="w-5 h-5 mr-2 text-primary" />
           Export Summary
@@ -262,7 +262,7 @@ export const ExportContent: React.FC<ExportContentProps> = ({
 
       {/* Display Exported Videos */}
       {project?.export?.videos && project.export.videos.length > 0 && (
-        <Card className="p-6 space-y-4">
+        <Card className="p-3 sm:p-6 space-y-4">
           <h3 className="text-lg font-semibold flex items-center">
             <Sparkles className="w-5 h-5 mr-2 text-primary" />
             Exported Videos
