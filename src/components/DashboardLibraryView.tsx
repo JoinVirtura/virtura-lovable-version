@@ -281,14 +281,14 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         <div className="lg:col-span-4">
           <Card className="p-6 border-2 hover:border-primary/20 transition-colors">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="relative flex-1">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-6">
+              <div className="relative flex-1 w-full sm:w-auto">
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search by name, tags, AI model, or content type..."
-                  className="pl-12 h-14 text-base bg-muted/30 border-0 focus:bg-background transition-colors"
+                  className="pl-12 pr-14 h-14 text-base bg-muted/30 border-0 focus:bg-background transition-colors"
                 />
                 <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
                   <Button size="sm" variant="ghost" className="h-8 w-8 p-0 hover:bg-primary/10">
@@ -297,7 +297,7 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                 </div>
               </div>
               
-              <div className="flex border-2 border-violet-500/50 rounded-xl overflow-hidden bg-muted/20">
+              <div className="flex border-2 border-violet-500/50 rounded-xl overflow-hidden bg-muted/20 w-full sm:w-auto justify-center">
                 <Button
                   variant={viewMode === "grid" ? "default" : "ghost"}
                   size="sm"
