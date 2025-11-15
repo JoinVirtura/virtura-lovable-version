@@ -101,7 +101,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
   return (
       <Sidebar 
         className="bg-black/90 backdrop-blur-xl border-r border-violet-500/20 z-50"
-        collapsible="offcanvas"
+        collapsible="icon"
       >
       <SidebarHeader className={!isMobile && isCollapsed ? "p-2" : "p-4"}>
         <div className="flex items-center justify-between">
