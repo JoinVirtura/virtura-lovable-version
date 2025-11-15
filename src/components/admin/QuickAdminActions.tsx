@@ -93,7 +93,7 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
             variant="outline"
             size="sm"
             onClick={() => setShowRetryJobs(true)}
-            className="w-full sm:w-auto flex items-center gap-2 whitespace-normal sm:whitespace-nowrap justify-center"
+            className="w-full sm:w-auto h-auto sm:h-10 py-2 sm:py-2"
           >
             <RefreshCw className="h-4 w-4" />
             Retry Failed Jobs
@@ -106,7 +106,7 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
             variant="outline"
             size="sm"
             onClick={() => setShowCreditTokens(true)}
-            className="w-full sm:w-auto flex items-center gap-2 whitespace-normal sm:whitespace-nowrap justify-center"
+            className="w-full sm:w-auto h-auto sm:h-10 py-2 sm:py-2"
           >
             <Coins className="h-4 w-4" />
             Credit Tokens
@@ -116,7 +116,7 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
             variant="outline"
             size="sm"
             onClick={() => setShowSystemHealth(true)}
-            className="w-full sm:w-auto flex items-center gap-2 whitespace-normal sm:whitespace-nowrap justify-center"
+            className="w-full sm:w-auto h-auto sm:h-10 py-2 sm:py-2"
           >
             <Activity className="h-4 w-4" />
             System Health
@@ -126,7 +126,7 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
             variant="outline"
             size="sm"
             onClick={() => setShowNotification(true)}
-            className="w-full sm:w-auto flex items-center gap-2 whitespace-normal sm:whitespace-nowrap justify-center"
+            className="w-full sm:w-auto h-auto sm:h-10 py-2 sm:py-2"
           >
             <Bell className="h-4 w-4" />
             Send Notification
