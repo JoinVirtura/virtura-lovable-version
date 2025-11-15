@@ -463,7 +463,7 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
         {/* Header - Only show before first generation */}
         {previewCards.length === 0 && (
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-4">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-4 pt-8 md:pt-0">
               Copilot
             </h1>
             <p className="text-lg text-muted-foreground">
@@ -493,7 +493,7 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                 {/* Prompt Input */}
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium">Describe your image</label>
+                    <label className="text-sm font-medium hidden md:block">Describe your image</label>
                     <div className="flex gap-2">
                       <Dialog open={showPromptLibrary} onOpenChange={setShowPromptLibrary}>
                         <DialogTrigger asChild>
