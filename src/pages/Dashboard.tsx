@@ -1944,7 +1944,7 @@ export default function Dashboard() {
       
       <SidebarProvider defaultOpen={true}>
         <div className="min-h-screen flex w-full bg-background relative overflow-hidden">
-          <MotionBackground />
+          {activeView !== 'admin-dashboard' && <MotionBackground />}
           
           {/* Fixed Mobile Header */}
           <header className="fixed top-0 left-0 right-0 z-50 md:hidden bg-black/90 backdrop-blur-xl border-b border-violet-500/20">
@@ -1964,7 +1964,7 @@ export default function Dashboard() {
         
         <div className="flex-1 flex flex-col relative z-10">
           {/* Add padding top on mobile to account for fixed header */}
-          <main className={`flex-1 ${activeView === 'admin-dashboard' ? 'pt-16 md:pt-6' : 'p-4 md:p-6 pt-16 md:pt-6 overflow-x-hidden'}`}>
+          <main className={`flex-1 ${activeView === 'admin-dashboard' ? 'pt-16 md:pt-6 px-0' : 'p-4 md:p-6 pt-16 md:pt-6 overflow-x-hidden'}`}>
             {renderContent()}
           </main>
         </div>
