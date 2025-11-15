@@ -803,15 +803,6 @@ export function BrandManagerView() {
   return (
     <StudioBackground>
       <div className="flex h-screen">
-        {/* Mobile Menu Button */}
-        <Button 
-          onClick={() => setMobileMenuOpen(true)}
-          className="lg:hidden fixed top-4 left-4 z-50 bg-violet-600 hover:bg-violet-700"
-          size="icon"
-        >
-          <Menu className="w-5 h-5" />
-        </Button>
-
         {/* Mobile Sidebar Sheet */}
         <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
           <SheetContent side="left" className="w-64 p-0 bg-black/95 backdrop-blur-xl border-violet-500/20">
@@ -828,7 +819,18 @@ export function BrandManagerView() {
           <div className="p-4 sm:p-6 lg:p-8">
             {/* Header */}
             <div className="mb-4 sm:mb-6">
-              <h1 className="text-2xl sm:text-3xl font-display font-bold text-white mb-4 sm:mb-6">Brand Manager</h1>
+              <div className="flex items-center justify-between mb-4 sm:mb-6">
+                <h1 className="text-2xl sm:text-3xl font-display font-bold text-white">Brand Manager</h1>
+                
+                {/* Mobile Menu Button */}
+                <Button 
+                  onClick={() => setMobileMenuOpen(true)}
+                  className="lg:hidden bg-violet-600 hover:bg-violet-700"
+                  size="icon"
+                >
+                  <Menu className="w-5 h-5" />
+                </Button>
+              </div>
               
               {/* Stats Row - Horizontal */}
               {selectedBrand && (
