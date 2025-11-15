@@ -26,9 +26,21 @@ interface ScheduledNotification {
   created_at: string;
 }
 
-export function ScheduledNotificationsDialog() {
+interface ScheduledNotificationsDialogProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  onSuccess?: () => void;
+}
+
+export function ScheduledNotificationsDialog({ 
+  open: externalOpen, 
+  onOpenChange: externalOnOpenChange,
+  onSuccess 
+}: ScheduledNotificationsDialogProps = {}) {
   const { user } = useAuth();
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = externalOpen !== undefined ? externalOpen : internalOpen;
+  const setOpen = externalOnOpenChange || setInternalOpen;
   const [notifications, setNotifications] = useState<ScheduledNotification[]>([]);
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -117,6 +129,7 @@ export function ScheduledNotificationsDialog() {
         description: "Notification scheduled successfully",
       });
 
+      onSuccess?.();
       setShowForm(false);
       setFormData({
         subject: "",
@@ -180,12 +193,14 @@ export function ScheduledNotificationsDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>
-          <Calendar className="w-4 h-4 mr-2" />
-          Scheduled Notifications
-        </Button>
-      </DialogTrigger>
+      {externalOpen === undefined && (
+        <DialogTrigger asChild>
+          <Button>
+            <Calendar className="w-4 h-4 mr-2" />
+            Scheduled Notifications
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Scheduled Notifications</DialogTitle>

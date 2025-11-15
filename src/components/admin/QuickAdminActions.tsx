@@ -7,7 +7,8 @@ import { RetryJobsModal } from "./RetryJobsModal";
 import { CreditTokensDialog } from "./CreditTokensDialog";
 import { SystemHealthModal } from "./SystemHealthModal";
 import { NotificationDialog } from "./NotificationDialog";
-import { RefreshCw, Coins, Activity, Bell } from "lucide-react";
+import { ScheduledNotificationsDialog } from "./ScheduledNotificationsDialog";
+import { RefreshCw, Coins, Activity, Bell, Calendar } from "lucide-react";
 
 interface QuickAdminActionsProps {
   onActionComplete?: () => void;
@@ -18,6 +19,7 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
   const [showCreditTokens, setShowCreditTokens] = useState(false);
   const [showSystemHealth, setShowSystemHealth] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
+  const [showScheduledNotifications, setShowScheduledNotifications] = useState(false);
   const [stats, setStats] = useState({
     failedJobs: 0,
     lowBalanceUsers: 0,
@@ -88,15 +90,15 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
           </div>
         </div>
 
-        <div className="w-full flex flex-col sm:flex-row gap-2">
+        <div className="w-full flex flex-wrap gap-2">
           <Button
             variant="outline"
             size="sm"
             onClick={() => setShowRetryJobs(true)}
-            className="w-full sm:w-auto"
+            className="flex-1 min-w-[140px]"
           >
-            <RefreshCw className="h-4 w-4" />
-            Retry Failed Jobs
+            <RefreshCw className="h-4 w-4 mr-2" />
+            <span className="whitespace-nowrap">Retry Failed Jobs</span>
             {stats.failedJobs > 0 && (
               <Badge variant="destructive" className="ml-1">{stats.failedJobs}</Badge>
             )}
@@ -106,30 +108,40 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
             variant="outline"
             size="sm"
             onClick={() => setShowCreditTokens(true)}
-            className="w-full sm:w-auto"
+            className="flex-1 min-w-[140px]"
           >
-            <Coins className="h-4 w-4" />
-            Credit Tokens
+            <Coins className="h-4 w-4 mr-2" />
+            <span className="whitespace-nowrap">Credit Tokens</span>
           </Button>
 
           <Button
             variant="outline"
             size="sm"
             onClick={() => setShowSystemHealth(true)}
-            className="w-full sm:w-auto"
+            className="flex-1 min-w-[140px]"
           >
-            <Activity className="h-4 w-4" />
-            System Health
+            <Activity className="h-4 w-4 mr-2" />
+            <span className="whitespace-nowrap">System Health</span>
           </Button>
 
           <Button
             variant="outline"
             size="sm"
             onClick={() => setShowNotification(true)}
-            className="w-full sm:w-auto"
+            className="flex-1 min-w-[140px]"
           >
-            <Bell className="h-4 w-4" />
-            Send Notification
+            <Bell className="h-4 w-4 mr-2" />
+            <span className="whitespace-nowrap">Send Notification</span>
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowScheduledNotifications(true)}
+            className="flex-1 min-w-[140px]"
+          >
+            <Calendar className="h-4 w-4 mr-2" />
+            <span className="whitespace-nowrap">Scheduled</span>
           </Button>
         </div>
       </Card>
@@ -154,6 +166,12 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
       <NotificationDialog
         open={showNotification}
         onOpenChange={setShowNotification}
+        onSuccess={handleActionComplete}
+      />
+
+      <ScheduledNotificationsDialog
+        open={showScheduledNotifications}
+        onOpenChange={setShowScheduledNotifications}
         onSuccess={handleActionComplete}
       />
     </>

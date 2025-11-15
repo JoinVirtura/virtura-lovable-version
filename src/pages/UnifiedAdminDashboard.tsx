@@ -13,7 +13,6 @@ import { UserManagementTools } from "@/components/admin/UserManagementTools";
 import { FinancialReporting } from "@/components/admin/FinancialReporting";
 import { AuditLogViewer } from "@/components/admin/AuditLogViewer";
 import { SystemMetrics } from "@/components/admin/SystemMetrics";
-import { ScheduledNotificationsDialog } from "@/components/admin/ScheduledNotificationsDialog";
 import { GalleryShowcaseManager } from "@/components/admin/GalleryShowcaseManager";
 import { LandingAnalyticsDashboard } from "@/components/admin/LandingAnalyticsDashboard";
 
@@ -122,10 +121,7 @@ export default function UnifiedAdminDashboard() {
       </div>
 
       {/* Quick Admin Actions */}
-      <div className="w-full flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-        <QuickAdminActions onActionComplete={fetchOverviewStats} />
-        <ScheduledNotificationsDialog />
-      </div>
+      <QuickAdminActions onActionComplete={fetchOverviewStats} />
 
       {/* Overview Stats */}
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4">
