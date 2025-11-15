@@ -1822,15 +1822,15 @@ export default function Dashboard() {
           <div className="space-y-8 min-h-screen">
             {/* Header */}
             <div>
-              <h1 className="text-3xl font-display font-bold text-foreground mb-2">Settings</h1>
-              <p className="text-muted-foreground">Manage your account and preferences</p>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold text-foreground mb-2">Settings</h1>
+              <p className="text-sm sm:text-base text-muted-foreground">Manage your account and preferences</p>
             </div>
 
             {/* Profile Settings */}
-            <Card className="p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <User className="w-5 h-5 text-primary" />
-                <h2 className="text-xl font-display font-bold">Profile</h2>
+            <Card className="p-4 sm:p-6 lg:p-8">
+              <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                <User className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-display font-bold">Profile</h2>
               </div>
               
               <div className="space-y-4">
@@ -1855,48 +1855,48 @@ export default function Dashboard() {
             </Card>
 
             {/* Notification Settings */}
-            <Card className="p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <Bell className="w-5 h-5 text-primary" />
-                <h2 className="text-xl font-display font-bold">Notifications</h2>
+            <Card className="p-4 sm:p-6 lg:p-8">
+              <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-display font-bold">Notifications</h2>
               </div>
               
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
+                  <div className="flex-1 min-w-0">
                     <Label>Email Notifications</Label>
-                    <p className="text-sm text-muted-foreground">Receive updates about your generations</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Receive updates about your generations</p>
                   </div>
-                  <Switch />
+                  <Switch className="self-start sm:self-auto flex-shrink-0" />
                 </div>
                 
                 <Separator />
                 
-                <div className="flex items-center justify-between">
-                  <div>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
+                  <div className="flex-1 min-w-0">
                     <Label>Generation Complete</Label>
-                    <p className="text-sm text-muted-foreground">Get notified when avatars finish generating</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Get notified when avatars finish generating</p>
                   </div>
-                  <Switch defaultChecked />
+                  <Switch defaultChecked className="self-start sm:self-auto flex-shrink-0" />
                 </div>
               </div>
             </Card>
 
             {/* Billing & Usage */}
-            <Card className="p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <CreditCard className="w-5 h-5 text-primary" />
-                <h2 className="text-xl font-display font-bold">Billing & Usage</h2>
+            <Card className="p-4 sm:p-6 lg:p-8">
+              <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-display font-bold">Billing & Usage</h2>
               </div>
               
               <div className="space-y-6">
                 {/* Current Plan */}
-                <div className="flex items-center justify-between p-4 bg-gradient-card rounded-lg">
-                  <div>
-                    <h3 className="font-display font-bold">Free Plan</h3>
-                    <p className="text-sm text-muted-foreground">50 generations per month</p>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 p-3 sm:p-4 bg-gradient-card rounded-lg">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-display font-bold text-base sm:text-lg">Free Plan</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground">50 generations per month</p>
                   </div>
-                  <Badge className="bg-gradient-primary">Active</Badge>
+                  <Badge className="bg-gradient-primary self-start sm:self-auto">Active</Badge>
                 </div>
                 
                 {/* Usage */}
@@ -1910,9 +1910,9 @@ export default function Dashboard() {
                   </div>
                 </div>
                 
-                <div className="flex gap-4">
-                  <Button onClick={() => setActiveView("upgrade")}>Upgrade Plan</Button>
-                  <Button variant="outline">View Billing History</Button>
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                  <Button onClick={() => setActiveView("upgrade")} className="w-full sm:w-auto">Upgrade Plan</Button>
+                  <Button variant="outline" className="w-full sm:w-auto">View Billing History</Button>
                 </div>
               </div>
             </Card>
