@@ -60,10 +60,10 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
 
   return (
     <>
-      <Card className="p-3 sm:p-4 mb-4 sm:mb-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+      <Card className="w-full p-3 sm:p-4 mb-4 sm:mb-6 overflow-hidden">
+        <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
           <h3 className="text-xs sm:text-sm font-semibold">Quick Actions</h3>
-          <div className="flex items-center flex-wrap gap-2 sm:gap-4 text-xs">
+          <div className="w-full flex items-center flex-wrap gap-2 sm:gap-4 text-xs">
             <div className="flex items-center gap-1">
               <span className="text-muted-foreground">Failed Jobs:</span>
               <Badge variant={stats.failedJobs > 0 ? "destructive" : "secondary"}>
@@ -88,7 +88,7 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
           </div>
         </div>
 
-        <div className="flex gap-2 flex-wrap">
+        <div className="w-full flex gap-2 flex-wrap">
           <Button
             variant="outline"
             size="sm"
