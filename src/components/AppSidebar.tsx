@@ -45,8 +45,8 @@ export function AppSidebar() {
 
   return (
     <Sidebar
-      className={`${collapsed ? "w-16" : "w-20"} border-r border-border bg-sidebar-background`}
-      collapsible="icon"
+      className="border-r border-border bg-sidebar-background"
+      collapsible="offcanvas"
     >
       <SidebarContent className="p-0">
         <div className="flex flex-col items-center pt-6 pb-4">
