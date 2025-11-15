@@ -1498,11 +1498,11 @@ export default function Dashboard() {
         return <DashboardLibraryView onEdit={handleEdit} />;
       case "guide":
         return (
-          <div className="space-y-6 min-h-screen px-4">
+          <div className="space-y-6 sm:space-y-8 min-h-screen px-4 sm:px-6 lg:px-8">
             {/* Onboarding Videos Section */}
-            <div className="mb-16">
-              <div className="flex items-center justify-between mb-8">
-                <h2 className="text-3xl font-display font-bold">
+            <div className="mb-8 sm:mb-12 lg:mb-16">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-6 sm:mb-8">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold">
                   Video Library
                 </h2>
                 <CircularProgress 
@@ -1513,7 +1513,7 @@ export default function Dashboard() {
                 />
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {/* Main Tutorial Video */}
                 <Card className="group overflow-hidden bg-[#1a1a2e]/80 border-violet-500/20 hover:border-violet-500/40 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(139,92,246,0.3)]">
                   <div className="aspect-video relative group cursor-pointer bg-gradient-to-br from-violet-900/50 to-pink-900/50">
@@ -1587,12 +1587,12 @@ export default function Dashboard() {
 
             {/* Checklist */}
             <div>
-              <h2 className="text-3xl font-display font-bold mb-8 flex items-center gap-3">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold mb-6 sm:mb-8 flex items-center gap-3">
                 <CheckCircle2 className="w-8 h-8 text-green-400" />
                 To-Do Checklist
               </h2>
               
-              <div className="space-y-6">
+              <div className="space-y-4 sm:space-y-6">
                 {todos.map((todo, index) => (
                   <Card 
                     key={todo.id} 
