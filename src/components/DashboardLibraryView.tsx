@@ -310,12 +310,12 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                 ))}
               </div>
               
-              <div className="flex border-2 border-violet-500/50 rounded-xl overflow-hidden bg-muted/20 shrink-0">
+              <div className="flex flex-col border-2 border-violet-500/50 rounded-xl overflow-hidden bg-muted/20 shrink-0">
                 <Button
                   variant={viewMode === "grid" ? "default" : "ghost"}
                   size="sm"
                   onClick={() => setViewMode("grid")}
-                  className="rounded-none border-0 px-3 h-9"
+                  className="rounded-none border-0 px-3 h-[18px] min-h-[18px]"
                 >
                   <Grid3X3 className="w-4 h-4" />
                 </Button>
@@ -323,7 +323,7 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                   variant={viewMode === "list" ? "default" : "ghost"}
                   size="sm"
                   onClick={() => setViewMode("list")}
-                  className="rounded-none border-0 px-3 h-9"
+                  className="rounded-none border-0 px-3 h-[18px] min-h-[18px]"
                 >
                   <List className="w-4 h-4" />
                 </Button>
