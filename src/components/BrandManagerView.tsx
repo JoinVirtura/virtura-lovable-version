@@ -825,10 +825,11 @@ export function BrandManagerView() {
                 {/* Mobile Menu Button */}
                 <Button 
                   onClick={() => setMobileMenuOpen(true)}
-                  className="lg:hidden bg-violet-600 hover:bg-violet-700"
-                  size="icon"
+                  className="lg:hidden"
+                  variant="ghost"
+                  size="sm"
                 >
-                  <Menu className="w-5 h-5" />
+                  <Menu className="w-4 h-4" />
                 </Button>
               </div>
               
