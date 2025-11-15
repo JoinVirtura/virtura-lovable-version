@@ -90,12 +90,12 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
           </div>
         </div>
 
-        <div className="w-full flex flex-wrap gap-2 max-w-full">
+        <div className="w-full flex flex-wrap gap-2">
           <Button
             variant="outline"
             size="sm"
             onClick={() => setShowRetryJobs(true)}
-            className="flex-1 min-w-[140px]"
+            className="flex-1 min-w-[120px] sm:min-w-[140px]"
           >
             <RefreshCw className="h-4 w-4 mr-2" />
             <span className="whitespace-nowrap">Retry Failed Jobs</span>
@@ -108,7 +108,7 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
             variant="outline"
             size="sm"
             onClick={() => setShowCreditTokens(true)}
-            className="flex-1 min-w-[140px]"
+            className="flex-1 min-w-[120px] sm:min-w-[140px]"
           >
             <Coins className="h-4 w-4 mr-2" />
             <span className="whitespace-nowrap">Credit Tokens</span>
@@ -118,7 +118,7 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
             variant="outline"
             size="sm"
             onClick={() => setShowSystemHealth(true)}
-            className="flex-1 min-w-[140px]"
+            className="flex-1 min-w-[120px] sm:min-w-[140px]"
           >
             <Activity className="h-4 w-4 mr-2" />
             <span className="whitespace-nowrap">System Health</span>
@@ -128,7 +128,7 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
             variant="outline"
             size="sm"
             onClick={() => setShowNotification(true)}
-            className="flex-1 min-w-[140px]"
+            className="flex-1 min-w-[120px] sm:min-w-[140px]"
           >
             <Bell className="h-4 w-4 mr-2" />
             <span className="whitespace-nowrap">Send Notification</span>
@@ -138,7 +138,7 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
             variant="outline"
             size="sm"
             onClick={() => setShowScheduledNotifications(true)}
-            className="flex-1 min-w-[140px]"
+            className="flex-1 min-w-[120px] sm:min-w-[140px]"
           >
             <Calendar className="h-4 w-4 mr-2" />
             <span className="whitespace-nowrap">Scheduled</span>
