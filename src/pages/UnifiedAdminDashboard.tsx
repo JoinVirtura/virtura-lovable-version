@@ -199,19 +199,19 @@ export default function UnifiedAdminDashboard() {
 
       {/* Tabbed Content */}
       <Tabs defaultValue="overview" className="space-y-4">
-        <div className="overflow-x-auto sm:overflow-x-visible">
-          <TabsList className="w-full sm:grid sm:grid-cols-11">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="metrics">Metrics</TabsTrigger>
-          <TabsTrigger value="users">Users</TabsTrigger>
-          <TabsTrigger value="financial">Financial</TabsTrigger>
-          <TabsTrigger value="costs">API Costs</TabsTrigger>
-          <TabsTrigger value="tokens">Token Txns</TabsTrigger>
-          <TabsTrigger value="jobs">Jobs & Activity</TabsTrigger>
-          <TabsTrigger value="audit">Audit Log</TabsTrigger>
-          <TabsTrigger value="recovery">Recovery</TabsTrigger>
-          <TabsTrigger value="gallery">Gallery</TabsTrigger>
-          <TabsTrigger value="landing">Landing</TabsTrigger>
+        <div className="overflow-x-auto sm:overflow-x-visible pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+          <TabsList className="inline-flex sm:grid sm:w-full sm:grid-cols-11 gap-2 h-auto flex-nowrap">
+          <TabsTrigger value="overview" className="whitespace-nowrap">Overview</TabsTrigger>
+          <TabsTrigger value="metrics" className="whitespace-nowrap">Metrics</TabsTrigger>
+          <TabsTrigger value="users" className="whitespace-nowrap">Users</TabsTrigger>
+          <TabsTrigger value="financial" className="whitespace-nowrap">Financial</TabsTrigger>
+          <TabsTrigger value="costs" className="whitespace-nowrap">API Costs</TabsTrigger>
+          <TabsTrigger value="tokens" className="whitespace-nowrap">Token Txns</TabsTrigger>
+          <TabsTrigger value="jobs" className="whitespace-nowrap">Jobs & Activity</TabsTrigger>
+          <TabsTrigger value="audit" className="whitespace-nowrap">Audit Log</TabsTrigger>
+          <TabsTrigger value="recovery" className="whitespace-nowrap">Recovery</TabsTrigger>
+          <TabsTrigger value="gallery" className="whitespace-nowrap">Gallery</TabsTrigger>
+          <TabsTrigger value="landing" className="whitespace-nowrap">Landing</TabsTrigger>
         </TabsList>
         </div>
 
