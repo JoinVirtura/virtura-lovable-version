@@ -113,7 +113,7 @@ export default function StudioPage() {
 
 
       {/* Main Studio Interface */}
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6">
         <div className="grid lg:grid-cols-12 gap-6">
           {/* Main Studio Panel */}
           <div className="lg:col-span-8">

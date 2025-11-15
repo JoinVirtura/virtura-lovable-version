@@ -18,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { StudioBackground } from '@/components/StudioBackground';
 import { CreateBrandDialog } from '@/components/CreateBrandDialog';
 import { LibrarySelectionModal } from '@/components/LibrarySelectionModal';
@@ -55,6 +56,7 @@ import {
   CheckSquare,
   Square,
   BarChart3,
+  Menu,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
@@ -98,6 +100,7 @@ export function BrandManagerView() {
   const [newFolderName, setNewFolderName] = useState('');
   const [libraryModalOpen, setLibraryModalOpen] = useState(false);
   const [generateDialogOpen, setGenerateDialogOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [brandKitOpen, setBrandKitOpen] = useState(false);
   const [campaignCreatorOpen, setCampaignCreatorOpen] = useState(false);
   const [editAssetDialogOpen, setEditAssetDialogOpen] = useState(false);
@@ -466,11 +469,8 @@ export function BrandManagerView() {
     }
   };
 
-  return (
-    <StudioBackground>
-      <div className="flex h-screen">
-        {/* Left Sidebar */}
-        <div className="w-64 border-r border-violet-500/20 bg-black/40 backdrop-blur-xl p-6 space-y-6 overflow-y-auto overflow-x-hidden">
+  const SidebarContent = () => (
+    <div className="w-full h-full space-y-6 overflow-y-auto overflow-x-hidden p-6">
           {/* New Campaign Button - Primary Action */}
           <Button
             variant="default"
@@ -797,18 +797,42 @@ export function BrandManagerView() {
               )}
             </div>
           )}
-        </div>
+    </div>
+  );
 
+  return (
+    <StudioBackground>
+      <div className="flex h-screen">
+        {/* Mobile Menu Button */}
+        <Button 
+          onClick={() => setMobileMenuOpen(true)}
+          className="lg:hidden fixed top-4 left-4 z-50 bg-violet-600 hover:bg-violet-700"
+          size="icon"
+        >
+          <Menu className="w-5 h-5" />
+        </Button>
+
+        {/* Mobile Sidebar Sheet */}
+        <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+          <SheetContent side="left" className="w-64 p-0 bg-black/95 backdrop-blur-xl border-violet-500/20">
+            <SidebarContent />
+          </SheetContent>
+        </Sheet>
+
+        {/* Desktop Sidebar */}
+        <div className="hidden lg:block w-64 border-r border-violet-500/20 bg-black/40 backdrop-blur-xl">
+          <SidebarContent />
+        </div>
         {/* Main Content Area */}
         <div className="flex-1 overflow-auto">
-          <div className="p-8">
+          <div className="p-4 sm:p-6 lg:p-8">
             {/* Header */}
-            <div className="mb-6">
-              <h1 className="text-3xl font-display font-bold text-white mb-6">Brand Manager</h1>
+            <div className="mb-4 sm:mb-6">
+              <h1 className="text-2xl sm:text-3xl font-display font-bold text-white mb-4 sm:mb-6">Brand Manager</h1>
               
               {/* Stats Row - Horizontal */}
               {selectedBrand && (
-                <div className="grid grid-cols-4 gap-4 mb-6">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
                   <Card className="bg-gradient-to-br from-gray-900/80 to-gray-800/80 border-violet-500/20 p-6">
                     <h3 className="text-sm text-muted-foreground mb-2">Total Assets</h3>
                     <p className="text-4xl font-bold text-white">{brandStats.totalAssets}</p>
@@ -843,7 +867,7 @@ export function BrandManagerView() {
             </div>
 
             {/* Search and Filters */}
-            <div className="flex items-center gap-4 mb-6">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
               {/* Batch Mode Toggle */}
               {assets.length > 0 && (
                 <Button
@@ -853,30 +877,30 @@ export function BrandManagerView() {
                     setBatchMode(!batchMode);
                     setSelectedAssets(new Set());
                   }}
-                  className={batchMode ? 'bg-violet-600' : 'border-violet-500/30'}
+                  className={`${batchMode ? 'bg-violet-600' : 'border-violet-500/30'} w-full sm:w-auto`}
                 >
                   {batchMode ? <CheckSquare className="w-4 h-4 mr-2" /> : <Square className="w-4 h-4 mr-2" />}
                   {batchMode ? 'Batch Mode' : 'Select Multiple'}
                 </Button>
               )}
 
-              <div className="flex-1 max-w-xl">
+              <div className="flex-1 w-full sm:max-w-xl">
                 <div className="relative">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
                     placeholder="Search assets..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 h-10 bg-black/40 backdrop-blur-md border border-violet-500/30"
+                    className="pl-9 sm:pl-10 h-10 bg-black/40 backdrop-blur-md border border-violet-500/30"
                   />
                 </div>
               </div>
 
-              <p className="text-sm text-violet-200 whitespace-nowrap">{assets.length} assets</p>
+              <p className="text-xs sm:text-sm text-violet-200 text-center sm:whitespace-nowrap">{assets.length} assets</p>
 
-              <div className="flex gap-2 flex-shrink-0">
+              <div className="flex flex-wrap gap-2 flex-shrink-0">
                 <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-32 h-10 bg-black/40 border-violet-500/30">
+                  <SelectTrigger className="w-full sm:w-32 h-10 bg-black/40 border-violet-500/30">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-gray-900 border-violet-500/30">
@@ -887,38 +911,40 @@ export function BrandManagerView() {
                   </SelectContent>
                 </Select>
 
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className={`h-10 w-10 ${
-                    viewMode === 'grid'
-                      ? 'bg-violet-500/20 text-violet-300 border-violet-500/50'
-                      : 'border-violet-500/30'
-                  }`}
-                  onClick={() => setViewMode('grid')}
-                >
-                  <Grid3X3 className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className={`h-10 w-10 ${
-                    viewMode === 'list'
-                      ? 'bg-violet-500/20 text-violet-300 border-violet-500/50'
-                      : 'border-violet-500/30'
-                  }`}
-                  onClick={() => setViewMode('list')}
-                >
-                  <List className="w-4 h-4" />
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className={`h-10 w-10 ${
+                      viewMode === 'grid'
+                        ? 'bg-violet-500/20 text-violet-300 border-violet-500/50'
+                        : 'border-violet-500/30'
+                    }`}
+                    onClick={() => setViewMode('grid')}
+                  >
+                    <Grid3X3 className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className={`h-10 w-10 ${
+                      viewMode === 'list'
+                        ? 'bg-violet-500/20 text-violet-300 border-violet-500/50'
+                        : 'border-violet-500/30'
+                    }`}
+                    onClick={() => setViewMode('list')}
+                  >
+                    <List className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
             </div>
 
             {/* Batch Actions Toolbar */}
             {batchMode && selectedAssets.size > 0 && (
-              <div className="mb-4 p-4 bg-violet-600/20 border border-violet-500/30 rounded-lg flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="text-sm font-medium text-white">
+              <div className="mb-4 p-3 sm:p-4 bg-violet-600/20 border border-violet-500/30 rounded-lg flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-0">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
+                  <span className="text-xs sm:text-sm font-medium text-white">
                     {selectedAssets.size} asset(s) selected
                   </span>
                   <Button
@@ -930,12 +956,12 @@ export function BrandManagerView() {
                     Clear
                   </Button>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2 w-full sm:w-auto">
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={handleBatchDownload}
-                    className="border-violet-500/30"
+                    className="border-violet-500/30 flex-1 sm:flex-none"
                   >
                     <Download className="w-4 h-4 mr-2" />
                     Download All
@@ -944,10 +970,10 @@ export function BrandManagerView() {
                     size="sm"
                     variant="outline"
                     onClick={handleBatchDelete}
-                    className="border-red-500/30 text-red-400 hover:text-red-300"
+                    className="border-red-500/30 text-red-400 hover:text-red-300 flex-1 sm:flex-none"
                   >
                     <Trash2 className="w-4 h-4 mr-2" />
-                    Delete
+                    Delete All
                   </Button>
                 </div>
               </div>
