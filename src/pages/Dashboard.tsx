@@ -1501,7 +1501,7 @@ export default function Dashboard() {
           <div className="space-y-6 sm:space-y-8 min-h-screen">
             {/* Onboarding Videos Section */}
             <div className="mb-8 sm:mb-12 lg:mb-16">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-6 sm:mb-8">
+              <div className="flex flex-row items-center justify-between gap-4 mb-6 sm:mb-8">
                 <h2 className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold">
                   Video Library
                 </h2>
@@ -1509,7 +1509,7 @@ export default function Dashboard() {
                   value={progress} 
                   size={80} 
                   strokeWidth={6}
-                  className="relative"
+                  className="relative flex-shrink-0"
                 />
               </div>
               
