@@ -629,26 +629,28 @@ export default function TalkingAvatarStudio() {
             {/* Workflow Tabs */}
             <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b border-border/50">
               <Tabs value={activeTab} onValueChange={setActiveTab} className="px-3 sm:px-6">
-                <TabsList className="grid w-full grid-cols-5 bg-muted/10">
-                  <TabsTrigger value="avatar" className="flex items-center space-x-2">
-                    <ImageIcon className="w-4 h-4" />
-                    <span>Avatar</span>
+                <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5 bg-muted/10 gap-1">
+                  <TabsTrigger value="avatar" className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm">
+                    <ImageIcon className="w-4 h-4 flex-shrink-0" />
+                    <span className="truncate">Avatar</span>
                   </TabsTrigger>
-                  <TabsTrigger value="voice" className="flex items-center space-x-2">
-                    <Volume2 className="w-4 h-4" />
-                    <span>Voice</span>
+                  <TabsTrigger value="voice" className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm">
+                    <Volume2 className="w-4 h-4 flex-shrink-0" />
+                    <span className="truncate">Voice</span>
                   </TabsTrigger>
-                  <TabsTrigger value="style" className="flex items-center space-x-2">
-                    <Palette className="w-4 h-4" />
-                    <span>Style & FX</span>
+                  <TabsTrigger value="style" className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm">
+                    <Palette className="w-4 h-4 flex-shrink-0" />
+                    <span className="truncate hidden sm:inline">Style & FX</span>
+                    <span className="truncate sm:hidden">Style</span>
                   </TabsTrigger>
-                  <TabsTrigger value="timeline" className="flex items-center space-x-2">
-                    <Film className="w-4 h-4" />
-                    <span>Timeline</span>
+                  <TabsTrigger value="timeline" className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm">
+                    <Film className="w-4 h-4 flex-shrink-0" />
+                    <span className="truncate">Timeline</span>
                   </TabsTrigger>
-                  <TabsTrigger value="export" className="flex items-center space-x-2">
-                    <Download className="w-4 h-4" />
-                    <span>Preview & Export</span>
+                  <TabsTrigger value="export" className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm col-span-2 sm:col-span-1">
+                    <Download className="w-4 h-4 flex-shrink-0" />
+                    <span className="truncate hidden sm:inline">Preview & Export</span>
+                    <span className="truncate sm:hidden">Export</span>
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
