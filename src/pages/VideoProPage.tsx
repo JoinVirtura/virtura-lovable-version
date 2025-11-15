@@ -177,7 +177,7 @@ export default function VideoProPage() {
       </div>
 
       {/* Main Studio Interface */}
-      <div className="w-full px-3 sm:px-6 py-4 sm:py-6 mb-6 sm:mb-8">
+      <div className="w-full px-4 sm:px-6 py-4 sm:py-6 mb-6 sm:mb-8">
         <div className="grid lg:grid-cols-12 gap-6">
           {/* Global file input - always available */}
           <input
