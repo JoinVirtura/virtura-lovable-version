@@ -994,7 +994,7 @@ export default function Dashboard() {
       case "overview":
         return <OverviewPage onViewChange={setActiveView} />;
       case "settings":
-        return <SettingsContent onRewatchTutorial={() => setShowWelcomeModal(true)} />;
+        return <DashboardSettingsContent />;
       case "talking-avatar":
         return (
           <div className="h-screen overflow-y-auto">
