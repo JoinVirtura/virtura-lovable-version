@@ -1501,7 +1501,7 @@ export default function Dashboard() {
           <div className="space-y-6 sm:space-y-8 min-h-screen">
             {/* Onboarding Videos Section */}
             <div className="mb-8 sm:mb-12 lg:mb-16">
-              <div className="flex flex-row items-center justify-between gap-4 mb-6 sm:mb-8">
+              <div className="flex flex-row items-center justify-center gap-6 sm:gap-8 mb-6 sm:mb-8">
                 <h2 className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold">
                   Video Library
                 </h2>
