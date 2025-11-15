@@ -62,7 +62,7 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
 
   return (
     <>
-      <Card className="w-full p-3 sm:p-4 mb-4 sm:mb-6">
+      <Card className="w-full p-3 sm:p-4 mb-4 sm:mb-6 overflow-visible">
         <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
           <h3 className="text-xs sm:text-sm font-semibold">Quick Actions</h3>
           <div className="w-full flex items-center flex-wrap gap-2 sm:gap-4 text-xs">
@@ -90,7 +90,7 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
           </div>
         </div>
 
-        <div className="w-full flex flex-wrap gap-2">
+        <div className="w-full flex flex-wrap gap-2 max-w-full">
           <Button
             variant="outline"
             size="sm"

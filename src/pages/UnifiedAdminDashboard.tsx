@@ -108,7 +108,7 @@ export default function UnifiedAdminDashboard() {
     : "0.0";
 
   return (
-    <div className="w-full max-w-7xl mx-auto py-6 sm:py-8 space-y-6 sm:space-y-8">
+    <div className="w-full mx-auto py-6 sm:py-8 space-y-6 sm:space-y-8 sm:max-w-7xl">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
         <Shield className="w-7 h-7 sm:w-8 sm:h-8 text-primary" />
@@ -195,8 +195,8 @@ export default function UnifiedAdminDashboard() {
 
       {/* Tabbed Content */}
       <Tabs defaultValue="overview" className="space-y-4">
-        <div className="w-full overflow-x-auto pb-2">
-          <TabsList className="flex sm:grid sm:w-full sm:grid-cols-11 gap-2 h-auto w-max sm:w-full">
+        <div className="w-full -mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto pb-2">
+          <TabsList className="inline-flex sm:grid sm:w-full sm:grid-cols-11 gap-2 h-auto min-w-max sm:min-w-0">
           <TabsTrigger value="overview" className="whitespace-nowrap">Overview</TabsTrigger>
           <TabsTrigger value="metrics" className="whitespace-nowrap">Metrics</TabsTrigger>
           <TabsTrigger value="users" className="whitespace-nowrap">Users</TabsTrigger>
