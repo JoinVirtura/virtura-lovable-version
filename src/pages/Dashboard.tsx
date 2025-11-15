@@ -130,16 +130,15 @@ export default function Dashboard() {
   const { isOnboardingComplete, loading: onboardingLoading } = useOnboarding();
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   
-  // Import admin dashboard
+  // Import admin dashboard immediately to avoid loading delay
   const [AdminDashboardComponent, setAdminDashboardComponent] = useState<any>(null);
   
   useEffect(() => {
-    if (activeView === "admin-dashboard") {
-      import("./UnifiedAdminDashboard").then((module) => {
-        setAdminDashboardComponent(() => module.default);
-      });
-    }
-  }, [activeView]);
+    // Preload admin dashboard component
+    import("./UnifiedAdminDashboard").then((module) => {
+      setAdminDashboardComponent(() => module.default);
+    });
+  }, []);
   
   // Brand Manager state
   const [currentFolder, setCurrentFolder] = useState<string>('all');
