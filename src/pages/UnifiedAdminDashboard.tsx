@@ -145,7 +145,7 @@ export default function UnifiedAdminDashboard() {
               Tokens Sold
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 sm:p-6 pt-0">
             <div className="text-2xl font-bold">{stats.totalTokensPurchased.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">lifetime</p>
           </CardContent>
@@ -158,7 +158,7 @@ export default function UnifiedAdminDashboard() {
               Tokens Used
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 sm:p-6 pt-0">
             <div className="text-2xl font-bold">{stats.totalTokensUsed.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">consumed</p>
           </CardContent>
@@ -171,7 +171,7 @@ export default function UnifiedAdminDashboard() {
               Revenue
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 sm:p-6 pt-0">
             <div className="text-2xl font-bold">${stats.totalRevenue.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground">from tokens</p>
           </CardContent>
@@ -184,7 +184,7 @@ export default function UnifiedAdminDashboard() {
               Profit Margin
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 sm:p-6 pt-0">
             <div className="text-2xl font-bold">{profitMargin}%</div>
             <p className="text-xs text-muted-foreground">
               ${(stats.totalRevenue - stats.totalApiCosts).toFixed(2)} profit
@@ -195,7 +195,7 @@ export default function UnifiedAdminDashboard() {
 
       {/* Tabbed Content */}
       <Tabs defaultValue="overview" className="space-y-4">
-        <div className="overflow-x-auto sm:overflow-x-visible pb-2">
+        <div className="w-full max-w-full overflow-x-auto sm:overflow-x-visible pb-2">
           <TabsList className="inline-flex sm:grid sm:w-full sm:grid-cols-11 gap-2 h-auto flex-nowrap">
           <TabsTrigger value="overview" className="whitespace-nowrap">Overview</TabsTrigger>
           <TabsTrigger value="metrics" className="whitespace-nowrap">Metrics</TabsTrigger>
