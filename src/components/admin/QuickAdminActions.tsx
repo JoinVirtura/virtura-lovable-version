@@ -90,7 +90,7 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
           </div>
         </div>
 
-        <div className="w-full flex flex-wrap gap-2">
+        <div className="w-full flex flex-wrap gap-2 max-w-full">
           <Button
             variant="outline"
             size="sm"
