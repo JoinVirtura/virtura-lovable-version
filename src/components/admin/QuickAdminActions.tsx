@@ -62,7 +62,7 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
 
   return (
     <>
-      <Card className="w-full p-3 sm:p-4 mb-4 sm:mb-6 overflow-hidden">
+      <Card className="w-full p-3 sm:p-4 mb-4 sm:mb-6">
         <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
           <h3 className="text-xs sm:text-sm font-semibold">Quick Actions</h3>
           <div className="w-full flex items-center flex-wrap gap-2 sm:gap-4 text-xs">
@@ -95,7 +95,7 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
             variant="outline"
             size="sm"
             onClick={() => setShowRetryJobs(true)}
-            className="flex-1 min-w-[120px] sm:min-w-[140px]"
+            className="flex-none w-full sm:flex-1 sm:min-w-[140px]"
           >
             <RefreshCw className="h-4 w-4 mr-2" />
             <span className="whitespace-nowrap">Retry Failed Jobs</span>
@@ -108,7 +108,7 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
             variant="outline"
             size="sm"
             onClick={() => setShowCreditTokens(true)}
-            className="flex-1 min-w-[120px] sm:min-w-[140px]"
+            className="flex-none w-full sm:flex-1 sm:min-w-[140px]"
           >
             <Coins className="h-4 w-4 mr-2" />
             <span className="whitespace-nowrap">Credit Tokens</span>
@@ -118,7 +118,7 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
             variant="outline"
             size="sm"
             onClick={() => setShowSystemHealth(true)}
-            className="flex-1 min-w-[120px] sm:min-w-[140px]"
+            className="flex-none w-full sm:flex-1 sm:min-w-[140px]"
           >
             <Activity className="h-4 w-4 mr-2" />
             <span className="whitespace-nowrap">System Health</span>
@@ -128,7 +128,7 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
             variant="outline"
             size="sm"
             onClick={() => setShowNotification(true)}
-            className="flex-1 min-w-[120px] sm:min-w-[140px]"
+            className="flex-none w-full sm:flex-1 sm:min-w-[140px]"
           >
             <Bell className="h-4 w-4 mr-2" />
             <span className="whitespace-nowrap">Send Notification</span>
@@ -138,7 +138,7 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
             variant="outline"
             size="sm"
             onClick={() => setShowScheduledNotifications(true)}
-            className="flex-1 min-w-[120px] sm:min-w-[140px]"
+            className="flex-none w-full sm:flex-1 sm:min-w-[140px]"
           >
             <Calendar className="h-4 w-4 mr-2" />
             <span className="whitespace-nowrap">Scheduled</span>
