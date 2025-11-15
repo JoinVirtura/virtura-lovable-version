@@ -913,7 +913,7 @@ export const StyleTransferStudio: React.FC<StyleTransferStudioProps> = ({
 
       {/* Prerequisites Check */}
       {!project.avatar && <Card className="border-violet-500/30 bg-violet-950/20 backdrop-blur-xl">
-          <CardContent className="p-6">
+          <CardContent className="p-3 sm:p-6">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-full bg-violet-500/20 flex items-center justify-center">
                 <Sparkles className="h-5 w-5 text-violet-400" />

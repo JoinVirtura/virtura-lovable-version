@@ -655,7 +655,7 @@ export default function TalkingAvatarStudio() {
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 flex gap-6 p-6">
+            <div className="flex-1 flex gap-3 sm:gap-6 p-3 sm:p-6">
               {/* Panels */}
               <div className="flex-1 max-w-4xl">
                 <Tabs value={activeTab} className="w-full">
