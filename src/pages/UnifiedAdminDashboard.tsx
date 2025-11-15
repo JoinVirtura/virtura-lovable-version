@@ -29,26 +29,47 @@ export default function UnifiedAdminDashboard() {
 
   useEffect(() => {
     const checkAdmin = async () => {
+      console.log('[UnifiedAdminDashboard] Starting admin check...');
+      console.log('[UnifiedAdminDashboard] User object:', user ? { id: user.id, email: user.email } : 'NO USER');
+      
       if (!user) {
+        console.log('[UnifiedAdminDashboard] No user found, setting isAdmin to false');
         setIsAdmin(false);
         return;
       }
 
-      const { data } = await supabase
+      console.log('[UnifiedAdminDashboard] Querying user_roles for user_id:', user.id);
+      
+      const { data, error } = await supabase
         .from("user_roles")
         .select("role")
         .eq("user_id", user.id)
         .eq("role", "admin")
         .maybeSingle();
 
-      setIsAdmin(!!data);
+      console.log('[UnifiedAdminDashboard] Query result:', { data, error });
+      
+      const isUserAdmin = !!data;
+      console.log('[UnifiedAdminDashboard] Setting isAdmin to:', isUserAdmin);
+      setIsAdmin(isUserAdmin);
 
       if (data) {
+        console.log('[UnifiedAdminDashboard] Fetching overview stats...');
         await fetchOverviewStats();
       }
     };
 
     checkAdmin();
+    
+    // Fallback timeout: if check doesn't complete in 5 seconds, force to false
+    const timeout = setTimeout(() => {
+      if (isAdmin === null) {
+        console.error('[UnifiedAdminDashboard] Admin check timed out after 5s, setting to false');
+        setIsAdmin(false);
+      }
+    }, 5000);
+    
+    return () => clearTimeout(timeout);
   }, [user]);
 
   const fetchOverviewStats = async () => {
