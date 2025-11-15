@@ -88,12 +88,12 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
           </div>
         </div>
 
-        <div className="w-full flex gap-2 flex-wrap">
+        <div className="w-full flex flex-col sm:flex-row gap-2">
           <Button
             variant="outline"
             size="sm"
             onClick={() => setShowRetryJobs(true)}
-            className="flex items-center gap-2"
+            className="w-full sm:w-auto flex items-center gap-2 whitespace-normal sm:whitespace-nowrap justify-center"
           >
             <RefreshCw className="h-4 w-4" />
             Retry Failed Jobs
@@ -106,7 +106,7 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
             variant="outline"
             size="sm"
             onClick={() => setShowCreditTokens(true)}
-            className="flex items-center gap-2"
+            className="w-full sm:w-auto flex items-center gap-2 whitespace-normal sm:whitespace-nowrap justify-center"
           >
             <Coins className="h-4 w-4" />
             Credit Tokens
@@ -116,7 +116,7 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
             variant="outline"
             size="sm"
             onClick={() => setShowSystemHealth(true)}
-            className="flex items-center gap-2"
+            className="w-full sm:w-auto flex items-center gap-2 whitespace-normal sm:whitespace-nowrap justify-center"
           >
             <Activity className="h-4 w-4" />
             System Health
@@ -126,7 +126,7 @@ export function QuickAdminActions({ onActionComplete }: QuickAdminActionsProps) 
             variant="outline"
             size="sm"
             onClick={() => setShowNotification(true)}
-            className="flex items-center gap-2"
+            className="w-full sm:w-auto flex items-center gap-2 whitespace-normal sm:whitespace-nowrap justify-center"
           >
             <Bell className="h-4 w-4" />
             Send Notification
