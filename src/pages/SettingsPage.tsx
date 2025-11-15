@@ -475,45 +475,45 @@ export default function SettingsPage() {
           </Card>
 
           {/* Notification Settings */}
-          <Card className="p-6">
-            <div className="flex items-center gap-3 mb-6">
-              <Bell className="w-5 h-5 text-primary" />
-              <h2 className="text-xl font-display font-bold">Notifications</h2>
+          <Card className="p-4 sm:p-6">
+            <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+              <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+              <h2 className="text-lg sm:text-xl font-display font-bold">Notifications</h2>
             </div>
             
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Email Notifications</Label>
-                  <p className="text-sm text-muted-foreground">Receive updates about your generations</p>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+                <div className="flex-1">
+                  <Label className="text-sm sm:text-base">Email Notifications</Label>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Receive updates about your generations</p>
                 </div>
-                <Switch />
+                <Switch className="self-start sm:self-auto" />
               </div>
               
               <Separator />
               
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Generation Complete</Label>
-                  <p className="text-sm text-muted-foreground">Get notified when avatars finish generating</p>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+                <div className="flex-1">
+                  <Label className="text-sm sm:text-base">Generation Complete</Label>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Get notified when avatars finish generating</p>
                 </div>
-                <Switch defaultChecked />
+                <Switch defaultChecked className="self-start sm:self-auto" />
               </div>
               
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Weekly Reports</Label>
-                  <p className="text-sm text-muted-foreground">Summary of your activity and usage</p>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+                <div className="flex-1">
+                  <Label className="text-sm sm:text-base">Weekly Reports</Label>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Summary of your activity and usage</p>
                 </div>
-                <Switch />
+                <Switch className="self-start sm:self-auto" />
               </div>
               
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label>Feature Updates</Label>
-                  <p className="text-sm text-muted-foreground">News about new features and improvements</p>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+                <div className="flex-1">
+                  <Label className="text-sm sm:text-base">Feature Updates</Label>
+                  <p className="text-xs sm:text-sm text-muted-foreground">News about new features and improvements</p>
                 </div>
-                <Switch defaultChecked />
+                <Switch defaultChecked className="self-start sm:self-auto" />
               </div>
             </div>
           </Card>
@@ -681,13 +681,13 @@ export default function SettingsPage() {
           </Card>
 
           {/* Billing & Usage */}
-          <Card className="p-6">
-            <div className="flex items-center gap-3 mb-6">
-              <CreditCard className="w-5 h-5 text-primary" />
-              <h2 className="text-xl font-display font-bold">Billing & Usage</h2>
+          <Card className="p-4 sm:p-6">
+            <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+              <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+              <h2 className="text-lg sm:text-xl font-display font-bold">Billing & Usage</h2>
             </div>
             
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {/* Current Plan - DYNAMIC */}
               {usageLoading ? (
                 <div className="h-24 bg-muted animate-pulse rounded-lg" />
@@ -834,16 +834,16 @@ export default function SettingsPage() {
               
               {/* Action Buttons */}
               <div className="space-y-3">
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                   {subscription?.status === 'active' || subscription?.plan_name !== 'free' ? (
-                    <Button onClick={openCustomerPortal} className="flex items-center gap-2">
+                    <Button onClick={openCustomerPortal} className="w-full sm:w-auto flex items-center justify-center gap-2">
                       <CreditCard className="w-4 h-4" />
                       Manage Billing
                     </Button>
                   ) : (
                     <Button 
                       onClick={() => document.getElementById('upgrade-section')?.scrollIntoView({ behavior: 'smooth' })}
-                      className="flex items-center gap-2"
+                      className="w-full sm:w-auto flex items-center justify-center gap-2"
                     >
                       <Crown className="w-4 h-4" />
                       View Plans
@@ -853,7 +853,7 @@ export default function SettingsPage() {
                     variant="outline" 
                     onClick={fetchBillingHistory}
                     disabled={loadingHistory || subscription?.plan_name === 'free'}
-                    className="flex items-center gap-2"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2"
                   >
                     {loadingHistory ? (
                       <>
@@ -880,32 +880,32 @@ export default function SettingsPage() {
           </Card>
 
           {/* Upgrade Plans */}
-          <Card className="p-6" id="upgrade-section">
-            <div className="flex items-center gap-3 mb-6">
-              <Crown className="w-5 h-5 text-primary" />
-              <h2 className="text-xl font-display font-bold">Upgrade Your Plan</h2>
+          <Card className="p-4 sm:p-6" id="upgrade-section">
+            <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+              <Crown className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+              <h2 className="text-lg sm:text-xl font-display font-bold">Upgrade Your Plan</h2>
             </div>
             
-            <p className="text-muted-foreground mb-6">Choose a plan that fits your creative needs</p>
+            <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6">Choose a plan that fits your creative needs</p>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
               {plans.map((plan) => (
-                <Card key={plan.id} className={`p-6 relative h-full flex flex-col ${plan.popular ? "ring-2 ring-primary" : ""}`}>
+                <Card key={plan.id} className={`p-4 sm:p-6 relative h-full flex flex-col ${plan.popular ? "ring-2 ring-primary" : ""}`}>
                   {plan.popular && (
-                    <Badge className="absolute -top-3 left-6 bg-gradient-primary">Most Popular</Badge>
+                    <Badge className="absolute -top-2 sm:-top-3 left-4 sm:left-6 bg-gradient-primary text-xs sm:text-sm">Most Popular</Badge>
                   )}
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-display font-bold">{plan.name}</h3>
-                    <p className="text-2xl font-display font-bold">{plan.price}</p>
-                    <p className="text-sm text-muted-foreground">{plan.description}</p>
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <h3 className="text-lg sm:text-xl font-display font-bold">{plan.name}</h3>
+                    <p className="text-xl sm:text-2xl font-display font-bold">{plan.price}</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">{plan.description}</p>
                   </div>
-                  <ul className="mt-4 space-y-2 text-sm text-muted-foreground flex-1">
+                  <ul className="mt-3 sm:mt-4 space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-muted-foreground flex-1">
                     {plan.highlights.map((h) => (
                       <li key={h}>• {h}</li>
                     ))}
                   </ul>
                   <Button 
-                    className="mt-6 w-full bg-gradient-primary hover:bg-gradient-secondary text-white shadow-violet-glow" 
+                    className="mt-4 sm:mt-6 w-full bg-gradient-primary hover:bg-gradient-secondary text-white shadow-violet-glow" 
                     onClick={() => startSubscription(plan.id)}
                   >
                     Choose {plan.name}
@@ -914,27 +914,27 @@ export default function SettingsPage() {
               ))}
             </div>
 
-            <Separator className="my-8" />
+            <Separator className="my-6 sm:my-8" />
 
             {/* Token Top-ups */}
-            <div className="space-y-6">
-              <div className="flex items-center gap-3">
-                <Zap className="w-5 h-5 text-primary" />
+            <div className="space-y-4 sm:space-y-6">
+              <div className="flex items-start sm:items-center gap-2 sm:gap-3">
+                <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0 mt-0.5 sm:mt-0" />
                 <div>
-                  <h3 className="text-lg font-display font-bold">Need More Tokens?</h3>
-                  <p className="text-sm text-muted-foreground">À la carte pricing - Premium rate: $0.15 per token (vs $0.10 in subscriptions)</p>
+                  <h3 className="text-base sm:text-lg font-display font-bold">Need More Tokens?</h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground">À la carte pricing - Premium rate: $0.15 per token (vs $0.10 in subscriptions)</p>
                 </div>
               </div>
               
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
                 {tokenPacks.map((pack) => (
-                  <Card key={pack.tokens} className="p-4 h-full flex flex-col">
-                    <h4 className="text-lg font-display font-bold">{pack.tokens}</h4>
-                    <p className="text-sm text-muted-foreground">tokens</p>
-                    <p className="text-xl font-display font-bold mt-2">{pack.price}</p>
+                  <Card key={pack.tokens} className="p-3 sm:p-4 h-full flex flex-col">
+                    <h4 className="text-base sm:text-lg font-display font-bold">{pack.tokens}</h4>
+                    <p className="text-xs sm:text-sm text-muted-foreground">tokens</p>
+                    <p className="text-lg sm:text-xl font-display font-bold mt-1 sm:mt-2">{pack.price}</p>
                     <Button 
                       variant="outline" 
-                      className="mt-4 w-full" 
+                      className="mt-3 sm:mt-4 w-full text-xs sm:text-sm" 
                       onClick={() => buyTokens(pack.tokens)}
                     >
                       Buy
@@ -946,50 +946,50 @@ export default function SettingsPage() {
           </Card>
 
           {/* Data & Export */}
-          <Card className="p-6">
-            <div className="flex items-center gap-3 mb-6">
-              <Download className="w-5 h-5 text-primary" />
-              <h2 className="text-xl font-display font-bold">Data & Export</h2>
+          <Card className="p-4 sm:p-6">
+            <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+              <Download className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+              <h2 className="text-lg sm:text-xl font-display font-bold">Data & Export</h2>
             </div>
             
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div>
-                <Label>Export Your Data</Label>
-                <p className="text-sm text-muted-foreground mb-3">
+                <Label className="text-sm sm:text-base">Export Your Data</Label>
+                <p className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-3">
                   Download all your generated content and account data
                 </p>
-                <Button variant="outline">Request Data Export</Button>
+                <Button variant="outline" className="w-full sm:w-auto">Request Data Export</Button>
               </div>
               
               <Separator />
               
               <div>
-                <Label>Storage</Label>
-                <p className="text-sm text-muted-foreground mb-3">
+                <Label className="text-sm sm:text-base">Storage</Label>
+                <p className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-3">
                   You're using 2.3 GB of 10 GB storage
                 </p>
-                <div className="w-full bg-muted rounded-full h-2 mb-3">
+                <div className="w-full bg-muted rounded-full h-2 mb-2 sm:mb-3">
                   <div className="bg-primary h-2 rounded-full" style={{ width: "23%" }}></div>
                 </div>
-                <Button variant="outline">Manage Storage</Button>
+                <Button variant="outline" className="w-full sm:w-auto">Manage Storage</Button>
               </div>
             </div>
           </Card>
 
           {/* Danger Zone */}
-          <Card className="p-6 border-destructive/30">
-            <div className="flex items-center gap-3 mb-6">
-              <Trash2 className="w-5 h-5 text-destructive" />
-              <h2 className="text-xl font-display font-bold text-destructive">Danger Zone</h2>
+          <Card className="p-4 sm:p-6 border-destructive/30">
+            <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+              <Trash2 className="w-4 h-4 sm:w-5 sm:h-5 text-destructive" />
+              <h2 className="text-lg sm:text-xl font-display font-bold text-destructive">Danger Zone</h2>
             </div>
             
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div>
-                <Label>Delete Account</Label>
-                <p className="text-sm text-muted-foreground mb-3">
+                <Label className="text-sm sm:text-base">Delete Account</Label>
+                <p className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-3">
                   Permanently delete your account and all associated data. This action cannot be undone.
                 </p>
-                <Button variant="destructive">Delete Account</Button>
+                <Button variant="destructive" className="w-full sm:w-auto">Delete Account</Button>
               </div>
             </div>
           </Card>

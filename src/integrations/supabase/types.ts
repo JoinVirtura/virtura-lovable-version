@@ -1055,6 +1055,287 @@ export type Database = {
           },
         ]
       }
+      landing_analytics: {
+        Row: {
+          created_at: string | null
+          event_type: string
+          id: string
+          metadata: Json | null
+          prompt: string | null
+          session_id: string | null
+          user_ip: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          prompt?: string | null
+          session_id?: string | null
+          user_ip?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          prompt?: string | null
+          session_id?: string | null
+          user_ip?: string | null
+        }
+        Relationships: []
+      }
+      notification_ab_assignments: {
+        Row: {
+          assigned_at: string | null
+          id: string
+          notification_id: string | null
+          test_id: string
+          user_id: string
+          variant_id: string
+        }
+        Insert: {
+          assigned_at?: string | null
+          id?: string
+          notification_id?: string | null
+          test_id: string
+          user_id: string
+          variant_id: string
+        }
+        Update: {
+          assigned_at?: string | null
+          id?: string
+          notification_id?: string | null
+          test_id?: string
+          user_id?: string
+          variant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_ab_assignments_notification_id_fkey"
+            columns: ["notification_id"]
+            isOneToOne: false
+            referencedRelation: "notifications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_ab_assignments_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "notification_ab_tests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_ab_assignments_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "notification_ab_variants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notification_ab_metrics: {
+        Row: {
+          clicked_at: string | null
+          created_at: string | null
+          dismissed_at: string | null
+          id: string
+          notification_clicked: boolean | null
+          notification_dismissed: boolean | null
+          notification_read: boolean | null
+          notification_received: boolean | null
+          notification_sent: boolean | null
+          read_at: string | null
+          received_at: string | null
+          sent_at: string | null
+          test_id: string
+          time_to_click: number | null
+          time_to_read: number | null
+          user_id: string
+          variant_id: string
+        }
+        Insert: {
+          clicked_at?: string | null
+          created_at?: string | null
+          dismissed_at?: string | null
+          id?: string
+          notification_clicked?: boolean | null
+          notification_dismissed?: boolean | null
+          notification_read?: boolean | null
+          notification_received?: boolean | null
+          notification_sent?: boolean | null
+          read_at?: string | null
+          received_at?: string | null
+          sent_at?: string | null
+          test_id: string
+          time_to_click?: number | null
+          time_to_read?: number | null
+          user_id: string
+          variant_id: string
+        }
+        Update: {
+          clicked_at?: string | null
+          created_at?: string | null
+          dismissed_at?: string | null
+          id?: string
+          notification_clicked?: boolean | null
+          notification_dismissed?: boolean | null
+          notification_read?: boolean | null
+          notification_received?: boolean | null
+          notification_sent?: boolean | null
+          read_at?: string | null
+          received_at?: string | null
+          sent_at?: string | null
+          test_id?: string
+          time_to_click?: number | null
+          time_to_read?: number | null
+          user_id?: string
+          variant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_ab_metrics_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "notification_ab_tests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_ab_metrics_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "notification_ab_variants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notification_ab_tests: {
+        Row: {
+          control_group_percentage: number | null
+          created_at: string | null
+          created_by: string
+          description: string | null
+          end_date: string | null
+          id: string
+          name: string
+          start_date: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          control_group_percentage?: number | null
+          created_at?: string | null
+          created_by: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          name: string
+          start_date?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          control_group_percentage?: number | null
+          created_at?: string | null
+          created_by?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          name?: string
+          start_date?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      notification_ab_variants: {
+        Row: {
+          category: Database["public"]["Enums"]["notification_category"] | null
+          created_at: string | null
+          id: string
+          message: string
+          metadata: Json | null
+          priority: string | null
+          test_id: string
+          title: string
+          variant_name: string
+        }
+        Insert: {
+          category?: Database["public"]["Enums"]["notification_category"] | null
+          created_at?: string | null
+          id?: string
+          message: string
+          metadata?: Json | null
+          priority?: string | null
+          test_id: string
+          title: string
+          variant_name: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["notification_category"] | null
+          created_at?: string | null
+          id?: string
+          message?: string
+          metadata?: Json | null
+          priority?: string | null
+          test_id?: string
+          title?: string
+          variant_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_ab_variants_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "notification_ab_tests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notification_analytics: {
+        Row: {
+          browser: string | null
+          device_type: string | null
+          event_data: Json | null
+          event_timestamp: string | null
+          event_type: string
+          id: string
+          notification_id: string | null
+          os: string | null
+          user_id: string
+        }
+        Insert: {
+          browser?: string | null
+          device_type?: string | null
+          event_data?: Json | null
+          event_timestamp?: string | null
+          event_type: string
+          id?: string
+          notification_id?: string | null
+          os?: string | null
+          user_id: string
+        }
+        Update: {
+          browser?: string | null
+          device_type?: string | null
+          event_data?: Json | null
+          event_timestamp?: string | null
+          event_type?: string
+          id?: string
+          notification_id?: string | null
+          os?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_analytics_notification_id_fkey"
+            columns: ["notification_id"]
+            isOneToOne: false
+            referencedRelation: "notifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_preferences: {
         Row: {
           account_enabled: boolean | null
@@ -1067,6 +1348,8 @@ export type Database = {
           id: string
           in_app_enabled: boolean | null
           marketing_enabled: boolean | null
+          phone_number: string | null
+          phone_verified: boolean | null
           product_enabled: boolean | null
           push_enabled: boolean | null
           quiet_hours_enabled: boolean | null
@@ -1074,6 +1357,7 @@ export type Database = {
           quiet_hours_start: number | null
           quiet_hours_timezone: string | null
           security_enabled: boolean | null
+          sms_enabled: boolean | null
           sound_enabled: boolean | null
           sound_file: string | null
           system_enabled: boolean | null
@@ -1092,6 +1376,8 @@ export type Database = {
           id?: string
           in_app_enabled?: boolean | null
           marketing_enabled?: boolean | null
+          phone_number?: string | null
+          phone_verified?: boolean | null
           product_enabled?: boolean | null
           push_enabled?: boolean | null
           quiet_hours_enabled?: boolean | null
@@ -1099,6 +1385,7 @@ export type Database = {
           quiet_hours_start?: number | null
           quiet_hours_timezone?: string | null
           security_enabled?: boolean | null
+          sms_enabled?: boolean | null
           sound_enabled?: boolean | null
           sound_file?: string | null
           system_enabled?: boolean | null
@@ -1117,6 +1404,8 @@ export type Database = {
           id?: string
           in_app_enabled?: boolean | null
           marketing_enabled?: boolean | null
+          phone_number?: string | null
+          phone_verified?: boolean | null
           product_enabled?: boolean | null
           push_enabled?: boolean | null
           quiet_hours_enabled?: boolean | null
@@ -1124,6 +1413,7 @@ export type Database = {
           quiet_hours_start?: number | null
           quiet_hours_timezone?: string | null
           security_enabled?: boolean | null
+          sms_enabled?: boolean | null
           sound_enabled?: boolean | null
           sound_file?: string | null
           system_enabled?: boolean | null
@@ -1132,6 +1422,89 @@ export type Database = {
           weekly_digest?: boolean | null
         }
         Relationships: []
+      }
+      notification_sms_limits: {
+        Row: {
+          daily_count: number | null
+          last_reset_date: string | null
+          last_reset_month: number | null
+          last_reset_week: number | null
+          monthly_count: number | null
+          user_id: string
+          weekly_count: number | null
+        }
+        Insert: {
+          daily_count?: number | null
+          last_reset_date?: string | null
+          last_reset_month?: number | null
+          last_reset_week?: number | null
+          monthly_count?: number | null
+          user_id: string
+          weekly_count?: number | null
+        }
+        Update: {
+          daily_count?: number | null
+          last_reset_date?: string | null
+          last_reset_month?: number | null
+          last_reset_week?: number | null
+          monthly_count?: number | null
+          user_id?: string
+          weekly_count?: number | null
+        }
+        Relationships: []
+      }
+      notification_sms_log: {
+        Row: {
+          created_at: string | null
+          delivered_at: string | null
+          error_message: string | null
+          from_phone: string
+          id: string
+          message_body: string
+          notification_id: string | null
+          sent_at: string | null
+          status: string | null
+          to_phone: string
+          twilio_sid: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          delivered_at?: string | null
+          error_message?: string | null
+          from_phone: string
+          id?: string
+          message_body: string
+          notification_id?: string | null
+          sent_at?: string | null
+          status?: string | null
+          to_phone: string
+          twilio_sid?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          delivered_at?: string | null
+          error_message?: string | null
+          from_phone?: string
+          id?: string
+          message_body?: string
+          notification_id?: string | null
+          sent_at?: string | null
+          status?: string | null
+          to_phone?: string
+          twilio_sid?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_sms_log_notification_id_fkey"
+            columns: ["notification_id"]
+            isOneToOne: false
+            referencedRelation: "notifications"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       notifications: {
         Row: {
@@ -1165,6 +1538,33 @@ export type Database = {
           priority?: string | null
           read?: boolean | null
           title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      phone_verification_codes: {
+        Row: {
+          code: string
+          created_at: string | null
+          expires_at: string
+          id: string
+          phone_number: string
+          user_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          expires_at: string
+          id?: string
+          phone_number: string
+          user_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+          phone_number?: string
           user_id?: string
         }
         Relationships: []
@@ -1902,7 +2302,19 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      notification_ctr_metrics: {
+        Row: {
+          category: Database["public"]["Enums"]["notification_category"] | null
+          ctr: number | null
+          date: string | null
+          open_rate: number | null
+          priority: string | null
+          total_clicked: number | null
+          total_read: number | null
+          total_sent: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       add_tokens: {
@@ -1917,6 +2329,15 @@ export type Database = {
       assign_job_to_gpu: {
         Args: { job_id_param: string; required_vram?: number }
         Returns: string
+      }
+      check_sms_limit: {
+        Args: {
+          daily_limit?: number
+          monthly_limit?: number
+          p_user_id: string
+          weekly_limit?: number
+        }
+        Returns: boolean
       }
       check_usage_limit: {
         Args: {
