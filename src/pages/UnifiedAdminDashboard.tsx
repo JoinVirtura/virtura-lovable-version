@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,6 +19,7 @@ import { LandingAnalyticsDashboard } from "@/components/admin/LandingAnalyticsDa
 export default function UnifiedAdminDashboard() {
   const { user } = useAuth();
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const adminCheckCompleted = useRef(false);
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalTokensPurchased: 0,
@@ -35,6 +36,7 @@ export default function UnifiedAdminDashboard() {
       if (!user) {
         console.log('[UnifiedAdminDashboard] No user found, setting isAdmin to false');
         setIsAdmin(false);
+        adminCheckCompleted.current = true;
         return;
       }
 
@@ -52,6 +54,7 @@ export default function UnifiedAdminDashboard() {
       const isUserAdmin = !!data;
       console.log('[UnifiedAdminDashboard] Setting isAdmin to:', isUserAdmin);
       setIsAdmin(isUserAdmin);
+      adminCheckCompleted.current = true;
 
       if (data) {
         console.log('[UnifiedAdminDashboard] Fetching overview stats...');
@@ -63,7 +66,7 @@ export default function UnifiedAdminDashboard() {
     
     // Fallback timeout: if check doesn't complete in 5 seconds, force to false
     const timeout = setTimeout(() => {
-      if (isAdmin === null) {
+      if (!adminCheckCompleted.current) {
         console.error('[UnifiedAdminDashboard] Admin check timed out after 5s, setting to false');
         setIsAdmin(false);
       }
