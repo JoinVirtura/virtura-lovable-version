@@ -443,7 +443,7 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
   return (
     <div className="space-y-6">
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-1">
           <TabsTrigger value="tts">
             <Volume2 className="h-4 w-4 mr-2" />
             Text-to-Speech
