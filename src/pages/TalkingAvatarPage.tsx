@@ -622,13 +622,13 @@ export default function TalkingAvatarStudio() {
           
           <main className="flex-1 flex flex-col min-h-screen">
             {/* Hero Canvas */}
-            <div className="p-6">
+            <div className="p-3 sm:p-6">
               <HeroCanvas uploadedFile={uploadedFile} onFileUpload={setUploadedFile} />
             </div>
 
             {/* Workflow Tabs */}
             <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b border-border/50">
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="px-6">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="px-3 sm:px-6">
                 <TabsList className="grid w-full grid-cols-5 bg-muted/10">
                   <TabsTrigger value="avatar" className="flex items-center space-x-2">
                     <ImageIcon className="w-4 h-4" />

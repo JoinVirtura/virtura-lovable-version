@@ -180,7 +180,7 @@ export default function DashboardPage() {
         {/* Main Content */}
         <div className="flex-1 overflow-auto">
           {/* Header */}
-          <header className="flex h-14 items-center border-b bg-card/30 backdrop-blur-sm px-6">
+          <header className="flex h-14 items-center border-b bg-card/30 backdrop-blur-sm px-3 sm:px-6">
             <div className="flex-1">
               <div className="relative max-w-md">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -207,7 +207,7 @@ export default function DashboardPage() {
           </header>
 
           {/* Content */}
-          <main className="p-6">
+          <main className="p-3 sm:p-6">
             {activeTab === "overview" && (
               <div className="space-y-6">
                 {/* Stats */}
