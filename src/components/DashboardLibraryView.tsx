@@ -288,21 +288,16 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search by name, tags, AI model, or content type..."
-                  className="pl-12 pr-14 h-14 text-base bg-muted/30 border-0 focus:bg-background transition-colors"
+                  className="pl-12 pr-4 h-14 text-base bg-muted/30 border-0 focus:bg-background transition-colors"
                 />
-                <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0 hover:bg-primary/10">
-                    <Filter className="w-4 h-4" />
-                  </Button>
-                </div>
               </div>
               
-              <div className="flex border-2 border-violet-500/50 rounded-xl overflow-hidden bg-muted/20 w-full sm:w-auto justify-center">
+              <div className="flex border-2 border-violet-500/50 rounded-xl overflow-hidden bg-muted/20 w-auto justify-center">
                 <Button
                   variant={viewMode === "grid" ? "default" : "ghost"}
                   size="sm"
                   onClick={() => setViewMode("grid")}
-                  className="rounded-none border-0 px-4"
+                  className="rounded-none border-0 px-3 sm:px-4 h-10 sm:h-auto"
                 >
                   <Grid3X3 className="w-4 h-4" />
                 </Button>
@@ -310,7 +305,7 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                   variant={viewMode === "list" ? "default" : "ghost"}
                   size="sm"
                   onClick={() => setViewMode("list")}
-                  className="rounded-none border-0 px-4"
+                  className="rounded-none border-0 px-3 sm:px-4 h-10 sm:h-auto"
                 >
                   <List className="w-4 h-4" />
                 </Button>
@@ -493,9 +488,9 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
               ) : (
                 <div className="space-y-3">
                   {filteredAssets.map((asset) => (
-                    <Card key={asset.id} className="p-5 hover:shadow-lg transition-all duration-200 hover:bg-muted/20 border-2 hover:border-primary/20">
-                      <div className="flex items-center gap-6">
-                        <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-xl flex-shrink-0 overflow-hidden">
+                    <Card key={asset.id} className="p-3 sm:p-5 hover:shadow-lg transition-all duration-200 hover:bg-muted/20 border-2 hover:border-primary/20">
+                      <div className="flex items-center gap-3 sm:gap-6">
+                        <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-xl flex-shrink-0 overflow-hidden">
                           <img 
                             src={asset.thumbnail} 
                             alt={asset.title}
@@ -505,55 +500,55 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                             }}
                           />
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between">
-                            <div className="space-y-2">
-                              <h3 className="font-semibold text-lg truncate">{asset.title}</h3>
-                              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <div className="flex-1 min-w-0 overflow-hidden">
+                          <div className="flex flex-col sm:flex-row items-start sm:items-start justify-between gap-3 sm:gap-4">
+                            <div className="space-y-1 sm:space-y-2 min-w-0 w-full sm:w-auto">
+                              <h3 className="font-semibold text-base sm:text-lg line-clamp-1">{asset.title}</h3>
+                              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
                                 <span className="flex items-center gap-1 font-medium">
                                   <Calendar className="w-3 h-3" />
                                   {asset.date}
                                 </span>
-                                <Badge variant="secondary" className="text-xs">{asset.format}</Badge>
+                                <Badge variant="secondary" className="text-xs w-fit">{asset.format}</Badge>
                               </div>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                               <Button 
                                 size="sm" 
                                 variant="ghost"
-                                className={`hover:bg-yellow-500/10 ${asset.isFavorite ? 'text-yellow-500' : 'text-muted-foreground'}`}
+                                className={`hover:bg-yellow-500/10 h-8 w-8 p-0 ${asset.isFavorite ? 'text-yellow-500' : 'text-muted-foreground'}`}
                                 onClick={() => handleFavorite(asset)}
                               >
-                                <Star className={`w-4 h-4 ${asset.isFavorite ? 'fill-current' : ''}`} />
+                                <Star className={`w-3 h-3 sm:w-4 sm:h-4 ${asset.isFavorite ? 'fill-current' : ''}`} />
                               </Button>
                               <Button 
                                 size="sm" 
                                 variant="ghost" 
-                                className="hover:bg-secondary/10"
+                                className="hover:bg-secondary/10 h-8 w-8 p-0"
                                 onClick={() => handleEditTitle(asset)}
                               >
-                                <Edit className="w-4 h-4" />
+                                <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
                               </Button>
                               <Button 
                                 size="sm" 
                                 variant="ghost" 
-                                className="hover:bg-secondary/10"
+                                className="hover:bg-secondary/10 h-8 w-8 p-0"
                                 onClick={() => handleDownload(asset)}
                               >
-                                <Download className="w-4 h-4" />
+                                <Download className="w-3 h-3 sm:w-4 sm:h-4" />
                               </Button>
                               <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                   <Button 
                                     size="sm" 
                                     variant="ghost" 
-                                    className="hover:bg-destructive/10 text-destructive"
+                                    className="hover:bg-destructive/10 text-destructive h-8 w-8 p-0"
                                     disabled={deletingAssetId === asset.dbId}
                                   >
                                     {deletingAssetId === asset.dbId ? (
-                                      <Loader2 className="w-4 h-4 animate-spin" />
+                                      <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin" />
                                     ) : (
-                                      <Trash2 className="w-4 h-4" />
+                                      <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                                     )}
                                   </Button>
                                 </AlertDialogTrigger>
