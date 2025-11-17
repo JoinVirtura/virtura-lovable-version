@@ -464,6 +464,28 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
 
         {/* Text-to-Speech Tab */}
         <TabsContent value="tts" className="space-y-4">
+          {/* Text-to-Speech Header with Skip Button */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-start justify-between">
+                <div className="space-y-1">
+                  <CardTitle className="text-sm">Text-to-Speech</CardTitle>
+                  <p className="text-xs text-muted-foreground">
+                    Generate professional AI voiceovers from your script in multiple languages and voices.
+                  </p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleSkipVoice}
+                  className="ml-2 shrink-0"
+                >
+                  Skip
+                </Button>
+              </div>
+            </CardHeader>
+          </Card>
+
           {/* Script Editor */}
           <Card>
             <CardHeader>
