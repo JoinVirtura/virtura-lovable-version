@@ -554,9 +554,6 @@ export const Hero = () => {
               <span className="text-foreground font-light">Where Identity </span>
               <span className="text-gradient-primary font-bold animate-glow-text">Evolves</span>
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
-              Describe the image you want to create...
-            </p>
           </div>
         )}
 
