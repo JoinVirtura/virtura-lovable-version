@@ -541,7 +541,7 @@ export const Hero = () => {
         <div className="absolute bottom-0 right-0 w-48 h-48 bg-gradient-to-tl from-primary/12 via-primary/4 to-transparent animate-corner-glow-4" />
       </div>
       
-      <div className="relative z-10 container mx-auto px-12 pt-40 pb-4 flex flex-col items-center min-h-screen text-center max-w-6xl">
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 pt-32 sm:pt-36 md:pt-40 pb-4 flex flex-col items-center min-h-screen text-center max-w-6xl">
         {/* Header Badge */}
         <Badge className="bg-card/80 border-primary/20 text-foreground px-6 py-3 text-base font-semibold mb-8 animate-fade-in backdrop-blur-sm">
           Virtura AI
@@ -550,11 +550,11 @@ export const Hero = () => {
         {/* Main Heading - Futuristic Aesthetic */}
         {generatedImages.length === 0 && !isGenerating && (
           <div className="mb-8 animate-fade-in">
-            <h1 className="text-4xl md:text-7xl font-extrabold leading-tight tracking-tight mb-4">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-tight tracking-tight mb-4 px-4">
               <span className="text-foreground font-light">Where Identity </span>
               <span className="text-gradient-primary font-bold animate-glow-text">Evolves</span>
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
               Describe the image you want to create...
             </p>
           </div>
@@ -562,8 +562,8 @@ export const Hero = () => {
 
         {/* Output Display Section - ABOVE input */}
         {generatedImages.length > 0 && (
-          <div className="w-full max-w-[1800px] mb-2 animate-fade-in px-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="w-full max-w-[1800px] mb-2 animate-fade-in px-2 sm:px-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
               {generatedImages.map((card) => (
             <Card 
               key={card.id} 
@@ -671,9 +671,9 @@ export const Hero = () => {
         )}
 
         {/* Input Interface - Studio Pro Style */}
-        <div className="w-full max-w-4xl mb-4 animate-fade-in">
+        <div className="w-full max-w-4xl mb-4 animate-fade-in px-2 sm:px-4">
           <Card className="backdrop-blur-xl bg-black/60 border-2 border-primary/30 rounded-2xl shadow-2xl overflow-hidden">
-            <div className="p-3 md:p-4">
+            <div className="p-2 sm:p-3 md:p-4">
               {/* Main Input Row */}
               <div className="flex items-center gap-2 md:gap-3">
                 <Textarea
@@ -774,38 +774,38 @@ export const Hero = () => {
           
           {/* Large Styles Popup Window */}
           {showStyleModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
               {/* Backdrop */}
               <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowStyleModal(false)} />
               
               {/* Large Popup Box - Properly Centered */}
               <div className="relative bg-black/95 backdrop-blur-xl border-2 border-primary/30 rounded-2xl shadow-2xl w-full max-w-7xl h-[85vh] overflow-hidden mx-auto">
                 {/* Modal Header */}
-                <div className="flex items-center justify-between p-4 border-b-2 border-primary/20 bg-black/40">
-                  <div className="flex items-center gap-3">
-                    <h2 className="text-xl font-bold text-white">Styles</h2>
-                    <div className="flex items-center gap-2">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 border-b-2 border-primary/20 bg-black/40 gap-2">
+                  <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+                    <h2 className="text-lg sm:text-xl font-bold text-white">Styles</h2>
+                    <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
                       <Button
                         size="sm"
-                        className="bg-black/40 text-gray-400 border border-primary/20 hover:bg-primary/20 hover:text-white text-xs px-2 py-1 h-7"
+                        className="bg-black/40 text-gray-400 border border-primary/20 hover:bg-primary/20 hover:text-white text-xs px-2 py-1 h-6 sm:h-7"
                       >
                         Individual
                       </Button>
                       <Button
                         size="sm"
-                        className="bg-primary text-white hover:bg-primary/90 text-xs px-2 py-1 h-7"
+                        className="bg-primary text-white hover:bg-primary/90 text-xs px-2 py-1 h-6 sm:h-7"
                       >
                         Brand
                       </Button>
                       <Button
                         size="sm"
-                        className="bg-black/40 text-gray-400 border border-primary/20 hover:bg-primary/20 hover:text-white text-xs px-2 py-1 h-7"
+                        className="bg-black/40 text-gray-400 border border-primary/20 hover:bg-primary/20 hover:text-white text-xs px-2 py-1 h-6 sm:h-7"
                       >
                         Private
                       </Button>
                       <Button
                         size="sm"
-                        className="bg-black/40 text-gray-400 border border-primary/20 hover:bg-primary/20 hover:text-white text-xs px-2 py-1 h-7"
+                        className="bg-black/40 text-gray-400 border border-primary/20 hover:bg-primary/20 hover:text-white text-xs px-2 py-1 h-6 sm:h-7"
                       >
                         Pinned
                       </Button>

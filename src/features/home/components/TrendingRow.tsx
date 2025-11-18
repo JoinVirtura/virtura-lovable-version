@@ -458,7 +458,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                 {/* Multi-Layer Holographic Title */}
                 <div className="relative">
                   <motion.h2 
-                    className="relative text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter pb-6 overflow-visible"
+                    className="relative text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter pb-6 overflow-visible"
                     style={{ lineHeight: '1.3' }}
                     initial={{ y: 50, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
@@ -518,13 +518,13 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                 
                 {/* Animated Subtitle with Line Decoration */}
                 <motion.div 
-                  className="flex items-center gap-4 mt-4"
+                  className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 mt-4"
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.8, delay: 0.4 }}
                 >
                   <motion.div 
-                    className="h-px w-20 bg-gradient-to-r from-transparent via-purple-500 to-transparent"
+                    className="hidden sm:block h-px w-20 bg-gradient-to-r from-transparent via-purple-500 to-transparent"
                     animate={{
                       width: [80, 100, 80],
                       opacity: [0.5, 1, 0.5],
@@ -534,10 +534,10 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
                       repeat: Infinity,
                     }}
                   />
-                  <p className="text-2xl md:text-3xl font-light bg-gradient-to-r from-purple-300 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent tracking-[0.3em] uppercase">
+                  <p className="text-sm sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-light bg-gradient-to-r from-purple-300 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent tracking-wide sm:tracking-[0.3em] uppercase text-center sm:text-left">
                     AI Capabilities
                   </p>
-                  <motion.div 
+                  <motion.div
                     className="h-px flex-1 bg-gradient-to-r from-transparent via-purple-500/50 to-transparent"
                     animate={{
                       opacity: [0.3, 0.7, 0.3],
@@ -560,7 +560,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
             >
               <div className="absolute -inset-6 bg-gradient-to-r from-purple-500/10 via-transparent to-cyan-500/10 blur-3xl" />
               <motion.p 
-                className="relative text-2xl md:text-3xl text-foreground/90 leading-relaxed font-light"
+                className="relative text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl text-foreground/90 leading-relaxed font-light text-center px-4 sm:px-0"
                 animate={{
                   textShadow: [
                     '0 0 20px rgba(168, 85, 247, 0)',
@@ -580,13 +580,13 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
 
           {/* Search Bar and Favorites Toggle */}
           <motion.div 
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8 pb-4 max-w-2xl mx-auto"
+            className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-stretch sm:items-center pt-6 sm:pt-8 pb-4 max-w-2xl mx-auto px-4 sm:px-0"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.75 }}
           >
             {/* Search Input */}
-            <div className="relative flex-1 w-full">
+            <div className="relative flex-1 w-full sm:w-auto">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-400" />
               <Input
                 type="text"
@@ -616,7 +616,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ tiles, className }) =>
 
           {/* Advanced Filter System */}
           <motion.div 
-            className="flex flex-wrap gap-2 sm:gap-3 justify-center pt-8 pb-4 px-2"
+            className="flex flex-wrap gap-2 sm:gap-3 justify-center pt-6 sm:pt-8 pb-4 px-4 sm:px-2"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
