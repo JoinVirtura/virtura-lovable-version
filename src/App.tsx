@@ -29,6 +29,10 @@ import PaymentCanceled from "./pages/PaymentCanceled";
 import TokenHistoryPage from "./pages/TokenHistoryPage";
 import AdminCostDashboardPage from "./pages/AdminCostDashboardPage";
 import UnifiedAdminDashboard from "./pages/UnifiedAdminDashboard";
+import { MarketplaceBrowser } from "./components/marketplace/MarketplaceBrowser";
+import { BrandCampaignCreator } from "./components/marketplace/BrandCampaignCreator";
+import { CampaignManagement } from "./components/marketplace/CampaignManagement";
+import CreatorDashboard from "./pages/CreatorDashboard";
 
 const queryClient = new QueryClient();
 
@@ -107,6 +111,10 @@ const AppRoutes = () => {
       {/* Admin Routes */}
       <Route path="/admin/costs" element={<ProtectedRoute><AdminCostDashboardPage /></ProtectedRoute>} />
       <Route path="/admin/dashboard" element={<ProtectedRoute><UnifiedAdminDashboard /></ProtectedRoute>} />
+      <Route path="/marketplace" element={<ProtectedRoute><MarketplaceBrowser /></ProtectedRoute>} />
+      <Route path="/marketplace/create" element={<ProtectedRoute><BrandCampaignCreator /></ProtectedRoute>} />
+      <Route path="/marketplace/manage" element={<ProtectedRoute><CampaignManagement /></ProtectedRoute>} />
+      <Route path="/creator/dashboard" element={<ProtectedRoute><CreatorDashboard /></ProtectedRoute>} />
       
       {/* Catch-all */}
       <Route path="*" element={<NotFound />} />
