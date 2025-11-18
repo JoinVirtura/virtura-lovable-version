@@ -1,5 +1,26 @@
 project_id = "ujaoziqnxhjqlmnvlxav"
 
+[functions.create-connect-account]
+verify_jwt = true
+
+[functions.connect-onboarding-link]
+verify_jwt = true
+
+[functions.connect-dashboard-link]
+verify_jwt = true
+
+[functions.create-creator-subscription]
+verify_jwt = true
+
+[functions.create-content-unlock]
+verify_jwt = true
+
+[functions.process-creator-tip]
+verify_jwt = true
+
+[functions.webhook-stripe-connect]
+verify_jwt = false
+
 [functions.get-billing-history]
 verify_jwt = true
 
