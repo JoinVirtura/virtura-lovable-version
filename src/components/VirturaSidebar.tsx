@@ -113,8 +113,8 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
   ];
 
   const marketplaceItems = [
-    { id: "marketplace", label: "Brand Campaigns", icon: Briefcase },
-    ...(hasBrands ? [{ id: "marketplace-manage", label: "My Campaigns", icon: FolderKanban }] : []),
+    { id: "marketplace", label: "Browse", icon: Briefcase },
+    ...(hasBrands ? [{ id: "marketplace-manage", label: "Campaigns", icon: FolderKanban }] : []),
     ...(hasCreatorAccount ? [{ id: "creator-dashboard", label: "Creator Earnings", icon: DollarSign }] : []),
   ];
 
