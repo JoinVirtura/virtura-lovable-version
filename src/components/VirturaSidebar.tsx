@@ -57,6 +57,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
   const { user, signOut } = useAuth();
   const { profile } = useProfile();
   const navigate = useNavigate();
+  const location = useLocation();
   const isCollapsed = state === "collapsed";
   const [isAdmin, setIsAdmin] = useState(false);
   const [hasCreatorAccount, setHasCreatorAccount] = useState(false);
@@ -228,7 +229,6 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
               <SidebarGroupContent>
                 <SidebarMenu>
                   {marketplaceItems.map((item) => {
-                    const location = useLocation();
                     const isActive = location.pathname === item.route;
                     
                     return (
