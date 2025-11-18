@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import virturaLogo from "/lovable-uploads/f264298f-2877-485b-affc-d705994fc848.png";
 import { useProfile } from "@/hooks/useProfile";
-import { 
+import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
@@ -19,12 +19,12 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { 
+import {
   Home,
   Video,
-  Plus, 
-  Settings as SettingsIcon, 
-  Zap, 
+  Plus,
+  Settings as SettingsIcon,
+  Zap,
   Crown,
   LogOut,
   Command,
@@ -41,7 +41,7 @@ import {
   Shield,
   Briefcase,
   FolderKanban,
-  DollarSign
+  DollarSign,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -61,50 +61,42 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
   const [isAdmin, setIsAdmin] = useState(false);
   const [hasCreatorAccount, setHasCreatorAccount] = useState(false);
   const [hasBrands, setHasBrands] = useState(false);
-  
+
   useEffect(() => {
     const checkAdmin = async () => {
       if (!user) return;
-      
+
       const { data } = await supabase
         .from("user_roles")
         .select("role")
         .eq("user_id", user.id)
         .eq("role", "admin")
         .maybeSingle();
-      
+
       setIsAdmin(!!data);
     };
-    
+
     const checkCreatorStatus = async () => {
       if (!user) return;
-      
-      const { data } = await supabase
-        .from("creator_accounts")
-        .select("id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-      
+
+      const { data } = await supabase.from("creator_accounts").select("id").eq("user_id", user.id).maybeSingle();
+
       setHasCreatorAccount(!!data);
     };
-    
+
     const checkBrands = async () => {
       if (!user) return;
-      
-      const { data } = await supabase
-        .from("brands")
-        .select("id")
-        .eq("user_id", user.id)
-        .limit(1);
-      
+
+      const { data } = await supabase.from("brands").select("id").eq("user_id", user.id).limit(1);
+
       setHasBrands((data?.length ?? 0) > 0);
     };
-    
+
     checkAdmin();
     checkCreatorStatus();
     checkBrands();
   }, [user]);
-  
+
   const mainItems = [
     ...(isAdmin ? [{ id: "admin-dashboard", label: "Dashboard", icon: Shield }] : []),
     { id: "overview", label: "Home", icon: Home },
@@ -121,11 +113,11 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
   ];
 
   const marketplaceItems = [
-    { id: "marketplace", label: "Browse Campaigns", icon: Briefcase },
+    { id: "marketplace", label: "Brand Campaigns", icon: Briefcase },
     ...(hasBrands ? [{ id: "marketplace-manage", label: "My Campaigns", icon: FolderKanban }] : []),
     ...(hasCreatorAccount ? [{ id: "creator-dashboard", label: "Creator Earnings", icon: DollarSign }] : []),
   ];
-  
+
   const handleLogout = async () => {
     try {
       await signOut();
@@ -136,10 +128,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
   };
 
   return (
-      <Sidebar 
-        className="bg-black/90 backdrop-blur-xl border-r border-violet-500/20"
-        collapsible="icon"
-      >
+    <Sidebar className="bg-black/90 backdrop-blur-xl border-r border-violet-500/20" collapsible="icon">
       <SidebarHeader className={!isMobile && isCollapsed ? "p-2" : "p-4"}>
         <div className="flex items-center justify-between gap-2">
           {(isMobile || !isCollapsed) && (
@@ -150,18 +139,22 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
               <p className="text-xs text-violet-300">Where Identity Evolves</p>
             </div>
           )}
-          <SidebarTrigger className={`h-10 w-10 min-h-[44px] min-w-[44px] p-0 text-violet-400 hover:text-violet-300 hover:bg-violet-500/20 rounded-lg transition-colors ${!isMobile && isCollapsed ? "mx-auto" : ""}`} />
+          <SidebarTrigger
+            className={`h-10 w-10 min-h-[44px] min-w-[44px] p-0 text-violet-400 hover:text-violet-300 hover:bg-violet-500/20 rounded-lg transition-colors ${!isMobile && isCollapsed ? "mx-auto" : ""}`}
+          />
         </div>
       </SidebarHeader>
 
       <SidebarContent className={!isMobile && isCollapsed ? "px-1 pb-0" : "px-3 pb-0"}>
         <SidebarGroup>
-          <SidebarGroupLabel className={`text-muted-foreground px-0 ${!isMobile && isCollapsed ? "hidden" : "block"}`}>Quick Actions</SidebarGroupLabel>
+          <SidebarGroupLabel className={`text-muted-foreground px-0 ${!isMobile && isCollapsed ? "hidden" : "block"}`}>
+            Quick Actions
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {mainItems.map((item) => (
                 <SidebarMenuItem key={item.id}>
-                  <SidebarMenuButton 
+                  <SidebarMenuButton
                     onClick={() => {
                       // Clear edit state when navigating to studio normally
                       if (item.id === "studio" && onClearEditState) {
@@ -174,8 +167,8 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                     }}
                     isActive={activeView === item.id}
                     className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
-                      activeView === item.id 
-                        ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30" 
+                      activeView === item.id
+                        ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30"
                         : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
                     }`}
                   >
@@ -191,12 +184,14 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
         <SidebarSeparator />
 
         <SidebarGroup className="pb-0">
-          <SidebarGroupLabel className={`text-muted-foreground px-0 ${!isMobile && isCollapsed ? "hidden" : "block"}`}>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel className={`text-muted-foreground px-0 ${!isMobile && isCollapsed ? "hidden" : "block"}`}>
+            Navigation
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navigationTabs.map((item) => (
                 <SidebarMenuItem key={item.id}>
-                  <SidebarMenuButton 
+                  <SidebarMenuButton
                     onClick={() => {
                       onClearEditState?.();
                       onViewChange(item.id);
@@ -206,8 +201,8 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                     }}
                     isActive={activeView === item.id}
                     className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
-                      activeView === item.id 
-                        ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30" 
+                      activeView === item.id
+                        ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30"
                         : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
                     }`}
                   >
@@ -223,43 +218,46 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
         <>
           <SidebarSeparator />
           <SidebarGroup className="pb-0">
-              <SidebarGroupLabel className={`text-muted-foreground px-0 ${!isMobile && isCollapsed ? "hidden" : "block"}`}>Marketplace</SidebarGroupLabel>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {marketplaceItems.map((item) => (
-                    <SidebarMenuItem key={item.id}>
-                      <SidebarMenuButton 
-                        onClick={() => {
-                          onViewChange(item.id);
-                          if (isMobile) {
-                            setOpenMobile(false);
-                          }
-                        }}
-                        isActive={activeView === item.id}
-                        className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
-                          activeView === item.id
-                            ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30" 
-                            : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
-                        }`}
-                      >
-                        <item.icon className="w-5 h-5 shrink-0" />
-                        {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-          </>
-
+            <SidebarGroupLabel
+              className={`text-muted-foreground px-0 ${!isMobile && isCollapsed ? "hidden" : "block"}`}
+            >
+              Marketplace
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {marketplaceItems.map((item) => (
+                  <SidebarMenuItem key={item.id}>
+                    <SidebarMenuButton
+                      onClick={() => {
+                        onViewChange(item.id);
+                        if (isMobile) {
+                          setOpenMobile(false);
+                        }
+                      }}
+                      isActive={activeView === item.id}
+                      className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
+                        activeView === item.id
+                          ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30"
+                          : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
+                      }`}
+                    >
+                      <item.icon className="w-5 h-5 shrink-0" />
+                      {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </>
       </SidebarContent>
 
       <SidebarFooter className="p-0">
         <SidebarSeparator className={!isMobile && isCollapsed ? "mx-1" : "mx-3"} />
-        
-        <button 
+
+        <button
           onClick={() => {
-            onViewChange('settings');
+            onViewChange("settings");
             setOpenMobile(false);
           }}
           className={`flex items-center transition-colors rounded-lg ml-3 mr-3 min-h-[44px] ${!isMobile && isCollapsed ? "py-3 justify-center" : "pl-4 pr-4 py-3 gap-3 justify-start"} hover:bg-violet-500/5 hover:text-violet-300 text-white`}
@@ -269,25 +267,25 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
             <AvatarFallback className="bg-violet-500/20 text-violet-300">
               {profile?.display_name
                 ? profile.display_name
-                    .split(' ')
+                    .split(" ")
                     .map((n) => n[0])
-                    .join('')
+                    .join("")
                     .toUpperCase()
                     .slice(0, 2)
-                : user?.email?.[0].toUpperCase() || 'U'}
+                : user?.email?.[0].toUpperCase() || "U"}
             </AvatarFallback>
           </Avatar>
           {(isMobile || !isCollapsed) && (
             <div className="flex-1 min-w-0 text-left">
               <p className="font-medium text-sm text-white">
-                {profile?.display_name || user?.email?.split('@')[0] || 'User'}
+                {profile?.display_name || user?.email?.split("@")[0] || "User"}
               </p>
             </div>
           )}
         </button>
-        
+
         <div className={!isMobile && isCollapsed ? "px-2 pb-3" : "px-3 pb-3"}>
-          <SidebarMenuButton 
+          <SidebarMenuButton
             onClick={handleLogout}
             className={`w-full min-h-[44px] ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 pl-5"} text-destructive hover:bg-destructive/10 h-auto py-2`}
           >
