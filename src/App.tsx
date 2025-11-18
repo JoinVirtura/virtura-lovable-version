@@ -34,6 +34,7 @@ import { MarketplaceBrowser } from "./components/marketplace/MarketplaceBrowser"
 import { BrandCampaignCreator } from "./components/marketplace/BrandCampaignCreator";
 import { CampaignManagement } from "./components/marketplace/CampaignManagement";
 import CreatorDashboard from "./pages/CreatorDashboard";
+import { SupportPage } from "./components/SupportPage";
 
 const queryClient = new QueryClient();
 
@@ -111,6 +112,10 @@ const AppRoutes = () => {
       
       {/* Admin Routes */}
       <Route path="/admin/costs" element={<ProtectedRoute><AdminCostDashboardPage /></ProtectedRoute>} />
+      <Route path="/admin/unified" element={<ProtectedRoute><UnifiedAdminDashboard /></ProtectedRoute>} />
+      
+      {/* Support Route */}
+      <Route path="/support" element={<ProtectedRoute><SupportPage /></ProtectedRoute>} />
       
       <Route path="/marketplace" element={
         <ProtectedRoute>
