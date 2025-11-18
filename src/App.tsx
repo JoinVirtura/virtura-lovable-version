@@ -110,7 +110,7 @@ const AppRoutes = () => {
       
       {/* Admin Routes */}
       <Route path="/admin/costs" element={<ProtectedRoute><AdminCostDashboardPage /></ProtectedRoute>} />
-      <Route path="/admin/dashboard" element={<ProtectedRoute><UnifiedAdminDashboard /></ProtectedRoute>} />
+      
       <Route path="/marketplace" element={<ProtectedRoute><MarketplaceBrowser /></ProtectedRoute>} />
       <Route path="/marketplace/create" element={<ProtectedRoute><BrandCampaignCreator /></ProtectedRoute>} />
       <Route path="/marketplace/manage" element={<ProtectedRoute><CampaignManagement /></ProtectedRoute>} />
