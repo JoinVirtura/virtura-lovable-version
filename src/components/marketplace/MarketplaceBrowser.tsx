@@ -12,7 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 export function MarketplaceBrowser() {
   const [filters, setFilters] = useState({
     search: '',
-    category: '',
+    category: 'all',
     minBudget: undefined as number | undefined,
     maxBudget: undefined as number | undefined,
     sortBy: 'newest' as 'newest' | 'budget_high' | 'budget_low' | 'deadline',

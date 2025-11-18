@@ -49,7 +49,7 @@ export function useMarketplaceCampaigns(filters?: CampaignFilters) {
         .eq('visibility', 'public');
 
       // Apply filters
-      if (filters?.category) {
+      if (filters?.category && filters.category !== 'all') {
         query = query.eq('category', filters.category);
       }
       if (filters?.minBudget) {
