@@ -116,3 +116,18 @@ verify_jwt = false
 
 [functions.manage-showcase-gallery]
 verify_jwt = true
+
+[functions.create-marketplace-campaign]
+verify_jwt = true
+
+[functions.apply-to-campaign]
+verify_jwt = true
+
+[functions.accept-campaign-application]
+verify_jwt = true
+
+[functions.submit-deliverable]
+verify_jwt = true
+
+[functions.approve-deliverable-payment]
+verify_jwt = true

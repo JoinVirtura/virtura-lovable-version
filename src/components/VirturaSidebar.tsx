@@ -131,7 +131,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                         onClearEditState();
                       }
                       if (item.id === "admin-dashboard") {
-                        navigate("/admin/unified");
+                        navigate("/admin/dashboard");
                       } else {
                         onViewChange(item.id);
                       }
