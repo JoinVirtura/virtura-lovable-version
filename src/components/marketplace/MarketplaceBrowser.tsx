@@ -112,7 +112,7 @@ export function MarketplaceBrowser() {
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <CardTitle className="text-xl">{campaign.title}</CardTitle>
+                    <CardTitle className="text-sm">{campaign.title}</CardTitle>
                     <CardDescription className="mt-1">
                       {campaign.brands?.name}
                     </CardDescription>
