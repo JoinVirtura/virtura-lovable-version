@@ -43,7 +43,10 @@ import { DashboardSettingsContent } from "@/components/DashboardSettingsContent"
 import { StudioBackground } from "@/components/StudioBackground";
 import { WelcomeModal } from "@/components/WelcomeModal";
 import { useOnboarding } from "@/hooks/useOnboarding";
-import { 
+import { MarketplaceBrowser } from "@/components/marketplace/MarketplaceBrowser";
+import { CampaignManagement } from "@/components/marketplace/CampaignManagement";
+import CreatorDashboard from "./CreatorDashboard";
+import {
   Play,
   Sparkles,
   Edit, 
@@ -1931,6 +1934,12 @@ export default function Dashboard() {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
         );
+      case "marketplace":
+        return <MarketplaceBrowser />;
+      case "marketplace-manage":
+        return <CampaignManagement />;
+      case "creator-dashboard":
+        return <CreatorDashboard />;
       default:
         return <OverviewPage onViewChange={setActiveView} />;
     }
