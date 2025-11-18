@@ -38,7 +38,10 @@ import {
   Menu,
   Image,
   LifeBuoy,
-  Shield
+  Shield,
+  Briefcase,
+  FolderKanban,
+  DollarSign
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -56,6 +59,8 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
   const navigate = useNavigate();
   const isCollapsed = state === "collapsed";
   const [isAdmin, setIsAdmin] = useState(false);
+  const [hasCreatorAccount, setHasCreatorAccount] = useState(false);
+  const [hasBrands, setHasBrands] = useState(false);
   
   useEffect(() => {
     const checkAdmin = async () => {
@@ -71,7 +76,33 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
       setIsAdmin(!!data);
     };
     
+    const checkCreatorStatus = async () => {
+      if (!user) return;
+      
+      const { data } = await supabase
+        .from("creator_accounts")
+        .select("id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      
+      setHasCreatorAccount(!!data);
+    };
+    
+    const checkBrands = async () => {
+      if (!user) return;
+      
+      const { data } = await supabase
+        .from("brands")
+        .select("id")
+        .eq("user_id", user.id)
+        .limit(1);
+      
+      setHasBrands((data?.length ?? 0) > 0);
+    };
+    
     checkAdmin();
+    checkCreatorStatus();
+    checkBrands();
   }, [user]);
   
   const mainItems = [
@@ -87,6 +118,12 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
     { id: "brands", label: "Brands", icon: Building2 },
     { id: "guide", label: "Tutorial", icon: BookOpen },
     { id: "support", label: "Support", icon: LifeBuoy },
+  ];
+
+  const marketplaceItems = [
+    { id: "marketplace", label: "Browse Campaigns", icon: Briefcase, route: "/marketplace" },
+    { id: "marketplace-manage", label: "My Campaigns", icon: FolderKanban, route: "/marketplace/manage" },
+    ...(hasCreatorAccount ? [{ id: "creator-dashboard", label: "Creator Earnings", icon: DollarSign, route: "/creator/dashboard" }] : []),
   ];
   
   const handleLogout = async () => {
@@ -130,11 +167,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                       if (item.id === "studio" && onClearEditState) {
                         onClearEditState();
                       }
-                      if (item.id === "admin-dashboard") {
-                        navigate("/admin/dashboard");
-                      } else {
-                        onViewChange(item.id);
-                      }
+                      onViewChange(item.id);
                       if (isMobile) {
                         setOpenMobile(false);
                       }
@@ -186,6 +219,37 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {(hasCreatorAccount || hasBrands) && (
+          <>
+            <SidebarSeparator />
+            <SidebarGroup className="pb-0">
+              <SidebarGroupLabel className={`text-muted-foreground px-0 ${!isMobile && isCollapsed ? "hidden" : "block"}`}>Marketplace</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {marketplaceItems.map((item) => (
+                    <SidebarMenuItem key={item.id}>
+                      <SidebarMenuButton 
+                        onClick={() => {
+                          if (item.route) {
+                            navigate(item.route);
+                          }
+                          if (isMobile) {
+                            setOpenMobile(false);
+                          }
+                        }}
+                        className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} hover:bg-violet-500/5 hover:text-violet-300 text-gray-400`}
+                      >
+                        <item.icon className="w-5 h-5 shrink-0" />
+                        {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </>
+        )}
 
       </SidebarContent>
 
