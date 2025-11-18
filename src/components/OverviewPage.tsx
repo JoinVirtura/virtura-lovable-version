@@ -14,7 +14,7 @@ export function OverviewPage({ onViewChange }: OverviewPageProps) {
     <StudioBackground>
       <NeuralVisual />
       <Hero />
-      <div className="pt-8">
+      <div className="pt-4 sm:pt-6 md:pt-8 px-4 sm:px-6 md:px-0">
         <TrendingRow tiles={showcaseGallery} className="px-0" />
       </div>
     </StudioBackground>
