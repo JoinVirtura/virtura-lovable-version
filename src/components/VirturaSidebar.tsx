@@ -107,18 +107,18 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
   }, [user]);
   
   const mainItems = [
-    ...(isAdmin ? [{ id: "admin-dashboard", label: "Dashboard", icon: Shield }] : []),
-    { id: "overview", label: "Home", icon: Home },
-    { id: "talking-avatar", label: "Style", icon: Image },
-    { id: "video-pro", label: "Video", icon: Video },
-    { id: "library", label: "Library", icon: Library },
+    ...(isAdmin ? [{ id: "admin-dashboard", label: "Dashboard", icon: Shield, route: "/admin/unified" }] : []),
+    { id: "overview", label: "Home", icon: Home, route: "/dashboard" },
+    { id: "talking-avatar", label: "Style", icon: Image, route: "/dashboard" },
+    { id: "video-pro", label: "Video", icon: Video, route: "/dashboard" },
+    { id: "library", label: "Library", icon: Library, route: "/dashboard" },
   ];
 
   const navigationTabs = [
-    { id: "studio", label: "Copilot", icon: Command },
-    { id: "brands", label: "Brands", icon: Building2 },
-    { id: "guide", label: "Tutorial", icon: BookOpen },
-    { id: "support", label: "Support", icon: LifeBuoy },
+    { id: "studio", label: "Copilot", icon: Command, route: "/dashboard" },
+    { id: "brands", label: "Brands", icon: Building2, route: "/dashboard" },
+    { id: "guide", label: "Tutorial", icon: BookOpen, route: "/guide" },
+    { id: "support", label: "Support", icon: LifeBuoy, route: "/support" },
   ];
 
   const marketplaceItems = [
@@ -164,16 +164,22 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                 <SidebarMenuItem key={item.id}>
                   <SidebarMenuButton 
                     onClick={() => {
-                      // Clear edit state when navigating to studio normally
-                      if (item.id === "studio" && onClearEditState) {
-                        onClearEditState();
+                      if (item.route) {
+                        navigate(item.route);
+                        if (item.id !== 'overview' && item.id !== 'admin-dashboard') {
+                          onViewChange(item.id);
+                        }
+                      } else {
+                        if (item.id === "studio" && onClearEditState) {
+                          onClearEditState();
+                        }
+                        onViewChange(item.id);
                       }
-                      onViewChange(item.id);
                       if (isMobile) {
                         setOpenMobile(false);
                       }
                     }}
-                    isActive={activeView === item.id}
+                    isActive={item.route ? location.pathname === item.route : activeView === item.id}
                     className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
                       activeView === item.id 
                         ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30" 
@@ -199,13 +205,20 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                 <SidebarMenuItem key={item.id}>
                   <SidebarMenuButton 
                     onClick={() => {
-                      onClearEditState?.();
-                      onViewChange(item.id);
+                      if (item.route) {
+                        navigate(item.route);
+                        if (item.id !== 'guide' && item.id !== 'support') {
+                          onViewChange(item.id);
+                        }
+                      } else {
+                        onClearEditState?.();
+                        onViewChange(item.id);
+                      }
                       if (isMobile) {
                         setOpenMobile(false);
                       }
                     }}
-                    isActive={activeView === item.id}
+                    isActive={item.route ? location.pathname === item.route : activeView === item.id}
                     className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
                       activeView === item.id 
                         ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30" 
