@@ -846,6 +846,230 @@ export type Database = {
           },
         ]
       }
+      content_unlocks: {
+        Row: {
+          amount_cents: number
+          content_id: string
+          content_type: string
+          creator_id: string
+          id: string
+          stripe_payment_intent_id: string | null
+          unlocked_at: string | null
+          user_id: string
+        }
+        Insert: {
+          amount_cents: number
+          content_id: string
+          content_type: string
+          creator_id: string
+          id?: string
+          stripe_payment_intent_id?: string | null
+          unlocked_at?: string | null
+          user_id: string
+        }
+        Update: {
+          amount_cents?: number
+          content_id?: string
+          content_type?: string
+          creator_id?: string
+          id?: string
+          stripe_payment_intent_id?: string | null
+          unlocked_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_unlocks_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_accounts: {
+        Row: {
+          charges_enabled: boolean | null
+          created_at: string | null
+          details_submitted: boolean | null
+          id: string
+          onboarding_complete: boolean | null
+          payouts_enabled: boolean | null
+          platform_fee_percentage: number | null
+          stripe_account_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          charges_enabled?: boolean | null
+          created_at?: string | null
+          details_submitted?: boolean | null
+          id?: string
+          onboarding_complete?: boolean | null
+          payouts_enabled?: boolean | null
+          platform_fee_percentage?: number | null
+          stripe_account_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          charges_enabled?: boolean | null
+          created_at?: string | null
+          details_submitted?: boolean | null
+          id?: string
+          onboarding_complete?: boolean | null
+          payouts_enabled?: boolean | null
+          platform_fee_percentage?: number | null
+          stripe_account_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      creator_earnings: {
+        Row: {
+          amount_cents: number
+          created_at: string | null
+          creator_amount_cents: number
+          creator_id: string
+          id: string
+          metadata: Json | null
+          payout_date: string | null
+          platform_fee_cents: number
+          source_id: string | null
+          source_type: string
+          status: string | null
+          stripe_payout_id: string | null
+        }
+        Insert: {
+          amount_cents: number
+          created_at?: string | null
+          creator_amount_cents: number
+          creator_id: string
+          id?: string
+          metadata?: Json | null
+          payout_date?: string | null
+          platform_fee_cents: number
+          source_id?: string | null
+          source_type: string
+          status?: string | null
+          stripe_payout_id?: string | null
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string | null
+          creator_amount_cents?: number
+          creator_id?: string
+          id?: string
+          metadata?: Json | null
+          payout_date?: string | null
+          platform_fee_cents?: number
+          source_id?: string | null
+          source_type?: string
+          status?: string | null
+          stripe_payout_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_earnings_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_subscriptions: {
+        Row: {
+          amount_cents: number
+          cancel_at_period_end: boolean | null
+          created_at: string | null
+          creator_id: string
+          current_period_end: string
+          current_period_start: string
+          id: string
+          status: string | null
+          stripe_subscription_id: string | null
+          subscriber_id: string
+          tier: string
+          updated_at: string | null
+        }
+        Insert: {
+          amount_cents: number
+          cancel_at_period_end?: boolean | null
+          created_at?: string | null
+          creator_id: string
+          current_period_end: string
+          current_period_start: string
+          id?: string
+          status?: string | null
+          stripe_subscription_id?: string | null
+          subscriber_id: string
+          tier: string
+          updated_at?: string | null
+        }
+        Update: {
+          amount_cents?: number
+          cancel_at_period_end?: boolean | null
+          created_at?: string | null
+          creator_id?: string
+          current_period_end?: string
+          current_period_start?: string
+          id?: string
+          status?: string | null
+          stripe_subscription_id?: string | null
+          subscriber_id?: string
+          tier?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_subscriptions_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_tips: {
+        Row: {
+          amount_cents: number
+          created_at: string | null
+          creator_id: string
+          id: string
+          message: string | null
+          stripe_payment_intent_id: string | null
+          tipper_id: string
+        }
+        Insert: {
+          amount_cents: number
+          created_at?: string | null
+          creator_id: string
+          id?: string
+          message?: string | null
+          stripe_payment_intent_id?: string | null
+          tipper_id: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string | null
+          creator_id?: string
+          id?: string
+          message?: string | null
+          stripe_payment_intent_id?: string | null
+          tipper_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_tips_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       error_logs: {
         Row: {
           context: Json | null
@@ -1084,6 +1308,254 @@ export type Database = {
           user_ip?: string | null
         }
         Relationships: []
+      }
+      marketplace_applications: {
+        Row: {
+          applied_at: string | null
+          campaign_id: string
+          creator_id: string
+          id: string
+          pitch: string
+          portfolio_links: string[] | null
+          proposed_rate_cents: number
+          reviewed_at: string | null
+          status: string | null
+        }
+        Insert: {
+          applied_at?: string | null
+          campaign_id: string
+          creator_id: string
+          id?: string
+          pitch: string
+          portfolio_links?: string[] | null
+          proposed_rate_cents: number
+          reviewed_at?: string | null
+          status?: string | null
+        }
+        Update: {
+          applied_at?: string | null
+          campaign_id?: string
+          creator_id?: string
+          id?: string
+          pitch?: string
+          portfolio_links?: string[] | null
+          proposed_rate_cents?: number
+          reviewed_at?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_applications_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_applications_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_campaigns: {
+        Row: {
+          brand_id: string
+          budget_cents: number
+          category: string | null
+          created_at: string | null
+          creator_id: string | null
+          creator_rate_cents: number | null
+          deadline: string | null
+          deliverables: Json
+          description: string | null
+          id: string
+          requirements: Json | null
+          status: string | null
+          title: string
+          updated_at: string | null
+          visibility: string | null
+        }
+        Insert: {
+          brand_id: string
+          budget_cents: number
+          category?: string | null
+          created_at?: string | null
+          creator_id?: string | null
+          creator_rate_cents?: number | null
+          deadline?: string | null
+          deliverables?: Json
+          description?: string | null
+          id?: string
+          requirements?: Json | null
+          status?: string | null
+          title: string
+          updated_at?: string | null
+          visibility?: string | null
+        }
+        Update: {
+          brand_id?: string
+          budget_cents?: number
+          category?: string | null
+          created_at?: string | null
+          creator_id?: string | null
+          creator_rate_cents?: number | null
+          deadline?: string | null
+          deliverables?: Json
+          description?: string | null
+          id?: string
+          requirements?: Json | null
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+          visibility?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_campaigns_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_campaigns_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_deliverables: {
+        Row: {
+          approved_at: string | null
+          asset_id: string | null
+          campaign_id: string
+          created_at: string | null
+          creator_id: string
+          deliverable_type: string
+          feedback: string | null
+          id: string
+          status: string | null
+          submitted_at: string | null
+        }
+        Insert: {
+          approved_at?: string | null
+          asset_id?: string | null
+          campaign_id: string
+          created_at?: string | null
+          creator_id: string
+          deliverable_type: string
+          feedback?: string | null
+          id?: string
+          status?: string | null
+          submitted_at?: string | null
+        }
+        Update: {
+          approved_at?: string | null
+          asset_id?: string | null
+          campaign_id?: string
+          created_at?: string | null
+          creator_id?: string
+          deliverable_type?: string
+          feedback?: string | null
+          id?: string
+          status?: string | null
+          submitted_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_deliverables_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "brand_assets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_deliverables_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_deliverables_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_payments: {
+        Row: {
+          brand_id: string
+          campaign_id: string
+          created_at: string | null
+          creator_amount_cents: number
+          creator_id: string
+          id: string
+          paid_at: string | null
+          platform_fee_cents: number
+          status: string | null
+          stripe_payment_intent_id: string | null
+          stripe_transfer_id: string | null
+          total_amount_cents: number
+        }
+        Insert: {
+          brand_id: string
+          campaign_id: string
+          created_at?: string | null
+          creator_amount_cents: number
+          creator_id: string
+          id?: string
+          paid_at?: string | null
+          platform_fee_cents: number
+          status?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_transfer_id?: string | null
+          total_amount_cents: number
+        }
+        Update: {
+          brand_id?: string
+          campaign_id?: string
+          created_at?: string | null
+          creator_amount_cents?: number
+          creator_id?: string
+          id?: string
+          paid_at?: string | null
+          platform_fee_cents?: number
+          status?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_transfer_id?: string | null
+          total_amount_cents?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_payments_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_payments_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_payments_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       notification_ab_assignments: {
         Row: {
