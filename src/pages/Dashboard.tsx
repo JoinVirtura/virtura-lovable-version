@@ -1943,7 +1943,7 @@ export default function Dashboard() {
         onOpenChange={setShowWelcomeModal}
       />
       
-      <SidebarProvider defaultOpen={true}>
+      <SidebarProvider defaultOpen={false}>
         <div className="min-h-screen flex w-full bg-background relative overflow-hidden">
           {activeView !== 'admin-dashboard' && <MotionBackground />}
           
@@ -1953,7 +1953,7 @@ export default function Dashboard() {
               <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 Virtura AI
               </h1>
-              <SidebarTrigger className="h-8 w-8 text-violet-400 hover:text-violet-300" />
+              <SidebarTrigger className="h-10 w-10 min-h-[44px] min-w-[44px] text-violet-400 hover:text-violet-300 hover:bg-violet-500/20 rounded-lg" />
             </div>
           </header>
           
@@ -1963,9 +1963,9 @@ export default function Dashboard() {
             onClearEditState={() => setSelectedEditImage(null)}
           />
         
-        <div className="flex-1 flex flex-col relative z-10">
+        <div className="flex-1 flex flex-col relative z-10 overflow-x-hidden">
           {/* Add padding top on mobile to account for fixed header */}
-          <main className={`flex-1 ${activeView === 'admin-dashboard' || activeView === 'talking-avatar' ? 'pt-16 md:pt-6 px-0' : 'p-4 md:p-6 pt-16 md:pt-6 overflow-x-hidden'}`}>
+          <main className={`flex-1 w-full ${activeView === 'admin-dashboard' || activeView === 'talking-avatar' ? 'pt-16 md:pt-6 px-0' : 'p-4 md:p-6 pt-16 md:pt-6'}`}>
             {renderContent()}
           </main>
         </div>

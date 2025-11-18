@@ -100,20 +100,20 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
 
   return (
       <Sidebar 
-        className="bg-black/90 backdrop-blur-xl border-r border-violet-500/20 z-50"
+        className="bg-black/90 backdrop-blur-xl border-r border-violet-500/20"
         collapsible="icon"
       >
       <SidebarHeader className={!isMobile && isCollapsed ? "p-2" : "p-4"}>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           {(isMobile || !isCollapsed) && (
-            <div>
+            <div className="flex-1">
               <h1 className="text-xl font-display font-bold text-gradient-primary drop-shadow-[0_0_10px_rgba(212,110,255,0.6)] leading-tight">
                 Virtura
               </h1>
               <p className="text-xs text-violet-300">Where Identity Evolves</p>
             </div>
           )}
-          <SidebarTrigger className={`h-8 w-8 p-0 text-violet-400 hover:text-violet-300 ${!isMobile && isCollapsed ? "mx-auto" : "ml-auto"}`} />
+          <SidebarTrigger className={`h-10 w-10 min-h-[44px] min-w-[44px] p-0 text-violet-400 hover:text-violet-300 hover:bg-violet-500/20 rounded-lg transition-colors ${!isMobile && isCollapsed ? "mx-auto" : ""}`} />
         </div>
       </SidebarHeader>
 
@@ -130,17 +130,23 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                       if (item.id === "studio" && onClearEditState) {
                         onClearEditState();
                       }
-                      onViewChange(item.id);
-                      setOpenMobile(false);
+                      if (item.id === "admin-dashboard") {
+                        navigate("/admin/unified");
+                      } else {
+                        onViewChange(item.id);
+                      }
+                      if (isMobile) {
+                        setOpenMobile(false);
+                      }
                     }}
                     isActive={activeView === item.id}
-                    className={`w-full ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
+                    className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
                       activeView === item.id 
                         ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30" 
                         : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
                     }`}
                   >
-                    <item.icon className="w-4 h-4 shrink-0" />
+                    <item.icon className="w-5 h-5 shrink-0" />
                     {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -159,17 +165,20 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                 <SidebarMenuItem key={item.id}>
                   <SidebarMenuButton 
                     onClick={() => {
+                      onClearEditState?.();
                       onViewChange(item.id);
-                      setOpenMobile(false);
+                      if (isMobile) {
+                        setOpenMobile(false);
+                      }
                     }}
                     isActive={activeView === item.id}
-                    className={`w-full ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
+                    className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
                       activeView === item.id 
                         ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30" 
                         : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
                     }`}
                   >
-                    <item.icon className="w-4 h-4 shrink-0" />
+                    <item.icon className="w-5 h-5 shrink-0" />
                     {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -188,9 +197,9 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
             onViewChange('settings');
             setOpenMobile(false);
           }}
-          className={`flex items-center transition-colors rounded-lg ml-3 mr-3 ${!isMobile && isCollapsed ? "py-3 justify-center" : "pl-4 pr-4 py-3 gap-3 justify-start"} hover:bg-violet-500/5 hover:text-violet-300 text-white`}
+          className={`flex items-center transition-colors rounded-lg ml-3 mr-3 min-h-[44px] ${!isMobile && isCollapsed ? "py-3 justify-center" : "pl-4 pr-4 py-3 gap-3 justify-start"} hover:bg-violet-500/5 hover:text-violet-300 text-white`}
         >
-          <Avatar className="w-8 h-8 ring-2 ring-violet-500/30 shrink-0">
+          <Avatar className="w-10 h-10 ring-2 ring-violet-500/30 shrink-0">
             <AvatarImage src={profile?.avatar_url || undefined} />
             <AvatarFallback className="bg-violet-500/20 text-violet-300">
               {profile?.display_name
@@ -215,9 +224,9 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
         <div className={!isMobile && isCollapsed ? "px-2 pb-3" : "px-3 pb-3"}>
           <SidebarMenuButton 
             onClick={handleLogout}
-            className={`w-full ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 pl-5"} text-destructive hover:bg-destructive/10 h-auto py-2`}
+            className={`w-full min-h-[44px] ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 pl-5"} text-destructive hover:bg-destructive/10 h-auto py-2`}
           >
-            <LogOut className="w-4 h-4 shrink-0" />
+            <LogOut className="w-5 h-5 shrink-0" />
             {(isMobile || !isCollapsed) && <span className="font-medium">Logout</span>}
           </SidebarMenuButton>
         </div>
