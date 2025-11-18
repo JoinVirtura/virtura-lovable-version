@@ -85,7 +85,7 @@ export function MarketplaceBrowser() {
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Categories</SelectItem>
+                <SelectItem value="all">All Categories</SelectItem>
                 <SelectItem value="video">Video</SelectItem>
                 <SelectItem value="image">Image</SelectItem>
                 <SelectItem value="social">Social Media</SelectItem>
