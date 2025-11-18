@@ -123,7 +123,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
 
   const marketplaceItems = [
     { id: "marketplace", label: "Browse Campaigns", icon: Briefcase, route: "/marketplace" },
-    { id: "marketplace-manage", label: "My Campaigns", icon: FolderKanban, route: "/marketplace/manage" },
+    ...(hasBrands ? [{ id: "marketplace-manage", label: "My Campaigns", icon: FolderKanban, route: "/marketplace/manage" }] : []),
     ...(hasCreatorAccount ? [{ id: "creator-dashboard", label: "Creator Earnings", icon: DollarSign, route: "/creator/dashboard" }] : []),
   ];
   
@@ -221,10 +221,9 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {(hasCreatorAccount || hasBrands) && (
-          <>
-            <SidebarSeparator />
-            <SidebarGroup className="pb-0">
+        <>
+          <SidebarSeparator />
+          <SidebarGroup className="pb-0">
               <SidebarGroupLabel className={`text-muted-foreground px-0 ${!isMobile && isCollapsed ? "hidden" : "block"}`}>Marketplace</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
@@ -258,7 +257,6 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
               </SidebarGroupContent>
             </SidebarGroup>
           </>
-        )}
 
       </SidebarContent>
 
