@@ -1,10 +1,13 @@
+import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { User, Building2, Library, BookOpen, Settings, Search, Target } from "lucide-react";
+import { User, Building2, Library, BookOpen, Settings, Search, Target, Menu, X } from "lucide-react";
 import { TokenBalanceCompact } from "@/components/TokenBalanceDisplay";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 export function VirturaNavigation() {
   const location = useLocation();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
   const navItems = [
     { path: "/individuals", label: "Individuals", icon: User },
@@ -56,47 +59,56 @@ export function VirturaNavigation() {
           {/* Right Side Actions */}
           <div className="hidden md:flex items-center space-x-4">
             <TokenBalanceCompact />
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" className="min-h-[44px] min-w-[44px]">
               <Search className="w-5 h-5" />
             </Button>
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden">
-            <Button variant="ghost" size="icon">
-              <Settings className="w-5 h-5" />
-            </Button>
+          <div className="md:hidden flex items-center gap-2">
+            <TokenBalanceCompact />
+            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="min-h-[44px] min-w-[44px]">
+                  <Menu className="w-6 h-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[280px] bg-black/95 backdrop-blur-xl border-violet-500/20">
+                <SheetHeader>
+                  <SheetTitle className="text-gradient-primary text-xl font-display">Virtura</SheetTitle>
+                </SheetHeader>
+                <div className="mt-6 space-y-2">
+                  {navItems.map((item) => {
+                    const isActive = location.pathname === item.path;
+                    const Icon = item.icon;
+                    
+                    return (
+                      <NavLink
+                        key={item.path}
+                        to={item.path}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 min-h-[44px] ${
+                          isActive
+                            ? "bg-violet-500/20 text-violet-300 shadow-[0_0_20px_rgba(212,110,255,0.3)] border border-violet-400/30"
+                            : "text-gray-300 hover:text-violet-400 hover:bg-violet-500/10"
+                        }`}
+                      >
+                        <Icon className="w-5 h-5" />
+                        {item.label}
+                      </NavLink>
+                    );
+                  })}
+                  <Button variant="ghost" className="w-full justify-start gap-3 min-h-[44px] mt-4">
+                    <Search className="w-5 h-5" />
+                    Search
+                  </Button>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </div>
 
-      {/* Mobile Navigation */}
-      <div className="md:hidden border-t border-border">
-        <div className="px-2 pt-2 pb-3 space-y-1">
-          <div className="px-3 py-2">
-            <TokenBalanceCompact />
-          </div>
-          {navItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            const Icon = item.icon;
-            
-            return (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                className={`block px-3 py-2 rounded-xl text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
-                  isActive
-                    ? "bg-violet-500/20 text-violet-300 shadow-[0_0_20px_rgba(212,110,255,0.3)]"
-                    : "text-gray-300 hover:text-violet-400 hover:bg-violet-500/5"
-                }`}
-              >
-                <Icon className="w-4 h-4" />
-                {item.label}
-              </NavLink>
-            );
-          })}
-        </div>
-      </div>
     </nav>
   );
 }

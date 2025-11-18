@@ -791,4 +791,61 @@ All colors MUST be HSL.
     background-size: 1000px 100%;
     animation: shimmer 2s infinite;
   }
+
+  /* Mobile Optimizations */
+  @media (max-width: 768px) {
+    /* Smooth scrolling for mobile */
+    * {
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
+    }
+
+    /* Prevent zoom on inputs */
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="search"],
+    input[type="number"],
+    textarea,
+    select {
+      font-size: 16px !important;
+    }
+
+    /* Better touch targets - minimum 44x44px */
+    button,
+    a,
+    [role="button"] {
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    /* Prevent text selection on buttons/controls */
+    button,
+    [role="button"],
+    .sidebar button {
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Improve sidebar sheet performance */
+    [data-state="open"],
+    [data-state="closed"] {
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Fix overflow issues */
+    body,
+    html,
+    #root {
+      overflow-x: hidden;
+      width: 100%;
+      position: relative;
+    }
+
+    /* Improve scrolling areas */
+    .overflow-y-auto {
+      overscroll-behavior-y: contain;
+    }
+  }
 }
