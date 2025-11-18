@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import virturaLogo from "/lovable-uploads/f264298f-2877-485b-affc-d705994fc848.png";
 import { useProfile } from "@/hooks/useProfile";
 import { 
@@ -227,24 +227,33 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
               <SidebarGroupLabel className={`text-muted-foreground px-0 ${!isMobile && isCollapsed ? "hidden" : "block"}`}>Marketplace</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  {marketplaceItems.map((item) => (
-                    <SidebarMenuItem key={item.id}>
-                      <SidebarMenuButton 
-                        onClick={() => {
-                          if (item.route) {
-                            navigate(item.route);
-                          }
-                          if (isMobile) {
-                            setOpenMobile(false);
-                          }
-                        }}
-                        className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} hover:bg-violet-500/5 hover:text-violet-300 text-gray-400`}
-                      >
-                        <item.icon className="w-5 h-5 shrink-0" />
-                        {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
+                  {marketplaceItems.map((item) => {
+                    const location = useLocation();
+                    const isActive = location.pathname === item.route;
+                    
+                    return (
+                      <SidebarMenuItem key={item.id}>
+                        <SidebarMenuButton 
+                          onClick={() => {
+                            if (item.route) {
+                              navigate(item.route);
+                            }
+                            if (isMobile) {
+                              setOpenMobile(false);
+                            }
+                          }}
+                          className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
+                            isActive
+                              ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30" 
+                              : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
+                          }`}
+                        >
+                          <item.icon className="w-5 h-5 shrink-0" />
+                          {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  })}
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>

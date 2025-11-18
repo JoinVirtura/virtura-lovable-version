@@ -28,6 +28,7 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCanceled from "./pages/PaymentCanceled";
 import TokenHistoryPage from "./pages/TokenHistoryPage";
 import AdminCostDashboardPage from "./pages/AdminCostDashboardPage";
+import { DashboardLayout } from "./layouts/DashboardLayout";
 import UnifiedAdminDashboard from "./pages/UnifiedAdminDashboard";
 import { MarketplaceBrowser } from "./components/marketplace/MarketplaceBrowser";
 import { BrandCampaignCreator } from "./components/marketplace/BrandCampaignCreator";
@@ -111,10 +112,34 @@ const AppRoutes = () => {
       {/* Admin Routes */}
       <Route path="/admin/costs" element={<ProtectedRoute><AdminCostDashboardPage /></ProtectedRoute>} />
       
-      <Route path="/marketplace" element={<ProtectedRoute><MarketplaceBrowser /></ProtectedRoute>} />
-      <Route path="/marketplace/create" element={<ProtectedRoute><BrandCampaignCreator /></ProtectedRoute>} />
-      <Route path="/marketplace/manage" element={<ProtectedRoute><CampaignManagement /></ProtectedRoute>} />
-      <Route path="/creator/dashboard" element={<ProtectedRoute><CreatorDashboard /></ProtectedRoute>} />
+      <Route path="/marketplace" element={
+        <ProtectedRoute>
+          <DashboardLayout>
+            <MarketplaceBrowser />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/marketplace/create" element={
+        <ProtectedRoute>
+          <DashboardLayout>
+            <BrandCampaignCreator />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/marketplace/manage" element={
+        <ProtectedRoute>
+          <DashboardLayout>
+            <CampaignManagement />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/creator/dashboard" element={
+        <ProtectedRoute>
+          <DashboardLayout>
+            <CreatorDashboard />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
       
       {/* Catch-all */}
       <Route path="*" element={<NotFound />} />
