@@ -46,6 +46,8 @@ import { useOnboarding } from "@/hooks/useOnboarding";
 import { MarketplaceBrowser } from "@/components/marketplace/MarketplaceBrowser";
 import { CampaignManagement } from "@/components/marketplace/CampaignManagement";
 import CreatorDashboard from "./CreatorDashboard";
+import SocialFeed from "./SocialFeed";
+import MarketplacePage from "./MarketplacePage";
 import {
   Play,
   Sparkles,
@@ -1934,12 +1936,12 @@ export default function Dashboard() {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
         );
-      case "marketplace":
-        return <MarketplaceBrowser />;
-      case "marketplace-manage":
-        return <CampaignManagement />;
+      case "social-feed":
+        return <SocialFeed />;
       case "creator-dashboard":
         return <CreatorDashboard />;
+      case "marketplace":
+        return <MarketplacePage />;
       default:
         return <OverviewPage onViewChange={setActiveView} />;
     }

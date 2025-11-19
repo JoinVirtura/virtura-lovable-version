@@ -112,10 +112,17 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
     { id: "support", label: "Support", icon: LifeBuoy },
   ];
 
+  // Social & Creator section (new structure)
+  const socialItems = [
+    { id: "social-feed", label: "Feed", icon: Home },
+  ];
+
+  const creatorItems = [
+    { id: "creator-dashboard", label: "Creator Dashboard", icon: DollarSign },
+  ];
+
   const marketplaceItems = [
-    { id: "marketplace", label: "Browse", icon: Briefcase },
-    ...(hasBrands ? [{ id: "marketplace-manage", label: "Campaigns", icon: FolderKanban }] : []),
-    ...(hasCreatorAccount ? [{ id: "creator-dashboard", label: "Creator Earnings", icon: DollarSign }] : []),
+    { id: "marketplace", label: "Marketplace", icon: Briefcase },
   ];
 
   const handleLogout = async () => {
@@ -216,6 +223,77 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
         </SidebarGroup>
 
         <>
+          {/* Social Section */}
+          <SidebarSeparator />
+          <SidebarGroup className="pb-0">
+            <SidebarGroupLabel
+              className={`text-muted-foreground px-0 ${!isMobile && isCollapsed ? "hidden" : "block"}`}
+            >
+              Social
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {socialItems.map((item) => (
+                  <SidebarMenuItem key={item.id}>
+                    <SidebarMenuButton
+                      onClick={() => {
+                        onViewChange(item.id);
+                        if (isMobile) {
+                          setOpenMobile(false);
+                        }
+                      }}
+                      isActive={activeView === item.id}
+                      className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
+                        activeView === item.id
+                          ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30"
+                          : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
+                      }`}
+                    >
+                      <item.icon className="w-5 h-5 shrink-0" />
+                      {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+
+          {/* Creator Section */}
+          <SidebarSeparator />
+          <SidebarGroup className="pb-0">
+            <SidebarGroupLabel
+              className={`text-muted-foreground px-0 ${!isMobile && isCollapsed ? "hidden" : "block"}`}
+            >
+              Creator
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {creatorItems.map((item) => (
+                  <SidebarMenuItem key={item.id}>
+                    <SidebarMenuButton
+                      onClick={() => {
+                        onViewChange(item.id);
+                        if (isMobile) {
+                          setOpenMobile(false);
+                        }
+                      }}
+                      isActive={activeView === item.id}
+                      className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
+                        activeView === item.id
+                          ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30"
+                          : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
+                      }`}
+                    >
+                      <item.icon className="w-5 h-5 shrink-0" />
+                      {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+
+          {/* Marketplace Section */}
           <SidebarSeparator />
           <SidebarGroup className="pb-0">
             <SidebarGroupLabel

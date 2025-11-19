@@ -137,7 +137,11 @@ export function MarketplaceBrowser() {
                 </div>
 
                 {campaign.deliverables && <div className="flex flex-wrap gap-1">
-                    {Object.entries(campaign.deliverables).map(([key, value]: [string, any]) => {})}
+                    {Object.entries(campaign.deliverables).map(([key, value]: [string, any]) => (
+                      <span key={key} className="text-xs px-2 py-1 bg-secondary rounded">
+                        {key}
+                      </span>
+                    ))}
                   </div>}
 
                 <Button className="w-full" onClick={() => setSelectedCampaign(campaign.id)}>
