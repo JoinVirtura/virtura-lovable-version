@@ -65,8 +65,8 @@ serve(async (req) => {
       );
     }
 
-    // Calculate platform fee (20%)
-    const platformFeeCents = Math.floor(amountCents * 0.20);
+    // Calculate platform fee (10%)
+    const platformFeeCents = Math.floor(amountCents * 0.10);
 
     // Create or get Stripe customer
     const { data: existingSubscriptions } = await supabase
