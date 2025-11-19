@@ -11,7 +11,7 @@ export function FeedTabs({ value, onValueChange }: FeedTabsProps) {
     <Tabs value={value} onValueChange={(v) => onValueChange(v as any)} className="w-full">
       <ScrollArea className="w-full">
         <TabsList className="inline-flex w-full min-w-max sm:grid sm:grid-cols-3">
-          <TabsTrigger value="all" className="flex-1">For You</TabsTrigger>
+          <TabsTrigger value="all" className="flex-1">All</TabsTrigger>
           <TabsTrigger value="following" className="flex-1">Following</TabsTrigger>
           <TabsTrigger value="trending" className="flex-1">Trending</TabsTrigger>
         </TabsList>
