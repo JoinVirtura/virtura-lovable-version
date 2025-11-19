@@ -40,6 +40,7 @@ import SavedPosts from "./pages/SavedPosts";
 import Analytics from "./pages/Analytics";
 import Upgrade from "./pages/Upgrade";
 import TrialAnalytics from "./pages/admin/TrialAnalytics";
+import TrialExperiments from "./pages/admin/TrialExperiments";
 
 const queryClient = new QueryClient();
 
@@ -118,6 +119,7 @@ const AppRoutes = () => {
       {/* Admin Routes */}
       <Route path="/admin/costs" element={<ProtectedRoute><AdminCostDashboardPage /></ProtectedRoute>} />
       <Route path="/admin/trial-analytics" element={<ProtectedRoute><TrialAnalytics /></ProtectedRoute>} />
+      <Route path="/admin/trial-experiments" element={<ProtectedRoute><TrialExperiments /></ProtectedRoute>} />
       
       <Route path="/marketplace" element={
         <ProtectedRoute>
