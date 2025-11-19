@@ -2333,6 +2333,7 @@ export type Database = {
           ai_training_opt_in: boolean | null
           auto_delete_old_projects: boolean | null
           avatar_url: string | null
+          bio: string | null
           content_visibility_default: string | null
           created_at: string
           display_name: string | null
@@ -2344,11 +2345,13 @@ export type Database = {
           save_voice_clones: boolean | null
           signup_bonus_claimed: boolean | null
           updated_at: string
+          website_url: string | null
         }
         Insert: {
           ai_training_opt_in?: boolean | null
           auto_delete_old_projects?: boolean | null
           avatar_url?: string | null
+          bio?: string | null
           content_visibility_default?: string | null
           created_at?: string
           display_name?: string | null
@@ -2360,11 +2363,13 @@ export type Database = {
           save_voice_clones?: boolean | null
           signup_bonus_claimed?: boolean | null
           updated_at?: string
+          website_url?: string | null
         }
         Update: {
           ai_training_opt_in?: boolean | null
           auto_delete_old_projects?: boolean | null
           avatar_url?: string | null
+          bio?: string | null
           content_visibility_default?: string | null
           created_at?: string
           display_name?: string | null
@@ -2376,6 +2381,7 @@ export type Database = {
           save_voice_clones?: boolean | null
           signup_bonus_claimed?: boolean | null
           updated_at?: string
+          website_url?: string | null
         }
         Relationships: []
       }
