@@ -5,7 +5,11 @@ import { useAuth } from '@/hooks/useAuth';
 export interface UserProfile {
   id: string;
   full_name: string;
-  avatar_url?: string;
+  display_name: string;
+  username: string;
+  avatar_url: string;
+  bio: string;
+  is_verified: boolean;
   follower_count: number;
   following_count: number;
   is_following: boolean;
@@ -75,13 +79,15 @@ export function useUserProfile(userId: string) {
       setProfile({
         id: profileData.id,
         full_name: profileData.display_name || 'Unknown User',
-        avatar_url: profileData.avatar_url || undefined,
+        display_name: profileData.display_name || 'Unknown User',
+        username: profileData.display_name?.toLowerCase().replace(/\s+/g, '') || profileData.id.substring(0, 8),
+        avatar_url: profileData.avatar_url || '',
+        bio: profileData.bio || '',
+        is_verified: false, // TODO: Add is_verified column to profiles table
         follower_count: followersRes.count || 0,
         following_count: followingRes.count || 0,
         is_following: !!isFollowingRes.data,
-        bio: profileData.bio,
-        website_url: profileData.website_url,
-      } as any);
+      });
 
       // Fetch user's posts
       const { data: postsData } = await supabase

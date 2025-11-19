@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCreatorAccount } from '@/hooks/useCreatorAccount';
 import { CheckCircle2, AlertCircle, ExternalLink, Loader2 } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 
 export function CreatorOnboarding() {
   const { account, loading, creating, createAccount, getOnboardingLink, getDashboardLink } = useCreatorAccount();
@@ -12,10 +13,25 @@ export function CreatorOnboarding() {
   const handleCreateAccount = async () => {
     try {
       await createAccount();
+      toast({
+        title: 'Creator account created!',
+        description: 'Complete your Stripe onboarding to start earning.',
+      });
     } catch (error: any) {
       // Check for Stripe Connect specific errors
       if (error?.message?.includes('Connect') || error?.message?.includes('signed up for Connect')) {
         console.error('Stripe Connect not enabled:', error);
+        toast({
+          title: 'Stripe Connect Required',
+          description: 'Please enable Stripe Connect in your Stripe Dashboard to create creator accounts. Visit stripe.com > Connect > Get Started.',
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: 'Error creating account',
+          description: error.message,
+          variant: 'destructive',
+        });
       }
     }
   };

@@ -1,26 +1,34 @@
-import { ScheduledPostsList } from '@/components/social/ScheduledPostsList';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useScheduledPosts } from '@/hooks/useScheduledPosts';
+import { SmartCalendar } from '@/components/scheduling/SmartCalendar';
+import { Loader2 } from 'lucide-react';
 
 export default function ScheduledPostsPage() {
-  const navigate = useNavigate();
+  const { posts, loading, publishNow, deleteScheduledPost } = useScheduledPosts();
+
+  if (loading) {
+    return (
+      <div className="container mx-auto p-6 flex items-center justify-center min-h-screen">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl space-y-6">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/social')}>
-          <ArrowLeft className="w-4 h-4" />
-        </Button>
-        <div>
-          <h1 className="text-3xl font-bold">Scheduled Posts</h1>
-          <p className="text-muted-foreground mt-1">
-            Manage posts scheduled for future publication
-          </p>
-        </div>
+    <div className="container mx-auto p-6 space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary-blue bg-clip-text text-transparent">
+          Scheduled Posts
+        </h1>
+        <p className="text-muted-foreground mt-1">
+          Manage your content calendar
+        </p>
       </div>
 
-      <ScheduledPostsList />
+      <SmartCalendar
+        posts={posts}
+        onPublishNow={publishNow}
+        onDelete={deleteScheduledPost}
+      />
     </div>
   );
 }
