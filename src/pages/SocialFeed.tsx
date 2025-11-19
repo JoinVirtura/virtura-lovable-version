@@ -6,6 +6,7 @@ import { CreatePostModal } from '@/components/social/CreatePostModal';
 
 export default function SocialFeed() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [feedType, setFeedType] = useState<'all' | 'following' | 'trending'>('all');
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -22,7 +23,7 @@ export default function SocialFeed() {
         </Button>
       </div>
 
-      <FeedContainer />
+      <FeedContainer filterType={feedType} />
 
       <CreatePostModal
         isOpen={createModalOpen}
