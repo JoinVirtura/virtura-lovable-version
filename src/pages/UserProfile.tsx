@@ -5,22 +5,19 @@ import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { ProfileStats } from "@/components/profile/ProfileStats";
 import { ProfileTabs } from "@/components/profile/ProfileTabs";
 import { ProfilePostsGrid } from "@/components/profile/ProfilePostsGrid";
-import { ProfileSettingsDialog } from "@/components/ProfileSettingsDialog";
+import { EditProfileModal } from "@/components/profile/EditProfileModal";
+import { ProfileSkeleton } from "@/components/profile/ProfileSkeleton";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function UserProfile() {
   const { userId } = useParams<{ userId: string }>();
   const { user } = useAuth();
-  const { profile, posts, loading } = useUserProfile(userId || '');
+  const { profile, posts, loading, updateProfile, uploadAvatar } = useUserProfile(userId || '');
   const [activeTab, setActiveTab] = useState('posts');
   const [showEditDialog, setShowEditDialog] = useState(false);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Loading profile...</p>
-      </div>
-    );
+    return <ProfileSkeleton />;
   }
 
   if (!profile) {
@@ -67,9 +64,12 @@ export default function UserProfile() {
       </div>
 
       {isOwnProfile && (
-        <ProfileSettingsDialog
+        <EditProfileModal
           open={showEditDialog}
           onOpenChange={setShowEditDialog}
+          profile={profile}
+          onUpdate={updateProfile}
+          onUploadAvatar={uploadAvatar}
         />
       )}
     </div>

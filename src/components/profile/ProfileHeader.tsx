@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { UserPlus, UserCheck, DollarSign, MessageCircle, Share2 } from "lucide-react";
+import { UserPlus, UserCheck, MessageCircle, Share2 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { UserProfile } from "@/hooks/useUserProfile";
 
 interface ProfileHeaderProps {
-  profile: UserProfile;
+  profile: UserProfile & { bio?: string; website_url?: string };
   onEditProfile?: () => void;
 }
 
@@ -88,9 +88,22 @@ export function ProfileHeader({ profile, onEditProfile }: ProfileHeaderProps) {
         </Avatar>
 
         <div className="flex-1 space-y-4">
-          <div>
+          <div className="space-y-2">
             <h1 className="text-2xl font-bold text-foreground">{profile.full_name}</h1>
             <p className="text-muted-foreground">@{profile.full_name.toLowerCase().replace(/\s+/g, '')}</p>
+            {profile.bio && (
+              <p className="text-foreground mt-2">{profile.bio}</p>
+            )}
+            {profile.website_url && (
+              <a
+                href={profile.website_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline text-sm inline-flex items-center gap-1"
+              >
+                🔗 {profile.website_url.replace(/^https?:\/\//, '')}
+              </a>
+            )}
           </div>
 
           <div className="flex flex-wrap gap-2">

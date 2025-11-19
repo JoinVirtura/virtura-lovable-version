@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -28,6 +29,7 @@ export function CommentModal({ postId, isOpen, onClose }: CommentModalProps) {
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(false);
   const { createComment } = usePostActions();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!postId || !isOpen) return;
@@ -98,6 +100,11 @@ export function CommentModal({ postId, isOpen, onClose }: CommentModalProps) {
     }
   };
 
+  const handleProfileClick = (userId: string) => {
+    navigate(`/profile/${userId}`);
+    onClose();
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-lg max-h-[80vh] flex flex-col">
@@ -118,19 +125,24 @@ export function CommentModal({ postId, isOpen, onClose }: CommentModalProps) {
           ) : (
             comments.map((comment) => (
               <div key={comment.id} className="flex gap-3">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={comment.avatar_url} />
-                  <AvatarFallback>{comment.display_name?.[0] || 'U'}</AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-sm">{comment.display_name}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
-                    </span>
+                <button
+                  onClick={() => handleProfileClick(comment.user_id)}
+                  className="flex gap-3 text-left hover:opacity-80 transition-opacity w-full"
+                >
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={comment.avatar_url} />
+                    <AvatarFallback>{comment.display_name?.[0] || 'U'}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-sm hover:underline">{comment.display_name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
+                      </span>
+                    </div>
+                    <p className="text-sm mt-1">{comment.content}</p>
                   </div>
-                  <p className="text-sm mt-1">{comment.content}</p>
-                </div>
+                </button>
               </div>
             ))
           )}
