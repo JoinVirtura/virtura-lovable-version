@@ -2710,13 +2710,16 @@ export type Database = {
       scheduled_posts: {
         Row: {
           caption: string | null
+          content_type: string | null
           created_at: string | null
           error_message: string | null
           hashtags: string[] | null
           id: string
+          is_paid: boolean | null
           media_urls: Json | null
           platforms: string[]
           post_id: string | null
+          price_cents: number | null
           published_to: Json | null
           scheduled_for: string
           status: string | null
@@ -2725,13 +2728,16 @@ export type Database = {
         }
         Insert: {
           caption?: string | null
+          content_type?: string | null
           created_at?: string | null
           error_message?: string | null
           hashtags?: string[] | null
           id?: string
+          is_paid?: boolean | null
           media_urls?: Json | null
           platforms: string[]
           post_id?: string | null
+          price_cents?: number | null
           published_to?: Json | null
           scheduled_for: string
           status?: string | null
@@ -2740,13 +2746,16 @@ export type Database = {
         }
         Update: {
           caption?: string | null
+          content_type?: string | null
           created_at?: string | null
           error_message?: string | null
           hashtags?: string[] | null
           id?: string
+          is_paid?: boolean | null
           media_urls?: Json | null
           platforms?: string[]
           post_id?: string | null
+          price_cents?: number | null
           published_to?: Json | null
           scheduled_for?: string
           status?: string | null
