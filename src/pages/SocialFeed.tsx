@@ -29,7 +29,7 @@ export default function SocialFeed() {
 
       <FeedTabs value={feedType} onValueChange={setFeedType} />
 
-      <FeedContainer filterType={feedType} />
+      <FeedContainer filterType={feedType} onFilterChange={setFeedType} />
 
       <CreatePostModal
         isOpen={createModalOpen}
