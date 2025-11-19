@@ -42,7 +42,9 @@ import {
   Briefcase,
   FolderKanban,
   DollarSign,
+  Bell,
 } from "lucide-react";
+import { NotificationBell } from "@/components/NotificationBell";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -116,6 +118,12 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
   const socialItems = [
     { id: "social-feed", label: "Feed", icon: Home },
   ];
+  
+  const socialHeaderActions = (
+    <div className="flex items-center gap-2">
+      <NotificationBell />
+    </div>
+  );
 
   const creatorItems = [
     { id: "creator-dashboard", label: "Creator Dashboard", icon: DollarSign },
@@ -226,11 +234,14 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
           {/* Social Section */}
           <SidebarSeparator />
           <SidebarGroup className="pb-0">
-            <SidebarGroupLabel
-              className={`text-muted-foreground px-0 ${!isMobile && isCollapsed ? "hidden" : "block"}`}
-            >
-              Social
-            </SidebarGroupLabel>
+            <div className="flex items-center justify-between px-0 mb-2">
+              <SidebarGroupLabel
+                className={`text-muted-foreground m-0 ${!isMobile && isCollapsed ? "hidden" : "block"}`}
+              >
+                Social
+              </SidebarGroupLabel>
+              {!isCollapsed && socialHeaderActions}
+            </div>
             <SidebarGroupContent>
               <SidebarMenu>
                 {socialItems.map((item) => (

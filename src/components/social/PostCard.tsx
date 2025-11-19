@@ -4,10 +4,11 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
 import { SocialPost } from '@/hooks/useSocialPosts';
 import { formatDistanceToNow } from 'date-fns';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSavedPosts } from '@/hooks/useSavedPosts';
 import { usePostAnalytics } from '@/hooks/usePostAnalytics';
+import { useViewTracking } from '@/hooks/useViewTracking';
 import { ShareButton } from './ShareButton';
 import { ReportModal } from './ReportModal';
 import {
@@ -30,12 +31,8 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
   const [reportModalOpen, setReportModalOpen] = useState(false);
   const { isPostSaved, savePost, unsavePost } = useSavedPosts();
   const { trackView } = usePostAnalytics(post.id);
+  const viewTrackingRef = useViewTracking(post.id, true);
   const saved = isPostSaved(post.id);
-
-  // Track view when post is visible
-  useEffect(() => {
-    trackView();
-  }, []);
 
   const handleSaveToggle = () => {
     if (saved) {
@@ -50,7 +47,7 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
 
   return (
     <>
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden" ref={viewTrackingRef}>
       {/* Creator Header */}
       <div className="flex items-center justify-between p-4">
         <button 
@@ -163,6 +160,10 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => navigate(`/profile/${post.user_id}`)}>
+                <User className="h-4 w-4 mr-2" />
+                View Profile
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setReportModalOpen(true)}>
                 <Flag className="h-4 w-4 mr-2" />
                 Report post

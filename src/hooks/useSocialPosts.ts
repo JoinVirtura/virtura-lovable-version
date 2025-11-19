@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useBlockedUsers } from '@/hooks/useBlockedUsers';
 
 export interface SocialPost {
   id: string;
@@ -22,8 +23,9 @@ export interface SocialPost {
   unlocked_by_user?: boolean;
 }
 
-export function useSocialPosts(filterType: 'all' | 'following' | 'own' = 'all') {
+export function useSocialPosts(filterType: 'all' | 'following' | 'own' | 'trending' = 'all') {
   const { user } = useAuth();
+  const { blockedUsers } = useBlockedUsers();
   const [posts, setPosts] = useState<SocialPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
@@ -55,19 +57,28 @@ export function useSocialPosts(filterType: 'all' | 'following' | 'own' = 'all') 
         } else {
           setPosts([]);
           setLoading(false);
+          setHasMore(false);
           return;
         }
       } else if (filterType === 'own') {
         query = query.eq('user_id', user.id);
+      } else if (filterType === 'trending') {
+        // Trending: recent posts with high engagement
+        const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+        query = query.gte('published_at', oneDayAgo);
       }
 
       const { data, error } = await query;
 
       if (error) throw error;
 
+      // Filter out blocked users
+      const blockedUserIds = blockedUsers.map(b => b.blocked_user_id);
+      const filteredData = (data || []).filter(post => !blockedUserIds.includes(post.user_id));
+
       // Enrich with user interactions and profiles
       const enrichedPosts = await Promise.all(
-        (data || []).map(async (post) => {
+        filteredData.map(async (post) => {
           const [profile, likes, follows, unlocks] = await Promise.all([
             supabase
               .from('profiles')
@@ -106,15 +117,25 @@ export function useSocialPosts(filterType: 'all' | 'following' | 'own' = 'all') 
         })
       );
 
+      // Sort trending by engagement score
+      let finalPosts = enrichedPosts;
+      if (filterType === 'trending') {
+        finalPosts = enrichedPosts.sort((a, b) => {
+          const scoreA = a.like_count * 3 + a.comment_count * 5 + a.view_count * 0.1;
+          const scoreB = b.like_count * 3 + b.comment_count * 5 + b.view_count * 0.1;
+          return scoreB - scoreA;
+        });
+      }
+
       if (reset) {
-        setPosts(enrichedPosts);
+        setPosts(finalPosts);
         setOffset(10);
       } else {
-        setPosts(prev => [...prev, ...enrichedPosts]);
+        setPosts(prev => [...prev, ...finalPosts]);
         setOffset(prev => prev + 10);
       }
 
-      setHasMore(enrichedPosts.length === 10);
+      setHasMore(finalPosts.length === 10);
     } catch (error) {
       console.error('Error fetching posts:', error);
     } finally {
@@ -141,7 +162,7 @@ export function useSocialPosts(filterType: 'all' | 'following' | 'own' = 'all') 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user?.id, filterType]);
+  }, [user?.id, filterType, blockedUsers]);
 
   return {
     posts,

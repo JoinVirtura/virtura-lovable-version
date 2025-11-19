@@ -3,6 +3,8 @@ import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { FeedContainer } from '@/components/social/FeedContainer';
 import { CreatePostModal } from '@/components/social/CreatePostModal';
+import { SearchBar } from '@/components/social/SearchBar';
+import { FeedTabs } from '@/components/social/FeedTabs';
 
 export default function SocialFeed() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -22,6 +24,10 @@ export default function SocialFeed() {
           Create Post
         </Button>
       </div>
+
+      <SearchBar />
+
+      <FeedTabs value={feedType} onValueChange={setFeedType} />
 
       <FeedContainer filterType={feedType} />
 

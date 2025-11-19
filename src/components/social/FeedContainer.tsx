@@ -11,9 +11,7 @@ interface FeedContainerProps {
 }
 
 export function FeedContainer({ filterType = 'all' }: FeedContainerProps) {
-  // Map 'trending' to 'all' for now, can be enhanced with actual trending algorithm
-  const feedFilter = filterType === 'trending' ? 'all' : filterType;
-  const { posts, loading, hasMore, fetchMore } = useSocialPosts(feedFilter);
+  const { posts, loading, hasMore, fetchMore } = useSocialPosts(filterType);
   const { toggleLike, followUser, unlockPost } = usePostActions();
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const observerRef = useRef<HTMLDivElement>(null);
