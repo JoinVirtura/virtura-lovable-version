@@ -6,8 +6,8 @@ import { useAuth } from "@/hooks/useAuth";
 interface Post {
   id: string;
   caption: string;
-  media_url: string;
-  media_type: string;
+  media_urls: string[];
+  media_type?: string;
   like_count: number;
   comment_count: number;
 }
@@ -55,7 +55,9 @@ export function ProfilePostsGrid({ posts, loading, userId }: ProfilePostsGridPro
 
   return (
     <div className="grid grid-cols-3 gap-1 p-6">
-      {posts.map((post) => (
+      {posts.map((post) => {
+        const mediaUrl = post.media_urls?.[0];
+        return (
         <button
           key={post.id}
           onClick={() => navigate(`/social?postId=${post.id}`)}
@@ -64,7 +66,7 @@ export function ProfilePostsGrid({ posts, loading, userId }: ProfilePostsGridPro
           {post.media_type === 'video' ? (
             <>
               <video 
-                src={post.media_url} 
+                src={mediaUrl} 
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
@@ -73,7 +75,7 @@ export function ProfilePostsGrid({ posts, loading, userId }: ProfilePostsGridPro
             </>
           ) : (
             <img 
-              src={post.media_url} 
+              src={mediaUrl} 
               alt={post.caption}
               className="w-full h-full object-cover"
             />
@@ -90,7 +92,8 @@ export function ProfilePostsGrid({ posts, loading, userId }: ProfilePostsGridPro
             </div>
           </div>
         </button>
-      ))}
+      );
+      })}
     </div>
   );
 }

@@ -144,7 +144,7 @@ const AppRoutes = () => {
           </DashboardLayout>
         </ProtectedRoute>
       } />
-      <Route path="/creator/dashboard" element={
+      <Route path="/creator-dashboard" element={
         <ProtectedRoute>
           <DashboardLayout>
             <CreatorDashboard />
