@@ -2330,6 +2330,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          account_type: string | null
           ai_training_opt_in: boolean | null
           auto_delete_old_projects: boolean | null
           avatar_url: string | null
@@ -2348,6 +2349,7 @@ export type Database = {
           website_url: string | null
         }
         Insert: {
+          account_type?: string | null
           ai_training_opt_in?: boolean | null
           auto_delete_old_projects?: boolean | null
           avatar_url?: string | null
@@ -2366,6 +2368,7 @@ export type Database = {
           website_url?: string | null
         }
         Update: {
+          account_type?: string | null
           ai_training_opt_in?: boolean | null
           auto_delete_old_projects?: boolean | null
           avatar_url?: string | null

@@ -28,6 +28,7 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCanceled from "./pages/PaymentCanceled";
 import TokenHistoryPage from "./pages/TokenHistoryPage";
 import AdminCostDashboardPage from "./pages/AdminCostDashboardPage";
+import AccountTypeSelection from "./pages/AccountTypeSelection";
 import { DashboardLayout } from "./layouts/DashboardLayout";
 import UnifiedAdminDashboard from "./pages/UnifiedAdminDashboard";
 import { MarketplaceBrowser } from "./components/marketplace/MarketplaceBrowser";
@@ -144,7 +145,8 @@ const AppRoutes = () => {
           </DashboardLayout>
         </ProtectedRoute>
       } />
-      <Route path="/creator-dashboard" element={
+          <Route path="/account-type" element={<AccountTypeSelection />} />
+          <Route path="/creator-dashboard" element={
         <ProtectedRoute>
           <DashboardLayout>
             <CreatorDashboard />
