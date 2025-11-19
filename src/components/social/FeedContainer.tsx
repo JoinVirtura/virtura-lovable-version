@@ -11,9 +11,10 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 interface FeedContainerProps {
   filterType?: 'all' | 'following' | 'own' | 'trending';
+  onFilterChange?: (filter: 'all' | 'following' | 'trending') => void;
 }
 
-export function FeedContainer({ filterType = 'all' }: FeedContainerProps) {
+export function FeedContainer({ filterType = 'all', onFilterChange }: FeedContainerProps) {
   const { posts, loading, hasMore, fetchMore, refresh } = useSocialPosts(filterType);
   const { toggleLike, followUser, unlockPost } = usePostActions();
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
@@ -59,13 +60,15 @@ export function FeedContainer({ filterType = 'all' }: FeedContainerProps) {
         icon: Sparkles,
         title: "Welcome to Virtura Social",
         description: "Be the first to share your creation!",
-        cta: { label: "Create Post", action: () => navigate('/social') }
+        cta: null
       },
       following: {
         icon: Users,
         title: "No posts from followed users",
         description: "Follow creators to see their content here",
-        cta: { label: "Discover Creators", action: () => navigate('/social') }
+        cta: onFilterChange 
+          ? { label: "Browse All Posts", action: () => onFilterChange('all') }
+          : null
       },
       trending: {
         icon: TrendingUp,
@@ -77,7 +80,7 @@ export function FeedContainer({ filterType = 'all' }: FeedContainerProps) {
         icon: Sparkles,
         title: "You haven't posted yet",
         description: "Share your first creation with the world",
-        cta: { label: "Create Post", action: () => navigate('/social') }
+        cta: null
       }
     };
 
