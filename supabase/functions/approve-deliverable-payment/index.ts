@@ -107,7 +107,7 @@ Deno.serve(async (req) => {
     console.log('PaymentIntent captured:', capturedPayment.id);
 
     // Calculate amounts
-    const platform_fee_percentage = deliverable.creator.platform_fee_percentage || 20;
+    const platform_fee_percentage = deliverable.creator.platform_fee_percentage || 10;
     const platform_fee_cents = Math.floor(payment.total_amount_cents * (platform_fee_percentage / 100));
     const creator_amount_cents = payment.total_amount_cents - platform_fee_cents;
 

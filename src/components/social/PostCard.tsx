@@ -42,7 +42,7 @@ interface PostCardProps {
   post: SocialPost;
   onLike: (postId: string) => void;
   onComment: (postId: string) => void;
-  onUnlock: (postId: string) => void;
+  onUnlock: (postId: string, priceCents: number) => void;
   onFollow: (userId: string) => void;
 }
 
@@ -183,7 +183,7 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
                     ${(post.price_cents / 100).toFixed(2)}
                   </p>
                 </div>
-                <Button onClick={() => onUnlock(post.id)} size="lg">
+                <Button onClick={() => onUnlock(post.id, post.price_cents)} size="lg">
                   Unlock Now
                 </Button>
               </div>

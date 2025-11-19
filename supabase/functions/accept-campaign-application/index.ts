@@ -158,8 +158,8 @@ Deno.serve(async (req) => {
         creator_id: application.creator_id,
         brand_id: application.campaign.brand_id,
         total_amount_cents: amount_cents,
-        creator_amount_cents: amount_cents * 0.8, // 80% to creator
-        platform_fee_cents: amount_cents * 0.2, // 20% platform fee
+        creator_amount_cents: amount_cents * 0.9, // 90% to creator
+        platform_fee_cents: amount_cents * 0.1, // 10% platform fee
         status: 'escrowed',
         stripe_payment_intent_id: paymentIntent.id,
       });
