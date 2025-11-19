@@ -1,7 +1,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCreatorEarnings } from '@/hooks/useCreatorEarnings';
-import { DollarSign, TrendingUp, Clock, Receipt } from 'lucide-react';
+import { DollarSign, TrendingUp, Clock, Receipt, Target } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export function CreatorEarningsDashboard() {
   const { stats, loading } = useCreatorEarnings();
@@ -22,6 +23,20 @@ export function CreatorEarningsDashboard() {
       </div>
     );
   }
+
+  const getTrendIndicator = () => {
+    const last7Days = stats.timeSeriesData.slice(-7);
+    const prev7Days = stats.timeSeriesData.slice(-14, -7);
+    
+    if (last7Days.length === 0 || prev7Days.length === 0) return '→';
+    
+    const lastWeekAvg = last7Days.reduce((sum, d) => sum + d.total, 0) / last7Days.length;
+    const prevWeekAvg = prev7Days.reduce((sum, d) => sum + d.total, 0) / prev7Days.length;
+    
+    if (lastWeekAvg > prevWeekAvg * 1.05) return '↑';
+    if (lastWeekAvg < prevWeekAvg * 0.95) return '↓';
+    return '→';
+  };
 
   const statCards = [
     {
@@ -48,22 +63,44 @@ export function CreatorEarningsDashboard() {
       icon: Receipt,
       description: 'Total transactions',
     },
+    {
+      title: 'Projected Monthly',
+      value: stats.timeSeriesData.length > 7 ? `$${stats.projectedMonthly.toFixed(2)}` : 'N/A',
+      icon: Target,
+      description: stats.timeSeriesData.length > 7 
+        ? `Based on last 30 days ${getTrendIndicator()}` 
+        : 'Insufficient data',
+      tooltip: 'Projected earnings for current month based on your last 30 days average daily earnings',
+    },
   ];
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      {statCards.map((stat) => (
-        <Card key={stat.title}>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-            <stat.icon className="w-4 h-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stat.value}</div>
-            <p className="text-xs text-muted-foreground mt-1">{stat.description}</p>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
+    <TooltipProvider>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+        {statCards.map((stat) => (
+          <Card key={stat.title}>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              {stat.tooltip ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <CardTitle className="text-sm font-medium cursor-help">{stat.title}</CardTitle>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="max-w-xs">{stat.tooltip}</p>
+                  </TooltipContent>
+                </Tooltip>
+              ) : (
+                <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+              )}
+              <stat.icon className="w-4 h-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stat.value}</div>
+              <p className="text-xs text-muted-foreground mt-1">{stat.description}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </TooltipProvider>
   );
 }

@@ -1,5 +1,6 @@
 import { CreatorOnboarding } from '@/components/creator/CreatorOnboarding';
 import { CreatorEarningsDashboard } from '@/components/creator/CreatorEarningsDashboard';
+import { CreatorRevenueCharts } from '@/components/creator/CreatorRevenueCharts';
 import { SubscriptionTiers } from '@/components/creator/SubscriptionTiers';
 import { PayoutSchedule } from '@/components/creator/PayoutSchedule';
 import { TransactionHistory } from '@/components/creator/TransactionHistory';
@@ -26,6 +27,8 @@ export default function CreatorDashboard() {
       {!loading && isOnboardingComplete && (
         <>
           <CreatorEarningsDashboard />
+
+          <CreatorRevenueCharts />
 
           <div className="grid gap-8 lg:grid-cols-2">
             <PayoutSchedule />
