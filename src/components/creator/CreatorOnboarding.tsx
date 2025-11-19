@@ -10,7 +10,14 @@ export function CreatorOnboarding() {
   const [redirecting, setRedirecting] = useState(false);
 
   const handleCreateAccount = async () => {
-    await createAccount();
+    try {
+      await createAccount();
+    } catch (error: any) {
+      // Check for Stripe Connect specific errors
+      if (error?.message?.includes('Connect') || error?.message?.includes('signed up for Connect')) {
+        console.error('Stripe Connect not enabled:', error);
+      }
+    }
   };
 
   const handleStartOnboarding = async () => {

@@ -23,13 +23,36 @@ export function useUserProfile(userId: string) {
     setLoading(true);
     try {
       // Fetch user profile
-      const { data: profileData, error: profileError } = await supabase
+      let { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
         .single();
 
-      if (profileError) throw profileError;
+      if (profileError) {
+        console.error('Profile fetch error:', profileError);
+        // If profile doesn't exist, try to create it for existing users
+        if (profileError.code === 'PGRST116') {
+          const { error: insertError } = await supabase
+            .from('profiles')
+            .insert({ id: userId, display_name: 'User' });
+          
+          if (!insertError) {
+            // Retry fetching after creation
+            const { data: retryData } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', userId)
+              .single();
+            
+            if (retryData) {
+              profileData = retryData;
+            }
+          }
+        }
+        
+        if (!profileData) throw profileError;
+      }
 
       // Fetch follower/following counts
       const [followersRes, followingRes, isFollowingRes] = await Promise.all([

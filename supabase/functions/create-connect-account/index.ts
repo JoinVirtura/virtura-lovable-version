@@ -56,16 +56,32 @@ serve(async (req) => {
     const userEmail = user.email;
 
     // Create Stripe Connect Express account
-    const account = await stripe.accounts.create({
-      type: 'express',
-      country: 'US',
-      email: userEmail,
-      capabilities: {
-        card_payments: { requested: true },
-        transfers: { requested: true },
-      },
-      business_type: 'individual',
-    });
+    let account;
+    try {
+      account = await stripe.accounts.create({
+        type: 'express',
+        country: 'US',
+        email: userEmail,
+        capabilities: {
+          card_payments: { requested: true },
+          transfers: { requested: true },
+        },
+        business_type: 'individual',
+      });
+    } catch (stripeError: any) {
+      console.error('Stripe error:', stripeError);
+      // Check for Stripe Connect specific errors
+      if (stripeError.message?.includes('Connect') || stripeError.type === 'StripePermissionError') {
+        return new Response(
+          JSON.stringify({ 
+            error: 'Stripe Connect is not enabled for this account. Please enable Stripe Connect in your Stripe Dashboard: Dashboard → Settings → Connect settings',
+            details: stripeError.message
+          }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      throw stripeError;
+    }
 
     // Store creator account in database
     const { data: creatorAccount, error: dbError } = await supabase

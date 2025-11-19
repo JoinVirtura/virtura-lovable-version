@@ -38,6 +38,8 @@ import SocialFeed from "./pages/SocialFeed";
 import UserProfile from "./pages/UserProfile";
 import SavedPosts from "./pages/SavedPosts";
 import Analytics from "./pages/Analytics";
+import ScheduledPostsPage from "./pages/ScheduledPostsPage";
+import VerificationPage from "./pages/VerificationPage";
 import Upgrade from "./pages/Upgrade";
 import TrialAnalytics from "./pages/admin/TrialAnalytics";
 import TrialExperiments from "./pages/admin/TrialExperiments";
@@ -150,10 +152,48 @@ const AppRoutes = () => {
         </ProtectedRoute>
       } />
       
-      <Route path="/social" element={<ProtectedRoute><SocialFeed /></ProtectedRoute>} />
-      <Route path="/profile/:userId" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
-      <Route path="/saved" element={<ProtectedRoute><SavedPosts /></ProtectedRoute>} />
-      <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+        <Route path="/social" element={
+          <ProtectedRoute>
+            <DashboardLayout>
+              <SocialFeed />
+            </DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/profile/:userId" element={
+          <ProtectedRoute>
+            <DashboardLayout>
+              <UserProfile />
+            </DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/saved" element={
+          <ProtectedRoute>
+            <DashboardLayout>
+              <SavedPosts />
+            </DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/analytics" element={
+          <ProtectedRoute>
+            <DashboardLayout>
+              <Analytics />
+            </DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/scheduled-posts" element={
+          <ProtectedRoute>
+            <DashboardLayout>
+              <ScheduledPostsPage />
+            </DashboardLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/verification" element={
+          <ProtectedRoute>
+            <DashboardLayout>
+              <VerificationPage />
+            </DashboardLayout>
+          </ProtectedRoute>
+        } />
       
       {/* Catch-all */}
       <Route path="*" element={<NotFound />} />

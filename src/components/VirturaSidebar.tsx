@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import virturaLogo from "/lovable-uploads/f264298f-2877-485b-affc-d705994fc848.png";
 import { useProfile } from "@/hooks/useProfile";
 import {
@@ -43,6 +43,10 @@ import {
   FolderKanban,
   DollarSign,
   Bell,
+  Bookmark,
+  BarChart3,
+  Calendar,
+  BadgeCheck,
 } from "lucide-react";
 import { NotificationBell } from "@/components/NotificationBell";
 import { useAuth } from "@/hooks/useAuth";
@@ -59,6 +63,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
   const { user, signOut } = useAuth();
   const { profile } = useProfile();
   const navigate = useNavigate();
+  const location = useLocation();
   const isCollapsed = state === "collapsed";
   const [isAdmin, setIsAdmin] = useState(false);
   const [hasCreatorAccount, setHasCreatorAccount] = useState(false);
@@ -116,7 +121,9 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
 
   // Social & Creator section (new structure)
   const socialItems = [
-    { id: "social-feed", label: "Feed", icon: Home },
+    { id: "social-feed", label: "Feed", icon: Home, path: "/social" },
+    { id: "saved", label: "Saved", icon: Bookmark, path: "/saved" },
+    { id: "my-profile", label: "My Profile", icon: User, path: `/profile/${user?.id}` },
   ];
   
   const socialHeaderActions = (
@@ -126,7 +133,9 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
   );
 
   const creatorItems = [
-    { id: "creator-dashboard", label: "Creator Dashboard", icon: DollarSign },
+    { id: "creator-dashboard", label: "Dashboard", icon: DollarSign, path: "/creator-dashboard" },
+    { id: "scheduled-posts", label: "Scheduled", icon: Calendar, path: "/scheduled-posts" },
+    { id: "verification", label: "Verification", icon: BadgeCheck, path: "/verification" },
   ];
 
   const marketplaceItems = [
@@ -248,14 +257,18 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                   <SidebarMenuItem key={item.id}>
                     <SidebarMenuButton
                       onClick={() => {
-                        onViewChange(item.id);
+                        if (item.path) {
+                          navigate(item.path);
+                        } else {
+                          onViewChange(item.id);
+                        }
                         if (isMobile) {
                           setOpenMobile(false);
                         }
                       }}
-                      isActive={activeView === item.id}
+                      isActive={item.path ? location.pathname === item.path : activeView === item.id}
                       className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
-                        activeView === item.id
+                        (item.path ? location.pathname === item.path : activeView === item.id)
                           ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30"
                           : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
                       }`}
@@ -283,14 +296,18 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                   <SidebarMenuItem key={item.id}>
                     <SidebarMenuButton
                       onClick={() => {
-                        onViewChange(item.id);
+                        if (item.path) {
+                          navigate(item.path);
+                        } else {
+                          onViewChange(item.id);
+                        }
                         if (isMobile) {
                           setOpenMobile(false);
                         }
                       }}
-                      isActive={activeView === item.id}
+                      isActive={item.path ? location.pathname === item.path : activeView === item.id}
                       className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
-                        activeView === item.id
+                        (item.path ? location.pathname === item.path : activeView === item.id)
                           ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30"
                           : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
                       }`}

@@ -56,7 +56,18 @@ export function useCreatorAccount() {
     try {
       const { data, error } = await supabase.functions.invoke('create-connect-account');
 
-      if (error) throw error;
+      if (error) {
+        // Provide helpful error message for Stripe Connect issues
+        if (error.message?.includes('Connect') || error.message?.includes('signed up for Connect')) {
+          toast({
+            title: 'Stripe Connect Required',
+            description: 'Please enable Stripe Connect in your Stripe Dashboard: Settings → Connect settings',
+            variant: 'destructive',
+          });
+          throw new Error('Stripe Connect is not enabled for this account.');
+        }
+        throw error;
+      }
 
       toast({
         title: 'Account created',
@@ -67,11 +78,13 @@ export function useCreatorAccount() {
       return data;
     } catch (error: any) {
       console.error('Error creating account:', error);
-      toast({
-        title: 'Error creating account',
-        description: error.message,
-        variant: 'destructive',
-      });
+      if (!error.message?.includes('Stripe Connect')) {
+        toast({
+          title: 'Error creating account',
+          description: error.message,
+          variant: 'destructive',
+        });
+      }
       throw error;
     } finally {
       setCreating(false);
