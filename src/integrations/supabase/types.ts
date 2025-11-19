@@ -3129,6 +3129,95 @@ export type Database = {
         }
         Relationships: []
       }
+      trial_experiment_assignments: {
+        Row: {
+          assigned_at: string | null
+          converted: boolean | null
+          converted_at: string | null
+          experiment_id: string
+          id: string
+          metadata: Json | null
+          trial_days: number
+          user_id: string
+          variant_name: string
+        }
+        Insert: {
+          assigned_at?: string | null
+          converted?: boolean | null
+          converted_at?: string | null
+          experiment_id: string
+          id?: string
+          metadata?: Json | null
+          trial_days: number
+          user_id: string
+          variant_name: string
+        }
+        Update: {
+          assigned_at?: string | null
+          converted?: boolean | null
+          converted_at?: string | null
+          experiment_id?: string
+          id?: string
+          metadata?: Json | null
+          trial_days?: number
+          user_id?: string
+          variant_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trial_experiment_assignments_experiment_id_fkey"
+            columns: ["experiment_id"]
+            isOneToOne: false
+            referencedRelation: "trial_experiments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trial_experiments: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          description: string | null
+          end_date: string | null
+          hypothesis: string | null
+          id: string
+          name: string
+          start_date: string | null
+          status: string
+          success_metric: string | null
+          updated_at: string | null
+          variants: Json
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          description?: string | null
+          end_date?: string | null
+          hypothesis?: string | null
+          id?: string
+          name: string
+          start_date?: string | null
+          status?: string
+          success_metric?: string | null
+          updated_at?: string | null
+          variants: Json
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          description?: string | null
+          end_date?: string | null
+          hypothesis?: string | null
+          id?: string
+          name?: string
+          start_date?: string | null
+          status?: string
+          success_metric?: string | null
+          updated_at?: string | null
+          variants?: Json
+        }
+        Relationships: []
+      }
       trial_extensions: {
         Row: {
           created_at: string | null
@@ -3186,6 +3275,90 @@ export type Database = {
           trial_id?: string | null
           usage_count?: number | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      trial_reactivation_campaigns: {
+        Row: {
+          campaign_type: string
+          converted: boolean | null
+          converted_at: string | null
+          created_at: string | null
+          email_clicked: boolean | null
+          email_opened: boolean | null
+          id: string
+          metadata: Json | null
+          offer_code: string | null
+          sent_at: string | null
+          user_id: string
+        }
+        Insert: {
+          campaign_type?: string
+          converted?: boolean | null
+          converted_at?: string | null
+          created_at?: string | null
+          email_clicked?: boolean | null
+          email_opened?: boolean | null
+          id?: string
+          metadata?: Json | null
+          offer_code?: string | null
+          sent_at?: string | null
+          user_id: string
+        }
+        Update: {
+          campaign_type?: string
+          converted?: boolean | null
+          converted_at?: string | null
+          created_at?: string | null
+          email_clicked?: boolean | null
+          email_opened?: boolean | null
+          id?: string
+          metadata?: Json | null
+          offer_code?: string | null
+          sent_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      trial_reactivation_offers: {
+        Row: {
+          active: boolean | null
+          created_at: string | null
+          discount_percentage: number | null
+          extended_days: number | null
+          id: string
+          max_redemptions: number | null
+          offer_code: string
+          offer_type: string
+          times_redeemed: number | null
+          updated_at: string | null
+          valid_until: string
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string | null
+          discount_percentage?: number | null
+          extended_days?: number | null
+          id?: string
+          max_redemptions?: number | null
+          offer_code: string
+          offer_type: string
+          times_redeemed?: number | null
+          updated_at?: string | null
+          valid_until: string
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string | null
+          discount_percentage?: number | null
+          extended_days?: number | null
+          id?: string
+          max_redemptions?: number | null
+          offer_code?: string
+          offer_type?: string
+          times_redeemed?: number | null
+          updated_at?: string | null
+          valid_until?: string
         }
         Relationships: []
       }
@@ -3471,6 +3644,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      get_active_trial_experiment: { Args: never; Returns: Json }
       get_user_role: {
         Args: { user_uuid: string }
         Returns: Database["public"]["Enums"]["user_role"]

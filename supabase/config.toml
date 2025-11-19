@@ -33,104 +33,11 @@ verify_jwt = true
 [functions.track-usage]
 verify_jwt = true
 
-[functions.voice-clone-elevenlabs]
-verify_jwt = true
-
-[functions.voice-upload-audio]
-verify_jwt = true
-
-[functions.generate-image-replicate]
-verify_jwt = true
-
-[functions.generate-avatar-real]
-verify_jwt = true
-
-[functions.voice-preview]
-verify_jwt = true
-
-[functions.generate-avatar]
-verify_jwt = true
-
-[functions.generate-avatar-hf]
-verify_jwt = true
-
-[functions.test-openai]
-verify_jwt = true
-
-[functions.create-payment]
-verify_jwt = true
-
-[functions.create-checkout]
-verify_jwt = true
-
-[functions.customer-portal]
-verify_jwt = true
-
-[functions.voice-generate]
-verify_jwt = true
-
-[functions.video-generate]
-verify_jwt = true
-
-[functions.video-sync]
-verify_jwt = true
-
-[functions.upload-avatar]
-verify_jwt = true
-
-[functions.video-generate-multi]
-verify_jwt = true
-
-[functions.video-generate-simple]
-verify_jwt = true
-
-[functions.cleanup-heygen-avatars]
-verify_jwt = true
-
-[functions.video-generate-direct]
-verify_jwt = true
-
-[functions.video-engine-pro]
+[functions.send-trial-reactivation-emails]
 verify_jwt = false
 
-[functions.voice-tts]
-verify_jwt = true
-
-[functions.webhook-stripe]
+[functions.assign-trial-experiment]
 verify_jwt = false
-
-[functions.voice-transcribe-whisper]
-verify_jwt = true
-
-[functions.export-studio-project]
-verify_jwt = true
-
-[functions.brand-asset-operations]
-verify_jwt = true
-
-[functions.generate-landing-replicate]
-verify_jwt = false
-
-[functions.track-landing-analytics]
-verify_jwt = false
-
-[functions.manage-showcase-gallery]
-verify_jwt = true
-
-[functions.create-marketplace-campaign]
-verify_jwt = true
-
-[functions.apply-to-campaign]
-verify_jwt = true
-
-[functions.accept-campaign-application]
-verify_jwt = true
-
-[functions.submit-deliverable]
-verify_jwt = true
-
-[functions.approve-deliverable-payment]
-verify_jwt = true
 
 [functions.track-feature-usage]
 verify_jwt = true
