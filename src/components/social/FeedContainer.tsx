@@ -5,6 +5,7 @@ import { PostCard } from './PostCard';
 import { Loader2, Sparkles, Users, TrendingUp, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { CommentModal } from './CommentModal';
+import { PostUnlockPaymentModal } from './PostUnlockPaymentModal';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -18,6 +19,11 @@ export function FeedContainer({ filterType = 'all', onFilterChange }: FeedContai
   const { posts, loading, hasMore, fetchMore, refresh } = useSocialPosts(filterType);
   const { toggleLike, followUser, unlockPost } = usePostActions();
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const [paymentData, setPaymentData] = useState<{
+    clientSecret: string;
+    postId: string;
+    amount: number;
+  } | null>(null);
   const observerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
@@ -38,11 +44,14 @@ export function FeedContainer({ filterType = 'all', onFilterChange }: FeedContai
     return () => observer.disconnect();
   }, [loading, hasMore, fetchMore]);
 
-  const handleUnlock = async (postId: string) => {
+  const handleUnlock = async (postId: string, priceCents: number) => {
     const result = await unlockPost(postId);
     if (result?.clientSecret) {
-      // TODO: Integrate Stripe payment flow
-      console.log('Payment required:', result.clientSecret);
+      setPaymentData({
+        clientSecret: result.clientSecret,
+        postId: postId,
+        amount: priceCents,
+      });
     }
   };
 
@@ -128,6 +137,18 @@ export function FeedContainer({ filterType = 'all', onFilterChange }: FeedContai
           postId={selectedPostId}
           isOpen={!!selectedPostId}
           onClose={() => setSelectedPostId(null)}
+        />
+
+        <PostUnlockPaymentModal
+          isOpen={!!paymentData}
+          onClose={() => setPaymentData(null)}
+          clientSecret={paymentData?.clientSecret || ''}
+          postId={paymentData?.postId || ''}
+          amount={paymentData?.amount || 0}
+          onSuccess={() => {
+            setPaymentData(null);
+            refresh();
+          }}
         />
       </>
     </ErrorBoundary>

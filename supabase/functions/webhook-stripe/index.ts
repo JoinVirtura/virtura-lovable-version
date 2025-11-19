@@ -72,6 +72,10 @@ serve(async (req) => {
         await handlePaymentFailed(supabase, event.data.object);
         break;
         
+      case 'payment_intent.succeeded':
+        await handlePostUnlockPayment(supabase, event.data.object);
+        break;
+        
       default:
         console.log(`Unhandled event type: ${event.type}`);
     }
@@ -232,6 +236,79 @@ async function handlePaymentFailed(supabase: any, invoice: any) {
     console.log('Subscription marked as past due');
   } catch (error) {
     console.error('Error handling payment failure:', error);
+    throw error;
+  }
+}
+
+async function handlePostUnlockPayment(supabase: any, paymentIntent: any) {
+  try {
+    const metadata = paymentIntent.metadata;
+    
+    // Only process if this is a post unlock payment
+    if (!metadata?.post_id) {
+      return;
+    }
+
+    console.log('Processing post unlock payment:', paymentIntent.id);
+    
+    // Update post_unlocks status to 'completed'
+    const { error: unlockError } = await supabase
+      .from('content_unlocks')
+      .update({ 
+        unlocked_at: new Date().toISOString()
+      })
+      .eq('stripe_payment_intent_id', paymentIntent.id);
+
+    if (unlockError) {
+      console.error('Error updating post unlock:', unlockError);
+      throw unlockError;
+    }
+    
+    // Calculate amounts (10% platform fee)
+    const totalAmount = paymentIntent.amount;
+    const platformFee = Math.round(totalAmount * 0.1);
+    const creatorAmount = totalAmount - platformFee;
+    
+    // Record creator earnings
+    const { error: earningsError } = await supabase
+      .from('creator_earnings')
+      .insert({
+        creator_id: metadata.creator_id,
+        amount_cents: totalAmount,
+        creator_amount_cents: creatorAmount,
+        platform_fee_cents: platformFee,
+        source_type: 'content_unlock',
+        source_id: metadata.post_id,
+        status: 'completed',
+        revenue_type: 'content',
+        metadata: {
+          content_type: metadata.content_type || 'post',
+          payment_intent_id: paymentIntent.id
+        }
+      });
+
+    if (earningsError) {
+      console.error('Error recording creator earnings:', earningsError);
+      throw earningsError;
+    }
+
+    // Update creator account totals
+    const { error: updateError } = await supabase
+      .from('creator_accounts')
+      .update({
+        total_earnings_cents: supabase.raw(`total_earnings_cents + ${creatorAmount}`),
+        pending_earnings_cents: supabase.raw(`pending_earnings_cents + ${creatorAmount}`)
+      })
+      .eq('id', metadata.creator_id);
+
+    if (updateError) {
+      console.error('Error updating creator account:', updateError);
+      throw updateError;
+    }
+
+    console.log('Post unlock payment processed successfully');
+  } catch (error) {
+    console.error('Error handling post unlock payment:', error);
     throw error;
   }
 }
