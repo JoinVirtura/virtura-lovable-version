@@ -139,7 +139,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
   ];
 
   const marketplaceItems = [
-    { id: "marketplace", label: "Marketplace", icon: Briefcase },
+    { id: "marketplace", label: "Marketplace", icon: Briefcase, path: "/marketplace" },
   ];
 
   const handleLogout = async () => {
@@ -335,14 +335,18 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                   <SidebarMenuItem key={item.id}>
                     <SidebarMenuButton
                       onClick={() => {
-                        onViewChange(item.id);
+                        if (item.path) {
+                          navigate(item.path);
+                        } else {
+                          onViewChange(item.id);
+                        }
                         if (isMobile) {
                           setOpenMobile(false);
                         }
                       }}
-                      isActive={activeView === item.id}
+                      isActive={item.path ? location.pathname === item.path : activeView === item.id}
                       className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
-                        activeView === item.id
+                        (item.path ? location.pathname === item.path : activeView === item.id)
                           ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30"
                           : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
                       }`}
@@ -363,7 +367,9 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
 
         <button
           onClick={() => {
-            onViewChange("settings");
+            if (user?.id) {
+              navigate(`/profile/${user.id}`);
+            }
             setOpenMobile(false);
           }}
           className={`flex items-center transition-colors rounded-lg ml-3 mr-3 min-h-[44px] ${!isMobile && isCollapsed ? "py-3 justify-center" : "pl-4 pr-4 py-3 gap-3 justify-start"} hover:bg-violet-500/5 hover:text-violet-300 text-white`}
@@ -389,6 +395,20 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
             </div>
           )}
         </button>
+
+        <div className={!isMobile && isCollapsed ? "px-2 pb-2" : "px-3 pb-2"}>
+          <SidebarMenuButton
+            onClick={() => {
+              onViewChange("settings");
+              setOpenMobile(false);
+            }}
+            isActive={activeView === "settings"}
+            className={`w-full min-h-[44px] ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 pl-5"} text-gray-400 hover:bg-violet-500/5 hover:text-violet-300 h-auto py-2`}
+          >
+            <Settings className="w-5 h-5 shrink-0" />
+            {(isMobile || !isCollapsed) && <span className="font-medium">Settings</span>}
+          </SidebarMenuButton>
+        </div>
 
         <div className={!isMobile && isCollapsed ? "px-2 pb-3" : "px-3 pb-3"}>
           <SidebarMenuButton

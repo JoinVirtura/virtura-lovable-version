@@ -5,16 +5,16 @@ import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { ProfileStats } from "@/components/profile/ProfileStats";
 import { ProfileTabs } from "@/components/profile/ProfileTabs";
 import { ProfilePostsGrid } from "@/components/profile/ProfilePostsGrid";
-import { EditProfileModal } from "@/components/profile/EditProfileModal";
 import { ProfileSkeleton } from "@/components/profile/ProfileSkeleton";
 import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 export default function UserProfile() {
   const { userId } = useParams<{ userId: string }>();
   const { user } = useAuth();
-  const { profile, posts, loading, updateProfile, uploadAvatar } = useUserProfile(userId || '');
+  const navigate = useNavigate();
+  const { profile, posts, loading } = useUserProfile(userId || '');
   const [activeTab, setActiveTab] = useState('posts');
-  const [showEditDialog, setShowEditDialog] = useState(false);
 
   if (loading) {
     return <ProfileSkeleton />;
@@ -35,7 +35,7 @@ export default function UserProfile() {
       <div className="max-w-4xl mx-auto">
         <ProfileHeader 
           profile={profile}
-          onEditProfile={isOwnProfile ? () => setShowEditDialog(true) : undefined}
+          onEditProfile={isOwnProfile ? () => navigate('/settings') : undefined}
         />
         
         <ProfileStats
@@ -62,16 +62,6 @@ export default function UserProfile() {
           </div>
         )}
       </div>
-
-      {isOwnProfile && (
-        <EditProfileModal
-          open={showEditDialog}
-          onOpenChange={setShowEditDialog}
-          profile={profile}
-          onUpdate={updateProfile}
-          onUploadAvatar={uploadAvatar}
-        />
-      )}
     </div>
   );
 }
