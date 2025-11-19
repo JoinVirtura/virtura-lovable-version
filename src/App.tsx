@@ -38,6 +38,8 @@ import SocialFeed from "./pages/SocialFeed";
 import UserProfile from "./pages/UserProfile";
 import SavedPosts from "./pages/SavedPosts";
 import Analytics from "./pages/Analytics";
+import Upgrade from "./pages/Upgrade";
+import TrialAnalytics from "./pages/admin/TrialAnalytics";
 
 const queryClient = new QueryClient();
 
@@ -106,7 +108,7 @@ const AppRoutes = () => {
       <Route path="/profile" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       
       {/* Payment Routes */}
-      <Route path="/upgrade" element={<ProtectedRoute><UpgradePage /></ProtectedRoute>} />
+      <Route path="/upgrade" element={<ProtectedRoute><Upgrade /></ProtectedRoute>} />
       <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
       <Route path="/payment-canceled" element={<ProtectedRoute><PaymentCanceled /></ProtectedRoute>} />
       <Route path="/token-history" element={<ProtectedRoute><TokenHistoryPage /></ProtectedRoute>} />
@@ -115,6 +117,7 @@ const AppRoutes = () => {
       
       {/* Admin Routes */}
       <Route path="/admin/costs" element={<ProtectedRoute><AdminCostDashboardPage /></ProtectedRoute>} />
+      <Route path="/admin/trial-analytics" element={<ProtectedRoute><TrialAnalytics /></ProtectedRoute>} />
       
       <Route path="/marketplace" element={
         <ProtectedRoute>

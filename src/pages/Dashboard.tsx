@@ -49,6 +49,7 @@ import CreatorDashboard from "./CreatorDashboard";
 import SocialFeed from "./SocialFeed";
 import MarketplacePage from "./MarketplacePage";
 import { TrialBanner } from "@/components/TrialBanner";
+import { TrialOnboarding } from "@/components/TrialOnboarding";
 import {
   Play,
   Sparkles,
