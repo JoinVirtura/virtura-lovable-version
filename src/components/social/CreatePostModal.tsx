@@ -5,8 +5,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 import { useCreatePost } from '@/hooks/useCreatePost';
-import { Upload, X, Loader2 } from 'lucide-react';
+import { useSchedulePost } from '@/hooks/useSchedulePost';
+import { Upload, X, Loader2, Calendar as CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
 
 interface CreatePostModalProps {
   isOpen: boolean;
@@ -19,7 +23,12 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
   const [price, setPrice] = useState('');
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
+  const [isScheduled, setIsScheduled] = useState(false);
+  const [scheduledDate, setScheduledDate] = useState<Date | undefined>();
+  const [scheduledTime, setScheduledTime] = useState('12:00');
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['feed']);
   const { createPost, uploading } = useCreatePost();
+  const { schedulePost, scheduling } = useSchedulePost();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
@@ -40,13 +49,35 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
                        files.length > 1 ? 'carousel' : 
                        files.length === 1 ? 'image' : 'text';
 
-    const success = await createPost({
-      contentType,
-      caption,
-      mediaFiles: files,
-      isPaid,
-      priceCents: isPaid ? Math.round(parseFloat(price) * 100) : 0,
-    });
+    let success = false;
+
+    if (isScheduled && scheduledDate) {
+      const scheduledFor = new Date(
+        scheduledDate.getFullYear(),
+        scheduledDate.getMonth(),
+        scheduledDate.getDate(),
+        parseInt(scheduledTime.split(':')[0]),
+        parseInt(scheduledTime.split(':')[1])
+      );
+
+      success = await schedulePost({
+        contentType,
+        caption,
+        mediaFiles: files,
+        isPaid,
+        priceCents: isPaid ? Math.round(parseFloat(price) * 100) : 0,
+        scheduledFor,
+        platforms: selectedPlatforms,
+      });
+    } else {
+      success = await createPost({
+        contentType,
+        caption,
+        mediaFiles: files,
+        isPaid,
+        priceCents: isPaid ? Math.round(parseFloat(price) * 100) : 0,
+      });
+    }
 
     if (success) {
       // Reset form
@@ -55,11 +86,15 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
       setPrice('');
       setFiles([]);
       setPreviews([]);
+      setIsScheduled(false);
+      setScheduledDate(undefined);
+      setScheduledTime('12:00');
+      setSelectedPlatforms(['feed']);
       onClose();
     }
   };
 
-  const isValid = caption.trim() && (!isPaid || (price && parseFloat(price) > 0));
+  const isValid = caption.trim() && (!isPaid || (price && parseFloat(price) > 0)) && (!isScheduled || scheduledDate);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -168,6 +203,78 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
             </div>
           )}
 
+          {/* Scheduling */}
+          <div className="space-y-4 border-t pt-4">
+            <div className="flex items-center justify-between">
+              <Label>Schedule for later</Label>
+              <Switch checked={isScheduled} onCheckedChange={setIsScheduled} />
+            </div>
+
+            {isScheduled && (
+              <>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Date</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" className="w-full justify-start mt-2">
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {scheduledDate ? format(scheduledDate, 'PPP') : 'Pick a date'}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={scheduledDate}
+                          onSelect={setScheduledDate}
+                          disabled={(date) => date < new Date()}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="time">Time</Label>
+                    <Input
+                      id="time"
+                      type="time"
+                      value={scheduledTime}
+                      onChange={(e) => setScheduledTime(e.target.value)}
+                      className="mt-2"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label>Platforms</Label>
+                  <div className="flex gap-2 mt-2 flex-wrap">
+                    {['feed', 'instagram', 'twitter', 'tiktok'].map((platform) => (
+                      <Button
+                        key={platform}
+                        type="button"
+                        size="sm"
+                        variant={selectedPlatforms.includes(platform) ? 'default' : 'outline'}
+                        onClick={() => {
+                          setSelectedPlatforms((prev) =>
+                            prev.includes(platform)
+                              ? prev.filter((p) => p !== platform)
+                              : [...prev, platform]
+                          );
+                        }}
+                      >
+                        {platform.charAt(0).toUpperCase() + platform.slice(1)}
+                      </Button>
+                    ))}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Note: Cross-platform posting coming soon (Phase 7)
+                  </p>
+                </div>
+              </>
+            )}
+          </div>
+
           {/* Actions */}
           <div className="flex gap-2 pt-4">
             <Button variant="outline" onClick={onClose} className="flex-1">
@@ -175,16 +282,16 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
             </Button>
             <Button
               onClick={handleSubmit}
-              disabled={!isValid || uploading}
+              disabled={!isValid || uploading || scheduling}
               className="flex-1"
             >
-              {uploading ? (
+              {uploading || scheduling ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Posting...
+                  {isScheduled ? 'Scheduling...' : 'Posting...'}
                 </>
               ) : (
-                'Post'
+                isScheduled ? 'Schedule Post' : 'Post Now'
               )}
             </Button>
           </div>
