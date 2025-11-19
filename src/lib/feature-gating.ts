@@ -38,6 +38,16 @@ export async function checkFeatureAccess(feature: string): Promise<{
       return { hasAccess: true, plan: 'enterprise', isAdmin: true };
     }
 
+    // Feature gating rules
+    const featureRules: Record<string, SubscriptionPlan[]> = {
+      'heygen-video': ['pro', 'enterprise'],
+      'premium-avatars': ['individual', 'pro', 'enterprise'],
+      'priority-processing': ['pro', 'enterprise'],
+      'commercial-license': ['pro', 'enterprise'],
+      'team-collaboration': ['enterprise'],
+      'white-label': ['enterprise'],
+    };
+
     // Get user subscription including trial data
     const { data: subscription } = await supabase
       .from('subscriptions')
@@ -59,16 +69,6 @@ export async function checkFeatureAccess(feature: string): Promise<{
     const plan: SubscriptionPlan = (subscription?.status === 'active' && subscription?.plan_name) 
       ? subscription.plan_name as SubscriptionPlan 
       : 'free';
-
-    // Feature gating rules
-    const featureRules: Record<string, SubscriptionPlan[]> = {
-      'heygen-video': ['pro', 'enterprise'],
-      'premium-avatars': ['individual', 'pro', 'enterprise'],
-      'priority-processing': ['pro', 'enterprise'],
-      'commercial-license': ['pro', 'enterprise'],
-      'team-collaboration': ['enterprise'],
-      'white-label': ['enterprise'],
-    };
 
     const allowedPlans = featureRules[feature] || [];
     const hasAccess = allowedPlans.includes(plan);

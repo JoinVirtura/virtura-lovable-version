@@ -48,6 +48,7 @@ import { CampaignManagement } from "@/components/marketplace/CampaignManagement"
 import CreatorDashboard from "./CreatorDashboard";
 import SocialFeed from "./SocialFeed";
 import MarketplacePage from "./MarketplacePage";
+import { TrialBanner } from "@/components/TrialBanner";
 import {
   Play,
   Sparkles,
@@ -135,6 +136,7 @@ export default function Dashboard() {
   const [activeView, setActiveView] = useState("overview");
   const { isOnboardingComplete, loading: onboardingLoading } = useOnboarding();
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [trialStatus, setTrialStatus] = useState<any>(null);
   
   // Import admin dashboard immediately to avoid loading delay
   const [AdminDashboardComponent, setAdminDashboardComponent] = useState<any>(null);
@@ -144,6 +146,29 @@ export default function Dashboard() {
     import("./UnifiedAdminDashboard").then((module) => {
       setAdminDashboardComponent(() => module.default);
     });
+  }, []);
+
+  // Fetch trial status
+  useEffect(() => {
+    const fetchTrialStatus = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data } = await supabase
+        .from('subscriptions')
+        .select('trial_end, trial_used, status, trial_plan_name')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (data?.status === 'trialing' && !data.trial_used && data.trial_end) {
+        const trialEnd = new Date(data.trial_end);
+        if (trialEnd > new Date()) {
+          setTrialStatus(data);
+        }
+      }
+    };
+
+    fetchTrialStatus();
   }, []);
   
   // Brand Manager state
@@ -1975,6 +2000,16 @@ export default function Dashboard() {
           />
         
         <div className="flex-1 flex flex-col relative z-10 overflow-x-hidden">
+          {/* Trial Banner */}
+          {trialStatus && (
+            <div className="p-4 md:p-6 pt-16 md:pt-6">
+              <TrialBanner 
+                trialEnd={trialStatus.trial_end} 
+                onUpgrade={() => setActiveView('upgrade')}
+              />
+            </div>
+          )}
+          
           {/* Add padding top on mobile to account for fixed header */}
           <main className={`flex-1 w-full ${activeView === 'admin-dashboard' || activeView === 'talking-avatar' ? 'pt-16 md:pt-6 px-0' : 'p-4 md:p-6 pt-16 md:pt-6'}`}>
             {renderContent()}
