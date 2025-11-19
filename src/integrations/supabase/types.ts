@@ -266,6 +266,27 @@ export type Database = {
         }
         Relationships: []
       }
+      blocked_users: {
+        Row: {
+          blocked_at: string | null
+          blocked_user_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          blocked_at?: string | null
+          blocked_user_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          blocked_at?: string | null
+          blocked_user_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       brand_analytics: {
         Row: {
           asset_id: string | null
@@ -2196,6 +2217,50 @@ export type Database = {
           },
         ]
       }
+      post_reports: {
+        Row: {
+          created_at: string | null
+          details: string | null
+          id: string
+          post_id: string
+          reason: string
+          reporter_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          details?: string | null
+          id?: string
+          post_id: string
+          reason: string
+          reporter_id: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          details?: string | null
+          id?: string
+          post_id?: string
+          reason?: string
+          reporter_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_reports_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "social_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       post_unlocks: {
         Row: {
           amount_cents: number
@@ -2224,6 +2289,38 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "post_unlocks_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "social_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_views: {
+        Row: {
+          id: string
+          post_id: string
+          session_id: string | null
+          viewed_at: string | null
+          viewer_id: string | null
+        }
+        Insert: {
+          id?: string
+          post_id: string
+          session_id?: string | null
+          viewed_at?: string | null
+          viewer_id?: string | null
+        }
+        Update: {
+          id?: string
+          post_id?: string
+          session_id?: string | null
+          viewed_at?: string | null
+          viewer_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_views_post_id_fkey"
             columns: ["post_id"]
             isOneToOne: false
             referencedRelation: "social_posts"
@@ -2496,6 +2593,38 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saved_posts: {
+        Row: {
+          folder: string | null
+          id: string
+          post_id: string
+          saved_at: string | null
+          user_id: string
+        }
+        Insert: {
+          folder?: string | null
+          id?: string
+          post_id: string
+          saved_at?: string | null
+          user_id: string
+        }
+        Update: {
+          folder?: string | null
+          id?: string
+          post_id?: string
+          saved_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_posts_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "social_posts"
             referencedColumns: ["id"]
           },
         ]
