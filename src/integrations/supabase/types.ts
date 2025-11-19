@@ -3069,6 +3069,126 @@ export type Database = {
         }
         Relationships: []
       }
+      trial_checklist_progress: {
+        Row: {
+          completed_steps: Json | null
+          created_at: string | null
+          id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          completed_steps?: Json | null
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          completed_steps?: Json | null
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      trial_conversions: {
+        Row: {
+          conversion_plan: string | null
+          converted_at: string | null
+          created_at: string | null
+          discount_code: string | null
+          id: string
+          time_to_convert_hours: number | null
+          trial_end: string
+          trial_start: string
+          user_id: string
+        }
+        Insert: {
+          conversion_plan?: string | null
+          converted_at?: string | null
+          created_at?: string | null
+          discount_code?: string | null
+          id?: string
+          time_to_convert_hours?: number | null
+          trial_end: string
+          trial_start: string
+          user_id: string
+        }
+        Update: {
+          conversion_plan?: string | null
+          converted_at?: string | null
+          created_at?: string | null
+          discount_code?: string | null
+          id?: string
+          time_to_convert_hours?: number | null
+          trial_end?: string
+          trial_start?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      trial_extensions: {
+        Row: {
+          created_at: string | null
+          extended_by: string
+          id: string
+          new_end_date: string
+          original_end_date: string
+          reason: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          extended_by: string
+          id?: string
+          new_end_date: string
+          original_end_date: string
+          reason?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          extended_by?: string
+          id?: string
+          new_end_date?: string
+          original_end_date?: string
+          reason?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      trial_feature_usage: {
+        Row: {
+          feature_name: string
+          first_used_at: string | null
+          id: string
+          last_used_at: string | null
+          trial_id: string | null
+          usage_count: number | null
+          user_id: string
+        }
+        Insert: {
+          feature_name: string
+          first_used_at?: string | null
+          id?: string
+          last_used_at?: string | null
+          trial_id?: string | null
+          usage_count?: number | null
+          user_id: string
+        }
+        Update: {
+          feature_name?: string
+          first_used_at?: string | null
+          id?: string
+          last_used_at?: string | null
+          trial_id?: string | null
+          usage_count?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       usage_tracking: {
         Row: {
           amount: number
@@ -3294,6 +3414,17 @@ export type Database = {
           total_clicked: number | null
           total_read: number | null
           total_sent: number | null
+        }
+        Relationships: []
+      }
+      trial_analytics_summary: {
+        Row: {
+          avg_time_to_convert_hours: number | null
+          conversion_rate: number | null
+          converted_trials: number | null
+          total_trials: number | null
+          trials_last_30_days: number | null
+          trials_last_7_days: number | null
         }
         Relationships: []
       }
