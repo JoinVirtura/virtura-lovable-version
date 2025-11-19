@@ -7,11 +7,13 @@ import { useState } from 'react';
 import { CommentModal } from './CommentModal';
 
 interface FeedContainerProps {
-  filterType?: 'all' | 'following' | 'own';
+  filterType?: 'all' | 'following' | 'own' | 'trending';
 }
 
 export function FeedContainer({ filterType = 'all' }: FeedContainerProps) {
-  const { posts, loading, hasMore, fetchMore } = useSocialPosts(filterType);
+  // Map 'trending' to 'all' for now, can be enhanced with actual trending algorithm
+  const feedFilter = filterType === 'trending' ? 'all' : filterType;
+  const { posts, loading, hasMore, fetchMore } = useSocialPosts(feedFilter);
   const { toggleLike, followUser, unlockPost } = usePostActions();
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const observerRef = useRef<HTMLDivElement>(null);

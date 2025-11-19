@@ -1,10 +1,20 @@
-import { Heart, MessageCircle, Share2, Lock } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Lock, MoreVertical, Bookmark, Flag, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
 import { SocialPost } from '@/hooks/useSocialPosts';
 import { formatDistanceToNow } from 'date-fns';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSavedPosts } from '@/hooks/useSavedPosts';
+import { usePostAnalytics } from '@/hooks/usePostAnalytics';
+import { ShareButton } from './ShareButton';
+import { ReportModal } from './ReportModal';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface PostCardProps {
   post: SocialPost;
@@ -15,11 +25,29 @@ interface PostCardProps {
 }
 
 export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCardProps) {
+  const [reportModalOpen, setReportModalOpen] = useState(false);
+  const { isPostSaved, savePost, unsavePost } = useSavedPosts();
+  const { trackView } = usePostAnalytics(post.id);
+  const saved = isPostSaved(post.id);
+
+  // Track view when post is visible
+  useEffect(() => {
+    trackView();
+  }, []);
+
+  const handleSaveToggle = () => {
+    if (saved) {
+      unsavePost(post.id);
+    } else {
+      savePost(post.id);
+    }
+  };
   const [imageError, setImageError] = useState(false);
   const needsUnlock = post.is_paid && !post.unlocked_by_user;
   const mediaUrl = post.media_urls?.[0];
 
   return (
+    <>
     <Card className="overflow-hidden">
       {/* Creator Header */}
       <div className="flex items-center justify-between p-4">
@@ -112,9 +140,30 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
             <MessageCircle className="h-5 w-5" />
             <span>{post.comment_count}</span>
           </Button>
-          <Button variant="ghost" size="sm" className="gap-2">
-            <Share2 className="h-5 w-5" />
+          
+          <ShareButton postId={post.id} />
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleSaveToggle}
+          >
+            <Bookmark className={`h-5 w-5 ${saved ? 'fill-current' : ''}`} />
           </Button>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm">
+                <MoreVertical className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setReportModalOpen(true)}>
+                <Flag className="h-4 w-4 mr-2" />
+                Report post
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {/* Caption */}
@@ -133,5 +182,12 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
         </p>
       </div>
     </Card>
+
+    <ReportModal
+      isOpen={reportModalOpen}
+      onClose={() => setReportModalOpen(false)}
+      postId={post.id}
+    />
+    </>
   );
 }
