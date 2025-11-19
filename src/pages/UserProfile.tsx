@@ -1,0 +1,77 @@
+import { useState } from "react";
+import { useParams } from "react-router-dom";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { ProfileHeader } from "@/components/profile/ProfileHeader";
+import { ProfileStats } from "@/components/profile/ProfileStats";
+import { ProfileTabs } from "@/components/profile/ProfileTabs";
+import { ProfilePostsGrid } from "@/components/profile/ProfilePostsGrid";
+import { ProfileSettingsDialog } from "@/components/ProfileSettingsDialog";
+import { useAuth } from "@/hooks/useAuth";
+
+export default function UserProfile() {
+  const { userId } = useParams<{ userId: string }>();
+  const { user } = useAuth();
+  const { profile, posts, loading } = useUserProfile(userId || '');
+  const [activeTab, setActiveTab] = useState('posts');
+  const [showEditDialog, setShowEditDialog] = useState(false);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Loading profile...</p>
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Profile not found</p>
+      </div>
+    );
+  }
+
+  const isOwnProfile = user?.id === userId;
+
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="max-w-4xl mx-auto">
+        <ProfileHeader 
+          profile={profile}
+          onEditProfile={isOwnProfile ? () => setShowEditDialog(true) : undefined}
+        />
+        
+        <ProfileStats
+          postsCount={posts.length}
+          followersCount={profile.follower_count}
+          followingCount={profile.following_count}
+        />
+
+        <ProfileTabs activeTab={activeTab} onTabChange={setActiveTab} />
+
+        {activeTab === 'posts' && (
+          <ProfilePostsGrid posts={posts} loading={loading} />
+        )}
+
+        {activeTab === 'likes' && (
+          <div className="p-6 text-center text-muted-foreground">
+            Liked posts coming soon
+          </div>
+        )}
+
+        {activeTab === 'about' && (
+          <div className="p-6">
+            <p className="text-muted-foreground">No bio yet</p>
+          </div>
+        )}
+      </div>
+
+      {isOwnProfile && (
+        <ProfileSettingsDialog
+          open={showEditDialog}
+          onOpenChange={setShowEditDialog}
+        />
+      )}
+    </div>
+  );
+}

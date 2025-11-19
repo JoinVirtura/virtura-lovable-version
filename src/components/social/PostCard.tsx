@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card';
 import { SocialPost } from '@/hooks/useSocialPosts';
 import { formatDistanceToNow } from 'date-fns';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSavedPosts } from '@/hooks/useSavedPosts';
 import { usePostAnalytics } from '@/hooks/usePostAnalytics';
 import { ShareButton } from './ShareButton';
@@ -25,6 +26,7 @@ interface PostCardProps {
 }
 
 export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCardProps) {
+  const navigate = useNavigate();
   const [reportModalOpen, setReportModalOpen] = useState(false);
   const { isPostSaved, savePost, unsavePost } = useSavedPosts();
   const { trackView } = usePostAnalytics(post.id);
@@ -51,18 +53,21 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
     <Card className="overflow-hidden">
       {/* Creator Header */}
       <div className="flex items-center justify-between p-4">
-        <div className="flex items-center gap-3">
+        <button 
+          onClick={() => navigate(`/profile/${post.user_id}`)}
+          className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+        >
           <Avatar className="h-10 w-10">
             <AvatarImage src={post.creator_avatar} />
             <AvatarFallback>{post.creator_name?.[0] || 'U'}</AvatarFallback>
           </Avatar>
-          <div>
+          <div className="text-left">
             <p className="font-semibold text-sm">{post.creator_name}</p>
             <p className="text-xs text-muted-foreground">
               {formatDistanceToNow(new Date(post.published_at), { addSuffix: true })}
             </p>
           </div>
-        </div>
+        </button>
         {!post.following_creator && (
           <Button
             size="sm"

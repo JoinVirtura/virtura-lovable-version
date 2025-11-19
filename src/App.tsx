@@ -34,6 +34,10 @@ import { MarketplaceBrowser } from "./components/marketplace/MarketplaceBrowser"
 import { BrandCampaignCreator } from "./components/marketplace/BrandCampaignCreator";
 import { CampaignManagement } from "./components/marketplace/CampaignManagement";
 import CreatorDashboard from "./pages/CreatorDashboard";
+import SocialFeed from "./pages/SocialFeed";
+import UserProfile from "./pages/UserProfile";
+import SavedPosts from "./pages/SavedPosts";
+import Analytics from "./pages/Analytics";
 
 const queryClient = new QueryClient();
 
@@ -140,6 +144,11 @@ const AppRoutes = () => {
           </DashboardLayout>
         </ProtectedRoute>
       } />
+      
+      <Route path="/social" element={<ProtectedRoute><SocialFeed /></ProtectedRoute>} />
+      <Route path="/profile/:userId" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
+      <Route path="/saved" element={<ProtectedRoute><SavedPosts /></ProtectedRoute>} />
+      <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
       
       {/* Catch-all */}
       <Route path="*" element={<NotFound />} />
