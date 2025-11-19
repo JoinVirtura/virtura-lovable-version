@@ -70,16 +70,26 @@ function FeatureGate({ feature, children, fallback }: FeatureGateProps) {
         return;
       }
 
-      // Check subscription
+      // Check subscription including trial data
       const { data: subData } = await supabase
         .from('subscriptions')
         .select('*')
         .eq('user_id', user.id)
-        .eq('status', 'active')
+        .in('status', ['active', 'trialing'])
         .single();
 
+      // Check if user has active trial
+      let planName = subData?.plan_name || 'free';
+      
+      if (subData?.trial_end && !subData.trial_used) {
+        const trialEnd = new Date(subData.trial_end);
+        if (trialEnd > new Date()) {
+          planName = subData.trial_plan_name || 'pro';
+        }
+      }
+
       setSubscription(subData ? {
-        plan_name: subData.plan_name || 'free',
+        plan_name: planName,
         status: (subData.status as 'active' | 'inactive' | 'canceled') || 'inactive',
         current_period_end: subData.current_period_end
       } : { plan_name: 'free', status: 'inactive' });
@@ -106,13 +116,10 @@ function FeatureGate({ feature, children, fallback }: FeatureGateProps) {
       });
 
       // Apply plan limits
-      const planName = subData?.plan_name || 'free';
-      if (planName in PLAN_LIMITS) {
-        const limits = PLAN_LIMITS[planName as keyof typeof PLAN_LIMITS];
-        usageSummary.voice_generation.limit = limits.voice_generation;
-        usageSummary.video_generation.limit = limits.video_generation;
-        usageSummary.storage.limit = limits.storage;
-      }
+      const limits = PLAN_LIMITS[planName as keyof typeof PLAN_LIMITS] || PLAN_LIMITS.free;
+      usageSummary.voice_generation.limit = limits.voice_generation;
+      usageSummary.video_generation.limit = limits.video_generation;
+      usageSummary.storage.limit = limits.storage;
 
       setUsage(usageSummary);
     } catch (error) {
