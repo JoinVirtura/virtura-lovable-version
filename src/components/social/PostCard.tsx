@@ -1,4 +1,4 @@
-import { Heart, MessageCircle, Share2, Lock, MoreVertical, Bookmark, Flag, User } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Lock, MoreVertical, Bookmark, Flag, User, Ban, Trash2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
@@ -9,14 +9,34 @@ import { useNavigate } from 'react-router-dom';
 import { useSavedPosts } from '@/hooks/useSavedPosts';
 import { usePostAnalytics } from '@/hooks/usePostAnalytics';
 import { useViewTracking } from '@/hooks/useViewTracking';
+import { useBlockedUsers } from '@/hooks/useBlockedUsers';
+import { useAuth } from '@/hooks/useAuth';
 import { ShareButton } from './ShareButton';
 import { ReportModal } from './ReportModal';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface PostCardProps {
   post: SocialPost;
@@ -28,11 +48,18 @@ interface PostCardProps {
 
 export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCardProps) {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [reportModalOpen, setReportModalOpen] = useState(false);
+  const [blockDialogOpen, setBlockDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [likeLoading, setLikeLoading] = useState(false);
+  const [followLoading, setFollowLoading] = useState(false);
   const { isPostSaved, savePost, unsavePost } = useSavedPosts();
   const { trackView } = usePostAnalytics(post.id);
   const viewTrackingRef = useViewTracking(post.id, true);
+  const { blockUser } = useBlockedUsers();
   const saved = isPostSaved(post.id);
+  const isOwnPost = user?.id === post.user_id;
 
   const handleSaveToggle = () => {
     if (saved) {
@@ -41,6 +68,50 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
       savePost(post.id);
     }
   };
+
+  const handleLike = async () => {
+    setLikeLoading(true);
+    try {
+      await onLike(post.id);
+    } finally {
+      setLikeLoading(false);
+    }
+  };
+
+  const handleFollow = async () => {
+    setFollowLoading(true);
+    try {
+      await onFollow(post.user_id);
+    } finally {
+      setFollowLoading(false);
+    }
+  };
+
+  const handleBlockUser = async () => {
+    try {
+      await blockUser(post.user_id);
+      toast.success('User blocked');
+      setBlockDialogOpen(false);
+    } catch (error) {
+      toast.error('Failed to block user');
+    }
+  };
+
+  const handleDeletePost = async () => {
+    try {
+      const { error } = await supabase
+        .from('social_posts')
+        .delete()
+        .eq('id', post.id);
+      
+      if (error) throw error;
+      toast.success('Post deleted');
+      setDeleteDialogOpen(false);
+    } catch (error) {
+      toast.error('Failed to delete post');
+    }
+  };
+
   const [imageError, setImageError] = useState(false);
   const needsUnlock = post.is_paid && !post.unlocked_by_user;
   const mediaUrl = post.media_urls?.[0];
@@ -65,13 +136,14 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
             </p>
           </div>
         </button>
-        {!post.following_creator && (
+        {!post.following_creator && !isOwnPost && (
           <Button
             size="sm"
             variant="outline"
-            onClick={() => onFollow(post.user_id)}
+            onClick={handleFollow}
+            disabled={followLoading}
           >
-            Follow
+            {followLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Follow'}
           </Button>
         )}
       </div>
@@ -123,54 +195,100 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
       {/* Actions & Caption */}
       <div className="p-4 space-y-3">
         {/* Action Buttons */}
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onLike(post.id)}
-            className="gap-2"
-          >
-            <Heart className={`h-5 w-5 ${post.liked_by_user ? 'fill-red-500 text-red-500' : ''}`} />
-            <span>{post.like_count}</span>
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onComment(post.id)}
-            className="gap-2"
-          >
-            <MessageCircle className="h-5 w-5" />
-            <span>{post.comment_count}</span>
-          </Button>
-          
-          <ShareButton postId={post.id} />
+        <TooltipProvider>
+          <div className="flex items-center gap-4">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleLike}
+                  disabled={likeLoading}
+                  className="gap-2"
+                >
+                  {likeLoading ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <Heart className={`h-5 w-5 ${post.liked_by_user ? 'fill-red-500 text-red-500' : ''}`} />
+                  )}
+                  <span>{post.like_count}</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{post.liked_by_user ? 'Unlike' : 'Like'}</TooltipContent>
+            </Tooltip>
 
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleSaveToggle}
-          >
-            <Bookmark className={`h-5 w-5 ${saved ? 'fill-current' : ''}`} />
-          </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onComment(post.id)}
+                  className="gap-2"
+                >
+                  <MessageCircle className="h-5 w-5" />
+                  <span>{post.comment_count}</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Comment</TooltipContent>
+            </Tooltip>
+            
+            <ShareButton postId={post.id} />
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm">
-                <MoreVertical className="h-5 w-5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => navigate(`/profile/${post.user_id}`)}>
-                <User className="h-4 w-4 mr-2" />
-                View Profile
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setReportModalOpen(true)}>
-                <Flag className="h-4 w-4 mr-2" />
-                Report post
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleSaveToggle}
+                >
+                  <Bookmark className={`h-5 w-5 ${saved ? 'fill-current' : ''}`} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{saved ? 'Unsave' : 'Save'}</TooltipContent>
+            </Tooltip>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="sm">
+                      <MoreVertical className="h-5 w-5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>More options</TooltipContent>
+                </Tooltip>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => navigate(`/profile/${post.user_id}`)}>
+                  <User className="h-4 w-4 mr-2" />
+                  View Profile
+                </DropdownMenuItem>
+                {!isOwnPost && (
+                  <DropdownMenuItem 
+                    onClick={() => setBlockDialogOpen(true)}
+                    className="text-destructive"
+                  >
+                    <Ban className="h-4 w-4 mr-2" />
+                    Block User
+                  </DropdownMenuItem>
+                )}
+                {isOwnPost && (
+                  <DropdownMenuItem 
+                    onClick={() => setDeleteDialogOpen(true)}
+                    className="text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete Post
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem onClick={() => setReportModalOpen(true)}>
+                  <Flag className="h-4 w-4 mr-2" />
+                  Report post
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </TooltipProvider>
 
         {/* Caption */}
         {post.caption && (
@@ -194,6 +312,46 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
       onClose={() => setReportModalOpen(false)}
       postId={post.id}
     />
+
+    <AlertDialog open={blockDialogOpen} onOpenChange={setBlockDialogOpen}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Block this user?</AlertDialogTitle>
+          <AlertDialogDescription>
+            You won't see posts from this user anymore. They won't be notified that you've blocked them.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction 
+            onClick={handleBlockUser}
+            className="bg-destructive hover:bg-destructive/90"
+          >
+            Block User
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+
+    <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Delete this post?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. Your post will be permanently deleted.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction 
+            onClick={handleDeletePost}
+            className="bg-destructive hover:bg-destructive/90"
+          >
+            Delete Post
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
     </>
   );
 }
