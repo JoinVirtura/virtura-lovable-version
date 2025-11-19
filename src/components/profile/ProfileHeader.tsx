@@ -78,16 +78,16 @@ export function ProfileHeader({ profile, onEditProfile }: ProfileHeaderProps) {
   };
 
   return (
-    <div className="border-b border-border bg-card p-6">
-      <div className="flex flex-col md:flex-row gap-6 items-start">
-        <Avatar className="w-24 h-24 border-4 border-primary/20">
+    <div className="border-b border-border bg-card p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-center sm:items-start">
+        <Avatar className="w-20 h-20 sm:w-24 sm:h-24 border-4 border-primary/20">
           <AvatarImage src={profile.avatar_url} />
-          <AvatarFallback className="text-2xl">
+          <AvatarFallback className="text-xl sm:text-2xl">
             {profile.full_name.slice(0, 2).toUpperCase()}
           </AvatarFallback>
         </Avatar>
 
-        <div className="flex-1 space-y-4">
+        <div className="flex-1 space-y-4 w-full text-center sm:text-left">
           <div className="space-y-2">
             <h1 className="text-2xl font-bold text-foreground">{profile.full_name}</h1>
             <p className="text-muted-foreground">@{profile.full_name.toLowerCase().replace(/\s+/g, '')}</p>
@@ -106,9 +106,9 @@ export function ProfileHeader({ profile, onEditProfile }: ProfileHeaderProps) {
             )}
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-2">
             {isOwnProfile ? (
-              <Button onClick={onEditProfile} variant="outline">
+              <Button onClick={onEditProfile} variant="outline" className="w-full sm:w-auto">
                 Edit Profile
               </Button>
             ) : (
@@ -117,6 +117,7 @@ export function ProfileHeader({ profile, onEditProfile }: ProfileHeaderProps) {
                   onClick={handleFollow} 
                   disabled={loading}
                   variant={isFollowing ? "outline" : "default"}
+                  className="w-full sm:w-auto"
                 >
                   {isFollowing ? (
                     <>
@@ -130,13 +131,18 @@ export function ProfileHeader({ profile, onEditProfile }: ProfileHeaderProps) {
                     </>
                   )}
                 </Button>
-                <Button variant="outline">
+                <Button variant="outline" className="w-full sm:w-auto">
                   <MessageCircle className="w-4 h-4 mr-2" />
                   Message
                 </Button>
               </>
             )}
-            <Button variant="outline" size="icon" onClick={handleShare}>
+            <Button 
+              variant="outline" 
+              size="icon"
+              onClick={handleShare}
+              className="w-full sm:w-auto"
+            >
               <Share2 className="w-4 h-4" />
             </Button>
           </div>

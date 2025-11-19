@@ -47,7 +47,7 @@ export default function UserProfile() {
         <ProfileTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
         {activeTab === 'posts' && (
-          <ProfilePostsGrid posts={posts} loading={loading} />
+          <ProfilePostsGrid posts={posts} loading={loading} userId={userId} />
         )}
 
         {activeTab === 'likes' && (

@@ -2,19 +2,23 @@ import { useEffect, useRef } from 'react';
 import { useSocialPosts } from '@/hooks/useSocialPosts';
 import { usePostActions } from '@/hooks/usePostActions';
 import { PostCard } from './PostCard';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Sparkles, Users, TrendingUp, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { CommentModal } from './CommentModal';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 interface FeedContainerProps {
   filterType?: 'all' | 'following' | 'own' | 'trending';
 }
 
 export function FeedContainer({ filterType = 'all' }: FeedContainerProps) {
-  const { posts, loading, hasMore, fetchMore } = useSocialPosts(filterType);
+  const { posts, loading, hasMore, fetchMore, refresh } = useSocialPosts(filterType);
   const { toggleLike, followUser, unlockPost } = usePostActions();
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const observerRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   // Infinite scroll
   useEffect(() => {
@@ -50,16 +54,57 @@ export function FeedContainer({ filterType = 'all' }: FeedContainerProps) {
   }
 
   if (posts.length === 0) {
+    const emptyStateContent = {
+      all: {
+        icon: Sparkles,
+        title: "Welcome to Virtura Social",
+        description: "Be the first to share your creation!",
+        cta: { label: "Create Post", action: () => navigate('/social') }
+      },
+      following: {
+        icon: Users,
+        title: "No posts from followed users",
+        description: "Follow creators to see their content here",
+        cta: { label: "Discover Creators", action: () => navigate('/social') }
+      },
+      trending: {
+        icon: TrendingUp,
+        title: "No trending posts yet",
+        description: "Check back soon for popular content",
+        cta: null
+      },
+      own: {
+        icon: Sparkles,
+        title: "You haven't posted yet",
+        description: "Share your first creation with the world",
+        cta: { label: "Create Post", action: () => navigate('/social') }
+      }
+    };
+
+    const content = emptyStateContent[filterType];
+    
     return (
-      <div className="text-center py-20">
-        <p className="text-muted-foreground">No posts yet. Be the first to post!</p>
+      <div className="flex flex-col items-center justify-center py-20 text-center max-w-md mx-auto px-4">
+        <content.icon className="w-16 h-16 text-muted-foreground mb-4" />
+        <h3 className="text-xl font-semibold mb-2">{content.title}</h3>
+        <p className="text-muted-foreground mb-6">{content.description}</p>
+        {content.cta && (
+          <Button onClick={content.cta.action} size="lg" className="gap-2">
+            <Plus className="w-4 h-4" />
+            {content.cta.label}
+          </Button>
+        )}
       </div>
     );
   }
 
   return (
-    <>
-      <div className="space-y-6 max-w-2xl mx-auto">
+    <ErrorBoundary 
+      fallbackTitle="Failed to load feed"
+      fallbackMessage="We couldn't load the posts. Please try again."
+    >
+      <>
+        <div className="space-y-6 max-w-2xl mx-auto">
         {posts.map((post) => (
           <PostCard
             key={post.id}
@@ -78,11 +123,12 @@ export function FeedContainer({ filterType = 'all' }: FeedContainerProps) {
         )}
       </div>
 
-      <CommentModal
-        postId={selectedPostId}
-        isOpen={!!selectedPostId}
-        onClose={() => setSelectedPostId(null)}
-      />
-    </>
+        <CommentModal
+          postId={selectedPostId}
+          isOpen={!!selectedPostId}
+          onClose={() => setSelectedPostId(null)}
+        />
+      </>
+    </ErrorBoundary>
   );
 }

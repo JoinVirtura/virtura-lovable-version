@@ -1,5 +1,7 @@
-import { Play, Heart, MessageCircle } from "lucide-react";
+import { Play, Heart, MessageCircle, Image as ImageIcon, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Post {
   id: string;
@@ -13,10 +15,13 @@ interface Post {
 interface ProfilePostsGridProps {
   posts: Post[];
   loading?: boolean;
+  userId?: string;
 }
 
-export function ProfilePostsGrid({ posts, loading }: ProfilePostsGridProps) {
+export function ProfilePostsGrid({ posts, loading, userId }: ProfilePostsGridProps) {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isOwnProfile = user?.id === userId;
 
   if (loading) {
     return (
@@ -30,8 +35,20 @@ export function ProfilePostsGrid({ posts, loading }: ProfilePostsGridProps) {
 
   if (posts.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center">
-        <p className="text-muted-foreground">No posts yet</p>
+      <div className="flex flex-col items-center justify-center py-16 text-center px-4">
+        <ImageIcon className="w-16 h-16 text-muted-foreground mb-4" />
+        <p className="text-lg font-medium mb-2">No posts yet</p>
+        <p className="text-sm text-muted-foreground mb-4 max-w-sm">
+          {isOwnProfile 
+            ? "Share your first creation with the world" 
+            : "This user hasn't posted anything yet"}
+        </p>
+        {isOwnProfile && (
+          <Button onClick={() => navigate('/social')} className="gap-2">
+            <Plus className="w-4 h-4" />
+            Create Your First Post
+          </Button>
+        )}
       </div>
     );
   }
