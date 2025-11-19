@@ -38,12 +38,23 @@ export async function checkFeatureAccess(feature: string): Promise<{
       return { hasAccess: true, plan: 'enterprise', isAdmin: true };
     }
 
-    // Get user subscription
+    // Get user subscription including trial data
     const { data: subscription } = await supabase
       .from('subscriptions')
-      .select('plan_name, status')
+      .select('plan_name, status, trial_end, trial_used, trial_plan_name')
       .eq('user_id', user.id)
       .maybeSingle();
+
+    // Check if user has active trial
+    if (subscription?.trial_end && !subscription.trial_used) {
+      const trialEnd = new Date(subscription.trial_end);
+      if (trialEnd > new Date()) {
+        const trialPlan = (subscription.trial_plan_name || 'pro') as SubscriptionPlan;
+        const allowedPlans = featureRules[feature] || [];
+        const hasAccess = allowedPlans.includes(trialPlan);
+        return { hasAccess, plan: trialPlan, isAdmin: false };
+      }
+    }
 
     const plan: SubscriptionPlan = (subscription?.status === 'active' && subscription?.plan_name) 
       ? subscription.plan_name as SubscriptionPlan 
