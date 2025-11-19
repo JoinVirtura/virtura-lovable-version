@@ -66,9 +66,7 @@ export function FeedContainer({ filterType = 'all', onFilterChange }: FeedContai
         icon: Users,
         title: "No posts from followed users",
         description: "Follow creators to see their content here",
-        cta: onFilterChange 
-          ? { label: "Browse All Posts", action: () => onFilterChange('all') }
-          : null
+        cta: null
       },
       trending: {
         icon: TrendingUp,
