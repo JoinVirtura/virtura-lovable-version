@@ -104,6 +104,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
     checkBrands();
   }, [user]);
 
+  // Main navigation items
   const mainItems = [
     ...(isAdmin ? [{ id: "admin-dashboard", label: "Dashboard", icon: Shield }] : []),
     { id: "overview", label: "Home", icon: Home },
@@ -112,14 +113,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
     { id: "library", label: "Library", icon: Library },
   ];
 
-  const navigationTabs = [
-    { id: "studio", label: "Copilot", icon: Command },
-    { id: "brands", label: "Brands", icon: Building2 },
-    { id: "guide", label: "Tutorial", icon: BookOpen },
-    { id: "support", label: "Support", icon: LifeBuoy },
-  ];
-
-  // Social & Creator section (new structure)
+  // Social section with notification bell
   const socialItems = [
     { id: "social-feed", label: "Feed", icon: Home, path: "/social" },
   ];
@@ -130,14 +124,20 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
     </div>
   );
 
+  // Creator Hub - consolidated creator features
   const creatorItems = [
     { id: "creator-dashboard", label: "Dashboard", icon: DollarSign, path: "/creator-dashboard" },
     { id: "scheduled-posts", label: "Scheduled", icon: Calendar, path: "/scheduled-posts" },
     { id: "verification", label: "Verification", icon: BadgeCheck, path: "/verification" },
+    { id: "marketplace", label: "Marketplace", icon: Briefcase, path: "/marketplace" },
   ];
 
-  const marketplaceItems = [
-    { id: "marketplace", label: "Marketplace", icon: Briefcase, path: "/marketplace" },
+  // More section - utilities and support
+  const moreItems = [
+    { id: "studio", label: "Copilot", icon: Command },
+    { id: "brands", label: "Brands", icon: Building2 },
+    { id: "guide", label: "Tutorial", icon: BookOpen },
+    { id: "support", label: "Support", icon: LifeBuoy },
   ];
 
   const handleLogout = async () => {
@@ -168,9 +168,10 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
       </SidebarHeader>
 
       <SidebarContent className={!isMobile && isCollapsed ? "px-1 pb-0" : "px-3 pb-0"}>
+        {/* Main Section */}
         <SidebarGroup>
-          <SidebarGroupLabel className={`text-muted-foreground px-0 ${!isMobile && isCollapsed ? "hidden" : "block"}`}>
-            Quick Actions
+          <SidebarGroupLabel className={`text-muted-foreground px-0 text-xs py-1 ${!isMobile && isCollapsed ? "hidden" : "block"}`}>
+            Main
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -178,7 +179,6 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                 <SidebarMenuItem key={item.id}>
                   <SidebarMenuButton
                     onClick={() => {
-                      // Clear edit state when navigating to studio normally
                       if (item.id === "studio" && onClearEditState) {
                         onClearEditState();
                       }
@@ -188,7 +188,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                       }
                     }}
                     isActive={activeView === item.id}
-                    className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
+                    className={`w-full min-h-[40px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
                       activeView === item.id
                         ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30"
                         : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
@@ -203,15 +203,101 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarSeparator />
+        <SidebarSeparator className="my-2" />
 
+        {/* Social Section */}
         <SidebarGroup className="pb-0">
-          <SidebarGroupLabel className={`text-muted-foreground px-0 ${!isMobile && isCollapsed ? "hidden" : "block"}`}>
-            Navigation
+          <div className="flex items-center justify-between px-0 mb-1">
+            <SidebarGroupLabel
+              className={`text-muted-foreground m-0 text-xs py-1 ${!isMobile && isCollapsed ? "hidden" : "block"}`}
+            >
+              Social
+            </SidebarGroupLabel>
+            {!isCollapsed && socialHeaderActions}
+          </div>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {socialItems.map((item) => (
+                <SidebarMenuItem key={item.id}>
+                  <SidebarMenuButton
+                    onClick={() => {
+                      if (item.path) {
+                        navigate(item.path);
+                      } else {
+                        onViewChange(item.id);
+                      }
+                      if (isMobile) {
+                        setOpenMobile(false);
+                      }
+                    }}
+                    isActive={item.path ? location.pathname === item.path : activeView === item.id}
+                    className={`w-full min-h-[40px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
+                      (item.path ? location.pathname === item.path : activeView === item.id)
+                        ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30"
+                        : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
+                    }`}
+                  >
+                    <item.icon className="w-5 h-5 shrink-0" />
+                    {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarSeparator className="my-2" />
+
+        {/* Creator Hub Section */}
+        <SidebarGroup className="pb-0">
+          <SidebarGroupLabel
+            className={`text-muted-foreground px-0 text-xs py-1 ${!isMobile && isCollapsed ? "hidden" : "block"}`}
+          >
+            Creator Hub
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navigationTabs.map((item) => (
+              {creatorItems.map((item) => (
+                <SidebarMenuItem key={item.id}>
+                  <SidebarMenuButton
+                    onClick={() => {
+                      if (item.path) {
+                        navigate(item.path);
+                      } else {
+                        onViewChange(item.id);
+                      }
+                      if (isMobile) {
+                        setOpenMobile(false);
+                      }
+                    }}
+                    isActive={item.path ? location.pathname === item.path : activeView === item.id}
+                    className={`w-full min-h-[40px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
+                      (item.path ? location.pathname === item.path : activeView === item.id)
+                        ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30"
+                        : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
+                    }`}
+                  >
+                    <item.icon className="w-5 h-5 shrink-0" />
+                    {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarSeparator className="my-2" />
+
+        {/* More Section */}
+        <SidebarGroup className="pb-0">
+          <SidebarGroupLabel
+            className={`text-muted-foreground px-0 text-xs py-1 ${!isMobile && isCollapsed ? "hidden" : "block"}`}
+          >
+            More
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {moreItems.map((item) => (
                 <SidebarMenuItem key={item.id}>
                   <SidebarMenuButton
                     onClick={() => {
@@ -222,7 +308,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                       }
                     }}
                     isActive={activeView === item.id}
-                    className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
+                    className={`w-full min-h-[40px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
                       activeView === item.id
                         ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30"
                         : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
@@ -236,128 +322,6 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-
-        <>
-          {/* Social Section */}
-          <SidebarSeparator />
-          <SidebarGroup className="pb-0">
-            <div className="flex items-center justify-between px-0 mb-2">
-              <SidebarGroupLabel
-                className={`text-muted-foreground m-0 ${!isMobile && isCollapsed ? "hidden" : "block"}`}
-              >
-                Social
-              </SidebarGroupLabel>
-              {!isCollapsed && socialHeaderActions}
-            </div>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {socialItems.map((item) => (
-                  <SidebarMenuItem key={item.id}>
-                    <SidebarMenuButton
-                      onClick={() => {
-                        if (item.path) {
-                          navigate(item.path);
-                        } else {
-                          onViewChange(item.id);
-                        }
-                        if (isMobile) {
-                          setOpenMobile(false);
-                        }
-                      }}
-                      isActive={item.path ? location.pathname === item.path : activeView === item.id}
-                      className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
-                        (item.path ? location.pathname === item.path : activeView === item.id)
-                          ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30"
-                          : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
-                      }`}
-                    >
-                      <item.icon className="w-5 h-5 shrink-0" />
-                      {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-
-          {/* Creator Section */}
-          <SidebarSeparator />
-          <SidebarGroup className="pb-0">
-            <SidebarGroupLabel
-              className={`text-muted-foreground px-0 ${!isMobile && isCollapsed ? "hidden" : "block"}`}
-            >
-              Creator
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {creatorItems.map((item) => (
-                  <SidebarMenuItem key={item.id}>
-                    <SidebarMenuButton
-                      onClick={() => {
-                        if (item.path) {
-                          navigate(item.path);
-                        } else {
-                          onViewChange(item.id);
-                        }
-                        if (isMobile) {
-                          setOpenMobile(false);
-                        }
-                      }}
-                      isActive={item.path ? location.pathname === item.path : activeView === item.id}
-                      className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
-                        (item.path ? location.pathname === item.path : activeView === item.id)
-                          ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30"
-                          : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
-                      }`}
-                    >
-                      <item.icon className="w-5 h-5 shrink-0" />
-                      {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-
-          {/* Marketplace Section */}
-          <SidebarSeparator />
-          <SidebarGroup className="pb-0">
-            <SidebarGroupLabel
-              className={`text-muted-foreground px-0 ${!isMobile && isCollapsed ? "hidden" : "block"}`}
-            >
-              Marketplace
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {marketplaceItems.map((item) => (
-                  <SidebarMenuItem key={item.id}>
-                    <SidebarMenuButton
-                      onClick={() => {
-                        if (item.path) {
-                          navigate(item.path);
-                        } else {
-                          onViewChange(item.id);
-                        }
-                        if (isMobile) {
-                          setOpenMobile(false);
-                        }
-                      }}
-                      isActive={item.path ? location.pathname === item.path : activeView === item.id}
-                      className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
-                        (item.path ? location.pathname === item.path : activeView === item.id)
-                          ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30"
-                          : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
-                      }`}
-                    >
-                      <item.icon className="w-5 h-5 shrink-0" />
-                      {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </>
       </SidebarContent>
 
       <SidebarFooter className="p-0">
