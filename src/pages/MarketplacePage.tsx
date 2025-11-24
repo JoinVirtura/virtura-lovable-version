@@ -103,24 +103,30 @@ export default function MarketplacePage() {
     );
   }
 
-  // Application approved - show marketplace
+  // Application approved - show marketplace with enhanced header
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Marketplace</h1>
-          <p className="text-muted-foreground mt-2">
-            Connect brands with creators for paid campaigns
-          </p>
+    <div className="container mx-auto p-6 space-y-8">
+      {/* Enhanced Header */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-900/40 via-purple-900/40 to-pink-900/40 border border-primary/20 p-8 backdrop-blur-xl">
+        <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:20px_20px]" />
+        <div className="relative z-10 flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary-blue bg-clip-text text-transparent">
+              Marketplace
+            </h1>
+            <p className="text-muted-foreground mt-2 text-lg">
+              Connect brands with creators for paid campaigns
+            </p>
+          </div>
+          <Badge variant="default" className="text-sm px-4 py-2 bg-gradient-to-r from-primary to-primary-blue">
+            <CheckCircle className="h-4 w-4 mr-2" />
+            {access.role_requested === 'creator' ? 'Approved Creator' : 'Approved Brand'}
+          </Badge>
         </div>
-        <Badge variant="default" className="text-sm">
-          <CheckCircle className="h-3 w-3 mr-1" />
-          {access.role_requested === 'creator' ? 'Approved Creator' : 'Approved Brand'}
-        </Badge>
       </div>
 
       <Tabs defaultValue="browse" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-2 bg-card/50 backdrop-blur-xl">
           <TabsTrigger value="browse">Browse Campaigns</TabsTrigger>
           <TabsTrigger value="manage">My Campaigns</TabsTrigger>
         </TabsList>

@@ -1,26 +1,43 @@
 import { useState } from 'react';
 import { useMarketplaceCampaigns } from '@/hooks/useMarketplaceCampaigns';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Search, Calendar, DollarSign, Briefcase } from 'lucide-react';
+import { Search, Calendar, DollarSign, TrendingUp, Briefcase } from 'lucide-react';
 import { CampaignApplicationForm } from './CampaignApplicationForm';
+import { CategoryFilter } from './CategoryFilter';
+import { FeaturedCampaigns } from './FeaturedCampaigns';
+import { CampaignPreviewModal } from './CampaignPreviewModal';
 import { Skeleton } from '@/components/ui/skeleton';
+import { motion } from 'framer-motion';
+import { format } from 'date-fns';
+
 export function MarketplaceBrowser() {
-  const [filters, setFilters] = useState({
-    search: '',
-    category: 'all',
-    minBudget: undefined as number | undefined,
-    maxBudget: undefined as number | undefined,
-    sortBy: 'newest' as 'newest' | 'budget_high' | 'budget_low' | 'deadline'
-  });
-  const [selectedCampaign, setSelectedCampaign] = useState<string | null>(null);
-  const {
-    campaigns,
-    loading
-  } = useMarketplaceCampaigns(filters);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCampaign, setSelectedCampaign] = useState<any | null>(null);
+  const [applicationCampaignId, setApplicationCampaignId] = useState<string | null>(null);
+  const [previewModalOpen, setPreviewModalOpen] = useState(false);
+
+  const filters = {
+    search: searchQuery,
+    category: selectedCategory || 'all',
+    sortBy: 'newest' as const
+  };
+
+  const { campaigns, loading } = useMarketplaceCampaigns(filters);
+
+  const handleViewCampaign = (campaign: any) => {
+    setSelectedCampaign(campaign);
+    setPreviewModalOpen(true);
+  };
+
+  const handleApplyCampaign = (campaignId: string) => {
+    setApplicationCampaignId(campaignId);
+    setPreviewModalOpen(false);
+  };
+
   const formatBudget = (cents: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -28,129 +45,146 @@ export function MarketplaceBrowser() {
       minimumFractionDigits: 0
     }).format(cents / 100);
   };
-  const formatDeadline = (deadline: string | null) => {
-    if (!deadline) return 'No deadline';
-    const date = new Date(deadline);
-    const now = new Date();
-    const days = Math.ceil((date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-    if (days < 0) return 'Expired';
-    if (days === 0) return 'Due today';
-    if (days === 1) return 'Due tomorrow';
-    return `${days} days left`;
-  };
+
   if (loading) {
-    return <div className="container mx-auto p-6 space-y-6">
-        <Skeleton className="h-12 w-full" />
+    return (
+      <div className="space-y-8">
+        <Skeleton className="h-64 w-full" />
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="h-80" />)}
+          {[1, 2, 3, 4, 5, 6].map(i => (
+            <Skeleton key={i} className="h-80" />
+          ))}
         </div>
-      </div>;
+      </div>
+    );
   }
-  return <div className="container mx-auto p-6 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-foreground">Marketplace</h1>
-        <p className="text-muted-foreground mt-2">
-          Find brand campaigns and get paid for your content
-        </p>
+
+  return (
+    <div className="space-y-8">
+      {/* Search Bar */}
+      <div className="relative">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+        <Input
+          placeholder="Search campaigns by keyword, brand, or category..."
+          className="pl-12 h-14 text-lg bg-gradient-to-r from-card/50 to-card/30 backdrop-blur-xl border-primary/20"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <Badge className="absolute right-4 top-1/2 -translate-y-1/2">
+          {campaigns.length} campaigns
+        </Badge>
       </div>
 
-      {/* Filters */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="grid gap-4 md:grid-cols-4">
-            <div className="relative md:col-span-2">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search campaigns..." value={filters.search} onChange={e => setFilters({
-              ...filters,
-              search: e.target.value
-            })} className="pl-10" />
-            </div>
+      {/* Featured Campaigns Carousel */}
+      <FeaturedCampaigns 
+        campaigns={campaigns.filter(c => c.status === 'open')} 
+        onViewCampaign={handleViewCampaign}
+      />
 
-            <Select value={filters.category} onValueChange={value => setFilters({
-            ...filters,
-            category: value
-          })}>
-              <SelectTrigger>
-                <SelectValue placeholder="Category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                <SelectItem value="video">Video</SelectItem>
-                <SelectItem value="image">Image</SelectItem>
-                <SelectItem value="social">Social Media</SelectItem>
-                <SelectItem value="animation">Animation</SelectItem>
-              </SelectContent>
-            </Select>
+      {/* Category Filters */}
+      <CategoryFilter
+        selectedCategory={selectedCategory}
+        onSelectCategory={setSelectedCategory}
+      />
 
-            <Select value={filters.sortBy} onValueChange={(value: any) => setFilters({
-            ...filters,
-            sortBy: value
-          })}>
-              <SelectTrigger>
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="newest">Newest First</SelectItem>
-                <SelectItem value="budget_high">Highest Budget</SelectItem>
-                <SelectItem value="budget_low">Lowest Budget</SelectItem>
-                <SelectItem value="deadline">Deadline</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Campaign Grid */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {campaigns.map((campaign, index) => (
+          <motion.div
+            key={campaign.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.05 }}
+            whileHover={{ y: -8, scale: 1.02 }}
+          >
+            <Card className="relative overflow-hidden backdrop-blur-3xl bg-gradient-to-br from-violet-900/20 via-purple-900/20 to-pink-900/20 border border-primary/20 shadow-2xl hover:shadow-violet-500/20 transition-all duration-300 h-full group">
+              {/* Animated gradient background on hover */}
+              <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-      {/* Campaigns Grid */}
-      {campaigns.length === 0 ? <Card>
-          <CardContent className="py-12 text-center">
-            <Briefcase className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-            <p className="text-lg font-medium">No campaigns found</p>
-            <p className="text-muted-foreground">Try adjusting your filters</p>
-          </CardContent>
-        </Card> : <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {campaigns.map(campaign => <Card key={campaign.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="flex items-start justify-between">
+              {/* Trending Badge */}
+              {index < 3 && (
+                <Badge className="absolute top-4 right-4 bg-gradient-to-r from-orange-500 to-red-500 z-10">
+                  <TrendingUp className="w-3 h-3 mr-1" />
+                  Trending
+                </Badge>
+              )}
+
+              <CardContent className="relative z-10 p-6 space-y-4">
+                {/* Brand Logo/Name */}
+                <div className="flex items-center gap-3">
+                  {campaign.brands?.logo_url ? (
+                    <img 
+                      src={campaign.brands.logo_url} 
+                      alt={campaign.brands.name}
+                      className="w-12 h-12 rounded-lg object-cover border border-border"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <Briefcase className="w-6 h-6 text-primary" />
+                    </div>
+                  )}
                   <div className="flex-1">
-                    <CardTitle className="text-sm">{campaign.title}</CardTitle>
-                    <CardDescription className="mt-1">
-                      {campaign.brands?.name}
-                    </CardDescription>
+                    <p className="text-sm text-muted-foreground">{campaign.brands?.name}</p>
+                    <Badge variant="outline" className="mt-1">{campaign.category}</Badge>
                   </div>
-                  {campaign.category && <Badge variant="secondary">{campaign.category}</Badge>}
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground line-clamp-3">
-                  {campaign.description}
-                </p>
-
-                <div className="space-y-2">
-                  <div className="flex items-center text-sm">
-                    <DollarSign className="h-4 w-4 mr-2 text-green-500" />
-                    <span className="font-semibold">{formatBudget(campaign.budget_cents)}</span>
-                  </div>
-                  {campaign.deadline && <div className="flex items-center text-sm">
-                      <Calendar className="h-4 w-4 mr-2 text-blue-500" />
-                      <span>{formatDeadline(campaign.deadline)}</span>
-                    </div>}
                 </div>
 
-                {campaign.deliverables && <div className="flex flex-wrap gap-1">
-                    {Object.entries(campaign.deliverables).map(([key, value]: [string, any]) => (
-                      <span key={key} className="text-xs px-2 py-1 bg-secondary rounded">
-                        {key}
-                      </span>
-                    ))}
-                  </div>}
+                {/* Campaign Info */}
+                <div>
+                  <h3 className="font-bold text-lg mb-2 line-clamp-2">{campaign.title}</h3>
+                  <p className="text-sm text-muted-foreground line-clamp-2">
+                    {campaign.description}
+                  </p>
+                </div>
 
-                <Button className="w-full" onClick={() => setSelectedCampaign(campaign.id)}>
-                  Apply Now
+                {/* Stats */}
+                <div className="flex items-center justify-between pt-4 border-t border-border">
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="w-4 h-4 text-primary" />
+                    <span className="font-bold">{formatBudget(campaign.budget_cents)}</span>
+                  </div>
+                  {campaign.deadline && (
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <Calendar className="w-3 h-3" />
+                      {format(new Date(campaign.deadline), 'MMM dd')}
+                    </div>
+                  )}
+                </div>
+
+                {/* View Details Button */}
+                <Button 
+                  className="w-full bg-gradient-to-r from-primary to-primary-blue"
+                  onClick={() => handleViewCampaign(campaign)}
+                >
+                  View Details
                 </Button>
               </CardContent>
-            </Card>)}
-        </div>}
+            </Card>
+          </motion.div>
+        ))}
+      </div>
 
-      {selectedCampaign && <CampaignApplicationForm campaignId={selectedCampaign} onClose={() => setSelectedCampaign(null)} />}
-    </div>;
+      {campaigns.length === 0 && !loading && (
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">No campaigns found matching your criteria</p>
+        </div>
+      )}
+
+      {/* Campaign Preview Modal */}
+      <CampaignPreviewModal
+        campaign={selectedCampaign}
+        isOpen={previewModalOpen}
+        onClose={() => setPreviewModalOpen(false)}
+        onApply={handleApplyCampaign}
+      />
+
+      {/* Application Form */}
+      {applicationCampaignId && (
+        <CampaignApplicationForm
+          campaignId={applicationCampaignId}
+          onClose={() => setApplicationCampaignId(null)}
+        />
+      )}
+    </div>
+  );
 }

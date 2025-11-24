@@ -4,7 +4,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
 import { SocialPost } from '@/hooks/useSocialPosts';
 import { formatDistanceToNow } from 'date-fns';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSavedPosts } from '@/hooks/useSavedPosts';
 import { usePostAnalytics } from '@/hooks/usePostAnalytics';
@@ -13,9 +13,11 @@ import { useBlockedUsers } from '@/hooks/useBlockedUsers';
 import { useAuth } from '@/hooks/useAuth';
 import { ShareButton } from './ShareButton';
 import { ReportModal } from './ReportModal';
+import { HeartBurstAnimation } from './HeartBurstAnimation';
+import { QuickReactions } from './QuickReactions';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -55,12 +57,57 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [likeLoading, setLikeLoading] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
+  const [showHeartBurst, setShowHeartBurst] = useState(false);
+  const [showQuickReactions, setShowQuickReactions] = useState(false);
+  const [lastTap, setLastTap] = useState(0);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const { isPostSaved, savePost, unsavePost } = useSavedPosts();
   const { trackView } = usePostAnalytics(post.id);
   const viewTrackingRef = useViewTracking(post.id, true);
   const { blockUser } = useBlockedUsers();
   const saved = isPostSaved(post.id);
   const isOwnPost = user?.id === post.user_id;
+
+  // Auto-play video when in view
+  useEffect(() => {
+    if (!videoRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            videoRef.current?.play()?.catch(() => {});
+          } else {
+            videoRef.current?.pause();
+          }
+        });
+      },
+      { threshold: 0.7 }
+    );
+
+    observer.observe(videoRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  // Double-tap to like handler
+  const handleDoubleTap = () => {
+    const now = Date.now();
+    const DOUBLE_TAP_DELAY = 300;
+
+    if (now - lastTap < DOUBLE_TAP_DELAY) {
+      setShowHeartBurst(true);
+      if (!post.liked_by_user) {
+        handleLike();
+      }
+      setTimeout(() => setShowHeartBurst(false), 1000);
+    }
+    setLastTap(now);
+  };
+
+  const handleQuickReaction = (emoji: string) => {
+    console.log('Quick reaction:', emoji, 'on post:', post.id);
+    // Could integrate with a reactions system in the future
+  };
 
   const handleSaveToggle = () => {
     if (saved) {
@@ -124,10 +171,19 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -4 }}
       transition={{ duration: 0.2 }}
+      className="scroll-snap-align-start"
     >
-      <Card className="overflow-hidden backdrop-blur-xl bg-background/40 border border-white/10 shadow-xl hover:shadow-2xl hover:shadow-violet-500/20 transition-all duration-300" ref={viewTrackingRef}>
+      <Card className="overflow-hidden backdrop-blur-3xl bg-gradient-to-br from-card/80 via-card/70 to-card/80 border border-primary/20 shadow-2xl hover:shadow-violet-500/20 transition-all duration-300 group" ref={viewTrackingRef}>
+        {/* Glassmorphic overlay on hover */}
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+        
+        {/* Heart Burst Animation */}
+        <AnimatePresence>
+          {showHeartBurst && <HeartBurstAnimation />}
+        </AnimatePresence>
+
         {/* Creator Header */}
-        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-violet-500/5 to-purple-500/5">
+        <div className="relative z-10 flex items-center justify-between p-4 bg-gradient-to-r from-violet-500/5 to-purple-500/5">
           <button 
             onClick={() => navigate(`/profile/${post.user_id}`)}
             className="flex items-center gap-3 hover:opacity-80 transition-opacity"
@@ -138,7 +194,7 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
                 animate={{ rotate: 360 }}
                 transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
               />
-              <Avatar className="h-10 w-10 relative">
+              <Avatar className="h-10 w-10 relative ring-2 ring-primary/20">
                 <AvatarImage src={post.creator_avatar} />
                 <AvatarFallback>{post.creator_name?.[0] || 'U'}</AvatarFallback>
               </Avatar>
@@ -150,35 +206,67 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
               </p>
             </div>
           </button>
-          {!post.following_creator && !isOwnPost && (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={handleFollow}
-              disabled={followLoading}
-              className="border-violet-500/50 hover:bg-violet-500/10"
-            >
-              {followLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Follow'}
-            </Button>
-          )}
+          
+          <div className="flex items-center gap-2">
+            {!post.following_creator && !isOwnPost && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleFollow}
+                disabled={followLoading}
+                className="border-violet-500/50 hover:bg-violet-500/10"
+              >
+                {followLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Follow'}
+              </Button>
+            )}
+
+            {/* Prominent Delete Button for Own Posts */}
+            {isOwnPost && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setDeleteDialogOpen(true)}
+                      className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Delete post</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+          </div>
         </div>
 
-        {/* Media */}
+        {/* Media with double-tap and quick reactions */}
         {mediaUrl && (
-          <div className="relative aspect-square bg-muted group">
+          <div 
+            className="relative aspect-square bg-muted group/media cursor-pointer select-none"
+            onClick={handleDoubleTap}
+            onMouseEnter={() => setShowQuickReactions(true)}
+            onMouseLeave={() => setShowQuickReactions(false)}
+          >
             {post.content_type === 'video' ? (
               <video
+                ref={videoRef}
                 src={needsUnlock ? undefined : mediaUrl}
-                className={`w-full h-full object-cover ${needsUnlock ? 'blur-xl' : ''} transition-transform duration-300 group-hover:scale-105`}
+                className={`w-full h-full object-cover ${needsUnlock ? 'blur-xl' : ''} transition-transform duration-300 group-hover/media:scale-105`}
                 controls={!needsUnlock}
+                playsInline
+                loop
+                muted
               />
             ) : (
               !imageError ? (
                 <img
                   src={needsUnlock ? mediaUrl : mediaUrl}
                   alt="Post content"
-                  className={`w-full h-full object-cover ${needsUnlock ? 'blur-xl' : ''} transition-transform duration-300 group-hover:scale-105`}
+                  className={`w-full h-full object-cover ${needsUnlock ? 'blur-xl' : ''} transition-transform duration-300 group-hover/media:scale-105`}
                   onError={() => setImageError(true)}
+                  loading="lazy"
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-muted-foreground">
@@ -212,11 +300,16 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
                 </motion.div>
               </div>
             )}
+
+            {/* Quick Reactions */}
+            {showQuickReactions && !needsUnlock && (
+              <QuickReactions onReact={handleQuickReaction} />
+            )}
           </div>
         )}
 
         {/* Actions & Caption */}
-        <div className="p-4 space-y-3">
+        <div className="relative z-10 p-4 space-y-3">
           {/* Action Buttons */}
           <TooltipProvider>
             <div className="flex items-center gap-4">
@@ -233,7 +326,12 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
                       {likeLoading ? (
                         <Loader2 className="h-5 w-5 animate-spin" />
                       ) : (
-                        <Heart className={`h-5 w-5 transition-all ${post.liked_by_user ? 'fill-red-500 text-red-500 scale-110' : ''}`} />
+                        <motion.div
+                          animate={post.liked_by_user ? { scale: [1, 1.2, 1] } : {}}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <Heart className={`h-5 w-5 transition-all ${post.liked_by_user ? 'fill-red-500 text-red-500 scale-110' : ''}`} />
+                        </motion.div>
                       )}
                       <span>{post.like_count}</span>
                     </Button>
@@ -300,15 +398,6 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
                     >
                       <Ban className="h-4 w-4 mr-2" />
                       Block User
-                    </DropdownMenuItem>
-                  )}
-                  {isOwnPost && (
-                    <DropdownMenuItem 
-                      onClick={() => setDeleteDialogOpen(true)}
-                      className="text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Delete Post
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuItem onClick={() => setReportModalOpen(true)}>
