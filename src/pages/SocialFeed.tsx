@@ -118,6 +118,9 @@ export default function SocialFeed() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Filter out the current user's story since they appear as "Your Story"
+  const filteredStories = stories.filter(story => story.userId !== user?.id);
+
   return (
     <div ref={containerRef} className="container mx-auto px-4 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6 max-w-5xl scroll-smooth">
       {/* Scroll Progress Indicator */}
@@ -178,7 +181,7 @@ export default function SocialFeed() {
               onClick={() => setCreateModalOpen(true)}
             />
           </div>
-          {stories.map((story, index) => (
+          {filteredStories.map((story, index) => (
             <div key={story.id} className="snap-start">
               <StoryRing
                 avatar={story.avatar}
