@@ -87,8 +87,8 @@ export function MarketplaceBrowser() {
         onViewCampaign={handleViewCampaign}
       />
 
-      {/* Campaign Grid */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {/* Campaign Grid - 3 columns on large screens */}
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {campaigns.map((campaign, index) => (
           <motion.div
             key={campaign.id}

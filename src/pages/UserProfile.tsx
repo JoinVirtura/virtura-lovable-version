@@ -11,18 +11,38 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { StatsGlobe } from "@/components/profile/StatsGlobe";
+import { AchievementBadges } from "@/components/profile/AchievementBadges";
+import { AnalyticsDashboard } from "@/components/profile/AnalyticsDashboard";
+import { CollaborationHistory } from "@/components/profile/CollaborationHistory";
+import { PortfolioShowcase } from "@/components/profile/PortfolioShowcase";
+import { MediaKitSection } from "@/components/profile/MediaKitSection";
 
 export default function UserProfile() {
   const { userId } = useParams<{ userId: string }>();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { profile, posts, loading, updateProfile } = useUserProfile(userId || '');
+  const { profile, posts, loading, updateProfile, refetch } = useUserProfile(userId || '');
   const { savedPosts, loading: savedLoading } = useSavedPosts();
   const [activeTab, setActiveTab] = useState('posts');
   const [savedPostsData, setSavedPostsData] = useState<any[]>([]);
   const [loadingSavedPosts, setLoadingSavedPosts] = useState(false);
+  const [currentFollowerCount, setCurrentFollowerCount] = useState(0);
 
   const isOwnProfile = user?.id === userId;
+
+  // Update follower count when profile changes
+  useEffect(() => {
+    if (profile) {
+      setCurrentFollowerCount(profile.follower_count);
+    }
+  }, [profile]);
+
+  const handleFollowChange = (isFollowing: boolean, newCount: number) => {
+    setCurrentFollowerCount(newCount);
+    // Optionally refetch profile for full sync
+    setTimeout(() => refetch(), 1000);
+  };
 
   // Fetch full post data for saved posts
   useEffect(() => {
@@ -106,9 +126,21 @@ export default function UserProfile() {
         postsCount={posts.length}
         isOwnProfile={isOwnProfile}
         onEditProfile={isOwnProfile ? () => navigate('/settings') : undefined}
+        onFollowChange={handleFollowChange}
       />
       
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-6 py-8 space-y-8">
+        {/* Stats Dashboard */}
+        <StatsGlobe 
+          views={523000}
+          likes={45200}
+          followers={currentFollowerCount}
+          engagement={12.8}
+        />
+
+        {/* Achievement Badges */}
+        <AchievementBadges />
+
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="w-full justify-start border-b border-border/50 bg-transparent rounded-none h-auto p-0 mb-8">
             <TabsTrigger 
@@ -117,14 +149,40 @@ export default function UserProfile() {
             >
               Posts
             </TabsTrigger>
+            <TabsTrigger 
+              value="portfolio"
+              className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-6 py-3"
+            >
+              Portfolio
+            </TabsTrigger>
             {isOwnProfile && (
-              <TabsTrigger 
-                value="saved"
-                className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-6 py-3"
-              >
-                Saved
-              </TabsTrigger>
+              <>
+                <TabsTrigger 
+                  value="analytics"
+                  className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-6 py-3"
+                >
+                  Analytics
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="saved"
+                  className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-6 py-3"
+                >
+                  Saved
+                </TabsTrigger>
+              </>
             )}
+            <TabsTrigger 
+              value="collaborations"
+              className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-6 py-3"
+            >
+              Collaborations
+            </TabsTrigger>
+            <TabsTrigger 
+              value="media-kit"
+              className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-6 py-3"
+            >
+              Media Kit
+            </TabsTrigger>
             <TabsTrigger 
               value="about"
               className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-6 py-3"
@@ -137,21 +195,39 @@ export default function UserProfile() {
             <MasonryPostGrid posts={posts} userId={userId} />
           </TabsContent>
 
+          <TabsContent value="portfolio">
+            <PortfolioShowcase />
+          </TabsContent>
+
           {isOwnProfile && (
-            <TabsContent value="saved">
-              {loadingSavedPosts || savedLoading ? (
-                <div className="flex justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                </div>
-              ) : savedPostsData.length > 0 ? (
-                <MasonryPostGrid posts={savedPostsData} userId={userId} />
-              ) : (
-                <div className="text-center py-12 text-muted-foreground">
-                  <p>No saved posts yet</p>
-                </div>
-              )}
-            </TabsContent>
+            <>
+              <TabsContent value="analytics">
+                <AnalyticsDashboard />
+              </TabsContent>
+
+              <TabsContent value="saved">
+                {loadingSavedPosts || savedLoading ? (
+                  <div className="flex justify-center py-12">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                ) : savedPostsData.length > 0 ? (
+                  <MasonryPostGrid posts={savedPostsData} userId={userId} />
+                ) : (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <p>No saved posts yet</p>
+                  </div>
+                )}
+              </TabsContent>
+            </>
           )}
+
+          <TabsContent value="collaborations">
+            <CollaborationHistory />
+          </TabsContent>
+
+          <TabsContent value="media-kit">
+            <MediaKitSection />
+          </TabsContent>
 
           <TabsContent value="about" className="max-w-2xl">
             {isOwnProfile ? (

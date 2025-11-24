@@ -1,9 +1,10 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, Edit, MessageCircle, UserPlus } from 'lucide-react';
+import { CheckCircle2, Edit, MessageCircle, UserPlus, UserCheck, Loader2 } from 'lucide-react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { useState, useEffect } from 'react';
+import { useFollowUser } from '@/hooks/useFollowUser';
 
 interface Profile {
   id: string;
@@ -21,17 +22,28 @@ interface EnhancedProfileHeaderProps {
   postsCount: number;
   isOwnProfile: boolean;
   onEditProfile?: () => void;
+  onFollowChange?: (isFollowing: boolean, newCount: number) => void;
 }
 
 export function EnhancedProfileHeader({ 
   profile, 
   postsCount, 
   isOwnProfile,
-  onEditProfile 
+  onEditProfile,
+  onFollowChange
 }: EnhancedProfileHeaderProps) {
   const [mounted, setMounted] = useState(false);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
+  
+  const { isFollowing, loading: followLoading, followerCount, toggleFollow } = useFollowUser(profile.id);
+
+  // Notify parent of follow changes
+  useEffect(() => {
+    if (onFollowChange && followerCount !== profile.follower_count) {
+      onFollowChange(isFollowing, followerCount);
+    }
+  }, [isFollowing, followerCount]);
 
   const rotateX = useTransform(mouseY, [-300, 300], [10, -10]);
   const rotateY = useTransform(mouseX, [-300, 300], [-10, 10]);
@@ -251,7 +263,7 @@ export function EnhancedProfileHeader({
                     transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
                   />
                   <p className="text-2xl font-bold relative bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                    <AnimatedCounter value={profile.follower_count} />
+                    <AnimatedCounter value={followerCount} />
                   </p>
                 </div>
                 <p className="text-sm text-muted-foreground">Followers</p>
@@ -305,10 +317,27 @@ export function EnhancedProfileHeader({
               ) : (
                 <>
                   <Button
-                    className="gap-2 bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 shadow-lg shadow-violet-500/50"
+                    onClick={toggleFollow}
+                    disabled={followLoading}
+                    className={`gap-2 shadow-lg ${
+                      isFollowing 
+                        ? 'bg-card border-2 border-violet-500/50 hover:bg-card/80' 
+                        : 'bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 shadow-violet-500/50'
+                    }`}
                   >
-                    <UserPlus className="h-4 w-4" />
-                    Follow
+                    {followLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : isFollowing ? (
+                      <>
+                        <UserCheck className="h-4 w-4" />
+                        Following
+                      </>
+                    ) : (
+                      <>
+                        <UserPlus className="h-4 w-4" />
+                        Follow
+                      </>
+                    )}
                   </Button>
                   <Button
                     variant="outline"
