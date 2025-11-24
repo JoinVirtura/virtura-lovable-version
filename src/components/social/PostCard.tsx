@@ -1,4 +1,4 @@
-import { Heart, MessageCircle, Share2, Lock, MoreVertical, Bookmark, Flag, User, Ban, Trash2, Loader2, Users, TrendingUp, Eye } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Lock, MoreVertical, Bookmark, Flag, User, Ban, Trash2, Loader2, Users, TrendingUp, Eye, Flame } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
@@ -242,22 +242,39 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
         </div>
 
         {/* Social Proof & Engagement Metrics */}
-        {post.like_count > 5 && (
-          <div className="relative z-10 px-4 py-2 bg-gradient-to-r from-violet-500/5 to-transparent border-l-2 border-violet-500/50">
-            <div className="flex items-center gap-4 text-xs">
+        <div className="relative z-10 px-4 py-2 bg-gradient-to-r from-violet-500/5 to-transparent border-l-2 border-violet-500/50">
+          <div className="flex items-center gap-4 text-xs flex-wrap">
+            {post.like_count > 5 && (
               <div className="flex items-center gap-1 text-violet-400">
                 <Users className="w-3 h-3" />
                 <span>{Math.floor(post.like_count * 0.3)} people you follow liked this</span>
               </div>
-              {post.view_count > 1000 && (
-                <div className="flex items-center gap-1 text-green-400">
-                  <TrendingUp className="w-3 h-3" />
-                  <span>Trending</span>
-                </div>
-              )}
-            </div>
+            )}
+            {post.view_count > 1000 && (
+              <div className="flex items-center gap-1 text-green-400 animate-pulse">
+                <TrendingUp className="w-3 h-3" />
+                <span>Trending</span>
+              </div>
+            )}
+            {/* Live Engagement Indicator */}
+            {post.view_count > 500 && (
+              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-red-500/20 border border-red-500/30">
+                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                <Eye className="w-3 h-3 text-red-400" />
+                <span className="text-red-400 font-semibold">
+                  {Math.floor(Math.random() * 50) + 20} viewing now
+                </span>
+              </div>
+            )}
+            {/* Hot Badge */}
+            {post.like_count > 100 && post.view_count > 5000 && (
+              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-orange-500/20 border border-orange-500/30">
+                <Flame className="w-3 h-3 text-orange-400" />
+                <span className="text-orange-400 font-semibold">Hot</span>
+              </div>
+            )}
           </div>
-        )}
+        </div>
 
         {/* Media with double-tap and quick reactions */}
         {mediaUrl && (

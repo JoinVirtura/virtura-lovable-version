@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Plus, Grid3x3, List, Sparkles, Users, TrendingUp, Clock, Play } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { FeedContainer } from '@/components/social/FeedContainer';
 import { CreatePostModal } from '@/components/social/CreatePostModal';
 import { SearchBar } from '@/components/social/SearchBar';
@@ -15,6 +15,8 @@ import { ContentPreviewCard } from '@/components/social/ContentPreviewCard';
 import { CreatorCard } from '@/components/social/CreatorCard';
 import { ContinueWatchingCard } from '@/components/social/ContinueWatchingCard';
 import { RecommendationCard } from '@/components/social/RecommendationCard';
+import { ContinueWatchingSection } from '@/components/social/ContinueWatchingSection';
+import { AIRecommendations } from '@/components/social/AIRecommendations';
 
 const stories = [
   {
@@ -118,9 +120,32 @@ export default function SocialFeed() {
   const [feedType, setFeedType] = useState<'all' | 'following' | 'trending'>('all');
   const [layout, setLayout] = useState<'list' | 'grid'>('list');
   const { isOpen, initialIndex, openStory, closeStory } = useStoryViewer();
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Track scroll progress
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!containerRef.current) return;
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = (scrollTop / docHeight) * 100;
+      setScrollProgress(Math.min(progress, 100));
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
-    <div className="container mx-auto p-6 space-y-6 max-w-5xl scroll-smooth">
+    <div ref={containerRef} className="container mx-auto p-6 space-y-6 max-w-5xl scroll-smooth">
+      {/* Scroll Progress Indicator */}
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 via-purple-500 to-pink-500 z-50 origin-left"
+        style={{ scaleX: scrollProgress / 100 }}
+        initial={{ scaleX: 0 }}
+      />
+
       {/* Header */}
       <motion.div 
         className="flex items-center justify-between"
@@ -215,6 +240,12 @@ export default function SocialFeed() {
           />
         </div>
       </motion.div>
+
+      {/* Continue Watching Section */}
+      <ContinueWatchingSection />
+
+      {/* AI Recommendations */}
+      <AIRecommendations />
 
       {/* Featured Creators Section */}
       <motion.div
