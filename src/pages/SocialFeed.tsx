@@ -17,47 +17,70 @@ import { ContinueWatchingCard } from '@/components/social/ContinueWatchingCard';
 import { RecommendationCard } from '@/components/social/RecommendationCard';
 import { ContinueWatchingSection } from '@/components/social/ContinueWatchingSection';
 import { AIRecommendations } from '@/components/social/AIRecommendations';
+import { useStoryProfiles } from '@/hooks/useStoryProfiles';
 
-const stories = [
-  {
-    id: '1',
-    userId: 'c75cfca4-8d6f-479a-bed5-0a7362541998', // Erosynth Labs - Real profile
-    username: 'Erosynth Labs',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop',
-    hasStory: true,
-    isVerified: true,
-    storyCount: 3,
-    stories: [
-      { id: 's1', content_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400', content_type: 'image' as const },
-      { id: 's2', content_url: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400', content_type: 'image' as const },
-      { id: 's3', content_url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400', content_type: 'image' as const },
-    ]
-  },
-  {
-    id: '2',
-    userId: '357de30c-916f-4f54-bc2e-b32a7f7a01f0', // Jahi Bentley - Real profile
-    username: 'Jahi Bentley',
-    avatar: 'https://logo.clearbit.com/nike.com',
-    hasStory: true,
-    isBrand: true,
-    storyCount: 5,
-    stories: [
-      { id: 's4', content_url: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400', content_type: 'image' as const },
-      { id: 's5', content_url: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400', content_type: 'image' as const },
-    ]
-  },
-  {
-    id: '3',
-    userId: '42fb3aaa-4ddb-41a1-adc4-75c9f0da99d6', // Golden Gleich - Real profile
-    username: 'Golden Gleich',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop',
-    hasStory: true,
-    storyCount: 2,
-    stories: [
-      { id: 's6', content_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400', content_type: 'image' as const },
-    ]
-  }
+// Story user IDs for fetching real profiles
+const storyUserIds = [
+  '357de30c-916f-4f54-bc2e-b32a7f7a01f0', // Jahi Bentley
+  'c75cfca4-8d6f-479a-bed5-0a7362541998', // Erosynth Labs
+  '42fb3aaa-4ddb-41a1-adc4-75c9f0da99d6', // Golden Gleich
 ];
+
+export default function SocialFeed() {
+  const { user } = useAuth();
+  const { profile } = useProfile();
+  const { profiles: storyProfiles } = useStoryProfiles(storyUserIds);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [feedType, setFeedType] = useState<'all' | 'following' | 'trending'>('all');
+  const [layout, setLayout] = useState<'list' | 'grid'>('list');
+  const { isOpen, initialIndex, openStory, closeStory } = useStoryViewer();
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const stories = [
+    {
+      id: '1',
+      userId: '357de30c-916f-4f54-bc2e-b32a7f7a01f0',
+      username: storyProfiles['357de30c-916f-4f54-bc2e-b32a7f7a01f0']?.display_name || 'Jahi Bentley',
+      avatar: storyProfiles['357de30c-916f-4f54-bc2e-b32a7f7a01f0']?.avatar_url || 'https://avatar.iran.liara.run/public',
+      hasStory: true,
+      isVerified: true,
+      storyCount: 5,
+      stories: [
+        { id: 's1', content_url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400', content_type: 'image' as const },
+        { id: 's2', content_url: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400', content_type: 'image' as const },
+        { id: 's8', content_url: 'https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?w=400', content_type: 'image' as const },
+        { id: 's9', content_url: 'https://images.unsplash.com/photo-1628155930542-3c7a64e2c833?w=400', content_type: 'image' as const },
+        { id: 's10', content_url: 'https://images.unsplash.com/photo-1556229162-1c5f3f43fc3c?w=400', content_type: 'image' as const },
+      ]
+    },
+    {
+      id: '2',
+      userId: 'c75cfca4-8d6f-479a-bed5-0a7362541998',
+      username: storyProfiles['c75cfca4-8d6f-479a-bed5-0a7362541998']?.display_name || 'Erosynth Labs',
+      avatar: storyProfiles['c75cfca4-8d6f-479a-bed5-0a7362541998']?.avatar_url || 'https://logo.clearbit.com/nike.com',
+      hasStory: true,
+      isBrand: storyProfiles['c75cfca4-8d6f-479a-bed5-0a7362541998']?.account_type === 'brand',
+      storyCount: 3,
+      stories: [
+        { id: 's3', content_url: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=400', content_type: 'image' as const },
+        { id: 's4', content_url: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=400', content_type: 'image' as const },
+        { id: 's5', content_url: 'https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?w=400', content_type: 'video' as const },
+      ]
+    },
+    {
+      id: '3',
+      userId: '42fb3aaa-4ddb-41a1-adc4-75c9f0da99d6',
+      username: storyProfiles['42fb3aaa-4ddb-41a1-adc4-75c9f0da99d6']?.display_name || 'Golden Gleich',
+      avatar: storyProfiles['42fb3aaa-4ddb-41a1-adc4-75c9f0da99d6']?.avatar_url || 'https://api.dicebear.com/7.x/avataaars/svg?seed=golden',
+      hasStory: true,
+      storyCount: 2,
+      stories: [
+        { id: 's6', content_url: 'https://images.unsplash.com/photo-1508341591423-4347099e1f19?w=400', content_type: 'image' as const },
+        { id: 's7', content_url: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400', content_type: 'image' as const },
+      ]
+    }
+  ];
 
 const featuredCreators = [
   {
@@ -93,16 +116,6 @@ const featuredCreators = [
     isFollowing: false
   }
 ];
-
-export default function SocialFeed() {
-  const { user } = useAuth();
-  const { profile } = useProfile();
-  const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [feedType, setFeedType] = useState<'all' | 'following' | 'trending'>('all');
-  const [layout, setLayout] = useState<'list' | 'grid'>('list');
-  const { isOpen, initialIndex, openStory, closeStory } = useStoryViewer();
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   // Track scroll progress
   useEffect(() => {

@@ -15,6 +15,7 @@ import { ShareButton } from './ShareButton';
 import { ReportModal } from './ReportModal';
 import { HeartBurstAnimation } from './HeartBurstAnimation';
 import { QuickReactions } from './QuickReactions';
+import { ProgressiveImage } from './ProgressiveImage';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -296,13 +297,14 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
               />
             ) : (
               !imageError ? (
-                <img
-                  src={needsUnlock ? mediaUrl : mediaUrl}
-                  alt="Post content"
-                  className={`w-full h-full object-cover ${needsUnlock ? 'blur-xl' : ''} transition-transform duration-300 group-hover/media:scale-105`}
-                  onError={() => setImageError(true)}
-                  loading="lazy"
-                />
+                <div className="relative w-full h-full">
+                  <ProgressiveImage
+                    src={mediaUrl}
+                    alt="Post content"
+                    className={`w-full h-full object-cover ${needsUnlock ? 'blur-xl' : ''} transition-transform duration-300 group-hover/media:scale-105`}
+                    onError={() => setImageError(true)}
+                  />
+                </div>
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-muted-foreground">
                   Failed to load image

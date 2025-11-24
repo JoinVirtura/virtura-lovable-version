@@ -6,6 +6,7 @@ import { Loader2, Sparkles, Users, TrendingUp, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { CommentModal } from './CommentModal';
 import { PostUnlockPaymentModal } from './PostUnlockPaymentModal';
+import { PullToRefresh } from './PullToRefresh';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -114,8 +115,8 @@ export function FeedContainer({ filterType = 'all', onFilterChange }: FeedContai
       fallbackTitle="Failed to load feed"
       fallbackMessage="We couldn't load the posts. Please try again."
     >
-      <>
-        <div className="space-y-6 max-w-2xl mx-auto scroll-smooth">
+      <PullToRefresh onRefresh={refresh}>
+        <div className="space-y-6 max-w-2xl mx-auto scroll-smooth snap-y snap-mandatory">
         {posts.map((post, index) => (
           <motion.div
             key={post.id}
@@ -163,7 +164,7 @@ export function FeedContainer({ filterType = 'all', onFilterChange }: FeedContai
             refresh();
           }}
         />
-      </>
+      </PullToRefresh>
     </ErrorBoundary>
   );
 }
