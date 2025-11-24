@@ -21,7 +21,7 @@ import { AIRecommendations } from '@/components/social/AIRecommendations';
 const stories = [
   {
     id: '1',
-    userId: 'user-1',
+    userId: 'c75cfca4-8d6f-479a-bed5-0a7362541998', // Sarah Chen - Real profile
     username: 'Sarah Chen',
     avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop',
     hasStory: true,
@@ -35,8 +35,8 @@ const stories = [
   },
   {
     id: '2',
-    userId: 'brand-nike',
-    username: 'Nike',
+    userId: '357de30c-916f-4f54-bc2e-b32a7f7a01f0', // Nike Brand - Real profile
+    username: 'Nike Brand',
     avatar: 'https://logo.clearbit.com/nike.com',
     hasStory: true,
     isBrand: true,
@@ -48,37 +48,13 @@ const stories = [
   },
   {
     id: '3',
-    userId: 'user-3',
+    userId: '42fb3aaa-4ddb-41a1-adc4-75c9f0da99d6', // Alex Rodriguez - Real profile
     username: 'Alex Rodriguez',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop',
     hasStory: true,
     storyCount: 2,
     stories: [
       { id: 's6', content_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400', content_type: 'image' as const },
-    ]
-  },
-  {
-    id: '4',
-    userId: 'brand-adobe',
-    username: 'Adobe',
-    avatar: 'https://logo.clearbit.com/adobe.com',
-    hasStory: true,
-    isBrand: true,
-    storyCount: 4,
-    stories: [
-      { id: 's7', content_url: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=400', content_type: 'image' as const },
-    ]
-  },
-  {
-    id: '5',
-    userId: 'user-5',
-    username: 'Maya Patel',
-    avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop',
-    hasStory: true,
-    isVerified: true,
-    storyCount: 1,
-    stories: [
-      { id: 's8', content_url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400', content_type: 'image' as const },
     ]
   }
 ];
