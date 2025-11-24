@@ -1,4 +1,4 @@
-import { VirturaNavigation } from "@/components/VirturaNavigation";
+
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,7 +40,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { MotionBackground } from "@/components/MotionBackground";
+
 import { SettingsContent } from "@/components/SettingsContent";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -363,9 +363,6 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      <MotionBackground />
-      <VirturaNavigation />
-      
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         {/* Header */}
         <div className="mb-8">

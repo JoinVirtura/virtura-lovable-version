@@ -15,6 +15,7 @@ import { ShareButton } from './ShareButton';
 import { ReportModal } from './ReportModal';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { motion } from 'framer-motion';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -118,194 +119,224 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
 
   return (
     <>
-    <Card className="overflow-hidden" ref={viewTrackingRef}>
-      {/* Creator Header */}
-      <div className="flex items-center justify-between p-4">
-        <button 
-          onClick={() => navigate(`/profile/${post.user_id}`)}
-          className="flex items-center gap-3 hover:opacity-80 transition-opacity"
-        >
-          <Avatar className="h-10 w-10">
-            <AvatarImage src={post.creator_avatar} />
-            <AvatarFallback>{post.creator_name?.[0] || 'U'}</AvatarFallback>
-          </Avatar>
-          <div className="text-left">
-            <p className="font-semibold text-sm">{post.creator_name}</p>
-            <p className="text-xs text-muted-foreground">
-              {formatDistanceToNow(new Date(post.published_at), { addSuffix: true })}
-            </p>
-          </div>
-        </button>
-        {!post.following_creator && !isOwnPost && (
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={handleFollow}
-            disabled={followLoading}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.2 }}
+    >
+      <Card className="overflow-hidden backdrop-blur-xl bg-background/40 border border-white/10 shadow-xl hover:shadow-2xl hover:shadow-violet-500/20 transition-all duration-300" ref={viewTrackingRef}>
+        {/* Creator Header */}
+        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-violet-500/5 to-purple-500/5">
+          <button 
+            onClick={() => navigate(`/profile/${post.user_id}`)}
+            className="flex items-center gap-3 hover:opacity-80 transition-opacity"
           >
-            {followLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Follow'}
-          </Button>
-        )}
-      </div>
-
-      {/* Media */}
-      {mediaUrl && (
-        <div className="relative aspect-square bg-muted">
-          {post.content_type === 'video' ? (
-            <video
-              src={needsUnlock ? undefined : mediaUrl}
-              className={`w-full h-full object-cover ${needsUnlock ? 'blur-xl' : ''}`}
-              controls={!needsUnlock}
-            />
-          ) : (
-            !imageError ? (
-              <img
-                src={needsUnlock ? mediaUrl : mediaUrl}
-                alt="Post content"
-                className={`w-full h-full object-cover ${needsUnlock ? 'blur-xl' : ''}`}
-                onError={() => setImageError(true)}
+            <div className="relative">
+              <motion.div
+                className="absolute -inset-1 rounded-full bg-gradient-to-r from-violet-500 to-purple-500 opacity-50 blur"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
               />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                Failed to load image
-              </div>
-            )
-          )}
-          
-          {/* Paywall Overlay */}
-          {needsUnlock && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-              <div className="text-center space-y-4 p-6 bg-background/90 backdrop-blur-sm rounded-lg">
-                <Lock className="h-12 w-12 mx-auto text-primary" />
-                <div>
-                  <p className="text-lg font-semibold">Unlock this post</p>
-                  <p className="text-2xl font-bold text-primary mt-2">
-                    ${(post.price_cents / 100).toFixed(2)}
-                  </p>
-                </div>
-                <Button onClick={() => onUnlock(post.id, post.price_cents)} size="lg">
-                  Unlock Now
-                </Button>
-              </div>
+              <Avatar className="h-10 w-10 relative">
+                <AvatarImage src={post.creator_avatar} />
+                <AvatarFallback>{post.creator_name?.[0] || 'U'}</AvatarFallback>
+              </Avatar>
             </div>
+            <div className="text-left">
+              <p className="font-semibold text-sm">{post.creator_name}</p>
+              <p className="text-xs text-muted-foreground">
+                {formatDistanceToNow(new Date(post.published_at), { addSuffix: true })}
+              </p>
+            </div>
+          </button>
+          {!post.following_creator && !isOwnPost && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleFollow}
+              disabled={followLoading}
+              className="border-violet-500/50 hover:bg-violet-500/10"
+            >
+              {followLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Follow'}
+            </Button>
           )}
         </div>
-      )}
 
-      {/* Actions & Caption */}
-      <div className="p-4 space-y-3">
-        {/* Action Buttons */}
-        <TooltipProvider>
-          <div className="flex items-center gap-4">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleLike}
-                  disabled={likeLoading}
-                  className="gap-2"
-                >
-                  {likeLoading ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                  ) : (
-                    <Heart className={`h-5 w-5 ${post.liked_by_user ? 'fill-red-500 text-red-500' : ''}`} />
-                  )}
-                  <span>{post.like_count}</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>{post.liked_by_user ? 'Unlike' : 'Like'}</TooltipContent>
-            </Tooltip>
-
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onComment(post.id)}
-                  className="gap-2"
-                >
-                  <MessageCircle className="h-5 w-5" />
-                  <span>{post.comment_count}</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Comment</TooltipContent>
-            </Tooltip>
+        {/* Media */}
+        {mediaUrl && (
+          <div className="relative aspect-square bg-muted group">
+            {post.content_type === 'video' ? (
+              <video
+                src={needsUnlock ? undefined : mediaUrl}
+                className={`w-full h-full object-cover ${needsUnlock ? 'blur-xl' : ''} transition-transform duration-300 group-hover:scale-105`}
+                controls={!needsUnlock}
+              />
+            ) : (
+              !imageError ? (
+                <img
+                  src={needsUnlock ? mediaUrl : mediaUrl}
+                  alt="Post content"
+                  className={`w-full h-full object-cover ${needsUnlock ? 'blur-xl' : ''} transition-transform duration-300 group-hover:scale-105`}
+                  onError={() => setImageError(true)}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                  Failed to load image
+                </div>
+              )
+            )}
             
-            <ShareButton postId={post.id} />
-
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleSaveToggle}
+            {/* Paywall Overlay */}
+            {needsUnlock && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+                <motion.div 
+                  className="text-center space-y-4 p-6 bg-background/95 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl"
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
                 >
-                  <Bookmark className={`h-5 w-5 ${saved ? 'fill-current' : ''}`} />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>{saved ? 'Unsave' : 'Save'}</TooltipContent>
-            </Tooltip>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="ghost" size="sm">
-                      <MoreVertical className="h-5 w-5" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>More options</TooltipContent>
-                </Tooltip>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => navigate(`/profile/${post.user_id}`)}>
-                  <User className="h-4 w-4 mr-2" />
-                  View Profile
-                </DropdownMenuItem>
-                {!isOwnPost && (
-                  <DropdownMenuItem 
-                    onClick={() => setBlockDialogOpen(true)}
-                    className="text-destructive"
+                  <Lock className="h-12 w-12 mx-auto text-violet-400" />
+                  <div>
+                    <p className="text-lg font-semibold">Unlock this post</p>
+                    <p className="text-3xl font-bold bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent mt-2">
+                      ${(post.price_cents / 100).toFixed(2)}
+                    </p>
+                  </div>
+                  <Button 
+                    onClick={() => onUnlock(post.id, post.price_cents)} 
+                    size="lg"
+                    className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600"
                   >
-                    <Ban className="h-4 w-4 mr-2" />
-                    Block User
-                  </DropdownMenuItem>
-                )}
-                {isOwnPost && (
-                  <DropdownMenuItem 
-                    onClick={() => setDeleteDialogOpen(true)}
-                    className="text-destructive"
-                  >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Delete Post
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuItem onClick={() => setReportModalOpen(true)}>
-                  <Flag className="h-4 w-4 mr-2" />
-                  Report post
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </TooltipProvider>
-
-        {/* Caption */}
-        {post.caption && (
-          <div>
-            <p className="text-sm">
-              <span className="font-semibold">{post.creator_name}</span>{' '}
-              {post.caption}
-            </p>
+                    Unlock Now
+                  </Button>
+                </motion.div>
+              </div>
+            )}
           </div>
         )}
 
-        {/* View Count */}
-        <p className="text-xs text-muted-foreground">
-          {post.view_count.toLocaleString()} views
-        </p>
-      </div>
-    </Card>
+        {/* Actions & Caption */}
+        <div className="p-4 space-y-3">
+          {/* Action Buttons */}
+          <TooltipProvider>
+            <div className="flex items-center gap-4">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <motion.div whileTap={{ scale: 0.9 }}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleLike}
+                      disabled={likeLoading}
+                      className="gap-2 hover:text-red-500 transition-colors"
+                    >
+                      {likeLoading ? (
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                      ) : (
+                        <Heart className={`h-5 w-5 transition-all ${post.liked_by_user ? 'fill-red-500 text-red-500 scale-110' : ''}`} />
+                      )}
+                      <span>{post.like_count}</span>
+                    </Button>
+                  </motion.div>
+                </TooltipTrigger>
+                <TooltipContent>{post.liked_by_user ? 'Unlike' : 'Like'}</TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <motion.div whileTap={{ scale: 0.9 }}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onComment(post.id)}
+                      className="gap-2 hover:text-violet-500 transition-colors"
+                    >
+                      <MessageCircle className="h-5 w-5" />
+                      <span>{post.comment_count}</span>
+                    </Button>
+                  </motion.div>
+                </TooltipTrigger>
+                <TooltipContent>Comment</TooltipContent>
+              </Tooltip>
+              
+              <ShareButton postId={post.id} />
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <motion.div whileTap={{ scale: 0.9 }}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleSaveToggle}
+                      className="hover:text-violet-500 transition-colors"
+                    >
+                      <Bookmark className={`h-5 w-5 transition-all ${saved ? 'fill-violet-500 text-violet-500 scale-110' : ''}`} />
+                    </Button>
+                  </motion.div>
+                </TooltipTrigger>
+                <TooltipContent>{saved ? 'Unsave' : 'Save'}</TooltipContent>
+              </Tooltip>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="sm">
+                        <MoreVertical className="h-5 w-5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>More options</TooltipContent>
+                  </Tooltip>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="backdrop-blur-xl bg-background/95 border-white/10">
+                  <DropdownMenuItem onClick={() => navigate(`/profile/${post.user_id}`)}>
+                    <User className="h-4 w-4 mr-2" />
+                    View Profile
+                  </DropdownMenuItem>
+                  {!isOwnPost && (
+                    <DropdownMenuItem 
+                      onClick={() => setBlockDialogOpen(true)}
+                      className="text-destructive"
+                    >
+                      <Ban className="h-4 w-4 mr-2" />
+                      Block User
+                    </DropdownMenuItem>
+                  )}
+                  {isOwnPost && (
+                    <DropdownMenuItem 
+                      onClick={() => setDeleteDialogOpen(true)}
+                      className="text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete Post
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem onClick={() => setReportModalOpen(true)}>
+                    <Flag className="h-4 w-4 mr-2" />
+                    Report post
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </TooltipProvider>
+
+          {/* Caption */}
+          {post.caption && (
+            <div>
+              <p className="text-sm">
+                <span className="font-semibold">{post.creator_name}</span>{' '}
+                {post.caption}
+              </p>
+            </div>
+          )}
+
+          {/* View Count */}
+          <p className="text-xs text-muted-foreground">
+            {post.view_count.toLocaleString()} views
+          </p>
+        </div>
+      </Card>
+    </motion.div>
 
     <ReportModal
       isOpen={reportModalOpen}

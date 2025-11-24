@@ -95,7 +95,7 @@ const AppRoutes = () => {
       <Route path="/campaigns" element={<ProtectedRoute><CampaignPage /></ProtectedRoute>} />
       <Route path="/library" element={<ProtectedRoute><LibraryPage /></ProtectedRoute>} />
       <Route path="/guide" element={<ProtectedRoute><GuidePage /></ProtectedRoute>} />
-      <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+      <Route path="/settings" element={<ProtectedRoute><DashboardLayout><SettingsPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       
       <Route path="/talking-avatar" element={<ProtectedRoute><TalkingAvatarPage /></ProtectedRoute>} />

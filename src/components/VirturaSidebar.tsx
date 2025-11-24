@@ -122,8 +122,6 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
   // Social & Creator section (new structure)
   const socialItems = [
     { id: "social-feed", label: "Feed", icon: Home, path: "/social" },
-    { id: "saved", label: "Saved", icon: Bookmark, path: "/saved" },
-    { id: "my-profile", label: "My Profile", icon: User, path: `/profile/${user?.id}` },
   ];
   
   const socialHeaderActions = (
@@ -399,7 +397,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
         <div className={!isMobile && isCollapsed ? "px-2 pb-2" : "px-3 pb-2"}>
           <SidebarMenuButton
             onClick={() => {
-              onViewChange("settings");
+              navigate("/settings");
               setOpenMobile(false);
             }}
             isActive={activeView === "settings"}
