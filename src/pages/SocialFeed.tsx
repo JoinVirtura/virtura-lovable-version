@@ -21,6 +21,7 @@ import { AIRecommendations } from '@/components/social/AIRecommendations';
 const stories = [
   {
     id: '1',
+    userId: 'user-1',
     username: 'Sarah Chen',
     avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop',
     hasStory: true,
@@ -34,6 +35,7 @@ const stories = [
   },
   {
     id: '2',
+    userId: 'brand-nike',
     username: 'Nike',
     avatar: 'https://logo.clearbit.com/nike.com',
     hasStory: true,
@@ -46,6 +48,7 @@ const stories = [
   },
   {
     id: '3',
+    userId: 'user-3',
     username: 'Alex Rodriguez',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop',
     hasStory: true,
@@ -56,6 +59,7 @@ const stories = [
   },
   {
     id: '4',
+    userId: 'brand-adobe',
     username: 'Adobe',
     avatar: 'https://logo.clearbit.com/adobe.com',
     hasStory: true,
@@ -67,6 +71,7 @@ const stories = [
   },
   {
     id: '5',
+    userId: 'user-5',
     username: 'Maya Patel',
     avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop',
     hasStory: true,
@@ -138,7 +143,7 @@ export default function SocialFeed() {
   }, []);
 
   return (
-    <div ref={containerRef} className="container mx-auto p-6 space-y-6 max-w-5xl scroll-smooth">
+    <div ref={containerRef} className="container mx-auto px-4 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6 max-w-5xl scroll-smooth">
       {/* Scroll Progress Indicator */}
       <motion.div
         className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 via-purple-500 to-pink-500 z-50 origin-left"
@@ -148,19 +153,19 @@ export default function SocialFeed() {
 
       {/* Header */}
       <motion.div 
-        className="flex items-center justify-between"
+        className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
       >
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-violet-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+          <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-violet-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
             Social Feed
           </h1>
-          <p className="text-muted-foreground mt-2">
+          <p className="text-sm md:text-base text-muted-foreground mt-1 md:mt-2">
             Discover and share content from creators
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 w-full sm:w-auto">
           {/* Layout Toggle */}
           <Button
             variant={layout === 'list' ? 'default' : 'ghost'}
@@ -188,24 +193,27 @@ export default function SocialFeed() {
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-          <StoryRing
-            avatar={profile?.avatar_url}
-            username={profile?.display_name || user?.email}
-            isYourStory
-            onClick={() => setCreateModalOpen(true)}
-          />
-          {stories.map((story, index) => (
+        <div className="flex gap-3 md:gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
+          <div className="snap-start">
             <StoryRing
-              key={story.id}
-              avatar={story.avatar}
-              username={story.username}
-              hasStory={story.hasStory}
-              isVerified={story.isVerified}
-              isBrand={story.isBrand}
-              storyCount={story.storyCount}
-              onClick={() => openStory(index)}
+              avatar={profile?.avatar_url}
+              username={profile?.display_name || user?.email}
+              isYourStory
+              onClick={() => setCreateModalOpen(true)}
             />
+          </div>
+          {stories.map((story, index) => (
+            <div key={story.id} className="snap-start">
+              <StoryRing
+                avatar={story.avatar}
+                username={story.username}
+                hasStory={story.hasStory}
+                isVerified={story.isVerified}
+                isBrand={story.isBrand}
+                storyCount={story.storyCount}
+                onClick={() => openStory(index)}
+              />
+            </div>
           ))}
         </div>
       </motion.div>
@@ -216,7 +224,7 @@ export default function SocialFeed() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
       >
-        <div className="grid grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 mb-6">
           <ContentPreviewCard
             type="video"
             thumbnail="https://images.unsplash.com/photo-1492619375914-88005aa9e8fb?w=400"
@@ -258,7 +266,7 @@ export default function SocialFeed() {
           <Sparkles className="w-5 h-5 text-violet-400 animate-pulse" />
           <h3 className="font-semibold text-lg">Featured Creators</h3>
         </div>
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
           {featuredCreators.map(creator => (
             <CreatorCard
               key={creator.id}
@@ -284,12 +292,13 @@ export default function SocialFeed() {
 
       {/* Filter Chips */}
       <motion.div
-        className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide"
+        className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
       >
         <FilterChip
+          className="snap-start whitespace-nowrap"
           active={feedType === 'all'}
           icon={<Sparkles className="h-4 w-4" />}
           onClick={() => setFeedType('all')}
@@ -297,6 +306,7 @@ export default function SocialFeed() {
           For You
         </FilterChip>
         <FilterChip
+          className="snap-start whitespace-nowrap"
           active={feedType === 'following'}
           icon={<Users className="h-4 w-4" />}
           onClick={() => setFeedType('following')}
@@ -304,6 +314,7 @@ export default function SocialFeed() {
           Following
         </FilterChip>
         <FilterChip
+          className="snap-start whitespace-nowrap"
           active={feedType === 'trending'}
           icon={<TrendingUp className="h-4 w-4" />}
           onClick={() => setFeedType('trending')}
