@@ -21,8 +21,8 @@ import { AIRecommendations } from '@/components/social/AIRecommendations';
 const stories = [
   {
     id: '1',
-    userId: 'c75cfca4-8d6f-479a-bed5-0a7362541998', // Sarah Chen - Real profile
-    username: 'Sarah Chen',
+    userId: 'c75cfca4-8d6f-479a-bed5-0a7362541998', // Erosynth Labs - Real profile
+    username: 'Erosynth Labs',
     avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop',
     hasStory: true,
     isVerified: true,
@@ -35,8 +35,8 @@ const stories = [
   },
   {
     id: '2',
-    userId: '357de30c-916f-4f54-bc2e-b32a7f7a01f0', // Nike Brand - Real profile
-    username: 'Nike Brand',
+    userId: '357de30c-916f-4f54-bc2e-b32a7f7a01f0', // Jahi Bentley - Real profile
+    username: 'Jahi Bentley',
     avatar: 'https://logo.clearbit.com/nike.com',
     hasStory: true,
     isBrand: true,
@@ -48,8 +48,8 @@ const stories = [
   },
   {
     id: '3',
-    userId: '42fb3aaa-4ddb-41a1-adc4-75c9f0da99d6', // Alex Rodriguez - Real profile
-    username: 'Alex Rodriguez',
+    userId: '42fb3aaa-4ddb-41a1-adc4-75c9f0da99d6', // Golden Gleich - Real profile
+    username: 'Golden Gleich',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop',
     hasStory: true,
     storyCount: 2,
