@@ -47,3 +47,6 @@ verify_jwt = false
 
 [functions.notification-scheduler]
 verify_jwt = false
+
+[functions.seed-sample-posts]
+verify_jwt = false
