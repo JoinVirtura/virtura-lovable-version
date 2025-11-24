@@ -1,18 +1,81 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useUserProfile } from "@/hooks/useUserProfile";
+import { useSavedPosts } from "@/hooks/useSavedPosts";
 import { EnhancedProfileHeader } from "@/components/profile/EnhancedProfileHeader";
 import { MasonryPostGrid } from "@/components/profile/MasonryPostGrid";
+import { EditableBio } from "@/components/profile/EditableBio";
 import { ProfileSkeleton } from "@/components/profile/ProfileSkeleton";
 import { useAuth } from "@/hooks/useAuth";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function UserProfile() {
   const { userId } = useParams<{ userId: string }>();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { profile, posts, loading } = useUserProfile(userId || '');
+  const { profile, posts, loading, updateProfile } = useUserProfile(userId || '');
+  const { savedPosts, loading: savedLoading } = useSavedPosts();
   const [activeTab, setActiveTab] = useState('posts');
+  const [savedPostsData, setSavedPostsData] = useState<any[]>([]);
+  const [loadingSavedPosts, setLoadingSavedPosts] = useState(false);
+
+  const isOwnProfile = user?.id === userId;
+
+  // Fetch full post data for saved posts
+  useEffect(() => {
+    const fetchSavedPostsData = async () => {
+      if (!isOwnProfile || savedPosts.length === 0) {
+        setSavedPostsData([]);
+        return;
+      }
+
+      setLoadingSavedPosts(true);
+      try {
+        const postIds = savedPosts.map(sp => sp.post_id);
+        
+        const { data, error } = await supabase
+          .from('social_posts')
+          .select(`
+            *,
+            profiles!social_posts_user_id_fkey (
+              display_name,
+              avatar_url
+            )
+          `)
+          .in('id', postIds)
+          .eq('status', 'published');
+
+        if (error) throw error;
+
+        const formattedPosts = data?.map(post => ({
+          id: post.id,
+          user_id: post.user_id,
+          media_urls: post.media_urls,
+          caption: post.caption,
+          content_type: post.content_type,
+          is_paid: post.is_paid,
+          price_cents: post.price_cents,
+          published_at: post.published_at,
+          like_count: post.like_count || 0,
+          comment_count: post.comment_count || 0,
+        })) || [];
+
+        setSavedPostsData(formattedPosts);
+      } catch (error) {
+        console.error('Error fetching saved posts:', error);
+        toast.error('Failed to load saved posts');
+      } finally {
+        setLoadingSavedPosts(false);
+      }
+    };
+
+    if (activeTab === 'saved' && isOwnProfile) {
+      fetchSavedPostsData();
+    }
+  }, [savedPosts, activeTab, isOwnProfile]);
 
   if (loading) {
     return <ProfileSkeleton />;
@@ -26,7 +89,15 @@ export default function UserProfile() {
     );
   }
 
-  const isOwnProfile = user?.id === userId;
+  const handleBioSave = async (newBio: string) => {
+    try {
+      await updateProfile({ bio: newBio });
+      toast.success('Bio updated successfully');
+    } catch (error) {
+      toast.error('Failed to update bio');
+      throw error;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -46,12 +117,14 @@ export default function UserProfile() {
             >
               Posts
             </TabsTrigger>
-            <TabsTrigger 
-              value="likes"
-              className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-6 py-3"
-            >
-              Likes
-            </TabsTrigger>
+            {isOwnProfile && (
+              <TabsTrigger 
+                value="saved"
+                className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-6 py-3"
+              >
+                Saved
+              </TabsTrigger>
+            )}
             <TabsTrigger 
               value="about"
               className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-6 py-3"
@@ -64,15 +137,29 @@ export default function UserProfile() {
             <MasonryPostGrid posts={posts} userId={userId} />
           </TabsContent>
 
-          <TabsContent value="likes" className="text-center py-12 text-muted-foreground">
-            Liked posts coming soon
-          </TabsContent>
+          {isOwnProfile && (
+            <TabsContent value="saved">
+              {loadingSavedPosts || savedLoading ? (
+                <div className="flex justify-center py-12">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              ) : savedPostsData.length > 0 ? (
+                <MasonryPostGrid posts={savedPostsData} userId={userId} />
+              ) : (
+                <div className="text-center py-12 text-muted-foreground">
+                  <p>No saved posts yet</p>
+                </div>
+              )}
+            </TabsContent>
+          )}
 
           <TabsContent value="about" className="max-w-2xl">
-            {profile.bio ? (
+            {isOwnProfile ? (
+              <EditableBio bio={profile.bio} onSave={handleBioSave} />
+            ) : profile.bio ? (
               <div className="space-y-4">
                 <h3 className="text-xl font-semibold">About</h3>
-                <p className="text-muted-foreground">{profile.bio}</p>
+                <p className="text-muted-foreground whitespace-pre-wrap">{profile.bio}</p>
               </div>
             ) : (
               <p className="text-muted-foreground text-center py-12">No bio yet</p>
