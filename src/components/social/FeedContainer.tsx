@@ -9,6 +9,7 @@ import { PostUnlockPaymentModal } from './PostUnlockPaymentModal';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { motion } from 'framer-motion';
 
 interface FeedContainerProps {
   filterType?: 'all' | 'following' | 'own' | 'trending';
@@ -114,16 +115,28 @@ export function FeedContainer({ filterType = 'all', onFilterChange }: FeedContai
       fallbackMessage="We couldn't load the posts. Please try again."
     >
       <>
-        <div className="space-y-6 max-w-2xl mx-auto">
-        {posts.map((post) => (
-          <PostCard
+        <div className="space-y-6 max-w-2xl mx-auto scroll-smooth">
+        {posts.map((post, index) => (
+          <motion.div
             key={post.id}
-            post={post}
-            onLike={toggleLike}
-            onComment={setSelectedPostId}
-            onUnlock={handleUnlock}
-            onFollow={followUser}
-          />
+            initial={{ opacity: 0, y: 50, scale: 0.95 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{
+              delay: index * 0.05,
+              duration: 0.4,
+              type: "spring",
+              stiffness: 100
+            }}
+          >
+            <PostCard
+              post={post}
+              onLike={toggleLike}
+              onComment={setSelectedPostId}
+              onUnlock={handleUnlock}
+              onFollow={followUser}
+            />
+          </motion.div>
         ))}
 
         {hasMore && (

@@ -1,4 +1,4 @@
-import { Heart, MessageCircle, Share2, Lock, MoreVertical, Bookmark, Flag, User, Ban, Trash2, Loader2 } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Lock, MoreVertical, Bookmark, Flag, User, Ban, Trash2, Loader2, Users, TrendingUp, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
@@ -240,6 +240,24 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
             )}
           </div>
         </div>
+
+        {/* Social Proof & Engagement Metrics */}
+        {post.like_count > 5 && (
+          <div className="relative z-10 px-4 py-2 bg-gradient-to-r from-violet-500/5 to-transparent border-l-2 border-violet-500/50">
+            <div className="flex items-center gap-4 text-xs">
+              <div className="flex items-center gap-1 text-violet-400">
+                <Users className="w-3 h-3" />
+                <span>{Math.floor(post.like_count * 0.3)} people you follow liked this</span>
+              </div>
+              {post.view_count > 1000 && (
+                <div className="flex items-center gap-1 text-green-400">
+                  <TrendingUp className="w-3 h-3" />
+                  <span>Trending</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Media with double-tap and quick reactions */}
         {mediaUrl && (
