@@ -65,9 +65,14 @@ export function useFollowUser(userId: string) {
 
     setLoading(true);
     try {
+      console.log('[Follow] Attempting to toggle follow for user:', userId);
+      console.log('[Follow] Current user:', user.id);
+      
       const { data, error } = await supabase.functions.invoke('follow-user', {
         body: { following_id: userId }
       });
+
+      console.log('[Follow] Response:', { data, error });
 
       if (error) throw error;
 
@@ -76,7 +81,7 @@ export function useFollowUser(userId: string) {
       
       toast.success(data.following ? 'Following user!' : 'Unfollowed user');
     } catch (error) {
-      console.error('Follow error:', error);
+      console.error('[Follow] Error:', error);
       toast.error('Failed to update follow status');
     } finally {
       setLoading(false);

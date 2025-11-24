@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 interface Story {
   id: string;
@@ -13,6 +14,7 @@ interface Story {
 
 interface StoryData {
   id: string;
+  userId: string;
   username: string;
   avatar?: string | null;
   stories: Story[];
@@ -26,6 +28,7 @@ interface StoryViewerProps {
 }
 
 export function StoryViewer({ isOpen, onClose, stories, initialStoryIndex }: StoryViewerProps) {
+  const navigate = useNavigate();
   const [currentUserIndex, setCurrentUserIndex] = useState(initialStoryIndex);
   const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -33,6 +36,11 @@ export function StoryViewer({ isOpen, onClose, stories, initialStoryIndex }: Sto
   const currentUser = stories[currentUserIndex];
   const currentStory = currentUser?.stories[currentStoryIndex];
   const duration = currentStory?.duration || 5000;
+
+  const handleUsernameClick = () => {
+    navigate(`/profile/${currentUser.userId}`);
+    onClose();
+  };
 
   useEffect(() => {
     if (!isOpen) return;
@@ -124,11 +132,16 @@ export function StoryViewer({ isOpen, onClose, stories, initialStoryIndex }: Sto
           {/* User Info */}
           <div className="absolute top-4 left-0 right-0 z-50 flex items-center justify-between px-4 mt-2">
             <div className="flex items-center gap-3">
-              <Avatar className="h-10 w-10 ring-2 ring-white">
+              <Avatar className="h-10 w-10 ring-2 ring-white cursor-pointer" onClick={handleUsernameClick}>
                 <AvatarImage src={currentUser.avatar || undefined} />
                 <AvatarFallback>{currentUser.username[0]}</AvatarFallback>
               </Avatar>
-              <span className="font-semibold text-white">{currentUser.username}</span>
+              <button 
+                onClick={handleUsernameClick}
+                className="font-semibold text-white hover:underline cursor-pointer transition-all"
+              >
+                {currentUser.username}
+              </button>
             </div>
             <Button
               variant="ghost"
