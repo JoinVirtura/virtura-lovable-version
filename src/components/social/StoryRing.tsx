@@ -66,7 +66,7 @@ export function StoryRing({ avatar, username, hasStory, isYourStory, isVerified,
       
       {/* Username with story count */}
       <div className="flex flex-col items-center gap-0.5">
-        <span className="text-xs text-muted-foreground max-w-[70px] truncate group-hover:text-foreground transition-colors">
+        <span className="text-xs text-muted-foreground lowercase group-hover:text-foreground transition-colors">
           {isYourStory ? 'Your Story' : username}
         </span>
         {storyCount && storyCount > 1 && (

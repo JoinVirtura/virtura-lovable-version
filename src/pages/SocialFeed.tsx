@@ -172,7 +172,7 @@ export default function SocialFeed() {
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <div className="flex gap-3 md:gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
+        <div className="flex gap-3 md:gap-4 overflow-x-auto pb-4 px-1 scrollbar-hide snap-x snap-mandatory">
           <div className="snap-start">
             <StoryRing
               avatar={profile?.avatar_url}
@@ -336,7 +336,7 @@ export default function SocialFeed() {
       <StoryViewer
         isOpen={isOpen}
         onClose={closeStory}
-        stories={stories}
+        stories={filteredStories}
         initialStoryIndex={initialIndex}
       />
     </div>
