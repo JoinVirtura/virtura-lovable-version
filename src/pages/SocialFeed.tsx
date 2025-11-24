@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Plus, Grid3x3, List, Sparkles, Users, TrendingUp, Clock } from 'lucide-react';
+import { Plus, Grid3x3, List, Sparkles, Users, TrendingUp, Clock, Play } from 'lucide-react';
 import { useState } from 'react';
 import { FeedContainer } from '@/components/social/FeedContainer';
 import { CreatePostModal } from '@/components/social/CreatePostModal';
@@ -9,6 +9,107 @@ import { FilterChip } from '@/components/social/FilterChip';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { motion } from 'framer-motion';
+import { StoryViewer } from '@/components/social/StoryViewer';
+import { useStoryViewer } from '@/hooks/useStoryViewer';
+import { ContentPreviewCard } from '@/components/social/ContentPreviewCard';
+import { CreatorCard } from '@/components/social/CreatorCard';
+import { ContinueWatchingCard } from '@/components/social/ContinueWatchingCard';
+import { RecommendationCard } from '@/components/social/RecommendationCard';
+
+const stories = [
+  {
+    id: '1',
+    username: 'Sarah Chen',
+    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop',
+    hasStory: true,
+    isVerified: true,
+    storyCount: 3,
+    stories: [
+      { id: 's1', content_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400', content_type: 'image' as const },
+      { id: 's2', content_url: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400', content_type: 'image' as const },
+      { id: 's3', content_url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400', content_type: 'image' as const },
+    ]
+  },
+  {
+    id: '2',
+    username: 'Nike',
+    avatar: 'https://logo.clearbit.com/nike.com',
+    hasStory: true,
+    isBrand: true,
+    storyCount: 5,
+    stories: [
+      { id: 's4', content_url: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400', content_type: 'image' as const },
+      { id: 's5', content_url: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400', content_type: 'image' as const },
+    ]
+  },
+  {
+    id: '3',
+    username: 'Alex Rodriguez',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop',
+    hasStory: true,
+    storyCount: 2,
+    stories: [
+      { id: 's6', content_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400', content_type: 'image' as const },
+    ]
+  },
+  {
+    id: '4',
+    username: 'Adobe',
+    avatar: 'https://logo.clearbit.com/adobe.com',
+    hasStory: true,
+    isBrand: true,
+    storyCount: 4,
+    stories: [
+      { id: 's7', content_url: 'https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=400', content_type: 'image' as const },
+    ]
+  },
+  {
+    id: '5',
+    username: 'Maya Patel',
+    avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop',
+    hasStory: true,
+    isVerified: true,
+    storyCount: 1,
+    stories: [
+      { id: 's8', content_url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400', content_type: 'image' as const },
+    ]
+  }
+];
+
+const featuredCreators = [
+  {
+    id: '1',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop',
+    name: 'Emma Wilson',
+    category: 'Fashion',
+    followers: '245K',
+    isFollowing: false
+  },
+  {
+    id: '2',
+    avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&h=100&fit=crop',
+    name: 'Marcus Chen',
+    category: 'Tech Reviews',
+    followers: '892K',
+    isFollowing: false
+  },
+  {
+    id: '3',
+    avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop',
+    name: 'Sofia Garcia',
+    category: 'Travel',
+    followers: '567K',
+    isFollowing: true
+  },
+  {
+    id: '4',
+    avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=100&h=100&fit=crop',
+    name: 'James Parker',
+    category: 'Fitness',
+    followers: '423K',
+    isFollowing: false
+  }
+];
 
 export default function SocialFeed() {
   const { user } = useAuth();
@@ -16,9 +117,10 @@ export default function SocialFeed() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [feedType, setFeedType] = useState<'all' | 'following' | 'trending'>('all');
   const [layout, setLayout] = useState<'list' | 'grid'>('list');
+  const { isOpen, initialIndex, openStory, closeStory } = useStoryViewer();
 
   return (
-    <div className="container mx-auto p-6 space-y-6 max-w-5xl">
+    <div className="container mx-auto p-6 space-y-6 max-w-5xl scroll-smooth">
       {/* Header */}
       <motion.div 
         className="flex items-center justify-between"
@@ -68,13 +170,73 @@ export default function SocialFeed() {
             isYourStory
             onClick={() => setCreateModalOpen(true)}
           />
-          {/* Placeholder stories - in real app, fetch from API */}
-          {[1, 2, 3, 4, 5].map((i) => (
+          {stories.map((story, index) => (
             <StoryRing
-              key={i}
-              avatar={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i}`}
-              username={`User ${i}`}
-              hasStory
+              key={story.id}
+              avatar={story.avatar}
+              username={story.username}
+              hasStory={story.hasStory}
+              isVerified={story.isVerified}
+              isBrand={story.isBrand}
+              storyCount={story.storyCount}
+              onClick={() => openStory(index)}
+            />
+          ))}
+        </div>
+      </motion.div>
+
+      {/* Content Preview Cards */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          <ContentPreviewCard
+            type="video"
+            thumbnail="https://images.unsplash.com/photo-1492619375914-88005aa9e8fb?w=400"
+            title="Tech Reviews"
+            viewCount="2.4M"
+            gradient="from-blue-500 to-cyan-500"
+          />
+          <ContentPreviewCard
+            type="animation"
+            thumbnail="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400"
+            title="Motion Graphics"
+            viewCount="1.8M"
+            gradient="from-purple-500 to-pink-500"
+          />
+          <ContentPreviewCard
+            type="photography"
+            thumbnail="https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=400"
+            title="Visual Stories"
+            viewCount="3.2M"
+            gradient="from-orange-500 to-red-500"
+          />
+        </div>
+      </motion.div>
+
+      {/* Featured Creators Section */}
+      <motion.div
+        className="mb-8 p-6 rounded-3xl bg-gradient-to-br from-violet-900/30 to-purple-900/30 backdrop-blur-xl border border-primary/20"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.25 }}
+      >
+        <div className="flex items-center gap-3 mb-4">
+          <Sparkles className="w-5 h-5 text-violet-400 animate-pulse" />
+          <h3 className="font-semibold text-lg">Featured Creators</h3>
+        </div>
+        <div className="grid grid-cols-4 gap-4">
+          {featuredCreators.map(creator => (
+            <CreatorCard
+              key={creator.id}
+              avatar={creator.avatar}
+              name={creator.name}
+              category={creator.category}
+              followers={creator.followers}
+              isFollowing={creator.isFollowing}
+              onFollow={() => console.log('Follow', creator.id)}
             />
           ))}
         </div>
@@ -147,6 +309,14 @@ export default function SocialFeed() {
       <CreatePostModal
         isOpen={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
+      />
+
+      {/* Story Viewer */}
+      <StoryViewer
+        isOpen={isOpen}
+        onClose={closeStory}
+        stories={stories}
+        initialStoryIndex={initialIndex}
       />
     </div>
   );

@@ -75,16 +75,16 @@ export function MarketplaceBrowser() {
         </Badge>
       </div>
 
-      {/* Featured Campaigns Carousel */}
-      <FeaturedCampaigns 
-        campaigns={campaigns.filter(c => c.status === 'open')} 
-        onViewCampaign={handleViewCampaign}
-      />
-
-      {/* Category Filters */}
+      {/* Category Filter - Moved above Featured Campaigns */}
       <CategoryFilter
         selectedCategory={selectedCategory}
         onSelectCategory={setSelectedCategory}
+      />
+
+      {/* Featured Campaigns Carousel */}
+      <FeaturedCampaigns 
+        campaigns={campaigns.filter(c => c.status === 'open')}
+        onViewCampaign={handleViewCampaign}
       />
 
       {/* Campaign Grid */}
