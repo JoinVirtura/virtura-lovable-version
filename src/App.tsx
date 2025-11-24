@@ -44,7 +44,6 @@ import VerificationPage from "./pages/VerificationPage";
 import Upgrade from "./pages/Upgrade";
 import TrialAnalytics from "./pages/admin/TrialAnalytics";
 import TrialExperiments from "./pages/admin/TrialExperiments";
-import Support from "./pages/Support";
 
 const queryClient = new QueryClient();
 
@@ -97,7 +96,6 @@ const AppRoutes = () => {
       <Route path="/library" element={<ProtectedRoute><LibraryPage /></ProtectedRoute>} />
       <Route path="/guide" element={<ProtectedRoute><GuidePage /></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><DashboardLayout><SettingsPage /></DashboardLayout></ProtectedRoute>} />
-      <Route path="/support" element={<ProtectedRoute><Support /></ProtectedRoute>} />
       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       
       <Route path="/talking-avatar" element={<ProtectedRoute><TalkingAvatarPage /></ProtectedRoute>} />
