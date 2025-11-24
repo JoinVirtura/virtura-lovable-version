@@ -21,40 +21,40 @@ import { AIRecommendations } from '@/components/social/AIRecommendations';
 const stories = [
   {
     id: '1',
-    userId: 'c75cfca4-8d6f-479a-bed5-0a7362541998', // Sarah Chen - Real profile
-    username: 'Sarah Chen',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop',
+    userId: '357de30c-916f-4f54-bc2e-b32a7f7a01f0', // Jahi Bentley
+    username: 'Jahi Bentley',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=jahi',
     hasStory: true,
     isVerified: true,
     storyCount: 3,
     stories: [
-      { id: 's1', content_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400', content_type: 'image' as const },
-      { id: 's2', content_url: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400', content_type: 'image' as const },
-      { id: 's3', content_url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400', content_type: 'image' as const },
+      { id: 's1', content_url: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400', content_type: 'image' as const },
+      { id: 's2', content_url: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400', content_type: 'image' as const },
+      { id: 's3', content_url: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=400', content_type: 'image' as const },
     ]
   },
   {
     id: '2',
-    userId: '357de30c-916f-4f54-bc2e-b32a7f7a01f0', // Nike Brand - Real profile
-    username: 'Nike Brand',
-    avatar: 'https://logo.clearbit.com/nike.com',
+    userId: 'c75cfca4-8d6f-479a-bed5-0a7362541998', // Erosynth Labs
+    username: 'Erosynth Labs',
+    avatar: 'https://api.dicebear.com/7.x/identicon/svg?seed=erosynthlabs',
     hasStory: true,
     isBrand: true,
     storyCount: 5,
     stories: [
-      { id: 's4', content_url: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400', content_type: 'image' as const },
-      { id: 's5', content_url: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400', content_type: 'image' as const },
+      { id: 's4', content_url: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=400', content_type: 'image' as const },
+      { id: 's5', content_url: 'https://images.unsplash.com/photo-1639762681057-408e52192e55?w=400', content_type: 'image' as const },
     ]
   },
   {
     id: '3',
-    userId: '42fb3aaa-4ddb-41a1-adc4-75c9f0da99d6', // Alex Rodriguez - Real profile
-    username: 'Alex Rodriguez',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop',
+    userId: '42fb3aaa-4ddb-41a1-adc4-75c9f0da99d6', // Golden Gleich
+    username: 'Golden Gleich',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=golden',
     hasStory: true,
     storyCount: 2,
     stories: [
-      { id: 's6', content_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400', content_type: 'image' as const },
+      { id: 's6', content_url: 'https://images.unsplash.com/photo-1549887534-1541e9326642?w=400', content_type: 'image' as const },
     ]
   }
 ];
