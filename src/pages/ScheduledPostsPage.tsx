@@ -1,9 +1,13 @@
+import { useState } from 'react';
 import { useScheduledPosts } from '@/hooks/useScheduledPosts';
 import { SmartCalendar } from '@/components/scheduling/SmartCalendar';
-import { Loader2 } from 'lucide-react';
+import { CreatePostModal } from '@/components/social/CreatePostModal';
+import { Button } from '@/components/ui/button';
+import { Loader2, Plus, Calendar } from 'lucide-react';
 
 export default function ScheduledPostsPage() {
   const { posts, loading, publishNow, deleteScheduledPost } = useScheduledPosts();
+  const [createModalOpen, setCreateModalOpen] = useState(false);
 
   if (loading) {
     return (
@@ -15,19 +19,38 @@ export default function ScheduledPostsPage() {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary-blue bg-clip-text text-transparent">
-          Scheduled Posts
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Manage your content calendar
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary-blue bg-clip-text text-transparent">
+            Scheduled Posts
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Manage your content calendar
+          </p>
+        </div>
+        
+        {/* Schedule Post Button */}
+        <Button 
+          onClick={() => setCreateModalOpen(true)}
+          className="bg-gradient-to-r from-primary to-primary-blue shadow-lg"
+          size="lg"
+        >
+          <Plus className="w-5 h-5 mr-2" />
+          Schedule Post
+        </Button>
       </div>
 
       <SmartCalendar
         posts={posts}
         onPublishNow={publishNow}
         onDelete={deleteScheduledPost}
+      />
+
+      {/* Create Post Modal with Scheduling Enabled by Default */}
+      <CreatePostModal 
+        isOpen={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        defaultScheduled={true}
       />
     </div>
   );

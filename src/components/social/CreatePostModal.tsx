@@ -15,15 +15,16 @@ import { format } from 'date-fns';
 interface CreatePostModalProps {
   isOpen: boolean;
   onClose: () => void;
+  defaultScheduled?: boolean;
 }
 
-export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
+export function CreatePostModal({ isOpen, onClose, defaultScheduled = false }: CreatePostModalProps) {
   const [caption, setCaption] = useState('');
   const [isPaid, setIsPaid] = useState(false);
   const [price, setPrice] = useState('');
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
-  const [isScheduled, setIsScheduled] = useState(false);
+  const [isScheduled, setIsScheduled] = useState(defaultScheduled);
   const [scheduledDate, setScheduledDate] = useState<Date | undefined>();
   const [scheduledTime, setScheduledTime] = useState('12:00');
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['feed']);
