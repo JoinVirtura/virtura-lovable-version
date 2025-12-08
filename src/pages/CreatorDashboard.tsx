@@ -42,8 +42,9 @@ export default function CreatorDashboard() {
   const earningsLoading = useDemoData ? false : realEarnings.loading;
   
   // Calculate daily average for projections
-  const dailyAverage = stats.timeSeriesData.length > 0
-    ? stats.timeSeriesData.reduce((sum: number, d: any) => sum + d.total, 0) / stats.timeSeriesData.length
+  const timeSeriesArr = stats.timeSeriesData as Array<{ total: number }>;
+  const dailyAverage = timeSeriesArr.length > 0
+    ? timeSeriesArr.reduce((sum, d) => sum + d.total, 0) / timeSeriesArr.length
     : 0;
 
   const handleSetupStripe = async () => {
