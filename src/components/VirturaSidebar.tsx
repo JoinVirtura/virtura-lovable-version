@@ -318,11 +318,11 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
               setOpenMobile(false);
             }
           }}
-          className={`flex items-center transition-colors rounded-lg ml-3 mr-3 min-h-[44px] ${!isMobile && isCollapsed ? "py-3 justify-center" : "pl-4 pr-4 py-3 gap-3 justify-start"} hover:bg-violet-500/5 hover:text-violet-300 text-white ${activeView === "profile" ? "bg-violet-500/20 border border-violet-400/30" : ""}`}
+          className={`flex items-center transition-colors rounded-lg min-h-[44px] ${!isMobile && isCollapsed ? "py-2 px-1 mx-1 justify-center" : "ml-3 mr-3 pl-4 pr-4 py-3 gap-3 justify-start"} hover:bg-violet-500/5 hover:text-violet-300 text-white ${activeView === "profile" ? "bg-violet-500/20 border border-violet-400/30" : ""}`}
         >
-          <Avatar className="w-10 h-10 ring-2 ring-violet-500/30 shrink-0">
+          <Avatar className={`ring-2 ring-violet-500/30 shrink-0 ${!isMobile && isCollapsed ? "w-8 h-8" : "w-10 h-10"}`}>
             <AvatarImage src={profile?.avatar_url || undefined} />
-            <AvatarFallback className="bg-violet-500/20 text-violet-300">
+            <AvatarFallback className="bg-violet-500/20 text-violet-300 text-xs">
               {profile?.display_name
                 ? profile.display_name
                     .split(" ")
