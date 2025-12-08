@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
+import { AnimatePresence } from "framer-motion";
 import { VirturaNavigation } from "@/components/VirturaNavigation";
 import { MotionBackground } from "@/components/MotionBackground";
 import { ChatInterface } from "@/components/ChatInterface";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Upload, Palette, Type, TrendingUp, Download, Share2, Sparkles, Plus, FolderOpen } from "lucide-react";
+import { BrandsOnboardingTutorial } from "@/components/studio/BrandsOnboardingTutorial";
 import { toast } from "sonner";
 import { AvatarService } from "@/services/avatarService";
 import { useBrandAssets } from "@/hooks/useBrandAssets";
@@ -29,6 +31,15 @@ export default function BrandsPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showCreateBrand, setShowCreateBrand] = useState(false);
   const [showBrandKit, setShowBrandKit] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  // Check onboarding on mount
+  useEffect(() => {
+    const hasSeenOnboarding = localStorage.getItem("brandsOnboardingComplete");
+    if (!hasSeenOnboarding) {
+      setShowOnboarding(true);
+    }
+  }, []);
 
   // Load brands on mount
   useEffect(() => {
@@ -175,9 +186,16 @@ export default function BrandsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
-      <MotionBackground />
-      <VirturaNavigation />
+    <>
+      <AnimatePresence>
+        {showOnboarding && (
+          <BrandsOnboardingTutorial onComplete={() => setShowOnboarding(false)} />
+        )}
+      </AnimatePresence>
+      
+      <div className="min-h-screen bg-background relative overflow-hidden">
+        <MotionBackground />
+        <VirturaNavigation />
       
       <main className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8 relative z-10">
         {/* Welcome Banner */}
@@ -495,5 +513,6 @@ export default function BrandsPage() {
         }}
       />
     </div>
+    </>
   );
 }

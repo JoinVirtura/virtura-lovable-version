@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from "react";
+import { AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { CopilotOnboardingTutorial } from "./studio/CopilotOnboardingTutorial";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -92,6 +94,7 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
   const [editImageRemoved, setEditImageRemoved] = useState(false);
   const [chatMessages, setChatMessages] = useState<Array<{role: 'user' | 'assistant', content: string, id?: number}>>([]);
   const [chatInput, setChatInput] = useState("");
+  const [showOnboarding, setShowOnboarding] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -116,6 +119,13 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
     { value: "balanced", label: "Balanced", description: "Best of both speed and quality" },
     { value: "ultra", label: "Ultra", description: "Maximum quality, slower generation" }
   ];
+
+  useEffect(() => {
+    const hasSeenOnboarding = localStorage.getItem("copilotOnboardingComplete");
+    if (!hasSeenOnboarding) {
+      setShowOnboarding(true);
+    }
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -451,7 +461,14 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+    <>
+      <AnimatePresence>
+        {showOnboarding && (
+          <CopilotOnboardingTutorial onComplete={() => setShowOnboarding(false)} />
+        )}
+      </AnimatePresence>
+      
+      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5">
       {/* Background Graphics */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
@@ -1140,5 +1157,6 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
         <div ref={messagesEndRef} />
       </div>
     </div>
+    </>
   );
 };
