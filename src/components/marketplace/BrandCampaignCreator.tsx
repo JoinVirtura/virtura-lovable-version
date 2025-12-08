@@ -42,7 +42,11 @@ const formSchema = z.object({
   visibility: z.enum(['public', 'private', 'invited']).default('public'),
 });
 
-export function BrandCampaignCreator() {
+interface BrandCampaignCreatorProps {
+  onSuccess?: () => void;
+}
+
+export function BrandCampaignCreator({ onSuccess }: BrandCampaignCreatorProps) {
   const [step, setStep] = useState(1);
   const [brands, setBrands] = useState<any[]>([]);
   const navigate = useNavigate();
@@ -101,7 +105,11 @@ export function BrandCampaignCreator() {
         visibility: values.visibility,
       });
 
-      navigate('/marketplace/manage');
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        navigate('/marketplace');
+      }
     } catch (error) {
       console.error('Error creating campaign:', error);
     }

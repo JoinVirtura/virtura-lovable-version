@@ -1601,6 +1601,41 @@ export type Database = {
           },
         ]
       }
+      marketplace_messages: {
+        Row: {
+          campaign_id: string
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          message: string
+          sender_id: string
+        }
+        Insert: {
+          campaign_id: string
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message: string
+          sender_id: string
+        }
+        Update: {
+          campaign_id?: string
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_messages_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       marketplace_payments: {
         Row: {
           brand_id: string
