@@ -48,6 +48,8 @@ export function AdminDashboard() {
   const [jobs, setJobs] = useState<JobData[]>([]);
   const [users, setUsers] = useState<UserActivity[]>([]);
   const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [typeFilter, setTypeFilter] = useState<string>('all');
 
   const fetchDashboardData = async () => {
     setLoading(true);
@@ -194,9 +196,6 @@ export function AdminDashboard() {
       </div>
     );
   }
-
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [typeFilter, setTypeFilter] = useState<string>('all');
 
   const getJobTypeIcon = (type: string) => {
     switch (type.toLowerCase()) {
