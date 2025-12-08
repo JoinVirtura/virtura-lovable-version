@@ -27,6 +27,9 @@ export interface DemoStats {
   paidOutEarnings: number;
   totalTransactions: number;
   projectedMonthly: number;
+  grossEarnings: number;
+  netEarnings: number;
+  platformFees: number;
   timeSeriesData: DemoTimeSeriesData[];
   revenueBySource: {
     source: string;
@@ -175,12 +178,19 @@ export function useDemoEarningsData() {
       count: data.count,
     }));
     
+    const grossEarnings = earnings.reduce((sum, e) => sum + e.amount_cents, 0) / 100;
+    const platformFees = earnings.reduce((sum, e) => sum + e.platform_fee_cents, 0) / 100;
+    const netEarnings = totalEarnings;
+
     const stats: DemoStats = {
       totalEarnings,
       pendingEarnings,
       paidOutEarnings,
       totalTransactions: earnings.length,
       projectedMonthly,
+      grossEarnings,
+      netEarnings,
+      platformFees,
       timeSeriesData,
       revenueBySource,
       sourceBreakdown,
