@@ -1,7 +1,8 @@
-import { Heart, MessageCircle, Share2, Lock, MoreVertical, Bookmark, Flag, User, Ban, Trash2, Loader2, Users, TrendingUp, Eye, Flame } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Lock, MoreVertical, Bookmark, Flag, User, Ban, Trash2, Loader2, Users, TrendingUp, Eye, Flame, Sparkles, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { SocialPost } from '@/hooks/useSocialPosts';
 import { formatDistanceToNow } from 'date-fns';
 import { useState, useRef, useEffect } from 'react';
@@ -16,6 +17,7 @@ import { ReportModal } from './ReportModal';
 import { HeartBurstAnimation } from './HeartBurstAnimation';
 import { QuickReactions } from './QuickReactions';
 import { ProgressiveImage } from './ProgressiveImage';
+import { SubscribeCreatorButton } from './SubscribeCreatorButton';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -69,6 +71,11 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
   const saved = isPostSaved(post.id);
   const isOwnPost = user?.id === post.user_id;
 
+  // Check if post is AI-generated (based on metadata or caption keywords)
+  const isAIGenerated = post.caption?.toLowerCase().includes('#ai') || 
+                        post.caption?.toLowerCase().includes('ai-generated') ||
+                        post.caption?.toLowerCase().includes('ai created');
+
   // Auto-play video when in view
   useEffect(() => {
     if (!videoRef.current) return;
@@ -107,7 +114,6 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
 
   const handleQuickReaction = (emoji: string) => {
     console.log('Quick reaction:', emoji, 'on post:', post.id);
-    // Could integrate with a reactions system in the future
   };
 
   const handleSaveToggle = () => {
@@ -170,117 +176,140 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -4 }}
+      whileHover={{ y: -2 }}
       transition={{ duration: 0.2 }}
       className="scroll-snap-align-start"
     >
-      <Card className="overflow-hidden backdrop-blur-3xl bg-gradient-to-br from-card/80 via-card/70 to-card/80 border border-primary/20 shadow-2xl hover:shadow-violet-500/20 transition-all duration-300 group" ref={viewTrackingRef}>
-        {/* Glassmorphic overlay on hover */}
-        <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-        
+      <Card className="overflow-hidden bg-card border border-border/50 shadow-lg hover:shadow-xl transition-all duration-300 group" ref={viewTrackingRef}>
         {/* Heart Burst Animation */}
         <AnimatePresence>
           {showHeartBurst && <HeartBurstAnimation />}
         </AnimatePresence>
 
-        {/* Creator Header */}
-        <div className="relative z-10 flex items-center justify-between p-4 bg-gradient-to-r from-violet-500/5 to-purple-500/5">
+        {/* Creator Header - Twitter Style */}
+        <div className="flex items-start justify-between p-4">
           <button 
             onClick={() => navigate(`/profile/${post.user_id}`)}
-            className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+            className="flex items-start gap-3 hover:opacity-80 transition-opacity"
           >
-            <div className="relative">
-              <motion.div
-                className="absolute -inset-1 rounded-full bg-gradient-to-r from-violet-500 to-purple-500 opacity-50 blur"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-              />
-              <Avatar className="h-10 w-10 relative ring-2 ring-primary/20">
-                <AvatarImage src={post.creator_avatar} />
-                <AvatarFallback>{post.creator_name?.[0] || 'U'}</AvatarFallback>
-              </Avatar>
-            </div>
+            <Avatar className="h-12 w-12 ring-2 ring-border">
+              <AvatarImage src={post.creator_avatar} />
+              <AvatarFallback>{post.creator_name?.[0] || 'U'}</AvatarFallback>
+            </Avatar>
             <div className="text-left">
-              <p className="font-semibold text-sm">{post.creator_name}</p>
+              <div className="flex items-center gap-2">
+                <p className="font-bold text-sm">{post.creator_name}</p>
+                {isAIGenerated && (
+                  <Badge variant="outline" className="text-xs px-1.5 py-0 h-5 bg-gradient-to-r from-violet-500/10 to-purple-500/10 border-violet-500/30">
+                    <Sparkles className="h-3 w-3 mr-1 text-violet-400" />
+                    AI
+                  </Badge>
+                )}
+              </div>
               <p className="text-xs text-muted-foreground">
-                {formatDistanceToNow(new Date(post.published_at), { addSuffix: true })}
+                @{post.creator_name?.toLowerCase().replace(/\s+/g, '')} · {formatDistanceToNow(new Date(post.published_at), { addSuffix: true })}
               </p>
             </div>
           </button>
           
           <div className="flex items-center gap-2">
+            {/* Price Badge or FREE Badge */}
+            {post.is_paid ? (
+              <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0">
+                ${(post.price_cents / 100).toFixed(2)}
+              </Badge>
+            ) : (
+              <Badge variant="secondary" className="text-xs">FREE</Badge>
+            )}
+
+            {/* Follow Button */}
             {!post.following_creator && !isOwnPost && (
               <Button
                 size="sm"
                 variant="outline"
                 onClick={handleFollow}
                 disabled={followLoading}
-                className="border-violet-500/50 hover:bg-violet-500/10"
+                className="border-primary/50 hover:bg-primary/10 h-8"
               >
                 {followLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Follow'}
               </Button>
             )}
 
-            {/* Prominent Delete Button for Own Posts */}
-            {isOwnPost && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setDeleteDialogOpen(true)}
-                      className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Delete post</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+            {/* Subscribe Button for Creators */}
+            {!isOwnPost && (
+              <SubscribeCreatorButton creatorId={post.user_id} size="sm" />
             )}
+
+            {/* Delete Button for Own Posts */}
+            {isOwnPost && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setDeleteDialogOpen(true)}
+                className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            )}
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => navigate(`/profile/${post.user_id}`)}>
+                  <User className="h-4 w-4 mr-2" />
+                  View Profile
+                </DropdownMenuItem>
+                {!isOwnPost && (
+                  <DropdownMenuItem 
+                    onClick={() => setBlockDialogOpen(true)}
+                    className="text-destructive"
+                  >
+                    <Ban className="h-4 w-4 mr-2" />
+                    Block User
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem onClick={() => setReportModalOpen(true)}>
+                  <Flag className="h-4 w-4 mr-2" />
+                  Report post
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
-        {/* Social Proof & Engagement Metrics */}
-        <div className="relative z-10 px-4 py-2 bg-gradient-to-r from-violet-500/5 to-transparent border-l-2 border-violet-500/50">
-          <div className="flex items-center gap-4 text-xs flex-wrap">
-            {post.like_count > 5 && (
-              <div className="flex items-center gap-1 text-violet-400">
-                <Users className="w-3 h-3" />
-                <span>{Math.floor(post.like_count * 0.3)} people you follow liked this</span>
-              </div>
+        {/* Caption - Before Media (Twitter Style) */}
+        {post.caption && (
+          <div className="px-4 pb-3">
+            <p className="text-sm whitespace-pre-wrap">{post.caption}</p>
+          </div>
+        )}
+
+        {/* Engagement Badges */}
+        {(post.view_count > 1000 || post.like_count > 100) && (
+          <div className="px-4 pb-2 flex gap-2 flex-wrap">
+            {post.view_count > 5000 && post.like_count > 100 && (
+              <Badge variant="outline" className="text-xs bg-orange-500/10 border-orange-500/30 text-orange-500">
+                <Flame className="h-3 w-3 mr-1" />
+                Hot
+              </Badge>
             )}
             {post.view_count > 1000 && (
-              <div className="flex items-center gap-1 text-green-400 animate-pulse">
-                <TrendingUp className="w-3 h-3" />
-                <span>Trending</span>
-              </div>
-            )}
-            {/* Live Engagement Indicator */}
-            {post.view_count > 500 && (
-              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-red-500/20 border border-red-500/30">
-                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                <Eye className="w-3 h-3 text-red-400" />
-                <span className="text-red-400 font-semibold">
-                  {Math.floor(Math.random() * 50) + 20} viewing now
-                </span>
-              </div>
-            )}
-            {/* Hot Badge */}
-            {post.like_count > 100 && post.view_count > 5000 && (
-              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-orange-500/20 border border-orange-500/30">
-                <Flame className="w-3 h-3 text-orange-400" />
-                <span className="text-orange-400 font-semibold">Hot</span>
-              </div>
+              <Badge variant="outline" className="text-xs bg-green-500/10 border-green-500/30 text-green-500">
+                <TrendingUp className="h-3 w-3 mr-1" />
+                Trending
+              </Badge>
             )}
           </div>
-        </div>
+        )}
 
         {/* Media with double-tap and quick reactions */}
         {mediaUrl && (
           <div 
-            className="relative aspect-square bg-muted group/media cursor-pointer select-none"
+            className="relative aspect-[4/3] bg-muted cursor-pointer select-none"
             onClick={handleDoubleTap}
             onMouseEnter={() => setShowQuickReactions(true)}
             onMouseLeave={() => setShowQuickReactions(false)}
@@ -289,7 +318,7 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
               <video
                 ref={videoRef}
                 src={needsUnlock ? undefined : mediaUrl}
-                className={`w-full h-full object-cover ${needsUnlock ? 'blur-xl' : ''} transition-transform duration-300 group-hover/media:scale-105`}
+                className={`w-full h-full object-cover ${needsUnlock ? 'blur-xl' : ''}`}
                 controls={!needsUnlock}
                 playsInline
                 loop
@@ -297,14 +326,12 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
               />
             ) : (
               !imageError ? (
-                <div className="relative w-full h-full">
-                  <ProgressiveImage
-                    src={mediaUrl}
-                    alt="Post content"
-                    className={`w-full h-full object-cover ${needsUnlock ? 'blur-xl' : ''} transition-transform duration-300 group-hover/media:scale-105`}
-                    onError={() => setImageError(true)}
-                  />
-                </div>
+                <ProgressiveImage
+                  src={mediaUrl}
+                  alt="Post content"
+                  className={`w-full h-full object-cover ${needsUnlock ? 'blur-xl' : ''}`}
+                  onError={() => setImageError(true)}
+                />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-muted-foreground">
                   Failed to load image
@@ -312,28 +339,34 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
               )
             )}
             
-            {/* Paywall Overlay */}
+            {/* Paywall Overlay - Improved */}
             {needsUnlock && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+              <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm">
                 <motion.div 
-                  className="text-center space-y-4 p-6 bg-background/95 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl"
+                  className="text-center space-y-4 p-6 bg-card/95 backdrop-blur-xl rounded-2xl border border-border shadow-2xl max-w-xs mx-4"
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                 >
-                  <Lock className="h-12 w-12 mx-auto text-violet-400" />
+                  <Lock className="h-10 w-10 mx-auto text-primary" />
                   <div>
-                    <p className="text-lg font-semibold">Unlock this post</p>
-                    <p className="text-3xl font-bold bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent mt-2">
+                    <p className="text-lg font-semibold">Premium Content</p>
+                    <p className="text-2xl font-bold text-primary mt-1">
                       ${(post.price_cents / 100).toFixed(2)}
                     </p>
+                    <p className="text-xs text-muted-foreground mt-1">One-time purchase</p>
                   </div>
                   <Button 
                     onClick={() => onUnlock(post.id, post.price_cents)} 
                     size="lg"
-                    className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600"
+                    className="w-full bg-primary hover:bg-primary/90"
                   >
+                    <Lock className="h-4 w-4 mr-2" />
                     Unlock Now
                   </Button>
+                  <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
+                    <span>or</span>
+                  </div>
+                  <SubscribeCreatorButton creatorId={post.user_id} variant="outline" className="w-full" />
                 </motion.div>
               </div>
             )}
@@ -345,125 +378,66 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
           </div>
         )}
 
-        {/* Actions & Caption */}
-        <div className="relative z-10 p-4 space-y-3">
-          {/* Action Buttons */}
-          <TooltipProvider>
-            <div className="flex items-center gap-4">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <motion.div whileTap={{ scale: 0.9 }}>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleLike}
-                      disabled={likeLoading}
-                      className="gap-2 hover:text-red-500 transition-colors"
-                    >
-                      {likeLoading ? (
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                      ) : (
-                        <motion.div
-                          animate={post.liked_by_user ? { scale: [1, 1.2, 1] } : {}}
-                          transition={{ duration: 0.3 }}
-                        >
-                          <Heart className={`h-5 w-5 transition-all ${post.liked_by_user ? 'fill-red-500 text-red-500 scale-110' : ''}`} />
-                        </motion.div>
-                      )}
-                      <span>{post.like_count}</span>
-                    </Button>
-                  </motion.div>
-                </TooltipTrigger>
-                <TooltipContent>{post.liked_by_user ? 'Unlike' : 'Like'}</TooltipContent>
-              </Tooltip>
+        {/* Actions - Twitter/TikTok Style */}
+        <div className="p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1">
+              <motion.div whileTap={{ scale: 0.9 }}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleLike}
+                  disabled={likeLoading}
+                  className="gap-1.5 hover:text-red-500 hover:bg-red-500/10 transition-colors"
+                >
+                  {likeLoading ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <Heart className={`h-5 w-5 ${post.liked_by_user ? 'fill-red-500 text-red-500' : ''}`} />
+                  )}
+                  <span className="text-sm">{post.like_count}</span>
+                </Button>
+              </motion.div>
 
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <motion.div whileTap={{ scale: 0.9 }}>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onComment(post.id)}
-                      className="gap-2 hover:text-violet-500 transition-colors"
-                    >
-                      <MessageCircle className="h-5 w-5" />
-                      <span>{post.comment_count}</span>
-                    </Button>
-                  </motion.div>
-                </TooltipTrigger>
-                <TooltipContent>Comment</TooltipContent>
-              </Tooltip>
+              <motion.div whileTap={{ scale: 0.9 }}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onComment(post.id)}
+                  className="gap-1.5 hover:text-primary hover:bg-primary/10"
+                >
+                  <MessageCircle className="h-5 w-5" />
+                  <span className="text-sm">{post.comment_count}</span>
+                </Button>
+              </motion.div>
               
               <ShareButton postId={post.id} />
-
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <motion.div whileTap={{ scale: 0.9 }}>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleSaveToggle}
-                      className="hover:text-violet-500 transition-colors"
-                    >
-                      <Bookmark className={`h-5 w-5 transition-all ${saved ? 'fill-violet-500 text-violet-500 scale-110' : ''}`} />
-                    </Button>
-                  </motion.div>
-                </TooltipTrigger>
-                <TooltipContent>{saved ? 'Unsave' : 'Save'}</TooltipContent>
-              </Tooltip>
-
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="ghost" size="sm">
-                        <MoreVertical className="h-5 w-5" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>More options</TooltipContent>
-                  </Tooltip>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="backdrop-blur-xl bg-background/95 border-white/10">
-                  <DropdownMenuItem onClick={() => navigate(`/profile/${post.user_id}`)}>
-                    <User className="h-4 w-4 mr-2" />
-                    View Profile
-                  </DropdownMenuItem>
-                  {!isOwnPost && (
-                    <DropdownMenuItem 
-                      onClick={() => setBlockDialogOpen(true)}
-                      className="text-destructive"
-                    >
-                      <Ban className="h-4 w-4 mr-2" />
-                      Block User
-                    </DropdownMenuItem>
-                  )}
-                  <DropdownMenuItem onClick={() => setReportModalOpen(true)}>
-                    <Flag className="h-4 w-4 mr-2" />
-                    Report post
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
             </div>
-          </TooltipProvider>
 
-          {/* Caption */}
-          {post.caption && (
-            <div>
-              <p className="text-sm">
-                <span className="font-semibold">{post.creator_name}</span>{' '}
-                {post.caption}
-              </p>
+            <div className="flex items-center gap-1">
+              {/* View Count */}
+              <span className="text-xs text-muted-foreground flex items-center gap-1 mr-2">
+                <Eye className="h-4 w-4" />
+                {post.view_count > 1000 ? `${(post.view_count / 1000).toFixed(1)}K` : post.view_count}
+              </span>
+
+              <motion.div whileTap={{ scale: 0.9 }}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleSaveToggle}
+                  className="hover:text-primary hover:bg-primary/10"
+                >
+                  <Bookmark className={`h-5 w-5 ${saved ? 'fill-primary text-primary' : ''}`} />
+                </Button>
+              </motion.div>
             </div>
-          )}
-
-          {/* View Count */}
-          <p className="text-xs text-muted-foreground">
-            {post.view_count.toLocaleString()} views
-          </p>
+          </div>
         </div>
       </Card>
     </motion.div>
 
+    {/* Modals and Dialogs */}
     <ReportModal
       isOpen={reportModalOpen}
       onClose={() => setReportModalOpen(false)}
@@ -475,16 +449,13 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
         <AlertDialogHeader>
           <AlertDialogTitle>Block this user?</AlertDialogTitle>
           <AlertDialogDescription>
-            You won't see posts from this user anymore. They won't be notified that you've blocked them.
+            You won't see their posts anymore. They won't be notified.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction 
-            onClick={handleBlockUser}
-            className="bg-destructive hover:bg-destructive/90"
-          >
-            Block User
+          <AlertDialogAction onClick={handleBlockUser} className="bg-destructive hover:bg-destructive/90">
+            Block
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -500,11 +471,8 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction 
-            onClick={handleDeletePost}
-            className="bg-destructive hover:bg-destructive/90"
-          >
-            Delete Post
+          <AlertDialogAction onClick={handleDeletePost} className="bg-destructive hover:bg-destructive/90">
+            Delete
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
