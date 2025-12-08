@@ -31,7 +31,7 @@ import AdminCostDashboardPage from "./pages/AdminCostDashboardPage";
 import AccountTypeSelection from "./pages/AccountTypeSelection";
 import { DashboardLayout } from "./layouts/DashboardLayout";
 import UnifiedAdminDashboard from "./pages/UnifiedAdminDashboard";
-import { MarketplaceBrowser } from "./components/marketplace/MarketplaceBrowser";
+import MarketplacePage from "./pages/MarketplacePage";
 import { BrandCampaignCreator } from "./components/marketplace/BrandCampaignCreator";
 import { CampaignManagement } from "./components/marketplace/CampaignManagement";
 import CreatorDashboard from "./pages/CreatorDashboard";
@@ -127,7 +127,7 @@ const AppRoutes = () => {
       <Route path="/marketplace" element={
         <ProtectedRoute>
           <DashboardLayout>
-            <MarketplaceBrowser />
+            <MarketplacePage />
           </DashboardLayout>
         </ProtectedRoute>
       } />
