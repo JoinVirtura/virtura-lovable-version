@@ -32,6 +32,13 @@ interface RevenueBySource {
   percentage: number;
 }
 
+interface SourceBreakdown {
+  gross: number;
+  fee: number;
+  net: number;
+  count: number;
+}
+
 interface EarningsStats {
   totalEarnings: number;
   pendingEarnings: number;
@@ -40,11 +47,21 @@ interface EarningsStats {
   projectedMonthly: number;
   timeSeriesData: TimeSeriesData[];
   revenueBySource: RevenueBySource[];
+  // New detailed breakdowns
+  grossEarnings: number;
+  platformFees: number;
+  netEarnings: number;
+  subscriptionBreakdown: SourceBreakdown;
+  tipBreakdown: SourceBreakdown;
+  ppvBreakdown: SourceBreakdown;
+  brandDealBreakdown: SourceBreakdown;
 }
 
 export function useCreatorEarnings() {
   const { user } = useAuth();
   const [earnings, setEarnings] = useState<Earning[]>([]);
+  const emptyBreakdown: SourceBreakdown = { gross: 0, fee: 0, net: 0, count: 0 };
+  
   const [stats, setStats] = useState<EarningsStats>({
     totalEarnings: 0,
     pendingEarnings: 0,
@@ -53,6 +70,13 @@ export function useCreatorEarnings() {
     projectedMonthly: 0,
     timeSeriesData: [],
     revenueBySource: [],
+    grossEarnings: 0,
+    platformFees: 0,
+    netEarnings: 0,
+    subscriptionBreakdown: emptyBreakdown,
+    tipBreakdown: emptyBreakdown,
+    ppvBreakdown: emptyBreakdown,
+    brandDealBreakdown: emptyBreakdown,
   });
   const [loading, setLoading] = useState(true);
 
@@ -148,6 +172,20 @@ export function useCreatorEarnings() {
       ).getDate();
       const projectedMonthly = (dailyAverage * daysInMonth) / 100;
 
+      // Calculate detailed breakdowns by source type
+      const platformFeeRate = 0.10; // 10% platform fee
+      const grossEarnings = total / 100;
+      const platformFees = grossEarnings * platformFeeRate;
+      const netEarnings = grossEarnings - platformFees;
+
+      const calculateBreakdown = (sourceType: string): SourceBreakdown => {
+        const sourceData = sourceMap.get(sourceType);
+        if (!sourceData) return { gross: 0, fee: 0, net: 0, count: 0 };
+        const gross = sourceData.amount / 100;
+        const fee = gross * platformFeeRate;
+        return { gross, fee, net: gross - fee, count: sourceData.count };
+      };
+
       setStats({
         totalEarnings: total / 100,
         pendingEarnings: pending / 100,
@@ -156,6 +194,13 @@ export function useCreatorEarnings() {
         projectedMonthly,
         timeSeriesData,
         revenueBySource,
+        grossEarnings,
+        platformFees,
+        netEarnings,
+        subscriptionBreakdown: calculateBreakdown('creator_subscription'),
+        tipBreakdown: calculateBreakdown('creator_tip'),
+        ppvBreakdown: calculateBreakdown('post_unlock'),
+        brandDealBreakdown: calculateBreakdown('campaign_completion'),
       });
     } catch (error: any) {
       console.error('Error fetching earnings:', error);
