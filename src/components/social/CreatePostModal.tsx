@@ -13,7 +13,7 @@ import { useSchedulePost } from '@/hooks/useSchedulePost';
 import { Upload, X, Loader2, Calendar as CalendarIcon, Sparkles, Image, Video, Type, FolderOpen } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { MediaLibraryModal } from './MediaLibraryModal';
+import { DashboardLibraryView } from '@/components/DashboardLibraryView';
 
 interface CreatePostModalProps {
   isOpen: boolean;
@@ -40,17 +40,16 @@ export function CreatePostModal({ isOpen, onClose, defaultScheduled = false }: C
   const { createPost, uploading } = useCreatePost();
   const { schedulePost, scheduling } = useSchedulePost();
 
-  const handleLibrarySelect = (items: { url: string; type: 'image' | 'video' }[]) => {
-    const urls = items.map(item => item.url);
-    setLibraryUrls(prev => [...prev, ...urls]);
+  const handleLibrarySelect = (avatarUrl: string, metadata?: { is_video?: boolean }) => {
+    setLibraryUrls(prev => [...prev, avatarUrl]);
+    setPreviews(prev => [...prev, avatarUrl]);
     
     // Set content type based on selection
-    if (items.some(item => item.type === 'video')) {
+    if (metadata?.is_video) {
       setSelectedContentType('video');
     }
     
-    // Create preview URLs
-    setPreviews(prev => [...prev, ...urls]);
+    setLibraryModalOpen(false);
   };
 
   const removeLibraryUrl = (index: number) => {
@@ -401,12 +400,18 @@ export function CreatePostModal({ isOpen, onClose, defaultScheduled = false }: C
       </DialogContent>
 
       {/* Media Library Modal */}
-      <MediaLibraryModal
-        isOpen={libraryModalOpen}
-        onClose={() => setLibraryModalOpen(false)}
-        onSelect={handleLibrarySelect}
-        contentType={selectedContentType === 'text' ? 'all' : selectedContentType}
-      />
+      <Dialog open={libraryModalOpen} onOpenChange={setLibraryModalOpen}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Choose from Library</DialogTitle>
+          </DialogHeader>
+          <DashboardLibraryView
+            onSelectAvatar={handleLibrarySelect}
+            isModal={true}
+            hideVideoCategory={selectedContentType === 'image'}
+          />
+        </DialogContent>
+      </Dialog>
     </Dialog>
   );
 }
