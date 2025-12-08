@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { VirturaSidebar } from "@/components/VirturaSidebar";
 import { OverviewPage } from "@/components/OverviewPage";
@@ -48,6 +48,9 @@ import { CampaignManagement } from "@/components/marketplace/CampaignManagement"
 import CreatorDashboard from "./CreatorDashboard";
 import SocialFeed from "./SocialFeed";
 import MarketplacePage from "./MarketplacePage";
+import ScheduledPostsPage from "./ScheduledPostsPage";
+import VerificationPage from "./VerificationPage";
+import UserProfile from "./UserProfile";
 import { TrialBanner } from "@/components/TrialBanner";
 import { TrialOnboarding } from "@/components/TrialOnboarding";
 import {
@@ -134,10 +137,25 @@ import avatarBrandConsultantImg from "@/assets/avatar-brand-consultant-realistic
 export default function Dashboard() {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [activeView, setActiveView] = useState("overview");
+  const location = useLocation();
+  
+  // Read initial view from location state (from redirects)
+  const initialView = (location.state as { view?: string })?.view || "overview";
+  const [activeView, setActiveView] = useState(initialView);
+  
   const { isOnboardingComplete, loading: onboardingLoading } = useOnboarding();
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [trialStatus, setTrialStatus] = useState<any>(null);
+  
+  // Update activeView when navigating from other routes
+  useEffect(() => {
+    const stateView = (location.state as { view?: string })?.view;
+    if (stateView && stateView !== activeView) {
+      setActiveView(stateView);
+      // Clear the state to prevent re-triggering
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state]);
   
   // Import admin dashboard immediately to avoid loading delay
   const [AdminDashboardComponent, setAdminDashboardComponent] = useState<any>(null);
@@ -1968,6 +1986,12 @@ export default function Dashboard() {
         return <CreatorDashboard />;
       case "marketplace":
         return <MarketplacePage />;
+      case "scheduled-posts":
+        return <ScheduledPostsPage />;
+      case "verification":
+        return <VerificationPage />;
+      case "profile":
+        return <UserProfile />;
       default:
         return <OverviewPage onViewChange={setActiveView} />;
     }

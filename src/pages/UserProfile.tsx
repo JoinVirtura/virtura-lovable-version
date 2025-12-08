@@ -19,10 +19,14 @@ import { PortfolioShowcase } from "@/components/profile/PortfolioShowcase";
 import { MediaKitSection } from "@/components/profile/MediaKitSection";
 
 export default function UserProfile() {
-  const { userId } = useParams<{ userId: string }>();
+  const { userId: paramUserId } = useParams<{ userId: string }>();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { profile, posts, loading, updateProfile, refetch } = useUserProfile(userId || '');
+  
+  // Use param userId if provided, otherwise fall back to current user's ID
+  const userId = paramUserId || user?.id || '';
+  
+  const { profile, posts, loading, updateProfile, refetch } = useUserProfile(userId);
   const { savedPosts, loading: savedLoading } = useSavedPosts();
   const [activeTab, setActiveTab] = useState('posts');
   const [savedPostsData, setSavedPostsData] = useState<any[]>([]);

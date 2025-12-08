@@ -1,7 +1,8 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { VirturaSidebar } from '@/components/VirturaSidebar';
 import { MotionBackground } from '@/components/MotionBackground';
+import { useNavigate } from 'react-router-dom';
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -14,6 +15,14 @@ export function DashboardLayout({
   noPadding = false,
   noBackground = false 
 }: DashboardLayoutProps) {
+  const navigate = useNavigate();
+  const [activeView, setActiveView] = useState("");
+
+  // Handle navigation from sidebar - redirect to dashboard with the view
+  const handleViewChange = (view: string) => {
+    navigate('/dashboard', { state: { view } });
+  };
+
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen flex w-full bg-background relative overflow-hidden">
@@ -30,8 +39,8 @@ export function DashboardLayout({
         </header>
         
         <VirturaSidebar 
-          activeView=""
-          onViewChange={() => {}}
+          activeView={activeView}
+          onViewChange={handleViewChange}
           onClearEditState={() => {}}
         />
       
