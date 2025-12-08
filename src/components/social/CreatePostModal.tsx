@@ -78,14 +78,28 @@ export function CreatePostModal({ isOpen, onClose, defaultScheduled = false }: C
   };
 
   const removeFile = (index: number) => {
-    setFiles(files.filter((_, i) => i !== index));
-    setPreviews(previews.filter((_, i) => i !== index));
+    if (index < files.length) {
+      // It's a file
+      setFiles(files.filter((_, i) => i !== index));
+      setPreviews(previews.filter((_, i) => i !== index));
+    } else {
+      // It's a library URL
+      const libraryIndex = index - files.length;
+      setLibraryUrls(libraryUrls.filter((_, i) => i !== libraryIndex));
+      setPreviews(previews.filter((_, i) => i !== index));
+    }
   };
 
   const handleSubmit = async () => {
-    const contentType = files[0]?.type.startsWith('video/') ? 'video' : 
-                       files.length > 1 ? 'carousel' : 
-                       files.length === 1 ? 'image' : 'text';
+    // Determine content type from files OR library items
+    const hasVideo = files[0]?.type.startsWith('video/') || 
+      libraryUrls.some(url => url.includes('.mp4') || url.includes('video'));
+    
+    const totalMedia = files.length + libraryUrls.length;
+    
+    const contentType = hasVideo ? 'video' : 
+                       totalMedia > 1 ? 'carousel' : 
+                       totalMedia === 1 ? 'image' : 'text';
 
     // Add AI indicator to caption if marked as AI-generated
     const finalCaption = isAIGenerated && !caption.includes('#AI') 
@@ -107,6 +121,7 @@ export function CreatePostModal({ isOpen, onClose, defaultScheduled = false }: C
         contentType,
         caption: finalCaption,
         mediaFiles: files,
+        libraryUrls: libraryUrls,
         isPaid,
         priceCents: isPaid ? Math.round(parseFloat(price) * 100) : 0,
         scheduledFor,
@@ -117,6 +132,7 @@ export function CreatePostModal({ isOpen, onClose, defaultScheduled = false }: C
         contentType,
         caption: finalCaption,
         mediaFiles: files,
+        libraryUrls: libraryUrls,
         isPaid,
         priceCents: isPaid ? Math.round(parseFloat(price) * 100) : 0,
       });
@@ -129,6 +145,7 @@ export function CreatePostModal({ isOpen, onClose, defaultScheduled = false }: C
       setPrice('');
       setFiles([]);
       setPreviews([]);
+      setLibraryUrls([]);
       setIsScheduled(false);
       setScheduledDate(undefined);
       setScheduledTime('12:00');
