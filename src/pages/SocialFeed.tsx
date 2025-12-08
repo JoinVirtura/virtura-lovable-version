@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Plus, Sparkles, Users, TrendingUp } from 'lucide-react';
+import { Plus, Users, TrendingUp, Zap } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { FeedContainer } from '@/components/social/FeedContainer';
 import { CreatePostModal } from '@/components/social/CreatePostModal';
@@ -141,21 +141,13 @@ export default function SocialFeed() {
           />
         </div>
 
-      {/* Stories Header - Premium Design */}
-        <div className="px-4 pt-10 pb-4 relative">
-          <div className="flex items-center gap-2 mb-4 max-w-4xl mx-auto">
-            <motion.div
-              animate={{ rotate: [0, 360] }}
-              transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-            >
-              <Sparkles className="h-5 w-5 text-primary" />
-            </motion.div>
-            <h2 className="text-lg font-semibold bg-gradient-to-r from-primary via-secondary to-primary-blue bg-clip-text text-transparent">
-              Stories
-            </h2>
-          </div>
-          <div className="flex gap-5 overflow-x-auto scrollbar-hide snap-x snap-mandatory max-w-4xl mx-auto pb-2 px-1">
-            <div className="snap-start flex-shrink-0">
+      {/* Stories Header - Clean Design */}
+        <div className="px-4 pt-6 pb-2 relative overflow-visible">
+          <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-widest mb-4 max-w-4xl mx-auto pl-2">
+            Stories
+          </h2>
+          <div className="flex gap-5 overflow-x-auto overflow-y-visible scrollbar-hide snap-x snap-mandatory max-w-4xl mx-auto py-4 px-4">
+            <div className="snap-start flex-shrink-0 overflow-visible">
               <StoryRing
                 avatar={profile?.avatar_url}
                 username={profile?.display_name || user?.email}
@@ -164,7 +156,7 @@ export default function SocialFeed() {
               />
             </div>
             {filteredStories.map((story, index) => (
-              <div key={story.id} className="snap-start flex-shrink-0">
+              <div key={story.id} className="snap-start flex-shrink-0 overflow-visible">
                 <StoryRing
                   avatar={story.avatar}
                   username={story.username}
@@ -183,7 +175,7 @@ export default function SocialFeed() {
         <div className="flex justify-center border-t border-white/5 relative">
           <div className="flex max-w-md w-full">
             {[
-              { type: 'all', label: 'All Posts', icon: Sparkles, activeColor: 'from-violet-500 to-purple-500', glowColor: 'violet' },
+              { type: 'all', label: 'All Posts', icon: Zap, activeColor: 'from-violet-500 to-purple-500', glowColor: 'violet' },
               { type: 'following', label: 'Following', icon: Users, activeColor: 'from-blue-500 to-cyan-500', glowColor: 'blue' },
               { type: 'trending', label: 'Trending', icon: TrendingUp, activeColor: 'from-orange-500 to-amber-500', glowColor: 'orange' },
             ].map(({ type, label, icon: Icon, activeColor, glowColor }) => (
