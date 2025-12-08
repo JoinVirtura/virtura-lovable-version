@@ -1,28 +1,21 @@
 import { useState, useEffect, Suspense, lazy } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useUserProfile } from "@/hooks/useUserProfile";
-import { useSavedPosts } from "@/hooks/useSavedPosts";
 import { ImmersiveProfileHeader } from "@/components/profile/ImmersiveProfileHeader";
 import { ProfileNotificationCenter } from "@/components/profile/ProfileNotificationCenter";
 import { CircularStatsRing } from "@/components/profile/CircularStatsRing";
 import { BentoContentGrid } from "@/components/profile/BentoContentGrid";
 import { QuickActionBar } from "@/components/profile/QuickActionBar";
-import { MasonryPostGrid } from "@/components/profile/MasonryPostGrid";
-import { EditableBio } from "@/components/profile/EditableBio";
 import { ProfileSkeleton } from "@/components/profile/ProfileSkeleton";
 import { AchievementBadges } from "@/components/profile/AchievementBadges";
 import { EnhancedProfileTabs } from "@/components/profile/EnhancedProfileTabs";
+import { ProfessionalAboutSection } from "@/components/profile/ProfessionalAboutSection";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { TabsContent } from "@/components/ui/tabs";
 import { BookmarkIcon, Loader2 } from "lucide-react";
 
 // Lazy load heavy components
-const AnalyticsDashboard = lazy(() => import("@/components/profile/AnalyticsDashboard").then(m => ({ default: m.AnalyticsDashboard })));
 const CollaborationHistory = lazy(() => import("@/components/profile/CollaborationHistory").then(m => ({ default: m.CollaborationHistory })));
-const PortfolioShowcase = lazy(() => import("@/components/profile/PortfolioShowcase").then(m => ({ default: m.PortfolioShowcase })));
-const MediaKitSection = lazy(() => import("@/components/profile/MediaKitSection").then(m => ({ default: m.MediaKitSection })));
 
 const TabLoader = () => (
   <div className="flex justify-center py-12">
@@ -38,10 +31,7 @@ export default function UserProfile() {
   const userId = paramUserId || user?.id || '';
   
   const { profile, posts, loading, updateProfile, refetch } = useUserProfile(userId);
-  const { savedPosts, loading: savedLoading } = useSavedPosts();
   const [activeTab, setActiveTab] = useState('grid');
-  const [savedPostsData, setSavedPostsData] = useState<any[]>([]);
-  const [loadingSavedPosts, setLoadingSavedPosts] = useState(false);
   const [currentFollowerCount, setCurrentFollowerCount] = useState(0);
 
   const isOwnProfile = user?.id === userId;
@@ -57,51 +47,6 @@ export default function UserProfile() {
     setTimeout(() => refetch(), 1000);
   };
 
-  useEffect(() => {
-    const fetchSavedPostsData = async () => {
-      if (!isOwnProfile || savedPosts.length === 0) {
-        setSavedPostsData([]);
-        return;
-      }
-
-      setLoadingSavedPosts(true);
-      try {
-        const postIds = savedPosts.map(sp => sp.post_id);
-        
-        const { data, error } = await supabase
-          .from('social_posts')
-          .select(`*, profiles!social_posts_user_id_fkey (display_name, avatar_url)`)
-          .in('id', postIds)
-          .eq('status', 'published');
-
-        if (error) throw error;
-
-        const formattedPosts = data?.map(post => ({
-          id: post.id,
-          user_id: post.user_id,
-          media_urls: post.media_urls,
-          caption: post.caption,
-          content_type: post.content_type,
-          is_paid: post.is_paid,
-          price_cents: post.price_cents,
-          published_at: post.published_at,
-          like_count: post.like_count || 0,
-          comment_count: post.comment_count || 0,
-        })) || [];
-
-        setSavedPostsData(formattedPosts);
-      } catch (error) {
-        console.error('Error fetching saved posts:', error);
-        toast.error('Failed to load saved posts');
-      } finally {
-        setLoadingSavedPosts(false);
-      }
-    };
-
-    if (activeTab === 'saved' && isOwnProfile) {
-      fetchSavedPostsData();
-    }
-  }, [savedPosts, activeTab, isOwnProfile]);
 
   if (loading) {
     return <ProfileSkeleton />;
@@ -115,14 +60,8 @@ export default function UserProfile() {
     );
   }
 
-  const handleBioSave = async (newBio: string) => {
-    try {
-      await updateProfile({ bio: newBio });
-      toast.success('Bio updated successfully');
-    } catch (error) {
-      toast.error('Failed to update bio');
-      throw error;
-    }
+  const handleProfileUpdate = async (updates: { bio?: string; website_url?: string }) => {
+    await updateProfile(updates);
   };
 
   return (
@@ -158,7 +97,6 @@ export default function UserProfile() {
           activeTab={activeTab}
           onTabChange={setActiveTab}
           isOwnProfile={isOwnProfile}
-          savedCount={savedPosts.length}
         />
 
         {activeTab === "grid" && (
@@ -166,10 +104,8 @@ export default function UserProfile() {
             {posts.length > 0 ? (
               <BentoContentGrid 
                 posts={posts}
-                savedPosts={savedPostsData}
+                savedPosts={[]}
                 isOwnProfile={isOwnProfile}
-                onNavigateToAnalytics={() => setActiveTab('analytics')}
-                onNavigateToSaved={() => setActiveTab('saved')}
               />
             ) : (
               <div className="text-center py-16">
@@ -185,35 +121,6 @@ export default function UserProfile() {
           </div>
         )}
 
-        {activeTab === "portfolio" && (
-          <Suspense fallback={<TabLoader />}>
-            <PortfolioShowcase />
-          </Suspense>
-        )}
-
-        {activeTab === "analytics" && isOwnProfile && (
-          <Suspense fallback={<TabLoader />}>
-            <AnalyticsDashboard />
-          </Suspense>
-        )}
-
-        {activeTab === "saved" && isOwnProfile && (
-          <>
-            {loadingSavedPosts || savedLoading ? (
-              <TabLoader />
-            ) : savedPostsData.length > 0 ? (
-              <MasonryPostGrid posts={savedPostsData} userId={userId} />
-            ) : (
-              <div className="text-center py-16">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-pink-500/10 flex items-center justify-center">
-                  <BookmarkIcon className="w-8 h-8 text-pink-400" />
-                </div>
-                <p className="text-muted-foreground">No saved posts yet</p>
-              </div>
-            )}
-          </>
-        )}
-
         {activeTab === "collaborations" && (
           <Suspense fallback={<TabLoader />}>
             <CollaborationHistory />
@@ -221,19 +128,12 @@ export default function UserProfile() {
         )}
 
         {activeTab === "about" && (
-          <div className="max-w-2xl">
-            <div className="p-6 rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900/80 via-violet-950/20 to-slate-900/80 backdrop-blur-xl">
-              {isOwnProfile ? (
-                <EditableBio bio={profile.bio} onSave={handleBioSave} />
-              ) : profile.bio ? (
-                <div className="space-y-4">
-                  <h3 className="text-xl font-semibold text-white">About</h3>
-                  <p className="text-muted-foreground whitespace-pre-wrap">{profile.bio}</p>
-                </div>
-              ) : (
-                <p className="text-muted-foreground text-center py-8">No bio yet</p>
-              )}
-            </div>
+          <div className="max-w-3xl mx-auto">
+            <ProfessionalAboutSection
+              profile={profile}
+              isOwnProfile={isOwnProfile}
+              onUpdateProfile={handleProfileUpdate}
+            />
           </div>
         )}
 

@@ -2,11 +2,8 @@ import { motion } from "framer-motion";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Grid3X3, 
-  BookmarkIcon, 
   User, 
-  BarChart3, 
-  Briefcase, 
-  FolderOpen 
+  Briefcase
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -23,7 +20,6 @@ interface EnhancedProfileTabsProps {
   activeTab: string;
   onTabChange: (value: string) => void;
   isOwnProfile: boolean;
-  savedCount?: number;
 }
 
 const tabConfigs: TabConfig[] = [
@@ -33,29 +29,6 @@ const tabConfigs: TabConfig[] = [
     icon: <Grid3X3 className="w-4 h-4" />,
     color: "violet",
     glowColor: "shadow-violet-500/40"
-  },
-  { 
-    value: "portfolio", 
-    label: "Portfolio", 
-    icon: <FolderOpen className="w-4 h-4" />,
-    color: "blue",
-    glowColor: "shadow-blue-500/40"
-  },
-  { 
-    value: "analytics", 
-    label: "Analytics", 
-    icon: <BarChart3 className="w-4 h-4" />,
-    color: "emerald",
-    glowColor: "shadow-emerald-500/40",
-    showForOwner: true
-  },
-  { 
-    value: "saved", 
-    label: "Saved", 
-    icon: <BookmarkIcon className="w-4 h-4" />,
-    color: "pink",
-    glowColor: "shadow-pink-500/40",
-    showForOwner: true
   },
   { 
     value: "collaborations", 
@@ -76,8 +49,7 @@ const tabConfigs: TabConfig[] = [
 export function EnhancedProfileTabs({ 
   activeTab, 
   onTabChange, 
-  isOwnProfile,
-  savedCount = 0
+  isOwnProfile
 }: EnhancedProfileTabsProps) {
   const visibleTabs = tabConfigs.filter(
     tab => !tab.showForOwner || isOwnProfile
@@ -153,13 +125,6 @@ export function EnhancedProfileTabs({
                     {tab.icon}
                   </span>
                   <span className="hidden sm:inline font-medium">{tab.label}</span>
-                  
-                  {/* Badge for saved count */}
-                  {tab.value === "saved" && savedCount > 0 && (
-                    <span className="ml-1 px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-pink-500/30 text-pink-300 border border-pink-500/40">
-                      {savedCount > 99 ? "99+" : savedCount}
-                    </span>
-                  )}
                 </div>
               </TabsTrigger>
             );

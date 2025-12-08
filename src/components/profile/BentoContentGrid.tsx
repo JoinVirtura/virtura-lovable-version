@@ -66,11 +66,22 @@ export function BentoContentGrid({
           onMouseLeave={() => setHoveredId(null)}
         >
           {featuredPost.media_urls?.[0] ? (
-            <img
-              src={featuredPost.media_urls[0]}
-              alt=""
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
+            featuredPost.media_urls[0].match(/\.(mp4|webm|mov)$/i) ? (
+              <video
+                src={featuredPost.media_urls[0]}
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                muted
+                playsInline
+                onMouseEnter={(e) => e.currentTarget.play()}
+                onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
+              />
+            ) : (
+              <img
+                src={featuredPost.media_urls[0]}
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+            )
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-violet-600 to-pink-600" />
           )}
@@ -134,11 +145,20 @@ export function BentoContentGrid({
           onMouseLeave={() => setHoveredId(null)}
         >
           {post.media_urls?.[0] ? (
-            <img
-              src={post.media_urls[0]}
-              alt=""
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-            />
+            post.media_urls[0].match(/\.(mp4|webm|mov)$/i) ? (
+              <video
+                src={post.media_urls[0]}
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                muted
+                playsInline
+              />
+            ) : (
+              <img
+                src={post.media_urls[0]}
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+              />
+            )
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900" />
           )}
