@@ -22,8 +22,13 @@ export function useUserProfile(userId: string) {
   const [loading, setLoading] = useState(true);
 
   const fetchProfile = async () => {
-    if (!userId) return;
+    if (!userId || userId.trim() === '') {
+      console.log('useUserProfile: No userId provided, skipping fetch');
+      setLoading(false);
+      return;
+    }
     
+    console.log('useUserProfile: Fetching profile for userId:', userId);
     setLoading(true);
     try {
       // Fetch user profile
@@ -90,7 +95,7 @@ export function useUserProfile(userId: string) {
       });
 
       // Fetch user's posts
-      const { data: postsData } = await supabase
+      const { data: postsData, error: postsError } = await supabase
         .from('social_posts')
         .select('*')
         .eq('user_id', userId)
@@ -98,6 +103,11 @@ export function useUserProfile(userId: string) {
         .order('published_at', { ascending: false })
         .limit(12);
 
+      if (postsError) {
+        console.error('Posts fetch error:', postsError);
+      }
+      
+      console.log('useUserProfile: Fetched posts:', postsData?.length || 0, 'for userId:', userId);
       setPosts(postsData || []);
     } catch (error) {
       console.error('Error fetching profile:', error);
