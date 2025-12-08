@@ -31,12 +31,10 @@ export function AdminTokenTransactionHistory() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'purchase' | 'usage' | 'bonus'>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
+  const [isLive, setIsLive] = useState(false);
 
-  useEffect(() => {
-    fetchTransactions();
-  }, [filter]);
-
-  const fetchTransactions = async () => {
+  const fetchTransactions = useCallback(async () => {
     setLoading(true);
     try {
       let query = supabase
@@ -73,8 +71,36 @@ export function AdminTokenTransactionHistory() {
       console.error('Error fetching transactions:', error);
     } finally {
       setLoading(false);
+      setLastUpdated(new Date());
     }
-  };
+  }, [filter]);
+
+  useEffect(() => {
+    fetchTransactions();
+
+    // Set up real-time subscription for token transactions
+    const channel = supabase
+      .channel('admin-token-txns-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'token_transactions'
+        },
+        (payload) => {
+          console.log('Token transaction update received:', payload);
+          fetchTransactions();
+        }
+      )
+      .subscribe((status) => {
+        setIsLive(status === 'SUBSCRIBED');
+      });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchTransactions]);
 
   const getTransactionIcon = (type: string) => {
     switch (type) {
@@ -183,6 +209,22 @@ export function AdminTokenTransactionHistory() {
 
   return (
     <div className="space-y-6">
+      {/* Live Status Header */}
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        <h2 className="text-xl font-semibold">Token Transaction History</h2>
+        <div className="flex items-center gap-3">
+          {isLive && (
+            <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
+              <Radio className="w-3 h-3 mr-2 animate-pulse" />
+              Live
+            </Badge>
+          )}
+          <span className="text-xs text-muted-foreground">
+            Updated {formatDistanceToNow(lastUpdated)} ago
+          </span>
+        </div>
+      </div>
+
       {/* Token-Specific Summary Cards - No redundancy with Financial/API Costs tabs */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border-emerald-500/20">
