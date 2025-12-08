@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { VerificationUploadForm } from '@/components/verification/VerificationUploadForm';
-import { CheckCircle2, Clock, XCircle, Shield, Loader2, ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { CheckCircle2, Clock, XCircle, Shield, Loader2, CreditCard, Sparkles } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 
 interface VerificationStatus {
   status: string;
@@ -15,9 +16,10 @@ interface VerificationStatus {
 }
 
 export default function VerificationPage() {
-  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [status, setStatus] = useState<VerificationStatus | null>(null);
   const [loading, setLoading] = useState(true);
+  const [subscribing, setSubscribing] = useState(false);
 
   const fetchStatus = async () => {
     setLoading(true);
@@ -42,7 +44,49 @@ export default function VerificationPage() {
 
   useEffect(() => {
     fetchStatus();
-  }, []);
+
+    // Handle subscription redirect results
+    const subscriptionResult = searchParams.get('verification_subscription');
+    if (subscriptionResult === 'success') {
+      toast({
+        title: 'Subscription Activated!',
+        description: 'Your verification badge is now active.',
+      });
+      fetchStatus();
+    } else if (subscriptionResult === 'canceled') {
+      toast({
+        title: 'Subscription Canceled',
+        description: 'You can subscribe anytime to activate your badge.',
+        variant: 'destructive',
+      });
+    }
+  }, [searchParams]);
+
+  const handleSubscribe = async () => {
+    setSubscribing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-verification-subscription', {
+        body: {
+          successUrl: window.location.href,
+          cancelUrl: window.location.href,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        window.location.href = data.url;
+      }
+    } catch (error: any) {
+      console.error('Error creating subscription:', error);
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to start subscription',
+        variant: 'destructive',
+      });
+      setSubscribing(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -51,6 +95,8 @@ export default function VerificationPage() {
       </div>
     );
   }
+
+  const isApprovedButNotSubscribed = status?.status === 'approved' && status?.subscription_status !== 'active';
 
   return (
     <div className="container mx-auto p-6 max-w-2xl space-y-6">
@@ -117,7 +163,61 @@ export default function VerificationPage() {
         </Card>
       )}
 
-      {status?.status === 'approved' && (
+      {/* Approved but needs subscription */}
+      {isApprovedButNotSubscribed && (
+        <Card className="border-primary/30 bg-gradient-to-br from-primary/10 to-primary/5">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-primary" />
+              Activate Your Verification
+            </CardTitle>
+            <CardDescription>
+              Your identity has been verified! Subscribe to activate your badge.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20">
+                <CheckCircle2 className="w-3 h-3 mr-1" />
+                Identity Verified
+              </Badge>
+              <Badge variant="outline" className="bg-muted text-muted-foreground">
+                Badge Inactive
+              </Badge>
+            </div>
+            
+            <div className="p-4 rounded-lg bg-background/50 border">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-semibold">Verified Creator Badge</p>
+                  <p className="text-sm text-muted-foreground">Monthly subscription</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-bold">$9.99</p>
+                  <p className="text-xs text-muted-foreground">/month</p>
+                </div>
+              </div>
+            </div>
+
+            <Button 
+              onClick={handleSubscribe} 
+              disabled={subscribing}
+              className="w-full gap-2"
+              size="lg"
+            >
+              {subscribing ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <CreditCard className="w-4 h-4" />
+              )}
+              Subscribe & Activate Badge
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Fully verified with active subscription */}
+      {status?.status === 'approved' && status?.subscription_status === 'active' && (
         <Card className="border-green-500/20 bg-green-500/5">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -133,16 +233,13 @@ export default function VerificationPage() {
               <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20">
                 Verified
               </Badge>
-              {status.subscription_status === 'active' && (
-                <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/20">
-                  Subscription Active
-                </Badge>
-              )}
+              <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/20">
+                Subscription Active
+              </Badge>
             </div>
             <p className="text-sm text-muted-foreground">
               Your verification badge is now visible on your profile and posts.
-              {status.subscription_status === 'active' && 
-                ' Your subscription is active and will renew monthly.'}
+              Your subscription is active and will renew monthly.
             </p>
           </CardContent>
         </Card>

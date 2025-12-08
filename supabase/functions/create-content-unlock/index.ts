@@ -76,8 +76,8 @@ serve(async (req) => {
       );
     }
 
-    // Calculate platform fee
-    const platformFeeCents = Math.floor(amountCents * (creatorAccount.platform_fee_percentage / 100));
+    // Calculate platform fee (standardized at 10%)
+    const platformFeeCents = Math.floor(amountCents * 0.10);
 
     // Create payment intent
     const paymentIntent = await stripe.paymentIntents.create({
