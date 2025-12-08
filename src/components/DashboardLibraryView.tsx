@@ -140,7 +140,9 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
 
   const handleAvatarSelect = (asset: any) => {
     if (onSelectAvatar) {
-      onSelectAvatar(asset.imageUrl, asset);
+      // Use video_url for videos, imageUrl for images
+      const urlToPass = asset.isVideo && asset.videoUrl ? asset.videoUrl : asset.imageUrl;
+      onSelectAvatar(urlToPass, asset);
     } else {
       setSelectedAvatarIds(prev => {
         const newSet = new Set(prev);
