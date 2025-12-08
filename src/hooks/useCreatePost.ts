@@ -34,6 +34,7 @@ export function useCreatePost() {
     contentType: 'image' | 'video' | 'text' | 'carousel';
     caption: string;
     mediaFiles?: File[];
+    libraryUrls?: string[];
     isPaid: boolean;
     priceCents?: number;
     isAiGenerated?: boolean;
@@ -50,6 +51,11 @@ export function useCreatePost() {
       
       if (params.mediaFiles && params.mediaFiles.length > 0) {
         mediaUrls = await uploadMedia(params.mediaFiles);
+      }
+
+      // Append library URLs (already have public URLs)
+      if (params.libraryUrls && params.libraryUrls.length > 0) {
+        mediaUrls = [...mediaUrls, ...params.libraryUrls];
       }
 
       const { error } = await supabase.functions.invoke('create-post', {

@@ -6,7 +6,8 @@ import { useAuth } from './useAuth';
 interface SchedulePostParams {
   contentType: string;
   caption: string;
-  mediaFiles: File[];
+  mediaFiles?: File[];
+  libraryUrls?: string[];
   isPaid: boolean;
   priceCents: number;
   scheduledFor: Date;
@@ -52,6 +53,11 @@ export function useSchedulePost() {
       let mediaUrls: string[] = [];
       if (params.mediaFiles && params.mediaFiles.length > 0) {
         mediaUrls = await uploadMedia(params.mediaFiles);
+      }
+
+      // Append library URLs (already have public URLs)
+      if (params.libraryUrls && params.libraryUrls.length > 0) {
+        mediaUrls = [...mediaUrls, ...params.libraryUrls];
       }
 
       // Create scheduled post
