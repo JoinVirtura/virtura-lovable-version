@@ -19,7 +19,6 @@ import CampaignPage from "./pages/CampaignPage";
 import NotificationsPage from "./pages/NotificationsPage";
 import LibraryPage from "./pages/LibraryPage";
 import GuidePage from "./pages/GuidePage";
-import SettingsPage from "./pages/SettingsPage";
 import UploadPage from "./pages/UploadPage";
 import ExportPage from "./pages/ExportPage";
 import NotFound from "./pages/NotFound";
@@ -29,18 +28,10 @@ import PaymentCanceled from "./pages/PaymentCanceled";
 import TokenHistoryPage from "./pages/TokenHistoryPage";
 import AdminCostDashboardPage from "./pages/AdminCostDashboardPage";
 import AccountTypeSelection from "./pages/AccountTypeSelection";
-import { DashboardLayout } from "./layouts/DashboardLayout";
 import UnifiedAdminDashboard from "./pages/UnifiedAdminDashboard";
-import MarketplacePage from "./pages/MarketplacePage";
 import { BrandCampaignCreator } from "./components/marketplace/BrandCampaignCreator";
 import { CampaignManagement } from "./components/marketplace/CampaignManagement";
-import CreatorDashboard from "./pages/CreatorDashboard";
-import SocialFeed from "./pages/SocialFeed";
-import UserProfile from "./pages/UserProfile";
-import SavedPosts from "./pages/SavedPosts";
-import Analytics from "./pages/Analytics";
-import ScheduledPostsPage from "./pages/ScheduledPostsPage";
-import VerificationPage from "./pages/VerificationPage";
+import { DashboardLayout } from "./layouts/DashboardLayout";
 import Upgrade from "./pages/Upgrade";
 import TrialAnalytics from "./pages/admin/TrialAnalytics";
 import TrialExperiments from "./pages/admin/TrialExperiments";
@@ -95,7 +86,6 @@ const AppRoutes = () => {
       <Route path="/campaigns" element={<ProtectedRoute><CampaignPage /></ProtectedRoute>} />
       <Route path="/library" element={<ProtectedRoute><LibraryPage /></ProtectedRoute>} />
       <Route path="/guide" element={<ProtectedRoute><GuidePage /></ProtectedRoute>} />
-      <Route path="/settings" element={<ProtectedRoute><DashboardLayout><SettingsPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       
       <Route path="/talking-avatar" element={<ProtectedRoute><TalkingAvatarPage /></ProtectedRoute>} />
@@ -124,13 +114,7 @@ const AppRoutes = () => {
       <Route path="/admin/trial-analytics" element={<ProtectedRoute><TrialAnalytics /></ProtectedRoute>} />
       <Route path="/admin/trial-experiments" element={<ProtectedRoute><TrialExperiments /></ProtectedRoute>} />
       
-      <Route path="/marketplace" element={
-        <ProtectedRoute>
-          <DashboardLayout>
-            <MarketplacePage />
-          </DashboardLayout>
-        </ProtectedRoute>
-      } />
+      {/* Marketplace sub-routes that need DashboardLayout */}
       <Route path="/marketplace/create" element={
         <ProtectedRoute>
           <DashboardLayout>
@@ -145,57 +129,19 @@ const AppRoutes = () => {
           </DashboardLayout>
         </ProtectedRoute>
       } />
-          <Route path="/account-type" element={<AccountTypeSelection />} />
-          <Route path="/creator-dashboard" element={
-        <ProtectedRoute>
-          <DashboardLayout>
-            <CreatorDashboard />
-          </DashboardLayout>
-        </ProtectedRoute>
-      } />
       
-        <Route path="/social" element={
-          <ProtectedRoute>
-            <DashboardLayout>
-              <SocialFeed />
-            </DashboardLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/profile/:userId" element={
-          <ProtectedRoute>
-            <DashboardLayout>
-              <UserProfile />
-            </DashboardLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/saved" element={
-          <ProtectedRoute>
-            <DashboardLayout>
-              <SavedPosts />
-            </DashboardLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/analytics" element={
-          <ProtectedRoute>
-            <DashboardLayout>
-              <Analytics />
-            </DashboardLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/scheduled-posts" element={
-          <ProtectedRoute>
-            <DashboardLayout>
-              <ScheduledPostsPage />
-            </DashboardLayout>
-          </ProtectedRoute>
-        } />
-        <Route path="/verification" element={
-          <ProtectedRoute>
-            <DashboardLayout>
-              <VerificationPage />
-            </DashboardLayout>
-          </ProtectedRoute>
-        } />
+      <Route path="/account-type" element={<AccountTypeSelection />} />
+      
+      {/* Redirect old standalone routes to dashboard with view parameter */}
+      <Route path="/social" element={<Navigate to="/dashboard" replace state={{ view: "social-feed" }} />} />
+      <Route path="/creator-dashboard" element={<Navigate to="/dashboard" replace state={{ view: "creator-dashboard" }} />} />
+      <Route path="/marketplace" element={<Navigate to="/dashboard" replace state={{ view: "marketplace" }} />} />
+      <Route path="/scheduled-posts" element={<Navigate to="/dashboard" replace state={{ view: "scheduled-posts" }} />} />
+      <Route path="/verification" element={<Navigate to="/dashboard" replace state={{ view: "verification" }} />} />
+      <Route path="/settings" element={<Navigate to="/dashboard" replace state={{ view: "settings" }} />} />
+      <Route path="/profile/:userId" element={<Navigate to="/dashboard" replace state={{ view: "profile" }} />} />
+      <Route path="/saved" element={<Navigate to="/dashboard" replace state={{ view: "social-feed" }} />} />
+      <Route path="/analytics" element={<Navigate to="/dashboard" replace state={{ view: "creator-dashboard" }} />} />
       
       {/* Catch-all */}
       <Route path="*" element={<NotFound />} />
