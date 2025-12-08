@@ -18,9 +18,10 @@ import { useCreatorEarnings } from '@/hooks/useCreatorEarnings';
 import { useDemoEarningsData } from '@/hooks/useDemoEarningsData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DollarSign, Wallet, Receipt, TrendingDown } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 
 export default function CreatorDashboard() {
-  const { account, loading, getOnboardingLink } = useCreatorAccount();
+  const { account, loading, createAccount, getOnboardingLink } = useCreatorAccount();
   const realEarnings = useCreatorEarnings();
   const demoData = useDemoEarningsData();
   const [activeTab, setActiveTab] = useState('overview');
@@ -30,9 +31,10 @@ export default function CreatorDashboard() {
     account?.charges_enabled && 
     account?.payouts_enabled;
 
-  // Use demo data if not onboarded or demo mode is explicitly enabled
-  const useDemoData = !isOnboardingComplete || demoMode;
+  // Demo mode only when explicitly toggled ON
+  const useDemoData = demoMode;
   const stats = useDemoData ? demoData.stats : realEarnings.stats;
+  const earningsLoading = useDemoData ? false : realEarnings.loading;
   
   // Calculate daily average for projections
   const dailyAverage = stats.timeSeriesData.length > 0
@@ -40,8 +42,30 @@ export default function CreatorDashboard() {
     : 0;
 
   const handleSetupStripe = async () => {
-    const url = await getOnboardingLink();
-    if (url) window.location.href = url;
+    try {
+      // Create account first if it doesn't exist
+      if (!account) {
+        const newAccount = await createAccount();
+        if (!newAccount) {
+          toast({
+            title: 'Account creation failed',
+            description: 'Please try again or contact support.',
+            variant: 'destructive',
+          });
+          return;
+        }
+      }
+      
+      // Now get onboarding link
+      const url = await getOnboardingLink();
+      if (url) window.location.href = url;
+    } catch (error: any) {
+      toast({
+        title: 'Setup failed',
+        description: error.message || 'Failed to start Stripe setup.',
+        variant: 'destructive',
+      });
+    }
   };
 
   const renderOverviewTab = () => (
@@ -94,7 +118,7 @@ export default function CreatorDashboard() {
       </div>
 
       {/* Earnings Breakdown */}
-      <EarningsBreakdownCards />
+      <EarningsBreakdownCards stats={stats} loading={earningsLoading} />
 
       {/* Charts */}
       <CreatorRevenueCharts />
@@ -116,7 +140,7 @@ export default function CreatorDashboard() {
   const renderEarningsTab = () => (
     <div className="space-y-8">
       <CreatorEarningsDashboard />
-      <EarningsBreakdownCards />
+      <EarningsBreakdownCards stats={stats} loading={earningsLoading} />
       <CreatorRevenueCharts />
       <TransactionHistory />
     </div>
@@ -166,8 +190,8 @@ export default function CreatorDashboard() {
         </p>
       </div>
 
-      {/* Demo mode banner */}
-      {useDemoData && (
+      {/* Demo mode banner - shows when demo active OR when setup needed */}
+      {(demoMode || !isOnboardingComplete) && (
         <DemoModeBanner
           isDemoMode={demoMode}
           onToggle={setDemoMode}
@@ -175,9 +199,6 @@ export default function CreatorDashboard() {
           showStripeSetup={!isOnboardingComplete}
         />
       )}
-
-      {/* Show onboarding as non-blocking banner if not complete */}
-      {!isOnboardingComplete && !useDemoData && <CreatorOnboarding />}
 
       {/* Always show dashboard content */}
       <DashboardTabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
