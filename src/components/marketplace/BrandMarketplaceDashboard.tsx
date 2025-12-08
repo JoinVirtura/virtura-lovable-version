@@ -3,15 +3,19 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useMarketplaceApplications } from '@/hooks/useMarketplaceApplications';
 import { useMarketplacePayments } from '@/hooks/useMarketplacePayments';
+import { useMarketplaceContracts } from '@/hooks/useMarketplaceContracts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { CheckCircle, Clock, XCircle, Plus, MessageSquare, ExternalLink, Users, DollarSign } from 'lucide-react';
+import { CheckCircle, Clock, XCircle, Plus, MessageSquare, ExternalLink, Users, DollarSign, FileText } from 'lucide-react';
 import { BrandCampaignCreator } from './BrandCampaignCreator';
 import { CampaignChat } from './CampaignChat';
+import { SuggestedCreators } from './SuggestedCreators';
+import { ContractViewer } from './ContractViewer';
+import { ContractStatusBadge } from './ContractStatusBadge';
 import { format } from 'date-fns';
 import { toast } from '@/hooks/use-toast';
 
@@ -58,12 +62,14 @@ export function BrandMarketplaceDashboard() {
   const { user } = useAuth();
   const { acceptApplication } = useMarketplaceApplications();
   const { approveDeliverable } = useMarketplacePayments();
+  const { contracts, generateContract, refetch: refetchContracts, getContractForCampaign } = useMarketplaceContracts();
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
   const [deliverables, setDeliverables] = useState<Deliverable[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [selectedCampaignForChat, setSelectedCampaignForChat] = useState<string | null>(null);
+  const [selectedContractCampaign, setSelectedContractCampaign] = useState<string | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -73,7 +79,6 @@ export function BrandMarketplaceDashboard() {
     if (!user) return;
 
     try {
-      // Fetch my brands' campaigns
       const { data: campaignsData } = await supabase
         .from('marketplace_campaigns')
         .select(`
@@ -85,7 +90,6 @@ export function BrandMarketplaceDashboard() {
 
       setCampaigns(campaignsData || []);
 
-      // Fetch applications for my campaigns
       const campaignIds = campaignsData?.map(c => c.id) || [];
       if (campaignIds.length > 0) {
         const { data: appsData } = await supabase
@@ -99,7 +103,6 @@ export function BrandMarketplaceDashboard() {
 
         setApplications(appsData || []);
 
-        // Fetch deliverables
         const { data: deliverablesData } = await supabase
           .from('marketplace_deliverables')
           .select(`
@@ -118,14 +121,25 @@ export function BrandMarketplaceDashboard() {
     }
   };
 
-  const handleAcceptApplication = async (applicationId: string) => {
+  const handleAcceptApplication = async (application: Application) => {
     try {
-      await acceptApplication(applicationId);
+      // First accept the application
+      await acceptApplication(application.id);
+      
+      // Then generate the contract
+      await generateContract(
+        application.campaign_id,
+        application.creator_id,
+        application.proposed_rate_cents
+      );
+      
       toast({
         title: 'Application accepted',
-        description: 'The creator has been assigned to this campaign',
+        description: 'Contract has been generated and is ready for signatures',
       });
+      
       fetchData();
+      refetchContracts();
     } catch (error) {
       console.error('Error accepting application:', error);
     }
@@ -188,6 +202,14 @@ export function BrandMarketplaceDashboard() {
   const inProgressCampaigns = campaigns.filter(c => c.status === 'in_progress');
   const completedCampaigns = campaigns.filter(c => c.status === 'completed');
 
+  // Get the first open campaign for AI recommendations
+  const firstOpenCampaign = openCampaigns[0];
+
+  // Get selected contract for viewer
+  const selectedContract = selectedContractCampaign 
+    ? getContractForCampaign(selectedContractCampaign)
+    : null;
+
   return (
     <div className="space-y-6">
       {/* Header with Create Button */}
@@ -216,6 +238,15 @@ export function BrandMarketplaceDashboard() {
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* AI Suggested Creators */}
+      {firstOpenCampaign && (
+        <SuggestedCreators
+          campaignId={firstOpenCampaign.id}
+          category={firstOpenCampaign.category}
+          budgetCents={firstOpenCampaign.budget_cents}
+        />
+      )}
 
       {/* Stats Overview */}
       <div className="grid gap-4 md:grid-cols-3">
@@ -271,6 +302,7 @@ export function BrandMarketplaceDashboard() {
           {openCampaigns.map((campaign) => {
             const campaignApps = applications.filter(a => a.campaign_id === campaign.id);
             const pendingApps = campaignApps.filter(a => a.status === 'pending');
+            const contract = getContractForCampaign(campaign.id);
 
             return (
               <Card key={campaign.id} className="backdrop-blur-xl bg-card/50">
@@ -282,11 +314,26 @@ export function BrandMarketplaceDashboard() {
                         {formatBudget(campaign.budget_cents)} • {campaignApps.length} applications
                       </p>
                     </div>
-                    {getStatusBadge(campaign.status || 'open')}
+                    <div className="flex items-center gap-2">
+                      {contract && <ContractStatusBadge status={contract.status} />}
+                      {getStatusBadge(campaign.status || 'open')}
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <p className="text-sm">{campaign.description}</p>
+
+                  {/* Contract View Button */}
+                  {contract && (
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setSelectedContractCampaign(campaign.id)}
+                    >
+                      <FileText className="w-4 h-4 mr-2" />
+                      View Contract
+                    </Button>
+                  )}
 
                   {pendingApps.length > 0 && (
                     <div className="space-y-2">
@@ -304,8 +351,8 @@ export function BrandMarketplaceDashboard() {
                               </div>
                               <p className="text-sm text-muted-foreground">{app.pitch}</p>
                             </div>
-                            <Button onClick={() => handleAcceptApplication(app.id)}>
-                              Accept
+                            <Button onClick={() => handleAcceptApplication(app)}>
+                              Accept & Generate Contract
                             </Button>
                           </div>
                         </div>
@@ -335,6 +382,7 @@ export function BrandMarketplaceDashboard() {
           {inProgressCampaigns.map((campaign) => {
             const campaignDeliverables = deliverables.filter(d => d.campaign_id === campaign.id);
             const pendingDeliverables = campaignDeliverables.filter(d => d.status === 'submitted');
+            const contract = getContractForCampaign(campaign.id);
 
             return (
               <Card key={campaign.id} className="backdrop-blur-xl bg-card/50">
@@ -346,17 +394,31 @@ export function BrandMarketplaceDashboard() {
                         Creator Rate: {formatBudget(campaign.creator_rate_cents || 0)}
                       </p>
                     </div>
-                    {getStatusBadge(campaign.status || 'in_progress')}
+                    <div className="flex items-center gap-2">
+                      {contract && <ContractStatusBadge status={contract.status} />}
+                      {getStatusBadge(campaign.status || 'in_progress')}
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <Button 
-                    variant="outline"
-                    onClick={() => setSelectedCampaignForChat(campaign.id)}
-                  >
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    Chat with Creator
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline"
+                      onClick={() => setSelectedCampaignForChat(campaign.id)}
+                    >
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      Chat with Creator
+                    </Button>
+                    {contract && (
+                      <Button 
+                        variant="outline"
+                        onClick={() => setSelectedContractCampaign(campaign.id)}
+                      >
+                        <FileText className="w-4 h-4 mr-2" />
+                        View Contract
+                      </Button>
+                    )}
+                  </div>
 
                   {pendingDeliverables.length > 0 && (
                     <div className="space-y-2">
@@ -410,21 +472,38 @@ export function BrandMarketplaceDashboard() {
         </TabsContent>
 
         <TabsContent value="completed" className="mt-6 space-y-4">
-          {completedCampaigns.map((campaign) => (
-            <Card key={campaign.id} className="backdrop-blur-xl bg-card/50">
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <CardTitle>{campaign.title}</CardTitle>
-                  {getStatusBadge(campaign.status || 'completed')}
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Paid: {formatBudget(campaign.creator_rate_cents || campaign.budget_cents)}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
+          {completedCampaigns.map((campaign) => {
+            const contract = getContractForCampaign(campaign.id);
+            
+            return (
+              <Card key={campaign.id} className="backdrop-blur-xl bg-card/50">
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <CardTitle>{campaign.title}</CardTitle>
+                    <div className="flex items-center gap-2">
+                      {contract && <ContractStatusBadge status={contract.status} />}
+                      {getStatusBadge(campaign.status || 'completed')}
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <p className="text-sm text-muted-foreground">
+                    Paid: {formatBudget(campaign.creator_rate_cents || campaign.budget_cents)}
+                  </p>
+                  {contract && (
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setSelectedContractCampaign(campaign.id)}
+                    >
+                      <FileText className="w-4 h-4 mr-2" />
+                      View Contract
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
 
           {completedCampaigns.length === 0 && (
             <div className="text-center py-12">
@@ -439,6 +518,19 @@ export function BrandMarketplaceDashboard() {
         <CampaignChat
           campaignId={selectedCampaignForChat}
           onClose={() => setSelectedCampaignForChat(null)}
+        />
+      )}
+
+      {/* Contract Viewer Modal */}
+      {selectedContract && (
+        <ContractViewer
+          contract={selectedContract}
+          userRole="brand"
+          onClose={() => setSelectedContractCampaign(null)}
+          onSigned={() => {
+            refetchContracts();
+            fetchData();
+          }}
         />
       )}
     </div>

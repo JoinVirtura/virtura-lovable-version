@@ -1540,6 +1540,68 @@ export type Database = {
           },
         ]
       }
+      marketplace_contracts: {
+        Row: {
+          brand_id: string
+          brand_signed_at: string | null
+          campaign_id: string
+          contract_terms: Json
+          created_at: string
+          creator_id: string
+          creator_payout_cents: number
+          creator_signed_at: string | null
+          deadline: string | null
+          deliverables_summary: string | null
+          id: string
+          payment_amount_cents: number
+          platform_fee_cents: number
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          brand_id: string
+          brand_signed_at?: string | null
+          campaign_id: string
+          contract_terms?: Json
+          created_at?: string
+          creator_id: string
+          creator_payout_cents: number
+          creator_signed_at?: string | null
+          deadline?: string | null
+          deliverables_summary?: string | null
+          id?: string
+          payment_amount_cents: number
+          platform_fee_cents: number
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          brand_id?: string
+          brand_signed_at?: string | null
+          campaign_id?: string
+          contract_terms?: Json
+          created_at?: string
+          creator_id?: string
+          creator_payout_cents?: number
+          creator_signed_at?: string | null
+          deadline?: string | null
+          deliverables_summary?: string | null
+          id?: string
+          payment_amount_cents?: number
+          platform_fee_cents?: number
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_contracts_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       marketplace_deliverables: {
         Row: {
           approved_at: string | null
