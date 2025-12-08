@@ -54,8 +54,8 @@ export function AdminDashboard() {
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [isLive, setIsLive] = useState(false);
 
-  const fetchDashboardData = useCallback(async () => {
-    setLoading(true);
+  const fetchDashboardData = useCallback(async (showLoading = true) => {
+    if (showLoading) setLoading(true);
     try {
       // Fetch real jobs data from database
       const { data: jobsData, error: jobsError } = await supabase
@@ -153,7 +153,7 @@ export function AdminDashboard() {
         },
         (payload) => {
           console.log('Job update received:', payload);
-          fetchDashboardData();
+          fetchDashboardData(false); // Don't show loading spinner for real-time updates
         }
       )
       .subscribe((status) => {
@@ -276,7 +276,7 @@ export function AdminDashboard() {
           <span className="text-xs text-muted-foreground">
             Updated {formatDistanceToNow(lastUpdated)} ago
           </span>
-          <Button onClick={fetchDashboardData} variant="outline" size="sm">
+          <Button onClick={() => fetchDashboardData(true)} variant="outline" size="sm">
             <RefreshCw className="w-4 h-4 mr-2" />
             Refresh
           </Button>
