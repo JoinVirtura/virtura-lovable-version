@@ -15,6 +15,8 @@ import { AuditLogViewer } from "@/components/admin/AuditLogViewer";
 import { SystemMetrics } from "@/components/admin/SystemMetrics";
 import { GalleryShowcaseManager } from "@/components/admin/GalleryShowcaseManager";
 import { LandingAnalyticsDashboard } from "@/components/admin/LandingAnalyticsDashboard";
+import { AdminVerificationReview } from "@/components/admin/AdminVerificationReview";
+import { AdminMarketplaceApprovals } from "@/components/marketplace/AdminMarketplaceApprovals";
 
 export default function UnifiedAdminDashboard() {
   const { user } = useAuth();
