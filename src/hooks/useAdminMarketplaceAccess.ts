@@ -51,16 +51,31 @@ export function useAdminMarketplaceAccess() {
       
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await supabase
+      console.log('Attempting to approve request:', requestId, 'by admin:', user.id);
+
+      const { data, error } = await supabase
         .from('marketplace_access')
         .update({
           status: 'approved',
           reviewed_at: new Date().toISOString(),
           reviewed_by: user.id,
         })
-        .eq('id', requestId);
+        .eq('id', requestId)
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase update error:', error);
+        if (error.code === '42501' || error.message.includes('row-level security')) {
+          throw new Error('Permission denied. Ensure you have admin role in user_roles table.');
+        }
+        throw error;
+      }
+
+      if (!data || data.length === 0) {
+        throw new Error('No rows updated. Check if request exists and you have admin permissions.');
+      }
+
+      console.log('Successfully approved request:', data);
 
       toast({
         title: 'Request approved',
@@ -71,8 +86,8 @@ export function useAdminMarketplaceAccess() {
     } catch (error: any) {
       console.error('Error approving request:', error);
       toast({
-        title: 'Error',
-        description: error.message,
+        title: 'Error approving request',
+        description: error.message || 'Failed to approve. Check console for details.',
         variant: 'destructive',
       });
     }
@@ -84,7 +99,9 @@ export function useAdminMarketplaceAccess() {
       
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await supabase
+      console.log('Attempting to deny request:', requestId, 'by admin:', user.id);
+
+      const { data, error } = await supabase
         .from('marketplace_access')
         .update({
           status: 'denied',
@@ -92,9 +109,22 @@ export function useAdminMarketplaceAccess() {
           reviewed_by: user.id,
           denial_reason: reason,
         })
-        .eq('id', requestId);
+        .eq('id', requestId)
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase update error:', error);
+        if (error.code === '42501' || error.message.includes('row-level security')) {
+          throw new Error('Permission denied. Ensure you have admin role in user_roles table.');
+        }
+        throw error;
+      }
+
+      if (!data || data.length === 0) {
+        throw new Error('No rows updated. Check if request exists and you have admin permissions.');
+      }
+
+      console.log('Successfully denied request:', data);
 
       toast({
         title: 'Request denied',
@@ -105,8 +135,8 @@ export function useAdminMarketplaceAccess() {
     } catch (error: any) {
       console.error('Error denying request:', error);
       toast({
-        title: 'Error',
-        description: error.message,
+        title: 'Error denying request',
+        description: error.message || 'Failed to deny. Check console for details.',
         variant: 'destructive',
       });
     }
