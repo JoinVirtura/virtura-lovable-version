@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { Coins, TrendingUp, TrendingDown, DollarSign, Download, Search, User } from "lucide-react";
-import { format } from "date-fns";
+import { Coins, TrendingUp, TrendingDown, DollarSign, Download, Search, User, Radio } from "lucide-react";
+import { format, formatDistanceToNow } from "date-fns";
 
 interface Transaction {
   id: string;
