@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { RefreshCw, AlertTriangle, CheckCircle, Clock, Activity, Video, Mic, Image, Loader2, RotateCcw, Filter } from 'lucide-react';
+import { RefreshCw, AlertTriangle, CheckCircle, Clock, Activity, Video, Mic, Image, Loader2, RotateCcw, Filter, Radio } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import { AdminVideoRecovery } from '@/components/AdminVideoRecovery';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { formatDistanceToNow } from 'date-fns';
 
 interface DashboardStats {
   totalUsers: number;
@@ -50,8 +51,10 @@ export function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
+  const [isLive, setIsLive] = useState(false);
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = useCallback(async () => {
     setLoading(true);
     try {
       // Fetch real jobs data from database
@@ -131,12 +134,36 @@ export function AdminDashboard() {
       });
     } finally {
       setLoading(false);
+      setLastUpdated(new Date());
     }
-  };
+  }, [toast]);
 
   useEffect(() => {
     fetchDashboardData();
-  }, []);
+
+    // Set up real-time subscription for jobs
+    const channel = supabase
+      .channel('admin-jobs-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'jobs'
+        },
+        (payload) => {
+          console.log('Job update received:', payload);
+          fetchDashboardData();
+        }
+      )
+      .subscribe((status) => {
+        setIsLive(status === 'SUBSCRIBED');
+      });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchDashboardData]);
 
   const getJobStatusBadge = (status: string) => {
     switch (status) {
@@ -231,7 +258,7 @@ export function AdminDashboard() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
             <Activity className="w-8 h-8 text-violet-400" />
@@ -239,10 +266,21 @@ export function AdminDashboard() {
           </h1>
           <p className="text-muted-foreground">Monitor jobs, render queues, and processing status</p>
         </div>
-        <Button onClick={fetchDashboardData} variant="outline" size="sm">
-          <RefreshCw className="w-4 h-4 mr-2" />
-          Refresh
-        </Button>
+        <div className="flex items-center gap-3">
+          {isLive && (
+            <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
+              <Radio className="w-3 h-3 mr-2 animate-pulse" />
+              Live
+            </Badge>
+          )}
+          <span className="text-xs text-muted-foreground">
+            Updated {formatDistanceToNow(lastUpdated)} ago
+          </span>
+          <Button onClick={fetchDashboardData} variant="outline" size="sm">
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Refresh
+          </Button>
+        </div>
       </div>
 
       {/* Job-Focused Stats Cards - Glassmorphic */}
