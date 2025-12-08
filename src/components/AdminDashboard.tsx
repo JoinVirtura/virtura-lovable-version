@@ -4,10 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { RefreshCw, AlertTriangle, CheckCircle, Clock, Users, Video, FileText } from 'lucide-react';
+import { RefreshCw, AlertTriangle, CheckCircle, Clock, Activity, Video, Mic, Image, Loader2, RotateCcw, Filter } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import { AdminVideoRecovery } from '@/components/AdminVideoRecovery';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface DashboardStats {
   totalUsers: number;
@@ -194,12 +195,50 @@ export function AdminDashboard() {
     );
   }
 
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [typeFilter, setTypeFilter] = useState<string>('all');
+
+  const getJobTypeIcon = (type: string) => {
+    switch (type.toLowerCase()) {
+      case 'video':
+      case 'video_generation':
+        return <Video className="w-4 h-4 text-violet-400" />;
+      case 'voice':
+      case 'voice_generation':
+        return <Mic className="w-4 h-4 text-cyan-400" />;
+      case 'image':
+      case 'image_generation':
+        return <Image className="w-4 h-4 text-pink-400" />;
+      default:
+        return <Activity className="w-4 h-4 text-amber-400" />;
+    }
+  };
+
+  const filteredJobs = jobs.filter(job => {
+    const statusMatch = statusFilter === 'all' || job.status === statusFilter;
+    const typeMatch = typeFilter === 'all' || job.type.toLowerCase().includes(typeFilter.toLowerCase());
+    return statusMatch && typeMatch;
+  });
+
+  const queuedJobs = jobs.filter(j => j.status === 'queued').length;
+  const failedJobsList = jobs.filter(j => j.status === 'error' || j.status === 'failed');
+
+  const bulkRetryFailed = async () => {
+    for (const job of failedJobsList) {
+      await retryJob(job.id);
+    }
+  };
+
   return (
-    <div className="space-y-6 p-6 max-w-7xl mx-auto">
+    <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
-          <p className="text-muted-foreground">Monitor platform usage and system health</p>
+          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
+            <Activity className="w-8 h-8 text-violet-400" />
+            Job Queue & Processing
+          </h1>
+          <p className="text-muted-foreground">Monitor jobs, render queues, and processing status</p>
         </div>
         <Button onClick={fetchDashboardData} variant="outline" size="sm">
           <RefreshCw className="w-4 h-4 mr-2" />
@@ -207,81 +246,108 @@ export function AdminDashboard() {
         </Button>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
+      {/* Job-Focused Stats Cards - Glassmorphic */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 border-blue-500/20 backdrop-blur-xl">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Queued</CardTitle>
+            <Clock className="h-5 w-5 text-blue-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalUsers}</div>
-            <p className="text-xs text-muted-foreground">Active accounts</p>
+            <div className="text-3xl font-bold text-blue-400">{queuedJobs}</div>
+            <p className="text-xs text-muted-foreground">awaiting processing</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gradient-to-br from-amber-500/10 to-amber-600/5 border-amber-500/20 backdrop-blur-xl">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Jobs</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Active</CardTitle>
+            <Loader2 className="h-5 w-5 text-amber-400 animate-spin" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.activeJobs}</div>
-            <p className="text-xs text-muted-foreground">Currently processing</p>
+            <div className="text-3xl font-bold text-amber-400">{stats.activeJobs}</div>
+            <p className="text-xs text-muted-foreground">currently processing</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border-emerald-500/20 backdrop-blur-xl">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Completed Today</CardTitle>
-            <CheckCircle className="h-4 w-4 text-muted-foreground" />
+            <CheckCircle className="h-5 w-5 text-emerald-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.completedToday}</div>
-            <p className="text-xs text-muted-foreground">Successful renders</p>
+            <div className="text-3xl font-bold text-emerald-400">{stats.completedToday}</div>
+            <p className="text-xs text-muted-foreground">successful renders</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className={`bg-gradient-to-br from-red-500/10 to-red-600/5 border-red-500/20 backdrop-blur-xl ${stats.failedJobs > 0 ? 'animate-pulse' : ''}`}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Failed Jobs</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Failed</CardTitle>
+            <AlertTriangle className="h-5 w-5 text-red-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.failedJobs}</div>
-            <p className="text-xs text-muted-foreground">Need attention</p>
+            <div className="text-3xl font-bold text-red-400">{stats.failedJobs}</div>
+            <p className="text-xs text-muted-foreground">need attention</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Credits Usage */}
-      <Card>
+      {/* Enhanced Credits Usage - Glassmorphic */}
+      <Card className="bg-gradient-to-br from-slate-900/50 to-slate-800/50 border-white/10 backdrop-blur-xl">
         <CardHeader>
-          <CardTitle>Credit Usage (24h)</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Activity className="w-5 h-5 text-violet-400" />
+            Resource Usage (24h)
+          </CardTitle>
           <CardDescription>Platform resource consumption</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="space-y-2">
+            <div className="space-y-2 p-4 rounded-lg bg-gradient-to-br from-cyan-500/10 to-cyan-600/5 border border-cyan-500/20">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Voice Generation</span>
-                <span className="text-sm text-muted-foreground">{stats.credits.voice}</span>
+                <span className="text-sm font-medium flex items-center gap-2">
+                  <Mic className="w-4 h-4 text-cyan-400" />
+                  Voice Generation
+                </span>
+                <span className="text-sm text-cyan-400 font-semibold">{stats.credits.voice}</span>
               </div>
-              <Progress value={(stats.credits.voice / 100) * 100} className="h-2" />
+              <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-cyan-500 to-cyan-400 transition-all duration-500"
+                  style={{ width: `${Math.min((stats.credits.voice / 100) * 100, 100)}%` }}
+                />
+              </div>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 p-4 rounded-lg bg-gradient-to-br from-violet-500/10 to-violet-600/5 border border-violet-500/20">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Video Generation</span>
-                <span className="text-sm text-muted-foreground">{stats.credits.video}</span>
+                <span className="text-sm font-medium flex items-center gap-2">
+                  <Video className="w-4 h-4 text-violet-400" />
+                  Video Generation
+                </span>
+                <span className="text-sm text-violet-400 font-semibold">{stats.credits.video}</span>
               </div>
-              <Progress value={(stats.credits.video / 50) * 100} className="h-2" />
+              <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-violet-500 to-violet-400 transition-all duration-500"
+                  style={{ width: `${Math.min((stats.credits.video / 50) * 100, 100)}%` }}
+                />
+              </div>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 p-4 rounded-lg bg-gradient-to-br from-pink-500/10 to-pink-600/5 border border-pink-500/20">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Storage</span>
-                <span className="text-sm text-muted-foreground">{stats.credits.storage}</span>
+                <span className="text-sm font-medium flex items-center gap-2">
+                  <Image className="w-4 h-4 text-pink-400" />
+                  Storage
+                </span>
+                <span className="text-sm text-pink-400 font-semibold">{stats.credits.storage}</span>
               </div>
-              <Progress value={(stats.credits.storage / 200) * 100} className="h-2" />
+              <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-pink-500 to-pink-400 transition-all duration-500"
+                  style={{ width: `${Math.min((stats.credits.storage / 200) * 100, 100)}%` }}
+                />
+              </div>
             </div>
           </div>
         </CardContent>
@@ -289,65 +355,133 @@ export function AdminDashboard() {
 
       {/* Detailed Views */}
       <Tabs defaultValue="jobs" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="jobs">Recent Jobs</TabsTrigger>
+        <TabsList className="bg-slate-900/50 border border-white/10">
+          <TabsTrigger value="jobs">Job Queue</TabsTrigger>
           <TabsTrigger value="users">User Activity</TabsTrigger>
           <TabsTrigger value="recovery">Video Recovery</TabsTrigger>
         </TabsList>
 
         <TabsContent value="jobs" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Job Queue</CardTitle>
-              <CardDescription>Recent processing jobs and their status</CardDescription>
+          <Card className="bg-gradient-to-br from-slate-900/50 to-slate-800/50 border-white/10 backdrop-blur-xl">
+            <CardHeader className="flex flex-row items-center justify-between flex-wrap gap-4">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <Activity className="w-5 h-5 text-violet-400" />
+                  Real-Time Job Queue
+                </CardTitle>
+                <CardDescription>Live processing status with instant updates</CardDescription>
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="w-32 bg-slate-800/50 border-white/10">
+                    <Filter className="w-4 h-4 mr-2" />
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Status</SelectItem>
+                    <SelectItem value="queued">Queued</SelectItem>
+                    <SelectItem value="processing">Processing</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                    <SelectItem value="failed">Failed</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={typeFilter} onValueChange={setTypeFilter}>
+                  <SelectTrigger className="w-32 bg-slate-800/50 border-white/10">
+                    <SelectValue placeholder="Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Types</SelectItem>
+                    <SelectItem value="video">Video</SelectItem>
+                    <SelectItem value="voice">Voice</SelectItem>
+                    <SelectItem value="image">Image</SelectItem>
+                  </SelectContent>
+                </Select>
+                {failedJobsList.length > 0 && (
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={bulkRetryFailed}
+                    className="bg-red-500/10 border-red-500/30 text-red-400 hover:bg-red-500/20"
+                  >
+                    <RotateCcw className="w-4 h-4 mr-2" />
+                    Retry All Failed ({failedJobsList.length})
+                  </Button>
+                )}
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {jobs.slice(0, 10).map((job) => (
-                  <div key={job.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">{job.type}</span>
-                        {getJobStatusBadge(job.status)}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        ID: {job.id.slice(0, 8)}... • {new Date(job.created_at).toLocaleString()}
-                      </div>
-                      {job.error_message && (
-                        <div className="text-sm text-red-600">{job.error_message}</div>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {job.status === 'processing' && (
-                        <Progress value={job.progress} className="w-24" />
-                      )}
-                      {(job.status === 'error' || job.status === 'failed') && (
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
-                          onClick={() => retryJob(job.id)}
-                        >
-                          Retry
-                        </Button>
-                      )}
-                    </div>
+              <div className="space-y-3">
+                {filteredJobs.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    No jobs found matching filters
                   </div>
-                ))}
+                ) : (
+                  filteredJobs.slice(0, 15).map((job) => (
+                    <div 
+                      key={job.id} 
+                      className="flex items-center justify-between p-4 rounded-lg bg-slate-800/30 border border-white/5 hover:border-white/10 transition-all"
+                    >
+                      <div className="flex items-center gap-4 flex-1">
+                        <div className="p-2 rounded-lg bg-slate-700/50">
+                          {getJobTypeIcon(job.type)}
+                        </div>
+                        <div className="space-y-1 flex-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-medium">{job.type}</span>
+                            {getJobStatusBadge(job.status)}
+                            {job.stage && (
+                              <Badge variant="outline" className="text-xs bg-slate-700/50">
+                                {job.stage}
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            ID: {job.id.slice(0, 8)}... • {new Date(job.created_at).toLocaleString()}
+                          </div>
+                          {job.error_message && (
+                            <div className="text-sm text-red-400 bg-red-500/10 px-2 py-1 rounded">
+                              {job.error_message}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        {job.status === 'processing' && (
+                          <div className="flex items-center gap-2">
+                            <Progress value={job.progress} className="w-24 h-2" />
+                            <span className="text-xs text-muted-foreground">{job.progress}%</span>
+                          </div>
+                        )}
+                        {(job.status === 'error' || job.status === 'failed') && (
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={() => retryJob(job.id)}
+                            className="bg-slate-700/50 hover:bg-slate-600/50"
+                          >
+                            <RotateCcw className="w-4 h-4 mr-1" />
+                            Retry
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
         <TabsContent value="users" className="space-y-4">
-          <Card>
+          <Card className="bg-gradient-to-br from-slate-900/50 to-slate-800/50 border-white/10 backdrop-blur-xl">
             <CardHeader>
               <CardTitle>User Activity</CardTitle>
               <CardDescription>Most active users and their usage patterns</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {users.slice(0, 10).map((user) => (
-                  <div key={user.user_id} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div key={user.user_id} className="flex items-center justify-between p-4 rounded-lg bg-slate-800/30 border border-white/5">
                     <div className="space-y-1">
                       <div className="font-medium">{user.user_id.slice(0, 8)}...</div>
                       <div className="text-sm text-muted-foreground">
@@ -355,7 +489,7 @@ export function AdminDashboard() {
                       </div>
                     </div>
                     <div className="text-right space-y-1">
-                      <div className="text-sm font-medium">{user.totalJobs} jobs</div>
+                      <div className="text-sm font-medium text-violet-400">{user.totalJobs} jobs</div>
                       <div className="text-sm text-muted-foreground">{user.creditsUsed} credits</div>
                     </div>
                   </div>

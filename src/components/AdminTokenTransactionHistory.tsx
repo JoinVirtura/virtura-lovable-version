@@ -183,57 +183,57 @@ export function AdminTokenTransactionHistory() {
 
   return (
     <div className="space-y-6">
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
+      {/* Token-Specific Summary Cards - No redundancy with Financial/API Costs tabs */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border-emerald-500/20">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-green-600" />
+              <TrendingUp className="h-4 w-4 text-emerald-500" />
               Total Purchased
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalPurchased.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">all users</p>
+            <div className="text-2xl font-bold text-emerald-400">{totalPurchased.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">tokens credited</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gradient-to-br from-red-500/10 to-red-600/5 border-red-500/20">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <TrendingDown className="h-4 w-4 text-red-600" />
+              <TrendingDown className="h-4 w-4 text-red-500" />
               Total Used
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalUsed.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">consumed</p>
+            <div className="text-2xl font-bold text-red-400">{totalUsed.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">tokens consumed</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gradient-to-br from-violet-500/10 to-violet-600/5 border-violet-500/20">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <DollarSign className="h-4 w-4 text-primary" />
-              Revenue
+              <Coins className="h-4 w-4 text-violet-500" />
+              Net Balance
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalRevenue.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground">from token sales</p>
+            <div className="text-2xl font-bold text-violet-400">{(totalPurchased - totalUsed).toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">available platform-wide</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gradient-to-br from-amber-500/10 to-amber-600/5 border-amber-500/20">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <DollarSign className="h-4 w-4 text-amber-600" />
-              API Costs
+              <User className="h-4 w-4 text-amber-500" />
+              Active Users
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalCost.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground">total spent</p>
+            <div className="text-2xl font-bold text-amber-400">{topUsers.length}</div>
+            <p className="text-xs text-muted-foreground">with token activity</p>
           </CardContent>
         </Card>
       </div>
