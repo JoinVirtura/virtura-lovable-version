@@ -2,17 +2,20 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useMarketplaceApplications } from '@/hooks/useMarketplaceApplications';
+import { useMarketplaceContracts } from '@/hooks/useMarketplaceContracts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
-import { CheckCircle, Clock, XCircle, Search, DollarSign, Calendar, MessageSquare, Upload, Briefcase } from 'lucide-react';
+import { CheckCircle, Clock, XCircle, Search, DollarSign, Calendar, MessageSquare, Upload, Briefcase, FileText } from 'lucide-react';
 import { DeliverableUpload } from './DeliverableUpload';
 import { CampaignChat } from './CampaignChat';
 import { CampaignApplicationForm } from './CampaignApplicationForm';
 import { CategoryFilter } from './CategoryFilter';
+import { ContractViewer } from './ContractViewer';
+import { ContractStatusBadge } from './ContractStatusBadge';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
 
@@ -43,6 +46,7 @@ interface Application {
 
 export function CreatorMarketplaceDashboard() {
   const { user } = useAuth();
+  const { contracts, getContractForCampaign, refetch: refetchContracts } = useMarketplaceContracts();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [openCampaigns, setOpenCampaigns] = useState<Campaign[]>([]);
@@ -52,6 +56,7 @@ export function CreatorMarketplaceDashboard() {
   const [selectedCampaignForApplication, setSelectedCampaignForApplication] = useState<string | null>(null);
   const [selectedCampaignForChat, setSelectedCampaignForChat] = useState<string | null>(null);
   const [selectedCampaignForUpload, setSelectedCampaignForUpload] = useState<string | null>(null);
+  const [selectedContractCampaign, setSelectedContractCampaign] = useState<string | null>(null);
   const [creatorId, setCreatorId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -62,7 +67,6 @@ export function CreatorMarketplaceDashboard() {
     if (!user) return;
 
     try {
-      // Get creator account
       const { data: creatorAccount } = await supabase
         .from('creator_accounts')
         .select('id')
@@ -73,7 +77,6 @@ export function CreatorMarketplaceDashboard() {
         setCreatorId(creatorAccount.id);
       }
 
-      // Fetch open campaigns
       const { data: campaignsData } = await supabase
         .from('marketplace_campaigns')
         .select(`
@@ -85,7 +88,6 @@ export function CreatorMarketplaceDashboard() {
 
       setOpenCampaigns(campaignsData || []);
 
-      // Fetch my applications
       if (creatorAccount) {
         const { data: appsData } = await supabase
           .from('marketplace_applications')
@@ -101,7 +103,6 @@ export function CreatorMarketplaceDashboard() {
 
         setMyApplications(appsData || []);
 
-        // Fetch active gigs (campaigns I'm assigned to)
         const { data: gigsData } = await supabase
           .from('marketplace_campaigns')
           .select(`
@@ -162,6 +163,16 @@ export function CreatorMarketplaceDashboard() {
     return matchesSearch && matchesCategory;
   });
 
+  // Get pending contracts that need creator signature
+  const pendingContracts = contracts.filter(c => 
+    c.status === 'pending_creator' && !c.creator_signed_at
+  );
+
+  // Get selected contract for viewer
+  const selectedContract = selectedContractCampaign 
+    ? getContractForCampaign(selectedContractCampaign)
+    : null;
+
   if (loading) {
     return (
       <div className="space-y-6">
@@ -173,6 +184,34 @@ export function CreatorMarketplaceDashboard() {
 
   return (
     <div className="space-y-6">
+      {/* Pending Contracts Alert */}
+      {pendingContracts.length > 0 && (
+        <Card className="backdrop-blur-xl bg-gradient-to-br from-yellow-900/20 to-orange-900/20 border-yellow-500/30">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-full bg-yellow-500/20">
+                  <FileText className="w-5 h-5 text-yellow-400" />
+                </div>
+                <div>
+                  <p className="font-semibold text-yellow-400">Contracts Awaiting Your Signature</p>
+                  <p className="text-sm text-muted-foreground">
+                    You have {pendingContracts.length} contract{pendingContracts.length > 1 ? 's' : ''} to review and sign
+                  </p>
+                </div>
+              </div>
+              <Button 
+                variant="outline"
+                className="border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/10"
+                onClick={() => setSelectedContractCampaign(pendingContracts[0].campaign_id)}
+              >
+                Review Contract
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <Tabs defaultValue="browse" className="w-full">
         <TabsList className="grid w-full grid-cols-3 bg-card/50 backdrop-blur-xl">
           <TabsTrigger value="browse">Browse Campaigns</TabsTrigger>
@@ -181,7 +220,6 @@ export function CreatorMarketplaceDashboard() {
         </TabsList>
 
         <TabsContent value="browse" className="mt-6 space-y-6">
-          {/* Search */}
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <Input
@@ -260,30 +298,50 @@ export function CreatorMarketplaceDashboard() {
         </TabsContent>
 
         <TabsContent value="applications" className="mt-6 space-y-4">
-          {myApplications.map((app) => (
-            <Card key={app.id} className="backdrop-blur-xl bg-card/50">
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle>{app.campaign?.title}</CardTitle>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {app.campaign?.brands?.name} • Applied {app.applied_at && format(new Date(app.applied_at), 'MMM dd, yyyy')}
-                    </p>
+          {myApplications.map((app) => {
+            const contract = app.campaign_id ? getContractForCampaign(app.campaign_id) : null;
+            const needsSignature = contract?.status === 'pending_creator' && !contract.creator_signed_at;
+            
+            return (
+              <Card key={app.id} className="backdrop-blur-xl bg-card/50">
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <CardTitle>{app.campaign?.title}</CardTitle>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {app.campaign?.brands?.name} • Applied {app.applied_at && format(new Date(app.applied_at), 'MMM dd, yyyy')}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {contract && <ContractStatusBadge status={contract.status} />}
+                      {getStatusBadge(app.status || 'pending')}
+                    </div>
                   </div>
-                  {getStatusBadge(app.status || 'pending')}
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <div>
-                    <span className="text-sm text-muted-foreground">Proposed Rate:</span>
-                    <span className="ml-2 font-bold">{formatBudget(app.proposed_rate_cents)}</span>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center gap-4">
+                    <div>
+                      <span className="text-sm text-muted-foreground">Proposed Rate:</span>
+                      <span className="ml-2 font-bold">{formatBudget(app.proposed_rate_cents)}</span>
+                    </div>
                   </div>
-                </div>
-                <p className="text-sm text-muted-foreground">{app.pitch}</p>
-              </CardContent>
-            </Card>
-          ))}
+                  <p className="text-sm text-muted-foreground">{app.pitch}</p>
+                  
+                  {/* Contract action for accepted applications */}
+                  {app.status === 'accepted' && contract && (
+                    <Button 
+                      onClick={() => setSelectedContractCampaign(app.campaign_id)}
+                      className={needsSignature ? 'bg-gradient-to-r from-yellow-500 to-orange-500' : ''}
+                      variant={needsSignature ? 'default' : 'outline'}
+                    >
+                      <FileText className="w-4 h-4 mr-2" />
+                      {needsSignature ? 'Sign Contract' : 'View Contract'}
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
 
           {myApplications.length === 0 && (
             <div className="text-center py-12">
@@ -300,53 +358,69 @@ export function CreatorMarketplaceDashboard() {
         </TabsContent>
 
         <TabsContent value="active" className="mt-6 space-y-4">
-          {activeGigs.map((campaign) => (
-            <Card key={campaign.id} className="backdrop-blur-xl bg-card/50">
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle>{campaign.title}</CardTitle>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {campaign.brands?.name}
-                    </p>
-                  </div>
-                  {getStatusBadge(campaign.status || 'open')}
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <div>
-                    <span className="text-sm text-muted-foreground">Your Rate:</span>
-                    <span className="ml-2 font-bold">{formatBudget(campaign.creator_rate_cents || 0)}</span>
-                  </div>
-                  {campaign.deadline && (
+          {activeGigs.map((campaign) => {
+            const contract = getContractForCampaign(campaign.id);
+            
+            return (
+              <Card key={campaign.id} className="backdrop-blur-xl bg-card/50">
+                <CardHeader>
+                  <div className="flex items-start justify-between">
                     <div>
-                      <span className="text-sm text-muted-foreground">Deadline:</span>
-                      <span className="ml-2">{format(new Date(campaign.deadline), 'MMM dd, yyyy')}</span>
+                      <CardTitle>{campaign.title}</CardTitle>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {campaign.brands?.name}
+                      </p>
                     </div>
-                  )}
-                </div>
+                    <div className="flex items-center gap-2">
+                      {contract && <ContractStatusBadge status={contract.status} />}
+                      {getStatusBadge(campaign.status || 'open')}
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center gap-4">
+                    <div>
+                      <span className="text-sm text-muted-foreground">Your Rate:</span>
+                      <span className="ml-2 font-bold">{formatBudget(campaign.creator_rate_cents || 0)}</span>
+                    </div>
+                    {campaign.deadline && (
+                      <div>
+                        <span className="text-sm text-muted-foreground">Deadline:</span>
+                        <span className="ml-2">{format(new Date(campaign.deadline), 'MMM dd, yyyy')}</span>
+                      </div>
+                    )}
+                  </div>
 
-                <div className="flex gap-2">
-                  <Button 
-                    variant="outline"
-                    onClick={() => setSelectedCampaignForChat(campaign.id)}
-                  >
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    Chat with Brand
-                  </Button>
-                  {campaign.status === 'in_progress' && (
+                  <div className="flex flex-wrap gap-2">
                     <Button 
-                      onClick={() => setSelectedCampaignForUpload(campaign.id)}
+                      variant="outline"
+                      onClick={() => setSelectedCampaignForChat(campaign.id)}
                     >
-                      <Upload className="w-4 h-4 mr-2" />
-                      Upload Deliverable
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      Chat with Brand
                     </Button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                    {contract && (
+                      <Button 
+                        variant="outline"
+                        onClick={() => setSelectedContractCampaign(campaign.id)}
+                      >
+                        <FileText className="w-4 h-4 mr-2" />
+                        View Contract
+                      </Button>
+                    )}
+                    {campaign.status === 'in_progress' && (
+                      <Button 
+                        onClick={() => setSelectedCampaignForUpload(campaign.id)}
+                      >
+                        <Upload className="w-4 h-4 mr-2" />
+                        Upload Deliverable
+                      </Button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
 
           {activeGigs.length === 0 && (
             <div className="text-center py-12">
@@ -381,6 +455,19 @@ export function CreatorMarketplaceDashboard() {
           campaignId={selectedCampaignForUpload}
           onClose={() => {
             setSelectedCampaignForUpload(null);
+            fetchData();
+          }}
+        />
+      )}
+
+      {/* Contract Viewer Modal */}
+      {selectedContract && (
+        <ContractViewer
+          contract={selectedContract}
+          userRole="creator"
+          onClose={() => setSelectedContractCampaign(null)}
+          onSigned={() => {
+            refetchContracts();
             fetchData();
           }}
         />
