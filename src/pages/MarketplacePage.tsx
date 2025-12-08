@@ -4,9 +4,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { CheckCircle, XCircle, Clock, AlertCircle } from 'lucide-react';
 import { useMarketplaceAccess } from '@/hooks/useMarketplaceAccess';
 import { MarketplaceAccessForm } from '@/components/marketplace/MarketplaceAccessForm';
-import { MarketplaceBrowser } from '@/components/marketplace/MarketplaceBrowser';
-import { CampaignManagement } from '@/components/marketplace/CampaignManagement';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { CreatorMarketplaceDashboard } from '@/components/marketplace/CreatorMarketplaceDashboard';
+import { BrandMarketplaceDashboard } from '@/components/marketplace/BrandMarketplaceDashboard';
 
 export default function MarketplacePage() {
   const { access, loading } = useMarketplaceAccess();
@@ -103,7 +102,9 @@ export default function MarketplacePage() {
     );
   }
 
-  // Application approved - show marketplace with enhanced header
+  // Application approved - show role-specific dashboard
+  const isCreator = access.role_requested === 'creator';
+
   return (
     <div className="container mx-auto p-6 space-y-8">
       {/* Enhanced Header */}
@@ -115,30 +116,25 @@ export default function MarketplacePage() {
               Marketplace
             </h1>
             <p className="text-muted-foreground mt-2 text-lg">
-              Connect brands with creators for paid campaigns
+              {isCreator 
+                ? 'Browse campaigns and connect with brands'
+                : 'Create campaigns and find talented creators'
+              }
             </p>
           </div>
           <Badge variant="default" className="text-sm px-4 py-2 bg-gradient-to-r from-primary to-primary-blue">
             <CheckCircle className="h-4 w-4 mr-2" />
-            {access.role_requested === 'creator' ? 'Approved Creator' : 'Approved Brand'}
+            {isCreator ? 'Approved Creator' : 'Approved Brand'}
           </Badge>
         </div>
       </div>
 
-      <Tabs defaultValue="browse" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 bg-card/50 backdrop-blur-xl">
-          <TabsTrigger value="browse">Browse Campaigns</TabsTrigger>
-          <TabsTrigger value="manage">My Campaigns</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="browse" className="mt-6">
-          <MarketplaceBrowser />
-        </TabsContent>
-
-        <TabsContent value="manage" className="mt-6">
-          <CampaignManagement />
-        </TabsContent>
-      </Tabs>
+      {/* Role-specific Dashboard */}
+      {isCreator ? (
+        <CreatorMarketplaceDashboard />
+      ) : (
+        <BrandMarketplaceDashboard />
+      )}
     </div>
   );
 }
