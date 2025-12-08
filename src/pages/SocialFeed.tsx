@@ -9,24 +9,14 @@ import { FeedOnboardingTutorial } from '@/components/social/FeedOnboardingTutori
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { motion } from 'framer-motion';
-import { StoryViewer } from '@/components/social/StoryViewer';
-import { useStoryViewer } from '@/hooks/useStoryViewer';
-import { useStoryProfiles } from '@/hooks/useStoryProfiles';
 
-// Story user IDs for fetching real profiles
-const storyUserIds = [
-  '357de30c-916f-4f54-bc2e-b32a7f7a01f0', // Jahi Bentley
-  'c75cfca4-8d6f-479a-bed5-0a7362541998', // Erosynth Labs
-  '42fb3aaa-4ddb-41a1-adc4-75c9f0da99d6', // Golden Gleich
-];
+// No hardcoded story data - feed starts empty until users post
 
 export default function SocialFeed() {
   const { user } = useAuth();
   const { profile } = useProfile();
-  const { profiles: storyProfiles } = useStoryProfiles(storyUserIds);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [feedType, setFeedType] = useState<'all' | 'following' | 'trending'>('all');
-  const { isOpen, initialIndex, openStory, closeStory } = useStoryViewer();
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -38,55 +28,6 @@ export default function SocialFeed() {
       setShowOnboarding(true);
     }
   }, []);
-
-  // Use library images for richer story content
-  const libraryImages = [
-    'https://ujaoziqnxhjqlmnvlxav.supabase.co/storage/v1/object/public/virtura-media/generated-avatar-1758477418197.png',
-    'https://ujaoziqnxhjqlmnvlxav.supabase.co/storage/v1/object/public/virtura-media/generated-avatar-1758477480137.png',
-    'https://ujaoziqnxhjqlmnvlxav.supabase.co/storage/v1/object/public/virtura-media/generated-avatar-1758487483579.png',
-    'https://ujaoziqnxhjqlmnvlxav.supabase.co/storage/v1/object/public/virtura-media/generated-avatar-1758537822018.png',
-    'https://ujaoziqnxhjqlmnvlxav.supabase.co/storage/v1/object/public/virtura-media/generated-avatar-1758482494489.png',
-  ];
-
-  const stories = [
-    {
-      id: '1',
-      userId: '357de30c-916f-4f54-bc2e-b32a7f7a01f0',
-      username: storyProfiles['357de30c-916f-4f54-bc2e-b32a7f7a01f0']?.display_name || 'Jahi Bentley',
-      avatar: storyProfiles['357de30c-916f-4f54-bc2e-b32a7f7a01f0']?.avatar_url || 'https://avatar.iran.liara.run/public',
-      hasStory: true,
-      isVerified: true,
-      storyCount: 5,
-      stories: [
-        { id: 's1', content_url: libraryImages[0], content_type: 'image' as const },
-        { id: 's2', content_url: libraryImages[1], content_type: 'image' as const },
-      ]
-    },
-    {
-      id: '2',
-      userId: 'c75cfca4-8d6f-479a-bed5-0a7362541998',
-      username: storyProfiles['c75cfca4-8d6f-479a-bed5-0a7362541998']?.display_name || 'Erosynth Labs',
-      avatar: storyProfiles['c75cfca4-8d6f-479a-bed5-0a7362541998']?.avatar_url || 'https://logo.clearbit.com/nike.com',
-      hasStory: true,
-      isBrand: storyProfiles['c75cfca4-8d6f-479a-bed5-0a7362541998']?.account_type === 'brand',
-      storyCount: 3,
-      stories: [
-        { id: 's3', content_url: libraryImages[2], content_type: 'image' as const },
-        { id: 's4', content_url: libraryImages[3], content_type: 'image' as const },
-      ]
-    },
-    {
-      id: '3',
-      userId: '42fb3aaa-4ddb-41a1-adc4-75c9f0da99d6',
-      username: storyProfiles['42fb3aaa-4ddb-41a1-adc4-75c9f0da99d6']?.display_name || 'Golden Gleich',
-      avatar: storyProfiles['42fb3aaa-4ddb-41a1-adc4-75c9f0da99d6']?.avatar_url || 'https://api.dicebear.com/7.x/avataaars/svg?seed=golden',
-      hasStory: true,
-      storyCount: 2,
-      stories: [
-        { id: 's5', content_url: libraryImages[4], content_type: 'image' as const },
-      ]
-    }
-  ];
 
   // Track scroll progress
   useEffect(() => {
@@ -101,9 +42,6 @@ export default function SocialFeed() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  // Filter out the current user's story since they appear as "Your Story"
-  const filteredStories = stories.filter(story => story.userId !== user?.id);
 
   return (
     <>
@@ -155,19 +93,6 @@ export default function SocialFeed() {
                 onClick={() => setCreateModalOpen(true)}
               />
             </div>
-            {filteredStories.map((story, index) => (
-              <div key={story.id} className="snap-start flex-shrink-0 overflow-visible">
-                <StoryRing
-                  avatar={story.avatar}
-                  username={story.username}
-                  hasStory={story.hasStory}
-                  isVerified={story.isVerified}
-                  isBrand={story.isBrand}
-                  storyCount={story.storyCount}
-                  onClick={() => openStory(index)}
-                />
-              </div>
-            ))}
           </div>
         </div>
 
@@ -255,13 +180,6 @@ export default function SocialFeed() {
         onClose={() => setCreateModalOpen(false)}
       />
 
-      {/* Story Viewer */}
-      <StoryViewer
-        isOpen={isOpen}
-        onClose={closeStory}
-        stories={filteredStories}
-        initialStoryIndex={initialIndex}
-      />
     </div>
     </>
   );
