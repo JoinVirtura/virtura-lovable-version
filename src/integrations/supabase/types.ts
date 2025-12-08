@@ -1028,6 +1028,9 @@ export type Database = {
           stripe_subscription_id: string | null
           subscriber_id: string
           tier: string
+          trial_end: string | null
+          trial_start: string | null
+          trial_used: boolean | null
           updated_at: string | null
         }
         Insert: {
@@ -1042,6 +1045,9 @@ export type Database = {
           stripe_subscription_id?: string | null
           subscriber_id: string
           tier: string
+          trial_end?: string | null
+          trial_start?: string | null
+          trial_used?: boolean | null
           updated_at?: string | null
         }
         Update: {
@@ -1056,6 +1062,9 @@ export type Database = {
           stripe_subscription_id?: string | null
           subscriber_id?: string
           tier?: string
+          trial_end?: string | null
+          trial_start?: string | null
+          trial_used?: boolean | null
           updated_at?: string | null
         }
         Relationships: [
