@@ -39,6 +39,15 @@ export default function SocialFeed() {
     }
   }, []);
 
+  // Use library images for richer story content
+  const libraryImages = [
+    'https://ujaoziqnxhjqlmnvlxav.supabase.co/storage/v1/object/public/virtura-media/generated-avatar-1758477418197.png',
+    'https://ujaoziqnxhjqlmnvlxav.supabase.co/storage/v1/object/public/virtura-media/generated-avatar-1758477480137.png',
+    'https://ujaoziqnxhjqlmnvlxav.supabase.co/storage/v1/object/public/virtura-media/generated-avatar-1758487483579.png',
+    'https://ujaoziqnxhjqlmnvlxav.supabase.co/storage/v1/object/public/virtura-media/generated-avatar-1758537822018.png',
+    'https://ujaoziqnxhjqlmnvlxav.supabase.co/storage/v1/object/public/virtura-media/generated-avatar-1758482494489.png',
+  ];
+
   const stories = [
     {
       id: '1',
@@ -49,8 +58,8 @@ export default function SocialFeed() {
       isVerified: true,
       storyCount: 5,
       stories: [
-        { id: 's1', content_url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400', content_type: 'image' as const },
-        { id: 's2', content_url: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400', content_type: 'image' as const },
+        { id: 's1', content_url: libraryImages[0], content_type: 'image' as const },
+        { id: 's2', content_url: libraryImages[1], content_type: 'image' as const },
       ]
     },
     {
@@ -62,7 +71,8 @@ export default function SocialFeed() {
       isBrand: storyProfiles['c75cfca4-8d6f-479a-bed5-0a7362541998']?.account_type === 'brand',
       storyCount: 3,
       stories: [
-        { id: 's3', content_url: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=400', content_type: 'image' as const },
+        { id: 's3', content_url: libraryImages[2], content_type: 'image' as const },
+        { id: 's4', content_url: libraryImages[3], content_type: 'image' as const },
       ]
     },
     {
@@ -73,7 +83,7 @@ export default function SocialFeed() {
       hasStory: true,
       storyCount: 2,
       stories: [
-        { id: 's6', content_url: 'https://images.unsplash.com/photo-1508341591423-4347099e1f19?w=400', content_type: 'image' as const },
+        { id: 's5', content_url: libraryImages[4], content_type: 'image' as const },
       ]
     }
   ];
@@ -131,10 +141,20 @@ export default function SocialFeed() {
           />
         </div>
 
-      {/* Stories Header */}
-        <div className="px-4 pt-6 pb-2 relative">
-          <h2 className="text-sm font-medium text-muted-foreground mb-3 max-w-4xl mx-auto">Stories</h2>
-          <div className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory max-w-4xl mx-auto pb-1">
+      {/* Stories Header - Premium Design */}
+        <div className="px-4 pt-10 pb-4 relative">
+          <div className="flex items-center gap-2 mb-4 max-w-4xl mx-auto">
+            <motion.div
+              animate={{ rotate: [0, 360] }}
+              transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+            >
+              <Sparkles className="h-5 w-5 text-primary" />
+            </motion.div>
+            <h2 className="text-lg font-semibold bg-gradient-to-r from-primary via-secondary to-primary-blue bg-clip-text text-transparent">
+              Stories
+            </h2>
+          </div>
+          <div className="flex gap-5 overflow-x-auto scrollbar-hide snap-x snap-mandatory max-w-4xl mx-auto pb-2 px-1">
             <div className="snap-start flex-shrink-0">
               <StoryRing
                 avatar={profile?.avatar_url}
@@ -200,26 +220,40 @@ export default function SocialFeed() {
         <FeedContainer filterType={feedType} onFilterChange={setFeedType} />
       </div>
 
-      {/* Floating Create Button with Neon Glow */}
+      {/* Floating Create Button - Bottom Right Position */}
       <motion.div
-        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"
+        className="fixed bottom-8 right-8 z-50"
         initial={{ scale: 0, y: 50 }}
         animate={{ scale: 1, y: 0 }}
         transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
       >
         <motion.div
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          animate={{ 
+            boxShadow: [
+              '0 0 30px hsl(270 100% 70% / 0.4)',
+              '0 0 50px hsl(270 100% 70% / 0.6)',
+              '0 0 30px hsl(270 100% 70% / 0.4)'
+            ]
+          }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          className="rounded-full"
         >
           <Button
             size="lg"
             onClick={() => setCreateModalOpen(true)}
-            className="h-14 px-8 rounded-full bg-gradient-to-r from-primary via-secondary to-primary-blue hover:from-primary/90 hover:via-secondary/90 hover:to-primary-blue/90 shadow-[0_0_40px_hsl(270_100%_70%/0.5)] text-primary-foreground font-semibold gap-2 border border-white/20 relative overflow-hidden group"
+            className="h-16 w-16 rounded-full bg-gradient-to-br from-primary via-secondary to-primary-blue hover:from-primary/90 hover:via-secondary/90 hover:to-primary-blue/90 shadow-2xl text-primary-foreground border border-white/30 relative overflow-hidden group p-0"
           >
+            {/* Pulsing glow ring */}
+            <motion.div
+              className="absolute inset-0 rounded-full bg-gradient-to-br from-primary to-secondary opacity-50"
+              animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.2, 0.5] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
             {/* Shimmer effect */}
-            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-            <Plus className="h-5 w-5 relative z-10" />
-            <span className="relative z-10">Create</span>
+            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500" />
+            <Plus className="h-7 w-7 relative z-10" />
           </Button>
         </motion.div>
       </motion.div>
