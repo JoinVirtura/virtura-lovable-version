@@ -60,11 +60,7 @@ serve(async (req) => {
       });
 
       if (updateError) {
-        // Fallback if RPC doesn't exist
-        await supabase
-          .from('social_posts')
-          .update({ like_count: supabase.raw('like_count - 1') })
-          .eq('id', post_id);
+        console.error('Error decrementing like count:', updateError);
       }
 
       console.log('Post unliked:', post_id);
@@ -86,11 +82,7 @@ serve(async (req) => {
       });
 
       if (updateError) {
-        // Fallback if RPC doesn't exist
-        await supabase
-          .from('social_posts')
-          .update({ like_count: supabase.raw('like_count + 1') })
-          .eq('id', post_id);
+        console.error('Error incrementing like count:', updateError);
       }
 
       console.log('Post liked:', post_id);
