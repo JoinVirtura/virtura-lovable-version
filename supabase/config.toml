@@ -74,3 +74,6 @@ verify_jwt = true
 
 [functions.sign-contract]
 verify_jwt = true
+
+[functions.invite-creator-to-campaign]
+verify_jwt = true

@@ -867,6 +867,129 @@ export type Database = {
           },
         ]
       }
+      campaign_disputes: {
+        Row: {
+          admin_id: string | null
+          admin_notes: string | null
+          campaign_id: string
+          created_at: string | null
+          description: string
+          dispute_type: string
+          evidence_urls: string[] | null
+          id: string
+          priority: string | null
+          raised_by_type: string
+          raised_by_user_id: string
+          resolution_summary: string | null
+          resolved_at: string | null
+          status: string | null
+          subject: string
+          updated_at: string | null
+        }
+        Insert: {
+          admin_id?: string | null
+          admin_notes?: string | null
+          campaign_id: string
+          created_at?: string | null
+          description: string
+          dispute_type: string
+          evidence_urls?: string[] | null
+          id?: string
+          priority?: string | null
+          raised_by_type: string
+          raised_by_user_id: string
+          resolution_summary?: string | null
+          resolved_at?: string | null
+          status?: string | null
+          subject: string
+          updated_at?: string | null
+        }
+        Update: {
+          admin_id?: string | null
+          admin_notes?: string | null
+          campaign_id?: string
+          created_at?: string | null
+          description?: string
+          dispute_type?: string
+          evidence_urls?: string[] | null
+          id?: string
+          priority?: string | null
+          raised_by_type?: string
+          raised_by_user_id?: string
+          resolution_summary?: string | null
+          resolved_at?: string | null
+          status?: string | null
+          subject?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_disputes_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      campaign_invites: {
+        Row: {
+          brand_id: string
+          campaign_id: string
+          creator_id: string
+          expires_at: string | null
+          id: string
+          invited_at: string | null
+          message: string | null
+          responded_at: string | null
+          status: string | null
+        }
+        Insert: {
+          brand_id: string
+          campaign_id: string
+          creator_id: string
+          expires_at?: string | null
+          id?: string
+          invited_at?: string | null
+          message?: string | null
+          responded_at?: string | null
+          status?: string | null
+        }
+        Update: {
+          brand_id?: string
+          campaign_id?: string
+          creator_id?: string
+          expires_at?: string | null
+          id?: string
+          invited_at?: string | null
+          message?: string | null
+          responded_at?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_invites_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaign_invites_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaign_invites_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creator_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       content_unlocks: {
         Row: {
           amount_cents: number
@@ -1111,6 +1234,44 @@ export type Database = {
             columns: ["creator_id"]
             isOneToOne: false
             referencedRelation: "creator_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dispute_messages: {
+        Row: {
+          attachments: string[] | null
+          created_at: string | null
+          dispute_id: string
+          id: string
+          is_admin: boolean | null
+          message: string
+          user_id: string
+        }
+        Insert: {
+          attachments?: string[] | null
+          created_at?: string | null
+          dispute_id: string
+          id?: string
+          is_admin?: boolean | null
+          message: string
+          user_id: string
+        }
+        Update: {
+          attachments?: string[] | null
+          created_at?: string | null
+          dispute_id?: string
+          id?: string
+          is_admin?: boolean | null
+          message?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dispute_messages_dispute_id_fkey"
+            columns: ["dispute_id"]
+            isOneToOne: false
+            referencedRelation: "campaign_disputes"
             referencedColumns: ["id"]
           },
         ]
