@@ -77,7 +77,6 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/auth" element={!user ? <AuthPage /> : <Navigate to="/dashboard" replace />} />
-      <Route path="/landing" element={<Landing />} />
       
       {/* Protected Routes */}
       <Route path="/" element={<Home />} />
