@@ -38,11 +38,7 @@ export function ProfileNotificationCenter() {
   const categories = [...new Set(notifications.map((n) => n.category))];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900/80 via-violet-950/30 to-slate-900/80 backdrop-blur-xl"
-    >
+    <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900/80 via-violet-950/30 to-slate-900/80 backdrop-blur-xl">
       {/* Animated gradient background */}
       <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 via-transparent to-pink-500/5 pointer-events-none" />
       <div className="absolute -top-24 -right-24 w-48 h-48 bg-violet-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -218,6 +214,6 @@ export function ProfileNotificationCenter() {
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 }

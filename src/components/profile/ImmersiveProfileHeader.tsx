@@ -70,9 +70,7 @@ export function ImmersiveProfileHeader({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+    <div
       className="relative overflow-hidden"
       onMouseMove={handleMouseMove}
     >
@@ -290,6 +288,6 @@ export function ImmersiveProfileHeader({
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

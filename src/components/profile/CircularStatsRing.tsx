@@ -148,11 +148,7 @@ export function CircularStatsRing({ views, likes, followers, engagement }: Circu
   ];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="relative p-6 rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900/80 via-violet-950/20 to-slate-900/80 backdrop-blur-xl overflow-hidden"
-    >
+    <div className="relative p-6 rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900/80 via-violet-950/20 to-slate-900/80 backdrop-blur-xl overflow-hidden">
       {/* Background effects */}
       <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 via-transparent to-pink-500/5 pointer-events-none" />
       <div className="absolute -top-32 -right-32 w-64 h-64 bg-violet-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -181,6 +177,6 @@ export function CircularStatsRing({ views, likes, followers, engagement }: Circu
         <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
         <span className="text-xs text-emerald-400 font-medium">Live</span>
       </motion.div>
-    </motion.div>
+    </div>
   );
 }
