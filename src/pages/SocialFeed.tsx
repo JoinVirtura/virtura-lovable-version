@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Plus, Users, TrendingUp, Zap } from 'lucide-react';
+import { Plus, Users, TrendingUp } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { FeedContainer } from '@/components/social/FeedContainer';
 import { CreatePostModal } from '@/components/social/CreatePostModal';
@@ -100,7 +100,7 @@ export default function SocialFeed() {
         <div className="flex justify-center border-t border-white/5 relative">
           <div className="flex max-w-md w-full">
             {[
-              { type: 'all', label: 'All Posts', icon: Zap, activeColor: 'from-violet-500 to-purple-500', glowColor: 'violet' },
+              { type: 'all', label: 'All Posts', icon: null, activeColor: 'from-violet-500 to-purple-500', glowColor: 'violet' },
               { type: 'following', label: 'Following', icon: Users, activeColor: 'from-blue-500 to-cyan-500', glowColor: 'blue' },
               { type: 'trending', label: 'Trending', icon: TrendingUp, activeColor: 'from-orange-500 to-amber-500', glowColor: 'orange' },
             ].map(({ type, label, icon: Icon, activeColor, glowColor }) => (
@@ -114,7 +114,7 @@ export default function SocialFeed() {
                 }`}
               >
                 <span className="flex items-center justify-center gap-2">
-                  <Icon className={`h-4 w-4 transition-all ${feedType === type ? `text-${glowColor}-500` : ''}`} />
+                  {Icon && <Icon className={`h-4 w-4 transition-all ${feedType === type ? `text-${glowColor}-500` : ''}`} />}
                   {label}
                 </span>
                 {feedType === type && (

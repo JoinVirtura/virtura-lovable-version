@@ -160,6 +160,11 @@ export function FeedContainer({ filterType = 'all', onFilterChange }: FeedContai
           postId={selectedPostId}
           isOpen={!!selectedPostId}
           onClose={() => setSelectedPostId(null)}
+          onCommentAdded={() => {
+            if (selectedPostId) {
+              updatePostComment(selectedPostId);
+            }
+          }}
         />
 
         <PostUnlockPaymentModal

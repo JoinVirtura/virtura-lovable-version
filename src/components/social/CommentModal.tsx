@@ -33,9 +33,10 @@ interface CommentModalProps {
   postId: string | null;
   isOpen: boolean;
   onClose: () => void;
+  onCommentAdded?: () => void;
 }
 
-export function CommentModal({ postId, isOpen, onClose }: CommentModalProps) {
+export function CommentModal({ postId, isOpen, onClose, onCommentAdded }: CommentModalProps) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(false);
@@ -112,6 +113,7 @@ export function CommentModal({ postId, isOpen, onClose }: CommentModalProps) {
     const success = await createComment(postId, newComment);
     if (success) {
       setNewComment('');
+      onCommentAdded?.();
     }
   };
 

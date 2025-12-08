@@ -190,8 +190,32 @@ export function useSocialPosts(filterType: 'all' | 'following' | 'own' | 'trendi
       })
       .subscribe();
 
+    // Real-time subscription for comment count updates
+    const commentsChannel = supabase
+      .channel('post_comments_realtime')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'post_comments'
+      }, (payload) => {
+        const postId = (payload.new as any)?.post_id || (payload.old as any)?.post_id;
+        if (postId) {
+          if (payload.eventType === 'INSERT') {
+            setPosts(prev => prev.map(p => 
+              p.id === postId ? { ...p, comment_count: p.comment_count + 1 } : p
+            ));
+          } else if (payload.eventType === 'DELETE') {
+            setPosts(prev => prev.map(p => 
+              p.id === postId ? { ...p, comment_count: Math.max(0, p.comment_count - 1) } : p
+            ));
+          }
+        }
+      })
+      .subscribe();
+
     return () => {
       supabase.removeChannel(channel);
+      supabase.removeChannel(commentsChannel);
     };
   }, [user?.id, filterType, blockedUsers]);
 
