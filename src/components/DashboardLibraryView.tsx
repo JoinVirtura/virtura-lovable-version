@@ -140,8 +140,8 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
 
   const handleAvatarSelect = (asset: any) => {
     if (onSelectAvatar) {
-      // Use video_url for videos, imageUrl for images
-      const urlToPass = asset.isVideo && asset.videoUrl ? asset.videoUrl : asset.imageUrl;
+      // Use video_url for videos, image_url for images (snake_case from DB)
+      const urlToPass = asset.is_video && asset.video_url ? asset.video_url : asset.imageUrl;
       onSelectAvatar(urlToPass, asset);
     } else {
       setSelectedAvatarIds(prev => {
