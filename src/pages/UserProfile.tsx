@@ -1,18 +1,19 @@
-import { useState, useEffect, Suspense, lazy } from "react";
+import { useState, useEffect, Suspense, lazy, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { ImmersiveProfileHeader } from "@/components/profile/ImmersiveProfileHeader";
-import { ProfileNotificationCenter } from "@/components/profile/ProfileNotificationCenter";
-import { CircularStatsRing } from "@/components/profile/CircularStatsRing";
 import { BentoContentGrid } from "@/components/profile/BentoContentGrid";
 import { QuickActionBar } from "@/components/profile/QuickActionBar";
 import { ProfileSkeleton } from "@/components/profile/ProfileSkeleton";
-import { AchievementBadges } from "@/components/profile/AchievementBadges";
 import { EnhancedProfileTabs } from "@/components/profile/EnhancedProfileTabs";
 import { ProfessionalAboutSection } from "@/components/profile/ProfessionalAboutSection";
 import { useAuth } from "@/hooks/useAuth";
-import { toast } from "sonner";
 import { BookmarkIcon, Loader2 } from "lucide-react";
+
+// Lazy load heavy components
+const ProfileNotificationCenter = lazy(() => import("@/components/profile/ProfileNotificationCenter").then(m => ({ default: m.ProfileNotificationCenter })));
+const CircularStatsRing = lazy(() => import("@/components/profile/CircularStatsRing").then(m => ({ default: m.CircularStatsRing })));
+const AchievementBadges = lazy(() => import("@/components/profile/AchievementBadges").then(m => ({ default: m.AchievementBadges })));
 
 // Lazy load heavy components
 const CollaborationHistory = lazy(() => import("@/components/profile/CollaborationHistory").then(m => ({ default: m.CollaborationHistory })));
@@ -35,6 +36,17 @@ export default function UserProfile() {
   const [currentFollowerCount, setCurrentFollowerCount] = useState(0);
 
   const isOwnProfile = user?.id === userId;
+
+  // Memoize stats calculations
+  const stats = useMemo(() => {
+    const views = posts.reduce((acc, post) => acc + (post.view_count || 0), 0);
+    const likes = posts.reduce((acc, post) => acc + (post.like_count || 0), 0);
+    const comments = posts.reduce((acc, post) => acc + (post.comment_count || 0), 0);
+    const engagement = posts.length > 0 
+      ? Math.round(((likes + comments) / Math.max(views, 1)) * 1000) / 10 
+      : 0;
+    return { views, likes, engagement };
+  }, [posts]);
 
   useEffect(() => {
     if (profile) {
@@ -76,21 +88,26 @@ export default function UserProfile() {
       
       <div className="container mx-auto px-4 md:px-6 py-8 space-y-6 pb-24">
         {/* Notification Center - Only for own profile */}
-        {isOwnProfile && <ProfileNotificationCenter />}
+        {isOwnProfile && (
+          <Suspense fallback={<div className="h-20 bg-slate-800/50 rounded-xl animate-pulse" />}>
+            <ProfileNotificationCenter />
+          </Suspense>
+        )}
 
         {/* Circular Stats Dashboard - Real data */}
-        <CircularStatsRing 
-          views={posts.reduce((acc, post) => acc + (post.view_count || 0), 0)}
-          likes={posts.reduce((acc, post) => acc + (post.like_count || 0), 0)}
-          followers={currentFollowerCount}
-          engagement={posts.length > 0 ? 
-            Math.round((posts.reduce((acc, post) => acc + (post.like_count || 0) + (post.comment_count || 0), 0) / 
-            Math.max(posts.reduce((acc, post) => acc + (post.view_count || 1), 0), 1)) * 1000) / 10 : 0
-          }
-        />
+        <Suspense fallback={<div className="h-32 bg-slate-800/50 rounded-xl animate-pulse" />}>
+          <CircularStatsRing 
+            views={stats.views}
+            likes={stats.likes}
+            followers={currentFollowerCount}
+            engagement={stats.engagement}
+          />
+        </Suspense>
 
         {/* Achievement Badges */}
-        <AchievementBadges />
+        <Suspense fallback={<div className="h-16 bg-slate-800/50 rounded-xl animate-pulse" />}>
+          <AchievementBadges />
+        </Suspense>
 
         {/* Enhanced Content Tabs */}
         <EnhancedProfileTabs
