@@ -225,137 +225,131 @@ export default function UnifiedAdminDashboard() {
 
       {/* Tabbed Content */}
       <Tabs defaultValue="overview" className="space-y-6">
-        {/* Futuristic Command Center Navigation */}
-        <div className="relative w-full">
-          {/* Left fade gradient */}
-          <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-background via-background/80 to-transparent z-10 pointer-events-none" />
-          
-          {/* Scrollable tabs container */}
-          <div className="w-full overflow-x-auto scrollbar-hide pb-2 px-2">
-            <TabsList className="inline-flex w-max gap-2 h-auto p-2.5 bg-gradient-to-r from-slate-900/90 via-violet-950/50 to-slate-900/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-violet-500/10">
-              
-              {/* Core Analytics Group */}
-              <TabsTrigger 
-                value="overview" 
-                className="group flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-violet-500/40 data-[state=active]:border data-[state=active]:border-white/20"
-              >
-                <LayoutDashboard className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
-                <span className="text-sm font-medium">Overview</span>
-              </TabsTrigger>
-              
-              <TabsTrigger 
-                value="metrics" 
-                className="group flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-violet-500/40 data-[state=active]:border data-[state=active]:border-white/20"
-              >
-                <BarChart3 className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
-                <span className="text-sm font-medium">Metrics</span>
-              </TabsTrigger>
-              
-              <TabsTrigger 
-                value="users" 
-                className="group flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-violet-500/40 data-[state=active]:border data-[state=active]:border-white/20"
-              >
-                <Users className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
-                <span className="text-sm font-medium">Users</span>
-              </TabsTrigger>
-              
-              {/* Divider */}
-              <div className="w-px h-8 bg-gradient-to-b from-transparent via-white/20 to-transparent mx-1 self-center" />
-              
-              {/* Financial Group */}
-              <TabsTrigger 
-                value="financial" 
-                className="group flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-600 data-[state=active]:to-cyan-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/40 data-[state=active]:border data-[state=active]:border-white/20"
-              >
-                <DollarSign className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
-                <span className="text-sm font-medium">Financial</span>
-              </TabsTrigger>
-              
-              <TabsTrigger 
-                value="costs" 
-                className="group flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-600 data-[state=active]:to-cyan-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/40 data-[state=active]:border data-[state=active]:border-white/20"
-              >
-                <Cpu className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
-                <span className="text-sm font-medium">API Costs</span>
-              </TabsTrigger>
-              
-              <TabsTrigger 
-                value="tokens" 
-                className="group flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-600 data-[state=active]:to-cyan-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/40 data-[state=active]:border data-[state=active]:border-white/20"
-              >
-                <Coins className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
-                <span className="text-sm font-medium">Token Txns</span>
-              </TabsTrigger>
-              
-              {/* Divider */}
-              <div className="w-px h-8 bg-gradient-to-b from-transparent via-white/20 to-transparent mx-1 self-center" />
-              
-              {/* Operations Group */}
-              <TabsTrigger 
-                value="jobs" 
-                className="group flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-600 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/40 data-[state=active]:border data-[state=active]:border-white/20"
-              >
-                <Activity className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
-                <span className="text-sm font-medium">Jobs</span>
-              </TabsTrigger>
-              
-              <TabsTrigger 
-                value="verification" 
-                className="group flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-600 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/40 data-[state=active]:border data-[state=active]:border-white/20"
-              >
-                <BadgeCheck className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
-                <span className="text-sm font-medium">Verification</span>
-              </TabsTrigger>
-              
-              <TabsTrigger 
-                value="marketplace" 
-                className="group flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-600 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/40 data-[state=active]:border data-[state=active]:border-white/20"
-              >
-                <Store className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
-                <span className="text-sm font-medium">Marketplace</span>
-              </TabsTrigger>
-              
-              {/* Divider */}
-              <div className="w-px h-8 bg-gradient-to-b from-transparent via-white/20 to-transparent mx-1 self-center" />
-              
-              {/* Tools Group */}
-              <TabsTrigger 
-                value="audit" 
-                className="group flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-rose-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-rose-500/40 data-[state=active]:border data-[state=active]:border-white/20"
-              >
-                <FileText className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
-                <span className="text-sm font-medium">Audit</span>
-              </TabsTrigger>
-              
-              <TabsTrigger 
-                value="recovery" 
-                className="group flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-rose-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-rose-500/40 data-[state=active]:border data-[state=active]:border-white/20"
-              >
-                <RotateCcw className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
-                <span className="text-sm font-medium">Recovery</span>
-              </TabsTrigger>
-              
-              <TabsTrigger 
-                value="gallery" 
-                className="group flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-rose-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-rose-500/40 data-[state=active]:border data-[state=active]:border-white/20"
-              >
-                <ImageIcon className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
-                <span className="text-sm font-medium">Gallery</span>
-              </TabsTrigger>
-              
-              <TabsTrigger 
-                value="landing" 
-                className="group flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-rose-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-rose-500/40 data-[state=active]:border data-[state=active]:border-white/20"
-              >
-                <Globe className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
-                <span className="text-sm font-medium">Landing</span>
-              </TabsTrigger>
-              
-            </TabsList>
-          </div>
-          
-          {/* Right fade gradient */}
-          <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-background via-background/80 to-transparent z-10 pointer-events-none" />
+        {/* Futuristic Command Center Navigation - Two Rows */}
+        <div className="flex flex-col gap-3 w-full">
+          {/* Row 1: Core Analytics + Financial + Jobs */}
+          <TabsList className="flex flex-wrap justify-center gap-2 h-auto p-2.5 bg-gradient-to-r from-slate-900/90 via-violet-950/50 to-slate-900/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-violet-500/10 w-full">
+            {/* Core Analytics Group */}
+            <TabsTrigger 
+              value="overview" 
+              className="group flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-violet-500/40 data-[state=active]:border data-[state=active]:border-white/20"
+            >
+              <LayoutDashboard className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
+              <span className="text-sm font-medium">Overview</span>
+            </TabsTrigger>
+            
+            <TabsTrigger 
+              value="metrics" 
+              className="group flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-violet-500/40 data-[state=active]:border data-[state=active]:border-white/20"
+            >
+              <BarChart3 className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
+              <span className="text-sm font-medium">Metrics</span>
+            </TabsTrigger>
+            
+            <TabsTrigger 
+              value="users" 
+              className="group flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-violet-500/40 data-[state=active]:border data-[state=active]:border-white/20"
+            >
+              <Users className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
+              <span className="text-sm font-medium">Users</span>
+            </TabsTrigger>
+            
+            {/* Divider */}
+            <div className="w-px h-8 bg-gradient-to-b from-transparent via-white/20 to-transparent mx-1 self-center" />
+            
+            {/* Financial Group */}
+            <TabsTrigger 
+              value="financial" 
+              className="group flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-600 data-[state=active]:to-cyan-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/40 data-[state=active]:border data-[state=active]:border-white/20"
+            >
+              <DollarSign className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
+              <span className="text-sm font-medium">Financial</span>
+            </TabsTrigger>
+            
+            <TabsTrigger 
+              value="costs" 
+              className="group flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-600 data-[state=active]:to-cyan-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/40 data-[state=active]:border data-[state=active]:border-white/20"
+            >
+              <Cpu className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
+              <span className="text-sm font-medium">API Costs</span>
+            </TabsTrigger>
+            
+            <TabsTrigger 
+              value="tokens" 
+              className="group flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-600 data-[state=active]:to-cyan-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/40 data-[state=active]:border data-[state=active]:border-white/20"
+            >
+              <Coins className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
+              <span className="text-sm font-medium">Token Txns</span>
+            </TabsTrigger>
+            
+            {/* Divider */}
+            <div className="w-px h-8 bg-gradient-to-b from-transparent via-white/20 to-transparent mx-1 self-center" />
+            
+            {/* Jobs */}
+            <TabsTrigger 
+              value="jobs" 
+              className="group flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-600 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/40 data-[state=active]:border data-[state=active]:border-white/20"
+            >
+              <Activity className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
+              <span className="text-sm font-medium">Jobs</span>
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Row 2: Operations + Tools */}
+          <TabsList className="flex flex-wrap justify-center gap-2 h-auto p-2.5 bg-gradient-to-r from-slate-900/90 via-violet-950/50 to-slate-900/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-violet-500/10 w-full">
+            {/* Operations Group */}
+            <TabsTrigger 
+              value="verification" 
+              className="group flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-600 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/40 data-[state=active]:border data-[state=active]:border-white/20"
+            >
+              <BadgeCheck className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
+              <span className="text-sm font-medium">Verification</span>
+            </TabsTrigger>
+            
+            <TabsTrigger 
+              value="marketplace" 
+              className="group flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-600 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/40 data-[state=active]:border data-[state=active]:border-white/20"
+            >
+              <Store className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
+              <span className="text-sm font-medium">Marketplace</span>
+            </TabsTrigger>
+            
+            {/* Divider */}
+            <div className="w-px h-8 bg-gradient-to-b from-transparent via-white/20 to-transparent mx-1 self-center" />
+            
+            {/* Tools Group */}
+            <TabsTrigger 
+              value="audit" 
+              className="group flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-rose-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-rose-500/40 data-[state=active]:border data-[state=active]:border-white/20"
+            >
+              <FileText className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
+              <span className="text-sm font-medium">Audit</span>
+            </TabsTrigger>
+            
+            <TabsTrigger 
+              value="recovery" 
+              className="group flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-rose-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-rose-500/40 data-[state=active]:border data-[state=active]:border-white/20"
+            >
+              <RotateCcw className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
+              <span className="text-sm font-medium">Recovery</span>
+            </TabsTrigger>
+            
+            <TabsTrigger 
+              value="gallery" 
+              className="group flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-rose-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-rose-500/40 data-[state=active]:border data-[state=active]:border-white/20"
+            >
+              <ImageIcon className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
+              <span className="text-sm font-medium">Gallery</span>
+            </TabsTrigger>
+            
+            <TabsTrigger 
+              value="landing" 
+              className="group flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-rose-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-rose-500/40 data-[state=active]:border data-[state=active]:border-white/20"
+            >
+              <Globe className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
+              <span className="text-sm font-medium">Landing</span>
+            </TabsTrigger>
+          </TabsList>
         </div>
 
         <TabsContent value="metrics" className="space-y-4">
