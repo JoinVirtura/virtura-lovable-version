@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { FeedContainer } from '@/components/social/FeedContainer';
 import { CreatePostModal } from '@/components/social/CreatePostModal';
 import { StoryRing } from '@/components/social/StoryRing';
+import { FeedBackground } from '@/components/social/FeedBackground';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { motion } from 'framer-motion';
@@ -85,19 +86,38 @@ export default function SocialFeed() {
   const filteredStories = stories.filter(story => story.userId !== user?.id);
 
   return (
-    <div ref={containerRef} className="min-h-screen bg-background">
+    <div ref={containerRef} className="min-h-screen bg-background relative">
+      {/* Animated Background */}
+      <FeedBackground />
+
       {/* Scroll Progress Indicator */}
       <motion.div
-        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 via-purple-500 to-pink-500 z-50 origin-left"
+        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-secondary to-primary-blue z-50 origin-left shadow-[0_0_20px_hsl(270_100%_70%/0.5)]"
         style={{ scaleX: scrollProgress / 100 }}
         initial={{ scaleX: 0 }}
       />
 
-      {/* Sticky Header with Stories and Filters */}
-      <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/50">
-        {/* Stories Bar - Compact */}
-        <div className="px-4 py-3">
-          <div className="flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory max-w-4xl mx-auto">
+      {/* Glassmorphic Sticky Header */}
+      <div className="sticky top-0 z-40 backdrop-blur-2xl bg-gradient-to-b from-background/95 via-background/80 to-background/60 border-b border-white/5">
+        {/* Energy Flow Effect */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-r from-primary/5 via-secondary/5 to-primary-blue/5"
+            animate={{
+              backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+            style={{ backgroundSize: '200% 100%' }}
+          />
+        </div>
+
+        {/* Stories Bar */}
+        <div className="px-4 py-4 relative">
+          <div className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory max-w-4xl mx-auto pb-1">
             <div className="snap-start flex-shrink-0">
               <StoryRing
                 avatar={profile?.avatar_url}
@@ -122,84 +142,69 @@ export default function SocialFeed() {
           </div>
         </div>
 
-        {/* Filter Tabs - Twitter/TikTok Style */}
-        <div className="flex justify-center border-t border-border/30">
+        {/* Filter Tabs with Neon Glow */}
+        <div className="flex justify-center border-t border-white/5 relative">
           <div className="flex max-w-md w-full">
-            <button
-              onClick={() => setFeedType('all')}
-              className={`flex-1 py-3 text-sm font-medium transition-all relative ${
-                feedType === 'all' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <span className="flex items-center justify-center gap-2">
-                <Sparkles className="h-4 w-4" />
-                For You
-              </span>
-              {feedType === 'all' && (
-                <motion.div
-                  layoutId="activeTab"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-violet-500 to-purple-500"
-                />
-              )}
-            </button>
-            <button
-              onClick={() => setFeedType('following')}
-              className={`flex-1 py-3 text-sm font-medium transition-all relative ${
-                feedType === 'following' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <span className="flex items-center justify-center gap-2">
-                <Users className="h-4 w-4" />
-                Following
-              </span>
-              {feedType === 'following' && (
-                <motion.div
-                  layoutId="activeTab"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-violet-500 to-purple-500"
-                />
-              )}
-            </button>
-            <button
-              onClick={() => setFeedType('trending')}
-              className={`flex-1 py-3 text-sm font-medium transition-all relative ${
-                feedType === 'trending' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <span className="flex items-center justify-center gap-2">
-                <TrendingUp className="h-4 w-4" />
-                Trending
-              </span>
-              {feedType === 'trending' && (
-                <motion.div
-                  layoutId="activeTab"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-violet-500 to-purple-500"
-                />
-              )}
-            </button>
+            {[
+              { type: 'all', label: 'For You', icon: Sparkles },
+              { type: 'following', label: 'Following', icon: Users },
+              { type: 'trending', label: 'Trending', icon: TrendingUp },
+            ].map(({ type, label, icon: Icon }) => (
+              <button
+                key={type}
+                onClick={() => setFeedType(type as typeof feedType)}
+                className={`flex-1 py-3 text-sm font-medium transition-all relative group ${
+                  feedType === type 
+                    ? 'text-foreground' 
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <Icon className={`h-4 w-4 transition-all ${feedType === type ? 'text-primary' : ''}`} />
+                  {label}
+                </span>
+                {feedType === type && (
+                  <motion.div
+                    layoutId="activeTab"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-secondary to-primary shadow-[0_0_10px_hsl(270_100%_70%/0.6)]"
+                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  />
+                )}
+                {/* Hover glow effect */}
+                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg" />
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Main Feed - Full Focus */}
-      <div className="pb-24">
+      {/* Main Feed */}
+      <div className="pb-24 relative z-10">
         <FeedContainer filterType={feedType} onFilterChange={setFeedType} />
       </div>
 
-      {/* Floating Create Button - TikTok Style */}
+      {/* Floating Create Button with Neon Glow */}
       <motion.div
         className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"
         initial={{ scale: 0, y: 50 }}
         animate={{ scale: 1, y: 0 }}
         transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
       >
-        <Button
-          size="lg"
-          onClick={() => setCreateModalOpen(true)}
-          className="h-14 px-8 rounded-full bg-gradient-to-r from-violet-500 via-purple-500 to-pink-500 hover:from-violet-600 hover:via-purple-600 hover:to-pink-600 shadow-2xl shadow-violet-500/40 text-white font-semibold gap-2"
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
-          <Plus className="h-5 w-5" />
-          Create
-        </Button>
+          <Button
+            size="lg"
+            onClick={() => setCreateModalOpen(true)}
+            className="h-14 px-8 rounded-full bg-gradient-to-r from-primary via-secondary to-primary-blue hover:from-primary/90 hover:via-secondary/90 hover:to-primary-blue/90 shadow-[0_0_40px_hsl(270_100%_70%/0.5)] text-primary-foreground font-semibold gap-2 border border-white/20 relative overflow-hidden group"
+          >
+            {/* Shimmer effect */}
+            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+            <Plus className="h-5 w-5 relative z-10" />
+            <span className="relative z-10">Create</span>
+          </Button>
+        </motion.div>
       </motion.div>
 
       <CreatePostModal

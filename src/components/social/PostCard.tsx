@@ -1,8 +1,7 @@
-import { Heart, MessageCircle, Share2, Lock, MoreVertical, Bookmark, Flag, User, Ban, Trash2, Loader2, Users, TrendingUp, Eye, Flame, Sparkles, Star } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Lock, MoreVertical, Bookmark, Flag, User, Ban, Trash2, Loader2, Eye, Flame, Sparkles, TrendingUp, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { SocialPost } from '@/hooks/useSocialPosts';
 import { formatDistanceToNow } from 'date-fns';
 import { useState, useRef, useEffect } from 'react';
@@ -18,6 +17,7 @@ import { HeartBurstAnimation } from './HeartBurstAnimation';
 import { QuickReactions } from './QuickReactions';
 import { ProgressiveImage } from './ProgressiveImage';
 import { SubscribeCreatorButton } from './SubscribeCreatorButton';
+import { GlowBadge } from './GlowBadge';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -37,12 +37,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 interface PostCardProps {
   post: SocialPost;
@@ -71,7 +65,7 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
   const saved = isPostSaved(post.id);
   const isOwnPost = user?.id === post.user_id;
 
-  // Check if post is AI-generated (based on metadata or caption keywords)
+  // Check if post is AI-generated
   const isAIGenerated = post.caption?.toLowerCase().includes('#ai') || 
                         post.caption?.toLowerCase().includes('ai-generated') ||
                         post.caption?.toLowerCase().includes('ai created');
@@ -176,34 +170,51 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -2 }}
-      transition={{ duration: 0.2 }}
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.3, type: "spring", stiffness: 300 }}
       className="scroll-snap-align-start"
     >
-      <Card className="overflow-hidden bg-card border border-border/50 shadow-lg hover:shadow-xl transition-all duration-300 group" ref={viewTrackingRef}>
+      {/* Glassmorphic Card Container */}
+      <Card 
+        className="overflow-hidden backdrop-blur-xl bg-gradient-to-br from-card/80 via-card/60 to-muted/40 border border-white/10 shadow-card hover:shadow-[0_12px_48px_hsl(270_100%_70%/0.2)] hover:border-primary/30 transition-all duration-500 group relative" 
+        ref={viewTrackingRef}
+      >
+        {/* Subtle Gradient Border Effect */}
+        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/10 via-transparent to-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+        
         {/* Heart Burst Animation */}
         <AnimatePresence>
           {showHeartBurst && <HeartBurstAnimation />}
         </AnimatePresence>
 
-        {/* Creator Header - Twitter Style */}
-        <div className="flex items-start justify-between p-4">
+        {/* Creator Header */}
+        <div className="flex items-start justify-between p-4 relative z-10">
           <button 
             onClick={() => navigate(`/profile/${post.user_id}`)}
             className="flex items-start gap-3 hover:opacity-80 transition-opacity"
           >
-            <Avatar className="h-12 w-12 ring-2 ring-border">
-              <AvatarImage src={post.creator_avatar} />
-              <AvatarFallback>{post.creator_name?.[0] || 'U'}</AvatarFallback>
-            </Avatar>
+            {/* Avatar with Neon Ring */}
+            <div className="relative">
+              <motion.div
+                className="absolute -inset-1 rounded-full bg-gradient-to-tr from-primary via-secondary to-primary-blue opacity-60 blur-sm group-hover:opacity-100 transition-opacity"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+              />
+              <Avatar className="h-12 w-12 ring-2 ring-background relative">
+                <AvatarImage src={post.creator_avatar} />
+                <AvatarFallback className="bg-gradient-to-br from-primary to-secondary text-primary-foreground">
+                  {post.creator_name?.[0] || 'U'}
+                </AvatarFallback>
+              </Avatar>
+            </div>
             <div className="text-left">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <p className="font-bold text-sm">{post.creator_name}</p>
                 {isAIGenerated && (
-                  <Badge variant="outline" className="text-xs px-1.5 py-0 h-5 bg-gradient-to-r from-violet-500/10 to-purple-500/10 border-violet-500/30">
-                    <Sparkles className="h-3 w-3 mr-1 text-violet-400" />
+                  <GlowBadge variant="ai">
+                    <Sparkles className="h-3 w-3" />
                     AI
-                  </Badge>
+                  </GlowBadge>
                 )}
               </div>
               <p className="text-xs text-muted-foreground">
@@ -215,11 +226,12 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
           <div className="flex items-center gap-2">
             {/* Price Badge or FREE Badge */}
             {post.is_paid ? (
-              <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0">
+              <GlowBadge variant="premium">
+                <Zap className="h-3 w-3" />
                 ${(post.price_cents / 100).toFixed(2)}
-              </Badge>
+              </GlowBadge>
             ) : (
-              <Badge variant="secondary" className="text-xs">FREE</Badge>
+              <GlowBadge variant="free">FREE</GlowBadge>
             )}
 
             {/* Follow Button */}
@@ -229,7 +241,7 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
                 variant="outline"
                 onClick={handleFollow}
                 disabled={followLoading}
-                className="border-primary/50 hover:bg-primary/10 h-8"
+                className="border-primary/40 bg-primary/5 hover:bg-primary/20 hover:border-primary/60 h-8 backdrop-blur-sm"
               >
                 {followLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Follow'}
               </Button>
@@ -254,11 +266,11 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-white/5">
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" className="backdrop-blur-xl bg-card/95 border-white/10">
                 <DropdownMenuItem onClick={() => navigate(`/profile/${post.user_id}`)}>
                   <User className="h-4 w-4 mr-2" />
                   View Profile
@@ -281,27 +293,27 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
           </div>
         </div>
 
-        {/* Caption - Before Media (Twitter Style) */}
+        {/* Caption */}
         {post.caption && (
-          <div className="px-4 pb-3">
-            <p className="text-sm whitespace-pre-wrap">{post.caption}</p>
+          <div className="px-4 pb-3 relative z-10">
+            <p className="text-sm whitespace-pre-wrap leading-relaxed">{post.caption}</p>
           </div>
         )}
 
         {/* Engagement Badges */}
         {(post.view_count > 1000 || post.like_count > 100) && (
-          <div className="px-4 pb-2 flex gap-2 flex-wrap">
+          <div className="px-4 pb-3 flex gap-2 flex-wrap relative z-10">
             {post.view_count > 5000 && post.like_count > 100 && (
-              <Badge variant="outline" className="text-xs bg-orange-500/10 border-orange-500/30 text-orange-500">
-                <Flame className="h-3 w-3 mr-1" />
+              <GlowBadge variant="hot">
+                <Flame className="h-3 w-3" />
                 Hot
-              </Badge>
+              </GlowBadge>
             )}
             {post.view_count > 1000 && (
-              <Badge variant="outline" className="text-xs bg-green-500/10 border-green-500/30 text-green-500">
-                <TrendingUp className="h-3 w-3 mr-1" />
+              <GlowBadge variant="trending">
+                <TrendingUp className="h-3 w-3" />
                 Trending
-              </Badge>
+              </GlowBadge>
             )}
           </div>
         )}
@@ -309,7 +321,7 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
         {/* Media with double-tap and quick reactions */}
         {mediaUrl && (
           <div 
-            className="relative aspect-[4/3] bg-muted cursor-pointer select-none"
+            className="relative aspect-[4/3] bg-muted/30 cursor-pointer select-none overflow-hidden"
             onClick={handleDoubleTap}
             onMouseEnter={() => setShowQuickReactions(true)}
             onMouseLeave={() => setShowQuickReactions(false)}
@@ -318,7 +330,7 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
               <video
                 ref={videoRef}
                 src={needsUnlock ? undefined : mediaUrl}
-                className={`w-full h-full object-cover ${needsUnlock ? 'blur-xl' : ''}`}
+                className={`w-full h-full object-cover ${needsUnlock ? 'blur-xl scale-105' : ''}`}
                 controls={!needsUnlock}
                 playsInline
                 loop
@@ -329,7 +341,7 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
                 <ProgressiveImage
                   src={mediaUrl}
                   alt="Post content"
-                  className={`w-full h-full object-cover ${needsUnlock ? 'blur-xl' : ''}`}
+                  className={`w-full h-full object-cover ${needsUnlock ? 'blur-xl scale-105' : ''} transition-transform duration-500 group-hover:scale-[1.02]`}
                   onError={() => setImageError(true)}
                 />
               ) : (
@@ -339,18 +351,27 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
               )
             )}
             
-            {/* Paywall Overlay - Improved */}
+            {/* Premium Holographic Paywall Overlay */}
             {needsUnlock && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-black/70 via-black/60 to-primary/20 backdrop-blur-md">
                 <motion.div 
-                  className="text-center space-y-4 p-6 bg-card/95 backdrop-blur-xl rounded-2xl border border-border shadow-2xl max-w-xs mx-4"
+                  className="text-center space-y-4 p-6 bg-gradient-to-br from-card/95 via-card/90 to-muted/80 backdrop-blur-2xl rounded-2xl border border-white/20 shadow-[0_0_60px_hsl(270_100%_70%/0.3)] max-w-xs mx-4 relative overflow-hidden"
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                 >
-                  <Lock className="h-10 w-10 mx-auto text-primary" />
-                  <div>
+                  {/* Holographic shimmer */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer" />
+                  
+                  <motion.div
+                    className="relative"
+                    animate={{ rotate: [0, 5, -5, 0] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    <Lock className="h-12 w-12 mx-auto text-primary drop-shadow-[0_0_15px_hsl(270_100%_70%/0.6)]" />
+                  </motion.div>
+                  <div className="relative">
                     <p className="text-lg font-semibold">Premium Content</p>
-                    <p className="text-2xl font-bold text-primary mt-1">
+                    <p className="text-3xl font-bold bg-gradient-to-r from-primary via-secondary to-primary-blue bg-clip-text text-transparent mt-1">
                       ${(post.price_cents / 100).toFixed(2)}
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">One-time purchase</p>
@@ -358,15 +379,16 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
                   <Button 
                     onClick={() => onUnlock(post.id, post.price_cents)} 
                     size="lg"
-                    className="w-full bg-primary hover:bg-primary/90"
+                    className="w-full bg-gradient-to-r from-primary via-secondary to-primary hover:from-primary/90 hover:to-secondary/90 shadow-[0_0_30px_hsl(270_100%_70%/0.4)] relative overflow-hidden group/btn"
                   >
+                    <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700" />
                     <Lock className="h-4 w-4 mr-2" />
                     Unlock Now
                   </Button>
                   <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
                     <span>or</span>
                   </div>
-                  <SubscribeCreatorButton creatorId={post.user_id} variant="outline" className="w-full" />
+                  <SubscribeCreatorButton creatorId={post.user_id} variant="outline" className="w-full border-white/20 hover:bg-white/5" />
                 </motion.div>
               </div>
             )}
@@ -378,57 +400,65 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
           </div>
         )}
 
-        {/* Actions - Twitter/TikTok Style */}
-        <div className="p-4">
+        {/* Actions Bar */}
+        <div className="p-4 relative z-10">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1">
-              <motion.div whileTap={{ scale: 0.9 }}>
+              <motion.div whileTap={{ scale: 0.85 }}>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={handleLike}
                   disabled={likeLoading}
-                  className="gap-1.5 hover:text-red-500 hover:bg-red-500/10 transition-colors"
+                  className={`gap-1.5 transition-all duration-300 ${
+                    post.liked_by_user 
+                      ? 'text-red-500 bg-red-500/10 hover:bg-red-500/20' 
+                      : 'hover:text-red-500 hover:bg-red-500/10'
+                  }`}
                 >
                   {likeLoading ? (
                     <Loader2 className="h-5 w-5 animate-spin" />
                   ) : (
-                    <Heart className={`h-5 w-5 ${post.liked_by_user ? 'fill-red-500 text-red-500' : ''}`} />
+                    <Heart className={`h-5 w-5 transition-all ${post.liked_by_user ? 'fill-red-500 scale-110' : ''}`} />
                   )}
-                  <span className="text-sm">{post.like_count}</span>
+                  <span className="text-sm font-medium">{post.like_count}</span>
                 </Button>
               </motion.div>
 
-              <motion.div whileTap={{ scale: 0.9 }}>
+              <motion.div whileTap={{ scale: 0.85 }}>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => onComment(post.id)}
-                  className="gap-1.5 hover:text-primary hover:bg-primary/10"
+                  className="gap-1.5 hover:text-primary hover:bg-primary/10 transition-colors"
                 >
                   <MessageCircle className="h-5 w-5" />
-                  <span className="text-sm">{post.comment_count}</span>
+                  <span className="text-sm font-medium">{post.comment_count}</span>
                 </Button>
               </motion.div>
               
               <ShareButton postId={post.id} />
             </div>
 
-            <div className="flex items-center gap-1">
-              {/* View Count */}
-              <span className="text-xs text-muted-foreground flex items-center gap-1 mr-2">
+            <div className="flex items-center gap-2">
+              {/* View Count with Glow */}
+              <span className="text-xs text-muted-foreground flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/5">
                 <Eye className="h-4 w-4" />
                 {post.view_count > 1000 ? `${(post.view_count / 1000).toFixed(1)}K` : post.view_count}
               </span>
 
-              <motion.div whileTap={{ scale: 0.9 }}>
+              <motion.div whileTap={{ scale: 0.85 }}>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={handleSaveToggle}
-                  className="hover:text-primary hover:bg-primary/10"
+                  className={`transition-all duration-300 ${
+                    saved 
+                      ? 'text-primary bg-primary/10 hover:bg-primary/20' 
+                      : 'hover:text-primary hover:bg-primary/10'
+                  }`}
                 >
-                  <Bookmark className={`h-5 w-5 ${saved ? 'fill-primary text-primary' : ''}`} />
+                  <Bookmark className={`h-5 w-5 transition-all ${saved ? 'fill-primary scale-110' : ''}`} />
                 </Button>
               </motion.div>
             </div>
@@ -445,7 +475,7 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
     />
 
     <AlertDialog open={blockDialogOpen} onOpenChange={setBlockDialogOpen}>
-      <AlertDialogContent>
+      <AlertDialogContent className="backdrop-blur-xl bg-card/95 border-white/10">
         <AlertDialogHeader>
           <AlertDialogTitle>Block this user?</AlertDialogTitle>
           <AlertDialogDescription>
@@ -453,7 +483,7 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel className="border-white/10">Cancel</AlertDialogCancel>
           <AlertDialogAction onClick={handleBlockUser} className="bg-destructive hover:bg-destructive/90">
             Block
           </AlertDialogAction>
@@ -462,7 +492,7 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
     </AlertDialog>
 
     <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-      <AlertDialogContent>
+      <AlertDialogContent className="backdrop-blur-xl bg-card/95 border-white/10">
         <AlertDialogHeader>
           <AlertDialogTitle>Delete this post?</AlertDialogTitle>
           <AlertDialogDescription>
@@ -470,7 +500,7 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel className="border-white/10">Cancel</AlertDialogCancel>
           <AlertDialogAction onClick={handleDeletePost} className="bg-destructive hover:bg-destructive/90">
             Delete
           </AlertDialogAction>
