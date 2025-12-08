@@ -7,9 +7,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
-  Shield, DollarSign, Coins, Users, Activity,
+  Shield, Coins, Activity,
   LayoutDashboard, BarChart3, Cpu, FileText, 
-  RotateCcw, ImageIcon, Globe, BadgeCheck, Store,
+  ImageIcon, Globe, BadgeCheck, Store, Users, DollarSign,
   RefreshCw, Bell, Calendar
 } from "lucide-react";
 import { AdminCostDashboard } from "@/components/AdminCostDashboard";
@@ -183,9 +183,6 @@ export default function UnifiedAdminDashboard() {
     return <Navigate to="/" replace />;
   }
 
-  const profitMargin = stats.totalRevenue > 0 
-    ? ((stats.totalRevenue - stats.totalApiCosts) / stats.totalRevenue * 100).toFixed(1)
-    : "0.0";
 
   return (
     <div className="w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8 sm:max-w-7xl">
@@ -287,39 +284,7 @@ export default function UnifiedAdminDashboard() {
           </div>
         </div>
 
-        {/* Overview Stats Row */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-5 pb-5 border-b border-white/10">
-          <div className="bg-white/5 rounded-xl p-3 border border-white/5">
-            <div className="flex items-center gap-2 text-slate-400 text-xs mb-1">
-              <Users className="w-3 h-3" /> Users
-            </div>
-            <div className="text-xl font-bold text-white">{stats.totalUsers}</div>
-          </div>
-          <div className="bg-white/5 rounded-xl p-3 border border-white/5">
-            <div className="flex items-center gap-2 text-emerald-400 text-xs mb-1">
-              <Coins className="w-3 h-3" /> Sold
-            </div>
-            <div className="text-xl font-bold text-white">{stats.totalTokensPurchased.toLocaleString()}</div>
-          </div>
-          <div className="bg-white/5 rounded-xl p-3 border border-white/5">
-            <div className="flex items-center gap-2 text-pink-400 text-xs mb-1">
-              <Activity className="w-3 h-3" /> Used
-            </div>
-            <div className="text-xl font-bold text-white">{stats.totalTokensUsed.toLocaleString()}</div>
-          </div>
-          <div className="bg-white/5 rounded-xl p-3 border border-white/5">
-            <div className="flex items-center gap-2 text-violet-400 text-xs mb-1">
-              <DollarSign className="w-3 h-3" /> Revenue
-            </div>
-            <div className="text-xl font-bold text-white">${stats.totalRevenue.toFixed(2)}</div>
-          </div>
-          <div className="bg-white/5 rounded-xl p-3 border border-white/5 col-span-2 sm:col-span-1">
-            <div className="flex items-center gap-2 text-amber-400 text-xs mb-1">
-              <DollarSign className="w-3 h-3" /> Profit
-            </div>
-            <div className="text-xl font-bold text-white">{profitMargin}%</div>
-          </div>
-        </div>
+        {/* Tabbed Content */}
 
         {/* Tabbed Content */}
         <Tabs defaultValue="overview" className="space-y-6">
@@ -424,13 +389,6 @@ export default function UnifiedAdminDashboard() {
               <span className="text-sm font-medium">Audit</span>
             </TabsTrigger>
             
-            <TabsTrigger 
-              value="recovery" 
-              className="group flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-rose-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-rose-500/40 data-[state=active]:border data-[state=active]:border-white/20"
-            >
-              <RotateCcw className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
-              <span className="text-sm font-medium">Recovery</span>
-            </TabsTrigger>
             
             <TabsTrigger 
               value="gallery" 
@@ -463,59 +421,12 @@ export default function UnifiedAdminDashboard() {
         </TabsContent>
 
         <TabsContent value="overview" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Platform Overview</CardTitle>
-              <CardDescription>
-                Key performance indicators and system health
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h4 className="font-semibold mb-2">Financial Summary</h4>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Total Revenue:</span>
-                      <span className="font-medium">${stats.totalRevenue.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Total API Costs:</span>
-                      <span className="font-medium">${stats.totalApiCosts.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Net Profit:</span>
-                      <span className="font-medium text-green-600">
-                        ${(stats.totalRevenue - stats.totalApiCosts).toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="font-semibold mb-2">Token Economy</h4>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Total Purchased:</span>
-                      <span className="font-medium">{stats.totalTokensPurchased.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Total Used:</span>
-                      <span className="font-medium">{stats.totalTokensUsed.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Utilization Rate:</span>
-                      <span className="font-medium">
-                        {stats.totalTokensPurchased > 0
-                          ? ((stats.totalTokensUsed / stats.totalTokensPurchased) * 100).toFixed(1)
-                          : 0}%
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="text-center py-8">
+            <h3 className="text-xl font-semibold text-white mb-2">Welcome to Admin Dashboard</h3>
+            <p className="text-slate-400 max-w-lg mx-auto">
+              Use the tabs above to navigate between different sections. Check status badges for quick health indicators and use quick actions for common tasks.
+            </p>
+          </div>
         </TabsContent>
 
         <TabsContent value="costs">
@@ -552,22 +463,6 @@ export default function UnifiedAdminDashboard() {
           <AdminMarketplaceApprovals />
         </TabsContent>
 
-        <TabsContent value="recovery">
-          <Card>
-            <CardHeader>
-              <CardTitle>Video Recovery Tools</CardTitle>
-              <CardDescription>
-                Scan storage and match orphaned videos with library items
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">
-                This tool is part of the Jobs & Users tab in the AdminDashboard component.
-                Access it there for video recovery operations.
-              </p>
-            </CardContent>
-          </Card>
-        </TabsContent>
 
         <TabsContent value="gallery" className="space-y-4">
           <GalleryShowcaseManager />
