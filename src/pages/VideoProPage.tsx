@@ -31,6 +31,7 @@ import { QualitySettings } from '@/components/studio/QualitySettings';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { BottomStepNavigation } from '@/components/studio/BottomStepNavigation';
 import { useSidebar } from '@/components/ui/sidebar';
+import { VideoOnboardingTutorial } from '@/components/studio/VideoOnboardingTutorial';
 
 const VIDEO_PRO_STEPS = [
   { id: 'upload', title: 'Upload', icon: Upload, color: 'bg-blue-500' },
@@ -41,6 +42,15 @@ const VIDEO_PRO_STEPS = [
 export default function VideoProPage() {
   const [currentStep, setCurrentStep] = useState('upload');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  // Check if user needs onboarding
+  useEffect(() => {
+    const hasCompletedOnboarding = localStorage.getItem('videoOnboardingComplete');
+    if (!hasCompletedOnboarding) {
+      setShowOnboarding(true);
+    }
+  }, []);
   const [isVideoSaved, setIsVideoSaved] = useState(false);
   
   const {
@@ -160,6 +170,10 @@ export default function VideoProPage() {
 
   return (
     <div className="w-full min-h-screen pb-32 bg-gradient-to-br from-[#0F0F1A] via-[#1a1a2e] to-[#0F0F1A] relative overflow-hidden">
+      {/* Onboarding Tutorial */}
+      {showOnboarding && (
+        <VideoOnboardingTutorial onComplete={() => setShowOnboarding(false)} />
+      )}
       {/* Ambient particles */}
       <div className="absolute inset-0 pointer-events-none">
         {[...Array(12)].map((_, i) => (
