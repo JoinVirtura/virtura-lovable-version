@@ -170,17 +170,30 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -4 }}
+      whileHover={{ y: -6, scale: 1.01 }}
       transition={{ duration: 0.3, type: "spring", stiffness: 300 }}
       className="scroll-snap-align-start"
     >
-      {/* Glassmorphic Card Container */}
+      {/* Premium Glassmorphic Card Container */}
       <Card 
-        className="overflow-hidden backdrop-blur-xl bg-gradient-to-br from-card/80 via-card/60 to-muted/40 border border-white/10 shadow-card hover:shadow-[0_12px_48px_hsl(270_100%_70%/0.2)] hover:border-primary/30 transition-all duration-500 group relative" 
+        className="overflow-hidden backdrop-blur-2xl bg-gradient-to-br from-card/90 via-card/70 to-muted/50 border border-white/15 shadow-[0_8px_32px_hsl(var(--primary)/0.15)] hover:shadow-[0_20px_60px_hsl(var(--primary)/0.25)] hover:border-primary/40 transition-all duration-500 group relative rounded-2xl" 
         ref={viewTrackingRef}
       >
-        {/* Subtle Gradient Border Effect */}
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/10 via-transparent to-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+        {/* Animated Gradient Border Effect */}
+        <motion.div 
+          className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/20 via-secondary/10 to-primary-blue/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+          animate={{ 
+            background: [
+              'linear-gradient(135deg, hsl(var(--primary)/0.2), transparent, hsl(var(--secondary)/0.2))',
+              'linear-gradient(225deg, hsl(var(--secondary)/0.2), transparent, hsl(var(--primary)/0.2))',
+              'linear-gradient(135deg, hsl(var(--primary)/0.2), transparent, hsl(var(--secondary)/0.2))'
+            ]
+          }}
+          transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+        />
+        
+        {/* Subtle shimmer overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 pointer-events-none" />
         
         {/* Heart Burst Animation */}
         <AnimatePresence>
@@ -209,7 +222,7 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
             </div>
             <div className="text-left">
               <div className="flex items-center gap-2 flex-wrap">
-                <p className="font-bold text-sm">{post.creator_name}</p>
+                <p className="font-bold text-sm bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text">{post.creator_name}</p>
                 {isAIGenerated && (
                   <GlowBadge variant="ai">
                     <Sparkles className="h-3 w-3" />
@@ -217,7 +230,7 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
                   </GlowBadge>
                 )}
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground/80">
                 @{post.creator_name?.toLowerCase().replace(/\s+/g, '')} · {formatDistanceToNow(new Date(post.published_at), { addSuffix: true })}
               </p>
             </div>
@@ -421,7 +434,14 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
                   ) : (
                     <Heart className={`h-5 w-5 transition-all ${post.liked_by_user ? 'fill-red-500 scale-110' : ''}`} />
                   )}
-                  <span className="text-sm font-medium">{post.like_count}</span>
+                  <motion.span 
+                    key={post.like_count}
+                    initial={{ scale: 1.3, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className="text-sm font-medium"
+                  >
+                    {post.like_count}
+                  </motion.span>
                 </Button>
               </motion.div>
 

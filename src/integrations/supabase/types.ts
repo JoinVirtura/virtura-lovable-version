@@ -3956,6 +3956,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_comment_count: {
+        Args: { post_id_param: string }
+        Returns: undefined
+      }
       increment_like_count: {
         Args: { post_id_param: string }
         Returns: undefined
