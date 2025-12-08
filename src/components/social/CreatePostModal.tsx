@@ -10,9 +10,10 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { useCreatePost } from '@/hooks/useCreatePost';
 import { useSchedulePost } from '@/hooks/useSchedulePost';
-import { Upload, X, Loader2, Calendar as CalendarIcon, Sparkles, Image, Video, Type } from 'lucide-react';
+import { Upload, X, Loader2, Calendar as CalendarIcon, Sparkles, Image, Video, Type, FolderOpen } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { MediaLibraryModal } from './MediaLibraryModal';
 
 interface CreatePostModalProps {
   isOpen: boolean;
@@ -34,8 +35,31 @@ export function CreatePostModal({ isOpen, onClose, defaultScheduled = false }: C
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['feed']);
   const [isAIGenerated, setIsAIGenerated] = useState(false);
   const [selectedContentType, setSelectedContentType] = useState<ContentType>('image');
+  const [libraryModalOpen, setLibraryModalOpen] = useState(false);
+  const [libraryUrls, setLibraryUrls] = useState<string[]>([]);
   const { createPost, uploading } = useCreatePost();
   const { schedulePost, scheduling } = useSchedulePost();
+
+  const handleLibrarySelect = (items: { url: string; type: 'image' | 'video' }[]) => {
+    const urls = items.map(item => item.url);
+    setLibraryUrls(prev => [...prev, ...urls]);
+    
+    // Set content type based on selection
+    if (items.some(item => item.type === 'video')) {
+      setSelectedContentType('video');
+    }
+    
+    // Create preview URLs
+    setPreviews(prev => [...prev, ...urls]);
+  };
+
+  const removeLibraryUrl = (index: number) => {
+    const actualIndex = index - files.length;
+    if (actualIndex >= 0) {
+      setLibraryUrls(libraryUrls.filter((_, i) => i !== actualIndex));
+      setPreviews(previews.filter((_, i) => i !== index));
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
@@ -164,15 +188,15 @@ export function CreatePostModal({ isOpen, onClose, defaultScheduled = false }: C
           {/* File Upload */}
           {selectedContentType !== 'text' && (
             <div>
-              <div className="mt-2">
+              <div className="flex gap-2 mt-2">
                 <label
                   htmlFor="media-upload"
-                  className="flex items-center justify-center w-full h-32 border-2 border-dashed border-border rounded-xl cursor-pointer hover:border-primary hover:bg-primary/5 transition-all"
+                  className="flex-1 flex items-center justify-center h-24 border-2 border-dashed border-border rounded-xl cursor-pointer hover:border-primary hover:bg-primary/5 transition-all"
                 >
                   <div className="text-center">
-                    <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground">
-                      {selectedContentType === 'video' ? 'Click to upload video' : 'Click to upload images'}
+                    <Upload className="h-6 w-6 mx-auto mb-1 text-muted-foreground" />
+                    <p className="text-xs text-muted-foreground">
+                      Upload
                     </p>
                   </div>
                   <input
@@ -184,6 +208,18 @@ export function CreatePostModal({ isOpen, onClose, defaultScheduled = false }: C
                     className="hidden"
                   />
                 </label>
+                <button
+                  type="button"
+                  onClick={() => setLibraryModalOpen(true)}
+                  className="flex-1 flex items-center justify-center h-24 border-2 border-dashed border-border rounded-xl cursor-pointer hover:border-primary hover:bg-primary/5 transition-all"
+                >
+                  <div className="text-center">
+                    <FolderOpen className="h-6 w-6 mx-auto mb-1 text-muted-foreground" />
+                    <p className="text-xs text-muted-foreground">
+                      Library
+                    </p>
+                  </div>
+                </button>
               </div>
 
               {/* Preview */}
@@ -346,6 +382,14 @@ export function CreatePostModal({ isOpen, onClose, defaultScheduled = false }: C
           </div>
         </div>
       </DialogContent>
+
+      {/* Media Library Modal */}
+      <MediaLibraryModal
+        isOpen={libraryModalOpen}
+        onClose={() => setLibraryModalOpen(false)}
+        onSelect={handleLibrarySelect}
+        contentType={selectedContentType === 'text' ? 'all' : selectedContentType}
+      />
     </Dialog>
   );
 }

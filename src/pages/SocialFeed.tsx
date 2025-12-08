@@ -5,6 +5,7 @@ import { FeedContainer } from '@/components/social/FeedContainer';
 import { CreatePostModal } from '@/components/social/CreatePostModal';
 import { StoryRing } from '@/components/social/StoryRing';
 import { FeedBackground } from '@/components/social/FeedBackground';
+import { FeedOnboardingTutorial } from '@/components/social/FeedOnboardingTutorial';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { motion } from 'framer-motion';
@@ -27,7 +28,16 @@ export default function SocialFeed() {
   const [feedType, setFeedType] = useState<'all' | 'following' | 'trending'>('all');
   const { isOpen, initialIndex, openStory, closeStory } = useStoryViewer();
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Check if onboarding should be shown
+  useEffect(() => {
+    const hasSeenOnboarding = localStorage.getItem('feedOnboardingComplete');
+    if (!hasSeenOnboarding) {
+      setShowOnboarding(true);
+    }
+  }, []);
 
   const stories = [
     {
@@ -86,7 +96,13 @@ export default function SocialFeed() {
   const filteredStories = stories.filter(story => story.userId !== user?.id);
 
   return (
-    <div ref={containerRef} className="min-h-screen bg-background relative">
+    <>
+      {/* Onboarding Tutorial */}
+      {showOnboarding && (
+        <FeedOnboardingTutorial onComplete={() => setShowOnboarding(false)} />
+      )}
+
+      <div ref={containerRef} className="min-h-screen bg-background relative">
       {/* Animated Background */}
       <FeedBackground />
 
@@ -220,5 +236,6 @@ export default function SocialFeed() {
         initialStoryIndex={initialIndex}
       />
     </div>
+    </>
   );
 }

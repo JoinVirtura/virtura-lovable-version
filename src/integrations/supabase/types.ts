@@ -3920,6 +3920,10 @@ export type Database = {
         Returns: boolean
       }
       check_verification_grace_period: { Args: never; Returns: undefined }
+      decrement_like_count: {
+        Args: { post_id_param: string }
+        Returns: undefined
+      }
       deduct_tokens: {
         Args: {
           p_amount: number
@@ -3951,6 +3955,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      increment_like_count: {
+        Args: { post_id_param: string }
+        Returns: undefined
       }
       is_admin: { Args: never; Returns: boolean }
       update_gpu_worker_heartbeat: {
