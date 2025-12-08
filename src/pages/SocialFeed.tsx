@@ -1,22 +1,14 @@
 import { Button } from '@/components/ui/button';
-import { Plus, Grid3x3, List, Sparkles, Users, TrendingUp, Clock, Play } from 'lucide-react';
+import { Plus, Sparkles, Users, TrendingUp } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { FeedContainer } from '@/components/social/FeedContainer';
 import { CreatePostModal } from '@/components/social/CreatePostModal';
-import { SearchBar } from '@/components/social/SearchBar';
 import { StoryRing } from '@/components/social/StoryRing';
-import { FilterChip } from '@/components/social/FilterChip';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { motion } from 'framer-motion';
 import { StoryViewer } from '@/components/social/StoryViewer';
 import { useStoryViewer } from '@/hooks/useStoryViewer';
-import { ContentPreviewCard } from '@/components/social/ContentPreviewCard';
-import { CreatorCard } from '@/components/social/CreatorCard';
-import { ContinueWatchingCard } from '@/components/social/ContinueWatchingCard';
-import { RecommendationCard } from '@/components/social/RecommendationCard';
-import { ContinueWatchingSection } from '@/components/social/ContinueWatchingSection';
-import { AIRecommendations } from '@/components/social/AIRecommendations';
 import { useStoryProfiles } from '@/hooks/useStoryProfiles';
 
 // Story user IDs for fetching real profiles
@@ -32,7 +24,6 @@ export default function SocialFeed() {
   const { profiles: storyProfiles } = useStoryProfiles(storyUserIds);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [feedType, setFeedType] = useState<'all' | 'following' | 'trending'>('all');
-  const [layout, setLayout] = useState<'list' | 'grid'>('list');
   const { isOpen, initialIndex, openStory, closeStory } = useStoryViewer();
   const [scrollProgress, setScrollProgress] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -49,9 +40,6 @@ export default function SocialFeed() {
       stories: [
         { id: 's1', content_url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400', content_type: 'image' as const },
         { id: 's2', content_url: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400', content_type: 'image' as const },
-        { id: 's8', content_url: 'https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?w=400', content_type: 'image' as const },
-        { id: 's9', content_url: 'https://images.unsplash.com/photo-1628155930542-3c7a64e2c833?w=400', content_type: 'image' as const },
-        { id: 's10', content_url: 'https://images.unsplash.com/photo-1556229162-1c5f3f43fc3c?w=400', content_type: 'image' as const },
       ]
     },
     {
@@ -64,8 +52,6 @@ export default function SocialFeed() {
       storyCount: 3,
       stories: [
         { id: 's3', content_url: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=400', content_type: 'image' as const },
-        { id: 's4', content_url: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=400', content_type: 'image' as const },
-        { id: 's5', content_url: 'https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?w=400', content_type: 'video' as const },
       ]
     },
     {
@@ -77,45 +63,9 @@ export default function SocialFeed() {
       storyCount: 2,
       stories: [
         { id: 's6', content_url: 'https://images.unsplash.com/photo-1508341591423-4347099e1f19?w=400', content_type: 'image' as const },
-        { id: 's7', content_url: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400', content_type: 'image' as const },
       ]
     }
   ];
-
-const featuredCreators = [
-  {
-    id: '1',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop',
-    name: 'Emma Wilson',
-    category: 'Fashion',
-    followers: '245K',
-    isFollowing: false
-  },
-  {
-    id: '2',
-    avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&h=100&fit=crop',
-    name: 'Marcus Chen',
-    category: 'Tech Reviews',
-    followers: '892K',
-    isFollowing: false
-  },
-  {
-    id: '3',
-    avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop',
-    name: 'Sofia Garcia',
-    category: 'Travel',
-    followers: '567K',
-    isFollowing: true
-  },
-  {
-    id: '4',
-    avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=100&h=100&fit=crop',
-    name: 'James Parker',
-    category: 'Fitness',
-    followers: '423K',
-    isFollowing: false
-  }
-];
 
   // Track scroll progress
   useEffect(() => {
@@ -135,7 +85,7 @@ const featuredCreators = [
   const filteredStories = stories.filter(story => story.userId !== user?.id);
 
   return (
-    <div ref={containerRef} className="container mx-auto px-4 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6 max-w-5xl scroll-smooth">
+    <div ref={containerRef} className="min-h-screen bg-background">
       {/* Scroll Progress Indicator */}
       <motion.div
         className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 via-purple-500 to-pink-500 z-50 origin-left"
@@ -143,200 +93,112 @@ const featuredCreators = [
         initial={{ scaleX: 0 }}
       />
 
-      {/* Header */}
-      <motion.div 
-        className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-violet-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-            Social Feed
-          </h1>
-          <p className="text-sm md:text-base text-muted-foreground mt-1 md:mt-2">
-            Discover and share content from creators
-          </p>
-        </div>
-        <div className="flex gap-2 w-full sm:w-auto">
-          {/* Layout Toggle */}
-          <Button
-            variant={layout === 'list' ? 'default' : 'ghost'}
-            size="icon"
-            onClick={() => setLayout('list')}
-            className="hidden md:flex"
-          >
-            <List className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={layout === 'grid' ? 'default' : 'ghost'}
-            size="icon"
-            onClick={() => setLayout('grid')}
-            className="hidden md:flex"
-          >
-            <Grid3x3 className="h-4 w-4" />
-          </Button>
-        </div>
-      </motion.div>
-
-      {/* Stories Bar */}
-      <motion.div
-        className="relative"
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.1 }}
-      >
-        <div className="flex gap-3 md:gap-4 overflow-x-auto pb-4 px-1 scrollbar-hide snap-x snap-mandatory">
-          <div className="snap-start">
-            <StoryRing
-              avatar={profile?.avatar_url}
-              username={profile?.display_name || user?.email}
-              isYourStory
-              onClick={() => setCreateModalOpen(true)}
-            />
-          </div>
-          {filteredStories.map((story, index) => (
-            <div key={story.id} className="snap-start">
+      {/* Sticky Header with Stories and Filters */}
+      <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/50">
+        {/* Stories Bar - Compact */}
+        <div className="px-4 py-3">
+          <div className="flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory max-w-4xl mx-auto">
+            <div className="snap-start flex-shrink-0">
               <StoryRing
-                avatar={story.avatar}
-                username={story.username}
-                hasStory={story.hasStory}
-                isVerified={story.isVerified}
-                isBrand={story.isBrand}
-                storyCount={story.storyCount}
-                onClick={() => openStory(index)}
+                avatar={profile?.avatar_url}
+                username={profile?.display_name || user?.email}
+                isYourStory
+                onClick={() => setCreateModalOpen(true)}
               />
             </div>
-          ))}
+            {filteredStories.map((story, index) => (
+              <div key={story.id} className="snap-start flex-shrink-0">
+                <StoryRing
+                  avatar={story.avatar}
+                  username={story.username}
+                  hasStory={story.hasStory}
+                  isVerified={story.isVerified}
+                  isBrand={story.isBrand}
+                  storyCount={story.storyCount}
+                  onClick={() => openStory(index)}
+                />
+              </div>
+            ))}
+          </div>
         </div>
-      </motion.div>
 
-      {/* Content Preview Cards */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-      >
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 mb-6">
-          <ContentPreviewCard
-            type="video"
-            thumbnail="https://images.unsplash.com/photo-1492619375914-88005aa9e8fb?w=400"
-            title="Tech Reviews"
-            viewCount="2.4M"
-            gradient="from-blue-500 to-cyan-500"
-          />
-          <ContentPreviewCard
-            type="animation"
-            thumbnail="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400"
-            title="Motion Graphics"
-            viewCount="1.8M"
-            gradient="from-purple-500 to-pink-500"
-          />
-          <ContentPreviewCard
-            type="photography"
-            thumbnail="https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=400"
-            title="Visual Stories"
-            viewCount="3.2M"
-            gradient="from-orange-500 to-red-500"
-          />
+        {/* Filter Tabs - Twitter/TikTok Style */}
+        <div className="flex justify-center border-t border-border/30">
+          <div className="flex max-w-md w-full">
+            <button
+              onClick={() => setFeedType('all')}
+              className={`flex-1 py-3 text-sm font-medium transition-all relative ${
+                feedType === 'all' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <span className="flex items-center justify-center gap-2">
+                <Sparkles className="h-4 w-4" />
+                For You
+              </span>
+              {feedType === 'all' && (
+                <motion.div
+                  layoutId="activeTab"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-violet-500 to-purple-500"
+                />
+              )}
+            </button>
+            <button
+              onClick={() => setFeedType('following')}
+              className={`flex-1 py-3 text-sm font-medium transition-all relative ${
+                feedType === 'following' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <span className="flex items-center justify-center gap-2">
+                <Users className="h-4 w-4" />
+                Following
+              </span>
+              {feedType === 'following' && (
+                <motion.div
+                  layoutId="activeTab"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-violet-500 to-purple-500"
+                />
+              )}
+            </button>
+            <button
+              onClick={() => setFeedType('trending')}
+              className={`flex-1 py-3 text-sm font-medium transition-all relative ${
+                feedType === 'trending' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <span className="flex items-center justify-center gap-2">
+                <TrendingUp className="h-4 w-4" />
+                Trending
+              </span>
+              {feedType === 'trending' && (
+                <motion.div
+                  layoutId="activeTab"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-violet-500 to-purple-500"
+                />
+              )}
+            </button>
+          </div>
         </div>
-      </motion.div>
+      </div>
 
-      {/* Continue Watching Section */}
-      <ContinueWatchingSection />
-
-      {/* AI Recommendations */}
-      <AIRecommendations />
-
-      {/* Featured Creators Section */}
-      <motion.div
-        className="mb-8 p-6 rounded-3xl bg-gradient-to-br from-violet-900/30 to-purple-900/30 backdrop-blur-xl border border-primary/20"
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.25 }}
-      >
-        <div className="flex items-center gap-3 mb-4">
-          <Sparkles className="w-5 h-5 text-violet-400 animate-pulse" />
-          <h3 className="font-semibold text-lg">Featured Creators</h3>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-          {featuredCreators.map(creator => (
-            <CreatorCard
-              key={creator.id}
-              avatar={creator.avatar}
-              name={creator.name}
-              category={creator.category}
-              followers={creator.followers}
-              isFollowing={creator.isFollowing}
-              onFollow={() => console.log('Follow', creator.id)}
-            />
-          ))}
-        </div>
-      </motion.div>
-
-      {/* Search Bar */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-      >
-        <SearchBar />
-      </motion.div>
-
-      {/* Filter Chips */}
-      <motion.div
-        className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-      >
-        <FilterChip
-          className="snap-start whitespace-nowrap"
-          active={feedType === 'all'}
-          icon={<Sparkles className="h-4 w-4" />}
-          onClick={() => setFeedType('all')}
-        >
-          For You
-        </FilterChip>
-        <FilterChip
-          className="snap-start whitespace-nowrap"
-          active={feedType === 'following'}
-          icon={<Users className="h-4 w-4" />}
-          onClick={() => setFeedType('following')}
-        >
-          Following
-        </FilterChip>
-        <FilterChip
-          className="snap-start whitespace-nowrap"
-          active={feedType === 'trending'}
-          icon={<TrendingUp className="h-4 w-4" />}
-          onClick={() => setFeedType('trending')}
-        >
-          Trending
-        </FilterChip>
-      </motion.div>
-
-      {/* Feed Container */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.4 }}
-      >
+      {/* Main Feed - Full Focus */}
+      <div className="pb-24">
         <FeedContainer filterType={feedType} onFilterChange={setFeedType} />
-      </motion.div>
+      </div>
 
-      {/* Floating Create Button */}
+      {/* Floating Create Button - TikTok Style */}
       <motion.div
-        className="fixed bottom-8 right-8 z-50"
-        initial={{ scale: 0, rotate: -180 }}
-        animate={{ scale: 1, rotate: 0 }}
-        transition={{ delay: 0.5, type: "spring" }}
+        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"
+        initial={{ scale: 0, y: 50 }}
+        animate={{ scale: 1, y: 0 }}
+        transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
       >
         <Button
           size="lg"
           onClick={() => setCreateModalOpen(true)}
-          className="h-16 w-16 rounded-full bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 shadow-2xl shadow-violet-500/50"
+          className="h-14 px-8 rounded-full bg-gradient-to-r from-violet-500 via-purple-500 to-pink-500 hover:from-violet-600 hover:via-purple-600 hover:to-pink-600 shadow-2xl shadow-violet-500/40 text-white font-semibold gap-2"
         >
-          <Plus className="h-8 w-8" />
+          <Plus className="h-5 w-5" />
+          Create
         </Button>
       </motion.div>
 
