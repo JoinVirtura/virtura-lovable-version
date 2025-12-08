@@ -40,12 +40,15 @@ export function CreatePostModal({ isOpen, onClose, defaultScheduled = false }: C
   const { createPost, uploading } = useCreatePost();
   const { schedulePost, scheduling } = useSchedulePost();
 
-  const handleLibrarySelect = (avatarUrl: string, metadata?: { is_video?: boolean }) => {
+  const handleLibrarySelect = (avatarUrl: string, metadata?: any) => {
     setLibraryUrls(prev => [...prev, avatarUrl]);
-    setPreviews(prev => [...prev, avatarUrl]);
+    
+    // Use thumbnail for video preview, otherwise use the URL directly
+    const previewUrl = metadata?.isVideo ? (metadata.thumbnail || metadata.imageUrl) : avatarUrl;
+    setPreviews(prev => [...prev, previewUrl]);
     
     // Set content type based on selection
-    if (metadata?.is_video) {
+    if (metadata?.isVideo) {
       setSelectedContentType('video');
     }
     
