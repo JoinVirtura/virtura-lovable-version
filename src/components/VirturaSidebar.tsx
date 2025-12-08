@@ -92,7 +92,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
 
   // All items now use onViewChange - no path/navigate
   const mainItems = [
-    ...(isAdmin ? [{ id: "admin-dashboard", label: "Dashboard", icon: Shield }] : []),
+    ...(isAdmin ? [{ id: "admin-dashboard", label: "Admin", icon: Shield }] : []),
     { id: "overview", label: "Home", icon: Home },
     { id: "talking-avatar", label: "Style", icon: Image },
     { id: "video-pro", label: "Video", icon: Video },

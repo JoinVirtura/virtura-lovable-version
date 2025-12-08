@@ -221,8 +221,8 @@ export default function UnifiedAdminDashboard() {
 
       {/* Tabbed Content */}
       <Tabs defaultValue="overview" className="space-y-4">
-        <div className="w-full -mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto pb-2">
-          <TabsList className="inline-flex sm:grid sm:w-full sm:grid-cols-13 gap-2 h-auto min-w-max sm:min-w-0">
+        <div className="w-full overflow-x-auto pb-2">
+          <TabsList className="inline-flex w-max gap-1 h-auto p-1">
           <TabsTrigger value="overview" className="whitespace-nowrap">Overview</TabsTrigger>
           <TabsTrigger value="metrics" className="whitespace-nowrap">Metrics</TabsTrigger>
           <TabsTrigger value="users" className="whitespace-nowrap">Users</TabsTrigger>
