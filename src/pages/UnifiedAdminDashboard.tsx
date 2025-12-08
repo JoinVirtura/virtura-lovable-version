@@ -10,7 +10,7 @@ import {
   Shield, Coins, Activity,
   LayoutDashboard, BarChart3, Cpu, FileText, 
   ImageIcon, Globe, BadgeCheck, Store, Users, DollarSign,
-  RefreshCw, Bell, Calendar
+  RefreshCw, Bell, Calendar, TrendingUp, ArrowRight
 } from "lucide-react";
 import { AdminCostDashboard } from "@/components/AdminCostDashboard";
 import { AdminDashboard } from "@/components/AdminDashboard";
@@ -420,12 +420,99 @@ export default function UnifiedAdminDashboard() {
           <FinancialReporting />
         </TabsContent>
 
-        <TabsContent value="overview" className="space-y-4">
-          <div className="text-center py-8">
-            <h3 className="text-xl font-semibold text-white mb-2">Welcome to Admin Dashboard</h3>
-            <p className="text-slate-400 max-w-lg mx-auto">
-              Use the tabs above to navigate between different sections. Check status badges for quick health indicators and use quick actions for common tasks.
-            </p>
+        <TabsContent value="overview" className="space-y-6">
+          {/* Quick Summary Cards Row */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <Card className="p-4 bg-gradient-to-br from-violet-500/10 to-violet-600/5 border-violet-500/20">
+              <div className="flex items-center gap-3">
+                <Users className="w-8 h-8 text-violet-400" />
+                <div>
+                  <p className="text-xs text-slate-400">Total Users</p>
+                  <p className="text-2xl font-bold text-white">{stats.totalUsers.toLocaleString()}</p>
+                </div>
+              </div>
+            </Card>
+            <Card className="p-4 bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border-emerald-500/20">
+              <div className="flex items-center gap-3">
+                <DollarSign className="w-8 h-8 text-emerald-400" />
+                <div>
+                  <p className="text-xs text-slate-400">Total Revenue</p>
+                  <p className="text-2xl font-bold text-white">${stats.totalRevenue.toFixed(2)}</p>
+                </div>
+              </div>
+            </Card>
+            <Card className="p-4 bg-gradient-to-br from-amber-500/10 to-amber-600/5 border-amber-500/20">
+              <div className="flex items-center gap-3">
+                <Coins className="w-8 h-8 text-amber-400" />
+                <div>
+                  <p className="text-xs text-slate-400">Tokens Purchased</p>
+                  <p className="text-2xl font-bold text-white">{stats.totalTokensPurchased.toLocaleString()}</p>
+                </div>
+              </div>
+            </Card>
+            <Card className="p-4 bg-gradient-to-br from-pink-500/10 to-pink-600/5 border-pink-500/20">
+              <div className="flex items-center gap-3">
+                <Cpu className="w-8 h-8 text-pink-400" />
+                <div>
+                  <p className="text-xs text-slate-400">API Costs</p>
+                  <p className="text-2xl font-bold text-white">${stats.totalApiCosts.toFixed(2)}</p>
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          {/* Financial Health Banner */}
+          <Card className="p-5 bg-gradient-to-r from-slate-800/50 via-emerald-900/20 to-slate-800/50 border-emerald-500/20">
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div>
+                <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-emerald-400" />
+                  Platform Financial Health
+                </h3>
+                <p className="text-slate-400 text-sm mt-1">
+                  Net Profit: <span className="text-emerald-400 font-semibold">${(stats.totalRevenue - stats.totalApiCosts).toFixed(2)}</span>
+                  {' | '}
+                  Margin: <span className="text-emerald-400 font-semibold">{stats.totalRevenue > 0 ? (((stats.totalRevenue - stats.totalApiCosts) / stats.totalRevenue) * 100).toFixed(1) : 0}%</span>
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <Badge className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                  {stats.totalTokensPurchased - stats.totalTokensUsed > 0 ? 'Token Surplus' : 'Tokens Balanced'}
+                </Badge>
+              </div>
+            </div>
+          </Card>
+
+          {/* Quick Navigation Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <Card className="p-4 hover:bg-white/5 transition-colors cursor-pointer group">
+              <div className="text-center">
+                <BarChart3 className="w-8 h-8 mx-auto text-violet-400 group-hover:scale-110 transition-transform" />
+                <p className="text-sm font-medium text-white mt-2">View Metrics</p>
+                <p className="text-xs text-slate-500">Real-time system data</p>
+              </div>
+            </Card>
+            <Card className="p-4 hover:bg-white/5 transition-colors cursor-pointer group">
+              <div className="text-center">
+                <DollarSign className="w-8 h-8 mx-auto text-emerald-400 group-hover:scale-110 transition-transform" />
+                <p className="text-sm font-medium text-white mt-2">Financial Reports</p>
+                <p className="text-xs text-slate-500">Revenue & profit analysis</p>
+              </div>
+            </Card>
+            <Card className="p-4 hover:bg-white/5 transition-colors cursor-pointer group">
+              <div className="text-center">
+                <Activity className="w-8 h-8 mx-auto text-amber-400 group-hover:scale-110 transition-transform" />
+                <p className="text-sm font-medium text-white mt-2">Job Queue</p>
+                <p className="text-xs text-slate-500">{quickStats.failedJobs} failed jobs</p>
+              </div>
+            </Card>
+            <Card className="p-4 hover:bg-white/5 transition-colors cursor-pointer group">
+              <div className="text-center">
+                <BadgeCheck className="w-8 h-8 mx-auto text-pink-400 group-hover:scale-110 transition-transform" />
+                <p className="text-sm font-medium text-white mt-2">Verifications</p>
+                <p className="text-xs text-slate-500">Review pending requests</p>
+              </div>
+            </Card>
           </div>
         </TabsContent>
 
