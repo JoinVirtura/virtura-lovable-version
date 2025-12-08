@@ -318,9 +318,9 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
               setOpenMobile(false);
             }
           }}
-          className={`flex items-center transition-colors rounded-lg min-h-[44px] ${!isMobile && isCollapsed ? "py-2 px-1 mx-1 justify-center" : "ml-3 mr-3 pl-4 pr-4 py-3 gap-3 justify-start"} hover:bg-violet-500/5 hover:text-violet-300 text-white ${activeView === "profile" ? "bg-violet-500/20 border border-violet-400/30" : ""}`}
+          className={`flex items-center transition-colors rounded-lg min-h-[44px] w-full ${!isMobile && isCollapsed ? "py-2 justify-center" : "px-3 py-3 gap-3 justify-start"} hover:bg-violet-500/5 hover:text-violet-300 text-white ${activeView === "profile" ? "bg-violet-500/20 border border-violet-400/30" : ""}`}
         >
-          <Avatar className={`ring-2 ring-violet-500/30 shrink-0 ${!isMobile && isCollapsed ? "w-8 h-8" : "w-10 h-10"}`}>
+          <Avatar className={`ring-2 ring-violet-500/30 shrink-0 ${!isMobile && isCollapsed ? "w-7 h-7" : "w-10 h-10"}`}>
             <AvatarImage src={profile?.avatar_url || undefined} />
             <AvatarFallback className="bg-violet-500/20 text-violet-300 text-xs">
               {profile?.display_name
@@ -342,11 +342,11 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
           )}
         </button>
 
-        <div className={!isMobile && isCollapsed ? "px-2 pb-2" : "px-3 pb-2"}>
+        <div className={!isMobile && isCollapsed ? "px-1 pb-2" : "px-3 pb-2"}>
           <SidebarMenuButton
             onClick={() => handleItemClick("settings")}
             isActive={activeView === "settings"}
-            className={`w-full min-h-[44px] ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 pl-5"} ${
+            className={`w-full min-h-[44px] ${!isMobile && isCollapsed ? "" : "gap-3 px-3"} ${
               activeView === "settings"
                 ? "bg-violet-500/20 text-violet-300 border border-violet-400/30"
                 : "text-gray-400 hover:bg-violet-500/5 hover:text-violet-300"
@@ -357,10 +357,10 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
           </SidebarMenuButton>
         </div>
 
-        <div className={!isMobile && isCollapsed ? "px-2 pb-3" : "px-3 pb-3"}>
+        <div className={!isMobile && isCollapsed ? "px-1 pb-3" : "px-3 pb-3"}>
           <SidebarMenuButton
             onClick={handleLogout}
-            className={`w-full min-h-[44px] ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 pl-5"} text-destructive hover:bg-destructive/10 h-auto py-2`}
+            className={`w-full min-h-[44px] ${!isMobile && isCollapsed ? "" : "gap-3 px-3"} text-destructive hover:bg-destructive/10 h-auto py-2`}
           >
             <LogOut className="w-5 h-5 shrink-0" />
             {(isMobile || !isCollapsed) && <span className="font-medium">Logout</span>}
