@@ -3475,8 +3475,10 @@ export type Database = {
       }
       user_verification: {
         Row: {
+          badge_expires_at: string | null
           created_at: string | null
           denial_reason: string | null
+          grace_period_days: number | null
           id: string
           id_document_type: string | null
           id_document_url: string | null
@@ -3490,8 +3492,10 @@ export type Database = {
           verification_subscription_id: string | null
         }
         Insert: {
+          badge_expires_at?: string | null
           created_at?: string | null
           denial_reason?: string | null
+          grace_period_days?: number | null
           id?: string
           id_document_type?: string | null
           id_document_url?: string | null
@@ -3505,8 +3509,10 @@ export type Database = {
           verification_subscription_id?: string | null
         }
         Update: {
+          badge_expires_at?: string | null
           created_at?: string | null
           denial_reason?: string | null
+          grace_period_days?: number | null
           id?: string
           id_document_type?: string | null
           id_document_url?: string | null
@@ -3646,6 +3652,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      check_trial_notifications: { Args: never; Returns: undefined }
       check_usage_limit: {
         Args: {
           daily_limit: number
@@ -3654,6 +3661,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      check_verification_grace_period: { Args: never; Returns: undefined }
       deduct_tokens: {
         Args: {
           p_amount: number

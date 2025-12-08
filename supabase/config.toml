@@ -56,3 +56,12 @@ verify_jwt = true
 
 [functions.webhook-stripe]
 verify_jwt = false
+
+[functions.publish-scheduled-posts]
+verify_jwt = false
+
+[functions.send-scheduled-notifications]
+verify_jwt = false
+
+[functions.admin-review-verification]
+verify_jwt = true
