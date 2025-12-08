@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { RefreshCw, AlertTriangle, CheckCircle, Clock, Activity, Video, Mic, Image, Loader2, RotateCcw, Filter, Radio } from 'lucide-react';
+import { RefreshCw, AlertTriangle, CheckCircle, Clock, Activity, Video, Mic, Image, Loader2, RotateCcw, Filter, Radio, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import { AdminVideoRecovery } from '@/components/AdminVideoRecovery';
@@ -255,6 +255,54 @@ export function AdminDashboard() {
     }
   };
 
+  const deleteJob = async (jobId: string) => {
+    try {
+      const { error } = await supabase
+        .from('jobs')
+        .delete()
+        .eq('id', jobId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Job Deleted",
+        description: "The job has been removed",
+      });
+
+      fetchDashboardData(false);
+    } catch (error: any) {
+      toast({
+        title: "Delete Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const bulkDeleteFailed = async () => {
+    try {
+      const { error } = await supabase
+        .from('jobs')
+        .delete()
+        .in('status', ['error', 'failed']);
+
+      if (error) throw error;
+
+      toast({
+        title: "Failed Jobs Deleted",
+        description: `Removed ${failedJobsList.length} failed jobs`,
+      });
+
+      fetchDashboardData(false);
+    } catch (error: any) {
+      toast({
+        title: "Delete Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -434,15 +482,26 @@ export function AdminDashboard() {
                   </SelectContent>
                 </Select>
                 {failedJobsList.length > 0 && (
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={bulkRetryFailed}
-                    className="bg-red-500/10 border-red-500/30 text-red-400 hover:bg-red-500/20"
-                  >
-                    <RotateCcw className="w-4 h-4 mr-2" />
-                    Retry All Failed ({failedJobsList.length})
-                  </Button>
+                  <>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={bulkRetryFailed}
+                      className="bg-amber-500/10 border-amber-500/30 text-amber-400 hover:bg-amber-500/20"
+                    >
+                      <RotateCcw className="w-4 h-4 mr-2" />
+                      Retry All ({failedJobsList.length})
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={bulkDeleteFailed}
+                      className="bg-red-500/10 border-red-500/30 text-red-400 hover:bg-red-500/20"
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete All Failed
+                    </Button>
+                  </>
                 )}
               </div>
             </CardHeader>
@@ -490,15 +549,25 @@ export function AdminDashboard() {
                           </div>
                         )}
                         {(job.status === 'error' || job.status === 'failed') && (
-                          <Button 
-                            size="sm" 
-                            variant="outline" 
-                            onClick={() => retryJob(job.id)}
-                            className="bg-slate-700/50 hover:bg-slate-600/50"
-                          >
-                            <RotateCcw className="w-4 h-4 mr-1" />
-                            Retry
-                          </Button>
+                          <div className="flex items-center gap-2">
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              onClick={() => retryJob(job.id)}
+                              className="bg-slate-700/50 hover:bg-slate-600/50"
+                            >
+                              <RotateCcw className="w-4 h-4 mr-1" />
+                              Retry
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              onClick={() => deleteJob(job.id)}
+                              className="bg-red-500/10 border-red-500/30 text-red-400 hover:bg-red-500/20"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
                         )}
                       </div>
                     </div>
