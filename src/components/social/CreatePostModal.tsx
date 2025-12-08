@@ -8,12 +8,15 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useCreatePost } from '@/hooks/useCreatePost';
 import { useSchedulePost } from '@/hooks/useSchedulePost';
-import { Upload, X, Loader2, Calendar as CalendarIcon, Sparkles, Image, Video, Type, FolderOpen } from 'lucide-react';
+import { Upload, X, Loader2, Calendar as CalendarIcon, Sparkles, Image, Video, Type, FolderOpen, Wand2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { DashboardLibraryView } from '@/components/DashboardLibraryView';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface CreatePostModalProps {
   isOpen: boolean;
@@ -37,8 +40,35 @@ export function CreatePostModal({ isOpen, onClose, defaultScheduled = false }: C
   const [selectedContentType, setSelectedContentType] = useState<ContentType>('image');
   const [libraryModalOpen, setLibraryModalOpen] = useState(false);
   const [libraryUrls, setLibraryUrls] = useState<string[]>([]);
+  const [generatingCaption, setGeneratingCaption] = useState(false);
+  const [captionTone, setCaptionTone] = useState<string>('casual');
   const { createPost, uploading } = useCreatePost();
   const { schedulePost, scheduling } = useSchedulePost();
+
+  const handleGenerateCaption = async () => {
+    setGeneratingCaption(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-caption', {
+        body: {
+          content_type: selectedContentType,
+          context: caption || undefined,
+          tone: captionTone
+        }
+      });
+
+      if (error) throw error;
+      
+      if (data?.caption) {
+        setCaption(data.caption);
+        toast.success('Caption generated!');
+      }
+    } catch (error: any) {
+      console.error('Error generating caption:', error);
+      toast.error(error.message || 'Failed to generate caption');
+    } finally {
+      setGeneratingCaption(false);
+    }
+  };
 
   const handleLibrarySelect = (avatarUrl: string, metadata?: any) => {
     setLibraryUrls(prev => [...prev, avatarUrl]);
@@ -273,8 +303,39 @@ export function CreatePostModal({ isOpen, onClose, defaultScheduled = false }: C
             </div>
           )}
 
-          {/* Caption */}
+          {/* Caption with AI Generator */}
           <div>
+            <div className="flex items-center justify-between mb-2">
+              <Label htmlFor="caption">Caption</Label>
+              <div className="flex items-center gap-2">
+                <Select value={captionTone} onValueChange={setCaptionTone}>
+                  <SelectTrigger className="w-[110px] h-8 text-xs">
+                    <SelectValue placeholder="Tone" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="casual">Casual</SelectItem>
+                    <SelectItem value="professional">Professional</SelectItem>
+                    <SelectItem value="funny">Funny</SelectItem>
+                    <SelectItem value="inspirational">Inspirational</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleGenerateCaption}
+                  disabled={generatingCaption}
+                  className="h-8 gap-1.5 text-xs border-primary/30 hover:border-primary/50 hover:bg-primary/10"
+                >
+                  {generatingCaption ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Wand2 className="h-3.5 w-3.5" />
+                  )}
+                  AI Caption
+                </Button>
+              </div>
+            </div>
             <Textarea
               id="caption"
               placeholder="What's on your mind? Share your creation..."

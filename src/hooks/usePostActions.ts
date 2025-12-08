@@ -105,11 +105,85 @@ export function usePostActions() {
     }
   };
 
+  const updateComment = async (commentId: string, content: string) => {
+    if (!user) {
+      toast({ title: 'Please sign in', variant: 'destructive' });
+      return false;
+    }
+
+    if (!content.trim()) {
+      toast({ title: 'Comment cannot be empty', variant: 'destructive' });
+      return false;
+    }
+
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('post_comments')
+        .update({ content })
+        .eq('id', commentId)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+      toast({ title: 'Comment updated' });
+      return true;
+    } catch (error: any) {
+      console.error('Error updating comment:', error);
+      toast({ title: 'Failed to update comment', variant: 'destructive' });
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteComment = async (commentId: string, postId: string) => {
+    if (!user) {
+      toast({ title: 'Please sign in', variant: 'destructive' });
+      return false;
+    }
+
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('post_comments')
+        .delete()
+        .eq('id', commentId)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      // Update post comment count directly
+      const { data: post } = await supabase
+        .from('social_posts')
+        .select('comment_count')
+        .eq('id', postId)
+        .single();
+      
+      if (post) {
+        await supabase
+          .from('social_posts')
+          .update({ comment_count: Math.max(0, (post.comment_count || 1) - 1) })
+          .eq('id', postId);
+      }
+
+      toast({ title: 'Comment deleted' });
+      return true;
+    } catch (error: any) {
+      console.error('Error deleting comment:', error);
+      toast({ title: 'Failed to delete comment', variant: 'destructive' });
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     toggleLike,
     followUser,
     unlockPost,
     createComment,
+    updateComment,
+    deleteComment,
     loading
   };
 }
