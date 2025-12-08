@@ -53,10 +53,12 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
 interface VirturaSidebarProps {
+  activeView: string;
+  onViewChange: (view: string) => void;
   onClearEditState?: () => void;
 }
 
-export function VirturaSidebar({ onClearEditState }: VirturaSidebarProps) {
+export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: VirturaSidebarProps) {
   const { state, setOpenMobile, isMobile } = useSidebar();
   const { user, signOut } = useAuth();
   const { profile } = useProfile();
@@ -103,18 +105,18 @@ export function VirturaSidebar({ onClearEditState }: VirturaSidebarProps) {
   }, [user]);
 
   const mainItems = [
-    ...(isAdmin ? [{ id: "admin-dashboard", label: "Dashboard", icon: Shield, path: "/dashboard/admin" }] : []),
-    { id: "overview", label: "Home", icon: Home, path: "/dashboard" },
-    { id: "talking-avatar", label: "Style", icon: Image, path: "/dashboard/style" },
-    { id: "video-pro", label: "Video", icon: Video, path: "/dashboard/video" },
-    { id: "library", label: "Library", icon: Library, path: "/dashboard/library" },
+    ...(isAdmin ? [{ id: "admin-dashboard", label: "Dashboard", icon: Shield }] : []),
+    { id: "overview", label: "Home", icon: Home },
+    { id: "talking-avatar", label: "Style", icon: Image },
+    { id: "video-pro", label: "Video", icon: Video },
+    { id: "library", label: "Library", icon: Library },
   ];
 
   const navigationTabs = [
-    { id: "studio", label: "Copilot", icon: Command, path: "/dashboard/copilot" },
-    { id: "brands", label: "Brands", icon: Building2, path: "/dashboard/brands" },
-    { id: "guide", label: "Tutorial", icon: BookOpen, path: "/dashboard/tutorial" },
-    { id: "support", label: "Support", icon: LifeBuoy, path: "/dashboard/support" },
+    { id: "studio", label: "Copilot", icon: Command },
+    { id: "brands", label: "Brands", icon: Building2 },
+    { id: "guide", label: "Tutorial", icon: BookOpen },
+    { id: "support", label: "Support", icon: LifeBuoy },
   ];
 
   // Social & Creator section (new structure)
@@ -172,35 +174,31 @@ export function VirturaSidebar({ onClearEditState }: VirturaSidebarProps) {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {mainItems.map((item) => {
-                const isActive = item.path === "/dashboard" 
-                  ? location.pathname === "/dashboard"
-                  : location.pathname.startsWith(item.path);
-                return (
-                  <SidebarMenuItem key={item.id}>
-                    <SidebarMenuButton
-                      onClick={() => {
-                        if (item.id === "studio" && onClearEditState) {
-                          onClearEditState();
-                        }
-                        navigate(item.path);
-                        if (isMobile) {
-                          setOpenMobile(false);
-                        }
-                      }}
-                      isActive={isActive}
-                      className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
-                        isActive
-                          ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30"
-                          : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
-                      }`}
-                    >
-                      <item.icon className="w-5 h-5 shrink-0" />
-                      {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
+              {mainItems.map((item) => (
+                <SidebarMenuItem key={item.id}>
+                  <SidebarMenuButton
+                    onClick={() => {
+                      // Clear edit state when navigating to studio normally
+                      if (item.id === "studio" && onClearEditState) {
+                        onClearEditState();
+                      }
+                      onViewChange(item.id);
+                      if (isMobile) {
+                        setOpenMobile(false);
+                      }
+                    }}
+                    isActive={activeView === item.id}
+                    className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
+                      activeView === item.id
+                        ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30"
+                        : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
+                    }`}
+                  >
+                    <item.icon className="w-5 h-5 shrink-0" />
+                    {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -213,31 +211,28 @@ export function VirturaSidebar({ onClearEditState }: VirturaSidebarProps) {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navigationTabs.map((item) => {
-                const isActive = location.pathname.startsWith(item.path);
-                return (
-                  <SidebarMenuItem key={item.id}>
-                    <SidebarMenuButton
-                      onClick={() => {
-                        onClearEditState?.();
-                        navigate(item.path);
-                        if (isMobile) {
-                          setOpenMobile(false);
-                        }
-                      }}
-                      isActive={isActive}
-                      className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
-                        isActive
-                          ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30"
-                          : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
-                      }`}
-                    >
-                      <item.icon className="w-5 h-5 shrink-0" />
-                      {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
+              {navigationTabs.map((item) => (
+                <SidebarMenuItem key={item.id}>
+                  <SidebarMenuButton
+                    onClick={() => {
+                      onClearEditState?.();
+                      onViewChange(item.id);
+                      if (isMobile) {
+                        setOpenMobile(false);
+                      }
+                    }}
+                    isActive={activeView === item.id}
+                    className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
+                      activeView === item.id
+                        ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30"
+                        : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
+                    }`}
+                  >
+                    <item.icon className="w-5 h-5 shrink-0" />
+                    {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -256,30 +251,31 @@ export function VirturaSidebar({ onClearEditState }: VirturaSidebarProps) {
             </div>
             <SidebarGroupContent>
               <SidebarMenu>
-                {socialItems.map((item) => {
-                  const isActive = location.pathname === item.path;
-                  return (
-                    <SidebarMenuItem key={item.id}>
-                      <SidebarMenuButton
-                        onClick={() => {
+                {socialItems.map((item) => (
+                  <SidebarMenuItem key={item.id}>
+                    <SidebarMenuButton
+                      onClick={() => {
+                        if (item.path) {
                           navigate(item.path);
-                          if (isMobile) {
-                            setOpenMobile(false);
-                          }
-                        }}
-                        isActive={isActive}
-                        className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
-                          isActive
-                            ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30"
-                            : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
-                        }`}
-                      >
-                        <item.icon className="w-5 h-5 shrink-0" />
-                        {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  );
-                })}
+                        } else {
+                          onViewChange(item.id);
+                        }
+                        if (isMobile) {
+                          setOpenMobile(false);
+                        }
+                      }}
+                      isActive={item.path ? location.pathname === item.path : activeView === item.id}
+                      className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
+                        (item.path ? location.pathname === item.path : activeView === item.id)
+                          ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30"
+                          : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
+                      }`}
+                    >
+                      <item.icon className="w-5 h-5 shrink-0" />
+                      {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
@@ -294,30 +290,31 @@ export function VirturaSidebar({ onClearEditState }: VirturaSidebarProps) {
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {creatorItems.map((item) => {
-                  const isActive = location.pathname === item.path;
-                  return (
-                    <SidebarMenuItem key={item.id}>
-                      <SidebarMenuButton
-                        onClick={() => {
+                {creatorItems.map((item) => (
+                  <SidebarMenuItem key={item.id}>
+                    <SidebarMenuButton
+                      onClick={() => {
+                        if (item.path) {
                           navigate(item.path);
-                          if (isMobile) {
-                            setOpenMobile(false);
-                          }
-                        }}
-                        isActive={isActive}
-                        className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
-                          isActive
-                            ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30"
-                            : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
-                        }`}
-                      >
-                        <item.icon className="w-5 h-5 shrink-0" />
-                        {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  );
-                })}
+                        } else {
+                          onViewChange(item.id);
+                        }
+                        if (isMobile) {
+                          setOpenMobile(false);
+                        }
+                      }}
+                      isActive={item.path ? location.pathname === item.path : activeView === item.id}
+                      className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
+                        (item.path ? location.pathname === item.path : activeView === item.id)
+                          ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30"
+                          : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
+                      }`}
+                    >
+                      <item.icon className="w-5 h-5 shrink-0" />
+                      {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
@@ -332,30 +329,31 @@ export function VirturaSidebar({ onClearEditState }: VirturaSidebarProps) {
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {marketplaceItems.map((item) => {
-                  const isActive = location.pathname === item.path;
-                  return (
-                    <SidebarMenuItem key={item.id}>
-                      <SidebarMenuButton
-                        onClick={() => {
+                {marketplaceItems.map((item) => (
+                  <SidebarMenuItem key={item.id}>
+                    <SidebarMenuButton
+                      onClick={() => {
+                        if (item.path) {
                           navigate(item.path);
-                          if (isMobile) {
-                            setOpenMobile(false);
-                          }
-                        }}
-                        isActive={isActive}
-                        className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
-                          isActive
-                            ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30"
-                            : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
-                        }`}
-                      >
-                        <item.icon className="w-5 h-5 shrink-0" />
-                        {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  );
-                })}
+                        } else {
+                          onViewChange(item.id);
+                        }
+                        if (isMobile) {
+                          setOpenMobile(false);
+                        }
+                      }}
+                      isActive={item.path ? location.pathname === item.path : activeView === item.id}
+                      className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
+                        (item.path ? location.pathname === item.path : activeView === item.id)
+                          ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30"
+                          : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
+                      }`}
+                    >
+                      <item.icon className="w-5 h-5 shrink-0" />
+                      {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
@@ -402,7 +400,7 @@ export function VirturaSidebar({ onClearEditState }: VirturaSidebarProps) {
               navigate("/settings");
               setOpenMobile(false);
             }}
-            isActive={location.pathname === "/settings"}
+            isActive={activeView === "settings"}
             className={`w-full min-h-[44px] ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 pl-5"} text-gray-400 hover:bg-violet-500/5 hover:text-violet-300 h-auto py-2`}
           >
             <Settings className="w-5 h-5 shrink-0" />

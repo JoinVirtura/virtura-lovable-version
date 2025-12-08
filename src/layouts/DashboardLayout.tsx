@@ -30,6 +30,8 @@ export function DashboardLayout({
         </header>
         
         <VirturaSidebar 
+          activeView=""
+          onViewChange={() => {}}
           onClearEditState={() => {}}
         />
       

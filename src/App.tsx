@@ -44,7 +44,6 @@ import VerificationPage from "./pages/VerificationPage";
 import Upgrade from "./pages/Upgrade";
 import TrialAnalytics from "./pages/admin/TrialAnalytics";
 import TrialExperiments from "./pages/admin/TrialExperiments";
-import { SupportPage } from "./components/SupportPage";
 
 const queryClient = new QueryClient();
 
@@ -98,16 +97,6 @@ const AppRoutes = () => {
       <Route path="/guide" element={<ProtectedRoute><GuidePage /></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><DashboardLayout><SettingsPage /></DashboardLayout></ProtectedRoute>} />
       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-      
-      {/* Dashboard sub-routes - all use DashboardLayout */}
-      <Route path="/dashboard/style" element={<ProtectedRoute><DashboardLayout><TalkingAvatarPage /></DashboardLayout></ProtectedRoute>} />
-      <Route path="/dashboard/video" element={<ProtectedRoute><DashboardLayout><VideoProPage /></DashboardLayout></ProtectedRoute>} />
-      <Route path="/dashboard/library" element={<ProtectedRoute><DashboardLayout><LibraryPage /></DashboardLayout></ProtectedRoute>} />
-      <Route path="/dashboard/copilot" element={<ProtectedRoute><DashboardLayout><AIImageStudioPage /></DashboardLayout></ProtectedRoute>} />
-      <Route path="/dashboard/brands" element={<ProtectedRoute><DashboardLayout><BrandsPage /></DashboardLayout></ProtectedRoute>} />
-      <Route path="/dashboard/tutorial" element={<ProtectedRoute><DashboardLayout><GuidePage /></DashboardLayout></ProtectedRoute>} />
-      <Route path="/dashboard/support" element={<ProtectedRoute><DashboardLayout><SupportPage /></DashboardLayout></ProtectedRoute>} />
-      <Route path="/dashboard/admin" element={<ProtectedRoute><DashboardLayout><UnifiedAdminDashboard /></DashboardLayout></ProtectedRoute>} />
       
       <Route path="/talking-avatar" element={<ProtectedRoute><TalkingAvatarPage /></ProtectedRoute>} />
       <Route path="/video-pro" element={<ProtectedRoute><VideoProPage /></ProtectedRoute>} />
