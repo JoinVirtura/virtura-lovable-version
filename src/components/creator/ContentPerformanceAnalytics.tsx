@@ -1,14 +1,17 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useContentPerformance } from '@/hooks/useContentPerformance';
 import { Eye, Heart, Unlock, DollarSign, TrendingUp, BarChart3 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { format } from 'date-fns';
+import { DemoContentStats } from '@/hooks/useDemoEarningsData';
 
-export function ContentPerformanceAnalytics() {
-  const { stats, loading } = useContentPerformance();
+interface ContentPerformanceAnalyticsProps {
+  stats?: DemoContentStats;
+  loading?: boolean;
+}
 
-  if (loading) {
+export function ContentPerformanceAnalytics({ stats, loading }: ContentPerformanceAnalyticsProps) {
+  if (loading || !stats) {
     return (
       <Card>
         <CardHeader>

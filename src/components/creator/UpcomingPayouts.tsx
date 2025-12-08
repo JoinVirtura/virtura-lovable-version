@@ -1,17 +1,23 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { useCreatorEarnings } from '@/hooks/useCreatorEarnings';
-import { Calendar, DollarSign, ArrowRight } from 'lucide-react';
+import { Calendar, ArrowRight } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format, nextFriday, addDays } from 'date-fns';
 
 const MINIMUM_THRESHOLD = 10; // $10 minimum payout
 const PLATFORM_FEE_RATE = 0.10; // 10%
 
-export function UpcomingPayouts() {
-  const { stats, loading } = useCreatorEarnings();
+interface UpcomingPayoutsProps {
+  stats?: {
+    pendingEarnings: number;
+    totalEarnings: number;
+    revenueBySource: { source_type: string; amount: number }[];
+  };
+  loading?: boolean;
+}
 
-  if (loading) {
+export function UpcomingPayouts({ stats, loading }: UpcomingPayoutsProps) {
+  if (loading || !stats) {
     return (
       <Card>
         <CardHeader>

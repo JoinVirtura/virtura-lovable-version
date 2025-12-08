@@ -1,22 +1,29 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useCreatorEarnings } from '@/hooks/useCreatorEarnings';
+import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { DollarSign, TrendingUp, Clock, Receipt, Target } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
-export function CreatorEarningsDashboard() {
-  const { stats, loading } = useCreatorEarnings();
+interface CreatorEarningsDashboardProps {
+  stats?: {
+    totalEarnings: number;
+    pendingEarnings: number;
+    paidOutEarnings: number;
+    totalTransactions: number;
+    projectedMonthly: number;
+    timeSeriesData: any[];
+  };
+  loading?: boolean;
+}
 
-  if (loading) {
+export function CreatorEarningsDashboard({ stats, loading }: CreatorEarningsDashboardProps) {
+  if (loading || !stats) {
     return (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {[...Array(4)].map((_, i) => (
           <Card key={i}>
-            <CardHeader className="pb-2">
+            <CardContent className="pt-6">
               <Skeleton className="h-4 w-24" />
-            </CardHeader>
-            <CardContent>
-              <Skeleton className="h-8 w-32" />
+              <Skeleton className="h-8 w-32 mt-2" />
             </CardContent>
           </Card>
         ))}
@@ -79,22 +86,22 @@ export function CreatorEarningsDashboard() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
         {statCards.map((stat) => (
           <Card key={stat.title}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              {stat.tooltip ? (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <CardTitle className="text-sm font-medium cursor-help">{stat.title}</CardTitle>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="max-w-xs">{stat.tooltip}</p>
-                  </TooltipContent>
-                </Tooltip>
-              ) : (
-                <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-              )}
-              <stat.icon className="w-4 h-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6">
+              <div className="flex flex-row items-center justify-between pb-2">
+                {stat.tooltip ? (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <CardTitle className="text-sm font-medium cursor-help">{stat.title}</CardTitle>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="max-w-xs">{stat.tooltip}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                ) : (
+                  <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+                )}
+                <stat.icon className="w-4 h-4 text-muted-foreground" />
+              </div>
               <div className="text-2xl font-bold">{stat.value}</div>
               <p className="text-xs text-muted-foreground mt-1">{stat.description}</p>
             </CardContent>

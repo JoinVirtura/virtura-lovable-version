@@ -1,83 +1,19 @@
-import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
-import { Handshake, DollarSign, Clock, CheckCircle, FileText, ArrowRight } from 'lucide-react';
+import { Handshake, DollarSign, Clock, FileText, ArrowRight } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
+import { DemoBrandDeal } from '@/hooks/useDemoEarningsData';
 
-interface Contract {
-  id: string;
-  campaign_id: string;
-  brand_id: string;
-  status: string;
-  payment_amount_cents: number;
-  creator_payout_cents: number;
-  platform_fee_cents: number;
-  deadline: string | null;
-  created_at: string;
-  campaign?: {
-    title: string;
-    brand?: {
-      name: string;
-      logo_url: string | null;
-    };
-  };
+interface BrandDealsOverviewProps {
+  contracts?: DemoBrandDeal[];
+  loading?: boolean;
 }
 
-export function BrandDealsOverview() {
-  const { user } = useAuth();
+export function BrandDealsOverview({ contracts = [], loading }: BrandDealsOverviewProps) {
   const navigate = useNavigate();
-  const [contracts, setContracts] = useState<Contract[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchContracts = async () => {
-      if (!user) {
-        setLoading(false);
-        return;
-      }
-
-      try {
-        // Get creator account
-        const { data: account } = await supabase
-          .from('creator_accounts')
-          .select('id')
-          .eq('user_id', user.id)
-          .maybeSingle();
-
-        if (!account) {
-          setLoading(false);
-          return;
-        }
-
-        // Get contracts with campaign and brand info
-        const { data, error } = await supabase
-          .from('marketplace_contracts')
-          .select(`
-            *,
-            campaign:marketplace_campaigns(
-              title,
-              brand:brands(name, logo_url)
-            )
-          `)
-          .eq('creator_id', account.id)
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-        setContracts(data || []);
-      } catch (error) {
-        console.error('Error fetching contracts:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchContracts();
-  }, [user]);
 
   if (loading) {
     return (

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { CreatorOnboarding } from '@/components/creator/CreatorOnboarding';
 import { CreatorEarningsDashboard } from '@/components/creator/CreatorEarningsDashboard';
 import { CreatorRevenueCharts } from '@/components/creator/CreatorRevenueCharts';
 import { EarningsProjectionsChart } from '@/components/creator/EarningsProjectionsChart';
@@ -33,12 +32,18 @@ export default function CreatorDashboard() {
 
   // Demo mode only when explicitly toggled ON
   const useDemoData = demoMode;
+  
+  // Select data based on demo mode
   const stats = useDemoData ? demoData.stats : realEarnings.stats;
+  const earnings = useDemoData ? demoData.earnings : realEarnings.earnings;
+  const payoutStats = useDemoData ? demoData.payoutStats : undefined;
+  const contentStats = useDemoData ? demoData.contentStats : undefined;
+  const brandDeals = useDemoData ? demoData.brandDeals : undefined;
   const earningsLoading = useDemoData ? false : realEarnings.loading;
   
   // Calculate daily average for projections
   const dailyAverage = stats.timeSeriesData.length > 0
-    ? stats.timeSeriesData.reduce((sum, d) => sum + d.total, 0) / stats.timeSeriesData.length
+    ? stats.timeSeriesData.reduce((sum: number, d: any) => sum + d.total, 0) / stats.timeSeriesData.length
     : 0;
 
   const handleSetupStripe = async () => {
@@ -121,7 +126,7 @@ export default function CreatorDashboard() {
       <EarningsBreakdownCards stats={stats} loading={earningsLoading} />
 
       {/* Charts */}
-      <CreatorRevenueCharts />
+      <CreatorRevenueCharts stats={stats} />
 
       {/* Projections */}
       <EarningsProjectionsChart 
@@ -131,7 +136,7 @@ export default function CreatorDashboard() {
 
       {/* Bottom Grid */}
       <div className="grid gap-8 lg:grid-cols-2">
-        <UpcomingPayouts />
+        <UpcomingPayouts stats={stats} loading={earningsLoading} />
         <SubscriptionTiers />
       </div>
     </div>
@@ -139,29 +144,29 @@ export default function CreatorDashboard() {
 
   const renderEarningsTab = () => (
     <div className="space-y-8">
-      <CreatorEarningsDashboard />
+      <CreatorEarningsDashboard stats={stats} loading={earningsLoading} />
       <EarningsBreakdownCards stats={stats} loading={earningsLoading} />
-      <CreatorRevenueCharts />
-      <TransactionHistory />
+      <CreatorRevenueCharts stats={stats} />
+      <TransactionHistory earnings={earnings} loading={earningsLoading} />
     </div>
   );
 
   const renderPayoutsTab = () => (
     <div className="space-y-8">
       <div className="grid gap-8 lg:grid-cols-2">
-        <UpcomingPayouts />
+        <UpcomingPayouts stats={stats} loading={earningsLoading} />
         <PayoutSchedule />
       </div>
-      <PayoutHistory />
+      <PayoutHistory stats={payoutStats} loading={earningsLoading} />
     </div>
   );
 
   const renderContentTab = () => (
-    <ContentPerformanceAnalytics />
+    <ContentPerformanceAnalytics stats={contentStats} loading={earningsLoading} />
   );
 
   const renderDealsTab = () => (
-    <BrandDealsOverview />
+    <BrandDealsOverview contracts={brandDeals} loading={earningsLoading} />
   );
 
   const renderTabContent = () => {
