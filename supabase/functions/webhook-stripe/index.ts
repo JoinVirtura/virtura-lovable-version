@@ -243,22 +243,42 @@ async function handleSubscriptionDeleted(supabase: any, subscription: any) {
     // Check if it's a verification subscription
     const { data: verification } = await supabase
       .from('user_verification')
-      .select('id')
+      .select('id, user_id, grace_period_days')
       .eq('verification_subscription_id', subscription.id)
       .single();
     
     if (verification) {
-      // Cancel verification subscription
+      // Apply 3-day grace period before removing badge
+      const gracePeriodDays = verification.grace_period_days || 3;
+      const badgeExpiresAt = new Date();
+      badgeExpiresAt.setDate(badgeExpiresAt.getDate() + gracePeriodDays);
+      
       const { error } = await supabase
         .from('user_verification')
         .update({
-          subscription_status: 'canceled',
+          subscription_status: 'grace_period',
+          badge_expires_at: badgeExpiresAt.toISOString(),
           updated_at: new Date().toISOString(),
         })
         .eq('verification_subscription_id', subscription.id);
       
       if (error) throw error;
-      console.log('Verification subscription canceled');
+      
+      // Notify user about grace period
+      await supabase.from('notifications').insert({
+        user_id: verification.user_id,
+        title: 'Verification Subscription Canceled',
+        message: `Your verification badge will remain active for ${gracePeriodDays} more days. Resubscribe to keep your verified status.`,
+        category: 'account',
+        priority: 'high',
+        metadata: { 
+          verification_id: verification.id,
+          badge_expires_at: badgeExpiresAt.toISOString(),
+          grace_period_days: gracePeriodDays
+        },
+      });
+      
+      console.log(`Verification subscription entered grace period (${gracePeriodDays} days)`);
       return;
     }
     

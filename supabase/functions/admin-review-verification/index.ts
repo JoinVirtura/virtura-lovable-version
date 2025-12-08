@@ -66,13 +66,18 @@ serve(async (req) => {
       .from('notifications')
       .insert({
         user_id: user_id,
-        title: action === 'approve' ? 'Verification Approved' : 'Verification Denied',
+        title: action === 'approve' ? '🎉 Verification Approved!' : 'Verification Denied',
         message: action === 'approve' 
-          ? 'Your verification request has been approved! Your badge is now active.'
+          ? 'Your identity has been verified! Subscribe now to get your verified badge for $9.99/month.'
           : `Your verification request was denied. ${denial_reason}`,
-        category: 'system',
+        category: 'account',
         priority: 'high',
-        metadata: { action, denial_reason },
+        metadata: { 
+          action, 
+          denial_reason,
+          action_url: action === 'approve' ? '/verification' : null,
+          action_label: action === 'approve' ? 'Subscribe Now' : null,
+        },
       });
 
     console.log(`[admin-review-verification] ${action} verification for user ${user_id}`);
