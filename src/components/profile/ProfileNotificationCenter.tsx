@@ -1,12 +1,24 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bell, Check, X, Filter, Settings, Trash2, ChevronRight } from "lucide-react";
+import { Bell, Check, Trash2, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useNotifications } from "@/hooks/useNotifications";
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
 
 const categoryColors: Record<string, string> = {
   social: "from-pink-500/20 to-rose-500/20 border-pink-500/30",
@@ -30,12 +42,26 @@ export function ProfileNotificationCenter() {
   const { notifications, unreadCount, markAsRead, markAllAsRead, deleteNotification } = useNotifications();
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState(true);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   const filteredNotifications = activeFilter
     ? notifications.filter((n) => n.category === activeFilter)
     : notifications;
 
   const categories = [...new Set(notifications.map((n) => n.category))];
+
+  const handleDeleteNotification = (id: string) => {
+    deleteNotification(id);
+    setDeleteConfirmId(null);
+    toast.success("Notification deleted");
+  };
+
+  const handleClearAll = async () => {
+    for (const notification of notifications) {
+      await deleteNotification(notification.id);
+    }
+    toast.success("All notifications cleared");
+  };
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900/80 via-violet-950/30 to-slate-900/80 backdrop-blur-xl">
@@ -80,6 +106,39 @@ export function ProfileNotificationCenter() {
                 <Check className="w-3 h-3 mr-1" />
                 Mark all read
               </Button>
+            )}
+            {notifications.length > 0 && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                  >
+                    <Trash2 className="w-3 h-3 mr-1" />
+                    Clear all
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="bg-slate-900 border-white/10">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className="text-white">Clear All Notifications?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will permanently delete all your notifications. This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">
+                      Cancel
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleClearAll}
+                      className="bg-red-500 hover:bg-red-600"
+                    >
+                      Clear All
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             )}
             <Button
               variant="ghost"
@@ -194,17 +253,40 @@ export function ProfileNotificationCenter() {
                           </p>
                         </div>
 
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteNotification(notification.id);
-                          }}
-                        >
-                          <X className="w-3 h-3 text-muted-foreground" />
-                        </Button>
+                        <AlertDialog open={deleteConfirmId === notification.id} onOpenChange={(open) => !open && setDeleteConfirmId(null)}>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-red-400 hover:text-red-300 hover:bg-red-500/20 transition-all"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setDeleteConfirmId(notification.id);
+                              }}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent className="bg-slate-900 border-white/10">
+                            <AlertDialogHeader>
+                              <AlertDialogTitle className="text-white">Delete Notification?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This will permanently delete this notification.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">
+                                Cancel
+                              </AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDeleteNotification(notification.id)}
+                                className="bg-red-500 hover:bg-red-600"
+                              >
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     </motion.div>
                   ))}

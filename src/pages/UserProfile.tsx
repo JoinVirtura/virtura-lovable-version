@@ -8,7 +8,7 @@ import { ProfileSkeleton } from "@/components/profile/ProfileSkeleton";
 import { EnhancedProfileTabs } from "@/components/profile/EnhancedProfileTabs";
 import { ProfessionalAboutSection } from "@/components/profile/ProfessionalAboutSection";
 import { useAuth } from "@/hooks/useAuth";
-import { BookmarkIcon, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 // Lazy load heavy components
 const ProfileNotificationCenter = lazy(() => import("@/components/profile/ProfileNotificationCenter").then(m => ({ default: m.ProfileNotificationCenter })));
@@ -31,7 +31,7 @@ export default function UserProfile() {
   
   const userId = paramUserId || user?.id || '';
   
-  const { profile, posts, loading, updateProfile, refetch } = useUserProfile(userId);
+  const { profile, posts, loading, hasMore, loadingMore, loadMore, updateProfile, refetch } = useUserProfile(userId);
   const [activeTab, setActiveTab] = useState('grid');
   const [currentFollowerCount, setCurrentFollowerCount] = useState(0);
 
@@ -118,23 +118,13 @@ export default function UserProfile() {
 
         {activeTab === "grid" && (
           <div className="mt-0">
-            {posts.length > 0 ? (
-              <BentoContentGrid 
-                posts={posts}
-                savedPosts={[]}
-                isOwnProfile={isOwnProfile}
-              />
-            ) : (
-              <div className="text-center py-16">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-violet-500/10 flex items-center justify-center">
-                  <BookmarkIcon className="w-8 h-8 text-violet-400" />
-                </div>
-                <p className="text-muted-foreground">No posts yet</p>
-                {isOwnProfile && (
-                  <p className="text-sm text-muted-foreground/60 mt-2">Create your first post from the Feed!</p>
-                )}
-              </div>
-            )}
+            <BentoContentGrid 
+              posts={posts}
+              hasMore={hasMore}
+              loadMore={loadMore}
+              loadingMore={loadingMore}
+              onPostDeleted={refetch}
+            />
           </div>
         )}
 

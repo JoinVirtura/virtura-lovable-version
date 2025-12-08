@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -15,11 +15,16 @@ export interface UserProfile {
   is_following: boolean;
 }
 
+const POSTS_PER_PAGE = 12;
+
 export function useUserProfile(userId: string) {
   const { user } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   const fetchProfile = async () => {
     if (!userId || userId.trim() === '') {
@@ -40,14 +45,12 @@ export function useUserProfile(userId: string) {
 
       if (profileError) {
         console.error('Profile fetch error:', profileError);
-        // If profile doesn't exist, try to create it for existing users
         if (profileError.code === 'PGRST116') {
           const { error: insertError } = await supabase
             .from('profiles')
             .insert({ id: userId, display_name: 'User' });
           
           if (!insertError) {
-            // Retry fetching after creation
             const { data: retryData } = await supabase
               .from('profiles')
               .select('*')
@@ -88,27 +91,14 @@ export function useUserProfile(userId: string) {
         username: profileData.display_name?.toLowerCase().replace(/\s+/g, '') || profileData.id.substring(0, 8),
         avatar_url: profileData.avatar_url || '',
         bio: profileData.bio || '',
-        is_verified: false, // TODO: Add is_verified column to profiles table
+        is_verified: false,
         follower_count: followersRes.count || 0,
         following_count: followingRes.count || 0,
         is_following: !!isFollowingRes.data,
       });
 
-      // Fetch user's posts
-      const { data: postsData, error: postsError } = await supabase
-        .from('social_posts')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('status', 'published')
-        .order('published_at', { ascending: false })
-        .limit(12);
-
-      if (postsError) {
-        console.error('Posts fetch error:', postsError);
-      }
-      
-      console.log('useUserProfile: Fetched posts:', postsData?.length || 0, 'for userId:', userId);
-      setPosts(postsData || []);
+      // Fetch first page of posts
+      await fetchPosts(0, true);
     } catch (error) {
       console.error('Error fetching profile:', error);
     } finally {
@@ -116,7 +106,53 @@ export function useUserProfile(userId: string) {
     }
   };
 
+  const fetchPosts = async (pageNum: number, reset: boolean = false) => {
+    if (!userId) return;
+    
+    if (!reset) setLoadingMore(true);
+    
+    try {
+      const from = pageNum * POSTS_PER_PAGE;
+      const to = from + POSTS_PER_PAGE - 1;
+
+      const { data: postsData, error: postsError } = await supabase
+        .from('social_posts')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('status', 'published')
+        .order('published_at', { ascending: false })
+        .range(from, to);
+
+      if (postsError) {
+        console.error('Posts fetch error:', postsError);
+        return;
+      }
+
+      const newPosts = postsData || [];
+      
+      if (reset) {
+        setPosts(newPosts);
+      } else {
+        setPosts(prev => [...prev, ...newPosts]);
+      }
+      
+      setPage(pageNum);
+      setHasMore(newPosts.length === POSTS_PER_PAGE);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
+  const loadMore = useCallback(() => {
+    if (!loadingMore && hasMore) {
+      fetchPosts(page + 1);
+    }
+  }, [loadingMore, hasMore, page, userId]);
+
   useEffect(() => {
+    setPage(0);
+    setHasMore(true);
+    setPosts([]);
     fetchProfile();
   }, [userId, user?.id]);
 
@@ -137,7 +173,6 @@ export function useUserProfile(userId: string) {
     
     if (error) throw error;
     
-    // Refetch profile to update UI
     fetchProfile();
     return data;
   };
@@ -149,14 +184,12 @@ export function useUserProfile(userId: string) {
     const fileName = `${user.id}-${Date.now()}.${fileExt}`;
     const filePath = `${user.id}/${fileName}`;
 
-    // Upload to storage
     const { error: uploadError } = await supabase.storage
       .from('avatars')
       .upload(filePath, file, { upsert: true });
 
     if (uploadError) throw uploadError;
 
-    // Get public URL
     const { data: { publicUrl } } = supabase.storage
       .from('avatars')
       .getPublicUrl(filePath);
@@ -165,8 +198,22 @@ export function useUserProfile(userId: string) {
   };
 
   const refetch = () => {
-    if (userId) fetchProfile();
+    if (userId) {
+      setPage(0);
+      setHasMore(true);
+      fetchProfile();
+    }
   };
 
-  return { profile, posts, loading, updateProfile, uploadAvatar, refetch };
+  return { 
+    profile, 
+    posts, 
+    loading, 
+    hasMore,
+    loadingMore,
+    loadMore,
+    updateProfile, 
+    uploadAvatar, 
+    refetch 
+  };
 }
