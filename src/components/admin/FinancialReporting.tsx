@@ -62,7 +62,7 @@ export function FinancialReporting() {
   const [revenueTrends, setRevenueTrends] = useState<any[]>([]);
   const [tokenEconomy, setTokenEconomy] = useState<any[]>([]);
   const [revenueByPack, setRevenueByPack] = useState<any[]>([]);
-  const [costByProvider, setCostByProvider] = useState<any[]>([]);
+  
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -212,21 +212,6 @@ export function FinancialReporting() {
 
       setRevenueByPack(packData);
 
-      // Cost by provider
-      const providerCosts: Record<string, Record<string, number>> = {};
-      (costs || []).forEach(c => {
-        if (!providerCosts[c.api_provider]) providerCosts[c.api_provider] = {};
-        providerCosts[c.api_provider][c.resource_type] = 
-          (providerCosts[c.api_provider][c.resource_type] || 0) + Number(c.cost_usd);
-      });
-
-      const providerData = Object.entries(providerCosts).map(([provider, resources]) => ({
-        provider,
-        ...resources,
-        total: Object.values(resources).reduce((sum, val) => sum + val, 0)
-      }));
-
-      setCostByProvider(providerData);
 
       // Fetch financial summary
       const { count: activeSubs } = await supabase
@@ -457,25 +442,6 @@ export function FinancialReporting() {
           </div>
         </Card>
 
-        {/* Cost by Provider */}
-        <Card className="p-4">
-          <h3 className="text-sm font-semibold mb-4">Cost by Provider</h3>
-          <div id="cost-provider-chart">
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={costByProvider}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="provider" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="image_generation" stackId="a" fill="#3b82f6" name="Image Gen" />
-              <Bar dataKey="voice_generation" stackId="a" fill="#10b981" name="Voice Gen" />
-              <Bar dataKey="video_generation" stackId="a" fill="#f59e0b" name="Video Gen" />
-              <Bar dataKey="style_transfer" stackId="a" fill="#8b5cf6" name="Style Transfer" />
-            </BarChart>
-          </ResponsiveContainer>
-          </div>
-        </Card>
       </div>
 
       {/* Financial Summary */}
