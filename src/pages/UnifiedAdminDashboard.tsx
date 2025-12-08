@@ -4,15 +4,17 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { 
   Shield, DollarSign, Coins, Users, Activity,
   LayoutDashboard, BarChart3, Cpu, FileText, 
-  RotateCcw, ImageIcon, Globe, BadgeCheck, Store
+  RotateCcw, ImageIcon, Globe, BadgeCheck, Store,
+  RefreshCw, Bell, Calendar
 } from "lucide-react";
 import { AdminCostDashboard } from "@/components/AdminCostDashboard";
 import { AdminDashboard } from "@/components/AdminDashboard";
 import { AdminTokenTransactionHistory } from "@/components/AdminTokenTransactionHistory";
-import { QuickAdminActions } from "@/components/admin/QuickAdminActions";
 import { UserManagementTools } from "@/components/admin/UserManagementTools";
 import { FinancialReporting } from "@/components/admin/FinancialReporting";
 import { AuditLogViewer } from "@/components/admin/AuditLogViewer";
@@ -21,6 +23,11 @@ import { GalleryShowcaseManager } from "@/components/admin/GalleryShowcaseManage
 import { LandingAnalyticsDashboard } from "@/components/admin/LandingAnalyticsDashboard";
 import { AdminVerificationReview } from "@/components/admin/AdminVerificationReview";
 import { AdminMarketplaceApprovals } from "@/components/marketplace/AdminMarketplaceApprovals";
+import { RetryJobsModal } from "@/components/admin/RetryJobsModal";
+import { CreditTokensDialog } from "@/components/admin/CreditTokensDialog";
+import { SystemHealthModal } from "@/components/admin/SystemHealthModal";
+import { NotificationDialog } from "@/components/admin/NotificationDialog";
+import { ScheduledNotificationsDialog } from "@/components/admin/ScheduledNotificationsDialog";
 
 export default function UnifiedAdminDashboard() {
   const { user } = useAuth();
@@ -33,6 +40,48 @@ export default function UnifiedAdminDashboard() {
     totalApiCosts: 0,
     totalRevenue: 0,
   });
+
+  // Quick Actions state (inlined from QuickAdminActions)
+  const [showRetryJobs, setShowRetryJobs] = useState(false);
+  const [showCreditTokens, setShowCreditTokens] = useState(false);
+  const [showSystemHealth, setShowSystemHealth] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
+  const [showScheduledNotifications, setShowScheduledNotifications] = useState(false);
+  const [quickStats, setQuickStats] = useState({
+    failedJobs: 0,
+    lowBalanceUsers: 0,
+    systemHealth: 'good' as 'good' | 'warning' | 'critical',
+  });
+
+  const fetchQuickStats = async () => {
+    try {
+      const { count: failedJobsCount } = await supabase
+        .from('jobs')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'failed');
+
+      const { count: lowBalanceCount } = await supabase
+        .from('user_tokens')
+        .select('*', { count: 'exact', head: true })
+        .lt('balance', 10);
+
+      const failedJobs = failedJobsCount || 0;
+      const lowBalance = lowBalanceCount || 0;
+
+      setQuickStats({
+        failedJobs,
+        lowBalanceUsers: lowBalance,
+        systemHealth: failedJobs > 20 ? 'critical' : failedJobs > 5 ? 'warning' : 'good',
+      });
+    } catch (error) {
+      console.error('Fetch quick stats error:', error);
+    }
+  };
+
+  const handleActionComplete = () => {
+    fetchQuickStats();
+    fetchOverviewStats();
+  };
 
   useEffect(() => {
     const checkAdmin = async () => {
@@ -65,6 +114,7 @@ export default function UnifiedAdminDashboard() {
       if (data) {
         console.log('[UnifiedAdminDashboard] Fetching overview stats...');
         await fetchOverviewStats();
+        await fetchQuickStats();
       }
     };
 
@@ -150,85 +200,133 @@ export default function UnifiedAdminDashboard() {
         </div>
       </div>
 
-      {/* Quick Admin Actions */}
-      <QuickAdminActions onActionComplete={fetchOverviewStats} />
+      {/* Unified Command Center */}
+      <div className="bg-gradient-to-r from-slate-900/90 via-violet-950/50 to-slate-900/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-violet-500/10 p-4 sm:p-6">
+        
+        {/* Header: Status Badges + Quick Action Buttons */}
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-5 pb-5 border-b border-white/10">
+          
+          {/* Left: Status Indicators */}
+          <div className="flex flex-wrap items-center gap-3">
+            <Badge 
+              className={`px-3 py-1.5 border ${
+                quickStats.failedJobs > 0 
+                  ? 'bg-pink-500/20 text-pink-300 border-pink-500/30 shadow-lg shadow-pink-500/20 animate-pulse' 
+                  : 'bg-slate-700/50 text-slate-400 border-slate-600/30'
+              }`}
+            >
+              <RefreshCw className="w-3 h-3 mr-1.5" />
+              Failed: {quickStats.failedJobs}
+            </Badge>
+            <Badge className="px-3 py-1.5 bg-amber-500/20 text-amber-300 border border-amber-500/30">
+              <Coins className="w-3 h-3 mr-1.5" />
+              Low Balance: {quickStats.lowBalanceUsers}
+            </Badge>
+            <Badge 
+              className={`px-3 py-1.5 border flex items-center gap-1.5 ${
+                quickStats.systemHealth === 'good' 
+                  ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30 shadow-lg shadow-emerald-500/20' 
+                  : quickStats.systemHealth === 'warning'
+                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+                    : 'bg-red-500/20 text-red-300 border-red-500/30 animate-pulse'
+              }`}
+            >
+              <span className={`w-2 h-2 rounded-full ${
+                quickStats.systemHealth === 'good' ? 'bg-emerald-400 animate-pulse' :
+                quickStats.systemHealth === 'warning' ? 'bg-amber-400' : 'bg-red-400'
+              }`} />
+              System: {quickStats.systemHealth}
+            </Badge>
+          </div>
+          
+          {/* Right: Quick Action Buttons */}
+          <div className="flex flex-wrap items-center gap-2">
+            <Button 
+              size="sm" 
+              variant="ghost" 
+              className="text-slate-300 hover:text-white hover:bg-white/10"
+              onClick={() => setShowRetryJobs(true)}
+            >
+              <RefreshCw className="w-4 h-4 mr-1.5" /> Retry
+              {quickStats.failedJobs > 0 && (
+                <Badge variant="destructive" className="ml-1.5 px-1.5 py-0 text-xs">{quickStats.failedJobs}</Badge>
+              )}
+            </Button>
+            <Button 
+              size="sm" 
+              variant="ghost" 
+              className="text-slate-300 hover:text-white hover:bg-white/10"
+              onClick={() => setShowCreditTokens(true)}
+            >
+              <Coins className="w-4 h-4 mr-1.5" /> Credit
+            </Button>
+            <Button 
+              size="sm" 
+              variant="ghost" 
+              className="text-slate-300 hover:text-white hover:bg-white/10"
+              onClick={() => setShowSystemHealth(true)}
+            >
+              <Activity className="w-4 h-4 mr-1.5" /> Health
+            </Button>
+            <Button 
+              size="sm" 
+              variant="ghost" 
+              className="text-slate-300 hover:text-white hover:bg-white/10"
+              onClick={() => setShowNotification(true)}
+            >
+              <Bell className="w-4 h-4 mr-1.5" /> Notify
+            </Button>
+            <Button 
+              size="sm" 
+              variant="ghost" 
+              className="text-slate-300 hover:text-white hover:bg-white/10"
+              onClick={() => setShowScheduledNotifications(true)}
+            >
+              <Calendar className="w-4 h-4 mr-1.5" /> Scheduled
+            </Button>
+          </div>
+        </div>
 
-      {/* Overview Stats */}
-      <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4">
-        <Card>
-          <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-2">
-            <CardTitle className="text-xs sm:text-sm font-medium flex items-center gap-2">
-              <Users className="h-3 w-3 sm:h-4 sm:w-4" />
-              Total Users
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 sm:p-6 pt-0">
-            <div className="text-xl sm:text-2xl font-bold">{stats.totalUsers}</div>
-            <p className="text-xs text-muted-foreground">registered accounts</p>
-          </CardContent>
-        </Card>
+        {/* Overview Stats Row */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-5 pb-5 border-b border-white/10">
+          <div className="bg-white/5 rounded-xl p-3 border border-white/5">
+            <div className="flex items-center gap-2 text-slate-400 text-xs mb-1">
+              <Users className="w-3 h-3" /> Users
+            </div>
+            <div className="text-xl font-bold text-white">{stats.totalUsers}</div>
+          </div>
+          <div className="bg-white/5 rounded-xl p-3 border border-white/5">
+            <div className="flex items-center gap-2 text-emerald-400 text-xs mb-1">
+              <Coins className="w-3 h-3" /> Sold
+            </div>
+            <div className="text-xl font-bold text-white">{stats.totalTokensPurchased.toLocaleString()}</div>
+          </div>
+          <div className="bg-white/5 rounded-xl p-3 border border-white/5">
+            <div className="flex items-center gap-2 text-pink-400 text-xs mb-1">
+              <Activity className="w-3 h-3" /> Used
+            </div>
+            <div className="text-xl font-bold text-white">{stats.totalTokensUsed.toLocaleString()}</div>
+          </div>
+          <div className="bg-white/5 rounded-xl p-3 border border-white/5">
+            <div className="flex items-center gap-2 text-violet-400 text-xs mb-1">
+              <DollarSign className="w-3 h-3" /> Revenue
+            </div>
+            <div className="text-xl font-bold text-white">${stats.totalRevenue.toFixed(2)}</div>
+          </div>
+          <div className="bg-white/5 rounded-xl p-3 border border-white/5 col-span-2 sm:col-span-1">
+            <div className="flex items-center gap-2 text-amber-400 text-xs mb-1">
+              <DollarSign className="w-3 h-3" /> Profit
+            </div>
+            <div className="text-xl font-bold text-white">{profitMargin}%</div>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Coins className="h-4 w-4 text-green-600" />
-              Tokens Sold
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 sm:p-6 pt-0">
-            <div className="text-2xl font-bold">{stats.totalTokensPurchased.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">lifetime</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Activity className="h-4 w-4 text-red-600" />
-              Tokens Used
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 sm:p-6 pt-0">
-            <div className="text-2xl font-bold">{stats.totalTokensUsed.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">consumed</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <DollarSign className="h-4 w-4 text-primary" />
-              Revenue
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 sm:p-6 pt-0">
-            <div className="text-2xl font-bold">${stats.totalRevenue.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground">from tokens</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <DollarSign className="h-4 w-4 text-amber-600" />
-              Profit Margin
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 sm:p-6 pt-0">
-            <div className="text-2xl font-bold">{profitMargin}%</div>
-            <p className="text-xs text-muted-foreground">
-              ${(stats.totalRevenue - stats.totalApiCosts).toFixed(2)} profit
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Tabbed Content */}
-      <Tabs defaultValue="overview" className="space-y-6">
-        {/* Futuristic Command Center Navigation - Two Rows */}
-        <div className="flex flex-col gap-3 w-full">
-          {/* Row 1: Core Analytics + Financial + Jobs */}
-          <TabsList className="flex flex-wrap justify-center gap-2 h-auto p-2.5 bg-gradient-to-r from-slate-900/90 via-violet-950/50 to-slate-900/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-violet-500/10 w-full">
+        {/* Tabbed Content */}
+        <Tabs defaultValue="overview" className="space-y-6">
+          {/* Tab Navigation Rows */}
+          <div className="flex flex-col gap-3 w-full">
+            {/* Row 1: Core Analytics + Financial + Jobs */}
+            <TabsList className="flex flex-wrap justify-center gap-2 h-auto p-2 bg-white/5 rounded-xl border border-white/5 w-full">
             {/* Core Analytics Group */}
             <TabsTrigger 
               value="overview" 
@@ -296,7 +394,7 @@ export default function UnifiedAdminDashboard() {
           </TabsList>
 
           {/* Row 2: Operations + Tools */}
-          <TabsList className="flex flex-wrap justify-center gap-2 h-auto p-2.5 bg-gradient-to-r from-slate-900/90 via-violet-950/50 to-slate-900/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-violet-500/10 w-full">
+          <TabsList className="flex flex-wrap justify-center gap-2 h-auto p-2 bg-white/5 rounded-xl border border-white/5 w-full">
             {/* Operations Group */}
             <TabsTrigger 
               value="verification" 
@@ -478,7 +576,38 @@ export default function UnifiedAdminDashboard() {
         <TabsContent value="landing" className="space-y-4">
           <LandingAnalyticsDashboard />
         </TabsContent>
-      </Tabs>
+        </Tabs>
+      </div>
+
+      {/* Quick Action Modals */}
+      <RetryJobsModal
+        open={showRetryJobs}
+        onOpenChange={setShowRetryJobs}
+        onSuccess={handleActionComplete}
+      />
+
+      <CreditTokensDialog
+        open={showCreditTokens}
+        onOpenChange={setShowCreditTokens}
+        onSuccess={handleActionComplete}
+      />
+
+      <SystemHealthModal
+        open={showSystemHealth}
+        onOpenChange={setShowSystemHealth}
+      />
+
+      <NotificationDialog
+        open={showNotification}
+        onOpenChange={setShowNotification}
+        onSuccess={handleActionComplete}
+      />
+
+      <ScheduledNotificationsDialog
+        open={showScheduledNotifications}
+        onOpenChange={setShowScheduledNotifications}
+        onSuccess={handleActionComplete}
+      />
     </div>
   );
 }
