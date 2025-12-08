@@ -1,8 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useCreatorEarnings } from '@/hooks/useCreatorEarnings';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { TrendingUp, DollarSign, PieChartIcon } from 'lucide-react';
+import { TrendingUp } from 'lucide-react';
 
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--secondary))', 'hsl(var(--accent))', 'hsl(var(--muted))'];
 
@@ -13,8 +12,32 @@ const sourceTypeLabels: Record<string, string> = {
   campaign_completion: 'Marketplace',
 };
 
-export function CreatorRevenueCharts() {
-  const { stats } = useCreatorEarnings();
+interface CreatorRevenueChartsProps {
+  stats?: {
+    timeSeriesData: any[];
+    revenueBySource: { source_type: string; amount: number }[];
+  };
+}
+
+export function CreatorRevenueCharts({ stats }: CreatorRevenueChartsProps) {
+  if (!stats) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="w-5 h-5" />
+            Revenue Analytics
+          </CardTitle>
+          <CardDescription>No data available</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="h-80 flex items-center justify-center text-muted-foreground">
+            No revenue data available yet
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const pieData = stats.revenueBySource.map(source => ({
     name: sourceTypeLabels[source.source_type] || source.source_type,
@@ -71,14 +94,14 @@ export function CreatorRevenueCharts() {
                     <Line 
                       type="monotone" 
                       dataKey="paid" 
-                      stroke="hsl(var(--success))" 
+                      stroke="hsl(142 76% 36%)" 
                       strokeWidth={2}
                       name="Paid"
                     />
                     <Line 
                       type="monotone" 
                       dataKey="pending" 
-                      stroke="hsl(var(--warning))" 
+                      stroke="hsl(38 92% 50%)" 
                       strokeWidth={2}
                       name="Pending"
                     />
@@ -151,8 +174,8 @@ export function CreatorRevenueCharts() {
                       }}
                     />
                     <Legend />
-                    <Bar dataKey="pending" stackId="a" fill="hsl(var(--warning))" name="Pending" />
-                    <Bar dataKey="paid" stackId="a" fill="hsl(var(--success))" name="Paid" />
+                    <Bar dataKey="pending" stackId="a" fill="hsl(38 92% 50%)" name="Pending" />
+                    <Bar dataKey="paid" stackId="a" fill="hsl(142 76% 36%)" name="Paid" />
                   </BarChart>
                 </ResponsiveContainer>
               ) : (

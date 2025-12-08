@@ -3,13 +3,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useCreatorEarnings } from '@/hooks/useCreatorEarnings';
 import { Download, DollarSign, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
+import { DemoEarning } from '@/hooks/useDemoEarningsData';
 
-export function TransactionHistory() {
-  const { earnings, loading } = useCreatorEarnings();
+interface TransactionHistoryProps {
+  earnings?: DemoEarning[];
+  loading?: boolean;
+}
+
+export function TransactionHistory({ earnings = [], loading }: TransactionHistoryProps) {
   const [filter, setFilter] = useState<'all' | 'pending' | 'paid'>('all');
 
   const filteredEarnings = earnings.filter((earning) => {
@@ -22,7 +26,7 @@ export function TransactionHistory() {
       ['Date', 'Type', 'Amount', 'Fee', 'Net', 'Status'].join(','),
       ...filteredEarnings.map((e) =>
         [
-          format(new Date(e.created_at!), 'yyyy-MM-dd'),
+          format(new Date(e.created_at), 'yyyy-MM-dd'),
           e.source_type,
           (e.amount_cents / 100).toFixed(2),
           (e.platform_fee_cents / 100).toFixed(2),
@@ -68,7 +72,7 @@ export function TransactionHistory() {
               View all your earnings and transactions
             </CardDescription>
           </div>
-          <Button onClick={handleExport} variant="outline" size="sm">
+          <Button onClick={handleExport} variant="outline" size="sm" disabled={earnings.length === 0}>
             <Download className="w-4 h-4 mr-2" />
             Export CSV
           </Button>
@@ -100,11 +104,11 @@ export function TransactionHistory() {
                     </div>
                     <div>
                       <div className="font-medium capitalize">
-                        {earning.source_type.replace('_', ' ')}
+                        {earning.source_type.replace(/_/g, ' ')}
                       </div>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Calendar className="w-3 h-3" />
-                        {format(new Date(earning.created_at!), 'MMM dd, yyyy')}
+                        {format(new Date(earning.created_at), 'MMM dd, yyyy')}
                       </div>
                     </div>
                   </div>

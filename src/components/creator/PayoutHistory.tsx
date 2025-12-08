@@ -1,15 +1,20 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { usePayoutHistory } from '@/hooks/usePayoutHistory';
 import { Download, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
+import { DemoPayoutStats } from '@/hooks/useDemoEarningsData';
 
-export function PayoutHistory() {
-  const { stats, loading } = usePayoutHistory();
+interface PayoutHistoryProps {
+  stats?: DemoPayoutStats;
+  loading?: boolean;
+}
 
+export function PayoutHistory({ stats, loading }: PayoutHistoryProps) {
   const handleExport = () => {
+    if (!stats) return;
+    
     const csv = [
       'Date,Amount,Status,Transactions,Stripe ID',
       ...stats.payouts.map(p => 
@@ -53,7 +58,7 @@ export function PayoutHistory() {
     }
   };
 
-  if (loading) {
+  if (loading || !stats) {
     return (
       <Card>
         <CardHeader>
