@@ -34,7 +34,7 @@ serve(async (req) => {
       );
     }
 
-    const { creatorId, tier } = await req.json();
+    const { creatorId, tier, trialDays } = await req.json();
 
     // Get creator account
     const { data: creatorAccount, error: accountError } = await supabase
@@ -49,6 +49,16 @@ serve(async (req) => {
         { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    // Check if subscriber already had a trial with this creator
+    const { data: existingSub } = await supabase
+      .from('creator_subscriptions')
+      .select('trial_used')
+      .eq('creator_id', creatorId)
+      .eq('subscriber_id', user.id)
+      .single();
+
+    const canUseTrial = trialDays && trialDays > 0 && !existingSub?.trial_used;
 
     // Define tier pricing
     const tierPricing: Record<string, number> = {
@@ -87,8 +97,8 @@ serve(async (req) => {
       customerId = customer.id;
     }
 
-    // Create checkout session with application fee
-    const session = await stripe.checkout.sessions.create({
+    // Create checkout session with application fee and optional trial
+    const sessionConfig: any = {
       customer: customerId,
       payment_method_types: ['card'],
       line_items: [
@@ -108,20 +118,37 @@ serve(async (req) => {
         },
       ],
       mode: 'subscription',
-      success_url: `${Deno.env.get('SUPABASE_URL')}/creator-profile/${creatorId}?subscription=success`,
-      cancel_url: `${Deno.env.get('SUPABASE_URL')}/creator-profile/${creatorId}?subscription=canceled`,
-      payment_intent_data: {
-        application_fee_amount: platformFeeCents,
-        transfer_data: {
-          destination: creatorAccount.stripe_account_id,
-        },
-      },
+      success_url: `${req.headers.get('origin')}/profile/${creatorAccount.user_id}?subscription=success`,
+      cancel_url: `${req.headers.get('origin')}/profile/${creatorAccount.user_id}?subscription=canceled`,
       metadata: {
         creator_id: creatorId,
         subscriber_id: user.id,
         tier,
+        amount_cents: amountCents.toString(),
+        trial_days: canUseTrial ? trialDays.toString() : '0',
       },
-    });
+    };
+
+    // Add trial period if eligible
+    if (canUseTrial) {
+      sessionConfig.subscription_data = {
+        trial_period_days: trialDays,
+        application_fee_percent: 10,
+        transfer_data: {
+          destination: creatorAccount.stripe_account_id,
+        },
+      };
+      console.log(`Adding ${trialDays} day trial for subscription`);
+    } else {
+      sessionConfig.subscription_data = {
+        application_fee_percent: 10,
+        transfer_data: {
+          destination: creatorAccount.stripe_account_id,
+        },
+      };
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionConfig);
 
     return new Response(
       JSON.stringify({

@@ -64,6 +64,10 @@ serve(async (req) => {
         await handleSubscriptionDeleted(supabase, event.data.object);
         break;
         
+      case 'customer.subscription.trial_will_end':
+        await handleTrialWillEnd(supabase, event.data.object);
+        break;
+        
       case 'invoice.payment_succeeded':
         await handlePaymentSucceeded(supabase, event.data.object);
         break;
@@ -96,17 +100,72 @@ serve(async (req) => {
 async function handleCheckoutCompleted(supabase: any, session: any) {
   try {
     console.log('Checkout completed:', session.id);
+    const metadata = session.metadata || {};
     
-    // Get user ID and token amount from metadata
-    const userId = session.client_reference_id || session.metadata?.user_id;
-    const tokens = parseInt(session.metadata?.tokens || '0');
+    // Handle verification subscription
+    if (metadata.type === 'verification_subscription') {
+      console.log('Processing verification subscription:', session.id);
+      const { error } = await supabase
+        .from('user_verification')
+        .update({
+          subscription_status: 'active',
+          verification_subscription_id: session.subscription,
+          subscription_started_at: new Date().toISOString(),
+        })
+        .eq('user_id', metadata.user_id);
+      
+      if (error) {
+        console.error('Error updating verification subscription:', error);
+        throw error;
+      }
+      console.log('Verification subscription activated for user:', metadata.user_id);
+      return;
+    }
+    
+    // Handle creator subscription with trial
+    if (metadata.creator_id && metadata.subscriber_id) {
+      console.log('Processing creator subscription:', session.id);
+      const subscription = session.subscription;
+      
+      const subscriptionData: any = {
+        creator_id: metadata.creator_id,
+        subscriber_id: metadata.subscriber_id,
+        tier: metadata.tier,
+        amount_cents: parseInt(metadata.amount_cents || '0'),
+        stripe_subscription_id: subscription,
+        status: session.status === 'complete' ? 'active' : 'pending',
+        current_period_start: new Date().toISOString(),
+        current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      };
+      
+      // Add trial info if present
+      if (metadata.trial_days) {
+        subscriptionData.trial_start = new Date().toISOString();
+        subscriptionData.trial_end = new Date(Date.now() + parseInt(metadata.trial_days) * 24 * 60 * 60 * 1000).toISOString();
+        subscriptionData.status = 'trialing';
+      }
+      
+      const { error } = await supabase
+        .from('creator_subscriptions')
+        .insert(subscriptionData);
+      
+      if (error) {
+        console.error('Error creating creator subscription:', error);
+        throw error;
+      }
+      console.log('Creator subscription created:', metadata.creator_id);
+      return;
+    }
+    
+    // Handle token purchase (existing logic)
+    const userId = session.client_reference_id || metadata.user_id;
+    const tokens = parseInt(metadata.tokens || '0');
     
     if (!userId || !tokens) {
-      console.error('Missing user ID or tokens in checkout session');
+      console.log('No tokens to credit, skipping');
       return;
     }
 
-    // Credit tokens to user using RPC function
     const { data, error } = await supabase.rpc('add_tokens', {
       p_user_id: userId,
       p_amount: tokens,
@@ -181,6 +240,51 @@ async function handleSubscriptionDeleted(supabase: any, subscription: any) {
   try {
     console.log('Deleting subscription:', subscription.id);
     
+    // Check if it's a verification subscription
+    const { data: verification } = await supabase
+      .from('user_verification')
+      .select('id')
+      .eq('verification_subscription_id', subscription.id)
+      .single();
+    
+    if (verification) {
+      // Cancel verification subscription
+      const { error } = await supabase
+        .from('user_verification')
+        .update({
+          subscription_status: 'canceled',
+          updated_at: new Date().toISOString(),
+        })
+        .eq('verification_subscription_id', subscription.id);
+      
+      if (error) throw error;
+      console.log('Verification subscription canceled');
+      return;
+    }
+    
+    // Check if it's a creator subscription
+    const { data: creatorSub } = await supabase
+      .from('creator_subscriptions')
+      .select('id')
+      .eq('stripe_subscription_id', subscription.id)
+      .single();
+    
+    if (creatorSub) {
+      const { error } = await supabase
+        .from('creator_subscriptions')
+        .update({
+          status: 'canceled',
+          cancel_at_period_end: true,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('stripe_subscription_id', subscription.id);
+      
+      if (error) throw error;
+      console.log('Creator subscription canceled');
+      return;
+    }
+    
+    // Default: platform subscription
     const { error } = await supabase
       .from('subscriptions')
       .update({
@@ -194,6 +298,31 @@ async function handleSubscriptionDeleted(supabase: any, subscription: any) {
     console.log('Subscription canceled successfully');
   } catch (error) {
     console.error('Error canceling subscription:', error);
+    throw error;
+  }
+}
+
+async function handleTrialWillEnd(supabase: any, subscription: any) {
+  try {
+    console.log('Trial ending soon for subscription:', subscription.id);
+    
+    // Update creator subscription trial_used flag
+    const { error } = await supabase
+      .from('creator_subscriptions')
+      .update({
+        trial_used: true,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('stripe_subscription_id', subscription.id);
+    
+    if (error) {
+      console.error('Error updating trial status:', error);
+    }
+    
+    // Could add notification logic here
+    console.log('Trial will end notification processed');
+  } catch (error) {
+    console.error('Error handling trial will end:', error);
     throw error;
   }
 }
