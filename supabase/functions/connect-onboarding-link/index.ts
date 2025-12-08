@@ -34,7 +34,18 @@ serve(async (req) => {
       );
     }
 
-    const { returnUrl, refreshUrl } = await req.json();
+    // Parse body - handle empty body gracefully
+    let returnUrl, refreshUrl;
+    try {
+      const body = await req.text();
+      if (body) {
+        const parsed = JSON.parse(body);
+        returnUrl = parsed.returnUrl;
+        refreshUrl = parsed.refreshUrl;
+      }
+    } catch (e) {
+      console.log('No body provided or invalid JSON, using defaults');
+    }
 
     // Get creator account
     const { data: creatorAccount, error: accountError } = await supabase
