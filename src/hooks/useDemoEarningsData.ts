@@ -32,8 +32,9 @@ export interface DemoStats {
   platformFees: number;
   timeSeriesData: DemoTimeSeriesData[];
   revenueBySource: {
-    source: string;
+    source_type: string;
     amount: number;
+    count: number;
     percentage: number;
   }[];
   sourceBreakdown: {
@@ -165,8 +166,9 @@ export function useDemoEarningsData() {
     
     const totalAmount = earnings.reduce((sum, e) => sum + e.creator_amount_cents, 0);
     const revenueBySource = Array.from(sourceMap.entries()).map(([source, data]) => ({
-      source,
+      source_type: source,
       amount: data.amount / 100,
+      count: data.count,
       percentage: totalAmount > 0 ? (data.amount / totalAmount) * 100 : 0,
     }));
     

@@ -1,7 +1,22 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useCreatorEarnings } from '@/hooks/useCreatorEarnings';
-import { CreditCard, Heart, Unlock, Handshake, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { CreditCard, Heart, Unlock, Handshake } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+
+interface RevenueBySource {
+  source_type: string;
+  amount: number;
+  count: number;
+  percentage: number;
+}
+
+interface Stats {
+  revenueBySource: RevenueBySource[];
+}
+
+interface EarningsBreakdownCardsProps {
+  stats: Stats;
+  loading: boolean;
+}
 
 const sourceTypeConfig: Record<string, { label: string; icon: typeof CreditCard; color: string }> = {
   creator_subscription: { label: 'Subscriptions', icon: CreditCard, color: 'text-blue-500' },
@@ -10,9 +25,7 @@ const sourceTypeConfig: Record<string, { label: string; icon: typeof CreditCard;
   campaign_completion: { label: 'Brand Deals', icon: Handshake, color: 'text-green-500' },
 };
 
-export function EarningsBreakdownCards() {
-  const { stats, loading } = useCreatorEarnings();
-
+export function EarningsBreakdownCards({ stats, loading }: EarningsBreakdownCardsProps) {
   if (loading) {
     return (
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
