@@ -153,11 +153,30 @@ export function useSocialPosts(filterType: 'all' | 'following' | 'own' | 'trendi
         event: '*',
         schema: 'public',
         table: 'social_posts'
-      }, (payload) => {
+      }, async (payload) => {
         if (payload.eventType === 'INSERT') {
-          // New post added - refresh if it's published
-          if ((payload.new as any)?.status === 'published') {
-            fetchPosts(true);
+          // New post added - add to top immediately for optimistic UI
+          const newPost = payload.new as any;
+          if (newPost?.status === 'published') {
+            // Fetch profile data for the new post
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('display_name, avatar_url')
+              .eq('id', newPost.user_id)
+              .maybeSingle();
+            
+            const enrichedPost: SocialPost = {
+              ...newPost,
+              media_urls: newPost.media_urls || [],
+              creator_name: profile?.display_name || 'Unknown User',
+              creator_avatar: profile?.avatar_url || undefined,
+              liked_by_user: false,
+              following_creator: false,
+              unlocked_by_user: false
+            };
+            
+            // Add to top of posts list
+            setPosts(prev => [enrichedPost, ...prev.filter(p => p.id !== newPost.id)]);
           }
         } else if (payload.eventType === 'UPDATE') {
           // Post updated - could be status change from draft/scheduled to published

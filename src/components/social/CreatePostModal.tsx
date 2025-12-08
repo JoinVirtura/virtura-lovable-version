@@ -43,12 +43,12 @@ export function CreatePostModal({ isOpen, onClose, defaultScheduled = false }: C
   const handleLibrarySelect = (avatarUrl: string, metadata?: any) => {
     setLibraryUrls(prev => [...prev, avatarUrl]);
     
-    // Use thumbnail for video preview, otherwise use the URL directly
-    const previewUrl = metadata?.isVideo ? (metadata.thumbnail || metadata.imageUrl) : avatarUrl;
+    // Use thumbnail for video preview, otherwise use the URL directly (snake_case from DB)
+    const previewUrl = metadata?.is_video ? (metadata.thumbnail_url || metadata.image_url || metadata.imageUrl) : avatarUrl;
     setPreviews(prev => [...prev, previewUrl]);
     
     // Set content type based on selection
-    if (metadata?.isVideo) {
+    if (metadata?.is_video) {
       setSelectedContentType('video');
     }
     
