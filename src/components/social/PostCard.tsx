@@ -1,7 +1,8 @@
-import { Heart, MessageCircle, Share2, Lock, MoreVertical, Bookmark, Flag, User, Ban, Trash2, Loader2, Eye, Flame, Sparkles, TrendingUp, Zap } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Lock, MoreVertical, Bookmark, Flag, User, Ban, Trash2, Loader2, Eye, Flame, Sparkles, TrendingUp, Zap, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
 import { SocialPost } from '@/hooks/useSocialPosts';
 import { formatDistanceToNow } from 'date-fns';
 import { useState, useRef, useEffect } from 'react';
@@ -37,6 +38,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 interface PostCardProps {
   post: SocialPost;
@@ -52,6 +60,10 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
   const [reportModalOpen, setReportModalOpen] = useState(false);
   const [blockDialogOpen, setBlockDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [editCaptionDialogOpen, setEditCaptionDialogOpen] = useState(false);
+  const [editedCaption, setEditedCaption] = useState('');
+  const [savingCaption, setSavingCaption] = useState(false);
+  const [localCaption, setLocalCaption] = useState(post.caption);
   const [likeLoading, setLikeLoading] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
   const [showHeartBurst, setShowHeartBurst] = useState(false);
@@ -158,6 +170,30 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
       setDeleteDialogOpen(false);
     } catch (error) {
       toast.error('Failed to delete post');
+    }
+  };
+
+  const handleEditCaption = () => {
+    setEditedCaption(localCaption || '');
+    setEditCaptionDialogOpen(true);
+  };
+
+  const handleSaveCaption = async () => {
+    setSavingCaption(true);
+    try {
+      const { error } = await supabase
+        .from('social_posts')
+        .update({ caption: editedCaption })
+        .eq('id', post.id);
+      
+      if (error) throw error;
+      setLocalCaption(editedCaption);
+      toast.success('Caption updated');
+      setEditCaptionDialogOpen(false);
+    } catch (error) {
+      toast.error('Failed to update caption');
+    } finally {
+      setSavingCaption(false);
     }
   };
 
@@ -288,6 +324,12 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
                   <User className="h-4 w-4 mr-2" />
                   View Profile
                 </DropdownMenuItem>
+                {isOwnPost && (
+                  <DropdownMenuItem onClick={handleEditCaption}>
+                    <Pencil className="h-4 w-4 mr-2" />
+                    Edit Caption
+                  </DropdownMenuItem>
+                )}
                 {!isOwnPost && (
                   <DropdownMenuItem 
                     onClick={() => setBlockDialogOpen(true)}
@@ -307,9 +349,9 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
         </div>
 
         {/* Caption */}
-        {post.caption && (
+        {localCaption && (
           <div className="px-4 pb-3 relative z-10">
-            <p className="text-sm whitespace-pre-wrap leading-relaxed">{post.caption}</p>
+            <p className="text-sm whitespace-pre-wrap leading-relaxed">{localCaption}</p>
           </div>
         )}
 
@@ -527,6 +569,31 @@ export function PostCard({ post, onLike, onComment, onUnlock, onFollow }: PostCa
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
+
+    {/* Edit Caption Dialog */}
+    <Dialog open={editCaptionDialogOpen} onOpenChange={setEditCaptionDialogOpen}>
+      <DialogContent className="backdrop-blur-xl bg-card/95 border-white/10">
+        <DialogHeader>
+          <DialogTitle>Edit Caption</DialogTitle>
+        </DialogHeader>
+        <Textarea
+          value={editedCaption}
+          onChange={(e) => setEditedCaption(e.target.value)}
+          placeholder="Write a caption..."
+          rows={4}
+          className="resize-none"
+        />
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setEditCaptionDialogOpen(false)}>
+            Cancel
+          </Button>
+          <Button onClick={handleSaveCaption} disabled={savingCaption}>
+            {savingCaption ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+            Save
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
     </>
   );
 }

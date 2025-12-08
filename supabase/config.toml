@@ -77,3 +77,6 @@ verify_jwt = true
 
 [functions.invite-creator-to-campaign]
 verify_jwt = true
+
+[functions.generate-caption]
+verify_jwt = true
