@@ -1,0 +1,2 @@
+-- Enable REPLICA IDENTITY FULL for real-time UPDATE/DELETE events
+ALTER TABLE social_posts REPLICA IDENTITY FULL;

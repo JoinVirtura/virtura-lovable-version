@@ -146,16 +146,28 @@ export function useSocialPosts(filterType: 'all' | 'following' | 'own' | 'trendi
   useEffect(() => {
     fetchPosts(true);
 
-    // Real-time subscription for new posts
+    // Real-time subscription for all post changes (INSERT, UPDATE, DELETE)
     const channel = supabase
-      .channel('social_posts_changes')
+      .channel('social_posts_realtime')
       .on('postgres_changes', {
-        event: 'INSERT',
+        event: '*',
         schema: 'public',
-        table: 'social_posts',
-        filter: 'status=eq.published'
-      }, () => {
-        fetchPosts(true);
+        table: 'social_posts'
+      }, (payload) => {
+        if (payload.eventType === 'INSERT') {
+          // New post added - refresh if it's published
+          if ((payload.new as any)?.status === 'published') {
+            fetchPosts(true);
+          }
+        } else if (payload.eventType === 'UPDATE') {
+          // Post updated - could be status change from draft/scheduled to published
+          if ((payload.new as any)?.status === 'published') {
+            fetchPosts(true);
+          }
+        } else if (payload.eventType === 'DELETE') {
+          // Post deleted - remove from local state immediately
+          setPosts(prev => prev.filter(p => p.id !== (payload.old as any)?.id));
+        }
       })
       .subscribe();
 
