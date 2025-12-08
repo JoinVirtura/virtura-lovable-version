@@ -18,7 +18,7 @@ interface FeedContainerProps {
 }
 
 export function FeedContainer({ filterType = 'all', onFilterChange }: FeedContainerProps) {
-  const { posts, loading, hasMore, fetchMore, refresh } = useSocialPosts(filterType);
+  const { posts, loading, hasMore, fetchMore, refresh, updatePostLike, updatePostComment } = useSocialPosts(filterType);
   const { toggleLike, followUser, unlockPost } = usePostActions();
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [paymentData, setPaymentData] = useState<{
@@ -132,7 +132,16 @@ export function FeedContainer({ filterType = 'all', onFilterChange }: FeedContai
           >
             <PostCard
               post={post}
-              onLike={toggleLike}
+              onLike={async (postId) => {
+                const wasLiked = post.liked_by_user;
+                updatePostLike(postId, !wasLiked);
+                try {
+                  await toggleLike(postId);
+                } catch (error) {
+                  // Revert on error
+                  updatePostLike(postId, wasLiked);
+                }
+              }}
               onComment={setSelectedPostId}
               onUnlock={handleUnlock}
               onFollow={followUser}

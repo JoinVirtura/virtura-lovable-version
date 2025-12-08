@@ -164,11 +164,39 @@ export function useSocialPosts(filterType: 'all' | 'following' | 'own' | 'trendi
     };
   }, [user?.id, filterType, blockedUsers]);
 
+  // Optimistic update for likes
+  const updatePostLike = (postId: string, isLiked: boolean) => {
+    setPosts(prevPosts => 
+      prevPosts.map(post => 
+        post.id === postId 
+          ? { 
+              ...post, 
+              liked_by_user: isLiked, 
+              like_count: isLiked ? post.like_count + 1 : Math.max(0, post.like_count - 1) 
+            } 
+          : post
+      )
+    );
+  };
+
+  // Optimistic update for comments
+  const updatePostComment = (postId: string) => {
+    setPosts(prevPosts => 
+      prevPosts.map(post => 
+        post.id === postId 
+          ? { ...post, comment_count: post.comment_count + 1 } 
+          : post
+      )
+    );
+  };
+
   return {
     posts,
     loading,
     hasMore,
     fetchMore: () => fetchPosts(false),
-    refresh: () => fetchPosts(true)
+    refresh: () => fetchPosts(true),
+    updatePostLike,
+    updatePostComment
   };
 }

@@ -63,17 +63,13 @@ serve(async (req) => {
       throw commentError;
     }
 
-    // Increment comment count
+    // Increment comment count using RPC
     const { error: updateError } = await supabase.rpc('increment_comment_count', { 
       post_id_param: post_id 
     });
 
     if (updateError) {
-      // Fallback if RPC doesn't exist
-      await supabase
-        .from('social_posts')
-        .update({ comment_count: supabase.raw('comment_count + 1') })
-        .eq('id', post_id);
+      console.error('Error incrementing comment count:', updateError);
     }
 
     console.log('Comment created successfully:', comment.id);

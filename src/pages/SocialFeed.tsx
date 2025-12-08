@@ -131,8 +131,9 @@ export default function SocialFeed() {
           />
         </div>
 
-        {/* Stories Bar */}
-        <div className="px-4 py-4 relative">
+      {/* Stories Header */}
+        <div className="px-4 pt-6 pb-2 relative">
+          <h2 className="text-sm font-medium text-muted-foreground mb-3 max-w-4xl mx-auto">Stories</h2>
           <div className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory max-w-4xl mx-auto pb-1">
             <div className="snap-start flex-shrink-0">
               <StoryRing
@@ -162,10 +163,10 @@ export default function SocialFeed() {
         <div className="flex justify-center border-t border-white/5 relative">
           <div className="flex max-w-md w-full">
             {[
-              { type: 'all', label: 'For You', icon: Sparkles },
-              { type: 'following', label: 'Following', icon: Users },
-              { type: 'trending', label: 'Trending', icon: TrendingUp },
-            ].map(({ type, label, icon: Icon }) => (
+              { type: 'all', label: 'All Posts', icon: Sparkles, activeColor: 'from-violet-500 to-purple-500', glowColor: 'violet' },
+              { type: 'following', label: 'Following', icon: Users, activeColor: 'from-blue-500 to-cyan-500', glowColor: 'blue' },
+              { type: 'trending', label: 'Trending', icon: TrendingUp, activeColor: 'from-orange-500 to-amber-500', glowColor: 'orange' },
+            ].map(({ type, label, icon: Icon, activeColor, glowColor }) => (
               <button
                 key={type}
                 onClick={() => setFeedType(type as typeof feedType)}
@@ -176,18 +177,18 @@ export default function SocialFeed() {
                 }`}
               >
                 <span className="flex items-center justify-center gap-2">
-                  <Icon className={`h-4 w-4 transition-all ${feedType === type ? 'text-primary' : ''}`} />
+                  <Icon className={`h-4 w-4 transition-all ${feedType === type ? `text-${glowColor}-500` : ''}`} />
                   {label}
                 </span>
                 {feedType === type && (
                   <motion.div
                     layoutId="activeTab"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-secondary to-primary shadow-[0_0_10px_hsl(270_100%_70%/0.6)]"
+                    className={`absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r ${activeColor} shadow-[0_0_12px_hsl(var(--primary)/0.6)]`}
                     transition={{ type: "spring", stiffness: 500, damping: 30 }}
                   />
                 )}
                 {/* Hover glow effect */}
-                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg" />
+                <div className={`absolute inset-0 ${feedType === type ? `bg-${glowColor}-500/10` : 'bg-primary/5'} opacity-0 group-hover:opacity-100 transition-opacity rounded-lg`} />
               </button>
             ))}
           </div>
