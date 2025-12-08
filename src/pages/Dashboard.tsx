@@ -1995,8 +1995,6 @@ export default function Dashboard() {
           </header>
           
           <VirturaSidebar 
-            activeView={activeView} 
-            onViewChange={setActiveView}
             onClearEditState={() => setSelectedEditImage(null)}
           />
         
