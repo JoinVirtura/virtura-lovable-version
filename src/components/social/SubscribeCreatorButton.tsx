@@ -114,7 +114,7 @@ export function SubscribeCreatorButton({
       onClick={handleSubscribe}
       disabled={loading}
       className={cn(
-        variant === 'default' && "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0",
+        variant === 'default' && "bg-gradient-to-r from-violet-500 via-secondary to-primary hover:from-violet-600 hover:via-secondary/90 hover:to-primary/90 text-white border-0 shadow-[0_0_20px_hsl(270_100%_70%/0.4)] hover:shadow-[0_0_30px_hsl(270_100%_70%/0.6)] transition-all",
         "gap-1.5",
         className
       )}
