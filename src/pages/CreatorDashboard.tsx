@@ -153,14 +153,12 @@ export default function CreatorDashboard() {
         </p>
       </div>
 
-      <CreatorOnboarding />
+      {/* Show onboarding as non-blocking banner if not complete */}
+      {!isOnboardingComplete && <CreatorOnboarding />}
 
-      {!loading && isOnboardingComplete && (
-        <>
-          <DashboardTabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
-          {renderTabContent()}
-        </>
-      )}
+      {/* Always show dashboard content */}
+      <DashboardTabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+      {renderTabContent()}
     </div>
   );
 }
