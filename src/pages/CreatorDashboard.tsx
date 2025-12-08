@@ -12,24 +12,37 @@ import { PayoutHistory } from '@/components/creator/PayoutHistory';
 import { UpcomingPayouts } from '@/components/creator/UpcomingPayouts';
 import { ContentPerformanceAnalytics } from '@/components/creator/ContentPerformanceAnalytics';
 import { BrandDealsOverview } from '@/components/creator/BrandDealsOverview';
+import { DemoModeBanner } from '@/components/creator/DemoModeBanner';
 import { useCreatorAccount } from '@/hooks/useCreatorAccount';
 import { useCreatorEarnings } from '@/hooks/useCreatorEarnings';
+import { useDemoEarningsData } from '@/hooks/useDemoEarningsData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DollarSign, Wallet, Receipt, TrendingDown } from 'lucide-react';
 
 export default function CreatorDashboard() {
-  const { account, loading } = useCreatorAccount();
-  const { stats } = useCreatorEarnings();
+  const { account, loading, getOnboardingLink } = useCreatorAccount();
+  const realEarnings = useCreatorEarnings();
+  const demoData = useDemoEarningsData();
   const [activeTab, setActiveTab] = useState('overview');
+  const [demoMode, setDemoMode] = useState(false);
 
   const isOnboardingComplete = account?.onboarding_complete && 
     account?.charges_enabled && 
     account?.payouts_enabled;
+
+  // Use demo data if not onboarded or demo mode is explicitly enabled
+  const useDemoData = !isOnboardingComplete || demoMode;
+  const stats = useDemoData ? demoData.stats : realEarnings.stats;
   
   // Calculate daily average for projections
   const dailyAverage = stats.timeSeriesData.length > 0
     ? stats.timeSeriesData.reduce((sum, d) => sum + d.total, 0) / stats.timeSeriesData.length
     : 0;
+
+  const handleSetupStripe = async () => {
+    const url = await getOnboardingLink();
+    if (url) window.location.href = url;
+  };
 
   const renderOverviewTab = () => (
     <div className="space-y-8">
@@ -153,8 +166,18 @@ export default function CreatorDashboard() {
         </p>
       </div>
 
+      {/* Demo mode banner */}
+      {useDemoData && (
+        <DemoModeBanner
+          isDemoMode={demoMode}
+          onToggle={setDemoMode}
+          onSetupStripe={handleSetupStripe}
+          showStripeSetup={!isOnboardingComplete}
+        />
+      )}
+
       {/* Show onboarding as non-blocking banner if not complete */}
-      {!isOnboardingComplete && <CreatorOnboarding />}
+      {!isOnboardingComplete && !useDemoData && <CreatorOnboarding />}
 
       {/* Always show dashboard content */}
       <DashboardTabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
