@@ -2,7 +2,8 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import Replicate from "https://esm.sh/replicate@0.25.2";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { deductTokensAndTrackCost } from '../_shared/token-manager.ts';
-import { calculateTokenCost, MODEL_COSTS } from '../_shared/token-costs.ts';
+import { calculateTokenCost } from '../_shared/token-costs.ts';
+import { MODEL_COSTS } from '../_shared/cost-tracking.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
