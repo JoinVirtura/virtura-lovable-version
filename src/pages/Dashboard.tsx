@@ -1047,13 +1047,13 @@ export default function Dashboard() {
         return <DashboardSettingsContent />;
       case "talking-avatar":
         return (
-          <div className="h-screen overflow-y-auto">
+          <div className="h-screen overflow-y-auto pt-14 md:pt-12">
             <StudioPage />
           </div>
         );
       case "video-pro":
         return (
-          <div className="h-screen overflow-y-auto">
+          <div className="h-screen overflow-y-auto pt-14 md:pt-12">
             <VideoProPage />
           </div>
         );
