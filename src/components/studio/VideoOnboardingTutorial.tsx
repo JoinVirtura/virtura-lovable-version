@@ -91,9 +91,9 @@ export function VideoOnboardingTutorial({ onComplete }: VideoOnboardingTutorialP
             variant="ghost"
             size="sm"
             onClick={handleSkip}
-            className="absolute top-4 right-4 text-white/70 hover:text-white hover:bg-white/10"
+            className="absolute top-4 left-4 text-white/70 hover:text-white hover:bg-white/10"
           >
-            Skip <X className="h-4 w-4 ml-1" />
+            <X className="h-4 w-4 mr-1" /> Skip
           </Button>
 
           {/* Tutorial Card */}
