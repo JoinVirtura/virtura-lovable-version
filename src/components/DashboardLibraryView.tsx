@@ -5,11 +5,14 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { EditTitleDialog } from "@/components/EditTitleDialog";
+import { FolderSelector } from "@/components/library/FolderSelector";
+import { CreateFolderDialog } from "@/components/library/CreateFolderDialog";
+import { MoveToFolderDialog } from "@/components/library/MoveToFolderDialog";
+import { useLibraryFolders } from "@/hooks/useLibraryFolders";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { 
   Search, 
-  Filter, 
   Download, 
   Trash2,
   Grid3X3,
@@ -20,7 +23,8 @@ import {
   Star,
   Edit,
   Play,
-  Loader2
+  Loader2,
+  FolderInput
 } from "lucide-react";
 
 interface DashboardLibraryViewProps {
@@ -41,16 +45,31 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
   const [editTitleDialog, setEditTitleDialog] = useState<{ open: boolean; asset: any } | null>(null);
   const [deletingAssetId, setDeletingAssetId] = useState<string | null>(null);
   const [selectedAvatarIds, setSelectedAvatarIds] = useState<Set<number>>(new Set());
+  
+  // Folder state
+  const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
+  const [createFolderOpen, setCreateFolderOpen] = useState(false);
+  const [moveToFolderDialog, setMoveToFolderDialog] = useState<{ open: boolean; asset: any } | null>(null);
+  const { folders, createFolder, moveToFolder } = useLibraryFolders();
 
   const fetchSavedAvatars = async () => {
     try {
       setLibraryLoading(true);
       setLibraryError(null);
       
-      const { data, error: fetchError } = await supabase
+      let query = supabase
         .from('avatar_library')
         .select('*')
         .order('created_at', { ascending: false });
+      
+      // Filter by folder
+      if (selectedFolder === "uncategorized") {
+        query = query.is('folder_id', null);
+      } else if (selectedFolder) {
+        query = query.eq('folder_id', selectedFolder);
+      }
+      
+      const { data, error: fetchError } = await query;
       
       if (fetchError) {
         console.error('Error fetching avatars:', fetchError);
@@ -83,7 +102,8 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
         quality: Math.floor(Math.random() * 10 + 90),
         generationTime: `${(Math.random() * 2 + 1.5).toFixed(1)}s`,
         fileSize: `${(Math.random() * 1.5 + 1.5).toFixed(1)} MB`,
-        category: item.is_video ? "Videos" : "Avatars"
+        category: item.is_video ? "Videos" : "Avatars",
+        folder_id: item.folder_id
       })) || [];
 
       setLibraryAssets(formattedAssets);
@@ -97,7 +117,7 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
 
   useEffect(() => {
     fetchSavedAvatars();
-  }, []);
+  }, [selectedFolder]);
 
   useEffect(() => {
     const channel = supabase
@@ -296,7 +316,14 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
             </div>
 
             <div className="flex items-center justify-between gap-3 mb-8 flex-wrap">
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap items-center gap-3">
+                <FolderSelector
+                  folders={folders}
+                  selectedFolder={selectedFolder}
+                  onSelectFolder={setSelectedFolder}
+                  onCreateFolder={() => setCreateFolderOpen(true)}
+                />
+                <div className="w-px h-6 bg-border" />
                 {["All", "Characters", "Videos", "Favorites"].filter(cat => !(hideVideoCategory && cat === "Videos")).map((category) => (
                   <Button
                     key={category}
@@ -399,7 +426,7 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                           </div>
                         )}
                           
-                        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-3">
+                        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-2">
                           <Button 
                             size="sm" 
                             variant="outline"
@@ -415,7 +442,19 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                           <Button 
                             size="sm" 
                             variant="outline"
-                            className="h-9 px-4 bg-black/40 backdrop-blur-md hover:bg-red-500/30 hover:border-red-500 transition-all border-red-500/50 text-red-400 hover:text-red-300"
+                            className="h-9 w-9 p-0 bg-black/40 backdrop-blur-md hover:bg-blue-500/10 hover:border-blue-500/50 transition-all border-white/20"
+                            onClick={(e) => { 
+                              e.stopPropagation(); 
+                              setMoveToFolderDialog({ open: true, asset });
+                            }}
+                            title="Move to folder"
+                          >
+                            <FolderInput className="w-4 h-4" />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            className="h-9 w-9 p-0 bg-black/40 backdrop-blur-md hover:bg-red-500/30 hover:border-red-500 transition-all border-red-500/50 text-red-400 hover:text-red-300"
                             onClick={(e) => { 
                               e.stopPropagation(); 
                               handleDelete(asset); 
@@ -424,11 +463,10 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                             title="Delete"
                           >
                             {deletingAssetId === asset.dbId ? (
-                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              <Loader2 className="w-4 h-4 animate-spin" />
                             ) : (
-                              <Trash2 className="w-4 h-4 mr-2" />
+                              <Trash2 className="w-4 h-4" />
                             )}
-                            <span className="text-sm font-medium">Delete</span>
                           </Button>
                         </div>
                       </div>
@@ -589,6 +627,28 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
           if (!open) setEditTitleDialog(null);
         }}
         onSave={handleSaveTitle}
+      />
+
+      <CreateFolderDialog
+        open={createFolderOpen}
+        onOpenChange={setCreateFolderOpen}
+        onCreateFolder={createFolder}
+      />
+
+      <MoveToFolderDialog
+        open={moveToFolderDialog?.open || false}
+        onOpenChange={(open) => {
+          if (!open) setMoveToFolderDialog(null);
+        }}
+        folders={folders}
+        currentFolderId={moveToFolderDialog?.asset?.folder_id || null}
+        onMoveToFolder={async (folderId) => {
+          if (!moveToFolderDialog?.asset) return false;
+          const success = await moveToFolder(moveToFolderDialog.asset.dbId, folderId);
+          if (success) fetchSavedAvatars();
+          return success;
+        }}
+        assetTitle={moveToFolderDialog?.asset?.title || ""}
       />
     </div>
   );
