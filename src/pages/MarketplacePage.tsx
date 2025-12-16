@@ -1,14 +1,32 @@
+import { useState, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CheckCircle, XCircle, Clock, AlertCircle } from 'lucide-react';
 import { useMarketplaceAccess } from '@/hooks/useMarketplaceAccess';
 import { MarketplaceAccessForm } from '@/components/marketplace/MarketplaceAccessForm';
+import { MarketplaceVerificationGate } from '@/components/marketplace/MarketplaceVerificationGate';
 import { CreatorMarketplaceDashboard } from '@/components/marketplace/CreatorMarketplaceDashboard';
 import { BrandMarketplaceDashboard } from '@/components/marketplace/BrandMarketplaceDashboard';
 
-export default function MarketplacePage() {
+interface MarketplacePageProps {
+  onNavigateToVerification?: () => void;
+}
+
+export default function MarketplacePage({ onNavigateToVerification }: MarketplacePageProps) {
   const { access, loading } = useMarketplaceAccess();
+  const [selectedRole, setSelectedRole] = useState<'creator' | 'brand' | null>(null);
+  const [isCreatorVerified, setIsCreatorVerified] = useState(false);
+
+  const handleVerified = useCallback(() => {
+    setIsCreatorVerified(true);
+  }, []);
+
+  const handleNavigateToVerification = useCallback(() => {
+    if (onNavigateToVerification) {
+      onNavigateToVerification();
+    }
+  }, [onNavigateToVerification]);
 
   if (loading) {
     return (
@@ -19,7 +37,7 @@ export default function MarketplacePage() {
     );
   }
 
-  // No application yet - show application form
+  // No application yet - show role selection and conditional form
   if (!access) {
     return (
       <div className="container mx-auto p-6 space-y-6">
@@ -30,7 +48,26 @@ export default function MarketplacePage() {
           </p>
         </div>
         <div className="max-w-2xl mx-auto">
-          <MarketplaceAccessForm />
+          {/* If Creator is selected and not verified, show verification gate */}
+          {selectedRole === 'creator' && !isCreatorVerified ? (
+            <div className="space-y-6">
+              <MarketplaceVerificationGate 
+                onVerified={handleVerified}
+                onNavigateToVerification={handleNavigateToVerification}
+              />
+              <button 
+                onClick={() => setSelectedRole(null)}
+                className="text-sm text-muted-foreground hover:text-foreground underline mx-auto block"
+              >
+                ← Choose a different role
+              </button>
+            </div>
+          ) : (
+            <MarketplaceAccessForm 
+              onRoleSelect={setSelectedRole}
+              isCreatorVerified={isCreatorVerified}
+            />
+          )}
         </div>
       </div>
     );
@@ -112,7 +149,7 @@ export default function MarketplacePage() {
         <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:20px_20px]" />
         <div className="relative z-10 flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary-blue bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-violet-400 bg-clip-text text-transparent">
               Marketplace
             </h1>
             <p className="text-muted-foreground mt-2 text-lg">
@@ -122,7 +159,7 @@ export default function MarketplacePage() {
               }
             </p>
           </div>
-          <Badge variant="default" className="text-sm px-4 py-2 bg-gradient-to-r from-primary to-primary-blue">
+          <Badge variant="default" className="text-sm px-4 py-2 bg-gradient-to-r from-primary to-violet-500">
             <CheckCircle className="h-4 w-4 mr-2" />
             {isCreator ? 'Approved Creator' : 'Approved Brand'}
           </Badge>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -8,57 +8,118 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDes
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Briefcase, Palette, Plus, X } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Briefcase, Palette } from 'lucide-react';
 import { useMarketplaceAccess } from '@/hooks/useMarketplaceAccess';
 
-const formSchema = z.object({
-  role: z.enum(['creator', 'brand']),
-  pitch: z.string().min(50, 'Please provide at least 50 characters'),
-  experience: z.string().min(20, 'Please provide at least 20 characters'),
-  portfolio_links: z.array(z.string().url('Must be a valid URL')).optional(),
+// Creator-specific schema
+const creatorSchema = z.object({
+  role: z.literal('creator'),
+  content_type: z.string().min(5, 'Please describe your content specialty'),
+  industries: z.string().min(5, 'Please list industries or niches you create for'),
+  turnaround_time: z.string().min(1, 'Please select your typical turnaround time'),
+  collaboration_pitch: z.string().min(30, 'Please provide at least 30 characters'),
+  main_profile_link: z.string().url('Please provide a valid URL to your Instagram or TikTok'),
 });
 
-export function MarketplaceAccessForm() {
-  const { applyForAccess } = useMarketplaceAccess();
-  const [portfolioLinks, setPortfolioLinks] = useState<string[]>(['']);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+// Brand-specific schema
+const brandSchema = z.object({
+  role: z.literal('brand'),
+  website_url: z.string().url('Please provide a valid website URL'),
+  campaign_type: z.string().min(5, 'Please describe your campaign type'),
+  creator_type: z.string().min(5, 'Please describe what type of creators you need'),
+  budget_range: z.string().min(1, 'Please select your budget range'),
+  deliverables: z.string().min(10, 'Please describe the deliverables you need'),
+});
 
-  const form = useForm<z.infer<typeof formSchema>>({
+// Combined schema with discriminated union
+const formSchema = z.discriminatedUnion('role', [creatorSchema, brandSchema]);
+
+type FormValues = z.infer<typeof formSchema>;
+
+interface MarketplaceAccessFormProps {
+  onRoleSelect?: (role: 'creator' | 'brand' | null) => void;
+  isCreatorVerified?: boolean;
+}
+
+export function MarketplaceAccessForm({ onRoleSelect, isCreatorVerified }: MarketplaceAccessFormProps) {
+  const { applyForAccess } = useMarketplaceAccess();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<'creator' | 'brand'>('brand');
+
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      role: 'creator',
-      pitch: '',
-      experience: '',
-      portfolio_links: [],
-    },
+      role: 'brand',
+      website_url: '',
+      campaign_type: '',
+      creator_type: '',
+      budget_range: '',
+      deliverables: '',
+    } as FormValues,
   });
 
-  const addPortfolioLink = () => {
-    setPortfolioLinks([...portfolioLinks, '']);
+  const handleRoleChange = (newRole: 'creator' | 'brand') => {
+    setSelectedRole(newRole);
+    onRoleSelect?.(newRole);
+    
+    // If creator is selected and not verified, don't reset form - verification gate will show
+    if (newRole === 'creator' && !isCreatorVerified) {
+      return;
+    }
+    
+    if (newRole === 'creator') {
+      form.reset({
+        role: 'creator',
+        content_type: '',
+        industries: '',
+        turnaround_time: '',
+        collaboration_pitch: '',
+        main_profile_link: '',
+      });
+    } else {
+      form.reset({
+        role: 'brand',
+        website_url: '',
+        campaign_type: '',
+        creator_type: '',
+        budget_range: '',
+        deliverables: '',
+      });
+    }
   };
 
-  const removePortfolioLink = (index: number) => {
-    setPortfolioLinks(portfolioLinks.filter((_, i) => i !== index));
-  };
+  // When creator becomes verified, reset form with creator defaults
+  useEffect(() => {
+    if (selectedRole === 'creator' && isCreatorVerified) {
+      form.reset({
+        role: 'creator',
+        content_type: '',
+        industries: '',
+        turnaround_time: '',
+        collaboration_pitch: '',
+        main_profile_link: '',
+      });
+    }
+  }, [isCreatorVerified, selectedRole, form]);
 
-  const updatePortfolioLink = (index: number, value: string) => {
-    const updated = [...portfolioLinks];
-    updated[index] = value;
-    setPortfolioLinks(updated);
-  };
-
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: FormValues) => {
     setIsSubmitting(true);
     try {
-      const validLinks = portfolioLinks.filter(link => link.trim() !== '');
+      // Serialize all form data as JSON in the pitch field
+      const applicationData = JSON.stringify(values);
+      
       await applyForAccess({
         role: values.role,
-        pitch: values.pitch,
-        experience: values.experience,
-        portfolio_links: validLinks.length > 0 ? validLinks : undefined,
+        pitch: applicationData,
+        experience: values.role === 'creator' 
+          ? `Content: ${(values as z.infer<typeof creatorSchema>).content_type}` 
+          : `Campaign: ${(values as z.infer<typeof brandSchema>).campaign_type}`,
+        portfolio_links: values.role === 'creator' 
+          ? [(values as z.infer<typeof creatorSchema>).main_profile_link]
+          : [(values as z.infer<typeof brandSchema>).website_url],
       });
       form.reset();
-      setPortfolioLinks(['']);
     } catch (error) {
       console.error('Error submitting application:', error);
     } finally {
@@ -71,12 +132,13 @@ export function MarketplaceAccessForm() {
       <CardHeader>
         <CardTitle>Apply for Marketplace Access</CardTitle>
         <CardDescription>
-          Tell us about yourself and why you want to join the marketplace
+          Tell us about yourself and what you're looking for
         </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Role Selection */}
             <FormField
               control={form.control}
               name="role"
@@ -85,13 +147,20 @@ export function MarketplaceAccessForm() {
                   <FormLabel>I want to join as a</FormLabel>
                   <FormControl>
                     <RadioGroup
-                      onValueChange={field.onChange}
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                        handleRoleChange(value as 'creator' | 'brand');
+                      }}
                       defaultValue={field.value}
                       className="grid grid-cols-2 gap-4"
                     >
                       <label
                         htmlFor="creator"
-                        className="flex flex-col items-center gap-3 rounded-lg border-2 border-border p-4 cursor-pointer hover:border-primary transition-colors"
+                        className={`flex flex-col items-center gap-3 rounded-lg border-2 p-4 cursor-pointer transition-colors ${
+                          selectedRole === 'creator' 
+                            ? 'border-primary bg-primary/5' 
+                            : 'border-border hover:border-primary'
+                        }`}
                       >
                         <RadioGroupItem value="creator" id="creator" className="sr-only" />
                         <Palette className="h-8 w-8 text-primary" />
@@ -104,7 +173,11 @@ export function MarketplaceAccessForm() {
                       </label>
                       <label
                         htmlFor="brand"
-                        className="flex flex-col items-center gap-3 rounded-lg border-2 border-border p-4 cursor-pointer hover:border-primary transition-colors"
+                        className={`flex flex-col items-center gap-3 rounded-lg border-2 p-4 cursor-pointer transition-colors ${
+                          selectedRole === 'brand' 
+                            ? 'border-primary bg-primary/5' 
+                            : 'border-border hover:border-primary'
+                        }`}
                       >
                         <RadioGroupItem value="brand" id="brand" className="sr-only" />
                         <Briefcase className="h-8 w-8 text-primary" />
@@ -122,83 +195,213 @@ export function MarketplaceAccessForm() {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="pitch"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Your Pitch</FormLabel>
-                  <FormDescription>
-                    Why do you want to join the marketplace? What makes you a great fit?
-                  </FormDescription>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Tell us your story..."
-                      className="min-h-[120px]"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="experience"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Relevant Experience</FormLabel>
-                  <FormDescription>
-                    Share your background and expertise
-                  </FormDescription>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Describe your experience..."
-                      className="min-h-[100px]"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="space-y-3">
-              <FormLabel>Portfolio Links (Optional)</FormLabel>
-              <FormDescription>
-                Add links to your work, social profiles, or website
-              </FormDescription>
-              {portfolioLinks.map((link, index) => (
-                <div key={index} className="flex gap-2">
-                  <Input
-                    placeholder="https://..."
-                    value={link}
-                    onChange={(e) => updatePortfolioLink(index, e.target.value)}
-                  />
-                  {portfolioLinks.length > 1 && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      onClick={() => removePortfolioLink(index)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
+            {/* Creator-specific fields */}
+            {selectedRole === 'creator' && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="content_type"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>What type of content do you specialize in?</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="e.g., UGC videos, product photography, lifestyle content, tutorials..."
+                          className="min-h-[80px]"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
-                </div>
-              ))}
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={addPortfolioLink}
-                className="w-full"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Another Link
-              </Button>
-            </div>
+                />
+
+                <FormField
+                  control={form.control}
+                  name="industries"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>What industries or niches do you create for?</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="e.g., Beauty, Fashion, Tech, Food & Beverage, Fitness..."
+                          className="min-h-[80px]"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="turnaround_time"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>What is your typical turnaround time?</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select turnaround time" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="24-48-hours">24-48 hours</SelectItem>
+                          <SelectItem value="3-5-days">3-5 days</SelectItem>
+                          <SelectItem value="1-week">1 week</SelectItem>
+                          <SelectItem value="2-weeks">2 weeks</SelectItem>
+                          <SelectItem value="flexible">Flexible / Project dependent</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="collaboration_pitch"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>What makes you a strong fit for brand collaborations?</FormLabel>
+                      <FormDescription>
+                        Highlight your strengths, past work, and what sets you apart
+                      </FormDescription>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Share why brands should work with you..."
+                          className="min-h-[100px]"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="main_profile_link"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Link to your main profile (Instagram or TikTok)</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="https://instagram.com/yourusername"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
+            )}
+
+            {/* Brand-specific fields */}
+            {selectedRole === 'brand' && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="website_url"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Brand Website URL</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="https://yourbrand.com"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="campaign_type"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>What type of campaign are you launching?</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="e.g., Product launch, brand awareness, seasonal promotion..."
+                          className="min-h-[80px]"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="creator_type"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>What type of creators are you looking for?</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="e.g., Lifestyle influencers, UGC specialists, product reviewers..."
+                          className="min-h-[80px]"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="budget_range"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>What is your budget range?</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select budget range" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="under-500">Under $500</SelectItem>
+                          <SelectItem value="500-1000">$500 - $1,000</SelectItem>
+                          <SelectItem value="1000-5000">$1,000 - $5,000</SelectItem>
+                          <SelectItem value="5000-10000">$5,000 - $10,000</SelectItem>
+                          <SelectItem value="10000-plus">$10,000+</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="deliverables"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>What deliverables do you need?</FormLabel>
+                      <FormDescription>
+                        Describe the content types you're looking for
+                      </FormDescription>
+                      <FormControl>
+                        <Textarea
+                          placeholder="e.g., 3 UGC videos (15-30 sec), 5 product photos, Instagram Reels..."
+                          className="min-h-[100px]"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
+            )}
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? 'Submitting...' : 'Submit Application'}
