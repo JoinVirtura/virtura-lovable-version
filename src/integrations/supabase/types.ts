@@ -187,6 +187,7 @@ export type Database = {
           audio_url: string | null
           created_at: string
           duration: number | null
+          folder_id: string | null
           id: string
           image_url: string
           is_video: boolean | null
@@ -202,6 +203,7 @@ export type Database = {
           audio_url?: string | null
           created_at?: string
           duration?: number | null
+          folder_id?: string | null
           id?: string
           image_url: string
           is_video?: boolean | null
@@ -217,6 +219,7 @@ export type Database = {
           audio_url?: string | null
           created_at?: string
           duration?: number | null
+          folder_id?: string | null
           id?: string
           image_url?: string
           is_video?: boolean | null
@@ -228,7 +231,15 @@ export type Database = {
           user_id?: string | null
           video_url?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "avatar_library_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "library_folders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       avatar_loras: {
         Row: {
@@ -1533,6 +1544,33 @@ export type Database = {
           prompt?: string | null
           session_id?: string | null
           user_ip?: string | null
+        }
+        Relationships: []
+      }
+      library_folders: {
+        Row: {
+          color: string | null
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
