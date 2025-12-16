@@ -6,6 +6,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
 import { Folder, FolderPlus, ChevronDown, Inbox } from "lucide-react";
 import { LibraryFolder } from "@/hooks/useLibraryFolders";
 
@@ -14,13 +15,15 @@ interface FolderSelectorProps {
   selectedFolder: string | null;
   onSelectFolder: (folderId: string | null) => void;
   onCreateFolder: () => void;
+  itemCount?: number;
 }
 
 export function FolderSelector({
   folders,
   selectedFolder,
   onSelectFolder,
-  onCreateFolder
+  onCreateFolder,
+  itemCount
 }: FolderSelectorProps) {
   const selectedFolderName = selectedFolder === null
     ? "All Items"
@@ -41,6 +44,9 @@ export function FolderSelector({
             style={selectedFolderColor ? { color: selectedFolderColor } : undefined}
           />
           <span className="max-w-[120px] truncate">{selectedFolderName}</span>
+          {itemCount !== undefined && (
+            <Badge variant="secondary" className="ml-1 text-xs">{itemCount}</Badge>
+          )}
           <ChevronDown className="w-4 h-4 opacity-50" />
         </Button>
       </DropdownMenuTrigger>
