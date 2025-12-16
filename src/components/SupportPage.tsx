@@ -27,9 +27,7 @@ import {
   ExternalLink,
   Video,
   Users,
-  Zap,
-  Shield,
-  Sparkles
+  Shield
 } from "lucide-react";
 
 const ticketSchema = z.object({
@@ -87,18 +85,18 @@ const quickActions = [
   {
     icon: Mail,
     title: "Email Us",
-    description: "support@virtura.ai",
+    description: "support@virturaai.com",
     color: "from-purple-500 to-pink-500",
-    link: "mailto:support@virtura.ai"
+    link: "mailto:support@virturaai.com"
   }
 ];
 
 const resources = [
   {
     icon: Users,
-    title: "Discord Community",
-    description: "Join 5,000+ creators",
-    link: "https://discord.gg/virtura"
+    title: "Skool Community",
+    description: "Join our creator community",
+    link: "https://www.skool.com/virtura"
   },
   {
     icon: BookOpen,
@@ -115,8 +113,8 @@ const resources = [
   {
     icon: Mail,
     title: "Email Support",
-    description: "support@virtura.ai",
-    link: "mailto:support@virtura.ai"
+    description: "support@virturaai.com",
+    link: "mailto:support@virturaai.com"
   }
 ];
 
@@ -384,36 +382,52 @@ export function SupportPage() {
           transition={{ delay: 0.5 }}
           className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"
         >
-          {quickActions.map((action, index) => (
-            <motion.div
-              key={action.title}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.1 * index }}
-              whileHover={{ scale: 1.02, y: -4 }}
-              className="relative group cursor-pointer"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl blur-xl"
-                style={{ backgroundImage: `linear-gradient(to bottom right, var(--tw-gradient-stops))` }}
-              />
-              <Card className="relative h-full p-4 sm:p-5 bg-card/50 backdrop-blur-xl border-white/10 hover:border-white/20 transition-all">
-                <div className="flex flex-col items-center text-center space-y-3">
-                  <div className={`p-3 rounded-xl bg-gradient-to-br ${action.color} opacity-80`}>
-                    <action.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+          {quickActions.map((action, index) => {
+            const handleClick = () => {
+              if (action.link) {
+                if (action.link.startsWith("mailto:")) {
+                  window.location.href = action.link;
+                } else if (action.link === "tutorial") {
+                  // Navigate to tutorial - handled by parent
+                  window.location.href = "/dashboard?view=guide";
+                }
+              } else if (action.action === "scroll-to-tickets") {
+                document.getElementById("tickets-section")?.scrollIntoView({ behavior: "smooth" });
+              }
+            };
+
+            return (
+              <motion.div
+                key={action.title}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.1 * index }}
+                whileHover={{ scale: 1.02, y: -4 }}
+                onClick={!action.badge ? handleClick : undefined}
+                className={`relative group ${!action.badge ? 'cursor-pointer' : 'cursor-default'}`}
+              >
+                <div className="absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl blur-xl"
+                  style={{ backgroundImage: `linear-gradient(to bottom right, var(--tw-gradient-stops))` }}
+                />
+                <Card className="relative h-full p-4 sm:p-5 bg-card/50 backdrop-blur-xl border-white/10 hover:border-white/20 transition-all">
+                  <div className="flex flex-col items-center text-center space-y-3">
+                    <div className={`p-3 rounded-xl bg-gradient-to-br ${action.color} opacity-80`}>
+                      <action.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-foreground text-sm sm:text-base">{action.title}</h3>
+                      <p className="text-xs sm:text-sm text-muted-foreground mt-1">{action.description}</p>
+                    </div>
+                    {action.badge && (
+                      <span className="absolute top-2 right-2 px-2 py-0.5 text-[10px] font-medium bg-violet-500/20 text-violet-300 rounded-full border border-violet-500/30">
+                        {action.badge}
+                      </span>
+                    )}
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground text-sm sm:text-base">{action.title}</h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground mt-1">{action.description}</p>
-                  </div>
-                  {action.badge && (
-                    <span className="absolute top-2 right-2 px-2 py-0.5 text-[10px] font-medium bg-violet-500/20 text-violet-300 rounded-full border border-violet-500/30">
-                      {action.badge}
-                    </span>
-                  )}
-                </div>
-              </Card>
-            </motion.div>
-          ))}
+                </Card>
+              </motion.div>
+            );
+          })}
         </motion.div>
 
         {/* Recent Tickets Section */}
@@ -602,10 +616,7 @@ export function SupportPage() {
                         Submitting...
                       </>
                     ) : (
-                      <>
-                        <Zap className="w-4 h-4 mr-2" />
-                        Submit Ticket
-                      </>
+                      "Submit Ticket"
                     )}
                   </Button>
                 </form>
@@ -754,10 +765,7 @@ export function SupportPage() {
                         Submitting...
                       </>
                     ) : (
-                      <>
-                        <Sparkles className="w-4 h-4 mr-2" />
-                        Submit Suggestion
-                      </>
+                      "Submit Suggestion"
                     )}
                   </Button>
                 </form>
