@@ -27,7 +27,7 @@ import { BrandKitDialog } from '@/components/BrandKitDialog';
 import { CampaignCreator } from '@/components/CampaignCreator';
 import { AssetEditDialog } from '@/components/AssetEditDialog';
 import { BrandAnalyticsDashboard } from '@/components/BrandAnalyticsDashboard';
-import { BrandCampaignCTA } from '@/components/BrandCampaignCTA';
+
 import { useBrandAssets, type Brand } from '@/hooks/useBrandAssets';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { supabase } from '@/integrations/supabase/client';
@@ -834,8 +834,6 @@ export function BrandManagerView() {
                 </Button>
               </div>
               
-              {/* Brand Campaign CTA */}
-              <BrandCampaignCTA hasCampaigns={campaigns.length > 0} />
               
               {/* Stats Row - Horizontal */}
               {selectedBrand && (
