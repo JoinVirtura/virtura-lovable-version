@@ -13,11 +13,11 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { motion } from 'framer-motion';
 
 interface FeedContainerProps {
-  filterType?: 'all' | 'following' | 'own' | 'trending';
-  onFilterChange?: (filter: 'all' | 'following' | 'trending') => void;
+  filterType?: 'following' | 'own' | 'trending';
+  onFilterChange?: (filter: 'following' | 'trending') => void;
 }
 
-export function FeedContainer({ filterType = 'all', onFilterChange }: FeedContainerProps) {
+export function FeedContainer({ filterType = 'following', onFilterChange }: FeedContainerProps) {
   const { posts, loading, hasMore, fetchMore, refresh, updatePostLike, updatePostComment } = useSocialPosts(filterType);
   const { toggleLike, followUser, unlockPost } = usePostActions();
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
