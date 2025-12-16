@@ -1,11 +1,12 @@
 import { Button } from '@/components/ui/button';
-import { Plus, Users, TrendingUp } from 'lucide-react';
+import { Plus, Users, TrendingUp, Search } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { FeedContainer } from '@/components/social/FeedContainer';
 import { CreatePostModal } from '@/components/social/CreatePostModal';
 import { StoryRing } from '@/components/social/StoryRing';
 import { FeedBackground } from '@/components/social/FeedBackground';
 import { FeedOnboardingTutorial } from '@/components/social/FeedOnboardingTutorial';
+import { SearchBar } from '@/components/social/SearchBar';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfile } from '@/hooks/useProfile';
 import { motion } from 'framer-motion';
@@ -16,7 +17,7 @@ export default function SocialFeed() {
   const { user } = useAuth();
   const { profile } = useProfile();
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [feedType, setFeedType] = useState<'all' | 'following' | 'trending'>('all');
+  const [feedType, setFeedType] = useState<'following' | 'trending'>('following');
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -96,11 +97,15 @@ export default function SocialFeed() {
           </div>
         </div>
 
+        {/* Search Bar */}
+        <div className="px-4 py-3 border-t border-white/5 max-w-4xl mx-auto">
+          <SearchBar />
+        </div>
+
         {/* Filter Tabs with Neon Glow */}
         <div className="flex justify-center border-t border-white/5 relative">
           <div className="flex max-w-md w-full">
             {[
-              { type: 'all', label: 'All Posts', icon: null, activeColor: 'from-violet-500 to-purple-500', glowColor: 'violet' },
               { type: 'following', label: 'Following', icon: Users, activeColor: 'from-blue-500 to-cyan-500', glowColor: 'blue' },
               { type: 'trending', label: 'Trending', icon: TrendingUp, activeColor: 'from-orange-500 to-amber-500', glowColor: 'orange' },
             ].map(({ type, label, icon: Icon, activeColor, glowColor }) => (
