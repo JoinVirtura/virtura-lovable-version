@@ -30,11 +30,19 @@ export async function isAdminUser(userId: string): Promise<boolean> {
 
 /**
  * Check if user has enough tokens for an operation
+ * Admins always have unlimited tokens
  */
 export async function checkTokenBalance(
   userId: string,
   requiredTokens: number
-): Promise<{ hasBalance: boolean; currentBalance: number }> {
+): Promise<{ hasBalance: boolean; currentBalance: number; isAdmin?: boolean }> {
+  // Check if user is admin first - admins have unlimited access
+  const isAdmin = await isAdminUser(userId);
+  if (isAdmin) {
+    console.log(`[ADMIN] Unlimited tokens for admin user: ${userId}`);
+    return { hasBalance: true, currentBalance: 999999, isAdmin: true };
+  }
+
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
   const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
