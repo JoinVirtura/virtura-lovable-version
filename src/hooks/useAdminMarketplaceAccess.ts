@@ -47,39 +47,31 @@ export function useAdminMarketplaceAccess() {
 
   const approveRequest = async (requestId: string) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) throw new Error('Not authenticated');
+      console.log('Approving request via edge function:', requestId);
 
-      console.log('Attempting to approve request:', requestId, 'by admin:', user.id);
-
-      const { data, error } = await supabase
-        .from('marketplace_access')
-        .update({
-          status: 'approved',
-          reviewed_at: new Date().toISOString(),
-          reviewed_by: user.id,
-        })
-        .eq('id', requestId)
-        .select();
+      const { data, error } = await supabase.functions.invoke('review-marketplace-application', {
+        body: {
+          application_id: requestId,
+          action: 'approve',
+        },
+      });
 
       if (error) {
-        console.error('Supabase update error:', error);
-        if (error.code === '42501' || error.message.includes('row-level security')) {
-          throw new Error('Permission denied. Ensure you have admin role in user_roles table.');
-        }
-        throw error;
+        console.error('Edge function error:', error);
+        throw new Error(error.message || 'Failed to approve application');
       }
 
-      if (!data || data.length === 0) {
-        throw new Error('No rows updated. Check if request exists and you have admin permissions.');
+      if (data?.error) {
+        throw new Error(data.error);
       }
 
       console.log('Successfully approved request:', data);
 
       toast({
         title: 'Request approved',
-        description: 'The user has been granted marketplace access',
+        description: data?.email_sent 
+          ? 'The user has been granted marketplace access and notified via email'
+          : 'The user has been granted marketplace access',
       });
 
       await fetchRequests();
@@ -95,40 +87,32 @@ export function useAdminMarketplaceAccess() {
 
   const denyRequest = async (requestId: string, reason: string) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) throw new Error('Not authenticated');
+      console.log('Denying request via edge function:', requestId);
 
-      console.log('Attempting to deny request:', requestId, 'by admin:', user.id);
-
-      const { data, error } = await supabase
-        .from('marketplace_access')
-        .update({
-          status: 'denied',
-          reviewed_at: new Date().toISOString(),
-          reviewed_by: user.id,
+      const { data, error } = await supabase.functions.invoke('review-marketplace-application', {
+        body: {
+          application_id: requestId,
+          action: 'deny',
           denial_reason: reason,
-        })
-        .eq('id', requestId)
-        .select();
+        },
+      });
 
       if (error) {
-        console.error('Supabase update error:', error);
-        if (error.code === '42501' || error.message.includes('row-level security')) {
-          throw new Error('Permission denied. Ensure you have admin role in user_roles table.');
-        }
-        throw error;
+        console.error('Edge function error:', error);
+        throw new Error(error.message || 'Failed to deny application');
       }
 
-      if (!data || data.length === 0) {
-        throw new Error('No rows updated. Check if request exists and you have admin permissions.');
+      if (data?.error) {
+        throw new Error(data.error);
       }
 
       console.log('Successfully denied request:', data);
 
       toast({
         title: 'Request denied',
-        description: 'The user has been notified of the decision',
+        description: data?.email_sent 
+          ? 'The user has been notified of the decision via email'
+          : 'The user has been notified of the decision',
       });
 
       await fetchRequests();
