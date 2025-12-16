@@ -1985,7 +1985,7 @@ export default function Dashboard() {
       case "creator-dashboard":
         return <CreatorDashboard />;
       case "marketplace":
-        return <MarketplacePage />;
+        return <MarketplacePage onNavigateToVerification={() => setActiveView("verification")} />;
       case "scheduled-posts":
         return <ScheduledPostsPage />;
       case "verification":
