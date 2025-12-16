@@ -94,14 +94,14 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
   const mainItems = [
     ...(isAdmin ? [{ id: "admin-dashboard", label: "Admin", icon: Shield }] : []),
     { id: "overview", label: "Home", icon: Home },
-    { id: "talking-avatar", label: "Style", icon: Image },
-    { id: "video-pro", label: "Editor", icon: Video },
+    { id: "talking-avatar", label: "Photo Editor", icon: Image },
+    { id: "video-pro", label: "Video Editor", icon: Video },
     { id: "library", label: "Library", icon: Library },
   ];
 
   const navigationTabs = [
     { id: "studio", label: "Copilot", icon: Command },
-    { id: "brands", label: "Manager", icon: Building2 },
+    { id: "brands", label: "Brand Manager", icon: Building2 },
     { id: "guide", label: "Tutorial", icon: BookOpen },
     { id: "support", label: "Support", icon: LifeBuoy },
   ];
