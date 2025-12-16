@@ -346,7 +346,7 @@ export const RealVideoEngine: React.FC<RealVideoEngineProps> = ({
       {/* Professional Video Direction */}
       <Card className="p-6 bg-gradient-to-br from-blue-500/5 to-blue-900/5 border-blue-500/20">
         <div className="space-y-2">
-          <h3 className="text-lg font-semibold">Professional Video Script</h3>
+          <h3 className="text-lg font-semibold">Movement Script</h3>
           <Textarea
             placeholder=""
             value={videoPrompt}

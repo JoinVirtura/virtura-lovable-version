@@ -95,7 +95,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
     ...(isAdmin ? [{ id: "admin-dashboard", label: "Admin", icon: Shield }] : []),
     { id: "overview", label: "Home", icon: Home },
     { id: "talking-avatar", label: "Style", icon: Image },
-    { id: "video-pro", label: "Video", icon: Video },
+    { id: "video-pro", label: "Editor", icon: Video },
     { id: "library", label: "Library", icon: Library },
   ];
 
