@@ -1,7 +1,20 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Play, Heart, MessageCircle, Loader2 } from "lucide-react";
+import { Play, Heart, MessageCircle, Loader2, Trash2 } from "lucide-react";
 import { PostLightboxModal } from "./PostLightboxModal";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface Post {
   id: string;
@@ -30,8 +43,10 @@ export function BentoContentGrid({
   loadingMore = false,
   onPostDeleted 
 }: BentoContentGridProps) {
+  const { user } = useAuth();
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [postToDelete, setPostToDelete] = useState<string | null>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
   const formatNumber = (num: number) => {
@@ -74,6 +89,17 @@ export function BentoContentGrid({
     setSelectedPost(null);
     onPostDeleted?.();
   }, [onPostDeleted]);
+
+  const handleDeletePost = async (postId: string) => {
+    const { error } = await supabase.from("social_posts").delete().eq("id", postId);
+    if (!error) {
+      toast.success("Post deleted");
+      onPostDeleted?.();
+    } else {
+      toast.error("Failed to delete post");
+    }
+    setPostToDelete(null);
+  };
 
   if (posts.length === 0) {
     return (
@@ -136,6 +162,20 @@ export function BentoContentGrid({
               </div>
             )}
 
+            {/* Delete button for own posts */}
+            {user?.id === post.user_id && hoveredId === post.id && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setPostToDelete(post.id);
+                }}
+                className="absolute top-2 left-2 z-10 p-2 bg-red-500/80 hover:bg-red-500 rounded-full transition-all"
+                title="Delete post"
+              >
+                <Trash2 className="w-4 h-4 text-white" />
+              </button>
+            )}
+
             {/* Hover overlay with stats */}
             <motion.div
               initial={{ opacity: 0 }}
@@ -173,6 +213,27 @@ export function BentoContentGrid({
           onDelete={handlePostDeleted}
         />
       )}
+
+      {/* Delete confirmation dialog */}
+      <AlertDialog open={!!postToDelete} onOpenChange={() => setPostToDelete(null)}>
+        <AlertDialogContent className="bg-slate-900 border-white/10">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white">Delete Post?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your post.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={() => postToDelete && handleDeletePost(postToDelete)} 
+              className="bg-red-500 hover:bg-red-600"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

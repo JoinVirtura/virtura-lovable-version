@@ -173,6 +173,16 @@ export function PostLightboxModal({ post, isOpen, onClose, onDelete }: PostLight
     setShowDeleteDialog(false);
   };
 
+  const handleDeleteComment = async (commentId: string) => {
+    const { error } = await supabase.from("post_comments").delete().eq("id", commentId);
+    if (!error) {
+      setComments(prev => prev.filter(c => c.id !== commentId));
+      toast.success("Comment deleted");
+    } else {
+      toast.error("Failed to delete comment");
+    }
+  };
+
   const displayName = creatorProfile?.display_name || post.creator_name || "User";
   const avatarUrl = creatorProfile?.avatar_url || post.creator_avatar;
 
@@ -306,25 +316,37 @@ export function PostLightboxModal({ post, isOpen, onClose, onDelete }: PostLight
                   <p className="text-sm text-muted-foreground text-center py-8">No comments yet</p>
                 ) : (
                   <div className="space-y-4">
-                    {comments.map((comment) => (
-                      <div key={comment.id} className="flex gap-3">
-                        <Avatar className="w-8 h-8">
-                          <AvatarImage src={comment.user_avatar} />
-                          <AvatarFallback className="bg-violet-500/20 text-violet-300 text-xs">
-                            {comment.user_name?.[0]?.toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <p className="text-sm">
-                            <span className="font-medium text-white">{comment.user_name}</span>{" "}
-                            <span className="text-gray-300">{comment.content}</span>
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
-                          </p>
+                    {comments.map((comment) => {
+                      const canDeleteComment = user?.id === comment.user_id || isOwnPost;
+                      return (
+                        <div key={comment.id} className="flex gap-3 group">
+                          <Avatar className="w-8 h-8">
+                            <AvatarImage src={comment.user_avatar} />
+                            <AvatarFallback className="bg-violet-500/20 text-violet-300 text-xs">
+                              {comment.user_name?.[0]?.toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <p className="text-sm">
+                              <span className="font-medium text-white">{comment.user_name}</span>{" "}
+                              <span className="text-gray-300">{comment.content}</span>
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
+                            </p>
+                          </div>
+                          {canDeleteComment && (
+                            <button
+                              onClick={() => handleDeleteComment(comment.id)}
+                              className="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-500/20 rounded transition-all"
+                              title="Delete comment"
+                            >
+                              <Trash2 className="w-4 h-4 text-red-400 hover:text-red-300" />
+                            </button>
+                          )}
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </ScrollArea>
