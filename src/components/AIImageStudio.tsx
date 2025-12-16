@@ -95,6 +95,7 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
   const [chatMessages, setChatMessages] = useState<Array<{role: 'user' | 'assistant', content: string, id?: number}>>([]);
   const [chatInput, setChatInput] = useState("");
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [imageCount, setImageCount] = useState(3); // User-selectable 1-10
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -165,8 +166,11 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
 
     setIsGenerating(true);
     
-    // Create placeholder cards
-    const newCardIds = Array.from({ length: 3 }, (_, i) => `card-${Date.now()}-${i}`);
+    // Clear existing previews when generating new images (replace mode)
+    setPreviewCards([]);
+    
+    // Create placeholder cards based on user-selected imageCount
+    const newCardIds = Array.from({ length: imageCount }, (_, i) => `card-${Date.now()}-${i}`);
     const placeholderCards: PreviewCard[] = newCardIds.map((id, index) => ({
       id,
       imageUrl: "",
@@ -175,7 +179,7 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
       safetyPassed: true,
     }));
 
-    setPreviewCards(prev => [...placeholderCards, ...prev]);
+    setPreviewCards(placeholderCards);
 
     try {
       const params: ImageGenerationParams = {
@@ -192,8 +196,8 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
         referenceImage
       };
 
-      // Generate variants
-      const results = await ImageGenerationService.generateVariants(prompt, params, 3);
+      // Generate variants using user-selected imageCount
+      const results = await ImageGenerationService.generateVariants(prompt, params, imageCount);
       
       // Update cards with results
       setPreviewCards(prev => 
@@ -730,6 +734,27 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                       </div>
                     </div>
 
+                    {/* Image Count Selector */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium flex items-center justify-between">
+                        <span>Number of Images: {imageCount}</span>
+                        <Badge variant="outline" className="text-xs">
+                          ~{imageCount} token{imageCount > 1 ? 's' : ''}
+                        </Badge>
+                      </label>
+                      <Slider
+                        value={[imageCount]}
+                        onValueChange={(v) => setImageCount(v[0])}
+                        max={10}
+                        min={1}
+                        step={1}
+                        className="w-full [&_[role=slider]]:bg-primary [&_[role=slider]]:border-primary/50 [&_[role=slider]]:shadow-[0_0_15px_rgba(139,92,246,0.4)]"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Generate 1-10 images per request
+                      </p>
+                    </div>
+
                     <div className="space-y-4">
                       <div className="space-y-2">
                         <label className="text-sm font-medium">Negative Prompt</label>
@@ -1048,7 +1073,7 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                           // Add progress message to chat
                           setChatMessages(prev => [...prev, {
                             role: 'assistant' as const,
-                            content: `⏳ Generating 3 refined variations... 0%`,
+                            content: `⏳ Generating ${imageCount} refined variations... 0%`,
                             id: progressMessageId
                           }]);
                           
@@ -1065,15 +1090,18 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                               : referenceImage || undefined,
                           };
 
-                          // Generate 3 images sequentially with progress updates
+                          // Clear existing previews before generating refined images (replace mode)
+                          setPreviewCards([]);
+                          
+                          // Generate images sequentially with progress updates (using user-selected imageCount)
                           let successCount = 0;
                           
-                          for (let i = 0; i < 3; i++) {
+                          for (let i = 0; i < imageCount; i++) {
                             // Update progress message
-                            const progressPercent = Math.round((i / 3) * 100);
+                            const progressPercent = Math.round((i / imageCount) * 100);
                             setChatMessages(prev => prev.map(msg => 
                               msg.id === progressMessageId
-                                ? { ...msg, content: `⏳ Generating variation ${i + 1}/3... ${progressPercent}%` }
+                                ? { ...msg, content: `⏳ Generating variation ${i + 1}/${imageCount}... ${progressPercent}%` }
                                 : msg
                             ));
                             
@@ -1093,18 +1121,19 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                                 }
                               };
                               
+                              // Append each new image as it completes (building the new set)
                               setPreviewCards(prev => [...prev, newCard]);
                               successCount++;
                             }
                             
                             // Small delay between generations
-                            if (i < 2) await new Promise(resolve => setTimeout(resolve, 500));
+                            if (i < imageCount - 1) await new Promise(resolve => setTimeout(resolve, 500));
                           }
                           
                           // Update progress to 100%
                           setChatMessages(prev => prev.map(msg => 
                             msg.id === progressMessageId
-                              ? { ...msg, content: `✓ Generation complete! ${successCount}/3 images created successfully - 100%` }
+                              ? { ...msg, content: `✓ Generation complete! ${successCount}/${imageCount} images created successfully - 100%` }
                               : msg
                           ));
                           

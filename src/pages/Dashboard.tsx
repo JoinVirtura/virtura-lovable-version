@@ -53,6 +53,7 @@ import VerificationPage from "./VerificationPage";
 import UserProfile from "./UserProfile";
 import { TrialBanner } from "@/components/TrialBanner";
 import { TrialOnboarding } from "@/components/TrialOnboarding";
+import { TokenBalanceHeader } from "@/components/TokenBalanceHeader";
 import {
   Play,
   Sparkles,
@@ -2014,9 +2015,17 @@ export default function Dashboard() {
               <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 Virtura AI
               </h1>
-              <SidebarTrigger className="h-10 w-10 min-h-[44px] min-w-[44px] text-violet-400 hover:text-violet-300 hover:bg-violet-500/20 rounded-lg" />
+              <div className="flex items-center gap-2">
+                <TokenBalanceHeader />
+                <SidebarTrigger className="h-10 w-10 min-h-[44px] min-w-[44px] text-violet-400 hover:text-violet-300 hover:bg-violet-500/20 rounded-lg" />
+              </div>
             </div>
           </header>
+          
+          {/* Fixed Desktop Token Balance Header */}
+          <div className="fixed top-4 right-4 z-50 hidden md:block">
+            <TokenBalanceHeader />
+          </div>
           
           <VirturaSidebar 
             activeView={activeView} 
