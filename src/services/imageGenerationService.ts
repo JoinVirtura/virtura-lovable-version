@@ -577,7 +577,8 @@ export class ImageGenerationService {
     
     // DO NOT modify the user's prompt - they know exactly what they want
     // Generate exact same prompt multiple times for consistency
-    const promises = Array.from({ length: Math.min(count, 3) }, async (_, i) => {
+    // Support up to 10 images max
+    const promises = Array.from({ length: Math.min(count, 10) }, async (_, i) => {
       try {
         console.log(`Generating image ${i + 1}/${count} with EXACT user prompt`);
         
