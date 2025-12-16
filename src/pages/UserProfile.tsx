@@ -150,9 +150,9 @@ export default function UserProfile() {
       <QuickActionBar 
         isOwnProfile={isOwnProfile}
         isFollowing={false}
-        onEdit={() => navigate('/settings')}
-        onAnalytics={() => setActiveTab('analytics')}
-        onSettings={() => navigate('/settings')}
+        onEdit={() => navigate('/dashboard?view=settings')}
+        onAnalytics={() => navigate('/dashboard?view=creator-dashboard')}
+        onSettings={() => navigate('/dashboard?view=settings')}
       />
     </div>
   );
