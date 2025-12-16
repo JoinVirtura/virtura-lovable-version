@@ -10,7 +10,7 @@ import {
   Shield, Coins, Activity,
   LayoutDashboard, BarChart3, Cpu, FileText, 
   ImageIcon, Globe, BadgeCheck, Store, Users, DollarSign,
-  RefreshCw, Bell, Calendar, TrendingUp, ArrowRight
+  RefreshCw, Bell, Calendar, TrendingUp, ArrowRight, LifeBuoy
 } from "lucide-react";
 import { AdminCostDashboard } from "@/components/AdminCostDashboard";
 import { AdminDashboard } from "@/components/AdminDashboard";
@@ -23,6 +23,7 @@ import { GalleryShowcaseManager } from "@/components/admin/GalleryShowcaseManage
 import { LandingAnalyticsDashboard } from "@/components/admin/LandingAnalyticsDashboard";
 import { AdminVerificationReview } from "@/components/admin/AdminVerificationReview";
 import { AdminMarketplaceApprovals } from "@/components/marketplace/AdminMarketplaceApprovals";
+import { AdminSupportReview } from "@/components/admin/AdminSupportReview";
 import { RetryJobsModal } from "@/components/admin/RetryJobsModal";
 import { CreditTokensDialog } from "@/components/admin/CreditTokensDialog";
 import { SystemHealthModal } from "@/components/admin/SystemHealthModal";
@@ -405,6 +406,14 @@ export default function UnifiedAdminDashboard() {
               <Globe className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
               <span className="text-sm font-medium">Landing</span>
             </TabsTrigger>
+            
+            <TabsTrigger 
+              value="support" 
+              className="group flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-rose-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-rose-500/40 data-[state=active]:border data-[state=active]:border-white/20"
+            >
+              <LifeBuoy className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
+              <span className="text-sm font-medium">Support</span>
+            </TabsTrigger>
           </TabsList>
         </div>
 
@@ -557,6 +566,20 @@ export default function UnifiedAdminDashboard() {
 
         <TabsContent value="landing" className="space-y-4">
           <LandingAnalyticsDashboard />
+        </TabsContent>
+
+        <TabsContent value="support" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Support Center</CardTitle>
+              <CardDescription>
+                View and manage support tickets and feature suggestions
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <AdminSupportReview />
+            </CardContent>
+          </Card>
         </TabsContent>
         </Tabs>
       </div>
