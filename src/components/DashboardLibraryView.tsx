@@ -322,19 +322,19 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                   selectedFolder={selectedFolder}
                   onSelectFolder={setSelectedFolder}
                   onCreateFolder={() => setCreateFolderOpen(true)}
+                  itemCount={filteredAssets.length}
                 />
                 <div className="w-px h-6 bg-border" />
-                {["All", "Characters", "Videos", "Favorites"].filter(cat => !(hideVideoCategory && cat === "Videos")).map((category) => (
+                {["Characters", "Videos", "Favorites"].filter(cat => !(hideVideoCategory && cat === "Videos")).map((category) => (
                   <Button
                     key={category}
                     variant={selectedCategory === category ? "default" : "outline"}
                     size="sm"
                     className="h-9 px-4 text-sm font-medium transition-all hover:scale-105 hover:shadow-md"
-                    onClick={() => setSelectedCategory(category)}
+                    onClick={() => setSelectedCategory(category === selectedCategory ? "All" : category)}
                   >
                     {category === "Favorites" && <Star className="w-4 h-4 mr-2" />}
                     {category}
-                    {category === "All" && <Badge variant="secondary" className="ml-2 text-xs">{libraryAssets.length}</Badge>}
                   </Button>
                 ))}
               </div>
