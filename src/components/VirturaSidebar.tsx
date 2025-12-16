@@ -115,7 +115,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
 
   const creatorItems = [
     { id: "creator-dashboard", label: "Dashboard", icon: DollarSign },
-    { id: "scheduled-posts", label: "Scheduled", icon: Calendar },
+    { id: "scheduled-posts", label: "Calendar", icon: Calendar },
     { id: "verification", label: "Verification", icon: BadgeCheck },
   ];
 

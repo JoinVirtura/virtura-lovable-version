@@ -11,7 +11,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useCreatePost } from '@/hooks/useCreatePost';
 import { useSchedulePost } from '@/hooks/useSchedulePost';
-import { Upload, X, Loader2, Calendar as CalendarIcon, Sparkles, Image, Video, Type, FolderOpen, Wand2 } from 'lucide-react';
+import { Upload, X, Loader2, Calendar as CalendarIcon, Sparkles, Image, Video, FolderOpen, Wand2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { DashboardLibraryView } from '@/components/DashboardLibraryView';
@@ -24,7 +24,7 @@ interface CreatePostModalProps {
   defaultScheduled?: boolean;
 }
 
-type ContentType = 'image' | 'video' | 'text';
+type ContentType = 'image' | 'video';
 
 export function CreatePostModal({ isOpen, onClose, defaultScheduled = false }: CreatePostModalProps) {
   const [caption, setCaption] = useState('');
@@ -191,7 +191,7 @@ export function CreatePostModal({ isOpen, onClose, defaultScheduled = false }: C
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg sm:max-w-xl">
+      <DialogContent className="max-w-lg sm:max-w-xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             Create Post
@@ -222,86 +222,74 @@ export function CreatePostModal({ isOpen, onClose, defaultScheduled = false }: C
               <Video className="h-4 w-4 mr-2" />
               Video
             </Button>
-            <Button
-              type="button"
-              size="sm"
-              variant={selectedContentType === 'text' ? 'default' : 'outline'}
-              onClick={() => setSelectedContentType('text')}
-              className="flex-1"
-            >
-              <Type className="h-4 w-4 mr-2" />
-              Text
-            </Button>
           </div>
 
           {/* File Upload */}
-          {selectedContentType !== 'text' && (
-            <div>
-              <div className="flex gap-2 mt-2">
-                <label
-                  htmlFor="media-upload"
-                  className="flex-1 flex items-center justify-center h-24 border-2 border-dashed border-border rounded-xl cursor-pointer hover:border-primary hover:bg-primary/5 transition-all"
-                >
-                  <div className="text-center">
-                    <Upload className="h-6 w-6 mx-auto mb-1 text-muted-foreground" />
-                    <p className="text-xs text-muted-foreground">
-                      Upload
-                    </p>
-                  </div>
-                  <input
-                    id="media-upload"
-                    type="file"
-                    accept={selectedContentType === 'video' ? 'video/*' : 'image/*'}
-                    multiple={selectedContentType === 'image'}
-                    onChange={handleFileChange}
-                    className="hidden"
-                  />
-                </label>
-                <button
-                  type="button"
-                  onClick={() => setLibraryModalOpen(true)}
-                  className="flex-1 flex items-center justify-center h-24 border-2 border-dashed border-border rounded-xl cursor-pointer hover:border-primary hover:bg-primary/5 transition-all"
-                >
-                  <div className="text-center">
-                    <FolderOpen className="h-6 w-6 mx-auto mb-1 text-muted-foreground" />
-                    <p className="text-xs text-muted-foreground">
-                      Library
-                    </p>
-                  </div>
-                </button>
-              </div>
-
-              {/* Preview */}
-              {previews.length > 0 && (
-                <div className="grid grid-cols-3 gap-2 mt-4">
-                  {previews.map((preview, index) => (
-                    <div key={index} className="relative aspect-square">
-                      {files[index]?.type.startsWith('video/') ? (
-                        <video
-                          src={preview}
-                          className="w-full h-full object-cover rounded-lg"
-                        />
-                      ) : (
-                        <img
-                          src={preview}
-                          alt={`Preview ${index + 1}`}
-                          className="w-full h-full object-cover rounded-lg"
-                        />
-                      )}
-                      <Button
-                        size="icon"
-                        variant="destructive"
-                        className="absolute top-1 right-1 h-6 w-6"
-                        onClick={() => removeFile(index)}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
+          <div>
+            <div className="flex gap-2 mt-2">
+              <label
+                htmlFor="media-upload"
+                className="flex-1 flex items-center justify-center h-24 border-2 border-dashed border-border rounded-xl cursor-pointer hover:border-primary hover:bg-primary/5 transition-all"
+              >
+                <div className="text-center">
+                  <Upload className="h-6 w-6 mx-auto mb-1 text-muted-foreground" />
+                  <p className="text-xs text-muted-foreground">
+                    Upload
+                  </p>
                 </div>
-              )}
+                <input
+                  id="media-upload"
+                  type="file"
+                  accept={selectedContentType === 'video' ? 'video/*' : 'image/*'}
+                  multiple={selectedContentType === 'image'}
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+              </label>
+              <button
+                type="button"
+                onClick={() => setLibraryModalOpen(true)}
+                className="flex-1 flex items-center justify-center h-24 border-2 border-dashed border-border rounded-xl cursor-pointer hover:border-primary hover:bg-primary/5 transition-all"
+              >
+                <div className="text-center">
+                  <FolderOpen className="h-6 w-6 mx-auto mb-1 text-muted-foreground" />
+                  <p className="text-xs text-muted-foreground">
+                    Library
+                  </p>
+                </div>
+              </button>
             </div>
-          )}
+
+            {/* Preview */}
+            {previews.length > 0 && (
+              <div className="grid grid-cols-3 gap-2 mt-4">
+                {previews.map((preview, index) => (
+                  <div key={index} className="relative aspect-square">
+                    {files[index]?.type.startsWith('video/') ? (
+                      <video
+                        src={preview}
+                        className="w-full h-full object-cover rounded-lg"
+                      />
+                    ) : (
+                      <img
+                        src={preview}
+                        alt={`Preview ${index + 1}`}
+                        className="w-full h-full object-cover rounded-lg"
+                      />
+                    )}
+                    <Button
+                      size="icon"
+                      variant="destructive"
+                      className="absolute top-1 right-1 h-6 w-6"
+                      onClick={() => removeFile(index)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
           {/* Caption with AI Generator */}
           <div>
