@@ -98,7 +98,7 @@ export const CopilotOnboardingTutorial = ({ onComplete }: CopilotOnboardingTutor
         <Button
           variant="ghost"
           size="icon"
-          className="absolute top-4 right-4 z-10 text-muted-foreground hover:text-foreground"
+          className="absolute top-4 left-4 z-10 text-muted-foreground hover:text-foreground"
           onClick={handleSkip}
         >
           <X className="w-4 h-4" />
