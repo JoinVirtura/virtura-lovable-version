@@ -80,3 +80,6 @@ verify_jwt = true
 
 [functions.generate-caption]
 verify_jwt = true
+
+[functions.review-marketplace-application]
+verify_jwt = true
