@@ -7,6 +7,7 @@ export interface TokenBalance {
   lifetimePurchased: number;
   lifetimeUsed: number;
   isLoading: boolean;
+  isAdmin: boolean;
 }
 
 export interface TokenCostInfo {
@@ -17,6 +18,7 @@ export interface TokenCostInfo {
 
 /**
  * Hook to manage user token balance
+ * Admins have unlimited tokens and skip balance checks
  */
 export function useTokenBalance() {
   const [tokenBalance, setTokenBalance] = useState<TokenBalance>({
@@ -24,14 +26,46 @@ export function useTokenBalance() {
     lifetimePurchased: 0,
     lifetimeUsed: 0,
     isLoading: true,
+    isAdmin: false,
   });
   const { toast } = useToast();
+
+  const checkAdminStatus = async (userId: string): Promise<boolean> => {
+    const { data, error } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId)
+      .eq('role', 'admin')
+      .maybeSingle();
+
+    if (error) {
+      console.error('Failed to check admin status:', error);
+      return false;
+    }
+
+    return !!data;
+  };
 
   const refreshBalance = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        setTokenBalance({ balance: 0, lifetimePurchased: 0, lifetimeUsed: 0, isLoading: false });
+        setTokenBalance({ balance: 0, lifetimePurchased: 0, lifetimeUsed: 0, isLoading: false, isAdmin: false });
+        return;
+      }
+
+      // Check admin status first
+      const isAdmin = await checkAdminStatus(user.id);
+      
+      if (isAdmin) {
+        // Admin users have unlimited tokens
+        setTokenBalance({
+          balance: 999999,
+          lifetimePurchased: 999999,
+          lifetimeUsed: 0,
+          isLoading: false,
+          isAdmin: true,
+        });
         return;
       }
 
@@ -43,7 +77,7 @@ export function useTokenBalance() {
 
       if (error) {
         console.error('Failed to fetch token balance:', error);
-        setTokenBalance({ balance: 0, lifetimePurchased: 0, lifetimeUsed: 0, isLoading: false });
+        setTokenBalance({ balance: 0, lifetimePurchased: 0, lifetimeUsed: 0, isLoading: false, isAdmin: false });
         return;
       }
 
@@ -52,10 +86,11 @@ export function useTokenBalance() {
         lifetimePurchased: data.lifetime_purchased || 0,
         lifetimeUsed: data.lifetime_used || 0,
         isLoading: false,
+        isAdmin: false,
       });
     } catch (error) {
       console.error('Error refreshing token balance:', error);
-      setTokenBalance({ balance: 0, lifetimePurchased: 0, lifetimeUsed: 0, isLoading: false });
+      setTokenBalance({ balance: 0, lifetimePurchased: 0, lifetimeUsed: 0, isLoading: false, isAdmin: false });
     }
   };
 
@@ -64,6 +99,11 @@ export function useTokenBalance() {
   }, []);
 
   const checkAndWarn = (requiredTokens: number): boolean => {
+    // Admins always pass - unlimited tokens
+    if (tokenBalance.isAdmin) {
+      return true;
+    }
+
     if (tokenBalance.balance < requiredTokens) {
       toast({
         title: "Insufficient Tokens",

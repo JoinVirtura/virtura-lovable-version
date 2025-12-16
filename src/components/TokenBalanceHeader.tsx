@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Coins, TrendingDown, Sparkles } from "lucide-react";
+import { Coins, TrendingDown, Shield, Infinity as InfinityIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
@@ -14,11 +14,39 @@ export function TokenBalanceHeader({ className }: TokenBalanceHeaderProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [showDeduction, setShowDeduction] = useState(false);
   const [deductionAmount, setDeductionAmount] = useState(0);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  const checkAdminStatus = async (userId: string) => {
+    const { data, error } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId)
+      .eq('role', 'admin')
+      .maybeSingle();
+
+    if (error) {
+      console.error('Failed to check admin status:', error);
+      return false;
+    }
+
+    return !!data;
+  };
 
   const fetchBalance = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
+        setIsLoading(false);
+        return;
+      }
+
+      // Check admin status first
+      const adminStatus = await checkAdminStatus(user.id);
+      setIsAdmin(adminStatus);
+
+      if (adminStatus) {
+        // Admin users have unlimited tokens
+        setBalance(999999);
         setIsLoading(false);
         return;
       }
@@ -57,10 +85,14 @@ export function TokenBalanceHeader({ className }: TokenBalanceHeaderProps) {
   useEffect(() => {
     fetchBalance();
 
-    // Set up realtime subscription for balance changes
+    // Set up realtime subscription for balance changes (only for non-admins)
     const setupRealtimeSubscription = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+
+      // Check admin status - admins don't need realtime updates
+      const adminStatus = await checkAdminStatus(user.id);
+      if (adminStatus) return;
 
       const channel = supabase
         .channel('token-balance-changes')
@@ -102,10 +134,14 @@ export function TokenBalanceHeader({ className }: TokenBalanceHeaderProps) {
 
   // Also refresh on window focus (for when user returns after generation)
   useEffect(() => {
-    const handleFocus = () => fetchBalance();
+    const handleFocus = () => {
+      if (!isAdmin) {
+        fetchBalance();
+      }
+    };
     window.addEventListener('focus', handleFocus);
     return () => window.removeEventListener('focus', handleFocus);
-  }, []);
+  }, [isAdmin]);
 
   if (isLoading) {
     return (
@@ -115,6 +151,32 @@ export function TokenBalanceHeader({ className }: TokenBalanceHeaderProps) {
       )}>
         <Coins className="w-4 h-4 text-muted-foreground animate-pulse" />
         <span className="text-sm text-muted-foreground">...</span>
+      </div>
+    );
+  }
+
+  // Admin unlimited display
+  if (isAdmin) {
+    return (
+      <div className={cn(
+        "relative flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-violet-500/20 via-purple-500/20 to-fuchsia-500/20 backdrop-blur-sm border border-violet-500/40 hover:border-violet-400/60 transition-all duration-300 shadow-lg shadow-violet-500/10",
+        className
+      )}>
+        <motion.div
+          animate={{ rotate: [0, 10, -10, 0] }}
+          transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+        >
+          <Shield className="w-4 h-4 text-violet-400" />
+        </motion.div>
+        
+        <div className="flex items-center gap-1">
+          <InfinityIcon className="w-4 h-4 text-violet-300" />
+          <span className="text-sm font-semibold bg-gradient-to-r from-violet-300 to-fuchsia-300 bg-clip-text text-transparent">
+            Unlimited
+          </span>
+        </div>
+        
+        <span className="text-xs text-violet-400/80 font-medium">Admin</span>
       </div>
     );
   }
