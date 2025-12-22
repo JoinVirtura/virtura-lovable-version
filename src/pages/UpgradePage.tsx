@@ -7,51 +7,51 @@ import { useToast } from "@/hooks/use-toast";
 
 const plans = [
   {
-    id: "individual",
-    name: "Individual",
-    price: "$20/mo",
-    amount: 20,
+    id: "starter",
+    name: "Starter",
+    price: "$29/mo",
+    amount: 29,
     highlights: [
-      "200 tokens/month",
-      "Image & video generations",
-      "Export packs",
-      "Tokens never expire",
-      "Community support",
+      "120 monthly generations",
+      "AI photos, avatars & concepts",
+      "1080p exports",
+      "Essential styles & presets",
+      "Basic support",
     ],
     popular: false,
-    description: "For creators, hobbyists, and freelancers"
+    description: "Perfect entry point for new creators"
   },
   {
     id: "pro",
     name: "Pro",
-    price: "$99/mo",
-    amount: 99,
+    price: "$129/mo",
+    amount: 129,
     highlights: [
-      "1,000 tokens/month",
-      "All generation features",
-      "Priority processing",
-      "Advanced editing tools",
-      "Email support",
-      "Commercial licensing",
+      "700 monthly generations",
+      "Hyper-realistic quality",
+      "4K exports",
+      "Branded content tools",
+      "Commercial license",
+      "Priority support & API access",
     ],
     popular: true,
-    description: "For professionals and small teams"
+    description: "For serious creators & growing brands"
   },
   {
     id: "enterprise",
     name: "Enterprise",
-    price: "$299/mo",
-    amount: 299,
+    price: "$349/mo",
+    amount: 349,
     highlights: [
-      "3,000 tokens/month",
-      "Unlimited scaling",
-      "Team collaboration",
+      "2,200 monthly generations",
+      "Dedicated account manager",
       "White-label options",
-      "Priority support",
-      "Custom integrations",
+      "Custom model training",
+      "Team seats & 8K exports",
+      "Advanced analytics",
     ],
     popular: false,
-    description: "For agencies and high-volume users"
+    description: "For agencies, teams & large-scale operations"
   },
 ] as const;
 

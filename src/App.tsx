@@ -35,6 +35,7 @@ import { DashboardLayout } from "./layouts/DashboardLayout";
 import Upgrade from "./pages/Upgrade";
 import TrialAnalytics from "./pages/admin/TrialAnalytics";
 import TrialExperiments from "./pages/admin/TrialExperiments";
+import ExplorePage from "./pages/ExplorePage";
 
 const queryClient = new QueryClient();
 
@@ -77,6 +78,9 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/auth" element={!user ? <AuthPage /> : <Navigate to="/dashboard" replace />} />
+      
+      {/* Public Routes */}
+      <Route path="/explore" element={<ExplorePage />} />
       
       {/* Protected Routes */}
       <Route path="/" element={<Home />} />
