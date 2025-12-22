@@ -105,11 +105,11 @@ export function PricingSection({ id }: PricingSectionProps) {
               </CardHeader>
 
               <CardContent className="flex flex-col flex-grow">
-                <ul className="space-y-3 flex-grow">
+                <ul className="space-y-2 flex-grow">
                   {plan.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                      <span className="text-muted-foreground">{feature}</span>
+                    <li key={featureIndex} className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-primary flex-shrink-0" />
+                      <span className="text-sm text-muted-foreground">{feature}</span>
                     </li>
                   ))}
                 </ul>

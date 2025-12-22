@@ -54,6 +54,7 @@ import UserProfile from "./UserProfile";
 import { TrialBanner } from "@/components/TrialBanner";
 import { TrialOnboarding } from "@/components/TrialOnboarding";
 import { TokenBalanceHeader } from "@/components/TokenBalanceHeader";
+import { useSubscriptionTier } from "@/hooks/useSubscriptionTier";
 import {
   Play,
   Sparkles,
@@ -147,6 +148,9 @@ export default function Dashboard() {
   const { isOnboardingComplete, loading: onboardingLoading } = useOnboarding();
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [trialStatus, setTrialStatus] = useState<any>(null);
+  
+  // Subscription tier access control
+  const subscriptionAccess = useSubscriptionTier();
   
   // Update activeView when navigating from other routes
   useEffect(() => {
