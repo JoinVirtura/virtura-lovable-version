@@ -55,8 +55,8 @@ export function LandingHero({ id }: LandingHeroProps) {
               </span>
             </h1>
 
-            <p className="text-xl text-muted-foreground mb-4 animate-fade-in max-w-2xl mx-auto" style={{ animationDelay: "0.2s" }}>
-              Type what you want to create and see the magic happen
+            <p className="text-xl text-muted-foreground mb-4 animate-fade-in max-w-3xl mx-auto" style={{ animationDelay: "0.2s" }}>
+              Create studio-quality AI content — avatars, branded visuals, campaigns, and concepts — all in seconds.
             </p>
           </div>
 
@@ -119,7 +119,7 @@ export function LandingHero({ id }: LandingHeroProps) {
           {images.length === 0 && !isGenerating && (
             <div className="text-center animate-fade-in" style={{ animationDelay: "0.4s" }}>
               <p className="text-sm text-muted-foreground">
-                No credit card required • 7-day free trial • Cancel anytime
+                No credit card required • 7-day free trial • SFW only • Cancel anytime
               </p>
             </div>
           )}

@@ -12,28 +12,32 @@ interface FAQSectionProps {
 export function FAQSection({ id }: FAQSectionProps) {
   const faqs = [
     {
-      question: "How does the free trial work?",
-      answer: "Sign up and get 7 days of full access to all Pro features. No credit card required. After the trial, choose a plan that fits your needs or continue with our free tier.",
+      question: "Do I own the content I generate?",
+      answer: "Yes. You have full rights to all SFW content you create inside Virtura.",
     },
     {
-      question: "What happens after I use my monthly credits?",
-      answer: "You can upgrade to a higher tier anytime, or purchase additional credits as needed. Your existing projects and content are never affected.",
+      question: "Does Virtura support NSFW content?",
+      answer: "No. Virtura is strictly SFW and follows strong compliance guidelines.",
     },
     {
-      question: "Can I cancel or change my plan anytime?",
-      answer: "Yes! You can upgrade, downgrade, or cancel your subscription at any time. Changes take effect immediately, and we prorate any billing adjustments.",
+      question: "Can I create multiple avatars or identities?",
+      answer: "Yes. All plans allow for multiple identities, styles, and personas.",
     },
     {
-      question: "Do I own the content I create?",
-      answer: "Absolutely! You own all rights to the content you create with Virtura AI. Use it commercially, share it, or modify it however you like.",
+      question: "Is my data and likeness secure?",
+      answer: "Absolutely. Your images and outputs are encrypted and used only for your account.",
     },
     {
-      question: "What formats can I export?",
-      answer: "Export in all major formats including PNG, JPG, MP4, GIF, and more. Resolution depends on your plan, ranging from 1080p to 8K.",
+      question: "Can I publish content directly to Virtura?",
+      answer: "Yes. Creators can publish to their profile for fans and consumers to explore.",
     },
     {
-      question: "Is there a refund policy?",
-      answer: "Yes! We offer a 30-day money-back guarantee. If you're not satisfied with Virtura AI, contact us for a full refund, no questions asked.",
+      question: "Can I upgrade or downgrade anytime?",
+      answer: "Yes. Change your subscription whenever needed.",
+    },
+    {
+      question: "Is Virtura for creators or brands?",
+      answer: "Both — Virtura is built for creators, consumers, businesses, and agencies.",
     },
   ];
 
@@ -47,10 +51,10 @@ export function FAQSection({ id }: FAQSectionProps) {
       <div className="container mx-auto px-6 relative z-10">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            Frequently Asked <span className="bg-gradient-text bg-clip-text text-transparent">Questions</span>
+            ❓ Frequently Asked <span className="bg-gradient-text bg-clip-text text-transparent">Questions</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Everything you need to know about Virtura AI
+            SFW, clean, and accurate answers
           </p>
         </div>
 
