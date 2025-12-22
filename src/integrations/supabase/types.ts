@@ -3913,17 +3913,6 @@ export type Database = {
         }
         Relationships: []
       }
-      trial_analytics_summary: {
-        Row: {
-          avg_time_to_convert_hours: number | null
-          conversion_rate: number | null
-          converted_trials: number | null
-          total_trials: number | null
-          trials_last_30_days: number | null
-          trials_last_7_days: number | null
-        }
-        Relationships: []
-      }
     }
     Functions: {
       add_tokens: {
