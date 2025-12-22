@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -11,36 +10,34 @@ interface PricingSectionProps {
 
 export function PricingSection({ id }: PricingSectionProps) {
   const navigate = useNavigate();
-  const [isAnnual, setIsAnnual] = useState(false);
 
   const plans = [
     {
       name: "Starter",
-      monthlyPrice: 100,
-      annualPrice: 80,
-      description: "Perfect for individuals starting out",
+      price: 29,
+      description: "Perfect entry point for new creators",
       features: [
-        "500 AI generations/month",
-        "Basic templates",
-        "Standard support",
+        "120 monthly generations",
+        "AI photos, avatars, and concepts",
         "1080p exports",
-        "Community access",
+        "Essential styles & presets",
+        "SFW content only",
+        "Basic support",
       ],
       cta: "Start Free Trial",
       popular: false,
     },
     {
       name: "Pro",
-      monthlyPrice: 200,
-      annualPrice: 160,
-      description: "Most popular for professionals",
+      price: 129,
+      description: "For serious creators & growing brands",
       features: [
-        "2,000 AI generations/month",
-        "Premium templates",
-        "Priority support",
+        "700 monthly generations",
+        "Hyper-realistic quality & advanced styles",
         "4K exports",
-        "Advanced features",
+        "Branded content tools",
         "Commercial license",
+        "Priority support",
         "API access",
       ],
       cta: "Start Free Trial",
@@ -48,18 +45,17 @@ export function PricingSection({ id }: PricingSectionProps) {
     },
     {
       name: "Enterprise",
-      monthlyPrice: 300,
-      annualPrice: 240,
-      description: "For teams and organizations",
+      price: 349,
+      description: "For agencies, teams & large-scale operations",
       features: [
-        "Unlimited generations",
-        "Custom templates",
-        "Dedicated support",
+        "2,200 monthly generations",
+        "Dedicated account manager",
+        "White-label options",
+        "Custom model training",
+        "Team seats & collaboration",
         "8K exports",
-        "White-label option",
-        "Custom integrations",
-        "Team collaboration",
         "Advanced analytics",
+        "Priority API access",
       ],
       cta: "Contact Sales",
       popular: false,
@@ -76,31 +72,11 @@ export function PricingSection({ id }: PricingSectionProps) {
       <div className="container mx-auto px-6 relative z-10">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            Transparent Pricing That <span className="bg-gradient-text bg-clip-text text-transparent">Scales With You</span>
+            💳 <span className="bg-gradient-text bg-clip-text text-transparent">Pricing</span>
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             No hidden fees. Cancel anytime.
           </p>
-          
-          {/* Billing Toggle */}
-          <div className="flex items-center justify-center gap-4 mb-8">
-            <span className={`text-sm ${!isAnnual ? 'text-foreground font-semibold' : 'text-muted-foreground'}`}>
-              Monthly
-            </span>
-            <button
-              onClick={() => setIsAnnual(!isAnnual)}
-              className="relative w-14 h-7 bg-card border-2 border-border rounded-full transition-colors duration-300 hover:border-primary"
-            >
-              <div
-                className={`absolute top-0.5 left-0.5 w-6 h-6 bg-gradient-primary rounded-full transition-transform duration-300 ${
-                  isAnnual ? 'translate-x-7' : 'translate-x-0'
-                }`}
-              />
-            </button>
-            <span className={`text-sm ${isAnnual ? 'text-foreground font-semibold' : 'text-muted-foreground'}`}>
-              Annual <span className="text-primary">(Save 20%)</span>
-            </span>
-          </div>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
@@ -122,18 +98,13 @@ export function PricingSection({ id }: PricingSectionProps) {
                 <p className="text-muted-foreground text-sm mb-6">{plan.description}</p>
                 <div className="mb-12">
                   <span className="text-5xl font-bold">
-                    ${isAnnual ? plan.annualPrice : plan.monthlyPrice}
+                    ${plan.price}
                   </span>
                   <span className="text-muted-foreground">/month</span>
-                  {isAnnual && (
-                    <div className="text-sm text-muted-foreground mt-2">
-                      Billed annually (${plan.annualPrice * 12}/year)
-                    </div>
-                  )}
                 </div>
                 <div className="pt-4">
                   <Button 
-                    onClick={() => plan.cta === "Contact Sales" ? null : navigate("/auth")}
+                    onClick={() => plan.cta === "Contact Sales" ? window.location.href = "mailto:sales@virtura.ai" : navigate("/auth")}
                     className={plan.popular ? "bg-gradient-primary hover:shadow-violet-glow w-full" : "w-full"}
                     variant={plan.popular ? "default" : "outline"}
                   >

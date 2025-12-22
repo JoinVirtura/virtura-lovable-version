@@ -16,10 +16,8 @@ export function LandingNavigation() {
   };
 
   const navLinks = [
-    { label: "Services", id: "services" },
-    { label: "How It Works", id: "how-it-works" },
+    { label: "Features", id: "services" },
     { label: "Pricing", id: "pricing" },
-    { label: "Testimonials", id: "testimonials" },
     { label: "FAQ", id: "faq" },
   ];
 

@@ -1,4 +1,4 @@
-import { FileText, Wand2, Download } from "lucide-react";
+import { User, Wand2, Share2 } from "lucide-react";
 
 interface HowItWorksSectionProps {
   id?: string;
@@ -8,21 +8,21 @@ export function HowItWorksSection({ id }: HowItWorksSectionProps) {
   const steps = [
     {
       number: "01",
-      icon: FileText,
-      title: "Describe Your Vision",
-      description: "Type what you want to create or upload reference images. Our AI understands natural language.",
+      icon: User,
+      title: "Create or Select Your Identity",
+      description: "Upload references or choose from style presets. Build avatars, personas, or brand identities with ease.",
     },
     {
       number: "02",
       icon: Wand2,
-      title: "AI Creates Magic",
-      description: "Our advanced AI generates multiple high-quality options in seconds. Watch the magic happen.",
+      title: "Generate Stunning Content",
+      description: "Produce lifestyle visuals, marketing concepts, product shots, branded images, and more — instantly.",
     },
     {
       number: "03",
-      icon: Download,
-      title: "Download & Share",
-      description: "Choose your favorite and export in any format. Ready to share with the world.",
+      icon: Share2,
+      title: "Publish & Share",
+      description: "Download in HD or publish directly to your Virtura profile for fans and consumers to explore.",
     },
   ];
 

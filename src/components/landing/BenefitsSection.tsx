@@ -1,4 +1,4 @@
-import { Rocket, Brain, Shield, Infinity, BarChart3, Users } from "lucide-react";
+import { Sparkles, Zap, Layers, Shield, Users, Infinity } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface BenefitsSectionProps {
@@ -8,34 +8,34 @@ interface BenefitsSectionProps {
 export function BenefitsSection({ id }: BenefitsSectionProps) {
   const benefits = [
     {
-      icon: Rocket,
-      title: "Lightning Fast Creation",
-      description: "Generate professional-grade content in seconds, not hours. 10x faster than traditional creative workflows.",
+      icon: Sparkles,
+      title: "Studio-Grade Quality",
+      description: "Cinematic lighting, clean composition, and premium aesthetics built for creators and brands.",
     },
     {
-      icon: Brain,
-      title: "AI-Powered Intelligence",
-      description: "Advanced neural networks trained on millions of images deliver consistently stunning results every time.",
+      icon: Zap,
+      title: "Content Scaling at Speed",
+      description: "Generate a month's worth of content in minutes — no shoots, no scheduling, no limitations.",
+    },
+    {
+      icon: Layers,
+      title: "Multiple Vertical Tools",
+      description: "Avatars, branded templates, campaign scenes, product visuals, lifestyle shots, and more.",
     },
     {
       icon: Shield,
-      title: "Enterprise Security",
-      description: "Bank-level encryption and data privacy. Your creations and intellectual property remain 100% yours.",
-    },
-    {
-      icon: Infinity,
-      title: "Unlimited Possibilities",
-      description: "Generate infinite variations, styles, and iterations. Experiment freely without constraints or additional costs.",
-    },
-    {
-      icon: BarChart3,
-      title: "Data-Driven Insights",
-      description: "Track performance metrics, analyze engagement, and optimize your content strategy with built-in analytics.",
+      title: "Privacy-Driven & SFW Only",
+      description: "Your likeness, assets, and content remain private and secure. No NSFW. No exceptions.",
     },
     {
       icon: Users,
-      title: "Team Collaboration",
-      description: "Real-time collaboration tools, shared libraries, and brand consistency across your entire organization.",
+      title: "Creators, Consumers & Brands Welcome",
+      description: "Virtura is built for everyone — from creators growing their audience to fans browsing profiles to brands building campaigns.",
+    },
+    {
+      icon: Infinity,
+      title: "Built for the Future of Content",
+      description: "One platform. Unlimited creativity. Endless ways to evolve your identity online.",
     },
   ];
 
@@ -50,10 +50,10 @@ export function BenefitsSection({ id }: BenefitsSectionProps) {
       <div className="container mx-auto px-6 relative z-10">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            Why <span className="bg-gradient-text bg-clip-text text-transparent">Virtura AI</span>
+            Why <span className="bg-gradient-text bg-clip-text text-transparent">Virtura</span>
           </h2>
-          <p className="text-xl text-muted-foreground">
-            Transform your content creation workflow with enterprise-grade AI technology
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            The platform built for creators, brands, and the future of content
           </p>
         </div>
 

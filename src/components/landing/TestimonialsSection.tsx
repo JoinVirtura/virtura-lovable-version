@@ -9,28 +9,25 @@ interface TestimonialsSectionProps {
 export function TestimonialsSection({ id }: TestimonialsSectionProps) {
   const testimonials = [
     {
-      name: "Sarah Johnson",
-      role: "Marketing Director",
-      company: "TechCorp",
-      content: "Virtura AI has transformed our content production. We've reduced costs by 70% while increasing output 5x! The quality is incredible.",
+      content: "Virtura replaced almost all of our content shoots. We create marketing visuals 10x faster and for a fraction of the cost.",
       rating: 5,
-      avatar: "SJ",
+      avatar: "CA",
+      name: "Creative Agency",
+      role: "USA",
     },
     {
-      name: "Mike Thompson",
-      role: "Content Creator",
-      company: "Independent",
-      content: "As a solo creator, I can now compete with big studios. The quality is unbelievable! It's like having a team of designers at my fingertips.",
+      content: "As a creator, this platform saved me hours every week. I never run out of content anymore.",
       rating: 5,
-      avatar: "MT",
+      avatar: "LC",
+      name: "Lifestyle Creator",
+      role: "",
     },
     {
-      name: "Lisa Kim",
-      role: "Small Business Owner",
-      company: "Creative Studio",
-      content: "The AI understands exactly what I want. It's intuitive, fast, and produces professional results every single time.",
+      content: "Our brand now produces consistent, on-brand imagery every single day. Virtura is a game-changer.",
       rating: 5,
-      avatar: "LK",
+      avatar: "EB",
+      name: "Ecommerce Brand",
+      role: "",
     },
   ];
 
@@ -39,7 +36,7 @@ export function TestimonialsSection({ id }: TestimonialsSectionProps) {
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            Loved by <span className="bg-gradient-text bg-clip-text text-transparent">Creators Worldwide</span>
+            ⭐ <span className="bg-gradient-text bg-clip-text text-transparent">Testimonials</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Join thousands of satisfied creators transforming their workflow
@@ -71,10 +68,11 @@ export function TestimonialsSection({ id }: TestimonialsSectionProps) {
                   </Avatar>
                   <div>
                     <p className="font-semibold">{testimonial.name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {testimonial.role}
-                      {testimonial.company && ` • ${testimonial.company}`}
-                    </p>
+                    {testimonial.role && (
+                      <p className="text-sm text-muted-foreground">
+                        {testimonial.role}
+                      </p>
+                    )}
                   </div>
                 </div>
               </CardContent>
