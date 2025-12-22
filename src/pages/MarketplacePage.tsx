@@ -30,7 +30,7 @@ export default function MarketplacePage({ onNavigateToVerification }: Marketplac
 
   if (loading) {
     return (
-      <div className="container mx-auto p-6 space-y-6">
+      <div className="container mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
         <Skeleton className="h-12 w-full" />
         <Skeleton className="h-64 w-full" />
       </div>
@@ -40,17 +40,17 @@ export default function MarketplacePage({ onNavigateToVerification }: Marketplac
   // No application yet - show role selection and conditional form
   if (!access) {
     return (
-      <div className="container mx-auto p-6 space-y-6">
+      <div className="container mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
         <div>
-          <h1 className="text-3xl font-bold">Marketplace</h1>
-          <p className="text-muted-foreground mt-2">
+          <h1 className="text-2xl sm:text-3xl font-bold">Marketplace</h1>
+          <p className="text-muted-foreground mt-2 text-sm sm:text-base">
             Connect brands with creators for paid campaigns
           </p>
         </div>
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-2xl mx-auto px-0 sm:px-4">
           {/* If Creator is selected and not verified, show verification gate */}
           {selectedRole === 'creator' && !isCreatorVerified ? (
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               <MarketplaceVerificationGate 
                 onVerified={handleVerified}
                 onNavigateToVerification={handleNavigateToVerification}
@@ -76,19 +76,19 @@ export default function MarketplacePage({ onNavigateToVerification }: Marketplac
   // Application pending - show status
   if (access.status === 'pending') {
     return (
-      <div className="container mx-auto p-6 space-y-6">
+      <div className="container mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
         <div>
-          <h1 className="text-3xl font-bold">Marketplace</h1>
-          <p className="text-muted-foreground mt-2">
+          <h1 className="text-2xl sm:text-3xl font-bold">Marketplace</h1>
+          <p className="text-muted-foreground mt-2 text-sm sm:text-base">
             Connect brands with creators for paid campaigns
           </p>
         </div>
         <Card>
-          <CardContent className="p-12 text-center space-y-4">
-            <Clock className="h-16 w-16 mx-auto text-primary" />
+          <CardContent className="p-6 sm:p-12 text-center space-y-4">
+            <Clock className="h-12 w-12 sm:h-16 sm:w-16 mx-auto text-primary" />
             <div>
-              <h3 className="text-2xl font-semibold mb-2">Application Under Review</h3>
-              <p className="text-muted-foreground">
+              <h3 className="text-xl sm:text-2xl font-semibold mb-2">Application Under Review</h3>
+              <p className="text-muted-foreground text-sm sm:text-base">
                 Your application is being reviewed by our team. You'll receive a notification
                 once a decision has been made (typically within 24-48 hours).
               </p>
@@ -106,23 +106,23 @@ export default function MarketplacePage({ onNavigateToVerification }: Marketplac
   // Application denied - show denial reason
   if (access.status === 'denied') {
     return (
-      <div className="container mx-auto p-6 space-y-6">
+      <div className="container mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
         <div>
-          <h1 className="text-3xl font-bold">Marketplace</h1>
-          <p className="text-muted-foreground mt-2">
+          <h1 className="text-2xl sm:text-3xl font-bold">Marketplace</h1>
+          <p className="text-muted-foreground mt-2 text-sm sm:text-base">
             Connect brands with creators for paid campaigns
           </p>
         </div>
         <Card>
-          <CardContent className="p-12 text-center space-y-4">
-            <XCircle className="h-16 w-16 mx-auto text-destructive" />
+          <CardContent className="p-6 sm:p-12 text-center space-y-4">
+            <XCircle className="h-12 w-12 sm:h-16 sm:w-16 mx-auto text-destructive" />
             <div>
-              <h3 className="text-2xl font-semibold mb-2">Application Not Approved</h3>
-              <p className="text-muted-foreground mb-4">
+              <h3 className="text-xl sm:text-2xl font-semibold mb-2">Application Not Approved</h3>
+              <p className="text-muted-foreground mb-4 text-sm sm:text-base">
                 Unfortunately, your marketplace application was not approved at this time.
               </p>
               {access.denial_reason && (
-                <div className="bg-muted p-4 rounded-lg text-left max-w-md mx-auto">
+                <div className="bg-muted p-3 sm:p-4 rounded-lg text-left max-w-md mx-auto">
                   <div className="flex items-start gap-2">
                     <AlertCircle className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
                     <div>
@@ -143,24 +143,24 @@ export default function MarketplacePage({ onNavigateToVerification }: Marketplac
   const isCreator = access.role_requested === 'creator';
 
   return (
-    <div className="container mx-auto p-6 space-y-8">
+    <div className="container mx-auto p-4 sm:p-6 space-y-4 sm:space-y-8">
       {/* Enhanced Header */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-900/40 via-purple-900/40 to-pink-900/40 border border-primary/20 p-8 backdrop-blur-xl">
+      <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-violet-900/40 via-purple-900/40 to-pink-900/40 border border-primary/20 p-4 sm:p-8 backdrop-blur-xl">
         <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:20px_20px]" />
-        <div className="relative z-10 flex items-center justify-between">
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-violet-400 bg-clip-text text-transparent">
+            <h1 className="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-primary to-violet-400 bg-clip-text text-transparent">
               Marketplace
             </h1>
-            <p className="text-muted-foreground mt-2 text-lg">
+            <p className="text-muted-foreground mt-1 sm:mt-2 text-sm sm:text-lg">
               {isCreator 
                 ? 'Browse campaigns and connect with brands'
                 : 'Create campaigns and find talented creators'
               }
             </p>
           </div>
-          <Badge variant="default" className="text-sm px-4 py-2 bg-gradient-to-r from-primary to-violet-500">
-            <CheckCircle className="h-4 w-4 mr-2" />
+          <Badge variant="default" className="text-xs sm:text-sm px-3 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-r from-primary to-violet-500 w-fit">
+            <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
             {isCreator ? 'Approved Creator' : 'Approved Brand'}
           </Badge>
         </div>

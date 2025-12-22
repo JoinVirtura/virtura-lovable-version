@@ -211,18 +211,18 @@ export default function DashboardPage() {
             {activeTab === "overview" && (
               <div className="space-y-6">
                 {/* Stats */}
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
                   {stats.map((stat) => (
                     <Card key={stat.label} className="bg-gradient-to-br from-card to-card/50">
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-3 sm:p-6 sm:pb-2">
+                        <CardTitle className="text-xs sm:text-sm font-medium truncate pr-2">
                           {stat.label}
                         </CardTitle>
-                        <stat.icon className="h-4 w-4 text-muted-foreground" />
+                        <stat.icon className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
                       </CardHeader>
-                      <CardContent>
-                        <div className="text-2xl font-bold">{stat.value}</div>
-                        <p className="text-xs text-muted-foreground">
+                      <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+                        <div className="text-xl sm:text-2xl font-bold">{stat.value}</div>
+                        <p className="text-[10px] sm:text-xs text-muted-foreground">
                           <span className="text-green-600">{stat.change}</span> from last month
                         </p>
                       </CardContent>
@@ -232,22 +232,22 @@ export default function DashboardPage() {
 
                 {/* Recent Avatars */}
                 <Card className="bg-gradient-to-br from-card to-card/50">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
+                  <CardHeader className="p-4 sm:p-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                       <div>
-                        <CardTitle>Recent Avatars</CardTitle>
-                        <CardDescription>
+                        <CardTitle className="text-base sm:text-lg">Recent Avatars</CardTitle>
+                        <CardDescription className="text-xs sm:text-sm">
                           Your latest AI-generated avatars
                         </CardDescription>
                       </div>
-                      <Button size="sm">
+                      <Button size="sm" className="w-full sm:w-auto">
                         <Plus className="mr-2 h-4 w-4" />
-                        Create New
+                        <span className="sm:inline">Create New</span>
                       </Button>
                     </div>
                   </CardHeader>
-                  <CardContent>
-                     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                  <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
+                     <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
                        {recentAvatars.filter(avatar => avatar.style === "Realistic").map((avatar) => (
                          <AvatarCard
                            key={avatar.id}
@@ -263,14 +263,14 @@ export default function DashboardPage() {
                 </Card>
 
                 {/* Usage Progress */}
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2">
                   <Card className="bg-gradient-to-br from-card to-card/50">
-                    <CardHeader>
-                      <CardTitle className="text-base">Monthly Usage</CardTitle>
+                    <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-2">
+                      <CardTitle className="text-sm sm:text-base">Monthly Usage</CardTitle>
                     </CardHeader>
-                    <CardContent>
-                      <div className="space-y-3">
-                        <div className="flex justify-between text-sm">
+                    <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
+                      <div className="space-y-2 sm:space-y-3">
+                        <div className="flex justify-between text-xs sm:text-sm">
                           <span>Credits Used</span>
                           <span>156 / 300</span>
                         </div>
@@ -283,13 +283,13 @@ export default function DashboardPage() {
                   </Card>
                   
                   <Card className="bg-gradient-to-br from-card to-card/50">
-                    <CardHeader>
-                      <CardTitle className="text-base">Generation Streak</CardTitle>
+                    <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-2">
+                      <CardTitle className="text-sm sm:text-base">Generation Streak</CardTitle>
                     </CardHeader>
-                    <CardContent>
-                      <div className="space-y-3">
-                        <div className="text-2xl font-bold">7 days</div>
-                        <p className="text-sm text-muted-foreground">
+                    <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
+                      <div className="space-y-2 sm:space-y-3">
+                        <div className="text-xl sm:text-2xl font-bold">7 days</div>
+                        <p className="text-xs sm:text-sm text-muted-foreground">
                           Keep creating to maintain your streak!
                         </p>
                         <Button size="sm" className="w-full">

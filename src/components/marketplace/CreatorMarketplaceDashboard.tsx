@@ -183,26 +183,27 @@ export function CreatorMarketplaceDashboard() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Pending Contracts Alert */}
       {pendingContracts.length > 0 && (
         <Card className="backdrop-blur-xl bg-gradient-to-br from-yellow-900/20 to-orange-900/20 border-yellow-500/30">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-full bg-yellow-500/20">
-                  <FileText className="w-5 h-5 text-yellow-400" />
+                <div className="p-2 rounded-full bg-yellow-500/20 flex-shrink-0">
+                  <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400" />
                 </div>
                 <div>
-                  <p className="font-semibold text-yellow-400">Contracts Awaiting Your Signature</p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="font-semibold text-yellow-400 text-sm sm:text-base">Contracts Awaiting Your Signature</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     You have {pendingContracts.length} contract{pendingContracts.length > 1 ? 's' : ''} to review and sign
                   </p>
                 </div>
               </div>
               <Button 
                 variant="outline"
-                className="border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/10"
+                size="sm"
+                className="border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/10 w-full sm:w-auto"
                 onClick={() => setSelectedContractCampaign(pendingContracts[0].campaign_id)}
               >
                 Review Contract
@@ -213,22 +214,22 @@ export function CreatorMarketplaceDashboard() {
       )}
 
       <Tabs defaultValue="browse" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 bg-card/50 backdrop-blur-xl">
-          <TabsTrigger value="browse">Browse Campaigns</TabsTrigger>
-          <TabsTrigger value="applications">My Applications ({myApplications.length})</TabsTrigger>
-          <TabsTrigger value="active">Active Gigs ({activeGigs.length})</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3 bg-card/50 backdrop-blur-xl h-auto">
+          <TabsTrigger value="browse" className="text-xs sm:text-sm py-2 px-1 sm:px-3">Browse</TabsTrigger>
+          <TabsTrigger value="applications" className="text-xs sm:text-sm py-2 px-1 sm:px-3">Applications ({myApplications.length})</TabsTrigger>
+          <TabsTrigger value="active" className="text-xs sm:text-sm py-2 px-1 sm:px-3">Active ({activeGigs.length})</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="browse" className="mt-6 space-y-6">
+        <TabsContent value="browse" className="mt-4 sm:mt-6 space-y-4 sm:space-y-6">
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
             <Input
               placeholder="Search campaigns..."
-              className="pl-12 h-12 bg-card/50 backdrop-blur-xl border-primary/20"
+              className="pl-10 sm:pl-12 h-10 sm:h-12 bg-card/50 backdrop-blur-xl border-primary/20 text-sm sm:text-base pr-24 sm:pr-32"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <Badge className="absolute right-4 top-1/2 -translate-y-1/2">
+            <Badge className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 text-xs">
               {filteredCampaigns.length} campaigns
             </Badge>
           </div>
@@ -238,7 +239,7 @@ export function CreatorMarketplaceDashboard() {
             onSelectCategory={setSelectedCategory}
           />
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {filteredCampaigns.map((campaign, index) => (
               <motion.div
                 key={campaign.id}
@@ -247,37 +248,37 @@ export function CreatorMarketplaceDashboard() {
                 transition={{ delay: index * 0.05 }}
               >
                 <Card className="backdrop-blur-3xl bg-gradient-to-br from-violet-900/20 via-purple-900/20 to-pink-900/20 border border-primary/20 h-full">
-                  <CardContent className="p-6 space-y-4">
-                    <div className="flex items-center gap-3">
+                  <CardContent className="p-4 sm:p-6 space-y-3 sm:space-y-4">
+                    <div className="flex items-center gap-2 sm:gap-3">
                       {campaign.brands?.logo_url ? (
                         <img 
                           src={campaign.brands.logo_url} 
                           alt={campaign.brands.name}
-                          className="w-10 h-10 rounded-lg object-cover"
+                          className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg object-cover"
                         />
                       ) : (
-                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                          <Briefcase className="w-5 h-5 text-primary" />
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <Briefcase className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                         </div>
                       )}
-                      <div>
-                        <p className="text-sm text-muted-foreground">{campaign.brands?.name}</p>
-                        <Badge variant="outline" className="text-xs">{campaign.category}</Badge>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs sm:text-sm text-muted-foreground truncate">{campaign.brands?.name}</p>
+                        <Badge variant="outline" className="text-[10px] sm:text-xs">{campaign.category}</Badge>
                       </div>
                     </div>
 
                     <div>
-                      <h3 className="font-bold text-lg mb-1">{campaign.title}</h3>
-                      <p className="text-sm text-muted-foreground line-clamp-2">{campaign.description}</p>
+                      <h3 className="font-bold text-base sm:text-lg mb-1 line-clamp-1">{campaign.title}</h3>
+                      <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">{campaign.description}</p>
                     </div>
 
-                    <div className="flex items-center justify-between pt-4 border-t border-border">
+                    <div className="flex items-center justify-between pt-3 sm:pt-4 border-t border-border">
                       <div className="flex items-center gap-1">
-                        <DollarSign className="w-4 h-4 text-primary" />
-                        <span className="font-bold">{formatBudget(campaign.budget_cents)}</span>
+                        <DollarSign className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
+                        <span className="font-bold text-sm sm:text-base">{formatBudget(campaign.budget_cents)}</span>
                       </div>
                       {campaign.deadline && (
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <div className="flex items-center gap-1 text-[10px] sm:text-xs text-muted-foreground">
                           <Calendar className="w-3 h-3" />
                           {format(new Date(campaign.deadline), 'MMM dd')}
                         </div>
@@ -285,7 +286,8 @@ export function CreatorMarketplaceDashboard() {
                     </div>
 
                     <Button 
-                      className="w-full bg-gradient-to-r from-primary to-primary-blue"
+                      className="w-full bg-gradient-to-r from-primary to-primary-blue text-sm"
+                      size="sm"
                       onClick={() => setSelectedCampaignForApplication(campaign.id)}
                     >
                       Apply Now
@@ -297,35 +299,35 @@ export function CreatorMarketplaceDashboard() {
           </div>
         </TabsContent>
 
-        <TabsContent value="applications" className="mt-6 space-y-4">
+        <TabsContent value="applications" className="mt-4 sm:mt-6 space-y-3 sm:space-y-4">
           {myApplications.map((app) => {
             const contract = app.campaign_id ? getContractForCampaign(app.campaign_id) : null;
             const needsSignature = contract?.status === 'pending_creator' && !contract.creator_signed_at;
             
             return (
               <Card key={app.id} className="backdrop-blur-xl bg-card/50">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle>{app.campaign?.title}</CardTitle>
-                      <p className="text-sm text-muted-foreground mt-1">
+                <CardHeader className="p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-0">
+                    <div className="min-w-0">
+                      <CardTitle className="text-base sm:text-lg truncate">{app.campaign?.title}</CardTitle>
+                      <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                         {app.campaign?.brands?.name} • Applied {app.applied_at && format(new Date(app.applied_at), 'MMM dd, yyyy')}
                       </p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-1 sm:gap-2">
                       {contract && <ContractStatusBadge status={contract.status} />}
                       {getStatusBadge(app.status || 'pending')}
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0 space-y-3 sm:space-y-4">
                   <div className="flex items-center gap-4">
                     <div>
-                      <span className="text-sm text-muted-foreground">Proposed Rate:</span>
-                      <span className="ml-2 font-bold">{formatBudget(app.proposed_rate_cents)}</span>
+                      <span className="text-xs sm:text-sm text-muted-foreground">Proposed Rate:</span>
+                      <span className="ml-2 font-bold text-sm sm:text-base">{formatBudget(app.proposed_rate_cents)}</span>
                     </div>
                   </div>
-                  <p className="text-sm text-muted-foreground">{app.pitch}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">{app.pitch}</p>
                   
                   {/* Contract action for accepted applications */}
                   {app.status === 'accepted' && contract && (
@@ -333,6 +335,7 @@ export function CreatorMarketplaceDashboard() {
                       onClick={() => setSelectedContractCampaign(app.campaign_id)}
                       className={needsSignature ? 'bg-gradient-to-r from-yellow-500 to-orange-500' : ''}
                       variant={needsSignature ? 'default' : 'outline'}
+                      size="sm"
                     >
                       <FileText className="w-4 h-4 mr-2" />
                       {needsSignature ? 'Sign Contract' : 'View Contract'}
@@ -357,43 +360,45 @@ export function CreatorMarketplaceDashboard() {
           )}
         </TabsContent>
 
-        <TabsContent value="active" className="mt-6 space-y-4">
+        <TabsContent value="active" className="mt-4 sm:mt-6 space-y-3 sm:space-y-4">
           {activeGigs.map((campaign) => {
             const contract = getContractForCampaign(campaign.id);
             
             return (
               <Card key={campaign.id} className="backdrop-blur-xl bg-card/50">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle>{campaign.title}</CardTitle>
-                      <p className="text-sm text-muted-foreground mt-1">
+                <CardHeader className="p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-0">
+                    <div className="min-w-0">
+                      <CardTitle className="text-base sm:text-lg truncate">{campaign.title}</CardTitle>
+                      <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                         {campaign.brands?.name}
                       </p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-1 sm:gap-2">
                       {contract && <ContractStatusBadge status={contract.status} />}
                       {getStatusBadge(campaign.status || 'open')}
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center gap-4">
+                <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0 space-y-3 sm:space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                     <div>
-                      <span className="text-sm text-muted-foreground">Your Rate:</span>
-                      <span className="ml-2 font-bold">{formatBudget(campaign.creator_rate_cents || 0)}</span>
+                      <span className="text-xs sm:text-sm text-muted-foreground">Your Rate:</span>
+                      <span className="ml-2 font-bold text-sm sm:text-base">{formatBudget(campaign.creator_rate_cents || 0)}</span>
                     </div>
                     {campaign.deadline && (
                       <div>
-                        <span className="text-sm text-muted-foreground">Deadline:</span>
-                        <span className="ml-2">{format(new Date(campaign.deadline), 'MMM dd, yyyy')}</span>
+                        <span className="text-xs sm:text-sm text-muted-foreground">Deadline:</span>
+                        <span className="ml-2 text-sm sm:text-base">{format(new Date(campaign.deadline), 'MMM dd, yyyy')}</span>
                       </div>
                     )}
                   </div>
 
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-col sm:flex-row flex-wrap gap-2">
                     <Button 
                       variant="outline"
+                      size="sm"
+                      className="w-full sm:w-auto"
                       onClick={() => setSelectedCampaignForChat(campaign.id)}
                     >
                       <MessageSquare className="w-4 h-4 mr-2" />
@@ -402,6 +407,8 @@ export function CreatorMarketplaceDashboard() {
                     {contract && (
                       <Button 
                         variant="outline"
+                        size="sm"
+                        className="w-full sm:w-auto"
                         onClick={() => setSelectedContractCampaign(campaign.id)}
                       >
                         <FileText className="w-4 h-4 mr-2" />
@@ -410,6 +417,8 @@ export function CreatorMarketplaceDashboard() {
                     )}
                     {campaign.status === 'in_progress' && (
                       <Button 
+                        size="sm"
+                        className="w-full sm:w-auto"
                         onClick={() => setSelectedCampaignForUpload(campaign.id)}
                       >
                         <Upload className="w-4 h-4 mr-2" />

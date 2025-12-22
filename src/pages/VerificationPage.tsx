@@ -90,7 +90,7 @@ export default function VerificationPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto p-6 max-w-2xl flex items-center justify-center min-h-screen">
+      <div className="container mx-auto p-4 sm:p-6 max-w-2xl flex items-center justify-center min-h-screen">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
@@ -99,10 +99,10 @@ export default function VerificationPage() {
   const isApprovedButNotSubscribed = status?.status === 'approved' && status?.subscription_status !== 'active';
 
   return (
-    <div className="container mx-auto p-6 max-w-2xl space-y-6">
+    <div className="container mx-auto p-4 sm:p-6 max-w-2xl space-y-4 sm:space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Verification</h1>
-        <p className="text-muted-foreground mt-1">
+        <h1 className="text-2xl sm:text-3xl font-bold">Verification</h1>
+        <p className="text-muted-foreground mt-1 text-sm sm:text-base">
           Get verified to stand out as a trusted creator
         </p>
       </div>
@@ -176,24 +176,24 @@ export default function VerificationPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20 text-xs sm:text-sm">
                 <CheckCircle2 className="w-3 h-3 mr-1" />
                 Identity Verified
               </Badge>
-              <Badge variant="outline" className="bg-muted text-muted-foreground">
+              <Badge variant="outline" className="bg-muted text-muted-foreground text-xs sm:text-sm">
                 Badge Inactive
               </Badge>
             </div>
             
-            <div className="p-4 rounded-lg bg-background/50 border">
-              <div className="flex items-center justify-between">
+            <div className="p-3 sm:p-4 rounded-lg bg-background/50 border">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
                 <div>
-                  <p className="font-semibold">Verified Creator Badge</p>
-                  <p className="text-sm text-muted-foreground">Monthly subscription</p>
+                  <p className="font-semibold text-sm sm:text-base">Verified Creator Badge</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Monthly subscription</p>
                 </div>
-                <div className="text-right">
-                  <p className="text-2xl font-bold">$9.99</p>
+                <div className="text-left sm:text-right">
+                  <p className="text-xl sm:text-2xl font-bold">$9.99</p>
                   <p className="text-xs text-muted-foreground">/month</p>
                 </div>
               </div>
