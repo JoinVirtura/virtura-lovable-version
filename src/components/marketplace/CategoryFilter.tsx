@@ -17,7 +17,7 @@ const categories = [
 
 export function CategoryFilter({ selectedCategory, onSelectCategory }: CategoryFilterProps) {
   return (
-    <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-none">
+    <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
       {categories.map((cat) => {
         const isSelected = selectedCategory === cat.id || (cat.id === 'all' && !selectedCategory);
         
@@ -27,7 +27,7 @@ export function CategoryFilter({ selectedCategory, onSelectCategory }: CategoryF
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => onSelectCategory(cat.id === 'all' ? null : cat.id)}
-            className={`px-6 py-3 rounded-xl font-medium text-sm whitespace-nowrap transition-all ${
+            className={`px-3 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl font-medium text-xs sm:text-sm whitespace-nowrap flex-shrink-0 transition-all ${
               isSelected
                 ? 'bg-gradient-to-r from-violet-500/20 to-purple-500/20 border-2 border-violet-500 text-violet-400'
                 : 'bg-card/50 border border-border hover:border-primary/30 text-muted-foreground hover:text-foreground'

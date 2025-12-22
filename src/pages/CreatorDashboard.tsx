@@ -188,10 +188,10 @@ export default function CreatorDashboard() {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6 overflow-x-hidden">
       <div>
-        <h1 className="text-3xl font-bold">Creator Dashboard</h1>
-        <p className="text-muted-foreground mt-1">
+        <h1 className="text-2xl sm:text-3xl font-bold">Creator Dashboard</h1>
+        <p className="text-sm sm:text-base text-muted-foreground mt-1">
           Your complete monetization hub
         </p>
       </div>
