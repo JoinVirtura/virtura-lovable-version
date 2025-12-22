@@ -57,7 +57,7 @@ export function BenefitsSection({ id }: BenefitsSectionProps) {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {benefits.map((benefit, index) => (
             <Card 
               key={index}
@@ -68,7 +68,7 @@ export function BenefitsSection({ id }: BenefitsSectionProps) {
                   <benefit.icon className="w-7 h-7 text-white" />
                 </div>
                 <h3 className="text-xl font-semibold mb-3">{benefit.title}</h3>
-                <p className="text-muted-foreground">{benefit.description}</p>
+                <p className="text-muted-foreground text-justify">{benefit.description}</p>
               </CardContent>
             </Card>
           ))}

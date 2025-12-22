@@ -18,7 +18,7 @@ export function AboutSection({ id }: AboutSectionProps) {
             The Future of <span className="bg-gradient-text bg-clip-text text-transparent">Content Creation</span>
           </h2>
           
-          <div className="space-y-6 text-lg text-muted-foreground leading-relaxed">
+          <div className="space-y-6 text-base md:text-lg text-muted-foreground leading-relaxed text-justify">
             <p>
               Virtura is a next-generation AI content platform designed to empower creators, brands, and consumers with studio-quality digital production tools. Our mission is simple: make high-quality content creation accessible, scalable, and limitless — without traditional production barriers.
             </p>
@@ -30,7 +30,7 @@ export function AboutSection({ id }: AboutSectionProps) {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 mt-16">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mt-16">
             <div className="flex flex-col items-center">
               <div className="w-14 h-14 rounded-full bg-gradient-primary flex items-center justify-center mb-4">
                 <Sparkles className="w-7 h-7 text-white" />
