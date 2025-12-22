@@ -54,21 +54,24 @@ export function useSubscriptionTier(): SubscriptionAccess {
           return;
         }
 
-        // Check subscription tier
+        // Check subscription tier - also check trial_plan_name as fallback
         const { data: subData } = await supabase
           .from('subscriptions')
-          .select('plan_name, status')
+          .select('plan_name, trial_plan_name, status')
           .eq('user_id', user.id)
           .in('status', ['active', 'trialing'])
           .maybeSingle();
 
-        if (subData?.plan_name) {
-          const planName = subData.plan_name.toLowerCase();
-          if (planName.includes('enterprise')) {
+        // Use plan_name first, fall back to trial_plan_name for trial users
+        const planName = subData?.plan_name || subData?.trial_plan_name;
+        
+        if (planName) {
+          const plan = planName.toLowerCase();
+          if (plan.includes('enterprise')) {
             setTier('enterprise');
-          } else if (planName.includes('pro')) {
+          } else if (plan.includes('pro')) {
             setTier('pro');
-          } else if (planName.includes('starter') || planName.includes('individual')) {
+          } else if (plan.includes('starter') || plan.includes('individual')) {
             setTier('starter');
           } else {
             setTier('free');
