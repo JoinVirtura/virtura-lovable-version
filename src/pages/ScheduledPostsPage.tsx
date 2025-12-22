@@ -18,13 +18,13 @@ export default function ScheduledPostsPage() {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="container mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary-blue bg-clip-text text-transparent">
+          <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary to-primary-blue bg-clip-text text-transparent">
             Scheduled Posts
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-muted-foreground mt-1 text-sm sm:text-base">
             Manage your content calendar
           </p>
         </div>
@@ -32,11 +32,11 @@ export default function ScheduledPostsPage() {
         {/* Schedule Post Button */}
         <Button 
           onClick={() => setCreateModalOpen(true)}
-          className="bg-gradient-to-r from-primary to-primary-blue shadow-lg"
-          size="lg"
+          className="bg-gradient-to-r from-primary to-primary-blue shadow-lg w-full sm:w-auto"
+          size="default"
         >
-          <Plus className="w-5 h-5 mr-2" />
-          Schedule Post
+          <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+          <span className="sm:inline">Schedule Post</span>
         </Button>
       </div>
 

@@ -45,25 +45,25 @@ export function SmartCalendar({ posts, onPublishNow, onDelete }: SmartCalendarPr
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
       {/* Calendar/List View */}
-      <Card className="lg:col-span-2 p-6 bg-gradient-to-br from-card/90 to-card/50 backdrop-blur-xl border-primary/20">
+      <Card className="lg:col-span-2 p-3 sm:p-6 bg-gradient-to-br from-card/90 to-card/50 backdrop-blur-xl border-primary/20">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
           <div className="flex items-center gap-3">
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary-blue bg-clip-text text-transparent">
+            <h2 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-primary to-primary-blue bg-clip-text text-transparent">
               {format(currentDate, 'MMMM yyyy')}
             </h2>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between sm:justify-end gap-2">
             {/* View Toggle */}
             <div className="flex bg-muted/50 rounded-lg p-1">
               <Button
                 variant={view === 'calendar' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setView('calendar')}
-                className="rounded-md"
+                className="rounded-md h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3"
               >
                 <Calendar className="w-4 h-4" />
               </Button>
@@ -71,7 +71,7 @@ export function SmartCalendar({ posts, onPublishNow, onDelete }: SmartCalendarPr
                 variant={view === 'list' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setView('list')}
-                className="rounded-md"
+                className="rounded-md h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3"
               >
                 <List className="w-4 h-4" />
               </Button>
@@ -83,7 +83,7 @@ export function SmartCalendar({ posts, onPublishNow, onDelete }: SmartCalendarPr
                 variant="outline"
                 size="icon"
                 onClick={() => setCurrentDate(subMonths(currentDate, 1))}
-                className="border-primary/20"
+                className="border-primary/20 h-8 w-8 sm:h-9 sm:w-9"
               >
                 <ChevronLeft className="w-4 h-4" />
               </Button>
@@ -91,7 +91,7 @@ export function SmartCalendar({ posts, onPublishNow, onDelete }: SmartCalendarPr
                 variant="outline"
                 size="sm"
                 onClick={() => setCurrentDate(new Date())}
-                className="border-primary/20"
+                className="border-primary/20 h-8 px-2 sm:h-9 sm:px-3 text-xs sm:text-sm"
               >
                 Today
               </Button>
@@ -99,7 +99,7 @@ export function SmartCalendar({ posts, onPublishNow, onDelete }: SmartCalendarPr
                 variant="outline"
                 size="icon"
                 onClick={() => setCurrentDate(addMonths(currentDate, 1))}
-                className="border-primary/20"
+                className="border-primary/20 h-8 w-8 sm:h-9 sm:w-9"
               >
                 <ChevronRight className="w-4 h-4" />
               </Button>
@@ -110,16 +110,17 @@ export function SmartCalendar({ posts, onPublishNow, onDelete }: SmartCalendarPr
         {view === 'calendar' ? (
           <>
             {/* Week Days Header */}
-            <div className="grid grid-cols-7 gap-2 mb-2">
-              {weekDays.map(day => (
-                <div key={day} className="text-center text-sm font-semibold text-muted-foreground py-2">
-                  {day}
+            <div className="grid grid-cols-7 gap-0.5 sm:gap-2 mb-1 sm:mb-2">
+              {weekDays.map((day, i) => (
+                <div key={day} className="text-center text-[10px] sm:text-sm font-semibold text-muted-foreground py-1 sm:py-2">
+                  <span className="hidden sm:inline">{day}</span>
+                  <span className="sm:hidden">{day.charAt(0)}</span>
                 </div>
               ))}
             </div>
 
             {/* Calendar Grid */}
-            <div className="grid grid-cols-7 gap-2">
+            <div className="grid grid-cols-7 gap-0.5 sm:gap-2">
               {days.map((day, idx) => {
                 const dayPosts = getPostsForDate(day);
                 const isSelected = selectedDate && isSameDay(day, selectedDate);
@@ -162,9 +163,9 @@ export function SmartCalendar({ posts, onPublishNow, onDelete }: SmartCalendarPr
       </Card>
 
       {/* Selected Date Posts Sidebar */}
-      <Card className="p-6 bg-gradient-to-br from-card/90 to-card/50 backdrop-blur-xl border-primary/20">
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold mb-1">
+      <Card className="p-4 sm:p-6 bg-gradient-to-br from-card/90 to-card/50 backdrop-blur-xl border-primary/20">
+        <div className="mb-3 sm:mb-4">
+          <h3 className="text-base sm:text-lg font-semibold mb-1">
             {selectedDate ? format(selectedDate, 'MMMM d, yyyy') : 'Select a date'}
           </h3>
           {selectedDate && (
@@ -174,7 +175,7 @@ export function SmartCalendar({ posts, onPublishNow, onDelete }: SmartCalendarPr
           )}
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-2 sm:space-y-3">
           {selectedDate && selectedDatePosts.length > 0 ? (
             selectedDatePosts.map(post => (
               <ScheduledPostPreview
@@ -186,7 +187,7 @@ export function SmartCalendar({ posts, onPublishNow, onDelete }: SmartCalendarPr
               />
             ))
           ) : (
-            <div className="text-center py-8 text-muted-foreground text-sm">
+            <div className="text-center py-6 sm:py-8 text-muted-foreground text-xs sm:text-sm">
               {selectedDate ? 'No posts scheduled for this day' : 'Click on a date to see scheduled posts'}
             </div>
           )}

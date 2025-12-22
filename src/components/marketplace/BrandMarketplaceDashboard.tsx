@@ -211,21 +211,21 @@ export function BrandMarketplaceDashboard() {
     : null;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header with Create Button */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
         <div>
-          <h2 className="text-2xl font-bold">Your Campaigns</h2>
-          <p className="text-muted-foreground">Manage campaigns and review creator applications</p>
+          <h2 className="text-xl sm:text-2xl font-bold">Your Campaigns</h2>
+          <p className="text-muted-foreground text-sm sm:text-base">Manage campaigns and review creator applications</p>
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button className="bg-gradient-to-r from-primary to-primary-blue">
+            <Button className="bg-gradient-to-r from-primary to-primary-blue w-full sm:w-auto" size="sm">
               <Plus className="w-4 h-4 mr-2" />
               Create Campaign
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto mx-4 sm:mx-auto">
             <DialogHeader>
               <DialogTitle>Create New Campaign</DialogTitle>
             </DialogHeader>
@@ -249,42 +249,42 @@ export function BrandMarketplaceDashboard() {
       )}
 
       {/* Stats Overview */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-3">
         <Card className="backdrop-blur-xl bg-gradient-to-br from-violet-900/20 to-purple-900/20 border-primary/20">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-full bg-primary/20">
-                <Clock className="w-6 h-6 text-primary" />
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="p-2 sm:p-3 rounded-full bg-primary/20">
+                <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{openCampaigns.length}</p>
-                <p className="text-sm text-muted-foreground">Open Campaigns</p>
+                <p className="text-xl sm:text-2xl font-bold">{openCampaigns.length}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Open Campaigns</p>
               </div>
             </div>
           </CardContent>
         </Card>
         <Card className="backdrop-blur-xl bg-gradient-to-br from-blue-900/20 to-cyan-900/20 border-primary/20">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-full bg-blue-500/20">
-                <Users className="w-6 h-6 text-blue-400" />
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="p-2 sm:p-3 rounded-full bg-blue-500/20">
+                <Users className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{applications.filter(a => a.status === 'pending').length}</p>
-                <p className="text-sm text-muted-foreground">Pending Applications</p>
+                <p className="text-xl sm:text-2xl font-bold">{applications.filter(a => a.status === 'pending').length}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Pending Applications</p>
               </div>
             </div>
           </CardContent>
         </Card>
         <Card className="backdrop-blur-xl bg-gradient-to-br from-green-900/20 to-emerald-900/20 border-primary/20">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-full bg-green-500/20">
-                <DollarSign className="w-6 h-6 text-green-400" />
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="p-2 sm:p-3 rounded-full bg-green-500/20">
+                <DollarSign className="w-5 h-5 sm:w-6 sm:h-6 text-green-400" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{completedCampaigns.length}</p>
-                <p className="text-sm text-muted-foreground">Completed</p>
+                <p className="text-xl sm:text-2xl font-bold">{completedCampaigns.length}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Completed</p>
               </div>
             </div>
           </CardContent>
@@ -292,13 +292,13 @@ export function BrandMarketplaceDashboard() {
       </div>
 
       <Tabs defaultValue="open" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 bg-card/50 backdrop-blur-xl">
-          <TabsTrigger value="open">Open ({openCampaigns.length})</TabsTrigger>
-          <TabsTrigger value="in_progress">In Progress ({inProgressCampaigns.length})</TabsTrigger>
-          <TabsTrigger value="completed">Completed ({completedCampaigns.length})</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3 bg-card/50 backdrop-blur-xl h-auto">
+          <TabsTrigger value="open" className="text-xs sm:text-sm py-2 px-1 sm:px-3">Open ({openCampaigns.length})</TabsTrigger>
+          <TabsTrigger value="in_progress" className="text-xs sm:text-sm py-2 px-1 sm:px-3">In Progress ({inProgressCampaigns.length})</TabsTrigger>
+          <TabsTrigger value="completed" className="text-xs sm:text-sm py-2 px-1 sm:px-3">Completed ({completedCampaigns.length})</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="open" className="mt-6 space-y-4">
+        <TabsContent value="open" className="mt-4 sm:mt-6 space-y-3 sm:space-y-4">
           {openCampaigns.map((campaign) => {
             const campaignApps = applications.filter(a => a.campaign_id === campaign.id);
             const pendingApps = campaignApps.filter(a => a.status === 'pending');
@@ -306,22 +306,22 @@ export function BrandMarketplaceDashboard() {
 
             return (
               <Card key={campaign.id} className="backdrop-blur-xl bg-card/50">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle>{campaign.title}</CardTitle>
-                      <p className="text-sm text-muted-foreground mt-1">
+                <CardHeader className="p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-0">
+                    <div className="min-w-0">
+                      <CardTitle className="text-base sm:text-lg truncate">{campaign.title}</CardTitle>
+                      <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                         {formatBudget(campaign.budget_cents)} • {campaignApps.length} applications
                       </p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-1 sm:gap-2">
                       {contract && <ContractStatusBadge status={contract.status} />}
                       {getStatusBadge(campaign.status || 'open')}
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-sm">{campaign.description}</p>
+                <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0 space-y-3 sm:space-y-4">
+                  <p className="text-xs sm:text-sm">{campaign.description}</p>
 
                   {/* Contract View Button */}
                   {contract && (
@@ -337,21 +337,25 @@ export function BrandMarketplaceDashboard() {
 
                   {pendingApps.length > 0 && (
                     <div className="space-y-2">
-                      <h4 className="font-semibold flex items-center gap-2">
+                      <h4 className="font-semibold flex items-center gap-2 text-sm sm:text-base">
                         <Users className="w-4 h-4" />
                         Pending Applications ({pendingApps.length})
                       </h4>
                       {pendingApps.map((app) => (
-                        <div key={app.id} className="p-4 bg-muted/50 rounded-lg">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-2">
-                                <span className="font-medium">Proposed Rate: {formatBudget(app.proposed_rate_cents)}</span>
+                        <div key={app.id} className="p-3 sm:p-4 bg-muted/50 rounded-lg">
+                          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex flex-wrap items-center gap-2 mb-2">
+                                <span className="font-medium text-sm">Proposed Rate: {formatBudget(app.proposed_rate_cents)}</span>
                                 {getStatusBadge(app.status || 'pending')}
                               </div>
-                              <p className="text-sm text-muted-foreground">{app.pitch}</p>
+                              <p className="text-xs sm:text-sm text-muted-foreground">{app.pitch}</p>
                             </div>
-                            <Button onClick={() => handleAcceptApplication(app)}>
+                            <Button 
+                              onClick={() => handleAcceptApplication(app)}
+                              size="sm"
+                              className="w-full sm:w-auto flex-shrink-0"
+                            >
                               Accept & Generate Contract
                             </Button>
                           </div>
