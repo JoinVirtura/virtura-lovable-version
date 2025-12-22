@@ -119,22 +119,24 @@ export function getTokenCostInfo(
 
 /**
  * Token pricing for purchases (in USD)
+ * Aligned with landing page pricing: $29/$129/$349
+ * Generations: 120/700/2200
  */
 export const TOKEN_PRICING = {
-  individual: {
-    subscription: 200,      // 200 tokens per month for $20
-    price: 20,
-    costPerToken: 0.10,
+  starter: {
+    subscription: 120,      // 120 generations per month for $29
+    price: 29,
+    costPerToken: 0.24,     // $29 / 120 = $0.24 per generation
   },
   pro: {
-    subscription: 1000,     // 1000 tokens per month for $99
-    price: 99,
-    costPerToken: 0.099,
+    subscription: 700,      // 700 generations per month for $129
+    price: 129,
+    costPerToken: 0.18,     // $129 / 700 = $0.18 per generation
   },
   enterprise: {
-    subscription: 3000,     // 3000 tokens per month for $299
-    price: 299,
-    costPerToken: 0.0997,
+    subscription: 2200,     // 2200 generations per month for $349
+    price: 349,
+    costPerToken: 0.16,     // $349 / 2200 = $0.16 per generation
   },
   packs: {
     50: { price: 7.50, costPerToken: 0.15 },
@@ -144,3 +146,15 @@ export const TOKEN_PRICING = {
     1000: { price: 150, costPerToken: 0.15 },
   },
 } as const;
+
+/**
+ * Get token allocation for a subscription plan
+ */
+export function getSubscriptionTokens(plan: string): number {
+  const planTokens: Record<string, number> = {
+    starter: 120,
+    pro: 700,
+    enterprise: 2200,
+  };
+  return planTokens[plan.toLowerCase()] || 120;
+}

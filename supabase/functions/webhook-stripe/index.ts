@@ -157,7 +157,40 @@ async function handleCheckoutCompleted(supabase: any, session: any) {
       return;
     }
     
-    // Handle token purchase (existing logic)
+    // Handle platform subscription checkout - credit tokens based on plan
+    if (metadata.plan && metadata.user_id) {
+      console.log('Processing platform subscription:', session.id, 'Plan:', metadata.plan);
+      
+      // Token allocations per plan (synced with pricing: $29/$129/$349)
+      const planTokens: Record<string, number> = {
+        starter: 120,
+        pro: 700,
+        enterprise: 2200,
+      };
+      
+      const tokensToCredit = planTokens[metadata.plan.toLowerCase()] || 120;
+      
+      const { error: tokenError } = await supabase.rpc('add_tokens', {
+        p_user_id: metadata.user_id,
+        p_amount: tokensToCredit,
+        p_transaction_type: 'subscription',
+        p_metadata: {
+          plan: metadata.plan,
+          stripe_session_id: session.id,
+          amount_paid: session.amount_total / 100,
+          period: 'monthly',
+        },
+      });
+      
+      if (tokenError) {
+        console.error('Failed to credit subscription tokens:', tokenError);
+      } else {
+        console.log(`Credited ${tokensToCredit} tokens for ${metadata.plan} subscription to user ${metadata.user_id}`);
+      }
+      return;
+    }
+    
+    // Handle token pack purchase (existing logic)
     const userId = session.client_reference_id || metadata.user_id;
     const tokens = parseInt(metadata.tokens || '0');
     

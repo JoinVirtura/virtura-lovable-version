@@ -154,15 +154,41 @@ export default function UnifiedAdminDashboard() {
         .from("profiles")
         .select("*", { count: "exact", head: true });
 
-      // Calculate revenue (assuming $0.01 per token)
-      const revenue = totalPurchased * 0.01;
+      // Calculate actual revenue from subscriptions and token purchases
+      // Subscription prices: starter=$29, pro=$129, enterprise=$349
+      const planPrices: Record<string, number> = {
+        starter: 29,
+        pro: 129,
+        enterprise: 349,
+      };
+
+      const { data: subscriptionData } = await supabase
+        .from("subscriptions")
+        .select("plan_name")
+        .eq("status", "active");
+
+      const subscriptionRevenue = subscriptionData?.reduce((sum, sub) => {
+        const plan = sub.plan_name?.toLowerCase() || '';
+        return sum + (planPrices[plan] || 0);
+      }, 0) || 0;
+
+      // Add token pack revenue from token_transactions
+      const { data: purchaseData } = await supabase
+        .from("token_transactions")
+        .select("metadata")
+        .eq("transaction_type", "purchase");
+
+      const packRevenue = purchaseData?.reduce((sum, t) => {
+        const meta = t.metadata as Record<string, unknown> | null;
+        return sum + (Number(meta?.amount_paid) || 0);
+      }, 0) || 0;
 
       setStats({
         totalUsers: userCount || 0,
         totalTokensPurchased: totalPurchased,
         totalTokensUsed: totalUsed,
         totalApiCosts: totalCosts,
-        totalRevenue: revenue,
+        totalRevenue: subscriptionRevenue + packRevenue,
       });
     } catch (error) {
       console.error("Error fetching overview stats:", error);
