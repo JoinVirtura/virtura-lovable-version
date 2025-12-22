@@ -165,8 +165,8 @@ export const TOKEN_COSTS = {
   },
   premium_video: {
     'kling-motion': 16,
-    'heygen-talking-photo': 20,
-    'default': 20,
+    'heygen-talking-photo': 75,
+    'default': 75,
   },
   style_transfer: {
     'basic': 2,
