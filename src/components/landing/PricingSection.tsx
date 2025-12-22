@@ -79,11 +79,11 @@ export function PricingSection({ id }: PricingSectionProps) {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto items-stretch">
           {plans.map((plan, index) => (
             <Card 
               key={index}
-              className={`relative ${plan.popular ? 'border-primary shadow-violet-glow scale-105' : ''}`}
+              className={`relative flex flex-col h-full ${plan.popular ? 'border-primary shadow-violet-glow md:scale-105' : ''}`}
             >
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
@@ -93,16 +93,28 @@ export function PricingSection({ id }: PricingSectionProps) {
                 </div>
               )}
               
-              <CardHeader className="text-center pb-12 pt-8">
+              <CardHeader className="text-center pt-8 pb-6 flex-shrink-0">
                 <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                <p className="text-muted-foreground text-sm mb-6">{plan.description}</p>
-                <div className="mb-12">
+                <p className="text-muted-foreground text-sm text-justify mb-6">{plan.description}</p>
+                <div>
                   <span className="text-5xl font-bold">
                     ${plan.price}
                   </span>
                   <span className="text-muted-foreground">/month</span>
                 </div>
-                <div className="pt-4">
+              </CardHeader>
+
+              <CardContent className="flex flex-col flex-grow">
+                <ul className="space-y-3 flex-grow">
+                  {plan.features.map((feature, featureIndex) => (
+                    <li key={featureIndex} className="flex items-start gap-3">
+                      <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                      <span className="text-muted-foreground">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                
+                <div className="pt-6 mt-auto">
                   <Button 
                     onClick={() => plan.cta === "Contact Sales" ? window.location.href = "mailto:sales@virtura.ai" : navigate("/auth")}
                     className={plan.popular ? "bg-gradient-primary hover:shadow-violet-glow w-full" : "w-full"}
@@ -111,17 +123,6 @@ export function PricingSection({ id }: PricingSectionProps) {
                     {plan.cta}
                   </Button>
                 </div>
-              </CardHeader>
-
-              <CardContent>
-                <ul className="space-y-3">
-                  {plan.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                      <span className="text-muted-foreground">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
               </CardContent>
             </Card>
           ))}

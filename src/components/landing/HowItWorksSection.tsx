@@ -42,11 +42,11 @@ export function HowItWorksSection({ id }: HowItWorksSectionProps) {
           {steps.map((step, index) => (
             <div 
               key={index}
-              className="relative flex flex-col md:flex-row items-center gap-8 mb-16 last:mb-0"
+              className="relative flex flex-col md:flex-row items-center gap-6 md:gap-8 mb-16 last:mb-0"
             >
               {/* Step Number */}
-              <div className="flex-shrink-0 w-32 h-32 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-violet-glow relative">
-                <span className="text-5xl font-bold text-white">{step.number}</span>
+              <div className="flex-shrink-0 w-24 h-24 md:w-32 md:h-32 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-violet-glow relative">
+                <span className="text-4xl md:text-5xl font-bold text-white">{step.number}</span>
                 {index < steps.length - 1 && (
                   <div className="hidden md:block absolute top-full left-1/2 -translate-x-1/2 w-0.5 h-16 bg-gradient-to-b from-primary to-transparent" />
                 )}
@@ -55,12 +55,12 @@ export function HowItWorksSection({ id }: HowItWorksSectionProps) {
               {/* Content */}
               <div className="flex-1 text-center md:text-left">
                 <div className="inline-flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 rounded-lg bg-card border border-border flex items-center justify-center">
-                    <step.icon className="w-6 h-6 text-primary" />
+                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-card border border-border flex items-center justify-center">
+                    <step.icon className="w-5 h-5 md:w-6 md:h-6 text-primary" />
                   </div>
-                  <h3 className="text-2xl font-bold">{step.title}</h3>
+                  <h3 className="text-xl md:text-2xl font-bold">{step.title}</h3>
                 </div>
-                <p className="text-lg text-muted-foreground">{step.description}</p>
+                <p className="text-base md:text-lg text-muted-foreground text-justify md:text-left">{step.description}</p>
               </div>
             </div>
           ))}

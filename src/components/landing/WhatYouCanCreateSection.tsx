@@ -52,12 +52,12 @@ export function WhatYouCanCreateSection({ id }: WhatYouCanCreateSectionProps) {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto">
           {creations.map((creation, index) => (
             <Card 
               key={index}
               className={`group hover:shadow-violet-glow/50 transition-all duration-300 hover:-translate-y-2 ${
-                index === 4 ? 'md:col-span-2 lg:col-span-1 lg:col-start-2' : ''
+                index === 4 ? 'sm:col-span-2 lg:col-span-1 lg:col-start-2' : ''
               }`}
             >
               <CardContent className="p-8">
@@ -65,7 +65,7 @@ export function WhatYouCanCreateSection({ id }: WhatYouCanCreateSectionProps) {
                   <creation.icon className="w-7 h-7 text-white" />
                 </div>
                 <h3 className="text-xl font-semibold mb-3">{creation.title}</h3>
-                <p className="text-muted-foreground">{creation.description}</p>
+                <p className="text-muted-foreground text-justify">{creation.description}</p>
               </CardContent>
             </Card>
           ))}

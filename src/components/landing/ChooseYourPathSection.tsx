@@ -46,22 +46,22 @@ export function ChooseYourPathSection({ id }: ChooseYourPathSectionProps) {
           </h2>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto">
           {paths.map((path, index) => (
             <Card 
               key={index}
-              className="group hover:shadow-violet-glow/50 transition-all duration-300 hover:-translate-y-2 text-center"
+              className="group hover:shadow-violet-glow/50 transition-all duration-300 hover:-translate-y-2 text-center h-full"
             >
               <CardContent className="p-8 flex flex-col items-center h-full">
-                <div className="w-16 h-16 rounded-full bg-gradient-primary flex items-center justify-center mb-6 group-hover:shadow-violet-glow transition-all">
+                <div className="w-16 h-16 rounded-full bg-gradient-primary flex items-center justify-center mb-6 group-hover:shadow-violet-glow transition-all flex-shrink-0">
                   <path.icon className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold mb-4">{path.title}</h3>
-                <p className="text-muted-foreground mb-8 flex-grow">{path.description}</p>
+                <p className="text-muted-foreground mb-8 flex-grow text-justify">{path.description}</p>
                 <Button 
                   onClick={path.action}
                   variant={path.variant}
-                  className={path.variant === "default" ? "bg-gradient-primary hover:shadow-violet-glow w-full" : "w-full"}
+                  className={`w-full mt-auto ${path.variant === "default" ? "bg-gradient-primary hover:shadow-violet-glow" : ""}`}
                 >
                   {path.cta}
                 </Button>

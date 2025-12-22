@@ -57,12 +57,12 @@ export function BrandAgencySection({ id }: BrandAgencySectionProps) {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto mb-12">
           {features.map((feature, index) => (
             <Card 
               key={index}
               className={`group hover:shadow-violet-glow/50 transition-all duration-300 ${
-                index === 4 ? 'md:col-span-2 lg:col-span-1 lg:col-start-2' : ''
+                index === 4 ? 'sm:col-span-2 lg:col-span-1 lg:col-start-2' : ''
               }`}
             >
               <CardContent className="p-6">
@@ -72,7 +72,7 @@ export function BrandAgencySection({ id }: BrandAgencySectionProps) {
                   </div>
                   <div>
                     <h3 className="font-semibold mb-2">{feature.title}</h3>
-                    <p className="text-sm text-muted-foreground">{feature.description}</p>
+                    <p className="text-sm text-muted-foreground text-justify">{feature.description}</p>
                   </div>
                 </div>
               </CardContent>
