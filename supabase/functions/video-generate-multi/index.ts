@@ -97,7 +97,7 @@ serve(async (req) => {
             error: tokenResult.error || 'Insufficient token balance for HeyGen video generation',
             required: tokensNeeded,
             currentBalance: tokenResult.remainingBalance,
-            suggestion: 'HeyGen video requires 25 tokens. Consider using a different provider or purchase more tokens.'
+            suggestion: 'HeyGen video requires 75 tokens. Consider using a different provider or purchase more tokens.'
           }), 
           { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
