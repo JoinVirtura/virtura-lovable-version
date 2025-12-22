@@ -27,16 +27,16 @@ export function DemoModeBanner({
           : "border-amber-500/50 bg-amber-500/10"
       )}
     >
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div className="flex items-start gap-3">
           {isDemoMode ? (
-            <Eye className="h-5 w-5 text-green-500 mt-0.5" />
+            <Eye className="h-5 w-5 text-green-500 mt-0.5 shrink-0" />
           ) : (
-            <Sparkles className="h-5 w-5 text-amber-500 mt-0.5" />
+            <Sparkles className="h-5 w-5 text-amber-500 mt-0.5 shrink-0" />
           )}
           <div className="space-y-1">
             <AlertTitle className={cn(
-              "flex items-center gap-2",
+              "flex flex-wrap items-center gap-2",
               isDemoMode ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400"
             )}>
               {isDemoMode ? 'Demo Mode Active' : 'Setup Required'}
@@ -49,7 +49,7 @@ export function DemoModeBanner({
                 {isDemoMode ? 'Sample Data' : 'Real Data'}
               </span>
             </AlertTitle>
-            <AlertDescription className="text-muted-foreground">
+            <AlertDescription className="text-muted-foreground text-sm">
               {isDemoMode 
                 ? "You're viewing sample earnings data to preview dashboard features."
                 : showStripeSetup 
@@ -60,7 +60,7 @@ export function DemoModeBanner({
           </div>
         </div>
         
-        <div className="flex items-center gap-4 shrink-0">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4 shrink-0">
           <div className="flex items-center gap-2">
             <Switch 
               id="demo-mode" 
@@ -77,7 +77,7 @@ export function DemoModeBanner({
             <Button 
               onClick={onSetupStripe}
               size="sm"
-              className="gap-2"
+              className="gap-2 w-full sm:w-auto"
             >
               <CreditCard className="h-4 w-4" />
               Setup Payments
