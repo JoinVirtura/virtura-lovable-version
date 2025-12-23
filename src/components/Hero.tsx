@@ -671,13 +671,13 @@ export const Hero = () => {
         <div className="w-full max-w-4xl mb-4 animate-fade-in px-2 sm:px-4">
           <Card className="backdrop-blur-xl bg-black/60 border-2 border-primary/30 rounded-2xl shadow-2xl overflow-hidden">
             <div className="p-2 sm:p-3 md:p-4">
-              {/* Main Input Row */}
-              <div className="flex items-start gap-2 md:gap-3">
+              {/* Main Input - Vertical Layout */}
+              <div className="flex flex-col gap-3">
                 <Textarea
                   ref={(el) => {
                     if (el) {
                       el.style.height = 'auto';
-                      el.style.height = `${Math.min(el.scrollHeight, 200)}px`;
+                      el.style.height = `${Math.min(el.scrollHeight, 300)}px`;
                     }
                   }}
                   placeholder="Describe the image you want to create..."
@@ -686,10 +686,10 @@ export const Hero = () => {
                     setInputValue(e.target.value);
                     const el = e.target;
                     el.style.height = 'auto';
-                    el.style.height = `${Math.min(el.scrollHeight, 200)}px`;
+                    el.style.height = `${Math.min(el.scrollHeight, 300)}px`;
                   }}
-                  className="flex-1 w-0 min-w-0 min-h-[40px] text-sm bg-transparent border-0 focus:ring-0 placeholder:text-muted-foreground/70 resize-none py-2 leading-normal break-words"
-                  style={{ outline: 'none', overflowWrap: 'anywhere', maxHeight: '200px', overflowY: 'auto' }}
+                  className="w-full min-h-[60px] text-sm bg-transparent border-0 focus:ring-0 placeholder:text-muted-foreground/70 resize-none py-2 leading-normal break-words"
+                  style={{ outline: 'none', overflowWrap: 'anywhere', maxHeight: '300px', overflowY: 'auto' }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                       e.preventDefault();
@@ -698,8 +698,8 @@ export const Hero = () => {
                   }}
                 />
                 
-                {/* Action Buttons */}
-                <div className="flex items-center gap-2">
+                {/* Action Buttons - Centered Below */}
+                <div className="flex items-center justify-center gap-3">
                   {/* Image Upload Button */}
                   {referenceImage ? (
                     <div className="relative">
