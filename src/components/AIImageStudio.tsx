@@ -995,68 +995,81 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                     <div className="relative group">
                       <div className="absolute top-2 left-2 z-10">
                         <Badge className="bg-gradient-to-r from-primary to-secondary text-white border-0">
-                          Edited
+                          {previewCards[0].isGenerating ? 'Generating...' : 'Edited'}
                         </Badge>
                       </div>
-                      <img
-                        src={previewCards[0].imageUrl}
-                        alt="Edited"
-                        className="w-full aspect-square object-cover rounded-2xl border-2 border-primary/50 shadow-[0_0_30px_rgba(139,92,246,0.3)]"
-                      />
-                      {/* Action buttons overlay */}
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 rounded-2xl">
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                size="icon"
-                                className="h-9 w-9 rounded-full bg-black/60 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
-                                onClick={() => handleDownloadVariant(previewCards[0].id)}
-                              >
-                                <Download className="h-4 w-4" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Download</TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                size="icon"
-                                className="h-9 w-9 rounded-full bg-black/60 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
-                                onClick={() => handleSaveToLibrary(previewCards[0].id)}
-                                disabled={savingToLibrary === previewCards[0].id}
-                              >
-                                {savingToLibrary === previewCards[0].id ? (
-                                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
-                                ) : (
-                                  <Heart className="h-4 w-4" />
-                                )}
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Save to Library</TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                size="icon"
-                                className="h-9 w-9 rounded-full bg-gradient-to-r from-primary to-secondary hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
-                                onClick={() => {
-                                  // Use edited as new base
-                                  setOriginalImageForComparison(previewCards[0].imageUrl);
-                                  toast.success("Using edited image as new base");
-                                }}
-                              >
-                                <Edit3 className="h-4 w-4" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Use as New Base</TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </div>
+                      
+                      {previewCards[0].isGenerating ? (
+                        <div className="w-full aspect-square bg-black/40 backdrop-blur-md rounded-2xl border-2 border-primary/30 flex items-center justify-center">
+                          <div className="text-center">
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
+                            <p className="text-sm text-muted-foreground">Creating your edited image...</p>
+                            <p className="text-xs text-muted-foreground/60 mt-1">This may take a moment</p>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <img
+                            src={previewCards[0].imageUrl}
+                            alt="Edited"
+                            className="w-full aspect-square object-cover rounded-2xl border-2 border-primary/50 shadow-[0_0_30px_rgba(139,92,246,0.3)]"
+                          />
+                          {/* Action buttons overlay */}
+                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 rounded-2xl">
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    size="icon"
+                                    className="h-9 w-9 rounded-full bg-black/60 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
+                                    onClick={() => handleDownloadVariant(previewCards[0].id)}
+                                  >
+                                    <Download className="h-4 w-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Download</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    size="icon"
+                                    className="h-9 w-9 rounded-full bg-black/60 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
+                                    onClick={() => handleSaveToLibrary(previewCards[0].id)}
+                                    disabled={savingToLibrary === previewCards[0].id}
+                                  >
+                                    {savingToLibrary === previewCards[0].id ? (
+                                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                                    ) : (
+                                      <Heart className="h-4 w-4" />
+                                    )}
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Save to Library</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    size="icon"
+                                    className="h-9 w-9 rounded-full bg-gradient-to-r from-primary to-secondary hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
+                                    onClick={() => {
+                                      // Use edited as new base
+                                      setOriginalImageForComparison(previewCards[0].imageUrl);
+                                      toast.success("Using edited image as new base");
+                                    }}
+                                  >
+                                    <Edit3 className="h-4 w-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Use as New Base</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 ) : (
