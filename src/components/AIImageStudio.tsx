@@ -167,6 +167,7 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
     }
 
     setIsGenerating(true);
+    setShowInputCard(false); // Hide input card immediately on send
     
     // Clear existing previews when generating new images (replace mode)
     setPreviewCards([]);
@@ -624,7 +625,7 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
         )}
 
         {/* Edit Mode - Display the original image being edited */}
-        {editImage && !editImageRemoved && (
+        {editImage && !editImageRemoved && previewCards.length === 0 && (
           <div className="mb-8">
             <Card className="max-w-md mx-auto p-4 bg-black/40 backdrop-blur-md border-2 border-primary/30 shadow-[0_0_40px_rgba(212,110,255,0.3)]">
               <img 
@@ -1231,7 +1232,7 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
 
                 {/* Chat Messages */}
                 {chatMessages.length > 0 && (
-                  <ScrollArea className="h-64 border rounded-lg p-4 bg-black/20 backdrop-blur-sm">
+                  <ScrollArea className="h-64 border-2 border-primary/30 rounded-lg p-4 bg-black/40 backdrop-blur-md">
                     <div className="space-y-3">
                       {chatMessages.map((message, index) => (
                         <div 
@@ -1260,12 +1261,12 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                 )}
 
                 {/* Chat Input */}
-                <div className="relative">
+                <div className="relative border-2 border-primary/30 rounded-lg bg-black/40 backdrop-blur-md">
                   <Textarea
                     placeholder="Ask for refinements: 'Make it more cinematic', 'Change the mood', 'Different composition'..."
                     value={chatInput}
                     onChange={(e) => setChatInput(e.target.value)}
-                    className="min-h-[60px] pr-14 resize-none bg-transparent border-0 focus-visible:ring-0 text-white placeholder:text-gray-400"
+                    className="min-h-[60px] pr-14 resize-none bg-transparent border-0 focus-visible:ring-0 focus:border-primary/50 text-white placeholder:text-gray-400"
                   />
                   <Button
                     onClick={() => {
