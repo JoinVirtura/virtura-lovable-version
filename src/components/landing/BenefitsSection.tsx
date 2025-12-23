@@ -68,7 +68,7 @@ export function BenefitsSection({ id }: BenefitsSectionProps) {
                   <benefit.icon className="w-7 h-7 text-white" />
                 </div>
                 <h3 className="text-xl font-semibold mb-3">{benefit.title}</h3>
-                <p className="text-muted-foreground text-justify">{benefit.description}</p>
+                <p className="text-muted-foreground">{benefit.description}</p>
               </CardContent>
             </Card>
           ))}

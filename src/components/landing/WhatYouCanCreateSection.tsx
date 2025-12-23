@@ -65,7 +65,7 @@ export function WhatYouCanCreateSection({ id }: WhatYouCanCreateSectionProps) {
                   <creation.icon className="w-7 h-7 text-white" />
                 </div>
                 <h3 className="text-xl font-semibold mb-3">{creation.title}</h3>
-                <p className="text-muted-foreground text-justify">{creation.description}</p>
+                <p className="text-muted-foreground">{creation.description}</p>
               </CardContent>
             </Card>
           ))}

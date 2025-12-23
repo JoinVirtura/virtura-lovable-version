@@ -95,7 +95,7 @@ export function PricingSection({ id }: PricingSectionProps) {
               
               <CardHeader className="text-center pt-8 pb-6 flex-shrink-0">
                 <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                <p className="text-muted-foreground text-sm text-justify mb-6">{plan.description}</p>
+                <p className="text-muted-foreground text-sm mb-6">{plan.description}</p>
                 <div>
                   <span className="text-5xl font-bold">
                     ${plan.price}
