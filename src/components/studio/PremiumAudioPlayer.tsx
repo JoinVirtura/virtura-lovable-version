@@ -118,8 +118,8 @@ export const PremiumAudioPlayer: React.FC<PremiumAudioPlayerProps> = ({
   const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
-    <Card className={`w-full ${className}`}>
-      <CardContent className="p-4">
+    <Card className={`w-full overflow-hidden ${className}`}>
+      <CardContent className="p-3 sm:p-4 overflow-hidden">
         <div className="space-y-4">
           {/* Waveform Visualizer */}
           <div className="relative">
@@ -148,13 +148,13 @@ export const PremiumAudioPlayer: React.FC<PremiumAudioPlayerProps> = ({
           </div>
 
           {/* Controls */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               <Button
                 size="sm"
                 variant="outline"
                 onClick={() => skip(-10)}
-                className="h-8 w-8 p-0"
+                className="h-7 w-7 sm:h-8 sm:w-8 p-0 shrink-0"
               >
                 <SkipBack className="h-3 w-3" />
               </Button>
@@ -162,7 +162,7 @@ export const PremiumAudioPlayer: React.FC<PremiumAudioPlayerProps> = ({
               <Button
                 size="sm"
                 onClick={handlePlayPause}
-                className="h-10 w-10 p-0"
+                className="h-9 w-9 sm:h-10 sm:w-10 p-0 shrink-0"
               >
                 {isPlaying ? (
                   <Pause className="h-4 w-4" />
@@ -175,28 +175,28 @@ export const PremiumAudioPlayer: React.FC<PremiumAudioPlayerProps> = ({
                 size="sm"
                 variant="outline"
                 onClick={() => skip(10)}
-                className="h-8 w-8 p-0"
+                className="h-7 w-7 sm:h-8 sm:w-8 p-0 shrink-0"
               >
                 <SkipForward className="h-3 w-3" />
               </Button>
             </div>
 
-            <div className="flex items-center gap-3 pr-4">
+            <div className="flex items-center gap-1 sm:gap-2 overflow-hidden">
               <Button
                 size="sm"
                 variant="ghost"
                 onClick={() => setIsLooping(!isLooping)}
-                className={`h-8 w-8 p-0 ${isLooping ? 'text-primary' : 'text-muted-foreground'}`}
+                className={`h-7 w-7 sm:h-8 sm:w-8 p-0 shrink-0 ${isLooping ? 'text-primary' : 'text-muted-foreground'}`}
               >
                 <Repeat className="h-3 w-3" />
               </Button>
               
-              <div className="flex items-center gap-2 mr-1">
+              <div className="flex items-center gap-1 shrink-0">
                 <Button
                   size="sm"
                   variant="ghost"
                   onClick={toggleMute}
-                  className="h-8 w-8 p-0"
+                  className="h-7 w-7 sm:h-8 sm:w-8 p-0 shrink-0"
                 >
                   {isMuted || volume === 0 ? (
                     <VolumeX className="h-3 w-3" />
@@ -209,7 +209,7 @@ export const PremiumAudioPlayer: React.FC<PremiumAudioPlayerProps> = ({
                   value={[isMuted ? 0 : volume]}
                   onValueChange={handleVolumeChange}
                   max={100}
-                  className="w-16"
+                  className="w-12 sm:w-16 hidden sm:flex"
                 />
               </div>
             </div>
