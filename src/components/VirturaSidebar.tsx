@@ -34,6 +34,7 @@ import {
   DollarSign,
   Calendar,
   BadgeCheck,
+  User,
 } from "lucide-react";
 // Notifications moved to UserProfile
 import { useAuth } from "@/hooks/useAuth";
@@ -91,37 +92,37 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
   }, [user]);
 
   // All items now use onViewChange - no path/navigate
+  // Items 0-6: Admin, Home, Photo Editor, Video Editor, Copilot, Library, Feed
   const mainItems = [
     ...(isAdmin ? [{ id: "admin-dashboard", label: "Admin", icon: Shield }] : []),
     { id: "overview", label: "Home", icon: Home },
     { id: "talking-avatar", label: "Photo Editor", icon: Image },
     { id: "video-pro", label: "Video Editor", icon: Video },
-    { id: "library", label: "Library", icon: Library },
-  ];
-
-  const navigationTabs = [
     { id: "studio", label: "Copilot", icon: Command },
-    { id: "brands", label: "Brand Manager", icon: Building2 },
-    { id: "guide", label: "Tutorial", icon: BookOpen },
-    { id: "support", label: "Support", icon: LifeBuoy },
-  ];
-
-  // Social & Creator section - all use onViewChange
-  const socialItems = [
+    { id: "library", label: "Library", icon: Library },
     { id: "social-feed", label: "Feed", icon: Home },
   ];
-  
-  // Notifications now in UserProfile
 
+  // Items 7-8: Brand Manager, Marketplace
+  const businessItems = [
+    { id: "brands", label: "Brand Manager", icon: Building2 },
+    { id: "marketplace", label: "Marketplace", icon: Briefcase },
+  ];
+
+  // Items 9-11: Creator Dashboard, Posting Calendar, Verification
   const creatorItems = [
-    { id: "creator-dashboard", label: "Dashboard", icon: DollarSign },
-    { id: "scheduled-posts", label: "Calendar", icon: Calendar },
+    { id: "creator-dashboard", label: "Creator Dashboard", icon: DollarSign },
+    { id: "scheduled-posts", label: "Posting Calendar", icon: Calendar },
     { id: "verification", label: "Verification", icon: BadgeCheck },
   ];
 
-  const marketplaceItems = [
-    { id: "marketplace", label: "Marketplace", icon: Briefcase },
+  // Items 12-13: Tutorials, Support
+  const supportItems = [
+    { id: "guide", label: "Tutorials", icon: BookOpen },
+    { id: "support", label: "Support", icon: LifeBuoy },
   ];
+
+  // Items 14-16: User Profile, Settings, Logout (in footer)
 
   const handleLogout = async () => {
     try {
@@ -189,13 +190,14 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
 
         <SidebarSeparator />
 
+        {/* Business Section */}
         <SidebarGroup className="pb-0">
           <SidebarGroupLabel className={`text-muted-foreground px-0 ${!isMobile && isCollapsed ? "hidden" : "block"}`}>
-            Navigation
+            Business
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navigationTabs.map((item) => (
+              {businessItems.map((item) => (
                 <SidebarMenuItem key={item.id}>
                   <SidebarMenuButton
                     onClick={() => handleItemClick(item.id)}
@@ -215,97 +217,63 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <>
-          {/* Social Section */}
-          <SidebarSeparator />
-          <SidebarGroup className="pb-0">
-            <SidebarGroupLabel
-              className={`text-muted-foreground px-0 ${!isMobile && isCollapsed ? "hidden" : "block"}`}
-            >
-              Social
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {socialItems.map((item) => (
-                  <SidebarMenuItem key={item.id}>
-                    <SidebarMenuButton
-                      onClick={() => handleItemClick(item.id)}
-                      isActive={activeView === item.id}
-                      className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
-                        activeView === item.id
-                          ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30"
-                          : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
-                      }`}
-                    >
-                      <item.icon className="w-5 h-5 shrink-0" />
-                      {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
+        <SidebarSeparator />
 
-          {/* Creator Section */}
-          <SidebarSeparator />
-          <SidebarGroup className="pb-0">
-            <SidebarGroupLabel
-              className={`text-muted-foreground px-0 ${!isMobile && isCollapsed ? "hidden" : "block"}`}
-            >
-              Creator
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {creatorItems.map((item) => (
-                  <SidebarMenuItem key={item.id}>
-                    <SidebarMenuButton
-                      onClick={() => handleItemClick(item.id)}
-                      isActive={activeView === item.id}
-                      className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
-                        activeView === item.id
-                          ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30"
-                          : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
-                      }`}
-                    >
-                      <item.icon className="w-5 h-5 shrink-0" />
-                      {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
+        {/* Creator Section */}
+        <SidebarGroup className="pb-0">
+          <SidebarGroupLabel className={`text-muted-foreground px-0 ${!isMobile && isCollapsed ? "hidden" : "block"}`}>
+            Creator
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {creatorItems.map((item) => (
+                <SidebarMenuItem key={item.id}>
+                  <SidebarMenuButton
+                    onClick={() => handleItemClick(item.id)}
+                    isActive={activeView === item.id}
+                    className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
+                      activeView === item.id
+                        ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30"
+                        : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
+                    }`}
+                  >
+                    <item.icon className="w-5 h-5 shrink-0" />
+                    {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
 
-          {/* Marketplace Section */}
-          <SidebarSeparator />
-          <SidebarGroup className="pb-0">
-            <SidebarGroupLabel
-              className={`text-muted-foreground px-0 ${!isMobile && isCollapsed ? "hidden" : "block"}`}
-            >
-              Marketplace
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {marketplaceItems.map((item) => (
-                  <SidebarMenuItem key={item.id}>
-                    <SidebarMenuButton
-                      onClick={() => handleItemClick(item.id)}
-                      isActive={activeView === item.id}
-                      className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
-                        activeView === item.id
-                          ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30"
-                          : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
-                      }`}
-                    >
-                      <item.icon className="w-5 h-5 shrink-0" />
-                      {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </>
+        <SidebarSeparator />
+
+        {/* Support Section */}
+        <SidebarGroup className="pb-0">
+          <SidebarGroupLabel className={`text-muted-foreground px-0 ${!isMobile && isCollapsed ? "hidden" : "block"}`}>
+            Support
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {supportItems.map((item) => (
+                <SidebarMenuItem key={item.id}>
+                  <SidebarMenuButton
+                    onClick={() => handleItemClick(item.id)}
+                    isActive={activeView === item.id}
+                    className={`w-full min-h-[44px] transition-all duration-200 ${!isMobile && isCollapsed ? "justify-center" : "justify-start gap-3 px-3"} ${
+                      activeView === item.id
+                        ? "bg-violet-500/20 text-violet-300 shadow-[inset_0_0_20px_rgba(212,110,255,0.2)] border border-violet-400/30"
+                        : "hover:bg-violet-500/5 hover:text-violet-300 text-gray-400"
+                    }`}
+                  >
+                    <item.icon className="w-5 h-5 shrink-0" />
+                    {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
 
       <SidebarFooter className="p-0">
