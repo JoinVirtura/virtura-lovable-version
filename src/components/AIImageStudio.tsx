@@ -530,27 +530,6 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                           />
                         </DialogContent>
                       </Dialog>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={toggleVoiceInput}
-                              className={`h-10 w-10 rounded-full backdrop-blur-md border-2 transition-all duration-300 ${
-                                isRecording 
-                                  ? 'bg-red-500/20 border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.5)]' 
-                                  : 'bg-black/40 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)]'
-                              }`}
-                            >
-                              {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            {isRecording ? "Stop recording" : "Voice input"}
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
                     </div>
                   </div>
                   
@@ -574,21 +553,75 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                       style={{ overflowWrap: 'anywhere', maxHeight: '300px', overflowY: 'auto' }}
                     />
                     
-                    {/* Send Button - Centered Below */}
-                    <div className="flex justify-center">
-                      <Button
+                    {/* Action Buttons - Centered Below */}
+                    <div className="flex items-center justify-center gap-3">
+                      {/* Image Upload/Reference Button */}
+                      {referenceImage ? (
+                        <div className="relative">
+                          <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-primary/50 hover:border-primary transition-all">
+                            <img 
+                              src={referenceImage} 
+                              alt="Reference" 
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              removeReferenceImage();
+                            }}
+                            className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center transition-colors shadow-lg"
+                          >
+                            <X className="h-3 w-3 text-white" />
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          disabled={isUploading}
+                          className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all flex items-center justify-center disabled:opacity-50"
+                        >
+                          <Camera className="h-4 w-4 text-white" />
+                        </button>
+                      )}
+                      
+                      {/* Microphone Button */}
+                      <button
+                        type="button"
+                        onClick={toggleVoiceInput}
+                        className={`w-10 h-10 rounded-full backdrop-blur-md border-2 transition-all flex items-center justify-center ${
+                          isRecording 
+                            ? 'bg-red-500/20 border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.5)]' 
+                            : 'bg-black/40 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)]'
+                        }`}
+                      >
+                        {isRecording ? <MicOff className="h-4 w-4 text-white" /> : <Mic className="h-4 w-4 text-white" />}
+                      </button>
+                      
+                      {/* Send Button */}
+                      <button
+                        type="button"
                         onClick={generatePreviews}
                         disabled={isGenerating || !prompt.trim()}
-                        className="h-12 w-12 rounded-full bg-gradient-to-r from-primary to-secondary hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] transition-all duration-300"
-                        size="icon"
+                        className="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-secondary hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {isGenerating ? (
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
                         ) : (
-                          <Send className="h-5 w-5" />
+                          <Send className="h-4 w-4 text-white" />
                         )}
-                      </Button>
+                      </button>
                     </div>
+                    
+                    {/* Hidden file input for reference image */}
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
                   </div>
                 </div>
 
@@ -796,47 +829,6 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                         </div>
                       </div>
 
-                      {/* Reference Image Upload */}
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">Reference Image (Optional)</label>
-                        <div className="flex gap-4">
-                          <Button
-                            variant="ghost"
-                            onClick={() => fileInputRef.current?.click()}
-                            disabled={isUploading}
-                            className="h-10 rounded-full bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
-                          >
-                            <Upload className="h-4 w-4 mr-2" />
-                            {isUploading ? "Uploading..." : "Upload Reference"}
-                          </Button>
-                          {referenceImage && (
-                            <Button
-                              variant="ghost"
-                              onClick={removeReferenceImage}
-                              className="h-10 rounded-full bg-black/40 backdrop-blur-md border-2 border-red-500/30 text-red-400 hover:bg-red-500/20 hover:border-red-500/50 hover:shadow-[0_0_20px_rgba(239,68,68,0.5)] transition-all duration-300"
-                            >
-                              <X className="h-4 w-4 mr-2" />
-                              Remove
-                            </Button>
-                          )}
-                        </div>
-                        <input
-                          ref={fileInputRef}
-                          type="file"
-                          accept="image/*"
-                          onChange={handleImageUpload}
-                          className="hidden"
-                        />
-                        {referenceImage && (
-                          <div className="mt-2">
-                            <img
-                              src={referenceImage}
-                              alt="Reference"
-                              className="h-20 w-20 object-cover rounded-md border"
-                            />
-                          </div>
-                        )}
-                      </div>
                     </div>
                   </div>
                 )}
