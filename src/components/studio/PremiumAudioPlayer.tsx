@@ -209,7 +209,7 @@ export const PremiumAudioPlayer: React.FC<PremiumAudioPlayerProps> = ({
                   value={[isMuted ? 0 : volume]}
                   onValueChange={handleVolumeChange}
                   max={100}
-                  className="h-7 sm:h-8 w-14 sm:w-16 [&_[data-orientation=horizontal]]:h-1.5 [&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
+                  className="hidden sm:flex h-8 w-16 [&_[data-orientation=horizontal]]:h-1.5 [&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
                 />
               </div>
             </div>
