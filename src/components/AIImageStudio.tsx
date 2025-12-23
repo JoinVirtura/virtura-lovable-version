@@ -1306,7 +1306,21 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
         {previewCards.length > 0 && !showInputCard && (
           <div className="mb-8 text-center">
             <Button
-              onClick={() => setShowInputCard(true)}
+              onClick={() => {
+                // Reset everything for a fresh start
+                setPreviewCards([]);
+                setPrompt("");
+                setNegativePrompt("");
+                setReferenceImage(null);
+                setSelectedImageForRefinement(null);
+                setIsRefinementMode(false);
+                setOriginalImageForComparison(null);
+                setChatMessages([]);
+                setChatInput("");
+                setSelectedVariant(null);
+                setShowInputCard(true);
+                toast.success("Ready for a new generation!");
+              }}
               size="lg"
               className="rounded-full bg-gradient-to-r from-primary to-secondary border-2 border-primary/30 hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] backdrop-blur-md transition-all duration-300"
             >
