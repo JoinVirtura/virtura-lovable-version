@@ -96,6 +96,8 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
   const [chatInput, setChatInput] = useState("");
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [imageCount, setImageCount] = useState(3); // User-selectable 1-10
+  const [originalImageForComparison, setOriginalImageForComparison] = useState<string | null>(null);
+  const [isRefinementMode, setIsRefinementMode] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -461,6 +463,106 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
       toast.error("Transcription failed");
     } finally {
       setAudioChunks([]);
+    }
+  };
+
+  // Handle quick refinement - auto-generates with the refinement prompt
+  const handleQuickRefinement = async (refinementText: string) => {
+    setChatInput(refinementText);
+    
+    // Get the selected image or first preview card as the base
+    const baseImage = selectedImageForRefinement 
+      ? previewCards.find(c => c.id === selectedImageForRefinement)
+      : previewCards[0];
+    
+    if (!baseImage) {
+      toast.error("Please select an image to refine");
+      return;
+    }
+    
+    // Store original for comparison
+    setOriginalImageForComparison(baseImage.imageUrl);
+    setIsRefinementMode(true);
+    
+    // Add user message to chat
+    const userMessage = { role: 'user' as const, content: refinementText };
+    setChatMessages(prev => [...prev, userMessage]);
+    
+    // Add assistant acknowledgment
+    const assistantMessage = { 
+      role: 'assistant' as const, 
+      content: `🎨 Applying: ${refinementText}` 
+    };
+    setChatMessages(prev => [...prev, assistantMessage]);
+    
+    const refinedPrompt = `${baseImage.prompt}. ${refinementText}`;
+    const progressMessageId = Date.now();
+    
+    try {
+      setIsGenerating(true);
+      setChatInput("");
+      
+      // Add progress message
+      setChatMessages(prev => [...prev, {
+        role: 'assistant' as const,
+        content: `⏳ Generating refined image... 0%`,
+        id: progressMessageId
+      }]);
+      
+      const params: ImageGenerationParams = {
+        prompt: refinedPrompt,
+        negativePrompt,
+        resolution: resolution as any,
+        contentType: contentType === "auto" ? undefined : contentType as any,
+        style,
+        adherence: adherence[0],
+        steps: steps[0],
+        referenceImage: baseImage.imageUrl,
+      };
+
+      // Generate only 1 image for refinement
+      const result = await ImageGenerationService.generateImage(params);
+      
+      if (result.success && result.image) {
+        const newCard: PreviewCard = {
+          id: `refined-${Date.now()}`,
+          imageUrl: result.image,
+          prompt: refinedPrompt,
+          isGenerating: false,
+          safetyPassed: true,
+          metadata: {
+            contentType: contentType === "auto" ? "Refined" : contentType,
+            style,
+            resolution
+          }
+        };
+        
+        // Replace all previews with just the single refined image
+        setPreviewCards([newCard]);
+        
+        // Update progress to complete
+        setChatMessages(prev => prev.map(msg => 
+          msg.id === progressMessageId
+            ? { ...msg, content: `✓ Refinement complete!` }
+            : msg
+        ));
+        
+        toast.success("Image refined successfully!");
+      } else {
+        throw new Error(result.error || 'Generation failed');
+      }
+      
+    } catch (error: any) {
+      console.error('Refinement error:', error);
+      toast.error("Failed to refine image");
+      
+      setChatMessages(prev => prev.map(msg => 
+        msg.id === progressMessageId
+          ? { ...msg, content: "✗ Failed to generate refined image. Please try again." }
+          : msg
+      ));
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -838,12 +940,99 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
         )}
 
 
-        {/* Results Section */}
+        {/* Results Section - Side by Side Comparison for Refinements */}
         {previewCards.length > 0 && (
           <Card className="border-2 border-primary/30 backdrop-blur-xl bg-black/60 shadow-2xl hover:shadow-[0_0_40px_rgba(139,92,246,0.2)] transition-all duration-300 mb-4">
             <div className="p-2">
               <ScrollArea className="max-h-[800px]">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {/* Side-by-side comparison when in refinement mode */}
+                {isRefinementMode && originalImageForComparison && previewCards.length === 1 ? (
+                  <div className="grid grid-cols-2 gap-4 p-2">
+                    {/* Original Image */}
+                    <div className="relative">
+                      <div className="absolute top-2 left-2 z-10">
+                        <Badge className="bg-black/80 backdrop-blur-md text-white border-white/20">
+                          Original
+                        </Badge>
+                      </div>
+                      <img
+                        src={originalImageForComparison}
+                        alt="Original"
+                        className="w-full aspect-square object-cover rounded-2xl border-2 border-white/20"
+                      />
+                    </div>
+                    
+                    {/* Edited Image */}
+                    <div className="relative group">
+                      <div className="absolute top-2 left-2 z-10">
+                        <Badge className="bg-gradient-to-r from-primary to-secondary text-white border-0">
+                          Edited
+                        </Badge>
+                      </div>
+                      <img
+                        src={previewCards[0].imageUrl}
+                        alt="Edited"
+                        className="w-full aspect-square object-cover rounded-2xl border-2 border-primary/50 shadow-[0_0_30px_rgba(139,92,246,0.3)]"
+                      />
+                      {/* Action buttons overlay */}
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 rounded-2xl">
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                size="icon"
+                                className="h-9 w-9 rounded-full bg-black/60 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
+                                onClick={() => handleDownloadVariant(previewCards[0].id)}
+                              >
+                                <Download className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Download</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                size="icon"
+                                className="h-9 w-9 rounded-full bg-black/60 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/20 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
+                                onClick={() => handleSaveToLibrary(previewCards[0].id)}
+                                disabled={savingToLibrary === previewCards[0].id}
+                              >
+                                {savingToLibrary === previewCards[0].id ? (
+                                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                                ) : (
+                                  <Heart className="h-4 w-4" />
+                                )}
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Save to Library</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                size="icon"
+                                className="h-9 w-9 rounded-full bg-gradient-to-r from-primary to-secondary hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
+                                onClick={() => {
+                                  // Use edited as new base
+                                  setOriginalImageForComparison(previewCards[0].imageUrl);
+                                  toast.success("Using edited image as new base");
+                                }}
+                              >
+                                <Edit3 className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Use as New Base</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  /* Standard grid layout for initial generation */
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                   {previewCards.map((card) => (
                     <Card 
                       key={card.id} 
@@ -972,6 +1161,7 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                     </Card>
                   ))}
                 </div>
+                )}
               </ScrollArea>
             </div>
           </Card>
@@ -993,19 +1183,19 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
               <div className="space-y-4">
                 {/* Quick Edit Suggestions */}
                 <div className="flex flex-wrap gap-2">
-                  <Button variant="ghost" size="sm" onClick={() => setChatInput("Change the lighting to vibrant neon")} className="bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/10 hover:border-primary/50 hover:shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all duration-300">
+                  <Button variant="ghost" size="sm" onClick={() => handleQuickRefinement("Change the lighting to vibrant neon")} disabled={isGenerating} className="bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/10 hover:border-primary/50 hover:shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all duration-300 disabled:opacity-50">
                     <Wand2 className="h-3 w-3 mr-1" />
                     Vibrant Light
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={() => setChatInput("Make it more dramatic")} className="bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/10 hover:border-primary/50 hover:shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all duration-300">
+                  <Button variant="ghost" size="sm" onClick={() => handleQuickRefinement("Make it more dramatic")} disabled={isGenerating} className="bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/10 hover:border-primary/50 hover:shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all duration-300 disabled:opacity-50">
                     <Camera className="h-3 w-3 mr-1" />
                     More Dramatic
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={() => setChatInput("Change the camera angle")} className="bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/10 hover:border-primary/50 hover:shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all duration-300">
+                  <Button variant="ghost" size="sm" onClick={() => handleQuickRefinement("Change the camera angle")} disabled={isGenerating} className="bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/10 hover:border-primary/50 hover:shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all duration-300 disabled:opacity-50">
                     <Eye className="h-3 w-3 mr-1" />
                     Different Angle
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={() => setChatInput("Enhance the colors")} className="bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/10 hover:border-primary/50 hover:shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all duration-300">
+                  <Button variant="ghost" size="sm" onClick={() => handleQuickRefinement("Enhance the colors")} disabled={isGenerating} className="bg-black/40 backdrop-blur-md border-2 border-primary/30 hover:bg-primary/10 hover:border-primary/50 hover:shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all duration-300 disabled:opacity-50">
                     <Palette className="h-3 w-3 mr-1" />
                     Enhance Colors
                   </Button>
@@ -1050,120 +1240,9 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                     className="min-h-[60px] pr-14 resize-none bg-transparent border-0 focus-visible:ring-0 text-white placeholder:text-gray-400"
                   />
                   <Button
-                    onClick={async () => {
+                    onClick={() => {
                       if (chatInput.trim()) {
-                        // Add user message to chat
-                        const userMessage = { role: 'user' as const, content: chatInput };
-                        setChatMessages(prev => [...prev, userMessage]);
-                        
-                        const currentChatInput = chatInput;
-                        setChatInput("");
-                        
-                        // Add assistant acknowledgment with progress
-                        const assistantMessage = { 
-                          role: 'assistant' as const, 
-                          content: `🎨 Applying: ${currentChatInput}` 
-                        };
-                        setChatMessages(prev => [...prev, assistantMessage]);
-                        
-                        // Get the selected image for refinement or use the original prompt
-                        const basePrompt = selectedImageForRefinement 
-                          ? previewCards.find(c => c.id === selectedImageForRefinement)?.prompt || prompt
-                          : prompt;
-                        
-                        const refinedPrompt = `${basePrompt}. ${currentChatInput}`;
-                        
-                        const progressMessageId = Date.now();
-                        
-                        try {
-                          setIsGenerating(true);
-                          
-                          // Add progress message to chat
-                          setChatMessages(prev => [...prev, {
-                            role: 'assistant' as const,
-                            content: `⏳ Generating ${imageCount} refined variations... 0%`,
-                            id: progressMessageId
-                          }]);
-                          
-                          const params: ImageGenerationParams = {
-                            prompt: refinedPrompt,
-                            negativePrompt,
-                            resolution: resolution as any,
-                            contentType: contentType === "auto" ? undefined : contentType as any,
-                            style,
-                            adherence: adherence[0],
-                            steps: steps[0],
-                            referenceImage: selectedImageForRefinement 
-                              ? previewCards.find(c => c.id === selectedImageForRefinement)?.imageUrl
-                              : referenceImage || undefined,
-                          };
-
-                          // Clear existing previews before generating refined images (replace mode)
-                          setPreviewCards([]);
-                          
-                          // Generate images sequentially with progress updates (using user-selected imageCount)
-                          let successCount = 0;
-                          
-                          for (let i = 0; i < imageCount; i++) {
-                            // Update progress message
-                            const progressPercent = Math.round((i / imageCount) * 100);
-                            setChatMessages(prev => prev.map(msg => 
-                              msg.id === progressMessageId
-                                ? { ...msg, content: `⏳ Generating variation ${i + 1}/${imageCount}... ${progressPercent}%` }
-                                : msg
-                            ));
-                            
-                            const result = await ImageGenerationService.generateImage(params);
-                            
-                            if (result.success && result.image) {
-                              const newCard: PreviewCard = {
-                                id: `refined-${Date.now()}-${i}`,
-                                imageUrl: result.image,
-                                prompt: refinedPrompt,
-                                isGenerating: false,
-                                safetyPassed: true,
-                                metadata: {
-                                  contentType: contentType === "auto" ? "Refined" : contentType,
-                                  style,
-                                  resolution
-                                }
-                              };
-                              
-                              // Append each new image as it completes (building the new set)
-                              setPreviewCards(prev => [...prev, newCard]);
-                              successCount++;
-                            }
-                            
-                            // Small delay between generations
-                            if (i < imageCount - 1) await new Promise(resolve => setTimeout(resolve, 500));
-                          }
-                          
-                          // Update progress to 100%
-                          setChatMessages(prev => prev.map(msg => 
-                            msg.id === progressMessageId
-                              ? { ...msg, content: `✓ Generation complete! ${successCount}/${imageCount} images created successfully - 100%` }
-                              : msg
-                          ));
-                          
-                          if (successCount > 0) {
-                            toast.success(`${successCount} refined images generated!`);
-                          } else {
-                            throw new Error('All generations failed');
-                          }
-                          
-                        } catch (error: any) {
-                          console.error('Refinement error:', error);
-                          toast.error("Failed to refine images");
-                          
-                          // Update chat with error
-                          setChatMessages(prev => prev.map(msg => 
-                            msg.id === progressMessageId
-                              ? { ...msg, content: "✗ Failed to generate refined images. Please try again." }
-                              : msg
-                          ));
-                        } finally {
-                          setIsGenerating(false);
-                        }
+                        handleQuickRefinement(chatInput);
                       }
                     }}
                     disabled={!chatInput.trim() || isGenerating}
