@@ -170,9 +170,22 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
     
     // Clear existing previews when generating new images (replace mode)
     setPreviewCards([]);
+
+    // EDIT MODE: When referenceImage is set, generate only 1 image and enable comparison
+    const isEditMode = !!referenceImage;
+    const actualImageCount = isEditMode ? 1 : imageCount;
     
-    // Create placeholder cards based on user-selected imageCount
-    const newCardIds = Array.from({ length: imageCount }, (_, i) => `card-${Date.now()}-${i}`);
+    // Set up side-by-side comparison for edit mode
+    if (isEditMode) {
+      setOriginalImageForComparison(referenceImage);
+      setIsRefinementMode(true);
+    } else {
+      setIsRefinementMode(false);
+      setOriginalImageForComparison(null);
+    }
+    
+    // Create placeholder cards based on actual count (1 for edit, user-selected for new)
+    const newCardIds = Array.from({ length: actualImageCount }, (_, i) => `card-${Date.now()}-${i}`);
     const placeholderCards: PreviewCard[] = newCardIds.map((id, index) => ({
       id,
       imageUrl: "",
@@ -198,8 +211,16 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
         referenceImage
       };
 
-      // Generate variants using user-selected imageCount
-      const results = await ImageGenerationService.generateVariants(prompt, params, imageCount);
+      let results;
+      
+      if (isEditMode) {
+        // Edit mode: Generate single image
+        const result = await ImageGenerationService.generateImage(params);
+        results = [result];
+      } else {
+        // New generation: Generate variants using user-selected imageCount
+        results = await ImageGenerationService.generateVariants(prompt, params, imageCount);
+      }
       
       // Update cards with results
       setPreviewCards(prev => 
@@ -228,7 +249,7 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
         })
       );
 
-      toast.success("Images generated successfully!");
+      toast.success(isEditMode ? "Image edited successfully!" : "Images generated successfully!");
       setShowInputCard(false); // Hide input card after successful generation
       
     } catch (error) {
