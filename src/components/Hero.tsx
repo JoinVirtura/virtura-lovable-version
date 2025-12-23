@@ -672,7 +672,7 @@ export const Hero = () => {
           <Card className="backdrop-blur-xl bg-black/60 border-2 border-primary/30 rounded-2xl shadow-2xl overflow-hidden">
             <div className="p-2 sm:p-3 md:p-4">
               {/* Main Input - Vertical Layout */}
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-2">
                 <Textarea
                   ref={(el) => {
                     if (el) {
@@ -688,7 +688,7 @@ export const Hero = () => {
                     el.style.height = 'auto';
                     el.style.height = `${Math.min(el.scrollHeight, 300)}px`;
                   }}
-                  className="w-full min-h-[60px] text-sm bg-transparent border-0 focus:ring-0 placeholder:text-muted-foreground/70 resize-none py-2 leading-normal break-words"
+                  className="w-full min-h-[40px] text-sm bg-transparent border-0 focus:ring-0 placeholder:text-muted-foreground/70 resize-none py-2 leading-normal break-words"
                   style={{ outline: 'none', overflowWrap: 'anywhere', maxHeight: '300px', overflowY: 'auto' }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
