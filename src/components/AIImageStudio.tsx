@@ -179,9 +179,16 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
     if (isEditMode) {
       setOriginalImageForComparison(referenceImage);
       setIsRefinementMode(true);
+      // Add the original prompt to studio chat so user can see what they requested
+      setChatMessages([
+        { role: 'user' as const, content: prompt },
+        { role: 'assistant' as const, content: `🎨 Editing image with: "${prompt}"` }
+      ]);
     } else {
       setIsRefinementMode(false);
       setOriginalImageForComparison(null);
+      // Clear chat for new generation
+      setChatMessages([]);
     }
     
     // Create placeholder cards based on actual count (1 for edit, user-selected for new)
@@ -748,8 +755,8 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                   </div>
                 </div>
 
-                {/* Reference Image Preview */}
-                {referenceImage && (
+                {/* Reference Image Preview - Only show before generation */}
+                {referenceImage && previewCards.length === 0 && (
                   <div className="flex items-center gap-3 p-3 bg-black/40 backdrop-blur-md rounded-lg border-2 border-primary/30">
                     <div className="w-16 h-16 rounded-lg overflow-hidden bg-black/50 border border-primary/20">
                       <img 
