@@ -197,7 +197,7 @@ export const PromptLibrary = ({ onUsePrompt, onClose }: PromptLibraryProps) => {
       </CardHeader>
       <CardContent>
         <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
-          <TabsList className="w-full flex flex-wrap justify-start gap-1">
+          <TabsList className="w-full h-auto flex flex-wrap justify-start gap-1 py-2">
             {categories.map((category) => (
               <TabsTrigger key={category} value={category} className="capitalize">
                 {category}
