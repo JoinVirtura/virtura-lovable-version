@@ -181,7 +181,7 @@ export const PremiumAudioPlayer: React.FC<PremiumAudioPlayerProps> = ({
               </Button>
             </div>
 
-            <div className="flex items-center gap-1 sm:gap-2 overflow-hidden">
+            <div className="flex items-center gap-1 sm:gap-2">
               <Button
                 size="sm"
                 variant="ghost"
@@ -209,7 +209,7 @@ export const PremiumAudioPlayer: React.FC<PremiumAudioPlayerProps> = ({
                   value={[isMuted ? 0 : volume]}
                   onValueChange={handleVolumeChange}
                   max={100}
-                  className="w-14 sm:w-16 [&>span]:h-1 [&>span>span]:h-3.5 [&>span>span]:w-3.5"
+                  className="h-7 sm:h-8 w-14 sm:w-16 [&_[data-orientation=horizontal]]:h-1.5 [&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
                 />
               </div>
             </div>
