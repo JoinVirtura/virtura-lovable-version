@@ -94,7 +94,7 @@ export function InteractiveHeroInput({ onGenerate, isGenerating, value, onChange
               }
             }}
             placeholder={currentPlaceholder}
-            className="flex-1 min-h-[32px] max-h-[32px] text-sm bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none py-2 placeholder:text-muted-foreground/60"
+            className="flex-1 min-h-[40px] max-h-[120px] text-sm bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none py-2 overflow-y-auto placeholder:text-muted-foreground/60"
           />
           
           {/* Action Buttons on Right */}
