@@ -67,13 +67,13 @@ export default function TrialAnalytics() {
   const loadAnalytics = async () => {
     setLoading(true);
     try {
-      // Load summary
+      // Load summary - using type assertion as this may be a view or custom table
       const { data: summaryData } = await supabase
-        .from("trial_analytics_summary")
+        .from("trial_analytics_summary" as any)
         .select("*")
         .single();
 
-      if (summaryData) setSummary(summaryData);
+      if (summaryData) setSummary(summaryData as unknown as AnalyticsSummary);
 
       // Load feature usage
       const { data: usageData } = await supabase
