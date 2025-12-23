@@ -134,25 +134,25 @@ export const SettingsContent: React.FC<SettingsContentProps> = ({
       id: "starter",
       name: "Starter",
       price: "$29/mo",
-      highlights: ["1,000 tokens/month", "HD quality", "48h render queue", "Standard support"],
+      highlights: ["120 monthly generations", "AI photos, avatars, and concepts", "1080p exports", "Essential styles & presets", "SFW content only", "Basic support"],
       popular: false,
-      description: "Perfect for hobbyists"
+      description: "Perfect entry point for new creators"
     },
     {
-      id: "creator",
-      name: "Creator",
-      price: "$79/mo",
-      highlights: ["5,000 tokens/month", "4K quality", "Priority rendering", "Priority support"],
+      id: "pro",
+      name: "Pro",
+      price: "$129/mo",
+      highlights: ["700 monthly generations", "Hyper-realistic quality & advanced styles", "4K exports", "Branded content tools", "Commercial license", "Priority support", "API access"],
       popular: true,
-      description: "For content creators"
+      description: "For serious creators & growing brands"
     },
     {
-      id: "studio",
-      name: "Studio",
-      price: "$199/mo",
-      highlights: ["Unlimited tokens", "8K quality", "Instant rendering", "Dedicated support"],
+      id: "enterprise",
+      name: "Enterprise",
+      price: "$349/mo",
+      highlights: ["2,200 monthly generations", "Dedicated account manager", "White-label options", "Custom model training", "Team seats & collaboration", "8K exports", "Advanced analytics", "Priority API access"],
       popular: false,
-      description: "For agencies and high-volume users"
+      description: "For agencies, teams & large-scale operations"
     },
   ];
 
