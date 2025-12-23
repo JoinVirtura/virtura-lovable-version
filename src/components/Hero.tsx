@@ -672,13 +672,24 @@ export const Hero = () => {
           <Card className="backdrop-blur-xl bg-black/60 border-2 border-primary/30 rounded-2xl shadow-2xl overflow-hidden">
             <div className="p-2 sm:p-3 md:p-4">
               {/* Main Input Row */}
-              <div className="flex items-center gap-2 md:gap-3">
+              <div className="flex items-start gap-2 md:gap-3">
                 <Textarea
+                  ref={(el) => {
+                    if (el) {
+                      el.style.height = 'auto';
+                      el.style.height = `${Math.min(el.scrollHeight, 200)}px`;
+                    }
+                  }}
                   placeholder="Describe the image you want to create..."
                   value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  className="flex-1 min-h-[40px] max-h-[120px] text-sm bg-transparent border-0 focus:ring-0 placeholder:text-muted-foreground/70 resize-none py-2 overflow-y-auto leading-normal"
-                  style={{ outline: 'none' }}
+                  onChange={(e) => {
+                    setInputValue(e.target.value);
+                    const el = e.target;
+                    el.style.height = 'auto';
+                    el.style.height = `${Math.min(el.scrollHeight, 200)}px`;
+                  }}
+                  className="flex-1 w-0 min-w-0 min-h-[40px] text-sm bg-transparent border-0 focus:ring-0 placeholder:text-muted-foreground/70 resize-none py-2 leading-normal break-words"
+                  style={{ outline: 'none', overflowWrap: 'anywhere', maxHeight: '200px', overflowY: 'auto' }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                       e.preventDefault();
