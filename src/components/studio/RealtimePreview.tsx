@@ -490,14 +490,14 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
 
         {/* Voice Preview Section - Compact Audio Player */}
         {project.voice?.status === 'completed' && project.voice?.audioUrl && (
-          <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
+          <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 overflow-hidden">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm flex items-center gap-2">
                 <Volume2 className="h-4 w-4 text-primary" />
                 Voice Preview
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-3 overflow-hidden">
               <PremiumAudioPlayer
                 audioUrl={project.voice.audioUrl}
                 isPlaying={isPlaying}
@@ -507,13 +507,13 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
               />
               
               {/* Duration and Quality on ONE LINE with Download Button */}
-              <div className="flex items-center justify-between text-xs text-muted-foreground pt-1">
-                <div className="flex items-center gap-4">
+              <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground pt-1">
+                <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
                   <div>
                     <span className="font-medium">Duration: </span>
                     <span>{typeof project.voice.metadata?.duration === 'number' ? `${project.voice.metadata.duration}s` : 'Unknown'}</span>
                   </div>
-                  <div>
+                  <div className="hidden sm:block">
                     <span className="font-medium">Quality: </span>
                     <span>Ultra-HD</span>
                   </div>
