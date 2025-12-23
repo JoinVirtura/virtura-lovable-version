@@ -192,7 +192,7 @@ export default function VideoProPage() {
 
       {/* Main Studio Interface */}
       <div className="w-full px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-6 mb-6 sm:mb-8">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
           {/* Global file input - always available */}
           <input
             ref={fileInputRef}
@@ -210,7 +210,7 @@ export default function VideoProPage() {
           />
 
           {/* Main Studio Panel */}
-          <div className="md:col-span-7 lg:col-span-8 relative">
+          <div className="lg:col-span-8 relative">
             <Card className="border-0 shadow-[0_8px_32px_rgba(0,0,0,0.3)] bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl rounded-2xl overflow-visible">
               <CardContent className="p-3 sm:p-6">
                 <Tabs value={currentStep} onValueChange={setCurrentStep}>
@@ -255,7 +255,7 @@ export default function VideoProPage() {
           </div>
 
           {/* Sidebar - Preview & Controls */}
-          <div className="md:col-span-5 lg:col-span-4 space-y-4 sm:space-y-6 mb-6">
+          <div className="lg:col-span-4 space-y-4 sm:space-y-6 mb-6">
             {/* Real-time Preview */}
             <div className="glass-card border border-violet-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] rounded-xl overflow-hidden">
               <RealtimePreview 
