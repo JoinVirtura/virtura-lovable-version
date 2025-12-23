@@ -148,13 +148,13 @@ export const PremiumAudioPlayer: React.FC<PremiumAudioPlayerProps> = ({
           </div>
 
           {/* Controls */}
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-1 sm:gap-2">
+          <div className="flex items-center justify-center gap-2 flex-wrap">
+            <div className="flex items-center gap-1">
               <Button
                 size="sm"
                 variant="outline"
                 onClick={() => skip(-10)}
-                className="h-7 w-7 sm:h-8 sm:w-8 p-0 shrink-0"
+                className="h-8 w-8 p-0 shrink-0"
               >
                 <SkipBack className="h-3 w-3" />
               </Button>
@@ -162,7 +162,7 @@ export const PremiumAudioPlayer: React.FC<PremiumAudioPlayerProps> = ({
               <Button
                 size="sm"
                 onClick={handlePlayPause}
-                className="h-9 w-9 sm:h-10 sm:w-10 p-0 shrink-0"
+                className="h-10 w-10 p-0 shrink-0"
               >
                 {isPlaying ? (
                   <Pause className="h-4 w-4" />
@@ -175,44 +175,41 @@ export const PremiumAudioPlayer: React.FC<PremiumAudioPlayerProps> = ({
                 size="sm"
                 variant="outline"
                 onClick={() => skip(10)}
-                className="h-7 w-7 sm:h-8 sm:w-8 p-0 shrink-0"
+                className="h-8 w-8 p-0 shrink-0"
               >
                 <SkipForward className="h-3 w-3" />
               </Button>
             </div>
 
-            <div className="flex items-center gap-1 sm:gap-2">
+            <div className="flex items-center gap-1">
               <Button
                 size="sm"
                 variant="ghost"
                 onClick={() => setIsLooping(!isLooping)}
-                className={`h-7 w-7 sm:h-8 sm:w-8 p-0 shrink-0 ${isLooping ? 'text-primary' : 'text-muted-foreground'}`}
+                className={`h-8 w-8 p-0 shrink-0 ${isLooping ? 'text-primary' : 'text-muted-foreground'}`}
               >
                 <Repeat className="h-3 w-3" />
               </Button>
               
-              <div className="flex items-center gap-1">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={toggleMute}
-                  className="h-7 w-7 sm:h-8 sm:w-8 p-0 shrink-0"
-                >
-                  {isMuted || volume === 0 ? (
-                    <VolumeX className="h-3 w-3" />
-                  ) : (
-                    <Volume2 className="h-3 w-3" />
-                  )}
-                </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={toggleMute}
+                className="h-8 w-8 p-0 shrink-0"
+              >
+                {isMuted || volume === 0 ? (
+                  <VolumeX className="h-3 w-3" />
+                ) : (
+                  <Volume2 className="h-3 w-3" />
+                )}
+              </Button>
 
-                <Slider
-                  orientation="vertical"
-                  value={[isMuted ? 0 : volume]}
-                  onValueChange={handleVolumeChange}
-                  max={100}
-                  className="h-7 w-5 sm:h-8 sm:w-5 flex-col justify-center shrink-0 [&_[data-orientation=vertical]]:w-1.5 [&_[data-orientation=vertical]]:h-full [&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
-                />
-              </div>
+              <Slider
+                value={[isMuted ? 0 : volume]}
+                onValueChange={handleVolumeChange}
+                max={100}
+                className="hidden sm:flex h-2 w-16 [&_[role=slider]]:h-3 [&_[role=slider]]:w-3"
+              />
             </div>
           </div>
         </div>
