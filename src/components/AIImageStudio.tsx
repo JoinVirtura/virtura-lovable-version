@@ -534,6 +534,15 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
       setIsGenerating(true);
       setChatInput("");
       
+      // Set loading placeholder immediately so side-by-side shows spinner
+      setPreviewCards([{
+        id: `refined-${Date.now()}`,
+        imageUrl: "",  // Empty = loading state
+        prompt: refinedPrompt,
+        isGenerating: true,
+        safetyPassed: true,
+      }]);
+      
       // Add progress message
       setChatMessages(prev => [...prev, {
         role: 'assistant' as const,
