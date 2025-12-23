@@ -554,25 +554,41 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                     </div>
                   </div>
                   
-                  <div className="relative">
+                  <div className="flex flex-col gap-2">
                     <Textarea
+                      ref={(el) => {
+                        if (el) {
+                          el.style.height = 'auto';
+                          el.style.height = `${Math.min(el.scrollHeight, 300)}px`;
+                        }
+                      }}
                       placeholder="A majestic mountain landscape at sunset, snow-capped peaks, dramatic clouds, photorealistic, 8K quality..."
                       value={prompt}
-                      onChange={(e) => setPrompt(e.target.value)}
-                      className="min-h-[60px] max-h-[200px] pr-14 resize-y bg-transparent border border-white/10 rounded-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 text-white placeholder:text-gray-400 px-4 py-4 overflow-y-auto whitespace-pre-wrap break-words transition-all duration-300"
+                      onChange={(e) => {
+                        setPrompt(e.target.value);
+                        const el = e.target;
+                        el.style.height = 'auto';
+                        el.style.height = `${Math.min(el.scrollHeight, 300)}px`;
+                      }}
+                      className="w-full min-h-[40px] resize-none bg-transparent border border-white/10 rounded-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 text-white placeholder:text-gray-400 px-4 py-4 transition-all duration-300"
+                      style={{ overflowWrap: 'anywhere', maxHeight: '300px', overflowY: 'auto' }}
                     />
-                    <Button
-                      onClick={generatePreviews}
-                      disabled={isGenerating || !prompt.trim()}
-                      className="absolute bottom-3 right-3 h-12 w-12 rounded-full bg-gradient-to-r from-primary to-secondary hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] transition-all duration-300"
-                      size="icon"
-                    >
-                      {isGenerating ? (
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
-                      ) : (
-                        <Send className="h-5 w-5" />
-                      )}
-                    </Button>
+                    
+                    {/* Send Button - Centered Below */}
+                    <div className="flex justify-center">
+                      <Button
+                        onClick={generatePreviews}
+                        disabled={isGenerating || !prompt.trim()}
+                        className="h-12 w-12 rounded-full bg-gradient-to-r from-primary to-secondary hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] transition-all duration-300"
+                        size="icon"
+                      >
+                        {isGenerating ? (
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                        ) : (
+                          <Send className="h-5 w-5" />
+                        )}
+                      </Button>
+                    </div>
                   </div>
                 </div>
 
