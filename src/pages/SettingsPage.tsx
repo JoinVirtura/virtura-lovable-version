@@ -308,48 +308,52 @@ export default function SettingsPage() {
 
   const plans = [
     {
-      id: "individual",
-      name: "Individual",
-      price: "$20/mo",
+      id: "starter",
+      name: "Starter",
+      price: "$29/mo",
       highlights: [
-        "200 tokens/month",
-        "Image & video generations",
-        "Export packs",
-        "Tokens never expire",
-        "Community support",
+        "120 monthly generations",
+        "AI photos, avatars, and concepts",
+        "1080p exports",
+        "Essential styles & presets",
+        "SFW content only",
+        "Basic support",
       ],
       popular: false,
-      description: "For creators, hobbyists, and freelancers"
+      description: "Perfect entry point for new creators"
     },
     {
       id: "pro",
       name: "Pro",
-      price: "$99/mo",
+      price: "$129/mo",
       highlights: [
-        "1,000 tokens/month",
-        "All generation features",
-        "Priority processing",
-        "Advanced editing tools",
-        "Email support",
-        "Commercial licensing",
+        "700 monthly generations",
+        "Hyper-realistic quality & advanced styles",
+        "4K exports",
+        "Branded content tools",
+        "Commercial license",
+        "Priority support",
+        "API access",
       ],
       popular: true,
-      description: "For professionals and small teams"
+      description: "For serious creators & growing brands"
     },
     {
       id: "enterprise",
       name: "Enterprise",
-      price: "$299/mo",
+      price: "$349/mo",
       highlights: [
-        "3,000 tokens/month",
-        "Unlimited scaling",
-        "Team collaboration",
+        "2,200 monthly generations",
+        "Dedicated account manager",
         "White-label options",
-        "Priority support",
-        "Custom integrations",
+        "Custom model training",
+        "Team seats & collaboration",
+        "8K exports",
+        "Advanced analytics",
+        "Priority API access",
       ],
       popular: false,
-      description: "For agencies and high-volume users"
+      description: "For agencies, teams & large-scale operations"
     },
   ];
 
