@@ -60,7 +60,7 @@ export function HowItWorksSection({ id }: HowItWorksSectionProps) {
                   </div>
                   <h3 className="text-xl md:text-2xl font-bold">{step.title}</h3>
                 </div>
-                <p className="text-base md:text-lg text-muted-foreground text-justify md:text-left">{step.description}</p>
+                <p className="text-base md:text-lg text-muted-foreground">{step.description}</p>
               </div>
             </div>
           ))}
