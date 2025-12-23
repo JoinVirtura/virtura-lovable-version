@@ -72,7 +72,7 @@ export function BrandAgencySection({ id }: BrandAgencySectionProps) {
                   </div>
                   <div>
                     <h3 className="font-semibold mb-2">{feature.title}</h3>
-                    <p className="text-sm text-muted-foreground text-justify">{feature.description}</p>
+                    <p className="text-sm text-muted-foreground">{feature.description}</p>
                   </div>
                 </div>
               </CardContent>

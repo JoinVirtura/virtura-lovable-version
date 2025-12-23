@@ -57,7 +57,7 @@ export function ChooseYourPathSection({ id }: ChooseYourPathSectionProps) {
                   <path.icon className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold mb-4">{path.title}</h3>
-                <p className="text-muted-foreground mb-8 flex-grow text-justify">{path.description}</p>
+                <p className="text-muted-foreground mb-8 flex-grow">{path.description}</p>
                 <Button 
                   onClick={path.action}
                   variant={path.variant}
