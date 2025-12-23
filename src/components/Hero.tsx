@@ -677,7 +677,7 @@ export const Hero = () => {
                   placeholder="Describe the image you want to create..."
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  className="flex-1 min-h-[32px] max-h-[32px] text-sm bg-transparent border-0 focus:ring-0 placeholder:text-muted-foreground/70 resize-none py-2"
+                  className="flex-1 min-h-[40px] max-h-[120px] text-sm bg-transparent border-0 focus:ring-0 placeholder:text-muted-foreground/70 resize-none py-2 overflow-y-auto leading-normal"
                   style={{ outline: 'none' }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
