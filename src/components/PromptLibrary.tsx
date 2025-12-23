@@ -197,9 +197,16 @@ export const PromptLibrary = ({ onUsePrompt, onClose }: PromptLibraryProps) => {
       </CardHeader>
       <CardContent>
         <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
-          <TabsList className="w-full h-auto flex flex-wrap justify-start gap-1 py-2">
+          <TabsList className="w-full h-auto flex flex-wrap justify-start gap-2 p-3 bg-gradient-to-b from-muted/50 to-muted/30 border border-border/50 rounded-xl">
             {categories.map((category) => (
-              <TabsTrigger key={category} value={category} className="capitalize">
+              <TabsTrigger 
+                key={category} 
+                value={category} 
+                className="capitalize px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 
+                           hover:bg-primary/10 hover:text-primary
+                           data-[state=active]:bg-primary data-[state=active]:text-primary-foreground 
+                           data-[state=active]:shadow-md data-[state=active]:shadow-primary/25"
+              >
                 {category}
               </TabsTrigger>
             ))}
