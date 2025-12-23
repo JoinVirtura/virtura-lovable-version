@@ -132,8 +132,12 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
   }, []);
 
   useEffect(() => {
-    // Scroll to top of results section when previews change
-    resultsTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    // Only scroll when there are actual previews (avoid scroll on empty state)
+    if (previewCards.length > 0) {
+      requestAnimationFrame(() => {
+        resultsTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
   }, [previewCards]);
 
   useEffect(() => {
@@ -170,9 +174,6 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
 
     setIsGenerating(true);
     setShowInputCard(false); // Hide input card immediately on send
-    
-    // Clear existing previews when generating new images (replace mode)
-    setPreviewCards([]);
 
     // EDIT MODE: When referenceImage is set, generate only 1 image and enable comparison
     const isEditMode = !!referenceImage;
@@ -1307,7 +1308,7 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
           <div className="mb-8 text-center">
             <Button
               onClick={() => {
-                // Reset everything for a fresh start
+                // Reset EVERYTHING for a true clean slate
                 setPreviewCards([]);
                 setPrompt("");
                 setNegativePrompt("");
@@ -1318,6 +1319,11 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                 setChatMessages([]);
                 setChatInput("");
                 setSelectedVariant(null);
+                setEditImageRemoved(true); // Clear edit mode image completely
+                setIsGenerating(false);
+                setIsUploading(false);
+                setSavingToLibrary(null);
+                if (fileInputRef.current) fileInputRef.current.value = "";
                 setShowInputCard(true);
                 toast.success("Ready for a new generation!");
               }}
