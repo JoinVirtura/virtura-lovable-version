@@ -634,7 +634,7 @@ export const PremiumVoiceEngine: React.FC<PremiumVoiceEngineProps> = ({
                         </div>
                         <div className="flex flex-wrap gap-2 mt-3">
                           <Badge variant="outline" className="text-xs inline-flex items-center gap-1">
-                            <span className="leading-none text-sm">{voice.gender === 'male' ? '♂' : voice.gender === 'female' ? '♀' : '✨'}</span>
+                            <span className="leading-none text-xs">{voice.gender === 'male' ? '♂' : voice.gender === 'female' ? '♀' : '✨'}</span>
                             <span className="capitalize">{voice.gender}</span>
                           </Badge>
                           <Badge variant="outline" className="text-xs">
