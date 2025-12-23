@@ -204,12 +204,13 @@ export const PremiumAudioPlayer: React.FC<PremiumAudioPlayerProps> = ({
                     <Volume2 className="h-3 w-3" />
                   )}
                 </Button>
-                
+
                 <Slider
+                  orientation="vertical"
                   value={[isMuted ? 0 : volume]}
                   onValueChange={handleVolumeChange}
                   max={100}
-                  className="hidden sm:flex h-8 w-16 [&_[data-orientation=horizontal]]:h-1.5 [&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
+                  className="h-7 w-5 sm:h-8 sm:w-5 flex-col justify-center shrink-0 [&_[data-orientation=vertical]]:w-1.5 [&_[data-orientation=vertical]]:h-full [&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
                 />
               </div>
             </div>
