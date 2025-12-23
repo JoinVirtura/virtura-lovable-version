@@ -100,6 +100,7 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
   const [isRefinementMode, setIsRefinementMode] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const resultsTopRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -131,7 +132,8 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
   }, []);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    // Scroll to top of results section when previews change
+    resultsTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [previewCards]);
 
   useEffect(() => {
@@ -970,6 +972,7 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
 
 
         {/* Results Section - Side by Side Comparison for Refinements */}
+        <div ref={resultsTopRef} />
         {previewCards.length > 0 && (
           <Card className="border-2 border-primary/30 backdrop-blur-xl bg-black/60 shadow-2xl hover:shadow-[0_0_40px_rgba(139,92,246,0.2)] transition-all duration-300 mb-4">
             <div className="p-2">
