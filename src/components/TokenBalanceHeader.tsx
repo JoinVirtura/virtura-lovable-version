@@ -146,11 +146,11 @@ export function TokenBalanceHeader({ className }: TokenBalanceHeaderProps) {
   if (isLoading) {
     return (
       <div className={cn(
-        "flex items-center gap-2 px-3 py-1.5 rounded-full bg-background/50 backdrop-blur-sm border border-border/50",
+        "flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-background/50 backdrop-blur-sm border border-border/50",
         className
       )}>
-        <Coins className="w-4 h-4 text-muted-foreground animate-pulse" />
-        <span className="text-sm text-muted-foreground">...</span>
+        <Coins className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground animate-pulse" />
+        <span className="text-xs sm:text-sm text-muted-foreground">...</span>
       </div>
     );
   }
@@ -159,49 +159,49 @@ export function TokenBalanceHeader({ className }: TokenBalanceHeaderProps) {
   if (isAdmin) {
     return (
       <div className={cn(
-        "relative flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-violet-500/20 via-purple-500/20 to-fuchsia-500/20 backdrop-blur-sm border border-violet-500/40 hover:border-violet-400/60 transition-all duration-300 shadow-lg shadow-violet-500/10",
+        "relative flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-gradient-to-r from-violet-500/20 via-purple-500/20 to-fuchsia-500/20 backdrop-blur-sm border border-violet-500/40 hover:border-violet-400/60 transition-all duration-300 shadow-lg shadow-violet-500/10",
         className
       )}>
         <motion.div
           animate={{ rotate: [0, 10, -10, 0] }}
           transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
         >
-          <Shield className="w-4 h-4 text-violet-400" />
+          <Shield className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-violet-400" />
         </motion.div>
         
-        <div className="flex items-center gap-1">
-          <InfinityIcon className="w-4 h-4 text-violet-300" />
-          <span className="text-sm font-semibold bg-gradient-to-r from-violet-300 to-fuchsia-300 bg-clip-text text-transparent">
+        <div className="flex items-center gap-0.5 sm:gap-1">
+          <InfinityIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-violet-300" />
+          <span className="text-xs sm:text-sm font-semibold bg-gradient-to-r from-violet-300 to-fuchsia-300 bg-clip-text text-transparent">
             Unlimited
           </span>
         </div>
         
-        <span className="text-xs text-violet-400/80 font-medium">Admin</span>
+        <span className="hidden sm:inline text-xs text-violet-400/80 font-medium">Admin</span>
       </div>
     );
   }
 
   return (
     <div className={cn(
-      "relative flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-primary/10 to-secondary/10 backdrop-blur-sm border border-primary/20 hover:border-primary/40 transition-all duration-300",
+      "relative flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-gradient-to-r from-primary/10 to-secondary/10 backdrop-blur-sm border border-primary/20 hover:border-primary/40 transition-all duration-300",
       className
     )}>
       <motion.div
         animate={showDeduction ? { scale: [1, 1.2, 1] } : {}}
         transition={{ duration: 0.3 }}
       >
-        <Coins className="w-4 h-4 text-primary" />
+        <Coins className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
       </motion.div>
       
       <motion.span 
-        className="text-sm font-semibold text-foreground"
+        className="text-xs sm:text-sm font-semibold text-foreground"
         animate={showDeduction ? { color: ['hsl(var(--foreground))', 'hsl(var(--destructive))', 'hsl(var(--foreground))'] } : {}}
         transition={{ duration: 0.5 }}
       >
         {balance.toLocaleString()}
       </motion.span>
       
-      <span className="text-xs text-muted-foreground">tokens</span>
+      <span className="hidden sm:inline text-xs text-muted-foreground">tokens</span>
 
       {/* Deduction Animation */}
       <AnimatePresence>
