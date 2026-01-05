@@ -24,11 +24,13 @@ import { LandingAnalyticsDashboard } from "@/components/admin/LandingAnalyticsDa
 import { AdminVerificationReview } from "@/components/admin/AdminVerificationReview";
 import { AdminMarketplaceApprovals } from "@/components/marketplace/AdminMarketplaceApprovals";
 import { AdminSupportReview } from "@/components/admin/AdminSupportReview";
+import { AuthAttemptsDashboard } from "@/components/admin/AuthAttemptsDashboard";
 import { RetryJobsModal } from "@/components/admin/RetryJobsModal";
 import { CreditTokensDialog } from "@/components/admin/CreditTokensDialog";
 import { SystemHealthModal } from "@/components/admin/SystemHealthModal";
 import { NotificationDialog } from "@/components/admin/NotificationDialog";
 import { ScheduledNotificationsDialog } from "@/components/admin/ScheduledNotificationsDialog";
+import { Key } from "lucide-react";
 
 export default function UnifiedAdminDashboard() {
   const { user } = useAuth();
@@ -344,6 +346,14 @@ export default function UnifiedAdminDashboard() {
               <span className="text-sm font-medium">Users</span>
             </TabsTrigger>
             
+            <TabsTrigger 
+              value="auth" 
+              className="group flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-violet-500/40 data-[state=active]:border data-[state=active]:border-white/20"
+            >
+              <Key className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
+              <span className="text-sm font-medium">Auth</span>
+            </TabsTrigger>
+            
             {/* Divider */}
             <div className="w-px h-8 bg-gradient-to-b from-transparent via-white/20 to-transparent mx-1 self-center" />
             
@@ -453,6 +463,10 @@ export default function UnifiedAdminDashboard() {
 
         <TabsContent value="financial" className="space-y-4">
           <FinancialReporting />
+        </TabsContent>
+
+        <TabsContent value="auth" className="space-y-4">
+          <AuthAttemptsDashboard />
         </TabsContent>
 
         <TabsContent value="overview" className="space-y-6">

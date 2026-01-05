@@ -123,6 +123,9 @@ export default function AuthPage() {
         // Record attempt only on actual failure from Supabase
         signUpRateLimit.recordAttempt();
         
+        // Track failed signup attempt
+        trackAuthAttempt(email, "signup", false, error.message);
+        
         // Enhanced error handling with security context
         if (error.message.includes("Password")) {
           toast.error("Password requirements not met. Please use a stronger password.");
@@ -136,6 +139,9 @@ export default function AuthPage() {
       
       // If signup successful and user is created, show success with signup bonus info
       if (data.user) {
+        // Track successful signup
+        trackAuthAttempt(email, "signup", true);
+        
         // Track landing page signup conversion
         try {
           await fetch('https://ujaoziqnxhjqlmnvlxav.supabase.co/functions/v1/track-landing-analytics', {
@@ -155,6 +161,7 @@ export default function AuthPage() {
           duration: 5000,
         });
       } else {
+        trackAuthAttempt(email, "signup", true);
         toast.success("Check your email for the confirmation link!");
       }
       
@@ -165,9 +172,35 @@ export default function AuthPage() {
       setPassword("");
     } catch (error: any) {
       signUpRateLimit.recordAttempt();
+      trackAuthAttempt(email, "signup", false, "Unexpected error");
       toast.error("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Helper function to track auth attempts
+  const trackAuthAttempt = async (
+    attemptEmail: string,
+    attemptType: "login" | "signup",
+    success: boolean,
+    failureReason?: string
+  ) => {
+    try {
+      await fetch('https://ujaoziqnxhjqlmnvlxav.supabase.co/functions/v1/track-auth-attempt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: attemptEmail,
+          attempt_type: attemptType,
+          success,
+          failure_reason: failureReason || null,
+          metadata: { source: 'auth_page' }
+        })
+      });
+    } catch (e) {
+      // Silently ignore tracking errors - don't block auth flow
+      console.debug('[AuthPage] Failed to track auth attempt:', e);
     }
   };
 
@@ -193,6 +226,9 @@ export default function AuthPage() {
         // Record attempt only on actual failure
         signInRateLimit.recordAttempt();
         
+        // Track failed login attempt
+        trackAuthAttempt(email, "login", false, error.message);
+        
         // Enhanced error handling for security
         if (error.message.includes("Invalid login credentials")) {
           toast.error("Invalid email or password. Please check your credentials.");
@@ -203,6 +239,9 @@ export default function AuthPage() {
         }
         return;
       }
+      
+      // Track successful login
+      trackAuthAttempt(email, "login", true);
       
       toast.success("Welcome back!");
       
@@ -215,6 +254,7 @@ export default function AuthPage() {
       setPassword("");
     } catch (error: any) {
       signInRateLimit.recordAttempt();
+      trackAuthAttempt(email, "login", false, "Unexpected error");
       toast.error("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);

@@ -272,66 +272,66 @@ export function UserManagementTools() {
   const totalPages = Math.ceil(totalCount / usersPerPage);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        <Card className="p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <Users className="h-4 w-4 text-primary" />
-            <span className="text-xs text-muted-foreground">Total Users</span>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+        <Card className="p-3 sm:p-4">
+          <div className="flex items-center gap-2 mb-1 sm:mb-2">
+            <Users className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
+            <span className="text-xs text-muted-foreground">Total</span>
           </div>
-          <p className="text-2xl font-bold">{stats.totalUsers}</p>
+          <p className="text-xl sm:text-2xl font-bold">{stats.totalUsers}</p>
         </Card>
 
-        <Card className="p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <Activity className="h-4 w-4 text-green-500" />
-            <span className="text-xs text-muted-foreground">Active Users</span>
+        <Card className="p-3 sm:p-4">
+          <div className="flex items-center gap-2 mb-1 sm:mb-2">
+            <Activity className="h-3 w-3 sm:h-4 sm:w-4 text-green-500" />
+            <span className="text-xs text-muted-foreground">Active</span>
           </div>
-          <p className="text-2xl font-bold">{stats.activeUsers}</p>
-          <p className="text-xs text-muted-foreground">Last 30 days</p>
+          <p className="text-xl sm:text-2xl font-bold">{stats.activeUsers}</p>
+          <p className="text-xs text-muted-foreground hidden sm:block">Last 30 days</p>
         </Card>
 
-        <Card className="p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <UserPlus className="h-4 w-4 text-blue-500" />
-            <span className="text-xs text-muted-foreground">New Users</span>
+        <Card className="p-3 sm:p-4">
+          <div className="flex items-center gap-2 mb-1 sm:mb-2">
+            <UserPlus className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500" />
+            <span className="text-xs text-muted-foreground">New</span>
           </div>
-          <p className="text-2xl font-bold">{stats.newUsersThisMonth}</p>
-          <p className="text-xs text-muted-foreground">This month</p>
+          <p className="text-xl sm:text-2xl font-bold">{stats.newUsersThisMonth}</p>
+          <p className="text-xs text-muted-foreground hidden sm:block">This month</p>
         </Card>
 
-        <Card className="p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <Award className="h-4 w-4 text-yellow-500" />
+        <Card className="p-3 sm:p-4">
+          <div className="flex items-center gap-2 mb-1 sm:mb-2">
+            <Award className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-500" />
             <span className="text-xs text-muted-foreground">Top Spender</span>
           </div>
-          <p className="text-lg font-bold truncate">{stats.topSpender?.name || 'N/A'}</p>
+          <p className="text-sm sm:text-lg font-bold truncate">{stats.topSpender?.name || 'N/A'}</p>
           <p className="text-xs text-muted-foreground">{stats.topSpender?.amount || 0} tokens</p>
         </Card>
 
-        <Card className="p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <TrendingUp className="h-4 w-4 text-purple-500" />
+        <Card className="p-3 sm:p-4">
+          <div className="flex items-center gap-2 mb-1 sm:mb-2">
+            <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-purple-500" />
             <span className="text-xs text-muted-foreground">Most Active</span>
           </div>
-          <p className="text-lg font-bold truncate">{stats.mostActive?.name || 'N/A'}</p>
+          <p className="text-sm sm:text-lg font-bold truncate">{stats.mostActive?.name || 'N/A'}</p>
           <p className="text-xs text-muted-foreground">{stats.mostActive?.usage || 0} used</p>
         </Card>
 
-        <Card className="p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <DollarSign className="h-4 w-4 text-orange-500" />
+        <Card className="p-3 sm:p-4">
+          <div className="flex items-center gap-2 mb-1 sm:mb-2">
+            <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-orange-500" />
             <span className="text-xs text-muted-foreground">Avg Balance</span>
           </div>
-          <p className="text-2xl font-bold">{stats.avgBalance}</p>
+          <p className="text-xl sm:text-2xl font-bold">{stats.avgBalance}</p>
         </Card>
       </div>
 
       {/* Search and Filters */}
-      <Card className="p-4">
-        <div className="flex flex-wrap gap-3">
-          <div className="flex-1 min-w-[200px]">
+      <Card className="p-3 sm:p-4">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3">
+          <div className="flex-1 min-w-[180px]">
             <UserSearchAutocomplete
               onUserSelect={(user) => {
                 setSelectedFromSearch(user);
@@ -346,7 +346,7 @@ export function UserManagementTools() {
           </div>
 
           <Select value={statusFilter} onValueChange={(value: any) => setStatusFilter(value)}>
-            <SelectTrigger className="w-[140px]">
+            <SelectTrigger className="w-full sm:w-[120px] h-9 text-xs sm:text-sm">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -357,7 +357,7 @@ export function UserManagementTools() {
           </Select>
 
           <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-            <SelectTrigger className="w-[160px]">
+            <SelectTrigger className="w-full sm:w-[140px] h-9 text-xs sm:text-sm">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -477,27 +477,29 @@ export function UserManagementTools() {
         </Table>
 
         {/* Pagination */}
-        <div className="flex items-center justify-between p-4 border-t">
-          <p className="text-sm text-muted-foreground">
-            Showing {((currentPage - 1) * usersPerPage) + 1} to {Math.min(currentPage * usersPerPage, totalCount)} of {totalCount} users
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 p-3 sm:p-4 border-t">
+          <p className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
+            {((currentPage - 1) * usersPerPage) + 1}-{Math.min(currentPage * usersPerPage, totalCount)} of {totalCount}
           </p>
-          <div className="flex gap-2">
+          <div className="flex gap-1 sm:gap-2">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
               disabled={currentPage === 1}
+              className="h-8 text-xs px-2 sm:px-3"
             >
-              Previous
+              Prev
             </Button>
-            <span className="flex items-center px-3 text-sm">
-              Page {currentPage} of {totalPages}
+            <span className="flex items-center px-2 sm:px-3 text-xs sm:text-sm">
+              {currentPage}/{totalPages}
             </span>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
+              className="h-8 text-xs px-2 sm:px-3"
             >
               Next
             </Button>
