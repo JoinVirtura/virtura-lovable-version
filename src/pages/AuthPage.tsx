@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,11 +7,14 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Loader2, Eye, EyeOff, AlertCircle, CheckCircle, Shield, ArrowLeft } from "lucide-react";
+import { Loader2, Eye, EyeOff, AlertCircle, CheckCircle, Shield, ArrowLeft, RotateCcw } from "lucide-react";
 import { useRateLimiting } from "@/hooks/useRateLimiting";
 import { useSecurityHeaders } from "@/hooks/useSecurityHeaders";
 import { WelcomeModal } from "@/components/WelcomeModal";
 import { useOnboarding } from "@/hooks/useOnboarding";
+
+// Normalize email for rate limiting key
+const normalizeEmail = (email: string) => email.trim().toLowerCase() || 'unknown';
 
 export default function AuthPage() {
   const [email, setEmail] = useState("");
@@ -32,20 +35,23 @@ export default function AuthPage() {
   // Security enhancements
   useSecurityHeaders();
   
-  // Rate limiting for authentication attempts
-  const signInRateLimit = useRateLimiting('signin', {
+  // Compute rate limit keys based on email
+  const normalizedEmail = useMemo(() => normalizeEmail(email), [email]);
+  
+  // Rate limiting for authentication attempts - per email, relaxed thresholds
+  const signInRateLimit = useRateLimiting(`signin:${normalizedEmail}`, {
     maxAttempts: 5,
     windowMs: 15 * 60 * 1000, // 15 minutes
     blockDurationMs: 30 * 60 * 1000, // 30 minutes block
   });
 
-  const signUpRateLimit = useRateLimiting('signup', {
-    maxAttempts: 3,
+  const signUpRateLimit = useRateLimiting(`signup:${normalizedEmail}`, {
+    maxAttempts: 10, // Increased from 3
     windowMs: 60 * 60 * 1000, // 1 hour
-    blockDurationMs: 60 * 60 * 1000, // 1 hour block
+    blockDurationMs: 15 * 60 * 1000, // 15 minutes block (reduced from 1 hour)
   });
 
-  const passwordResetRateLimit = useRateLimiting('password-reset', {
+  const passwordResetRateLimit = useRateLimiting(`password-reset:${normalizedEmail}`, {
     maxAttempts: 3,
     windowMs: 60 * 60 * 1000, // 1 hour
     blockDurationMs: 60 * 60 * 1000, // 1 hour block
@@ -101,7 +107,6 @@ export default function AuthPage() {
     }
     
     setLoading(true);
-    signUpRateLimit.recordAttempt();
 
     try {
       const redirectUrl = `${window.location.origin}/dashboard`;
@@ -115,6 +120,9 @@ export default function AuthPage() {
       });
 
       if (error) {
+        // Record attempt only on actual failure from Supabase
+        signUpRateLimit.recordAttempt();
+        
         // Enhanced error handling with security context
         if (error.message.includes("Password")) {
           toast.error("Password requirements not met. Please use a stronger password.");
@@ -123,7 +131,7 @@ export default function AuthPage() {
         } else {
           toast.error(error.message || "Failed to sign up");
         }
-        throw error;
+        return;
       }
       
       // If signup successful and user is created, show success with signup bonus info
@@ -139,8 +147,8 @@ export default function AuthPage() {
               metadata: { email }
             })
           });
-        } catch (error) {
-          console.error('Error tracking signup:', error);
+        } catch (trackingError) {
+          // Silently ignore tracking errors
         }
 
         toast.success("Welcome! Check your email for the confirmation link. You've received 50 free tokens! 🎉", {
@@ -156,7 +164,8 @@ export default function AuthPage() {
       // Clear sensitive data
       setPassword("");
     } catch (error: any) {
-      // Error already handled above
+      signUpRateLimit.recordAttempt();
+      toast.error("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -173,7 +182,6 @@ export default function AuthPage() {
     }
     
     setLoading(true);
-    signInRateLimit.recordAttempt();
 
     try {
       const { error } = await supabase.auth.signInWithPassword({
@@ -182,6 +190,9 @@ export default function AuthPage() {
       });
 
       if (error) {
+        // Record attempt only on actual failure
+        signInRateLimit.recordAttempt();
+        
         // Enhanced error handling for security
         if (error.message.includes("Invalid login credentials")) {
           toast.error("Invalid email or password. Please check your credentials.");
@@ -190,7 +201,7 @@ export default function AuthPage() {
         } else {
           toast.error(error.message || "Failed to sign in");
         }
-        throw error;
+        return;
       }
       
       toast.success("Welcome back!");
@@ -203,7 +214,8 @@ export default function AuthPage() {
       // Clear sensitive data
       setPassword("");
     } catch (error: any) {
-      // Error already handled above
+      signInRateLimit.recordAttempt();
+      toast.error("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -220,7 +232,6 @@ export default function AuthPage() {
     }
     
     setLoading(true);
-    passwordResetRateLimit.recordAttempt();
 
     try {
       const redirectUrl = `${window.location.origin}/auth`;
@@ -230,8 +241,9 @@ export default function AuthPage() {
       });
 
       if (error) {
+        passwordResetRateLimit.recordAttempt();
         toast.error(error.message || "Failed to send reset email");
-        throw error;
+        return;
       }
       
       toast.success("Password reset email sent! Check your inbox.");
@@ -239,10 +251,16 @@ export default function AuthPage() {
       setShowForgotPassword(false);
       setEmail("");
     } catch (error: any) {
-      // Error already handled above
+      passwordResetRateLimit.recordAttempt();
+      toast.error("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleResetLockout = (resetFn: () => void, type: string) => {
+    resetFn();
+    toast.success(`${type} lockout has been reset. You can try again.`);
   };
 
   return (
@@ -336,9 +354,21 @@ export default function AuthPage() {
                     Sign In
                   </Button>
                   {signInRateLimit.isBlocked && (
-                    <p className="text-sm text-destructive text-center mt-2">
-                      Too many attempts. Try again in {Math.ceil(signInRateLimit.remainingTime / (60 * 1000))} minutes.
-                    </p>
+                    <div className="text-center space-y-2">
+                      <p className="text-sm text-destructive">
+                        Too many attempts. Try again in {Math.ceil(signInRateLimit.remainingTime / (60 * 1000))} minutes.
+                      </p>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="text-xs text-muted-foreground hover:text-foreground"
+                        onClick={() => handleResetLockout(signInRateLimit.reset, 'Sign in')}
+                      >
+                        <RotateCcw className="h-3 w-3 mr-1" />
+                        Reset lockout on this device
+                      </Button>
+                    </div>
                   )}
                 </form>
               ) : (
@@ -379,9 +409,21 @@ export default function AuthPage() {
                     </Button>
                   </div>
                   {passwordResetRateLimit.isBlocked && (
-                    <p className="text-sm text-destructive text-center mt-2">
-                      Too many attempts. Try again in {Math.ceil(passwordResetRateLimit.remainingTime / (60 * 1000))} minutes.
-                    </p>
+                    <div className="text-center space-y-2">
+                      <p className="text-sm text-destructive">
+                        Too many attempts. Try again in {Math.ceil(passwordResetRateLimit.remainingTime / (60 * 1000))} minutes.
+                      </p>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="text-xs text-muted-foreground hover:text-foreground"
+                        onClick={() => handleResetLockout(passwordResetRateLimit.reset, 'Password reset')}
+                      >
+                        <RotateCcw className="h-3 w-3 mr-1" />
+                        Reset lockout on this device
+                      </Button>
+                    </div>
                   )}
                 </form>
               )}
@@ -472,9 +514,21 @@ export default function AuthPage() {
                   Sign Up
                 </Button>
                 {signUpRateLimit.isBlocked && (
-                  <p className="text-sm text-destructive text-center mt-2">
-                    Too many attempts. Try again in {Math.ceil(signUpRateLimit.remainingTime / (60 * 1000))} minutes.
-                  </p>
+                  <div className="text-center space-y-2">
+                    <p className="text-sm text-destructive">
+                      Too many attempts. Try again in {Math.ceil(signUpRateLimit.remainingTime / (60 * 1000))} minutes.
+                    </p>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs text-muted-foreground hover:text-foreground"
+                      onClick={() => handleResetLockout(signUpRateLimit.reset, 'Sign up')}
+                    >
+                      <RotateCcw className="h-3 w-3 mr-1" />
+                      Reset lockout on this device
+                    </Button>
+                  </div>
                 )}
               </form>
             </TabsContent>
