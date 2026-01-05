@@ -81,14 +81,40 @@ export function CreditTokensWithUserSearch({
 
     setSearching(true);
     try {
-      // Search profiles by display_name, id, or email pattern
-      const { data: profiles, error } = await supabase
+      // Search profiles by display_name only (ILIKE doesn't work on UUID columns)
+      const { data: profilesByName, error: nameError } = await supabase
         .from("profiles")
         .select("id, display_name, avatar_url")
-        .or(`display_name.ilike.%${searchQuery}%,id.ilike.%${searchQuery}%`)
+        .ilike("display_name", `%${searchQuery}%`)
         .limit(20);
 
-      if (error) throw error;
+      if (nameError) throw nameError;
+
+      // If search looks like a UUID prefix, also search by exact ID
+      let profilesById: typeof profilesByName = [];
+      const uuidPattern = /^[0-9a-f-]+$/i;
+      if (uuidPattern.test(searchQuery) && searchQuery.length >= 4) {
+        const { data } = await supabase
+          .from("profiles")
+          .select("id, display_name, avatar_url")
+          .gte("id", searchQuery.toLowerCase())
+          .lt("id", searchQuery.toLowerCase() + "g")
+          .limit(10);
+        
+        if (data) {
+          profilesById = data.filter(p => 
+            p.id.toLowerCase().startsWith(searchQuery.toLowerCase())
+          );
+        }
+      }
+
+      // Combine and deduplicate results
+      const profiles = [...(profilesByName || [])];
+      profilesById?.forEach(p => {
+        if (!profiles.some(existing => existing.id === p.id)) {
+          profiles.push(p);
+        }
+      });
 
       // Get token balances for these users
       const userIds = profiles?.map((p) => p.id) || [];
