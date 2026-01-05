@@ -42,14 +42,15 @@ serve(async (req) => {
       });
     }
 
-    // Check if user is admin
-    const { data: profile } = await supabaseAdmin
-      .from("profiles")
-      .select("account_type")
-      .eq("id", user.id)
-      .single();
+    // Check if user is admin using user_roles table
+    const { data: roleData } = await supabaseAdmin
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .eq("role", "admin")
+      .maybeSingle();
 
-    if (profile?.account_type !== "admin") {
+    if (!roleData) {
       console.log("Non-admin user attempted to search users:", user.id);
       return new Response(JSON.stringify({ error: "Forbidden - Admin only" }), {
         status: 403,
