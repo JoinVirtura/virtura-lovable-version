@@ -53,44 +53,44 @@ export function TestimonialsSection({ id }: TestimonialsSectionProps) {
   ];
 
   return (
-    <section id={id} className="py-32 bg-card/20">
-      <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+    <section id={id} className="py-20 sm:py-32 bg-card/20">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="text-center mb-10 sm:mb-16">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
             ⭐ <span className="bg-gradient-text bg-clip-text text-transparent">Testimonials</span>
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
             Join thousands of satisfied creators transforming their workflow
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 max-w-6xl mx-auto">
           {testimonials.map((testimonial, index) => (
             <Card key={index} className="hover:shadow-violet-glow/50 transition-all duration-300">
-              <CardContent className="p-8">
+              <CardContent className="p-5 sm:p-6 md:p-8">
                 {/* Rating */}
-                <div className="flex gap-1 mb-4">
+                <div className="flex gap-1 mb-3 sm:mb-4">
                   {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-primary text-primary" />
+                    <Star key={i} className="w-4 h-4 sm:w-5 sm:h-5 fill-primary text-primary" />
                   ))}
                 </div>
 
                 {/* Content */}
-                <p className="text-muted-foreground mb-6 leading-relaxed">
+                <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6 leading-relaxed">
                   "{testimonial.content}"
                 </p>
 
                 {/* Author */}
-                <div className="flex items-center gap-4">
-                  <Avatar className="w-12 h-12 border-2 border-primary/20">
-                    <AvatarFallback className="bg-gradient-primary text-white font-semibold">
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <Avatar className="w-10 h-10 sm:w-12 sm:h-12 border-2 border-primary/20">
+                    <AvatarFallback className="bg-gradient-primary text-white font-semibold text-xs sm:text-sm">
                       {testimonial.avatar}
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="font-semibold">{testimonial.name}</p>
+                    <p className="font-semibold text-sm sm:text-base">{testimonial.name}</p>
                     {testimonial.role && (
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-xs sm:text-sm text-muted-foreground">
                         {testimonial.role}
                       </p>
                     )}

@@ -69,12 +69,12 @@ export function PricingSection({ id }: PricingSectionProps) {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl" />
       </div>
 
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
+        <div className="text-center mb-10 sm:mb-16">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
             💳 <span className="bg-gradient-text bg-clip-text text-transparent">Pricing</span>
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
             No hidden fees. Cancel anytime.
           </p>
         </div>
@@ -87,20 +87,20 @@ export function PricingSection({ id }: PricingSectionProps) {
             >
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <Badge className="bg-gradient-primary px-4 py-1">
+                  <Badge className="bg-gradient-primary px-4 py-1 text-xs sm:text-sm">
                     Most Popular
                   </Badge>
                 </div>
               )}
               
-              <CardHeader className="text-center pt-8 pb-6 flex-shrink-0">
-                <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                <p className="text-muted-foreground text-sm mb-6">{plan.description}</p>
+              <CardHeader className="text-center pt-6 sm:pt-8 pb-4 sm:pb-6 flex-shrink-0">
+                <h3 className="text-xl sm:text-2xl font-bold mb-2">{plan.name}</h3>
+                <p className="text-muted-foreground text-xs sm:text-sm mb-4 sm:mb-6">{plan.description}</p>
                 <div>
-                  <span className="text-5xl font-bold">
+                  <span className="text-3xl sm:text-4xl md:text-5xl font-bold">
                     ${plan.price}
                   </span>
-                  <span className="text-muted-foreground">/month</span>
+                  <span className="text-muted-foreground text-sm sm:text-base">/month</span>
                 </div>
               </CardHeader>
 
