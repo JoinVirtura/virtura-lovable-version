@@ -941,6 +941,13 @@ export type Database = {
             referencedRelation: "marketplace_campaigns"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "campaign_disputes_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_campaigns_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       campaign_invites: {
@@ -990,6 +997,13 @@ export type Database = {
             columns: ["campaign_id"]
             isOneToOne: false
             referencedRelation: "marketplace_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaign_invites_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_campaigns_public"
             referencedColumns: ["id"]
           },
           {
@@ -1662,6 +1676,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "marketplace_applications_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_campaigns_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "marketplace_applications_creator_id_fkey"
             columns: ["creator_id"]
             isOneToOne: false
@@ -1799,6 +1820,13 @@ export type Database = {
             referencedRelation: "marketplace_campaigns"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "marketplace_contracts_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_campaigns_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       marketplace_deliverables: {
@@ -1854,6 +1882,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "marketplace_deliverables_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_campaigns_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "marketplace_deliverables_creator_id_fkey"
             columns: ["creator_id"]
             isOneToOne: false
@@ -1893,6 +1928,13 @@ export type Database = {
             columns: ["campaign_id"]
             isOneToOne: false
             referencedRelation: "marketplace_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_messages_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_campaigns_public"
             referencedColumns: ["id"]
           },
         ]
@@ -1953,6 +1995,13 @@ export type Database = {
             columns: ["campaign_id"]
             isOneToOne: false
             referencedRelation: "marketplace_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_payments_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_campaigns_public"
             referencedColumns: ["id"]
           },
           {
@@ -3900,6 +3949,56 @@ export type Database = {
       }
     }
     Views: {
+      marketplace_campaigns_public: {
+        Row: {
+          brand_id: string | null
+          created_at: string | null
+          deadline: string | null
+          deliverables: Json | null
+          description: string | null
+          id: string | null
+          requirements: Json | null
+          status: string | null
+          title: string | null
+          updated_at: string | null
+          visibility: string | null
+        }
+        Insert: {
+          brand_id?: string | null
+          created_at?: string | null
+          deadline?: string | null
+          deliverables?: Json | null
+          description?: string | null
+          id?: string | null
+          requirements?: Json | null
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+          visibility?: string | null
+        }
+        Update: {
+          brand_id?: string | null
+          created_at?: string | null
+          deadline?: string | null
+          deliverables?: Json | null
+          description?: string | null
+          id?: string | null
+          requirements?: Json | null
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+          visibility?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_campaigns_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_ctr_metrics: {
         Row: {
           category: Database["public"]["Enums"]["notification_category"] | null
