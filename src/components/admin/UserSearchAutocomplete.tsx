@@ -58,7 +58,8 @@ export function UserSearchAutocomplete({
   const searchUsers = async () => {
     setLoading(true);
     try {
-      // Get user emails from auth.users metadata
+      // Search profiles by display_name or id
+      // Also search for default "User" names to find all users
       const { data: profiles, error: profileError } = await supabase
         .from("profiles")
         .select(`
@@ -67,9 +68,9 @@ export function UserSearchAutocomplete({
           avatar_url
         `)
         .or(
-          `display_name.ilike.%${searchQuery}%,id.eq.${searchQuery}`
+          `display_name.ilike.%${searchQuery}%,id.ilike.%${searchQuery}%`
         )
-        .limit(10);
+        .limit(20);
 
       if (profileError) throw profileError;
 
@@ -87,25 +88,39 @@ export function UserSearchAutocomplete({
           profiles.map((p) => p.id)
         );
 
-      // Get emails from auth service (only admins can do this)
-      const authResponse = await supabase.auth.admin.listUsers();
-      const authUsers = authResponse.data?.users || [];
+      // Try to get emails via edge function (admin only)
+      let authUsers: any[] = [];
+      try {
+        const authResponse = await supabase.auth.admin.listUsers();
+        authUsers = authResponse.data?.users || [];
+      } catch (authError) {
+        // Admin API may not be available, continue without emails
+        console.log("Admin API not available, proceeding without emails");
+      }
 
-      // Combine data
+      // Combine data and prioritize users with proper display names
       const enrichedResults = profiles.map((profile) => {
         const tokenData = tokens?.find((t) => t.user_id === profile.id);
-        const authUser = authUsers.find((u) => u.id === profile.id);
+        const authUser = authUsers.find((u: any) => u.id === profile.id);
+        const hasDefaultName = !profile.display_name || profile.display_name === "User";
         
         return {
           id: profile.id,
-          display_name: profile.display_name,
+          display_name: hasDefaultName ? null : profile.display_name,
           avatar_url: profile.avatar_url,
           email: authUser?.email,
           balance: tokenData?.balance || 0,
         };
       });
 
-      setResults(enrichedResults);
+      // Sort: users with proper names first, then by balance
+      enrichedResults.sort((a, b) => {
+        if (a.display_name && !b.display_name) return -1;
+        if (!a.display_name && b.display_name) return 1;
+        return (b.balance || 0) - (a.balance || 0);
+      });
+
+      setResults(enrichedResults.slice(0, 10));
     } catch (error) {
       console.error("Error searching users:", error);
       toast.error("Failed to search users");
@@ -188,10 +203,10 @@ export function UserSearchAutocomplete({
                       </Avatar>
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-sm truncate">
-                          {user.display_name || "Unknown User"}
+                          {user.display_name || user.email || `User ${user.id.slice(0, 8)}`}
                         </p>
                         <p className="text-xs text-muted-foreground truncate">
-                          {user.email || user.id}
+                          {user.email || user.id.slice(0, 16)}...
                         </p>
                       </div>
                       <div className="text-xs text-muted-foreground">

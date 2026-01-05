@@ -44,6 +44,9 @@ interface SystemMetrics {
   dbLatency: number;
   failedJobs: number;
   queueRate: number;
+  signupBonuses24h: number;
+  signupBonusesTotal: number;
+  signupCount24h: number;
 }
 
 export function SystemMetrics() {
@@ -113,6 +116,22 @@ export function SystemMetrics() {
       const tokensLastHour = Math.abs(tokensHour?.reduce((sum, t) => sum + t.amount, 0) || 0);
       const tokensLast24h = Math.abs(tokens24h?.reduce((sum, t) => sum + t.amount, 0) || 0);
       const tokensLast7d = Math.abs(tokens7d?.reduce((sum, t) => sum + t.amount, 0) || 0);
+
+      // Signup bonus tokens (credited at signup)
+      const { data: bonusTokens24h } = await supabase
+        .from("token_transactions")
+        .select("amount, user_id")
+        .eq("transaction_type", "bonus")
+        .gte("created_at", oneDayAgo);
+
+      const { data: bonusTokensTotal } = await supabase
+        .from("token_transactions")
+        .select("amount")
+        .eq("transaction_type", "bonus");
+
+      const signupBonuses24h = bonusTokens24h?.reduce((sum, t) => sum + t.amount, 0) || 0;
+      const signupBonusesTotal = bonusTokensTotal?.reduce((sum, t) => sum + t.amount, 0) || 0;
+      const signupCount24h = new Set(bonusTokens24h?.map(t => t.user_id)).size;
 
       // Revenue
       const startOfToday = new Date();
@@ -212,6 +231,9 @@ export function SystemMetrics() {
         dbLatency,
         failedJobs: failedCount || 0,
         queueRate: queueRateCount || 0,
+        signupBonuses24h,
+        signupBonusesTotal,
+        signupCount24h,
       });
 
       setLastUpdated(new Date());
@@ -307,7 +329,7 @@ export function SystemMetrics() {
 
       {metrics && (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
             {/* Active Users */}
             <Card className="p-3 sm:p-4">
               <CardHeader className="p-0 pb-2">
@@ -403,6 +425,29 @@ export function SystemMetrics() {
                     {metrics.failedJobs} failed
                   </Badge>
                 )}
+              </CardContent>
+            </Card>
+
+            {/* Signup Bonuses */}
+            <Card className="p-3 sm:p-4 bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border-emerald-500/20">
+              <CardHeader className="p-0 pb-2">
+                <CardTitle className="text-xs sm:text-sm font-medium flex items-center gap-1 sm:gap-2">
+                  <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-emerald-500" />
+                  <span className="hidden sm:inline">Signup Bonuses</span>
+                  <span className="sm:hidden">Bonuses</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="text-2xl sm:text-3xl font-bold text-emerald-400">
+                  {metrics.signupBonuses24h.toLocaleString()}
+                </div>
+                <p className="text-xs text-muted-foreground">tokens (24h)</p>
+                <p className="text-xs text-muted-foreground mt-1 hidden sm:block">
+                  {metrics.signupCount24h} new signups
+                </p>
+                <p className="text-xs text-emerald-400/70 mt-1">
+                  Total: {metrics.signupBonusesTotal.toLocaleString()}
+                </p>
               </CardContent>
             </Card>
           </div>

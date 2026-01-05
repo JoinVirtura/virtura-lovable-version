@@ -12,7 +12,7 @@ import {
   ImageIcon, Globe, BadgeCheck, Store, Users, DollarSign,
   RefreshCw, Bell, Calendar, TrendingUp, ArrowRight, LifeBuoy
 } from "lucide-react";
-import { AdminCostDashboard } from "@/components/AdminCostDashboard";
+// AdminCostDashboard consolidated into FinancialReporting
 import { AdminDashboard } from "@/components/AdminDashboard";
 import { AdminTokenTransactionHistory } from "@/components/AdminTokenTransactionHistory";
 import { UserManagementTools } from "@/components/admin/UserManagementTools";
@@ -366,13 +366,8 @@ export default function UnifiedAdminDashboard() {
               <span className="text-sm font-medium">Financial</span>
             </TabsTrigger>
             
-            <TabsTrigger 
-              value="costs" 
-              className="group flex items-center gap-2 px-4 py-2.5 rounded-xl whitespace-nowrap text-slate-400 transition-all duration-300 hover:text-white hover:bg-white/5 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-600 data-[state=active]:to-cyan-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/40 data-[state=active]:border data-[state=active]:border-white/20"
-            >
-              <Cpu className="w-4 h-4 transition-transform group-hover:scale-110 group-data-[state=active]:scale-110" />
-              <span className="text-sm font-medium">API Costs</span>
-            </TabsTrigger>
+            
+            {/* Token Txns - API Costs data now consolidated into Financial tab */}
             
             <TabsTrigger 
               value="tokens" 
@@ -565,9 +560,7 @@ export default function UnifiedAdminDashboard() {
           </div>
         </TabsContent>
 
-        <TabsContent value="costs">
-          <AdminCostDashboard />
-        </TabsContent>
+        {/* API Costs tab removed - data consolidated into Financial tab */}
 
         <TabsContent value="tokens">
           <AdminTokenTransactionHistory />
