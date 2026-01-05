@@ -200,18 +200,18 @@ export function SystemMetrics() {
   }
 
   return (
-    <div className="space-y-6" id="metrics-dashboard">
+    <div className="space-y-4 sm:space-y-6" id="metrics-dashboard">
       {/* Controls */}
       <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
+        <CardHeader className="p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <CardTitle>System Metrics Dashboard</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-lg sm:text-xl">System Metrics Dashboard</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">
                 Real-time platform performance and analytics
               </CardDescription>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4">
               <div className="flex items-center gap-2">
                 <Switch
                   checked={autoRefresh}
@@ -226,7 +226,7 @@ export function SystemMetrics() {
                 value={refreshInterval.toString()}
                 onValueChange={(v) => setRefreshInterval(parseInt(v))}
               >
-                <SelectTrigger className="w-32">
+                <SelectTrigger className="w-20 sm:w-32 h-8 sm:h-10 text-xs sm:text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -236,9 +236,9 @@ export function SystemMetrics() {
                   <SelectItem value="300">5m</SelectItem>
                 </SelectContent>
               </Select>
-              <Button onClick={fetchMetrics} size="sm" variant="outline">
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Refresh
+              <Button onClick={fetchMetrics} size="sm" variant="outline" className="h-8 sm:h-10 text-xs sm:text-sm">
+                <RefreshCw className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Refresh</span>
               </Button>
               {metrics && (
                 <MetricsExport
@@ -261,24 +261,24 @@ export function SystemMetrics() {
         </CardHeader>
       </Card>
 
-      {/* Metrics Grid */}
       {metrics && (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
             {/* Active Users */}
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium flex items-center gap-2">
-                  <Users className="h-4 w-4 text-green-600" />
-                  Active Users
+            <Card className="p-3 sm:p-4">
+              <CardHeader className="p-0 pb-2">
+                <CardTitle className="text-xs sm:text-sm font-medium flex items-center gap-1 sm:gap-2">
+                  <Users className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
+                  <span className="hidden sm:inline">Active Users</span>
+                  <span className="sm:hidden">Active</span>
                   <div className="w-2 h-2 rounded-full bg-green-600 animate-pulse" />
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">{metrics.activeUsers}</div>
+              <CardContent className="p-0">
+                <div className="text-2xl sm:text-3xl font-bold">{metrics.activeUsers}</div>
                 <p className="text-xs text-muted-foreground">online now</p>
                 {metrics.activeUsersList.length > 0 && (
-                  <div className="mt-2 text-xs text-muted-foreground">
+                  <div className="mt-2 text-xs text-muted-foreground hidden sm:block">
                     {metrics.activeUsersList.join(", ")}
                   </div>
                 )}
@@ -286,15 +286,16 @@ export function SystemMetrics() {
             </Card>
 
             {/* API Response Time */}
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium flex items-center gap-2">
-                  <Clock className="h-4 w-4" />
-                  Avg Response
+            <Card className="p-3 sm:p-4">
+              <CardHeader className="p-0 pb-2">
+                <CardTitle className="text-xs sm:text-sm font-medium flex items-center gap-1 sm:gap-2">
+                  <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <span className="hidden sm:inline">Avg Response</span>
+                  <span className="sm:hidden">Response</span>
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className={`text-3xl font-bold ${getResponseTimeColor(metrics.avgResponseTime)}`}>
+              <CardContent className="p-0">
+                <div className={`text-2xl sm:text-3xl font-bold ${getResponseTimeColor(metrics.avgResponseTime)}`}>
                   {metrics.avgResponseTime}ms
                 </div>
                 <p className="text-xs text-muted-foreground">API latency</p>
@@ -302,15 +303,16 @@ export function SystemMetrics() {
             </Card>
 
             {/* Token Usage */}
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium flex items-center gap-2">
-                  <Coins className="h-4 w-4 text-amber-600" />
-                  Token Usage
+            <Card className="p-3 sm:p-4">
+              <CardHeader className="p-0 pb-2">
+                <CardTitle className="text-xs sm:text-sm font-medium flex items-center gap-1 sm:gap-2">
+                  <Coins className="h-3 w-3 sm:h-4 sm:w-4 text-amber-600" />
+                  <span className="hidden sm:inline">Token Usage</span>
+                  <span className="sm:hidden">Tokens</span>
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">{metrics.tokensLastHour.toLocaleString()}</div>
+              <CardContent className="p-0">
+                <div className="text-2xl sm:text-3xl font-bold">{metrics.tokensLastHour.toLocaleString()}</div>
                 <p className="text-xs text-muted-foreground">last hour</p>
                 <div className="mt-1 flex items-center gap-1 text-xs">
                   <TrendingUp className="h-3 w-3" />
@@ -322,38 +324,39 @@ export function SystemMetrics() {
             </Card>
 
             {/* Revenue */}
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium flex items-center gap-2">
-                  <DollarSign className="h-4 w-4 text-primary" />
+            <Card className="p-3 sm:p-4">
+              <CardHeader className="p-0 pb-2">
+                <CardTitle className="text-xs sm:text-sm font-medium flex items-center gap-1 sm:gap-2">
+                  <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
                   Revenue
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">${metrics.revenueToday.toFixed(2)}</div>
+              <CardContent className="p-0">
+                <div className="text-2xl sm:text-3xl font-bold">${metrics.revenueToday.toFixed(2)}</div>
                 <p className="text-xs text-muted-foreground">today</p>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-xs text-muted-foreground mt-1 hidden sm:block">
                   Week: ${metrics.revenueWeek.toFixed(2)}
                 </p>
               </CardContent>
             </Card>
 
             {/* System Health */}
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium flex items-center gap-2">
-                  <Gauge className="h-4 w-4" />
-                  System Health
+            <Card className="p-3 sm:p-4">
+              <CardHeader className="p-0 pb-2">
+                <CardTitle className="text-xs sm:text-sm font-medium flex items-center gap-1 sm:gap-2">
+                  <Gauge className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <span className="hidden sm:inline">System Health</span>
+                  <span className="sm:hidden">Health</span>
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className={`text-3xl font-bold ${getHealthColor(metrics.systemHealth)}`}>
+              <CardContent className="p-0">
+                <div className={`text-2xl sm:text-3xl font-bold ${getHealthColor(metrics.systemHealth)}`}>
                   {metrics.systemHealth}
                 </div>
                 <p className="text-xs text-muted-foreground">health score</p>
                 {metrics.failedJobs > 0 && (
                   <Badge variant="destructive" className="mt-2 text-xs">
-                    {metrics.failedJobs} failed jobs
+                    {metrics.failedJobs} failed
                   </Badge>
                 )}
               </CardContent>
@@ -362,49 +365,51 @@ export function SystemMetrics() {
 
           {/* Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">API Response Times (24h)</CardTitle>
+            <Card className="p-3 sm:p-4">
+              <CardHeader className="p-0 pb-3 sm:pb-4">
+                <CardTitle className="text-sm sm:text-base">API Response Times (24h)</CardTitle>
               </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={200}>
-                  <LineChart data={metrics.responseTimeData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="time" />
-                    <YAxis />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="ms" stroke="hsl(var(--primary))" strokeWidth={2} />
-                  </LineChart>
-                </ResponsiveContainer>
+              <CardContent className="p-0">
+                <div className="h-[180px] sm:h-[200px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={metrics.responseTimeData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="time" tick={{ fontSize: 10 }} />
+                      <YAxis tick={{ fontSize: 10 }} />
+                      <Tooltip />
+                      <Line type="monotone" dataKey="ms" stroke="hsl(var(--primary))" strokeWidth={2} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Token Usage Breakdown</CardTitle>
+            <Card className="p-3 sm:p-4">
+              <CardHeader className="p-0 pb-3 sm:pb-4">
+                <CardTitle className="text-sm sm:text-base">Token Usage Breakdown</CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
+              <CardContent className="p-0">
+                <div className="space-y-3 sm:space-y-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm">Last Hour</span>
-                    <span className="font-bold">{metrics.tokensLastHour.toLocaleString()}</span>
+                    <span className="text-xs sm:text-sm">Last Hour</span>
+                    <span className="font-bold text-sm">{metrics.tokensLastHour.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm">Last 24 Hours</span>
-                    <span className="font-bold">{metrics.tokensLast24h.toLocaleString()}</span>
+                    <span className="text-xs sm:text-sm">Last 24 Hours</span>
+                    <span className="font-bold text-sm">{metrics.tokensLast24h.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm">Last 7 Days</span>
-                    <span className="font-bold">{metrics.tokensLast7d.toLocaleString()}</span>
+                    <span className="text-xs sm:text-sm">Last 7 Days</span>
+                    <span className="font-bold text-sm">{metrics.tokensLast7d.toLocaleString()}</span>
                   </div>
-                  <div className="pt-4 border-t">
+                  <div className="pt-3 sm:pt-4 border-t">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">DB Latency</span>
-                      <span className="text-sm font-medium">{metrics.dbLatency}ms</span>
+                      <span className="text-xs sm:text-sm text-muted-foreground">DB Latency</span>
+                      <span className="text-xs sm:text-sm font-medium">{metrics.dbLatency}ms</span>
                     </div>
                     <div className="flex justify-between items-center mt-2">
-                      <span className="text-sm text-muted-foreground">Queue Rate</span>
-                      <span className="text-sm font-medium">{metrics.queueRate}/min</span>
+                      <span className="text-xs sm:text-sm text-muted-foreground">Queue Rate</span>
+                      <span className="text-xs sm:text-sm font-medium">{metrics.queueRate}/min</span>
                     </div>
                   </div>
                 </div>

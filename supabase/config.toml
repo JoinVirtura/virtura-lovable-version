@@ -92,3 +92,6 @@ verify_jwt = false
 
 [functions.approve-deliverable-payment]
 verify_jwt = true
+
+[functions.track-auth-attempt]
+verify_jwt = false

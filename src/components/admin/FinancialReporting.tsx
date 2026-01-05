@@ -312,82 +312,84 @@ export function FinancialReporting() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Date Range Selector */}
-      <Card className="p-4">
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="text-sm font-medium">Date Range:</span>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => setPresetRange('today')}>Today</Button>
-            <Button variant="outline" size="sm" onClick={() => setPresetRange('yesterday')}>Yesterday</Button>
-            <Button variant="outline" size="sm" onClick={() => setPresetRange('7days')}>Last 7 Days</Button>
-            <Button variant="outline" size="sm" onClick={() => setPresetRange('30days')}>Last 30 Days</Button>
-            <Button variant="outline" size="sm" onClick={() => setPresetRange('thisMonth')}>This Month</Button>
-            <Button variant="outline" size="sm" onClick={() => setPresetRange('lastMonth')}>Last Month</Button>
+      <Card className="p-3 sm:p-4">
+        <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3">
+          <span className="text-xs sm:text-sm font-medium">Date Range:</span>
+          <div className="flex flex-wrap gap-1 sm:gap-2">
+            <Button variant="outline" size="sm" onClick={() => setPresetRange('today')} className="h-7 sm:h-8 text-xs px-2 sm:px-3">Today</Button>
+            <Button variant="outline" size="sm" onClick={() => setPresetRange('yesterday')} className="h-7 sm:h-8 text-xs px-2 sm:px-3 hidden sm:inline-flex">Yesterday</Button>
+            <Button variant="outline" size="sm" onClick={() => setPresetRange('7days')} className="h-7 sm:h-8 text-xs px-2 sm:px-3">7 Days</Button>
+            <Button variant="outline" size="sm" onClick={() => setPresetRange('30days')} className="h-7 sm:h-8 text-xs px-2 sm:px-3">30 Days</Button>
+            <Button variant="outline" size="sm" onClick={() => setPresetRange('thisMonth')} className="h-7 sm:h-8 text-xs px-2 sm:px-3 hidden md:inline-flex">This Month</Button>
+            <Button variant="outline" size="sm" onClick={() => setPresetRange('lastMonth')} className="h-7 sm:h-8 text-xs px-2 sm:px-3 hidden md:inline-flex">Last Month</Button>
           </div>
           <div className="flex-1" />
-          <Button variant="outline" size="sm" onClick={exportToCSV}>
-            <Download className="h-4 w-4 mr-2" />
-            Export CSV
-          </Button>
-          <Button variant="default" size="sm" onClick={exportToPDF}>
-            <FileText className="h-4 w-4 mr-2" />
-            Export PDF Report
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={exportToCSV} className="h-7 sm:h-8 text-xs">
+              <Download className="h-3 w-3 mr-1" />
+              <span className="hidden sm:inline">CSV</span>
+            </Button>
+            <Button variant="default" size="sm" onClick={exportToPDF} className="h-7 sm:h-8 text-xs">
+              <FileText className="h-3 w-3 mr-1" />
+              <span className="hidden sm:inline">PDF</span>
+            </Button>
+          </div>
         </div>
-        <div className="mt-2 text-sm text-muted-foreground">
+        <div className="mt-2 text-xs text-muted-foreground">
           {format(dateRange.start, 'MMM d, yyyy')} - {format(dateRange.end, 'MMM d, yyyy')}
         </div>
       </Card>
 
       {/* Revenue Metrics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <DollarSign className="h-4 w-4 text-green-500" />
-            <span className="text-xs text-muted-foreground">Total Revenue</span>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        <Card className="p-3 sm:p-4">
+          <div className="flex items-center gap-2 mb-1 sm:mb-2">
+            <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-green-500" />
+            <span className="text-xs text-muted-foreground">Revenue</span>
           </div>
-          <p className="text-2xl font-bold">${metrics.totalRevenue.toFixed(2)}</p>
+          <p className="text-lg sm:text-2xl font-bold">${metrics.totalRevenue.toFixed(2)}</p>
         </Card>
 
-        <Card className="p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <TrendingDown className="h-4 w-4 text-red-500" />
-            <span className="text-xs text-muted-foreground">Total API Costs</span>
+        <Card className="p-3 sm:p-4">
+          <div className="flex items-center gap-2 mb-1 sm:mb-2">
+            <TrendingDown className="h-3 w-3 sm:h-4 sm:w-4 text-red-500" />
+            <span className="text-xs text-muted-foreground">API Costs</span>
           </div>
-          <p className="text-2xl font-bold">${metrics.totalCosts.toFixed(2)}</p>
+          <p className="text-lg sm:text-2xl font-bold">${metrics.totalCosts.toFixed(2)}</p>
         </Card>
 
-        <Card className="p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <TrendingUp className="h-4 w-4 text-blue-500" />
-            <span className="text-xs text-muted-foreground">Net Profit</span>
+        <Card className="p-3 sm:p-4">
+          <div className="flex items-center gap-2 mb-1 sm:mb-2">
+            <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500" />
+            <span className="text-xs text-muted-foreground">Profit</span>
           </div>
-          <p className="text-2xl font-bold">${metrics.netProfit.toFixed(2)}</p>
+          <p className="text-lg sm:text-2xl font-bold">${metrics.netProfit.toFixed(2)}</p>
         </Card>
 
-        <Card className="p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <Percent className="h-4 w-4 text-purple-500" />
-            <span className="text-xs text-muted-foreground">Profit Margin</span>
+        <Card className="p-3 sm:p-4">
+          <div className="flex items-center gap-2 mb-1 sm:mb-2">
+            <Percent className="h-3 w-3 sm:h-4 sm:w-4 text-purple-500" />
+            <span className="text-xs text-muted-foreground">Margin</span>
           </div>
-          <p className="text-2xl font-bold">{metrics.profitMargin.toFixed(1)}%</p>
+          <p className="text-lg sm:text-2xl font-bold">{metrics.profitMargin.toFixed(1)}%</p>
         </Card>
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Revenue Trends Chart */}
-        <Card className="p-4">
-          <h3 className="text-sm font-semibold mb-4">Revenue Trends</h3>
-          <div id="revenue-trends-chart">
-            <ResponsiveContainer width="100%" height={250}>
+        <Card className="p-3 sm:p-4">
+          <h3 className="text-xs sm:text-sm font-semibold mb-3 sm:mb-4">Revenue Trends</h3>
+          <div id="revenue-trends-chart" className="h-[200px] sm:h-[250px]">
+            <ResponsiveContainer width="100%" height="100%">
               <LineChart data={revenueTrends}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
+              <XAxis dataKey="date" tick={{ fontSize: 10 }} />
+              <YAxis tick={{ fontSize: 10 }} />
               <Tooltip />
-              <Legend />
+              <Legend wrapperStyle={{ fontSize: '10px' }} />
               <Line type="monotone" dataKey="revenue" stroke="#10b981" name="Revenue" />
               <Line type="monotone" dataKey="costs" stroke="#ef4444" name="Costs" />
               <Line type="monotone" dataKey="profit" stroke="#3b82f6" name="Profit" />
@@ -397,17 +399,17 @@ export function FinancialReporting() {
         </Card>
 
         {/* Token Economy Chart */}
-        <Card className="p-4">
-          <h3 className="text-sm font-semibold mb-4">Token Economy</h3>
-          <div id="token-economy-chart">
-            <ResponsiveContainer width="100%" height={250}>
+        <Card className="p-3 sm:p-4">
+          <h3 className="text-xs sm:text-sm font-semibold mb-3 sm:mb-4">Token Economy</h3>
+          <div id="token-economy-chart" className="h-[200px] sm:h-[250px]">
+            <ResponsiveContainer width="100%" height="100%">
               <BarChart data={tokenEconomy}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis yAxisId="left" />
-              <YAxis yAxisId="right" orientation="right" />
+              <XAxis dataKey="date" tick={{ fontSize: 10 }} />
+              <YAxis yAxisId="left" tick={{ fontSize: 10 }} />
+              <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10 }} />
               <Tooltip />
-              <Legend />
+              <Legend wrapperStyle={{ fontSize: '10px' }} />
               <Bar yAxisId="left" dataKey="purchased" fill="#10b981" name="Purchased" />
               <Bar yAxisId="left" dataKey="used" fill="#ef4444" name="Used" />
               <Line yAxisId="right" type="monotone" dataKey="profitMargin" stroke="#8b5cf6" name="Profit %" />
@@ -417,10 +419,10 @@ export function FinancialReporting() {
         </Card>
 
         {/* Revenue by Pack Size */}
-        <Card className="p-4">
-          <h3 className="text-sm font-semibold mb-4">Revenue by Token Pack</h3>
-          <div id="revenue-pack-chart">
-            <ResponsiveContainer width="100%" height={250}>
+        <Card className="p-3 sm:p-4">
+          <h3 className="text-xs sm:text-sm font-semibold mb-3 sm:mb-4">Revenue by Token Pack</h3>
+          <div id="revenue-pack-chart" className="h-[200px] sm:h-[250px]">
+            <ResponsiveContainer width="100%" height="100%">
               <PieChart>
               <Pie
                 data={revenueByPack}
@@ -428,7 +430,7 @@ export function FinancialReporting() {
                 cy="50%"
                 labelLine={false}
                 label={(entry) => `${entry.name}: $${entry.value}`}
-                outerRadius={80}
+                outerRadius={60}
                 fill="#8884d8"
                 dataKey="value"
               >
