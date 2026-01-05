@@ -165,14 +165,14 @@ export function InteractiveHeroInput({ onGenerate, isGenerating, value, onChange
             {/* Camera Button - Hidden on very small screens */}
             <button
               onClick={() => fileInputRef.current?.click()}
-              className={`hidden sm:flex w-9 h-9 rounded-full backdrop-blur-md border transition-all duration-300 items-center justify-center group ${
+              className={`hidden sm:flex min-w-[44px] min-h-[44px] w-11 h-11 rounded-full backdrop-blur-md border transition-all duration-300 items-center justify-center group ${
                 uploadedImage 
                   ? 'bg-primary/20 border-primary/60' 
                   : 'bg-black/40 border-primary/30 hover:border-primary/60 hover:bg-primary/10'
               }`}
               title="Upload reference image"
             >
-              <Camera className={`h-4 w-4 transition-colors ${
+              <Camera className={`h-5 w-5 transition-colors ${
                 uploadedImage ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'
               }`} />
             </button>
@@ -180,14 +180,14 @@ export function InteractiveHeroInput({ onGenerate, isGenerating, value, onChange
             {/* Microphone Button - Hidden on very small screens */}
             <button
               onClick={handleVoiceInput}
-              className={`hidden sm:flex w-9 h-9 rounded-full backdrop-blur-md border transition-all duration-300 items-center justify-center group ${
+              className={`hidden sm:flex min-w-[44px] min-h-[44px] w-11 h-11 rounded-full backdrop-blur-md border transition-all duration-300 items-center justify-center group ${
                 isRecording 
                   ? 'bg-red-500 border-red-400 animate-pulse' 
                   : 'bg-black/40 border-primary/30 hover:border-primary/60 hover:bg-primary/10'
               }`}
               title={isRecording ? "Recording..." : "Voice input"}
             >
-              <Mic className={`h-4 w-4 transition-colors ${
+              <Mic className={`h-5 w-5 transition-colors ${
                 isRecording ? 'text-white' : 'text-muted-foreground group-hover:text-primary'
               }`} />
             </button>

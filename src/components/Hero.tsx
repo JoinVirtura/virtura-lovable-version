@@ -724,9 +724,9 @@ export const Hero = () => {
                     <button
                       type="button"
                       onClick={() => document.getElementById('reference-upload')?.click()}
-                      className="w-9 h-9 rounded-full bg-black/40 backdrop-blur-md border border-primary/30 hover:bg-primary/20 hover:border-primary/50 transition-all flex items-center justify-center"
+                      className="min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-black/40 backdrop-blur-md border border-primary/30 hover:bg-primary/20 hover:border-primary/50 transition-all flex items-center justify-center"
                     >
-                      <Camera className="h-4 w-4 text-white" />
+                      <Camera className="h-5 w-5 text-white" />
                     </button>
                   )}
                   <input
@@ -752,13 +752,13 @@ export const Hero = () => {
                   <button
                     type="button"
                     onClick={handleVoiceInput}
-                    className={`w-9 h-9 rounded-full backdrop-blur-md border transition-all flex items-center justify-center ${
+                    className={`min-w-[44px] min-h-[44px] w-11 h-11 rounded-full backdrop-blur-md border transition-all flex items-center justify-center ${
                       isRecording 
                         ? 'bg-red-500 border-red-400 animate-pulse' 
                         : 'bg-black/40 border-primary/30 hover:bg-primary/20 hover:border-primary/50'
                     }`}
                   >
-                    <Mic className="h-4 w-4 text-white" />
+                    <Mic className="h-5 w-5 text-white" />
                   </button>
                   
                   {/* Generate Button */}
@@ -766,12 +766,12 @@ export const Hero = () => {
                     type="button"
                     onClick={handleGenerate}
                     disabled={isGenerating || !inputValue.trim()}
-                    className="w-9 h-9 rounded-full bg-gradient-to-r from-primary to-secondary hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-gradient-to-r from-primary to-secondary hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isGenerating ? (
-                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
                     ) : (
-                      <Send className="h-4 w-4 text-white" />
+                      <Send className="h-5 w-5 text-white" />
                     )}
                   </button>
                 </div>
@@ -787,9 +787,9 @@ export const Hero = () => {
               <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowStyleModal(false)} />
               
               {/* Large Popup Box - Properly Centered */}
-              <div className="relative bg-black/95 backdrop-blur-xl border-2 border-primary/30 rounded-2xl shadow-2xl w-full max-w-7xl h-[85vh] overflow-hidden mx-auto">
+              <div className="relative bg-black/95 backdrop-blur-xl border-2 border-primary/30 rounded-2xl shadow-2xl w-full max-w-7xl h-[90vh] sm:h-[85vh] overflow-hidden mx-2 sm:mx-auto">
                 {/* Modal Header */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 border-b-2 border-primary/20 bg-black/40 gap-2">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center justify-between p-3 sm:p-4 border-b-2 border-primary/20 bg-black/40">
                   <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
                     <h2 className="text-lg sm:text-xl font-bold text-white">Styles</h2>
                     <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
@@ -854,7 +854,7 @@ export const Hero = () => {
                     </div>
 
                     {/* Styles Grid - Smaller thumbnails */}
-                    <div className="grid grid-cols-6 gap-2">
+                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
                       {/* Create Style Card */}
                       <div 
                         className="aspect-square bg-black/40 rounded-xl border-2 border-dashed border-primary/30 flex flex-col items-center justify-center cursor-pointer hover:bg-primary/20 hover:border-primary/50 transition-all"
