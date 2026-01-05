@@ -1,11 +1,11 @@
 import { Textarea } from "@/components/ui/textarea";
-import { Camera, Mic, Send } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Camera, Mic, Send, X } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 
 interface InteractiveHeroInputProps {
-  onGenerate: (prompt: string) => void;
+  onGenerate: (prompt: string, referenceImage?: string) => void;
   isGenerating: boolean;
   value: string;
   onChange: (value: string) => void;
@@ -23,6 +23,8 @@ const PLACEHOLDER_PROMPTS = [
 export function InteractiveHeroInput({ onGenerate, isGenerating, value, onChange }: InteractiveHeroInputProps) {
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Rotate placeholder every 3 seconds
   useEffect(() => {
@@ -39,7 +41,7 @@ export function InteractiveHeroInput({ onGenerate, isGenerating, value, onChange
       toast.error("Please enter a prompt");
       return;
     }
-    onGenerate(value);
+    onGenerate(value, uploadedImage || undefined);
   };
 
   const handleVoiceInput = async () => {
@@ -79,9 +81,70 @@ export function InteractiveHeroInput({ onGenerate, isGenerating, value, onChange
     recognition.start();
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast.error("Please upload an image file");
+        return;
+      }
+      
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error("Image must be less than 10MB");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setUploadedImage(event.target?.result as string);
+        toast.success("Reference image uploaded");
+      };
+      reader.readAsDataURL(file);
+    }
+    // Reset input to allow re-uploading same file
+    e.target.value = '';
+  };
+
+  const handleRemoveImage = () => {
+    setUploadedImage(null);
+    toast.info("Reference image removed");
+  };
+
   return (
     <Card className="max-w-full sm:max-w-4xl mx-auto backdrop-blur-xl bg-black/60 border-2 border-primary/30 shadow-2xl rounded-xl sm:rounded-2xl overflow-hidden">
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleFileUpload}
+      />
+      
       <div className="p-3 sm:p-4">
+        {/* Uploaded image preview */}
+        {uploadedImage && (
+          <div className="mb-3 flex items-center gap-2">
+            <div className="relative group">
+              <img 
+                src={uploadedImage} 
+                alt="Reference" 
+                className="w-16 h-16 object-cover rounded-lg border border-primary/50"
+              />
+              <button
+                onClick={handleRemoveImage}
+                className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center transition-colors"
+                title="Remove reference image"
+              >
+                <X className="w-3 h-3 text-white" />
+              </button>
+            </div>
+            <span className="text-xs text-muted-foreground">Reference image attached</span>
+          </div>
+        )}
+        
         <div className="flex items-center gap-2 sm:gap-3">
           {/* Single-line Textarea */}
           <Textarea
@@ -101,10 +164,17 @@ export function InteractiveHeroInput({ onGenerate, isGenerating, value, onChange
           <div className="flex items-center gap-1.5 sm:gap-2">
             {/* Camera Button - Hidden on very small screens */}
             <button
-              className="hidden sm:flex w-9 h-9 rounded-full bg-black/40 backdrop-blur-md border border-primary/30 hover:border-primary/60 hover:bg-primary/10 transition-all duration-300 items-center justify-center group"
+              onClick={() => fileInputRef.current?.click()}
+              className={`hidden sm:flex w-9 h-9 rounded-full backdrop-blur-md border transition-all duration-300 items-center justify-center group ${
+                uploadedImage 
+                  ? 'bg-primary/20 border-primary/60' 
+                  : 'bg-black/40 border-primary/30 hover:border-primary/60 hover:bg-primary/10'
+              }`}
               title="Upload reference image"
             >
-              <Camera className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+              <Camera className={`h-4 w-4 transition-colors ${
+                uploadedImage ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'
+              }`} />
             </button>
 
             {/* Microphone Button - Hidden on very small screens */}

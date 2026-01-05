@@ -43,7 +43,7 @@ serve(async (req) => {
       );
     }
 
-    const { prompt } = await req.json();
+    const { prompt, referenceImage } = await req.json();
     
     // Validate prompt
     if (!prompt || typeof prompt !== 'string' || prompt.length > 500) {
@@ -63,24 +63,48 @@ serve(async (req) => {
       auth: REPLICATE_API_KEY,
     });
 
-    console.log('[Landing] Generating with Replicate Flux Schnell:', prompt);
+    console.log('[Landing] Generating with Replicate:', prompt, referenceImage ? 'with reference image' : 'text-to-image');
 
-    // Use Flux Schnell for fast, high-quality generation (same as dashboard)
-    const output = await replicate.run(
-      "black-forest-labs/flux-schnell",
-      {
-        input: {
-          prompt: `${prompt}, professional quality, 8K resolution, masterpiece, highly detailed`,
-          go_fast: true,
-          megapixels: "1",
-          num_outputs: 1,
-          aspect_ratio: "1:1",
-          output_format: "webp",
-          output_quality: 80,
-          num_inference_steps: 4
+    let output;
+
+    if (referenceImage) {
+      // Use img2img model when reference image is provided
+      console.log('[Landing] Using image-to-image generation');
+      
+      output = await replicate.run(
+        "stability-ai/sdxl:7762fd07cf82c948538e41f63f77d685e02b063e37e496e96eefd46c929f9bdc",
+        {
+          input: {
+            prompt: `${prompt}, professional quality, 8K resolution, masterpiece, highly detailed`,
+            image: referenceImage,
+            prompt_strength: 0.7,
+            num_outputs: 1,
+            guidance_scale: 7.5,
+            num_inference_steps: 25,
+            scheduler: "K_EULER"
+          }
         }
-      }
-    );
+      );
+    } else {
+      // Use Flux Schnell for fast, high-quality text-to-image generation
+      console.log('[Landing] Using text-to-image generation');
+      
+      output = await replicate.run(
+        "black-forest-labs/flux-schnell",
+        {
+          input: {
+            prompt: `${prompt}, professional quality, 8K resolution, masterpiece, highly detailed`,
+            go_fast: true,
+            megapixels: "1",
+            num_outputs: 1,
+            aspect_ratio: "1:1",
+            output_format: "webp",
+            output_quality: 80,
+            num_inference_steps: 4
+          }
+        }
+      );
+    }
 
     const imageUrl = Array.isArray(output) ? output[0] : output;
 

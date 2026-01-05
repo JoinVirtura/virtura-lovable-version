@@ -25,6 +25,10 @@ export function LandingHero({ id }: LandingHeroProps) {
     }, 100);
   };
 
+  const handleGenerate = (prompt: string, referenceImage?: string) => {
+    generateImages(prompt, { referenceImage });
+  };
+
   return (
     <section id={id} className="relative min-h-screen flex items-center justify-center overflow-hidden pt-32 pb-20">
       {/* Animated Background */}
@@ -63,7 +67,7 @@ export function LandingHero({ id }: LandingHeroProps) {
           {/* Interactive Input Section */}
           <div ref={inputRef} className="mb-12 animate-fade-in" style={{ animationDelay: "0.3s" }}>
             <InteractiveHeroInput 
-              onGenerate={generateImages}
+              onGenerate={handleGenerate}
               isGenerating={isGenerating}
               value={currentPrompt}
               onChange={setCurrentPrompt}

@@ -2,11 +2,15 @@ import { useState } from "react";
 import { ImageGenerationService, type ImageGenerationParams, type GeneratedImage } from "@/services/imageGenerationService";
 import { toast } from "sonner";
 
+interface ExtendedImageGenerationParams extends Partial<ImageGenerationParams> {
+  referenceImage?: string;
+}
+
 interface UseLandingImageGenerationReturn {
   images: GeneratedImage[];
   isGenerating: boolean;
   progress: number;
-  generateImages: (prompt: string, params?: Partial<ImageGenerationParams>) => Promise<void>;
+  generateImages: (prompt: string, params?: ExtendedImageGenerationParams) => Promise<void>;
   clearImages: () => void;
   sessionId: string;
 }
@@ -17,7 +21,7 @@ export function useLandingImageGeneration(): UseLandingImageGenerationReturn {
   const [progress, setProgress] = useState(0);
   const [sessionId] = useState(() => `session_${Date.now()}_${Math.random()}`);
 
-  const generateImages = async (prompt: string, params?: Partial<ImageGenerationParams>) => {
+  const generateImages = async (prompt: string, params?: ExtendedImageGenerationParams) => {
     if (!prompt.trim()) {
       toast.error("Please enter a prompt");
       return;
@@ -28,7 +32,7 @@ export function useLandingImageGeneration(): UseLandingImageGenerationReturn {
     setImages([]);
 
     try {
-      console.log('[Landing] Generation started:', prompt);
+      console.log('[Landing] Generation started:', prompt, params?.referenceImage ? 'with reference image' : '');
 
       // Generate 3 variants using Replicate (same quality as dashboard)
       const variants: GeneratedImage[] = [];
@@ -39,7 +43,10 @@ export function useLandingImageGeneration(): UseLandingImageGenerationReturn {
         try {
           const { supabase } = await import("@/integrations/supabase/client");
           const { data, error } = await supabase.functions.invoke('generate-landing-replicate', {
-            body: { prompt }
+            body: { 
+              prompt,
+              referenceImage: params?.referenceImage 
+            }
           });
 
           if (error) {
@@ -96,7 +103,10 @@ export function useLandingImageGeneration(): UseLandingImageGenerationReturn {
               event_type: 'images_generated',
               prompt,
               session_id: sessionId,
-              metadata: { count: variants.length }
+              metadata: { 
+                count: variants.length,
+                hasReferenceImage: !!params?.referenceImage 
+              }
             })
           });
         } catch (error) {
