@@ -69,12 +69,17 @@ export function SystemMetrics() {
     try {
       setLoading(true);
 
+      // Measure DB latency with a real query
+      const dbStartTime = performance.now();
+      
       // Active users (users with activity in last 5 minutes)
       const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
       const { data: recentActivity } = await supabase
         .from("usage_tracking")
         .select("user_id, profiles!inner(display_name)")
         .gte("created_at", fiveMinutesAgo);
+
+      const dbLatency = Math.round(performance.now() - dbStartTime);
 
       const uniqueActiveUsers = new Set(recentActivity?.map((a) => a.user_id));
       const activeUsersList = recentActivity
@@ -137,25 +142,64 @@ export function SystemMetrics() {
         .select("*", { count: "exact", head: true })
         .eq("status", "failed");
 
-      // Mock data for charts (in production, get from actual API logs)
-      const responseTimeData = Array.from({ length: 24 }, (_, i) => ({
-        time: `${i}:00`,
-        ms: Math.floor(Math.random() * 200) + 50,
+      // Queue rate: jobs created in the last minute
+      const oneMinuteAgo = new Date(Date.now() - 60 * 1000).toISOString();
+      const { count: queueRateCount } = await supabase
+        .from("jobs")
+        .select("*", { count: "exact", head: true })
+        .gte("created_at", oneMinuteAgo);
+
+      // Response time data from completed jobs in last 24 hours
+      const { data: completedJobs } = await supabase
+        .from("jobs")
+        .select("created_at, completed_at")
+        .eq("status", "completed")
+        .not("completed_at", "is", null)
+        .gte("created_at", oneDayAgo)
+        .order("created_at", { ascending: true });
+
+      // Group jobs by hour and calculate avg completion time
+      const hourlyData: { [hour: string]: number[] } = {};
+      for (let i = 0; i < 24; i++) {
+        hourlyData[`${i}:00`] = [];
+      }
+
+      (completedJobs || []).forEach((job) => {
+        if (job.created_at && job.completed_at) {
+          const createdAt = new Date(job.created_at);
+          const completedAt = new Date(job.completed_at);
+          const durationMs = completedAt.getTime() - createdAt.getTime();
+          const hour = `${createdAt.getHours()}:00`;
+          if (hourlyData[hour]) {
+            hourlyData[hour].push(Math.min(durationMs, 60000)); // Cap at 60 seconds
+          }
+        }
+      });
+
+      const responseTimeData = Object.entries(hourlyData).map(([time, durations]) => ({
+        time,
+        ms: durations.length > 0 
+          ? Math.round(durations.reduce((a, b) => a + b, 0) / durations.length)
+          : 0,
       }));
 
-      const avgResponseTime = responseTimeData.reduce((sum, d) => sum + d.ms, 0) / 24;
+      const avgResponseTime = responseTimeData.filter(d => d.ms > 0).length > 0
+        ? Math.round(responseTimeData.filter(d => d.ms > 0).reduce((sum, d) => sum + d.ms, 0) / responseTimeData.filter(d => d.ms > 0).length)
+        : 0;
 
       // System health score (0-100)
       let healthScore = 100;
-      if (avgResponseTime > 500) healthScore -= 30;
-      else if (avgResponseTime > 200) healthScore -= 15;
+      if (avgResponseTime > 30000) healthScore -= 30;
+      else if (avgResponseTime > 10000) healthScore -= 15;
       if (failedCount && failedCount > 10) healthScore -= 20;
       else if (failedCount && failedCount > 5) healthScore -= 10;
+      if (dbLatency > 500) healthScore -= 10;
+      else if (dbLatency > 200) healthScore -= 5;
 
       setMetrics({
         activeUsers: uniqueActiveUsers.size,
         activeUsersList,
-        avgResponseTime: Math.round(avgResponseTime),
+        avgResponseTime: avgResponseTime > 0 ? avgResponseTime : dbLatency,
         responseTimeData,
         tokensLastHour,
         tokensLast24h,
@@ -165,9 +209,9 @@ export function SystemMetrics() {
         revenueWeek: (revenueWeek?.reduce((sum, t) => sum + t.amount, 0) || 0) * 0.01,
         revenueMonth: (revenueMonth?.reduce((sum, t) => sum + t.amount, 0) || 0) * 0.01,
         systemHealth: healthScore,
-        dbLatency: Math.floor(Math.random() * 50) + 10,
+        dbLatency,
         failedJobs: failedCount || 0,
-        queueRate: Math.floor(Math.random() * 100) + 50,
+        queueRate: queueRateCount || 0,
       });
 
       setLastUpdated(new Date());
