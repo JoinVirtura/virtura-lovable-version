@@ -128,7 +128,7 @@ export function CreditTokensWithUserSearch({
     try {
       const { error } = await supabase.functions.invoke("credit-user-tokens", {
         body: {
-          userId: selectedUser.id,
+          targetUserId: selectedUser.id,
           amount: parseInt(amount),
           reason,
           note,
