@@ -36,26 +36,26 @@ export function LandingHero({ id }: LandingHeroProps) {
         </div>
       </div>
 
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <div className="max-w-6xl mx-auto">
           {/* Social Proof Badge */}
-          <div className="flex justify-center mb-8 animate-fade-in">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card/50 backdrop-blur-sm border border-border">
-              <Sparkles className="w-4 h-4 text-primary" />
-              <span className="text-sm text-muted-foreground">Trusted by 10,000+ creators worldwide</span>
+          <div className="flex justify-center mb-6 sm:mb-8 animate-fade-in">
+            <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full bg-card/50 backdrop-blur-sm border border-border">
+              <Sparkles className="w-4 h-4 text-primary flex-shrink-0" />
+              <span className="text-xs sm:text-sm text-muted-foreground">Trusted by 10,000+ creators worldwide</span>
             </div>
           </div>
 
           {/* Main Heading */}
-          <div className="text-center mb-10">
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
+          <div className="text-center mb-8 sm:mb-10">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-4 sm:mb-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
               <span className="text-foreground">Where Identity </span>
               <span className="bg-gradient-text bg-clip-text text-transparent">
                 Evolves
               </span>
             </h1>
 
-            <p className="text-xl text-muted-foreground mb-4 animate-fade-in max-w-3xl mx-auto" style={{ animationDelay: "0.2s" }}>
+            <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-4 animate-fade-in max-w-3xl mx-auto px-2" style={{ animationDelay: "0.2s" }}>
               Create studio-quality AI content — avatars, branded visuals, campaigns, and concepts — all in seconds.
             </p>
           </div>

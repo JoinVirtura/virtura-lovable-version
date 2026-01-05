@@ -80,9 +80,9 @@ export function InteractiveHeroInput({ onGenerate, isGenerating, value, onChange
   };
 
   return (
-    <Card className="max-w-4xl mx-auto backdrop-blur-xl bg-black/60 border-2 border-primary/30 shadow-2xl rounded-2xl overflow-hidden">
-      <div className="p-4">
-        <div className="flex items-center gap-3">
+    <Card className="max-w-full sm:max-w-4xl mx-auto backdrop-blur-xl bg-black/60 border-2 border-primary/30 shadow-2xl rounded-xl sm:rounded-2xl overflow-hidden">
+      <div className="p-3 sm:p-4">
+        <div className="flex items-center gap-2 sm:gap-3">
           {/* Single-line Textarea */}
           <Textarea
             value={value}
@@ -98,19 +98,19 @@ export function InteractiveHeroInput({ onGenerate, isGenerating, value, onChange
           />
           
           {/* Action Buttons on Right */}
-          <div className="flex items-center gap-2">
-            {/* Camera Button */}
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Camera Button - Hidden on very small screens */}
             <button
-              className="w-9 h-9 rounded-full bg-black/40 backdrop-blur-md border border-primary/30 hover:border-primary/60 hover:bg-primary/10 transition-all duration-300 flex items-center justify-center group"
+              className="hidden sm:flex w-9 h-9 rounded-full bg-black/40 backdrop-blur-md border border-primary/30 hover:border-primary/60 hover:bg-primary/10 transition-all duration-300 items-center justify-center group"
               title="Upload reference image"
             >
               <Camera className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
             </button>
 
-            {/* Microphone Button */}
+            {/* Microphone Button - Hidden on very small screens */}
             <button
               onClick={handleVoiceInput}
-              className={`w-9 h-9 rounded-full backdrop-blur-md border transition-all duration-300 flex items-center justify-center group ${
+              className={`hidden sm:flex w-9 h-9 rounded-full backdrop-blur-md border transition-all duration-300 items-center justify-center group ${
                 isRecording 
                   ? 'bg-red-500 border-red-400 animate-pulse' 
                   : 'bg-black/40 border-primary/30 hover:border-primary/60 hover:bg-primary/10'
@@ -126,7 +126,7 @@ export function InteractiveHeroInput({ onGenerate, isGenerating, value, onChange
             <button
               onClick={handleGenerate}
               disabled={isGenerating || !value.trim()}
-              className="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-primary-blue hover:shadow-violet-glow transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-gradient-to-r from-primary to-primary-blue hover:shadow-violet-glow transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center flex-shrink-0"
               title="Generate"
             >
               {isGenerating ? (
