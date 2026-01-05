@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { Search, X, User } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Search, X, User, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -33,6 +32,27 @@ interface UserSearchAutocompleteProps {
   onClear: () => void;
 }
 
+const RECENT_NOTIFY_USERS_KEY = "admin_recent_notify_users";
+
+const getRecentUsers = (): UserResult[] => {
+  try {
+    const stored = localStorage.getItem(RECENT_NOTIFY_USERS_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+};
+
+const saveRecentUser = (user: UserResult) => {
+  try {
+    const recent = getRecentUsers().filter(u => u.id !== user.id);
+    const updated = [user, ...recent].slice(0, 5);
+    localStorage.setItem(RECENT_NOTIFY_USERS_KEY, JSON.stringify(updated));
+  } catch {
+    // Ignore localStorage errors
+  }
+};
+
 export function UserSearchAutocomplete({
   onUserSelect,
   selectedUser,
@@ -42,6 +62,14 @@ export function UserSearchAutocomplete({
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState<UserResult[]>([]);
   const [loading, setLoading] = useState(false);
+  const [recentUsers, setRecentUsers] = useState<UserResult[]>([]);
+
+  // Load recent users when popover opens
+  useEffect(() => {
+    if (open) {
+      setRecentUsers(getRecentUsers());
+    }
+  }, [open]);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -85,11 +113,36 @@ export function UserSearchAutocomplete({
         }
       }
 
+      // Search by email using admin edge function
+      let profilesByEmail: any[] = [];
+      if (searchQuery.includes("@") || searchQuery.length >= 3) {
+        try {
+          const { data: emailData, error: emailError } = await supabase.functions.invoke(
+            "admin-search-users",
+            { body: { searchQuery } }
+          );
+          if (!emailError && emailData?.users) {
+            profilesByEmail = emailData.users;
+          }
+        } catch (e) {
+          console.log("Email search not available:", e);
+        }
+      }
+
       // Combine and deduplicate results
       const profiles = [...(profilesByName || [])];
       profilesById?.forEach(p => {
         if (!profiles.some(existing => existing.id === p.id)) {
           profiles.push(p);
+        }
+      });
+      profilesByEmail.forEach(p => {
+        if (!profiles.some(existing => existing.id === p.id)) {
+          profiles.push({ ...p, email: p.email });
+        } else {
+          // Add email to existing profile
+          const existing = profiles.find(e => e.id === p.id);
+          if (existing) (existing as any).email = p.email;
         }
       });
 
@@ -107,7 +160,7 @@ export function UserSearchAutocomplete({
           profiles.map((p) => p.id)
         );
 
-      // Try to get emails via edge function (admin only)
+      // Get emails from the email search results
       let authUsers: any[] = [];
       try {
         const authResponse = await supabase.auth.admin.listUsers();
@@ -127,7 +180,6 @@ export function UserSearchAutocomplete({
           id: profile.id,
           display_name: hasDefaultName ? null : profile.display_name,
           avatar_url: profile.avatar_url,
-          email: authUser?.email,
           balance: tokenData?.balance || 0,
         };
       });
@@ -150,6 +202,7 @@ export function UserSearchAutocomplete({
   };
 
   const handleSelect = (user: UserResult) => {
+    saveRecentUser(user);
     onUserSelect(user);
     setOpen(false);
     setSearchQuery("");
@@ -206,8 +259,36 @@ export function UserSearchAutocomplete({
                   ? "Type at least 2 characters to search"
                   : "No users found"}
               </CommandEmpty>
+              {/* Recent Users Section */}
+              {results.length === 0 && recentUsers.length > 0 && searchQuery.length < 2 && (
+                <CommandGroup heading="Recent Users">
+                  {recentUsers.map((user) => (
+                    <CommandItem
+                      key={user.id}
+                      onSelect={() => handleSelect(user)}
+                      className="flex items-center gap-3 p-2 cursor-pointer"
+                    >
+                      <Avatar className="h-7 w-7">
+                        <AvatarImage src={user.avatar_url || ""} />
+                        <AvatarFallback>
+                          <User className="h-3 w-3" />
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm truncate">
+                          {user.display_name || user.email || `User ${user.id.slice(0, 8)}`}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {user.email || user.id.slice(0, 16)}...
+                        </p>
+                      </div>
+                      <Clock className="h-3 w-3 text-muted-foreground" />
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              )}
               {results.length > 0 && (
-                <CommandGroup heading="Users">
+                <CommandGroup heading="Search Results">
                   {results.map((user) => (
                     <CommandItem
                       key={user.id}
