@@ -20,7 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Search, Coins, ArrowRight, ArrowLeft, User, CheckCircle, ExternalLink, Filter } from "lucide-react";
+import { Search, Coins, ArrowRight, ArrowLeft, User, CheckCircle, Filter, Clock } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface UserResult {
@@ -38,6 +38,27 @@ interface CreditTokensWithUserSearchProps {
   onSuccess?: () => void;
 }
 
+const RECENT_USERS_KEY = "admin_recent_credit_users";
+
+const getRecentUsers = (): UserResult[] => {
+  try {
+    const stored = localStorage.getItem(RECENT_USERS_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+};
+
+const saveRecentUser = (user: UserResult) => {
+  try {
+    const recent = getRecentUsers().filter(u => u.id !== user.id);
+    const updated = [user, ...recent].slice(0, 5);
+    localStorage.setItem(RECENT_USERS_KEY, JSON.stringify(updated));
+  } catch {
+    // Ignore localStorage errors
+  }
+};
+
 export function CreditTokensWithUserSearch({
   open,
   onOpenChange,
@@ -49,6 +70,7 @@ export function CreditTokensWithUserSearch({
   const [selectedUser, setSelectedUser] = useState<UserResult | null>(null);
   const [searching, setSearching] = useState(false);
   const [balanceFilter, setBalanceFilter] = useState<string>("all");
+  const [recentUsers, setRecentUsers] = useState<UserResult[]>([]);
 
   // Credit form state
   const [amount, setAmount] = useState("");
@@ -56,6 +78,13 @@ export function CreditTokensWithUserSearch({
   const [note, setNote] = useState("");
   const [loading, setLoading] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+
+  // Load recent users on mount
+  useEffect(() => {
+    if (open) {
+      setRecentUsers(getRecentUsers());
+    }
+  }, [open]);
 
   const resetState = () => {
     setStep("search");
@@ -108,11 +137,36 @@ export function CreditTokensWithUserSearch({
         }
       }
 
+      // Search by email using admin edge function
+      let profilesByEmail: any[] = [];
+      if (searchQuery.includes("@") || searchQuery.length >= 3) {
+        try {
+          const { data: emailData, error: emailError } = await supabase.functions.invoke(
+            "admin-search-users",
+            { body: { searchQuery } }
+          );
+          if (!emailError && emailData?.users) {
+            profilesByEmail = emailData.users;
+          }
+        } catch (e) {
+          console.log("Email search not available:", e);
+        }
+      }
+
       // Combine and deduplicate results
       const profiles = [...(profilesByName || [])];
       profilesById?.forEach(p => {
         if (!profiles.some(existing => existing.id === p.id)) {
           profiles.push(p);
+        }
+      });
+      profilesByEmail.forEach((p: any) => {
+        if (!profiles.some(existing => existing.id === p.id)) {
+          profiles.push({ ...p, email: p.email } as any);
+        } else {
+          // Add email to existing profile
+          const existing = profiles.find(e => e.id === p.id);
+          if (existing) (existing as any).email = p.email;
         }
       });
 
@@ -173,6 +227,7 @@ export function CreditTokensWithUserSearch({
 
   const handleSelectUser = (user: UserResult) => {
     setSelectedUser(user);
+    saveRecentUser(user);
     setStep("credit");
   };
 
@@ -290,12 +345,52 @@ export function CreditTokensWithUserSearch({
             </div>
 
             <ScrollArea className="h-[300px]">
-              {searchResults.length === 0 ? (
+              {/* Recent Users Section */}
+              {searchResults.length === 0 && recentUsers.length > 0 && !searchQuery && (
+                <div className="mb-4">
+                  <div className="flex items-center gap-2 mb-2 text-xs text-muted-foreground">
+                    <Clock className="h-3 w-3" />
+                    <span>Recent Users</span>
+                  </div>
+                  <div className="space-y-1">
+                    {recentUsers.map((user) => (
+                      <button
+                        key={user.id}
+                        onClick={() => handleSelectUser(user)}
+                        className="w-full flex items-center gap-3 p-2 rounded-lg border border-dashed hover:bg-accent transition-colors text-left"
+                      >
+                        <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden flex-shrink-0">
+                          {user.avatar_url ? (
+                            <img src={user.avatar_url} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            <User className="h-4 w-4 text-muted-foreground" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium truncate text-sm">{getUserDisplayName(user)}</p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {user.email || `ID: ${user.id.slice(0, 8)}...`}
+                          </p>
+                        </div>
+                        <Badge variant="secondary" className="text-xs px-1.5 py-0">
+                          {user.balance} tokens
+                        </Badge>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {searchResults.length === 0 && !recentUsers.length ? (
                 <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
                   <User className="h-12 w-12 mb-2 opacity-50" />
                   <p className="text-sm">Search for users above</p>
                 </div>
-              ) : (
+              ) : searchResults.length === 0 && searchQuery ? (
+                <div className="flex flex-col items-center justify-center h-32 text-muted-foreground">
+                  <p className="text-sm">No users found for "{searchQuery}"</p>
+                </div>
+              ) : searchResults.length > 0 ? (
                 <div className="space-y-2">
                   {searchResults.map((user) => (
                     <button
@@ -337,7 +432,7 @@ export function CreditTokensWithUserSearch({
                     </button>
                   ))}
                 </div>
-              )}
+              ) : null}
             </ScrollArea>
           </div>
         )}
