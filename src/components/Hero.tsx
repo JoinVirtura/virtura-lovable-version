@@ -702,8 +702,8 @@ export const Hero = () => {
                 <div className="flex items-center justify-center gap-3">
                   {/* Image Upload Button */}
                   {referenceImage ? (
-                    <div className="relative">
-                      <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-primary/50 hover:border-primary transition-all">
+                    <div className="relative flex-shrink-0">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 border-primary/50 hover:border-primary transition-all">
                         <img 
                           src={referenceImage} 
                           alt="Uploaded reference" 
@@ -715,9 +715,9 @@ export const Hero = () => {
                           e.stopPropagation();
                           handleCompleteReset();
                         }}
-                        className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center transition-colors shadow-lg"
+                        className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center transition-colors shadow-lg"
                       >
-                        <X className="h-3 w-3 text-white" />
+                        <X className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-white" />
                       </button>
                     </div>
                   ) : (
