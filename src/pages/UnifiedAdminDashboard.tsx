@@ -26,7 +26,7 @@ import { AdminMarketplaceApprovals } from "@/components/marketplace/AdminMarketp
 import { AdminSupportReview } from "@/components/admin/AdminSupportReview";
 import { AuthAttemptsDashboard } from "@/components/admin/AuthAttemptsDashboard";
 import { RetryJobsModal } from "@/components/admin/RetryJobsModal";
-import { CreditTokensDialog } from "@/components/admin/CreditTokensDialog";
+import { CreditTokensWithUserSearch } from "@/components/admin/CreditTokensWithUserSearch";
 import { SystemHealthModal } from "@/components/admin/SystemHealthModal";
 import { NotificationDialog } from "@/components/admin/NotificationDialog";
 import { ScheduledNotificationsDialog } from "@/components/admin/ScheduledNotificationsDialog";
@@ -631,7 +631,7 @@ export default function UnifiedAdminDashboard() {
         onSuccess={handleActionComplete}
       />
 
-      <CreditTokensDialog
+      <CreditTokensWithUserSearch
         open={showCreditTokens}
         onOpenChange={setShowCreditTokens}
         onSuccess={handleActionComplete}
