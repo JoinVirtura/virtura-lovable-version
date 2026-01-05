@@ -42,6 +42,7 @@ import { SettingsContent } from "@/components/SettingsContent";
 import { DashboardSettingsContent } from "@/components/DashboardSettingsContent";
 import { StudioBackground } from "@/components/StudioBackground";
 import { WelcomeModal } from "@/components/WelcomeModal";
+import { ProfileSetupModal } from "@/components/ProfileSetupModal";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import { MarketplaceBrowser } from "@/components/marketplace/MarketplaceBrowser";
 import { CampaignManagement } from "@/components/marketplace/CampaignManagement";
@@ -147,6 +148,8 @@ export default function Dashboard() {
   
   const { isOnboardingComplete, loading: onboardingLoading } = useOnboarding();
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [showProfileSetup, setShowProfileSetup] = useState(false);
+  const [profileCheckDone, setProfileCheckDone] = useState(false);
   const [trialStatus, setTrialStatus] = useState<any>(null);
   
   // Subscription tier access control
@@ -278,12 +281,39 @@ export default function Dashboard() {
     };
   }, []);
 
-  // Check if user needs to see onboarding
+  // Check if user needs profile setup (has default 'User' display name)
   useEffect(() => {
-    if (!onboardingLoading && !isOnboardingComplete) {
+    const checkProfileComplete = async () => {
+      if (profileCheckDone) return;
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('display_name')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      // If no display_name or it's the default 'User', show profile setup
+      if (!profile?.display_name || profile.display_name === 'User') {
+        setShowProfileSetup(true);
+      } else if (!onboardingLoading && !isOnboardingComplete) {
+        setShowWelcomeModal(true);
+      }
+      
+      setProfileCheckDone(true);
+    };
+
+    checkProfileComplete();
+  }, [profileCheckDone, isOnboardingComplete, onboardingLoading]);
+
+  // Check if user needs to see onboarding (after profile is set up)
+  useEffect(() => {
+    if (!onboardingLoading && !isOnboardingComplete && profileCheckDone && !showProfileSetup) {
       setShowWelcomeModal(true);
     }
-  }, [isOnboardingComplete, onboardingLoading]);
+  }, [isOnboardingComplete, onboardingLoading, profileCheckDone, showProfileSetup]);
   
   // Copilot Flow state
   const [currentPrompt, setCurrentPrompt] = useState("");
@@ -2004,8 +2034,18 @@ export default function Dashboard() {
 
   return (
     <>
+      <ProfileSetupModal
+        open={showProfileSetup}
+        onComplete={() => {
+          setShowProfileSetup(false);
+          // Now show onboarding if not complete
+          if (!isOnboardingComplete) {
+            setShowWelcomeModal(true);
+          }
+        }}
+      />
       <WelcomeModal 
-        open={showWelcomeModal} 
+        open={showWelcomeModal && !showProfileSetup} 
         onOpenChange={setShowWelcomeModal}
       />
       
