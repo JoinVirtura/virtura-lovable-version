@@ -202,20 +202,20 @@ export default function Upgrade() {
                     </div>
                     <CardTitle>{plan.name}</CardTitle>
                   </div>
-                  <CardDescription>
-                    <div className="flex items-baseline gap-2">
+                  <div className="mt-2">
+                    <span className="flex items-baseline gap-2">
                       <span className="text-4xl font-bold text-foreground">
                         ${discountedPrice.toFixed(0)}
                       </span>
                       <span className="text-muted-foreground">/month</span>
-                    </div>
+                    </span>
                     {discountCode === "TRIAL20" && (
-                      <p className="text-sm text-green-600 mt-1">
+                      <span className="text-sm text-green-600 mt-1 block">
                         <s className="text-muted-foreground">${plan.price}</s> 20%
                         off applied!
-                      </p>
+                      </span>
                     )}
-                  </CardDescription>
+                  </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <ul className="space-y-3">
