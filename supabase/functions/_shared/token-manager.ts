@@ -154,7 +154,7 @@ export async function deductTokensAndTrackCost(params: {
 export async function addTokens(
   userId: string,
   amount: number,
-  transactionType: 'purchase' | 'bonus' | 'refund' = 'purchase',
+  transactionType: 'purchase' | 'bonus' | 'refund' | 'admin_credit' = 'purchase',
   metadata?: Record<string, any>
 ): Promise<boolean> {
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
