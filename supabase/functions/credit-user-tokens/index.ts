@@ -53,13 +53,13 @@ serve(async (req) => {
       });
     }
 
-    // Credit tokens
+    // Credit tokens - use 'admin_credit' to distinguish from signup bonuses
     const success = await addTokens(
       targetUserId,
       amount,
-      'bonus',
+      'admin_credit',
       {
-        reason,
+        reason: 'admin_credit',
         note,
         admin_id: user.id,
         admin_email: user.email,

@@ -64,6 +64,23 @@ export function UserManagementTools() {
   useEffect(() => {
     fetchUsers();
     fetchStats();
+
+    // Set up realtime subscription for live updates
+    const channel = supabase
+      .channel('admin-users-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_tokens' }, () => {
+        fetchUsers();
+        fetchStats();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'token_transactions' }, () => {
+        fetchUsers();
+        fetchStats();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [currentPage, searchTerm, statusFilter, sortBy]);
 
   const fetchUsers = async () => {
@@ -189,7 +206,8 @@ export function UserManagementTools() {
           .select('display_name')
           .eq('id', topSpender.user_id)
           .single();
-        topSpenderName = profile?.display_name || 'Unknown';
+        const name = profile?.display_name;
+        topSpenderName = (name && name !== 'User') ? name : `User ${topSpender.user_id.slice(0, 8)}`;
       }
 
       // Most active
@@ -201,7 +219,8 @@ export function UserManagementTools() {
           .select('display_name')
           .eq('id', mostActive.user_id)
           .single();
-        mostActiveName = profile?.display_name || 'Unknown';
+        const name = profile?.display_name;
+        mostActiveName = (name && name !== 'User') ? name : `User ${mostActive.user_id.slice(0, 8)}`;
       }
 
       // Average balance
@@ -448,11 +467,15 @@ export function UserManagementTools() {
                       <Avatar className="h-8 w-8">
                         <AvatarImage src={user.avatar_url || undefined} />
                         <AvatarFallback>
-                          {user.display_name?.charAt(0)?.toUpperCase() || '?'}
+                          {(user.display_name && user.display_name !== 'User' ? user.display_name : user.id).charAt(0)?.toUpperCase() || '?'}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-medium">{user.display_name || 'No name'}</p>
+                        <p className="font-medium">
+                          {user.display_name && user.display_name !== 'User' 
+                            ? user.display_name 
+                            : `User ${user.id.slice(0, 8)}`}
+                        </p>
                         <p className="text-xs text-muted-foreground truncate max-w-[200px]">
                           {user.id}
                         </p>

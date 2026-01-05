@@ -59,13 +59,28 @@ export function SystemMetrics() {
   useEffect(() => {
     fetchMetrics();
 
-    if (!autoRefresh) return;
+    // Set up realtime subscription for live updates
+    const channel = supabase
+      .channel('admin-metrics-realtime')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'token_transactions' }, () => fetchMetrics())
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'jobs' }, () => fetchMetrics())
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'jobs' }, () => fetchMetrics())
+      .subscribe();
+
+    if (!autoRefresh) {
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
 
     const interval = setInterval(() => {
       fetchMetrics();
     }, refreshInterval * 1000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      supabase.removeChannel(channel);
+    };
   }, [autoRefresh, refreshInterval]);
 
   const fetchMetrics = async () => {
@@ -75,20 +90,39 @@ export function SystemMetrics() {
       // Measure DB latency with a real query
       const dbStartTime = performance.now();
       
-      // Active users (users with activity in last 5 minutes)
-      const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
-      const { data: recentActivity } = await supabase
-        .from("usage_tracking")
-        .select("user_id, profiles!inner(display_name)")
-        .gte("created_at", fiveMinutesAgo);
+      // Active users - based on real activity (token usage, jobs) in last 30 minutes
+      const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+      
+      // Get users with token transactions (usage) in last 30 minutes
+      const { data: recentTokenActivity } = await supabase
+        .from("token_transactions")
+        .select("user_id")
+        .gte("created_at", thirtyMinutesAgo);
+      
+      // Get users with active jobs in last 30 minutes
+      const { data: recentJobActivity } = await supabase
+        .from("jobs")
+        .select("user_id")
+        .gte("updated_at", thirtyMinutesAgo);
+
+      // Combine unique active users
+      const activeUserIds = new Set([
+        ...(recentTokenActivity?.map((a) => a.user_id) || []),
+        ...(recentJobActivity?.map((a) => a.user_id) || []),
+      ]);
+
+      // Get display names for active users
+      const activeUserIdArray = Array.from(activeUserIds);
+      let activeUsersList: string[] = [];
+      if (activeUserIdArray.length > 0) {
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id, display_name")
+          .in("id", activeUserIdArray.slice(0, 5));
+        activeUsersList = profiles?.map((p) => p.display_name || `User ${p.id.slice(0, 8)}`) || [];
+      }
 
       const dbLatency = Math.round(performance.now() - dbStartTime);
-
-      const uniqueActiveUsers = new Set(recentActivity?.map((a) => a.user_id));
-      const activeUsersList = recentActivity
-        ?.filter((a, i, arr) => arr.findIndex((x) => x.user_id === a.user_id) === i)
-        .map((a: any) => a.profiles?.display_name || "Unknown")
-        .slice(0, 5) || [];
 
       // Token usage
       const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
@@ -117,21 +151,31 @@ export function SystemMetrics() {
       const tokensLast24h = Math.abs(tokens24h?.reduce((sum, t) => sum + t.amount, 0) || 0);
       const tokensLast7d = Math.abs(tokens7d?.reduce((sum, t) => sum + t.amount, 0) || 0);
 
-      // Signup bonus tokens (credited at signup)
+      // Signup bonus tokens (only count actual signup bonuses, not admin credits)
       const { data: bonusTokens24h } = await supabase
         .from("token_transactions")
-        .select("amount, user_id")
+        .select("amount, user_id, resource_type, metadata")
         .eq("transaction_type", "bonus")
         .gte("created_at", oneDayAgo);
 
+      // Filter to only signup bonuses (not admin credits)
+      const signupBonuses24hFiltered = bonusTokens24h?.filter(
+        (t) => t.resource_type === "signup_bonus" || (t.metadata as any)?.reason === "signup_bonus"
+      ) || [];
+
       const { data: bonusTokensTotal } = await supabase
         .from("token_transactions")
-        .select("amount")
+        .select("amount, resource_type, metadata")
         .eq("transaction_type", "bonus");
 
-      const signupBonuses24h = bonusTokens24h?.reduce((sum, t) => sum + t.amount, 0) || 0;
-      const signupBonusesTotal = bonusTokensTotal?.reduce((sum, t) => sum + t.amount, 0) || 0;
-      const signupCount24h = new Set(bonusTokens24h?.map(t => t.user_id)).size;
+      // Filter to only signup bonuses
+      const signupBonusesTotalFiltered = bonusTokensTotal?.filter(
+        (t) => t.resource_type === "signup_bonus" || (t.metadata as any)?.reason === "signup_bonus"
+      ) || [];
+
+      const signupBonuses24h = signupBonuses24hFiltered.reduce((sum, t) => sum + t.amount, 0);
+      const signupBonusesTotal = signupBonusesTotalFiltered.reduce((sum, t) => sum + t.amount, 0);
+      const signupCount24h = new Set(signupBonuses24hFiltered.map(t => t.user_id)).size;
 
       // Revenue
       const startOfToday = new Date();
@@ -216,7 +260,7 @@ export function SystemMetrics() {
       else if (dbLatency > 200) healthScore -= 5;
 
       setMetrics({
-        activeUsers: uniqueActiveUsers.size,
+        activeUsers: activeUserIds.size,
         activeUsersList,
         avgResponseTime: avgResponseTime > 0 ? avgResponseTime : dbLatency,
         responseTimeData,
@@ -342,7 +386,7 @@ export function SystemMetrics() {
               </CardHeader>
               <CardContent className="p-0">
                 <div className="text-2xl sm:text-3xl font-bold">{metrics.activeUsers}</div>
-                <p className="text-xs text-muted-foreground">online now</p>
+                <p className="text-xs text-muted-foreground">active (last 30m)</p>
                 {metrics.activeUsersList.length > 0 && (
                   <div className="mt-2 text-xs text-muted-foreground hidden sm:block">
                     {metrics.activeUsersList.join(", ")}
