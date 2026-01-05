@@ -89,3 +89,6 @@ verify_jwt = false
 
 [functions.track-landing-analytics]
 verify_jwt = false
+
+[functions.approve-deliverable-payment]
+verify_jwt = true
