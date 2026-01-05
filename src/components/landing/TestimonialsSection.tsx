@@ -9,25 +9,46 @@ interface TestimonialsSectionProps {
 export function TestimonialsSection({ id }: TestimonialsSectionProps) {
   const testimonials = [
     {
-      content: "Virtura replaced almost all of our content shoots. We create marketing visuals 10x faster and for a fraction of the cost.",
+      content: "We didn't replace photographers entirely, but Virtura eliminated 80% of our repeat shoots. For pitch decks, ads, and social content, it's become our first stop. Clients actually think we increased our production budget — we didn't.",
       rating: 5,
       avatar: "CA",
-      name: "Creative Agency",
+      name: "Creative Agency Founder",
+      role: "New York",
+    },
+    {
+      content: "Consistency was our biggest problem. Our product photos never matched across campaigns. Virtura fixed that overnight. Same lighting, same look, same brand feel — without reshoots.",
+      rating: 5,
+      avatar: "EB",
+      name: "Ecommerce Marketing Manager",
+      role: "",
+    },
+    {
+      content: "I honestly assumed this would look 'AI-ish.' It doesn't. My audience can't tell the difference, and engagement actually went up because I'm posting more often without burning out.",
+      rating: 5,
+      avatar: "SC",
+      name: "Lifestyle Creator",
+      role: "120k+ followers",
+    },
+    {
+      content: "Before Virtura, content was a bottleneck. Now our team can spin up launch visuals in a single afternoon. For a startup, that speed is everything.",
+      rating: 5,
+      avatar: "SF",
+      name: "SaaS Founder",
       role: "USA",
     },
     {
-      content: "As a creator, this platform saved me hours every week. I never run out of content anymore.",
+      content: "I used to schedule shoots every 2–3 months. Now I generate on-brand visuals whenever I need them — listings, Instagram, press features. It's saved me time, money, and coordination headaches.",
       rating: 5,
-      avatar: "LC",
-      name: "Lifestyle Creator",
+      avatar: "RB",
+      name: "Real Estate Broker",
       role: "",
     },
     {
-      content: "Our brand now produces consistent, on-brand imagery every single day. Virtura is a game-changer.",
+      content: "Virtura didn't replace creativity — it removed friction. Our designers still direct the vision, but execution is faster and more scalable. That's the real win.",
       rating: 5,
-      avatar: "EB",
-      name: "Ecommerce Brand",
-      role: "",
+      avatar: "AC",
+      name: "Head of Content",
+      role: "Digital Agency",
     },
   ];
 
@@ -43,7 +64,7 @@ export function TestimonialsSection({ id }: TestimonialsSectionProps) {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {testimonials.map((testimonial, index) => (
             <Card key={index} className="hover:shadow-violet-glow/50 transition-all duration-300">
               <CardContent className="p-8">
