@@ -25,7 +25,8 @@ import {
 } from "lucide-react";
 import { MetricsExport } from "./MetricsExport";
 import { supabase } from "@/integrations/supabase/client";
-import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
 import { toast } from "sonner";
 
 interface SystemMetrics {
@@ -503,17 +504,20 @@ export function SystemMetrics() {
                 <CardTitle className="text-sm sm:text-base">API Response Times (24h)</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
-                <div className="h-[180px] sm:h-[200px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={metrics.responseTimeData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="time" tick={{ fontSize: 10 }} />
-                      <YAxis tick={{ fontSize: 10 }} />
-                      <Tooltip />
-                      <Line type="monotone" dataKey="ms" stroke="hsl(var(--primary))" strokeWidth={2} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
+                <ChartContainer 
+                  config={{
+                    ms: { label: "Response Time", color: "hsl(var(--primary))" }
+                  } satisfies ChartConfig}
+                  className="h-[180px] sm:h-[200px]"
+                >
+                  <LineChart data={metrics.responseTimeData}>
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                    <XAxis dataKey="time" tick={{ fontSize: 10 }} className="text-muted-foreground" />
+                    <YAxis tick={{ fontSize: 10 }} className="text-muted-foreground" />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Line type="monotone" dataKey="ms" stroke="var(--color-ms)" strokeWidth={2} dot={false} />
+                  </LineChart>
+                </ChartContainer>
               </CardContent>
             </Card>
 

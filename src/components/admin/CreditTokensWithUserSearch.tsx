@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -17,16 +17,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Search, Coins, ArrowRight, ArrowLeft, User, CheckCircle } from "lucide-react";
+import { Search, Coins, ArrowRight, ArrowLeft, User, CheckCircle, ExternalLink, Filter } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface UserResult {
   id: string;
   display_name: string | null;
   avatar_url: string | null;
+  email?: string;
   balance: number;
+  lastActive?: string;
 }
 
 interface CreditTokensWithUserSearchProps {
@@ -45,6 +48,7 @@ export function CreditTokensWithUserSearch({
   const [searchResults, setSearchResults] = useState<UserResult[]>([]);
   const [selectedUser, setSelectedUser] = useState<UserResult | null>(null);
   const [searching, setSearching] = useState(false);
+  const [balanceFilter, setBalanceFilter] = useState<string>("all");
 
   // Credit form state
   const [amount, setAmount] = useState("");
@@ -62,6 +66,7 @@ export function CreditTokensWithUserSearch({
     setReason("testing");
     setNote("");
     setShowConfirmation(false);
+    setBalanceFilter("all");
   };
 
   const handleClose = (isOpen: boolean) => {
@@ -76,11 +81,12 @@ export function CreditTokensWithUserSearch({
 
     setSearching(true);
     try {
+      // Search profiles by display_name, id, or email pattern
       const { data: profiles, error } = await supabase
         .from("profiles")
         .select("id, display_name, avatar_url")
-        .ilike("display_name", `%${searchQuery}%`)
-        .limit(10);
+        .or(`display_name.ilike.%${searchQuery}%,id.ilike.%${searchQuery}%`)
+        .limit(20);
 
       if (error) throw error;
 
@@ -91,12 +97,37 @@ export function CreditTokensWithUserSearch({
         .select("user_id, balance")
         .in("user_id", userIds);
 
-      const results: UserResult[] = (profiles || []).map((p) => ({
+      // Get last activity from token_transactions
+      const { data: lastActivity } = await supabase
+        .from("token_transactions")
+        .select("user_id, created_at")
+        .in("user_id", userIds)
+        .order("created_at", { ascending: false });
+
+      // Group last activity by user
+      const lastActiveMap: Record<string, string> = {};
+      lastActivity?.forEach((a) => {
+        if (!lastActiveMap[a.user_id]) {
+          lastActiveMap[a.user_id] = a.created_at;
+        }
+      });
+
+      let results: UserResult[] = (profiles || []).map((p) => ({
         id: p.id,
         display_name: p.display_name,
         avatar_url: p.avatar_url,
         balance: tokens?.find((t) => t.user_id === p.id)?.balance || 0,
+        lastActive: lastActiveMap[p.id],
       }));
+
+      // Apply balance filter
+      if (balanceFilter === "low") {
+        results = results.filter((u) => u.balance < 10);
+      } else if (balanceFilter === "medium") {
+        results = results.filter((u) => u.balance >= 10 && u.balance <= 50);
+      } else if (balanceFilter === "high") {
+        results = results.filter((u) => u.balance > 50);
+      }
 
       setSearchResults(results);
     } catch (error) {
@@ -106,6 +137,13 @@ export function CreditTokensWithUserSearch({
       setSearching(false);
     }
   };
+
+  // Re-search when filter changes
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      handleSearch();
+    }
+  }, [balanceFilter]);
 
   const handleSelectUser = (user: UserResult) => {
     setSelectedUser(user);
@@ -138,7 +176,7 @@ export function CreditTokensWithUserSearch({
       if (error) throw error;
 
       toast.success(
-        `Successfully credited ${amount} tokens to ${selectedUser.display_name || "user"}`
+        `Successfully credited ${amount} tokens to ${getUserDisplayName(selectedUser)}`
       );
       handleClose(false);
       onSuccess?.();
@@ -150,9 +188,33 @@ export function CreditTokensWithUserSearch({
     }
   };
 
+  const getUserDisplayName = (user: UserResult) => {
+    if (user.display_name && user.display_name !== "User") {
+      return user.display_name;
+    }
+    if (user.email) {
+      return user.email;
+    }
+    return `User ${user.id.slice(0, 8)}`;
+  };
+
+  const formatLastActive = (dateStr?: string) => {
+    if (!dateStr) return "Never";
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    return `${diffDays}d ago`;
+  };
+
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="max-w-[95vw] sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Coins className="h-5 w-5 text-primary" />
@@ -161,7 +223,7 @@ export function CreditTokensWithUserSearch({
           <DialogDescription>
             {step === "search"
               ? "Search for a user to credit tokens"
-              : `Credit tokens to ${selectedUser?.display_name || "user"}`}
+              : `Credit tokens to ${getUserDisplayName(selectedUser!)}`}
           </DialogDescription>
         </DialogHeader>
 
@@ -169,14 +231,36 @@ export function CreditTokensWithUserSearch({
           <div className="space-y-4">
             <div className="flex gap-2">
               <Input
-                placeholder="Search by display name..."
+                placeholder="Search by name, email, or ID..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                className="flex-1"
               />
-              <Button onClick={handleSearch} disabled={searching}>
+              <Button onClick={handleSearch} disabled={searching} size="icon">
                 <Search className="h-4 w-4" />
               </Button>
+            </div>
+
+            {/* Filter */}
+            <div className="flex items-center gap-2">
+              <Filter className="h-4 w-4 text-muted-foreground" />
+              <Select value={balanceFilter} onValueChange={setBalanceFilter}>
+                <SelectTrigger className="w-[140px] h-8 text-xs">
+                  <SelectValue placeholder="Balance filter" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Balances</SelectItem>
+                  <SelectItem value="low">Low (&lt;10)</SelectItem>
+                  <SelectItem value="medium">Medium (10-50)</SelectItem>
+                  <SelectItem value="high">High (&gt;50)</SelectItem>
+                </SelectContent>
+              </Select>
+              {balanceFilter !== "all" && (
+                <Badge variant="secondary" className="text-xs">
+                  {searchResults.length} results
+                </Badge>
+              )}
             </div>
 
             <ScrollArea className="h-[300px]">
@@ -193,7 +277,7 @@ export function CreditTokensWithUserSearch({
                       onClick={() => handleSelectUser(user)}
                       className="w-full flex items-center gap-3 p-3 rounded-lg border hover:bg-accent transition-colors text-left"
                     >
-                      <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                      <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center overflow-hidden flex-shrink-0">
                         {user.avatar_url ? (
                           <img
                             src={user.avatar_url}
@@ -205,14 +289,25 @@ export function CreditTokensWithUserSearch({
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium truncate">
-                          {user.display_name || "Unnamed User"}
+                        <p className="font-medium truncate text-sm">
+                          {getUserDisplayName(user)}
                         </p>
-                        <p className="text-xs text-muted-foreground">
-                          Balance: {user.balance} tokens
+                        <p className="text-xs text-muted-foreground truncate">
+                          ID: {user.id.slice(0, 8)}...
                         </p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Badge 
+                            variant={user.balance < 10 ? "destructive" : "secondary"}
+                            className="text-xs px-1.5 py-0"
+                          >
+                            {user.balance} tokens
+                          </Badge>
+                          <span className="text-xs text-muted-foreground">
+                            Active: {formatLastActive(user.lastActive)}
+                          </span>
+                        </div>
                       </div>
-                      <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                      <ArrowRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                     </button>
                   ))}
                 </div>
@@ -244,9 +339,12 @@ export function CreditTokensWithUserSearch({
                   <User className="h-5 w-5 text-muted-foreground" />
                 )}
               </div>
-              <div>
-                <p className="font-medium">
-                  {selectedUser?.display_name || "Unnamed User"}
+              <div className="flex-1 min-w-0">
+                <p className="font-medium truncate">
+                  {getUserDisplayName(selectedUser!)}
+                </p>
+                <p className="text-xs text-muted-foreground truncate">
+                  ID: {selectedUser?.id.slice(0, 16)}...
                 </p>
                 <p className="text-xs text-muted-foreground">
                   Current balance: {selectedUser?.balance} tokens
@@ -307,8 +405,14 @@ export function CreditTokensWithUserSearch({
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">User:</span>
-                  <span className="font-medium">
-                    {selectedUser?.display_name || "Unnamed User"}
+                  <span className="font-medium truncate max-w-[200px]">
+                    {getUserDisplayName(selectedUser!)}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">User ID:</span>
+                  <span className="font-mono text-xs">
+                    {selectedUser?.id.slice(0, 12)}...
                   </span>
                 </div>
                 <div className="flex justify-between">

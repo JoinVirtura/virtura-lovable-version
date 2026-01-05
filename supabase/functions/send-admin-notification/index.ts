@@ -53,7 +53,7 @@ serve(async (req) => {
     }
 
     // Parse request body
-    const { targetAudience, notificationType, subject, message } = await req.json();
+    const { targetAudience, notificationType, subject, message, targetUserId } = await req.json();
 
     if (!targetAudience || !notificationType || !subject || !message) {
       return new Response(JSON.stringify({ error: 'Missing required fields' }), {
@@ -66,6 +66,16 @@ serve(async (req) => {
     let targetUserIds: string[] = [];
     
     switch (targetAudience) {
+      case 'specific_user': {
+        if (!targetUserId) {
+          return new Response(JSON.stringify({ error: 'Target user ID required for specific_user audience' }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+        targetUserIds = [targetUserId];
+        break;
+      }
       case 'all_users': {
         const { data: profiles } = await supabase
           .from('profiles')
@@ -142,15 +152,18 @@ serve(async (req) => {
       adminId: user.id,
       adminEmail: user.email!,
       actionType: 'send_notification',
-      targetType: 'users',
-      targetId: notificationRecord?.id,
+      targetType: targetAudience === 'specific_user' ? 'user' : 'users',
+      targetId: targetAudience === 'specific_user' ? targetUserId : notificationRecord?.id,
       details: {
         target_audience: targetAudience,
         notification_type: notificationType,
         subject,
         recipient_count: targetUserIds.length,
+        target_user_id: targetAudience === 'specific_user' ? targetUserId : undefined,
       },
     });
+
+    console.log(`[send-admin-notification] Sent notification to ${targetUserIds.length} users. Audience: ${targetAudience}`);
 
     return new Response(
       JSON.stringify({
