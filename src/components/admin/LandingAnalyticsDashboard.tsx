@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, LineChart, Line } from "recharts";
 import { TrendingUp, Users, Sparkles, MousePointer } from "lucide-react";
 
 // Type for landing analytics records
@@ -116,96 +117,105 @@ export function LandingAnalyticsDashboard() {
     );
   }
 
+  const trendChartConfig = {
+    generations: { label: "Generations", color: "hsl(var(--primary))" },
+    signups: { label: "Signups", color: "hsl(var(--chart-2))" },
+  } satisfies ChartConfig;
+
+  const promptChartConfig = {
+    count: { label: "Count", color: "hsl(var(--primary))" },
+  } satisfies ChartConfig;
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
-        <h2 className="text-2xl font-bold">Landing Page Analytics</h2>
-        <p className="text-muted-foreground">Track conversion rates and user engagement</p>
+        <h2 className="text-xl sm:text-2xl font-bold">Landing Page Analytics</h2>
+        <p className="text-sm text-muted-foreground">Track conversion rates and user engagement</p>
       </div>
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Generations</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6 sm:pb-2">
+            <CardTitle className="text-xs sm:text-sm font-medium">Total Generations</CardTitle>
             <Sparkles className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{data.totalGenerations}</div>
-            <p className="text-xs text-muted-foreground">Images generated on landing page</p>
+          <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+            <div className="text-xl sm:text-2xl font-bold">{data.totalGenerations}</div>
+            <p className="text-xs text-muted-foreground hidden sm:block">Images generated on landing page</p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">CTA Clicks</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6 sm:pb-2">
+            <CardTitle className="text-xs sm:text-sm font-medium">CTA Clicks</CardTitle>
             <MousePointer className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{data.totalSignupClicks}</div>
-            <p className="text-xs text-muted-foreground">Sign up button clicks</p>
+          <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+            <div className="text-xl sm:text-2xl font-bold">{data.totalSignupClicks}</div>
+            <p className="text-xs text-muted-foreground hidden sm:block">Sign up button clicks</p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Signups</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6 sm:pb-2">
+            <CardTitle className="text-xs sm:text-sm font-medium">Signups</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{data.totalSignups}</div>
-            <p className="text-xs text-muted-foreground">Completed signups from landing</p>
+          <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+            <div className="text-xl sm:text-2xl font-bold">{data.totalSignups}</div>
+            <p className="text-xs text-muted-foreground hidden sm:block">Completed signups from landing</p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Conversion Rate</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6 sm:pb-2">
+            <CardTitle className="text-xs sm:text-sm font-medium">Conversion Rate</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{data.conversionRate}%</div>
-            <p className="text-xs text-muted-foreground">Generation to signup rate</p>
+          <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+            <div className="text-xl sm:text-2xl font-bold">{data.conversionRate}%</div>
+            <p className="text-xs text-muted-foreground hidden sm:block">Generation to signup rate</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Daily Trend Chart */}
       <Card>
-        <CardHeader>
-          <CardTitle>7-Day Trend</CardTitle>
-          <CardDescription>Generations and signups over the last 7 days</CardDescription>
+        <CardHeader className="p-3 sm:p-6">
+          <CardTitle className="text-sm sm:text-base">7-Day Trend</CardTitle>
+          <CardDescription className="text-xs sm:text-sm">Generations and signups over the last 7 days</CardDescription>
         </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
+        <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+          <ChartContainer config={trendChartConfig} className="h-[200px] sm:h-[300px]">
             <LineChart data={data.dailyTrend}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
-              <Line type="monotone" dataKey="generations" stroke="hsl(var(--primary))" name="Generations" />
-              <Line type="monotone" dataKey="signups" stroke="hsl(var(--primary-blue))" name="Signups" />
+              <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+              <XAxis dataKey="date" tick={{ fontSize: 10 }} className="text-muted-foreground" />
+              <YAxis tick={{ fontSize: 10 }} className="text-muted-foreground" />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <Line type="monotone" dataKey="generations" stroke="var(--color-generations)" name="Generations" strokeWidth={2} />
+              <Line type="monotone" dataKey="signups" stroke="var(--color-signups)" name="Signups" strokeWidth={2} />
             </LineChart>
-          </ResponsiveContainer>
+          </ChartContainer>
         </CardContent>
       </Card>
 
       {/* Top Performing Prompts */}
       <Card>
-        <CardHeader>
-          <CardTitle>Top Performing Prompts</CardTitle>
-          <CardDescription>Most frequently used generation prompts</CardDescription>
+        <CardHeader className="p-3 sm:p-6">
+          <CardTitle className="text-sm sm:text-base">Top Performing Prompts</CardTitle>
+          <CardDescription className="text-xs sm:text-sm">Most frequently used generation prompts</CardDescription>
         </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={400}>
+        <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+          <ChartContainer config={promptChartConfig} className="h-[300px] sm:h-[400px]">
             <BarChart data={data.topPrompts} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis type="number" />
-              <YAxis type="category" dataKey="prompt" width={200} />
-              <Tooltip />
-              <Bar dataKey="count" fill="hsl(var(--primary))" />
+              <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+              <XAxis type="number" tick={{ fontSize: 10 }} className="text-muted-foreground" />
+              <YAxis type="category" dataKey="prompt" width={150} tick={{ fontSize: 10 }} className="text-muted-foreground" />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <Bar dataKey="count" fill="var(--color-count)" radius={4} />
             </BarChart>
-          </ResponsiveContainer>
+          </ChartContainer>
         </CardContent>
       </Card>
     </div>

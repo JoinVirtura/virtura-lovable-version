@@ -20,12 +20,23 @@ import {
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Bell, Send } from "lucide-react";
+import { Bell, Send, User, X } from "lucide-react";
+import { UserSearchAutocomplete } from "./UserSearchAutocomplete";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 
 interface NotificationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
+}
+
+interface SelectedUser {
+  id: string;
+  display_name: string | null;
+  avatar_url: string | null;
+  email?: string;
+  balance?: number;
 }
 
 export function NotificationDialog({ open, onOpenChange, onSuccess }: NotificationDialogProps) {
@@ -35,12 +46,22 @@ export function NotificationDialog({ open, onOpenChange, onSuccess }: Notificati
   const [notificationType, setNotificationType] = useState("in_app");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
+  const [selectedUser, setSelectedUser] = useState<SelectedUser | null>(null);
 
   const handleSend = async () => {
     if (!subject.trim() || !message.trim()) {
       toast({
         title: "Validation Error",
         description: "Subject and message are required",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (targetAudience === "specific_user" && !selectedUser) {
+      toast({
+        title: "Validation Error",
+        description: "Please select a user to notify",
         variant: "destructive",
       });
       return;
@@ -55,6 +76,7 @@ export function NotificationDialog({ open, onOpenChange, onSuccess }: Notificati
           notificationType,
           subject,
           message,
+          targetUserId: targetAudience === "specific_user" ? selectedUser?.id : undefined,
         },
       });
 
@@ -62,11 +84,16 @@ export function NotificationDialog({ open, onOpenChange, onSuccess }: Notificati
 
       toast({
         title: "Notification Sent",
-        description: `Successfully sent to ${data.recipientCount} users`,
+        description: targetAudience === "specific_user" 
+          ? `Successfully sent to ${selectedUser?.display_name || selectedUser?.email || 'user'}`
+          : `Successfully sent to ${data.recipientCount} users`,
       });
 
+      // Reset form
       setSubject("");
       setMessage("");
+      setSelectedUser(null);
+      setTargetAudience("all_users");
       onOpenChange(false);
       onSuccess?.();
     } catch (error: any) {
@@ -81,9 +108,26 @@ export function NotificationDialog({ open, onOpenChange, onSuccess }: Notificati
     }
   };
 
+  const handleAudienceChange = (value: string) => {
+    setTargetAudience(value);
+    if (value !== "specific_user") {
+      setSelectedUser(null);
+    }
+  };
+
+  const getUserDisplayName = (user: SelectedUser) => {
+    if (user.display_name && user.display_name !== "User") {
+      return user.display_name;
+    }
+    if (user.email) {
+      return user.email;
+    }
+    return `User ${user.id.slice(0, 8)}`;
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="max-w-[95vw] sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Bell className="h-5 w-5" />
@@ -97,7 +141,7 @@ export function NotificationDialog({ open, onOpenChange, onSuccess }: Notificati
         <div className="space-y-4 py-4">
           <div className="space-y-2">
             <Label htmlFor="target-audience">Target Audience</Label>
-            <Select value={targetAudience} onValueChange={setTargetAudience}>
+            <Select value={targetAudience} onValueChange={handleAudienceChange}>
               <SelectTrigger id="target-audience">
                 <SelectValue />
               </SelectTrigger>
@@ -106,9 +150,54 @@ export function NotificationDialog({ open, onOpenChange, onSuccess }: Notificati
                 <SelectItem value="active_users">Active Users (Last 30 Days)</SelectItem>
                 <SelectItem value="low_balance_users">Low Balance Users (&lt;10 Tokens)</SelectItem>
                 <SelectItem value="premium_subscribers">Premium Subscribers</SelectItem>
+                <SelectItem value="specific_user">Specific User</SelectItem>
               </SelectContent>
             </Select>
           </div>
+
+          {/* User Search - shown when specific_user is selected */}
+          {targetAudience === "specific_user" && (
+            <div className="space-y-2">
+              <Label>Select User</Label>
+              {selectedUser ? (
+                <div className="flex items-center gap-3 p-3 rounded-lg border bg-muted/50">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={selectedUser.avatar_url || ""} />
+                    <AvatarFallback>
+                      <User className="h-5 w-5" />
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate text-sm">
+                      {getUserDisplayName(selectedUser)}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      ID: {selectedUser.id.slice(0, 12)}...
+                    </p>
+                  </div>
+                  {selectedUser.balance !== undefined && (
+                    <Badge variant="secondary" className="text-xs">
+                      {selectedUser.balance} tokens
+                    </Badge>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => setSelectedUser(null)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : (
+                <UserSearchAutocomplete
+                  onUserSelect={setSelectedUser}
+                  selectedUser={selectedUser}
+                  onClear={() => setSelectedUser(null)}
+                />
+              )}
+            </div>
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="notification-type">Notification Type</Label>
@@ -151,11 +240,11 @@ export function NotificationDialog({ open, onOpenChange, onSuccess }: Notificati
           </div>
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+        <DialogFooter className="flex-col sm:flex-row gap-2">
+          <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full sm:w-auto">
             Cancel
           </Button>
-          <Button onClick={handleSend} disabled={loading}>
+          <Button onClick={handleSend} disabled={loading} className="w-full sm:w-auto">
             <Send className="h-4 w-4 mr-2" />
             {loading ? "Sending..." : "Send Notification"}
           </Button>

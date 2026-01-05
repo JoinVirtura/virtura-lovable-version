@@ -3,7 +3,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
-import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
+import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Legend } from "recharts";
 import { DollarSign, TrendingUp, TrendingDown, Percent, Download, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { format, subDays, startOfMonth, endOfMonth, subMonths } from "date-fns";
@@ -382,48 +383,62 @@ export function FinancialReporting() {
         {/* Revenue Trends Chart */}
         <Card className="p-3 sm:p-4">
           <h3 className="text-xs sm:text-sm font-semibold mb-3 sm:mb-4">Revenue Trends</h3>
-          <div id="revenue-trends-chart" className="h-[200px] sm:h-[250px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={revenueTrends}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" tick={{ fontSize: 10 }} />
-              <YAxis tick={{ fontSize: 10 }} />
-              <Tooltip />
+          <ChartContainer 
+            config={{
+              revenue: { label: "Revenue", color: "hsl(142 76% 36%)" },
+              costs: { label: "Costs", color: "hsl(0 84% 60%)" },
+              profit: { label: "Profit", color: "hsl(221 83% 53%)" },
+            } satisfies ChartConfig}
+            id="revenue-trends-chart" 
+            className="h-[200px] sm:h-[250px]"
+          >
+            <LineChart data={revenueTrends}>
+              <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+              <XAxis dataKey="date" tick={{ fontSize: 10 }} className="text-muted-foreground" />
+              <YAxis tick={{ fontSize: 10 }} className="text-muted-foreground" />
+              <ChartTooltip content={<ChartTooltipContent />} />
               <Legend wrapperStyle={{ fontSize: '10px' }} />
-              <Line type="monotone" dataKey="revenue" stroke="#10b981" name="Revenue" />
-              <Line type="monotone" dataKey="costs" stroke="#ef4444" name="Costs" />
-              <Line type="monotone" dataKey="profit" stroke="#3b82f6" name="Profit" />
+              <Line type="monotone" dataKey="revenue" stroke="var(--color-revenue)" name="Revenue" strokeWidth={2} />
+              <Line type="monotone" dataKey="costs" stroke="var(--color-costs)" name="Costs" strokeWidth={2} />
+              <Line type="monotone" dataKey="profit" stroke="var(--color-profit)" name="Profit" strokeWidth={2} />
             </LineChart>
-          </ResponsiveContainer>
-          </div>
+          </ChartContainer>
         </Card>
 
         {/* Token Economy Chart */}
         <Card className="p-3 sm:p-4">
           <h3 className="text-xs sm:text-sm font-semibold mb-3 sm:mb-4">Token Economy</h3>
-          <div id="token-economy-chart" className="h-[200px] sm:h-[250px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={tokenEconomy}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" tick={{ fontSize: 10 }} />
-              <YAxis yAxisId="left" tick={{ fontSize: 10 }} />
-              <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10 }} />
-              <Tooltip />
+          <ChartContainer 
+            config={{
+              purchased: { label: "Purchased", color: "hsl(142 76% 36%)" },
+              used: { label: "Used", color: "hsl(0 84% 60%)" },
+            } satisfies ChartConfig}
+            id="token-economy-chart" 
+            className="h-[200px] sm:h-[250px]"
+          >
+            <BarChart data={tokenEconomy}>
+              <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+              <XAxis dataKey="date" tick={{ fontSize: 10 }} className="text-muted-foreground" />
+              <YAxis tick={{ fontSize: 10 }} className="text-muted-foreground" />
+              <ChartTooltip content={<ChartTooltipContent />} />
               <Legend wrapperStyle={{ fontSize: '10px' }} />
-              <Bar yAxisId="left" dataKey="purchased" fill="#10b981" name="Purchased" />
-              <Bar yAxisId="left" dataKey="used" fill="#ef4444" name="Used" />
-              <Line yAxisId="right" type="monotone" dataKey="profitMargin" stroke="#8b5cf6" name="Profit %" />
+              <Bar dataKey="purchased" fill="var(--color-purchased)" name="Purchased" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="used" fill="var(--color-used)" name="Used" radius={[4, 4, 0, 0]} />
             </BarChart>
-          </ResponsiveContainer>
-          </div>
+          </ChartContainer>
         </Card>
 
         {/* Revenue by Pack Size */}
         <Card className="p-3 sm:p-4">
           <h3 className="text-xs sm:text-sm font-semibold mb-3 sm:mb-4">Revenue by Token Pack</h3>
-          <div id="revenue-pack-chart" className="h-[200px] sm:h-[250px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
+          <ChartContainer 
+            config={{
+              value: { label: "Revenue", color: "hsl(var(--primary))" },
+            } satisfies ChartConfig}
+            id="revenue-pack-chart" 
+            className="h-[200px] sm:h-[250px]"
+          >
+            <PieChart>
               <Pie
                 data={revenueByPack}
                 cx="50%"
@@ -438,10 +453,9 @@ export function FinancialReporting() {
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip />
+              <ChartTooltip content={<ChartTooltipContent />} />
             </PieChart>
-          </ResponsiveContainer>
-          </div>
+          </ChartContainer>
         </Card>
 
       </div>

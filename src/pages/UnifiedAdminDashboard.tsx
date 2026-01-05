@@ -63,10 +63,11 @@ export default function UnifiedAdminDashboard() {
         .select('*', { count: 'exact', head: true })
         .eq('status', 'failed');
 
+      // Low balance threshold: users with < 5 tokens (more meaningful threshold)
       const { count: lowBalanceCount } = await supabase
         .from('user_tokens')
         .select('*', { count: 'exact', head: true })
-        .lt('balance', 10);
+        .lt('balance', 5);
 
       const failedJobs = failedJobsCount || 0;
       const lowBalance = lowBalanceCount || 0;
@@ -123,6 +124,13 @@ export default function UnifiedAdminDashboard() {
 
     checkAdmin();
     
+    // Set up realtime subscription for low balance badge
+    const channel = supabase
+      .channel('admin-quick-stats')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_tokens' }, () => fetchQuickStats())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'jobs' }, () => fetchQuickStats())
+      .subscribe();
+    
     // Fallback timeout: if check doesn't complete in 5 seconds, force to false
     const timeout = setTimeout(() => {
       if (!adminCheckCompleted.current) {
@@ -131,7 +139,10 @@ export default function UnifiedAdminDashboard() {
       }
     }, 5000);
     
-    return () => clearTimeout(timeout);
+    return () => {
+      clearTimeout(timeout);
+      supabase.removeChannel(channel);
+    };
   }, [user]);
 
   const fetchOverviewStats = async () => {
@@ -244,9 +255,12 @@ export default function UnifiedAdminDashboard() {
               <RefreshCw className="w-3 h-3 mr-1.5" />
               Failed: {quickStats.failedJobs}
             </Badge>
-            <Badge className="px-3 py-1.5 bg-amber-500/20 text-amber-300 border border-amber-500/30">
+            <Badge 
+              className="px-3 py-1.5 bg-amber-500/20 text-amber-300 border border-amber-500/30"
+              title="Users with less than 5 tokens"
+            >
               <Coins className="w-3 h-3 mr-1.5" />
-              Low Balance: {quickStats.lowBalanceUsers}
+              Low Balance (&lt;5): {quickStats.lowBalanceUsers}
             </Badge>
             <Badge 
               className={`px-3 py-1.5 border flex items-center gap-1.5 ${
