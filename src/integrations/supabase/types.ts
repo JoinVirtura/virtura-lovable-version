@@ -4062,6 +4062,19 @@ export type Database = {
         Returns: boolean
       }
       get_active_trial_experiment: { Args: never; Returns: Json }
+      get_notification_ctr_metrics: {
+        Args: never
+        Returns: {
+          category: Database["public"]["Enums"]["notification_category"]
+          ctr: number
+          date: string
+          open_rate: number
+          priority: string
+          total_clicked: number
+          total_read: number
+          total_sent: number
+        }[]
+      }
       get_user_role: {
         Args: { user_uuid: string }
         Returns: Database["public"]["Enums"]["user_role"]
