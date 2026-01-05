@@ -86,3 +86,6 @@ verify_jwt = true
 
 [functions.test-api-integrations]
 verify_jwt = false
+
+[functions.track-landing-analytics]
+verify_jwt = false
