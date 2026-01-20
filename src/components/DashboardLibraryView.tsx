@@ -424,7 +424,7 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                       }`}
                       onClick={() => handleAvatarSelect(asset)}
                     >
-                      <div className="aspect-square bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 relative overflow-hidden">
+                      <div className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10">
                         {/* Show video when clicked for video assets */}
                         {asset.is_video && asset.video_url && playingVideoId === asset.id ? (
                           <div className="relative w-full h-full">
@@ -454,7 +454,7 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                             <img 
                               src={asset.thumbnail} 
                               alt={asset.title}
-                              className="w-full h-full object-cover transition-all duration-700 hover:scale-110 hover:brightness-125 hover:rotate-1"
+                              className="w-full h-auto object-contain transition-all duration-700 hover:scale-110 hover:brightness-125"
                               onError={(e) => {
                                 e.currentTarget.src = "/api/placeholder/300/300";
                               }}
