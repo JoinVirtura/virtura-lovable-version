@@ -460,10 +460,10 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                               }}
                             />
                             
-                            {/* Play icon overlay - clickable for videos */}
-                            {asset.is_video && (
-                              <div 
-                                className="absolute inset-0 flex items-center justify-center cursor-pointer"
+                      {/* Play icon overlay - clickable for videos */}
+                      {asset.is_video && (
+                        <div 
+                          className="absolute inset-0 flex items-center justify-center cursor-pointer z-20"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   if (asset.video_url) {
@@ -486,9 +486,9 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                           </>
                         )}
                         
-                        {/* Action buttons overlay - only show when video NOT playing */}
-                        {playingVideoId !== asset.id && (
-                          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-2">
+                    {/* Action buttons overlay - only show when video NOT playing */}
+                    {playingVideoId !== asset.id && (
+                      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-2 z-10">
                             <Button 
                               size="sm" 
                               variant="outline"
