@@ -3,6 +3,10 @@ import Replicate from "https://esm.sh/replicate@0.25.2";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { deductTokensAndTrackCost } from '../_shared/token-manager.ts';
 import { calculateTokenCost } from '../_shared/token-costs.ts';
+import { 
+  buildIdentityPreservingStylePrompt,
+  getIdentityPreservationParams 
+} from '../_shared/identity-preservation.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -134,7 +138,7 @@ serve(async (req) => {
 
     console.log('✅ User authenticated:', user.id);
 
-    const { sourceImage, stylePreset, strength = 0.75, quality = 'HD' } = await req.json();
+    const { sourceImage, stylePreset, strength = 0.75, quality = 'HD', preserveIdentity = false } = await req.json();
 
     // Input validation
     if (!sourceImage || typeof sourceImage !== 'string') {
@@ -158,6 +162,7 @@ serve(async (req) => {
       stylePreset, 
       strength, 
       quality,
+      preserveIdentity,
       sourceImageLength: sourceImage.length 
     });
     console.log('🖼️ Source image:', sourceImage.substring(0, 100) + '...');
@@ -196,13 +201,27 @@ serve(async (req) => {
     const replicate = new Replicate({ auth: REPLICATE_API_KEY });
 
     // Get style prompt enhancement
-    const stylePrompt = stylePromptMap[stylePreset] || `${stylePreset} style, artistic transformation`;
+    let stylePrompt = stylePromptMap[stylePreset] || `${stylePreset} style, artistic transformation`;
+    
+    // Apply identity preservation if requested
+    if (preserveIdentity) {
+      console.log('🔒 Identity preservation enabled for style transfer');
+      stylePrompt = buildIdentityPreservingStylePrompt(stylePrompt);
+    }
     
     const startTime = Date.now();
+    
+    // Get identity-aware parameters
+    const identityParams = preserveIdentity 
+      ? getIdentityPreservationParams('flux-redux-schnell')
+      : { guidance_scale: Math.max(1, Math.min(4, strength * 4)) };
     
     // Use FLUX Redux for style transfer - best quality and speed
     console.log('🚀 Using FLUX Redux Schnell for style transfer');
     console.log('📝 Style prompt:', stylePrompt);
+    if (preserveIdentity) {
+      console.log('🎯 Using identity preservation parameters:', identityParams);
+    }
     
     const output = await replicate.run(
       "black-forest-labs/flux-redux-schnell",
@@ -214,8 +233,8 @@ serve(async (req) => {
           output_format: "png",
           output_quality: quality === '4K' ? 95 : quality === '8K' ? 100 : 90,
           aspect_ratio: "1:1",
-          num_inference_steps: 4,
-          guidance_scale: Math.max(1, Math.min(4, strength * 4)), // Scale 0-1 to 1-4 for better control
+          num_inference_steps: identityParams.num_inference_steps || 4,
+          guidance_scale: identityParams.guidance_scale,
         }
       }
     );

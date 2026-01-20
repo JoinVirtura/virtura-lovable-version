@@ -4,6 +4,12 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
 import { HfInference } from 'https://esm.sh/@huggingface/inference@2.3.2';
 import { deductTokensAndTrackCost } from '../_shared/token-manager.ts';
 import { calculateTokenCost } from '../_shared/token-costs.ts';
+import { 
+  detectModificationIntent, 
+  buildIdentityPreservingPrompt,
+  shouldPreserveIdentity,
+  getIdentityPreservationParams 
+} from '../_shared/identity-preservation.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -59,7 +65,8 @@ serve(async (req) => {
       referenceImage,
       contentType,
       width,
-      height
+      height,
+      preserveIdentity
     } = await req.json();
     
     // Input validation
@@ -147,7 +154,18 @@ serve(async (req) => {
       ? `${focusedPrompt}, ${contentEnhancement}, ${selectedStyleEnhancement}, ${qualityBoost}`
       : focusedPrompt;
     
-    // Remove undefined references and clean up prompt enhancement
+    // Check for identity preservation when using reference images
+    const hasReferenceImage = !!referenceImage;
+    const needsIdentityPreservation = shouldPreserveIdentity(
+      hasReferenceImage, 
+      prompt, 
+      preserveIdentity
+    );
+    
+    if (needsIdentityPreservation) {
+      console.log('🔒 Identity preservation enabled for HuggingFace FLUX generation');
+      enhancedPrompt = buildIdentityPreservingPrompt(enhancedPrompt);
+    }
     
     // Add ultra-enhancement specifications
     if (enhance) {
@@ -159,6 +177,9 @@ serve(async (req) => {
     }
 
     console.log('Enhanced prompt:', enhancedPrompt);
+    if (needsIdentityPreservation) {
+      console.log('🎯 Identity-preserving prompt applied');
+    }
 
     // OPTIMIZED quality parameters for single-subject focus
     const qualityMap: Record<string, { steps: number, guidance: number }> = {

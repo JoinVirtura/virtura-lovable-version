@@ -14,6 +14,7 @@ export interface ImageGenerationParams {
   referenceImage?: string;
   variantType?: 'composition' | 'style' | 'lighting' | 'mood';
   provider?: 'huggingface' | 'replicate';
+  preserveIdentity?: boolean; // Explicit identity preservation flag
 }
 
 export interface GeneratedImage {
@@ -144,6 +145,9 @@ export class ImageGenerationService {
           first50Chars: params.referenceImage?.substring(0, 50) || 'EMPTY'
         });
         
+        // Auto-enable identity preservation when editing reference images
+        const shouldPreserveIdentity = params.preserveIdentity ?? (!!params.referenceImage);
+        
         const replicateResp = await supabase.functions.invoke('generate-image-replicate', {
           body: {
             prompt: params.prompt,
@@ -151,7 +155,8 @@ export class ImageGenerationService {
             quality: replicateQuality,
             aspectRatio: params.aspectRatio || '1:1',
             style: params.style || 'photorealistic',
-            referenceImage: params.referenceImage
+            referenceImage: params.referenceImage,
+            preserveIdentity: shouldPreserveIdentity
           }
         });
 
@@ -190,6 +195,9 @@ export class ImageGenerationService {
       const resolution = params.resolution || '1024x1024';
       const dimensions = resolutionMap[resolution as keyof typeof resolutionMap];
 
+      // Auto-enable identity preservation when editing reference images
+      const shouldPreserveIdentity = params.preserveIdentity ?? (!!params.referenceImage);
+
       // HuggingFace FLUX generation
       const realResp = await supabase.functions.invoke('generate-avatar-real', {
         body: {
@@ -206,7 +214,8 @@ export class ImageGenerationService {
           enhance: params.enhance !== false,
           referenceImage: params.referenceImage,
           photoMode: true,
-          selectedPreset: params.style || 'photorealistic'
+          selectedPreset: params.style || 'photorealistic',
+          preserveIdentity: shouldPreserveIdentity
         },
       });
 
