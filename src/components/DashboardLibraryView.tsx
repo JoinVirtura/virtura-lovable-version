@@ -45,12 +45,20 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
   const [editTitleDialog, setEditTitleDialog] = useState<{ open: boolean; asset: any } | null>(null);
   const [deletingAssetId, setDeletingAssetId] = useState<string | null>(null);
   const [selectedAvatarIds, setSelectedAvatarIds] = useState<Set<number>>(new Set());
+  const [hoveredVideoId, setHoveredVideoId] = useState<string | null>(null);
   
   // Folder state
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
   const [createFolderOpen, setCreateFolderOpen] = useState(false);
   const [moveToFolderDialog, setMoveToFolderDialog] = useState<{ open: boolean; asset: any } | null>(null);
   const { folders, createFolder, moveToFolder } = useLibraryFolders();
+
+  // Helper to format video duration
+  const formatDuration = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const fetchSavedAvatars = async () => {
     try {
@@ -235,15 +243,22 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
 
   const handleDownload = async (asset: any) => {
     try {
-      const response = await fetch(asset.imageUrl);
-      if (!response.ok) throw new Error('Failed to fetch image');
+      // Use video_url for videos, imageUrl for images
+      const downloadUrl = asset.is_video && asset.video_url 
+        ? asset.video_url 
+        : asset.imageUrl;
+      
+      const fileExtension = asset.is_video ? 'mp4' : 'png';
+      
+      const response = await fetch(downloadUrl);
+      if (!response.ok) throw new Error('Failed to fetch file');
       
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       
       const link = document.createElement('a');
       link.href = url;
-      link.download = `${asset.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png`;
+      link.download = `${asset.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.${fileExtension}`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -251,13 +266,13 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
       
       toast({
         title: "Download Started",
-        description: `Downloading "${asset.title}"`
+        description: `Downloading "${asset.title}" (${asset.is_video ? 'video' : 'image'})`
       });
     } catch (error) {
       console.error('Download error:', error);
       toast({
         title: "Download Failed",
-        description: "Unable to download the image. Please try again.",
+        description: `Unable to download the ${asset.is_video ? 'video' : 'image'}. Please try again.`,
         variant: "destructive"
       });
     }
@@ -408,21 +423,45 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                       }`}
                       onClick={() => handleAvatarSelect(asset)}
                     >
-                      <div className="aspect-square bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 relative overflow-hidden">
-                        <img 
-                          src={asset.thumbnail} 
-                          alt={asset.title}
-                          className="w-full h-full object-cover transition-all duration-700 hover:scale-110 hover:brightness-125 hover:rotate-1"
-                          onError={(e) => {
-                            e.currentTarget.src = "/api/placeholder/300/300";
-                          }}
-                        />
+                      <div 
+                        className="aspect-square bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 relative overflow-hidden"
+                        onMouseEnter={() => asset.is_video && asset.video_url && setHoveredVideoId(asset.id)}
+                        onMouseLeave={() => setHoveredVideoId(null)}
+                      >
+                        {/* Show video on hover for video assets */}
+                        {asset.is_video && asset.video_url && hoveredVideoId === asset.id ? (
+                          <video
+                            src={asset.video_url}
+                            className="w-full h-full object-cover"
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                          />
+                        ) : (
+                          <img 
+                            src={asset.thumbnail} 
+                            alt={asset.title}
+                            className="w-full h-full object-cover transition-all duration-700 hover:scale-110 hover:brightness-125 hover:rotate-1"
+                            onError={(e) => {
+                              e.currentTarget.src = "/api/placeholder/300/300";
+                            }}
+                          />
+                        )}
                        
-                        {asset.type === "video" && (
-                          <div className="absolute inset-0 flex items-center justify-center">
+                        {/* Play icon overlay - only show when NOT hovering (video not playing) */}
+                        {asset.is_video && hoveredVideoId !== asset.id && (
+                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                             <div className="w-16 h-16 bg-black/30 rounded-full flex items-center justify-center backdrop-blur-sm">
                               <Play className="w-8 h-8 text-white ml-1" />
                             </div>
+                          </div>
+                        )}
+
+                        {/* Video duration badge */}
+                        {asset.is_video && asset.duration && hoveredVideoId !== asset.id && (
+                          <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-0.5 rounded">
+                            {formatDuration(asset.duration)}
                           </div>
                         )}
                           
@@ -517,10 +556,10 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                               e.stopPropagation();
                               handleDownload(asset);
                             }}
-                            title="Download"
+                            title={`Download ${asset.is_video ? 'Video' : 'Image'}`}
                           >
                             <Download className="w-3 h-3 mr-1 2xl:w-4 2xl:h-4 2xl:mr-0" />
-                            <span className="2xl:hidden">Download</span>
+                            <span className="2xl:hidden">{asset.is_video ? 'Video' : 'Download'}</span>
                           </Button>
                         </div>
                       </div>
