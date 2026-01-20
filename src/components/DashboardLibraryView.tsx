@@ -488,7 +488,7 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                         
                     {/* Action buttons overlay - only show when video NOT playing */}
                     {playingVideoId !== asset.id && (
-                      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-2 z-10">
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-2 py-4 z-10">
                             <Button 
                               size="sm" 
                               variant="outline"
