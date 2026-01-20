@@ -24,7 +24,8 @@ import {
   Edit,
   Play,
   Loader2,
-  FolderInput
+  FolderInput,
+  X
 } from "lucide-react";
 
 interface DashboardLibraryViewProps {
@@ -45,7 +46,7 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
   const [editTitleDialog, setEditTitleDialog] = useState<{ open: boolean; asset: any } | null>(null);
   const [deletingAssetId, setDeletingAssetId] = useState<string | null>(null);
   const [selectedAvatarIds, setSelectedAvatarIds] = useState<Set<number>>(new Set());
-  const [hoveredVideoId, setHoveredVideoId] = useState<string | null>(null);
+  const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
   
   // Folder state
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
@@ -423,91 +424,114 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                       }`}
                       onClick={() => handleAvatarSelect(asset)}
                     >
-                      <div 
-                        className="aspect-square bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 relative overflow-hidden"
-                        onMouseEnter={() => asset.is_video && asset.video_url && setHoveredVideoId(asset.id)}
-                        onMouseLeave={() => setHoveredVideoId(null)}
-                      >
-                        {/* Show video on hover for video assets */}
-                        {asset.is_video && asset.video_url && hoveredVideoId === asset.id ? (
-                          <video
-                            src={asset.video_url}
-                            className="w-full h-full object-cover"
-                            autoPlay
-                            muted
-                            loop
-                            playsInline
-                          />
+                      <div className="aspect-square bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 relative overflow-hidden">
+                        {/* Show video when clicked for video assets */}
+                        {asset.is_video && asset.video_url && playingVideoId === asset.id ? (
+                          <div className="relative w-full h-full">
+                            <video
+                              src={asset.video_url}
+                              className="w-full h-full object-cover"
+                              autoPlay
+                              controls
+                              loop
+                              playsInline
+                            />
+                            {/* X button to close video */}
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="absolute top-2 right-2 h-8 w-8 p-0 bg-black/60 hover:bg-black/80 text-white rounded-full z-10"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setPlayingVideoId(null);
+                              }}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
                         ) : (
-                          <img 
-                            src={asset.thumbnail} 
-                            alt={asset.title}
-                            className="w-full h-full object-cover transition-all duration-700 hover:scale-110 hover:brightness-125 hover:rotate-1"
-                            onError={(e) => {
-                              e.currentTarget.src = "/api/placeholder/300/300";
-                            }}
-                          />
-                        )}
-                       
-                        {/* Play icon overlay - only show when NOT hovering (video not playing) */}
-                        {asset.is_video && hoveredVideoId !== asset.id && (
-                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                            <div className="w-16 h-16 bg-black/30 rounded-full flex items-center justify-center backdrop-blur-sm">
-                              <Play className="w-8 h-8 text-white ml-1" />
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Video duration badge */}
-                        {asset.is_video && asset.duration && hoveredVideoId !== asset.id && (
-                          <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-0.5 rounded">
-                            {formatDuration(asset.duration)}
-                          </div>
-                        )}
-                          
-                        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-2">
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            className={`h-9 w-9 p-0 bg-black/40 backdrop-blur-md hover:bg-violet-500/10 hover:border-violet-500/50 transition-all ${asset.isFavorite ? 'text-violet-500 border-violet-500/50' : 'border-white/20'}`}
-                            onClick={(e) => { 
-                              e.stopPropagation(); 
-                              handleFavorite(asset); 
-                            }}
-                            title={asset.isFavorite ? "Remove from favorites" : "Add to favorites"}
-                          >
-                            <Star className={`w-4 h-4 ${asset.isFavorite ? 'fill-current' : ''}`} />
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            className="h-9 w-9 p-0 bg-black/40 backdrop-blur-md hover:bg-blue-500/10 hover:border-blue-500/50 transition-all border-white/20"
-                            onClick={(e) => { 
-                              e.stopPropagation(); 
-                              setMoveToFolderDialog({ open: true, asset });
-                            }}
-                            title="Move to folder"
-                          >
-                            <FolderInput className="w-4 h-4" />
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            className="h-9 w-9 p-0 bg-black/40 backdrop-blur-md hover:bg-red-500/30 hover:border-red-500 transition-all border-red-500/50 text-red-400 hover:text-red-300"
-                            onClick={(e) => { 
-                              e.stopPropagation(); 
-                              handleDelete(asset); 
-                            }}
-                            disabled={deletingAssetId === asset.dbId}
-                            title="Delete"
-                          >
-                            {deletingAssetId === asset.dbId ? (
-                              <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                              <Trash2 className="w-4 h-4" />
+                          <>
+                            <img 
+                              src={asset.thumbnail} 
+                              alt={asset.title}
+                              className="w-full h-full object-cover transition-all duration-700 hover:scale-110 hover:brightness-125 hover:rotate-1"
+                              onError={(e) => {
+                                e.currentTarget.src = "/api/placeholder/300/300";
+                              }}
+                            />
+                            
+                            {/* Play icon overlay - clickable for videos */}
+                            {asset.is_video && (
+                              <div 
+                                className="absolute inset-0 flex items-center justify-center cursor-pointer"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (asset.video_url) {
+                                    setPlayingVideoId(asset.id);
+                                  }
+                                }}
+                              >
+                                <div className="w-16 h-16 bg-black/30 rounded-full flex items-center justify-center backdrop-blur-sm hover:bg-black/50 hover:scale-110 transition-all">
+                                  <Play className="w-8 h-8 text-white ml-1" />
+                                </div>
+                              </div>
                             )}
-                          </Button>
-                        </div>
+
+                            {/* Video duration badge */}
+                            {asset.is_video && asset.duration && (
+                              <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-0.5 rounded">
+                                {formatDuration(asset.duration)}
+                              </div>
+                            )}
+                          </>
+                        )}
+                        
+                        {/* Action buttons overlay - only show when video NOT playing */}
+                        {playingVideoId !== asset.id && (
+                          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-2">
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              className={`h-9 w-9 p-0 bg-black/40 backdrop-blur-md hover:bg-violet-500/10 hover:border-violet-500/50 transition-all ${asset.isFavorite ? 'text-violet-500 border-violet-500/50' : 'border-white/20'}`}
+                              onClick={(e) => { 
+                                e.stopPropagation(); 
+                                handleFavorite(asset); 
+                              }}
+                              title={asset.isFavorite ? "Remove from favorites" : "Add to favorites"}
+                            >
+                              <Star className={`w-4 h-4 ${asset.isFavorite ? 'fill-current' : ''}`} />
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              className="h-9 w-9 p-0 bg-black/40 backdrop-blur-md hover:bg-blue-500/10 hover:border-blue-500/50 transition-all border-white/20"
+                              onClick={(e) => { 
+                                e.stopPropagation(); 
+                                setMoveToFolderDialog({ open: true, asset });
+                              }}
+                              title="Move to folder"
+                            >
+                              <FolderInput className="w-4 h-4" />
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              className="h-9 w-9 p-0 bg-black/40 backdrop-blur-md hover:bg-red-500/30 hover:border-red-500 transition-all border-red-500/50 text-red-400 hover:text-red-300"
+                              onClick={(e) => { 
+                                e.stopPropagation(); 
+                                handleDelete(asset); 
+                              }}
+                              disabled={deletingAssetId === asset.dbId}
+                              title="Delete"
+                            >
+                              {deletingAssetId === asset.dbId ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                              ) : (
+                                <Trash2 className="w-4 h-4" />
+                              )}
+                            </Button>
+                          </div>
+                        )}
                       </div>
                       
                       <div className="p-6 space-y-4">
