@@ -1,5 +1,10 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import Replicate from "https://esm.sh/replicate@0.25.2";
+import { 
+  detectModificationIntent, 
+  buildIdentityPreservingPrompt,
+  getIdentityPreservationParams 
+} from '../_shared/identity-preservation.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -71,20 +76,38 @@ serve(async (req) => {
       // Use img2img model when reference image is provided
       console.log('[Landing] Using image-to-image generation');
       
+      // Check if user wants to modify appearance while preserving identity
+      const wantsModification = detectModificationIntent(prompt);
+      let finalPrompt = `${prompt}, professional quality, 8K resolution, masterpiece, highly detailed`;
+      
+      if (wantsModification) {
+        console.log('[Landing] 🔒 Identity preservation enabled for modification');
+        finalPrompt = buildIdentityPreservingPrompt(prompt);
+      }
+      
+      // Get identity-aware parameters for SDXL
+      const identityParams = wantsModification 
+        ? getIdentityPreservationParams('sdxl')
+        : { guidance_scale: 7.5, prompt_strength: 0.7 };
+      
       output = await replicate.run(
         "stability-ai/sdxl:7762fd07cf82c948538e41f63f77d685e02b063e37e496e96eefd46c929f9bdc",
         {
           input: {
-            prompt: `${prompt}, professional quality, 8K resolution, masterpiece, highly detailed`,
+            prompt: finalPrompt,
             image: referenceImage,
-            prompt_strength: 0.7,
+            prompt_strength: identityParams.prompt_strength || 0.7,
             num_outputs: 1,
-            guidance_scale: 7.5,
-            num_inference_steps: 25,
+            guidance_scale: identityParams.guidance_scale,
+            num_inference_steps: identityParams.num_inference_steps || 25,
             scheduler: "K_EULER"
           }
         }
       );
+      
+      if (wantsModification) {
+        console.log('[Landing] ✅ Identity-preserving image generated');
+      }
     } else {
       // Use Flux Schnell for fast, high-quality text-to-image generation
       console.log('[Landing] Using text-to-image generation');

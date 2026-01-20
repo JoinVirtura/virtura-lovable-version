@@ -2,6 +2,11 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { deductTokensAndTrackCost } from '../_shared/token-manager.ts';
 import { calculateTokenCost } from '../_shared/token-costs.ts';
+import { 
+  detectModificationIntent, 
+  buildIdentityPreservingPrompt,
+  shouldPreserveIdentity 
+} from '../_shared/identity-preservation.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -28,6 +33,7 @@ interface GenerateAvatarRequest {
   resolution?: string;
   photoMode?: boolean;
   referenceImage?: string; // Base64 encoded image for image-to-image
+  preserveIdentity?: boolean; // Explicit identity preservation flag
 }
 
 serve(async (req) => {
@@ -232,10 +238,26 @@ function buildEnhancedPrompt(params: GenerateAvatarRequest): string {
     ? params.prompt.trim().replace(/,?\s*(or|and|either|with|including)[^,]*/g, '').split(',')[0].trim()
     : "Professional portrait";
 
+  // Check if identity preservation is needed
+  const hasReferenceImage = !!params.referenceImage;
+  const needsIdentityPreservation = shouldPreserveIdentity(
+    hasReferenceImage, 
+    params.prompt, 
+    params.preserveIdentity
+  );
+  
+  if (needsIdentityPreservation) {
+    console.log('🔒 Identity preservation enabled for OpenAI generation');
+    prompt = buildIdentityPreservingPrompt(prompt);
+  }
+
   // Photo Mode gets maximum realism treatment
   if (params.photoMode) {
     // Transform to ultra-realistic professional headshot format
-    prompt = `Ultra-realistic professional studio headshot photograph of ${prompt.toLowerCase().replace('professional portrait', 'person').replace('professional studio headshot photograph of ', '').replace('hyperrealistic professional portrait photograph', 'person')}`;
+    const basePrompt = needsIdentityPreservation ? prompt : 
+      `Ultra-realistic professional studio headshot photograph of ${prompt.toLowerCase().replace('professional portrait', 'person').replace('professional studio headshot photograph of ', '').replace('hyperrealistic professional portrait photograph', 'person')}`;
+    
+    prompt = basePrompt;
     
     // Add clean demographics
     if (params.gender) prompt += `, ${params.gender} person`;
