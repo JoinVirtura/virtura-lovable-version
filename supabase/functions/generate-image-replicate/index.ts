@@ -72,11 +72,21 @@ function detectModificationIntent(prompt: string): boolean {
     'smile', 'smiling', 'grin', 'expression', 'facial',
     'wear', 'wearing', 'with', 'holding', 'has',
     'add', 'remove', 'change', 'make', 'transform',
-    'gold teeth', 'teeth', 'eyes', 'hair', 'clothing'
+    'gold teeth', 'teeth', 'eyes', 'hair', 'clothing',
+    'blonde', 'brunette', 'redhead', 'bald', 'fat', 'thin', 'muscular',
+    'older', 'younger', 'beard', 'mustache', 'glasses', 'tattoo'
   ];
   
   const lowerPrompt = prompt.toLowerCase();
   return modificationKeywords.some(keyword => lowerPrompt.includes(keyword));
+}
+
+// Build identity-preserving prompt for image modifications
+function buildIdentityPreservingPrompt(userPrompt: string): string {
+  return `CRITICAL: Keep the EXACT same person - same face, same eyes, same nose, same mouth, same facial bone structure, same skin tone. ` +
+    `The person's identity must be 100% recognizable and unchanged. ` +
+    `ONLY modify what is specifically requested: ${userPrompt}. ` +
+    `Do NOT change any facial features, face shape, or identity characteristics.`;
 }
 
 serve(async (req) => {
@@ -228,10 +238,11 @@ serve(async (req) => {
         // Use FLUX Kontext Pro for identity-preserving image editing
         model = 'black-forest-labs/flux-kontext-pro';
         
-        // Direct prompt for editing instructions
-        finalPrompt = prompt;
+        // Build prompt with strong identity preservation instructions
+        finalPrompt = buildIdentityPreservingPrompt(prompt);
         
-        console.log('✏️ MODIFICATION MODE: Using FLUX Kontext Pro for image editing');
+        console.log('✏️ MODIFICATION MODE: Using FLUX Kontext Pro with identity preservation');
+        console.log('🎯 Identity-preserving prompt:', finalPrompt);
       } else {
         // Use Redux for style transfer (artistic styles)
         model = 'black-forest-labs/flux-redux-schnell';
@@ -308,7 +319,7 @@ serve(async (req) => {
         });
       } else if (model === 'black-forest-labs/flux-kontext-pro') {
         // FLUX Kontext Pro - specialized for image editing with reference
-        console.log('🖌️ Using FLUX Kontext Pro for image editing');
+        console.log('🖌️ Using FLUX Kontext Pro for identity-preserving image editing');
         
         output = await replicate.run(model, {
           input: {
@@ -318,11 +329,11 @@ serve(async (req) => {
             output_format: "png",
             output_quality: 100,
             num_inference_steps: 50,
-            guidance_scale: 3.5
+            guidance_scale: 5.0  // Increased for stricter identity adherence
           }
         });
         
-        console.log('✅ FLUX Kontext Pro editing complete');
+        console.log('✅ FLUX Kontext Pro identity-preserving edit complete');
       } else if (model === 'black-forest-labs/flux-schnell' || model === 'black-forest-labs/flux-1.1-pro') {
         // FLUX models - optimized for maximum quality
         const fluxInput: any = {
