@@ -13,7 +13,7 @@ export interface ImageGenerationParams {
   enhance?: boolean;
   referenceImage?: string;
   variantType?: 'composition' | 'style' | 'lighting' | 'mood';
-  provider?: 'huggingface' | 'replicate';
+  provider?: 'huggingface' | 'replicate' | 'gemini';
   preserveIdentity?: boolean; // Explicit identity preservation flag
 }
 
@@ -127,54 +127,42 @@ export class ImageGenerationService {
         ? this.detectContentType(params.prompt) 
         : params.contentType;
 
-      const provider = params.provider || 'replicate';
+      const provider = params.provider || 'gemini';
       const quality = params.quality || 'ultra';
-      
-      // Route to Replicate by default
-      if (provider === 'replicate') {
-        console.log('🎨 Using Replicate API for generation');
-        
-        // Map quality to Replicate format
-        const replicateQuality = quality === 'ultra' ? '8K' : quality === 'balanced' ? '4K' : 'HD';
-        
-        // 🔍 DEBUG: Check reference image before sending to edge function
-        console.log('📤 SERVICE: Sending to edge function:', {
-          hasReferenceImage: !!params.referenceImage,
-          isDataURI: params.referenceImage?.startsWith('data:'),
-          length: params.referenceImage?.length || 0,
-          first50Chars: params.referenceImage?.substring(0, 50) || 'EMPTY'
-        });
-        
-        // Auto-enable identity preservation when editing reference images
+
+      // Route to Gemini (default) or Replicate
+      if (provider === 'gemini' || provider === 'replicate') {
+        const isGemini = provider === 'gemini';
+        const functionName = isGemini ? 'generate-image-gemini' : 'generate-image-replicate';
+        console.log(`🎨 Using ${isGemini ? 'Gemini' : 'Replicate'} API for generation`);
+
+        const mappedQuality = quality === 'ultra' ? '8K' : quality === 'balanced' ? '4K' : 'HD';
         const shouldPreserveIdentity = params.preserveIdentity ?? (!!params.referenceImage);
-        
-        const replicateResp = await supabase.functions.invoke('generate-image-replicate', {
+
+        const resp = await supabase.functions.invoke(functionName, {
           body: {
             prompt: params.prompt,
             contentType,
-            quality: replicateQuality,
+            quality: mappedQuality,
             aspectRatio: params.aspectRatio || '1:1',
             style: params.style || 'photorealistic',
             referenceImage: params.referenceImage,
-            preserveIdentity: shouldPreserveIdentity
-          }
+            preserveIdentity: shouldPreserveIdentity,
+          },
         });
 
-        if (!replicateResp.error && replicateResp.data?.success) {
-          console.log('✅ Replicate generation successful');
-          return replicateResp.data as GeneratedImage;
+        if (!resp.error && resp.data?.success) {
+          console.log(`✅ ${isGemini ? 'Gemini' : 'Replicate'} generation successful`);
+          return resp.data as GeneratedImage;
         }
 
-        // Replicate failed - decide whether to fallback or throw error
-        console.warn('⚠️ Replicate failed:', replicateResp.error?.message);
-        
-        // For non-portrait content, throw error instead of falling back to HuggingFace
+        console.warn(`⚠️ ${isGemini ? 'Gemini' : 'Replicate'} failed:`, resp.error?.message);
+
+        // For non-portrait content, throw instead of falling back
         if (contentType !== 'portrait') {
-          console.error('❌ Replicate failed for non-portrait content - no fallback available');
-          throw new Error(`Image generation failed: ${replicateResp.error?.message || 'Unknown error'}`);
+          throw new Error(`Image generation failed: ${resp.error?.message || 'Unknown error'}`);
         }
-        
-        // Only portraits can fall back to HuggingFace
+
         console.log('🔄 Falling back to HuggingFace for portrait generation');
       }
       

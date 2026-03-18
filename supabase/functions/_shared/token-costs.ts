@@ -13,6 +13,9 @@ export const TOKEN_COSTS = {
     'flux-1.1-pro': 4,            // $0.04
     'flux-1.1-pro-ultra': 6,      // $0.06
     'flux-pro-1.1-8k': 8,         // $0.08
+    // Google Gemini
+    'gemini-image-gen': 1,        // $0.003 - text-to-image
+    'gemini-image-edit': 2,       // $0.005 - image editing with reference
     'default': 1,                 // Default for basic operations
   },
   

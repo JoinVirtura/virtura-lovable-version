@@ -30,3 +30,7 @@ dist-ssr
 
 # Supabase temp
 supabase/.temp/
+
+# Claude Code settings
+.claude/settings.json
+settings.json

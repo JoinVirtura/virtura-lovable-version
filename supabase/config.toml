@@ -1,4 +1,7 @@
-project_id = "ujaoziqnxhjqlmnvlxav"
+project_id = "ocvlldhfkidppvfslzwl"
+
+[functions.generate-image-gemini]
+verify_jwt = false
 
 [functions.create-connect-account]
 verify_jwt = true

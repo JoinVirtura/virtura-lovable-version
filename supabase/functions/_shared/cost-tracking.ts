@@ -6,7 +6,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.55.0';
 export async function trackApiCost(params: {
   userId: string;
   resourceType: 'image_generation' | 'voice_generation' | 'video_generation' | 'style_transfer';
-  apiProvider: 'replicate' | 'elevenlabs' | 'heygen' | 'openai' | 'huggingface';
+  apiProvider: 'replicate' | 'elevenlabs' | 'heygen' | 'openai' | 'huggingface' | 'gemini';
   modelUsed?: string;
   costUsd: number;
   tokensCharged?: number;
@@ -46,6 +46,12 @@ export const MODEL_COSTS = {
     'flux-redux': 0.003,
   },
   
+  // Google Gemini
+  gemini: {
+    'gemini-3-pro-image-preview': 0.003,   // text-to-image
+    'gemini-image-edit': 0.005,             // image editing with reference
+  },
+
   // OpenAI
   openai: {
     'gpt-image-1-1024': 0.04,

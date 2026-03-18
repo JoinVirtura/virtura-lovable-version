@@ -42,7 +42,7 @@ export function useLandingImageGeneration(): UseLandingImageGenerationReturn {
         
         try {
           const { supabase } = await import("@/integrations/supabase/client");
-          const { data, error } = await supabase.functions.invoke('generate-landing-replicate', {
+          const { data, error } = await supabase.functions.invoke('generate-landing-gemini', {
             body: { 
               prompt,
               referenceImage: params?.referenceImage 
