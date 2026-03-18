@@ -56,27 +56,33 @@ ALTER TABLE public.blocked_users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.post_views ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for saved_posts
+DROP POLICY IF EXISTS "Users can view their own saved posts" ON public.saved_posts;
 CREATE POLICY "Users can view their own saved posts"
   ON public.saved_posts FOR SELECT
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can save posts" ON public.saved_posts;
 CREATE POLICY "Users can save posts"
   ON public.saved_posts FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete their saved posts" ON public.saved_posts;
 CREATE POLICY "Users can delete their saved posts"
   ON public.saved_posts FOR DELETE
   USING (auth.uid() = user_id);
 
 -- RLS Policies for post_reports
+DROP POLICY IF EXISTS "Users can view their own reports" ON public.post_reports;
 CREATE POLICY "Users can view their own reports"
   ON public.post_reports FOR SELECT
   USING (auth.uid() = reporter_id);
 
+DROP POLICY IF EXISTS "Users can create reports" ON public.post_reports;
 CREATE POLICY "Users can create reports"
   ON public.post_reports FOR INSERT
   WITH CHECK (auth.uid() = reporter_id);
 
+DROP POLICY IF EXISTS "Admins can view all reports" ON public.post_reports;
 CREATE POLICY "Admins can view all reports"
   ON public.post_reports FOR SELECT
   USING (EXISTS (
@@ -84,6 +90,7 @@ CREATE POLICY "Admins can view all reports"
     WHERE user_id = auth.uid() AND role = 'admin'
   ));
 
+DROP POLICY IF EXISTS "Admins can update reports" ON public.post_reports;
 CREATE POLICY "Admins can update reports"
   ON public.post_reports FOR UPDATE
   USING (EXISTS (
@@ -92,23 +99,28 @@ CREATE POLICY "Admins can update reports"
   ));
 
 -- RLS Policies for blocked_users
+DROP POLICY IF EXISTS "Users can view their own blocks" ON public.blocked_users;
 CREATE POLICY "Users can view their own blocks"
   ON public.blocked_users FOR SELECT
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can block others" ON public.blocked_users;
 CREATE POLICY "Users can block others"
   ON public.blocked_users FOR INSERT
   WITH CHECK (auth.uid() = user_id AND user_id != blocked_user_id);
 
+DROP POLICY IF EXISTS "Users can unblock others" ON public.blocked_users;
 CREATE POLICY "Users can unblock others"
   ON public.blocked_users FOR DELETE
   USING (auth.uid() = user_id);
 
 -- RLS Policies for post_views
+DROP POLICY IF EXISTS "Anyone can track views" ON public.post_views;
 CREATE POLICY "Anyone can track views"
   ON public.post_views FOR INSERT
   WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Post creators can view their post analytics" ON public.post_views;
 CREATE POLICY "Post creators can view their post analytics"
   ON public.post_views FOR SELECT
   USING (
@@ -119,10 +131,10 @@ CREATE POLICY "Post creators can view their post analytics"
   );
 
 -- Add view count to social_posts if not exists
-DO $$ 
+DO $$
 BEGIN
   IF NOT EXISTS (
-    SELECT 1 FROM information_schema.columns 
+    SELECT 1 FROM information_schema.columns
     WHERE table_name = 'social_posts' AND column_name = 'view_count'
   ) THEN
     ALTER TABLE public.social_posts ADD COLUMN view_count INTEGER DEFAULT 0;

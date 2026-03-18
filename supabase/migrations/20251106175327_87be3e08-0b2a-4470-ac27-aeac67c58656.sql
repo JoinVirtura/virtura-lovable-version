@@ -1,5 +1,5 @@
 -- Create admin notifications log table
-CREATE TABLE admin_notifications (
+CREATE TABLE IF NOT EXISTS admin_notifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   admin_id UUID NOT NULL,
   admin_email TEXT NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE admin_notifications (
 );
 
 -- Create in-app notifications for users table
-CREATE TABLE notifications (
+CREATE TABLE IF NOT EXISTS notifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL,
   title TEXT NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE notifications (
 );
 
 -- Create audit log table
-CREATE TABLE admin_audit_logs (
+CREATE TABLE IF NOT EXISTS admin_audit_logs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   admin_id UUID NOT NULL,
   admin_email TEXT NOT NULL,
@@ -38,11 +38,11 @@ CREATE TABLE admin_audit_logs (
 );
 
 -- Create indexes for performance
-CREATE INDEX idx_audit_logs_admin_id ON admin_audit_logs(admin_id);
-CREATE INDEX idx_audit_logs_action_type ON admin_audit_logs(action_type);
-CREATE INDEX idx_audit_logs_created_at ON admin_audit_logs(created_at DESC);
-CREATE INDEX idx_notifications_user_id ON notifications(user_id);
-CREATE INDEX idx_notifications_read ON notifications(read);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_admin_id ON admin_audit_logs(admin_id);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_action_type ON admin_audit_logs(action_type);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_created_at ON admin_audit_logs(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id);
+CREATE INDEX IF NOT EXISTS idx_notifications_read ON notifications(read);
 
 -- Enable RLS
 ALTER TABLE admin_notifications ENABLE ROW LEVEL SECURITY;
@@ -50,19 +50,24 @@ ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE admin_audit_logs ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for admin_notifications
+DROP POLICY IF EXISTS "Admins can manage notifications" ON admin_notifications;
 CREATE POLICY "Admins can manage notifications" ON admin_notifications
   FOR ALL USING (has_role(auth.uid(), 'admin'));
 
 -- RLS Policies for notifications
+DROP POLICY IF EXISTS "Users can view their own notifications" ON notifications;
 CREATE POLICY "Users can view their own notifications" ON notifications
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update their own notifications" ON notifications;
 CREATE POLICY "Users can update their own notifications" ON notifications
   FOR UPDATE USING (auth.uid() = user_id);
 
 -- RLS Policies for admin_audit_logs
+DROP POLICY IF EXISTS "Admins can view audit logs" ON admin_audit_logs;
 CREATE POLICY "Admins can view audit logs" ON admin_audit_logs
   FOR SELECT USING (has_role(auth.uid(), 'admin'));
 
+DROP POLICY IF EXISTS "Service role can insert audit logs" ON admin_audit_logs;
 CREATE POLICY "Service role can insert audit logs" ON admin_audit_logs
   FOR INSERT WITH CHECK ((auth.jwt() ->> 'role'::text) = 'service_role'::text);

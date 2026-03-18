@@ -1,5 +1,5 @@
 -- Create table for saved avatar variants in library
-CREATE TABLE public.avatar_library (
+CREATE TABLE IF NOT EXISTS public.avatar_library (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES auth.users(id),
   image_url TEXT NOT NULL,
@@ -14,24 +14,28 @@ CREATE TABLE public.avatar_library (
 ALTER TABLE public.avatar_library ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for avatar library
-CREATE POLICY "Users can view their own library items" 
-ON public.avatar_library 
-FOR SELECT 
+DROP POLICY IF EXISTS "Users can view their own library items" ON public.avatar_library;
+CREATE POLICY "Users can view their own library items"
+ON public.avatar_library
+FOR SELECT
 USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can create their own library items" 
-ON public.avatar_library 
-FOR INSERT 
+DROP POLICY IF EXISTS "Users can create their own library items" ON public.avatar_library;
+CREATE POLICY "Users can create their own library items"
+ON public.avatar_library
+FOR INSERT
 WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY "Users can update their own library items" 
-ON public.avatar_library 
-FOR UPDATE 
+DROP POLICY IF EXISTS "Users can update their own library items" ON public.avatar_library;
+CREATE POLICY "Users can update their own library items"
+ON public.avatar_library
+FOR UPDATE
 USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can delete their own library items" 
-ON public.avatar_library 
-FOR DELETE 
+DROP POLICY IF EXISTS "Users can delete their own library items" ON public.avatar_library;
+CREATE POLICY "Users can delete their own library items"
+ON public.avatar_library
+FOR DELETE
 USING (auth.uid() = user_id);
 
 -- Create function to update timestamps
@@ -44,6 +48,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Create trigger for automatic timestamp updates
+DROP TRIGGER IF EXISTS update_avatar_library_updated_at ON public.avatar_library;
 CREATE TRIGGER update_avatar_library_updated_at
 BEFORE UPDATE ON public.avatar_library
 FOR EACH ROW

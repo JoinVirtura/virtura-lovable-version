@@ -5,6 +5,7 @@
 DROP POLICY IF EXISTS "Service role can insert audit logs" ON admin_audit_logs;
 
 -- Create a policy that allows inserts from edge functions (using service role)
+DROP POLICY IF EXISTS "Allow audit log inserts from edge functions" ON admin_audit_logs;
 CREATE POLICY "Allow audit log inserts from edge functions" ON admin_audit_logs
   FOR INSERT WITH CHECK (true);
 

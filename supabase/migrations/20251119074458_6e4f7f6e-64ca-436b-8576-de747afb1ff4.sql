@@ -11,29 +11,29 @@ CREATE TABLE IF NOT EXISTS social_posts (
   caption TEXT,
   media_urls JSONB DEFAULT '[]',
   thumbnail_url TEXT,
-  
+
   -- Monetization
   is_paid BOOLEAN DEFAULT false,
   price_cents INTEGER DEFAULT 0,
-  
+
   -- AI generated or not
   is_ai_generated BOOLEAN DEFAULT false,
   ai_metadata JSONB DEFAULT '{}',
-  
+
   -- Engagement
   view_count INTEGER DEFAULT 0,
   like_count INTEGER DEFAULT 0,
   comment_count INTEGER DEFAULT 0,
   share_count INTEGER DEFAULT 0,
-  
+
   -- Publishing
   status TEXT DEFAULT 'published' CHECK (status IN ('draft', 'scheduled', 'published', 'archived')),
   scheduled_for TIMESTAMPTZ,
   published_at TIMESTAMPTZ DEFAULT NOW(),
-  
+
   -- Cross-platform
   cross_posted_to JSONB DEFAULT '{}',
-  
+
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -95,21 +95,21 @@ CREATE TABLE IF NOT EXISTS marketplace_access (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   role_requested TEXT NOT NULL CHECK (role_requested IN ('creator', 'brand')),
-  
+
   -- Application data
   portfolio_links TEXT[],
   pitch TEXT,
   experience TEXT,
-  
+
   -- Status
   status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'denied')),
   reviewed_by UUID REFERENCES auth.users(id),
   reviewed_at TIMESTAMPTZ,
   denial_reason TEXT,
-  
+
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
-  
+
   UNIQUE(user_id)
 );
 
@@ -119,24 +119,24 @@ ALTER TABLE marketplace_access ENABLE ROW LEVEL SECURITY;
 CREATE TABLE IF NOT EXISTS user_verification (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE UNIQUE,
-  
+
   -- Verification status
   status TEXT DEFAULT 'unverified' CHECK (status IN ('unverified', 'pending', 'verified', 'denied')),
-  
+
   -- ID verification
   id_document_url TEXT,
   id_document_type TEXT,
-  
+
   -- Subscription
   verification_subscription_id TEXT,
   subscription_status TEXT DEFAULT 'inactive',
   subscription_started_at TIMESTAMPTZ,
-  
+
   -- Review
   reviewed_by UUID REFERENCES auth.users(id),
   reviewed_at TIMESTAMPTZ,
   denial_reason TEXT,
-  
+
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -148,21 +148,21 @@ CREATE TABLE IF NOT EXISTS scheduled_posts (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   post_id UUID REFERENCES social_posts(id) ON DELETE CASCADE,
-  
+
   -- Scheduling
   scheduled_for TIMESTAMPTZ NOT NULL,
   platforms TEXT[] NOT NULL,
-  
+
   -- Content
   caption TEXT,
   media_urls JSONB,
   hashtags TEXT[],
-  
+
   -- Status
   status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'processing', 'published', 'failed')),
   published_to JSONB DEFAULT '{}',
   error_message TEXT,
-  
+
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -170,7 +170,7 @@ CREATE TABLE IF NOT EXISTS scheduled_posts (
 ALTER TABLE scheduled_posts ENABLE ROW LEVEL SECURITY;
 
 -- 9. UPDATE CREATOR ACCOUNTS TABLE
-ALTER TABLE creator_accounts 
+ALTER TABLE creator_accounts
   ADD COLUMN IF NOT EXISTS total_earnings_cents INTEGER DEFAULT 0,
   ADD COLUMN IF NOT EXISTS pending_earnings_cents INTEGER DEFAULT 0,
   ADD COLUMN IF NOT EXISTS paid_out_cents INTEGER DEFAULT 0;
@@ -188,6 +188,7 @@ ALTER TABLE creator_earnings
 -- ============================================
 
 -- SOCIAL POSTS POLICIES
+DROP POLICY IF EXISTS "Users can view published posts" ON social_posts;
 CREATE POLICY "Users can view published posts" ON social_posts
   FOR SELECT USING (
     status = 'published' AND (
@@ -197,82 +198,106 @@ CREATE POLICY "Users can view published posts" ON social_posts
     )
   );
 
+DROP POLICY IF EXISTS "Users can create posts" ON social_posts;
 CREATE POLICY "Users can create posts" ON social_posts
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own posts" ON social_posts;
 CREATE POLICY "Users can update own posts" ON social_posts
   FOR UPDATE USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own posts" ON social_posts;
 CREATE POLICY "Users can delete own posts" ON social_posts
   FOR DELETE USING (auth.uid() = user_id);
 
 -- POST UNLOCKS POLICIES
+DROP POLICY IF EXISTS "Users can view own unlocks" ON post_unlocks;
 CREATE POLICY "Users can view own unlocks" ON post_unlocks
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can create unlocks" ON post_unlocks;
 CREATE POLICY "Users can create unlocks" ON post_unlocks
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- FOLLOWS POLICIES
+DROP POLICY IF EXISTS "Users can view all follows" ON follows;
 CREATE POLICY "Users can view all follows" ON follows
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Users can follow others" ON follows;
 CREATE POLICY "Users can follow others" ON follows
   FOR INSERT WITH CHECK (auth.uid() = follower_id);
 
+DROP POLICY IF EXISTS "Users can unfollow" ON follows;
 CREATE POLICY "Users can unfollow" ON follows
   FOR DELETE USING (auth.uid() = follower_id);
 
 -- POST LIKES POLICIES
+DROP POLICY IF EXISTS "Users can view all likes" ON post_likes;
 CREATE POLICY "Users can view all likes" ON post_likes
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Users can like posts" ON post_likes;
 CREATE POLICY "Users can like posts" ON post_likes
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can unlike posts" ON post_likes;
 CREATE POLICY "Users can unlike posts" ON post_likes
   FOR DELETE USING (auth.uid() = user_id);
 
 -- POST COMMENTS POLICIES
+DROP POLICY IF EXISTS "Users can view comments" ON post_comments;
 CREATE POLICY "Users can view comments" ON post_comments
   FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Users can create comments" ON post_comments;
 CREATE POLICY "Users can create comments" ON post_comments
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own comments" ON post_comments;
 CREATE POLICY "Users can update own comments" ON post_comments
   FOR UPDATE USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own comments" ON post_comments;
 CREATE POLICY "Users can delete own comments" ON post_comments
   FOR DELETE USING (auth.uid() = user_id);
 
 -- MARKETPLACE ACCESS POLICIES
+DROP POLICY IF EXISTS "Users can view own marketplace access" ON marketplace_access;
 CREATE POLICY "Users can view own marketplace access" ON marketplace_access
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can apply for marketplace access" ON marketplace_access;
 CREATE POLICY "Users can apply for marketplace access" ON marketplace_access
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- VERIFICATION POLICIES
+DROP POLICY IF EXISTS "Users can view own verification" ON user_verification;
 CREATE POLICY "Users can view own verification" ON user_verification
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can create verification" ON user_verification;
 CREATE POLICY "Users can create verification" ON user_verification
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own verification" ON user_verification;
 CREATE POLICY "Users can update own verification" ON user_verification
   FOR UPDATE USING (auth.uid() = user_id);
 
 -- SCHEDULED POSTS POLICIES
+DROP POLICY IF EXISTS "Users can view own scheduled posts" ON scheduled_posts;
 CREATE POLICY "Users can view own scheduled posts" ON scheduled_posts
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can create scheduled posts" ON scheduled_posts;
 CREATE POLICY "Users can create scheduled posts" ON scheduled_posts
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own scheduled posts" ON scheduled_posts;
 CREATE POLICY "Users can update own scheduled posts" ON scheduled_posts
   FOR UPDATE USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own scheduled posts" ON scheduled_posts;
 CREATE POLICY "Users can delete own scheduled posts" ON scheduled_posts
   FOR DELETE USING (auth.uid() = user_id);
 

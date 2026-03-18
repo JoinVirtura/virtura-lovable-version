@@ -18,12 +18,14 @@ CREATE INDEX IF NOT EXISTS idx_landing_analytics_session_id ON public.landing_an
 ALTER TABLE public.landing_analytics ENABLE ROW LEVEL SECURITY;
 
 -- Public can insert analytics (anonymous tracking)
+DROP POLICY IF EXISTS "Anyone can insert landing analytics" ON public.landing_analytics;
 CREATE POLICY "Anyone can insert landing analytics"
   ON public.landing_analytics
   FOR INSERT
   WITH CHECK (true);
 
 -- Admins can view all analytics
+DROP POLICY IF EXISTS "Admins can view landing analytics" ON public.landing_analytics;
 CREATE POLICY "Admins can view landing analytics"
   ON public.landing_analytics
   FOR SELECT

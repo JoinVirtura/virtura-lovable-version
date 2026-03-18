@@ -1,12 +1,12 @@
 -- Add trial tracking columns to subscriptions table
-ALTER TABLE subscriptions 
-ADD COLUMN trial_start timestamptz,
-ADD COLUMN trial_end timestamptz,
-ADD COLUMN trial_used boolean DEFAULT false,
-ADD COLUMN trial_plan_name text DEFAULT 'pro';
+ALTER TABLE subscriptions
+ADD COLUMN IF NOT EXISTS trial_start timestamptz,
+ADD COLUMN IF NOT EXISTS trial_end timestamptz,
+ADD COLUMN IF NOT EXISTS trial_used boolean DEFAULT false,
+ADD COLUMN IF NOT EXISTS trial_plan_name text DEFAULT 'pro';
 
 -- Add index for efficient trial queries
-CREATE INDEX idx_subscriptions_trial_status ON subscriptions(user_id, trial_end) 
+CREATE INDEX IF NOT EXISTS idx_subscriptions_trial_status ON subscriptions(user_id, trial_end)
 WHERE trial_used = false;
 
 -- Add comments for documentation
@@ -25,10 +25,10 @@ AS $$
 BEGIN
   -- Insert trial subscription for new users
   INSERT INTO public.subscriptions (
-    user_id, 
-    status, 
-    trial_start, 
-    trial_end, 
+    user_id,
+    status,
+    trial_start,
+    trial_end,
     trial_used,
     trial_plan_name
   ) VALUES (
@@ -40,7 +40,7 @@ BEGIN
     'pro'
   )
   ON CONFLICT (user_id) DO NOTHING;
-  
+
   RETURN NEW;
 END;
 $$;
@@ -54,7 +54,7 @@ CREATE TRIGGER on_auth_user_created_initialize_trial
 
 -- Grant 7-day trials to existing users without subscriptions
 INSERT INTO subscriptions (user_id, status, trial_start, trial_end, trial_used, trial_plan_name)
-SELECT 
+SELECT
   p.id,
   'trialing',
   NOW(),

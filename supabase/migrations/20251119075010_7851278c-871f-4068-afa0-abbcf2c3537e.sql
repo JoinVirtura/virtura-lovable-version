@@ -4,24 +4,27 @@ VALUES ('social-media', 'social-media', true)
 ON CONFLICT (id) DO NOTHING;
 
 -- RLS policies for social-media storage bucket
+DROP POLICY IF EXISTS "Users can upload to social-media" ON storage.objects;
 CREATE POLICY "Users can upload to social-media"
 ON storage.objects FOR INSERT
 TO authenticated
 WITH CHECK (
-  bucket_id = 'social-media' 
+  bucket_id = 'social-media'
   AND auth.uid()::text = (storage.foldername(name))[1]
 );
 
+DROP POLICY IF EXISTS "Public can view social-media" ON storage.objects;
 CREATE POLICY "Public can view social-media"
 ON storage.objects FOR SELECT
 TO public
 USING (bucket_id = 'social-media');
 
+DROP POLICY IF EXISTS "Users can delete own files" ON storage.objects;
 CREATE POLICY "Users can delete own files"
 ON storage.objects FOR DELETE
 TO authenticated
 USING (
-  bucket_id = 'social-media' 
+  bucket_id = 'social-media'
   AND auth.uid()::text = (storage.foldername(name))[1]
 );
 

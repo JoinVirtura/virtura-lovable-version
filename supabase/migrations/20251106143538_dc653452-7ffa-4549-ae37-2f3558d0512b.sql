@@ -28,29 +28,34 @@ ALTER TABLE public.user_tokens ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.token_transactions ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for user_tokens
+DROP POLICY IF EXISTS "Users can view their own token balance" ON public.user_tokens;
 CREATE POLICY "Users can view their own token balance"
   ON public.user_tokens FOR SELECT
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Service role can manage all token balances" ON public.user_tokens;
 CREATE POLICY "Service role can manage all token balances"
   ON public.user_tokens FOR ALL
   USING ((auth.jwt() ->> 'role'::text) = 'service_role'::text);
 
 -- RLS Policies for token_transactions
+DROP POLICY IF EXISTS "Users can view their own transactions" ON public.token_transactions;
 CREATE POLICY "Users can view their own transactions"
   ON public.token_transactions FOR SELECT
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Service role can insert transactions" ON public.token_transactions;
 CREATE POLICY "Service role can insert transactions"
   ON public.token_transactions FOR INSERT
   WITH CHECK ((auth.jwt() ->> 'role'::text) = 'service_role'::text);
 
 -- Create indexes for performance
-CREATE INDEX idx_user_tokens_user_id ON public.user_tokens(user_id);
-CREATE INDEX idx_token_transactions_user_id ON public.token_transactions(user_id);
-CREATE INDEX idx_token_transactions_created_at ON public.token_transactions(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_user_tokens_user_id ON public.user_tokens(user_id);
+CREATE INDEX IF NOT EXISTS idx_token_transactions_user_id ON public.token_transactions(user_id);
+CREATE INDEX IF NOT EXISTS idx_token_transactions_created_at ON public.token_transactions(created_at DESC);
 
 -- Create trigger for updated_at
+DROP TRIGGER IF EXISTS update_user_tokens_updated_at ON public.user_tokens;
 CREATE TRIGGER update_user_tokens_updated_at
   BEFORE UPDATE ON public.user_tokens
   FOR EACH ROW
@@ -62,15 +67,16 @@ RETURNS TRIGGER AS $$
 BEGIN
   INSERT INTO public.user_tokens (user_id, balance, lifetime_purchased)
   VALUES (NEW.id, 50, 50); -- Give 50 free tokens on signup
-  
+
   INSERT INTO public.token_transactions (user_id, amount, transaction_type, metadata)
   VALUES (NEW.id, 50, 'bonus', '{"reason": "signup_bonus"}'::jsonb);
-  
+
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 -- Trigger to initialize tokens for new users
+DROP TRIGGER IF EXISTS on_auth_user_created_tokens ON auth.users;
 CREATE TRIGGER on_auth_user_created_tokens
   AFTER INSERT ON auth.users
   FOR EACH ROW
@@ -94,40 +100,40 @@ BEGIN
   FROM public.user_tokens
   WHERE user_id = p_user_id
   FOR UPDATE;
-  
+
   -- Check if user has enough tokens
   IF v_current_balance IS NULL OR v_current_balance < p_amount THEN
     RETURN FALSE;
   END IF;
-  
+
   -- Deduct tokens
   UPDATE public.user_tokens
-  SET 
+  SET
     balance = balance - p_amount,
     lifetime_used = lifetime_used + p_amount,
     updated_at = now()
   WHERE user_id = p_user_id;
-  
+
   -- Record transaction
   INSERT INTO public.token_transactions (
-    user_id, 
-    amount, 
-    transaction_type, 
-    resource_type, 
+    user_id,
+    amount,
+    transaction_type,
+    resource_type,
     resource_id,
     cost_usd,
     metadata
   )
   VALUES (
-    p_user_id, 
-    -p_amount, 
-    'usage', 
+    p_user_id,
+    -p_amount,
+    'usage',
     p_resource_type,
     p_resource_id,
     p_cost_usd,
     p_metadata
   );
-  
+
   RETURN TRUE;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
@@ -149,21 +155,21 @@ BEGIN
     balance = user_tokens.balance + p_amount,
     lifetime_purchased = user_tokens.lifetime_purchased + p_amount,
     updated_at = now();
-  
+
   -- Record transaction
   INSERT INTO public.token_transactions (
-    user_id, 
-    amount, 
+    user_id,
+    amount,
     transaction_type,
     metadata
   )
   VALUES (
-    p_user_id, 
-    p_amount, 
+    p_user_id,
+    p_amount,
     p_transaction_type,
     p_metadata
   );
-  
+
   RETURN TRUE;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;

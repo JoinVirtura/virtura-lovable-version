@@ -4,12 +4,14 @@
 DROP POLICY IF EXISTS "Users can view their own usage" ON public.usage_tracking;
 
 -- Users can only view their usage (read-only)
+DROP POLICY IF EXISTS "Users can view own usage" ON public.usage_tracking;
 CREATE POLICY "Users can view own usage"
 ON public.usage_tracking
 FOR SELECT
 USING (auth.uid() = user_id);
 
 -- Only service role can insert usage records
+DROP POLICY IF EXISTS "Service role can insert usage" ON public.usage_tracking;
 CREATE POLICY "Service role can insert usage"
 ON public.usage_tracking
 FOR INSERT
@@ -18,11 +20,13 @@ WITH CHECK (
 );
 
 -- Block all user updates and deletes
+DROP POLICY IF EXISTS "No user updates on usage" ON public.usage_tracking;
 CREATE POLICY "No user updates on usage"
 ON public.usage_tracking
 FOR UPDATE
 USING (false);
 
+DROP POLICY IF EXISTS "No user deletes on usage" ON public.usage_tracking;
 CREATE POLICY "No user deletes on usage"
 ON public.usage_tracking
 FOR DELETE
@@ -32,18 +36,21 @@ USING (false);
 DROP POLICY IF EXISTS "Users can manage their own roles" ON public.user_roles;
 
 -- Users can only view their own roles (read-only)
+DROP POLICY IF EXISTS "Users can view own roles" ON public.user_roles;
 CREATE POLICY "Users can view own roles"
 ON public.user_roles
 FOR SELECT
 USING (auth.uid() = user_id);
 
 -- Only admins can manage all roles
+DROP POLICY IF EXISTS "Admins can manage all roles" ON public.user_roles;
 CREATE POLICY "Admins can manage all roles"
 ON public.user_roles
 FOR ALL
 USING (public.has_role(auth.uid(), 'admin'::user_role));
 
 -- Service role can manage roles (for initial setup and automation)
+DROP POLICY IF EXISTS "Service role can manage roles" ON public.user_roles;
 CREATE POLICY "Service role can manage roles"
 ON public.user_roles
 FOR ALL

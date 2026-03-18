@@ -2,6 +2,7 @@
 ALTER TABLE subscriptions ENABLE ROW LEVEL SECURITY;
 
 -- Policy: Users can read their own subscription
+DROP POLICY IF EXISTS "Users can read own subscription" ON subscriptions;
 CREATE POLICY "Users can read own subscription"
 ON subscriptions
 FOR SELECT
@@ -9,6 +10,7 @@ TO authenticated
 USING (auth.uid() = user_id);
 
 -- Policy: Service role can manage all subscriptions
+DROP POLICY IF EXISTS "Service role can manage subscriptions" ON subscriptions;
 CREATE POLICY "Service role can manage subscriptions"
 ON subscriptions
 FOR ALL

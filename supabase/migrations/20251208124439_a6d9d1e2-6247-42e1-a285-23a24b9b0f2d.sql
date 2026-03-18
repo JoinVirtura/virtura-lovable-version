@@ -1,5 +1,5 @@
 -- Campaign Invites Table
-CREATE TABLE public.campaign_invites (
+CREATE TABLE IF NOT EXISTS public.campaign_invites (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   campaign_id UUID NOT NULL REFERENCES marketplace_campaigns(id) ON DELETE CASCADE,
   brand_id UUID NOT NULL REFERENCES brands(id) ON DELETE CASCADE,
@@ -13,7 +13,7 @@ CREATE TABLE public.campaign_invites (
 );
 
 -- Campaign Disputes Table
-CREATE TABLE public.campaign_disputes (
+CREATE TABLE IF NOT EXISTS public.campaign_disputes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   campaign_id UUID NOT NULL REFERENCES marketplace_campaigns(id) ON DELETE CASCADE,
   raised_by_user_id UUID NOT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE public.campaign_disputes (
 );
 
 -- Dispute Messages Table
-CREATE TABLE public.dispute_messages (
+CREATE TABLE IF NOT EXISTS public.dispute_messages (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   dispute_id UUID NOT NULL REFERENCES campaign_disputes(id) ON DELETE CASCADE,
   user_id UUID NOT NULL,
@@ -49,85 +49,98 @@ ALTER TABLE public.campaign_disputes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.dispute_messages ENABLE ROW LEVEL SECURITY;
 
 -- Campaign Invites Policies
+DROP POLICY IF EXISTS "Brands can create invites for their campaigns" ON public.campaign_invites;
 CREATE POLICY "Brands can create invites for their campaigns"
 ON public.campaign_invites FOR INSERT
 WITH CHECK (brand_id IN (SELECT id FROM brands WHERE user_id = auth.uid()));
 
+DROP POLICY IF EXISTS "Brands can view invites they sent" ON public.campaign_invites;
 CREATE POLICY "Brands can view invites they sent"
 ON public.campaign_invites FOR SELECT
 USING (brand_id IN (SELECT id FROM brands WHERE user_id = auth.uid()));
 
+DROP POLICY IF EXISTS "Creators can view their invites" ON public.campaign_invites;
 CREATE POLICY "Creators can view their invites"
 ON public.campaign_invites FOR SELECT
 USING (creator_id IN (SELECT id FROM creator_accounts WHERE user_id = auth.uid()));
 
+DROP POLICY IF EXISTS "Creators can update their invite status" ON public.campaign_invites;
 CREATE POLICY "Creators can update their invite status"
 ON public.campaign_invites FOR UPDATE
 USING (creator_id IN (SELECT id FROM creator_accounts WHERE user_id = auth.uid()));
 
 -- Campaign Disputes Policies
+DROP POLICY IF EXISTS "Campaign parties can create disputes" ON public.campaign_disputes;
 CREATE POLICY "Campaign parties can create disputes"
 ON public.campaign_disputes FOR INSERT
 WITH CHECK (auth.uid() = raised_by_user_id);
 
+DROP POLICY IF EXISTS "Campaign parties can view their disputes" ON public.campaign_disputes;
 CREATE POLICY "Campaign parties can view their disputes"
 ON public.campaign_disputes FOR SELECT
 USING (
-  raised_by_user_id = auth.uid() 
+  raised_by_user_id = auth.uid()
   OR campaign_id IN (
-    SELECT id FROM marketplace_campaigns 
+    SELECT id FROM marketplace_campaigns
     WHERE brand_id IN (SELECT id FROM brands WHERE user_id = auth.uid())
     OR creator_id IN (SELECT id FROM creator_accounts WHERE user_id = auth.uid())
   )
 );
 
+DROP POLICY IF EXISTS "Admins can view all disputes" ON public.campaign_disputes;
 CREATE POLICY "Admins can view all disputes"
 ON public.campaign_disputes FOR SELECT
 USING (has_role(auth.uid(), 'admin'));
 
+DROP POLICY IF EXISTS "Admins can update disputes" ON public.campaign_disputes;
 CREATE POLICY "Admins can update disputes"
 ON public.campaign_disputes FOR UPDATE
 USING (has_role(auth.uid(), 'admin'));
 
 -- Dispute Messages Policies
+DROP POLICY IF EXISTS "Dispute parties can view messages" ON public.dispute_messages;
 CREATE POLICY "Dispute parties can view messages"
 ON public.dispute_messages FOR SELECT
 USING (
   dispute_id IN (
-    SELECT id FROM campaign_disputes 
+    SELECT id FROM campaign_disputes
     WHERE raised_by_user_id = auth.uid()
     OR campaign_id IN (
-      SELECT id FROM marketplace_campaigns 
+      SELECT id FROM marketplace_campaigns
       WHERE brand_id IN (SELECT id FROM brands WHERE user_id = auth.uid())
       OR creator_id IN (SELECT id FROM creator_accounts WHERE user_id = auth.uid())
     )
   )
 );
 
+DROP POLICY IF EXISTS "Dispute parties can add messages" ON public.dispute_messages;
 CREATE POLICY "Dispute parties can add messages"
 ON public.dispute_messages FOR INSERT
 WITH CHECK (
   auth.uid() = user_id AND
   dispute_id IN (
-    SELECT id FROM campaign_disputes 
+    SELECT id FROM campaign_disputes
     WHERE raised_by_user_id = auth.uid()
     OR campaign_id IN (
-      SELECT id FROM marketplace_campaigns 
+      SELECT id FROM marketplace_campaigns
       WHERE brand_id IN (SELECT id FROM brands WHERE user_id = auth.uid())
       OR creator_id IN (SELECT id FROM creator_accounts WHERE user_id = auth.uid())
     )
   )
 );
 
+DROP POLICY IF EXISTS "Admins can add messages to any dispute" ON public.dispute_messages;
 CREATE POLICY "Admins can add messages to any dispute"
 ON public.dispute_messages FOR INSERT
 WITH CHECK (has_role(auth.uid(), 'admin'));
 
+DROP POLICY IF EXISTS "Admins can view all dispute messages" ON public.dispute_messages;
 CREATE POLICY "Admins can view all dispute messages"
 ON public.dispute_messages FOR SELECT
 USING (has_role(auth.uid(), 'admin'));
 
 -- Triggers for updated_at
+DROP TRIGGER IF EXISTS update_campaign_disputes_updated_at ON public.campaign_disputes;
 CREATE TRIGGER update_campaign_disputes_updated_at
 BEFORE UPDATE ON public.campaign_disputes
 FOR EACH ROW

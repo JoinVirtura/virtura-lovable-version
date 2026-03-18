@@ -1,5 +1,5 @@
 -- Delete corrupted avatar records with base64 data
-DELETE FROM avatar_library 
+DELETE FROM avatar_library
 WHERE id IN (
   '128a4bd1-0230-474f-81ee-bf656291335b',
   '6f16ef6b-800a-4f86-af09-2f3e58fb26ec'
@@ -19,17 +19,18 @@ BEGIN
   IF NEW.image_url ~* '\.(mp4|webm|avi|mov)$' OR NEW.image_url LIKE 'blob:%' THEN
     RAISE EXCEPTION 'image_url cannot be a video file or blob URL. Use a static image instead.';
   END IF;
-  
+
   -- Check if image_url is a base64 data URL
   IF NEW.image_url LIKE 'data:%' THEN
     RAISE EXCEPTION 'image_url cannot be a base64 data URL. Upload to Supabase storage instead.';
   END IF;
-  
+
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
 -- Create trigger to validate image_url before insert/update
+DROP TRIGGER IF EXISTS check_avatar_image_url ON public.avatar_library;
 CREATE TRIGGER check_avatar_image_url
   BEFORE INSERT OR UPDATE ON public.avatar_library
   FOR EACH ROW

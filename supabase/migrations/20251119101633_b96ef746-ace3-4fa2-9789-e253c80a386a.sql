@@ -63,51 +63,59 @@ ALTER TABLE public.trial_experiments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.trial_experiment_assignments ENABLE ROW LEVEL SECURITY;
 
 -- Reactivation campaigns: users can view their own
+DROP POLICY IF EXISTS "Users can view own reactivation campaigns" ON public.trial_reactivation_campaigns;
 CREATE POLICY "Users can view own reactivation campaigns"
   ON public.trial_reactivation_campaigns
   FOR SELECT
   USING (auth.uid() = user_id);
 
 -- Admins can manage everything
+DROP POLICY IF EXISTS "Admins can manage reactivation campaigns" ON public.trial_reactivation_campaigns;
 CREATE POLICY "Admins can manage reactivation campaigns"
   ON public.trial_reactivation_campaigns
   FOR ALL
   USING (public.is_admin());
 
+DROP POLICY IF EXISTS "Admins can manage reactivation offers" ON public.trial_reactivation_offers;
 CREATE POLICY "Admins can manage reactivation offers"
   ON public.trial_reactivation_offers
   FOR ALL
   USING (public.is_admin());
 
+DROP POLICY IF EXISTS "Admins can manage experiments" ON public.trial_experiments;
 CREATE POLICY "Admins can manage experiments"
   ON public.trial_experiments
   FOR ALL
   USING (public.is_admin());
 
+DROP POLICY IF EXISTS "Users can view experiment assignments" ON public.trial_experiment_assignments;
 CREATE POLICY "Users can view experiment assignments"
   ON public.trial_experiment_assignments
   FOR SELECT
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Admins can manage experiment assignments" ON public.trial_experiment_assignments;
 CREATE POLICY "Admins can manage experiment assignments"
   ON public.trial_experiment_assignments
   FOR ALL
   USING (public.is_admin());
 
 -- Indexes
-CREATE INDEX idx_reactivation_campaigns_user_id ON public.trial_reactivation_campaigns(user_id);
-CREATE INDEX idx_reactivation_campaigns_sent_at ON public.trial_reactivation_campaigns(sent_at);
-CREATE INDEX idx_reactivation_offers_code ON public.trial_reactivation_offers(offer_code);
-CREATE INDEX idx_experiments_status ON public.trial_experiments(status);
-CREATE INDEX idx_experiment_assignments_experiment ON public.trial_experiment_assignments(experiment_id);
-CREATE INDEX idx_experiment_assignments_user ON public.trial_experiment_assignments(user_id);
+CREATE INDEX IF NOT EXISTS idx_reactivation_campaigns_user_id ON public.trial_reactivation_campaigns(user_id);
+CREATE INDEX IF NOT EXISTS idx_reactivation_campaigns_sent_at ON public.trial_reactivation_campaigns(sent_at);
+CREATE INDEX IF NOT EXISTS idx_reactivation_offers_code ON public.trial_reactivation_offers(offer_code);
+CREATE INDEX IF NOT EXISTS idx_experiments_status ON public.trial_experiments(status);
+CREATE INDEX IF NOT EXISTS idx_experiment_assignments_experiment ON public.trial_experiment_assignments(experiment_id);
+CREATE INDEX IF NOT EXISTS idx_experiment_assignments_user ON public.trial_experiment_assignments(user_id);
 
 -- Triggers
+DROP TRIGGER IF EXISTS update_trial_reactivation_offers_updated_at ON public.trial_reactivation_offers;
 CREATE TRIGGER update_trial_reactivation_offers_updated_at
   BEFORE UPDATE ON public.trial_reactivation_offers
   FOR EACH ROW
   EXECUTE FUNCTION public.handle_updated_at();
 
+DROP TRIGGER IF EXISTS update_trial_experiments_updated_at ON public.trial_experiments;
 CREATE TRIGGER update_trial_experiments_updated_at
   BEFORE UPDATE ON public.trial_experiments
   FOR EACH ROW

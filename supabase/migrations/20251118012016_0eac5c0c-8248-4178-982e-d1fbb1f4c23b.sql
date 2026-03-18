@@ -1,7 +1,7 @@
 -- Creator Monetization Tables
 
 -- Creator accounts with Stripe Connect
-CREATE TABLE creator_accounts (
+CREATE TABLE IF NOT EXISTS creator_accounts (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES auth.users(id) UNIQUE NOT NULL,
   stripe_account_id TEXT UNIQUE,
@@ -18,24 +18,28 @@ CREATE TABLE creator_accounts (
 ALTER TABLE creator_accounts ENABLE ROW LEVEL SECURITY;
 
 -- Policies for creator_accounts
+DROP POLICY IF EXISTS "Users can view their own creator account" ON creator_accounts;
 CREATE POLICY "Users can view their own creator account"
   ON creator_accounts FOR SELECT
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert their own creator account" ON creator_accounts;
 CREATE POLICY "Users can insert their own creator account"
   ON creator_accounts FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update their own creator account" ON creator_accounts;
 CREATE POLICY "Users can update their own creator account"
   ON creator_accounts FOR UPDATE
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Service role can manage all creator accounts" ON creator_accounts;
 CREATE POLICY "Service role can manage all creator accounts"
   ON creator_accounts FOR ALL
   USING ((auth.jwt() ->> 'role'::text) = 'service_role'::text);
 
 -- Earnings and payouts tracking
-CREATE TABLE creator_earnings (
+CREATE TABLE IF NOT EXISTS creator_earnings (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   creator_id UUID REFERENCES creator_accounts(id) NOT NULL,
   amount_cents INTEGER NOT NULL,
@@ -54,6 +58,7 @@ CREATE TABLE creator_earnings (
 ALTER TABLE creator_earnings ENABLE ROW LEVEL SECURITY;
 
 -- Policies for creator_earnings
+DROP POLICY IF EXISTS "Creators can view their own earnings" ON creator_earnings;
 CREATE POLICY "Creators can view their own earnings"
   ON creator_earnings FOR SELECT
   USING (
@@ -62,12 +67,13 @@ CREATE POLICY "Creators can view their own earnings"
     )
   );
 
+DROP POLICY IF EXISTS "Service role can manage all earnings" ON creator_earnings;
 CREATE POLICY "Service role can manage all earnings"
   ON creator_earnings FOR ALL
   USING ((auth.jwt() ->> 'role'::text) = 'service_role'::text);
 
 -- Subscriptions to creators
-CREATE TABLE creator_subscriptions (
+CREATE TABLE IF NOT EXISTS creator_subscriptions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   creator_id UUID REFERENCES creator_accounts(id) NOT NULL,
   subscriber_id UUID REFERENCES auth.users(id) NOT NULL,
@@ -87,6 +93,7 @@ CREATE TABLE creator_subscriptions (
 ALTER TABLE creator_subscriptions ENABLE ROW LEVEL SECURITY;
 
 -- Policies for creator_subscriptions
+DROP POLICY IF EXISTS "Creators can view their subscriptions" ON creator_subscriptions;
 CREATE POLICY "Creators can view their subscriptions"
   ON creator_subscriptions FOR SELECT
   USING (
@@ -95,16 +102,18 @@ CREATE POLICY "Creators can view their subscriptions"
     )
   );
 
+DROP POLICY IF EXISTS "Subscribers can view their own subscriptions" ON creator_subscriptions;
 CREATE POLICY "Subscribers can view their own subscriptions"
   ON creator_subscriptions FOR SELECT
   USING (auth.uid() = subscriber_id);
 
+DROP POLICY IF EXISTS "Service role can manage all subscriptions" ON creator_subscriptions;
 CREATE POLICY "Service role can manage all subscriptions"
   ON creator_subscriptions FOR ALL
   USING ((auth.jwt() ->> 'role'::text) = 'service_role'::text);
 
 -- Content unlocks
-CREATE TABLE content_unlocks (
+CREATE TABLE IF NOT EXISTS content_unlocks (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES auth.users(id) NOT NULL,
   content_id UUID NOT NULL,
@@ -120,10 +129,12 @@ CREATE TABLE content_unlocks (
 ALTER TABLE content_unlocks ENABLE ROW LEVEL SECURITY;
 
 -- Policies for content_unlocks
+DROP POLICY IF EXISTS "Users can view their own unlocks" ON content_unlocks;
 CREATE POLICY "Users can view their own unlocks"
   ON content_unlocks FOR SELECT
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Creators can view unlocks of their content" ON content_unlocks;
 CREATE POLICY "Creators can view unlocks of their content"
   ON content_unlocks FOR SELECT
   USING (
@@ -132,12 +143,13 @@ CREATE POLICY "Creators can view unlocks of their content"
     )
   );
 
+DROP POLICY IF EXISTS "Service role can manage all unlocks" ON content_unlocks;
 CREATE POLICY "Service role can manage all unlocks"
   ON content_unlocks FOR ALL
   USING ((auth.jwt() ->> 'role'::text) = 'service_role'::text);
 
 -- Tips to creators
-CREATE TABLE creator_tips (
+CREATE TABLE IF NOT EXISTS creator_tips (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   creator_id UUID REFERENCES creator_accounts(id) NOT NULL,
   tipper_id UUID REFERENCES auth.users(id) NOT NULL,
@@ -151,6 +163,7 @@ CREATE TABLE creator_tips (
 ALTER TABLE creator_tips ENABLE ROW LEVEL SECURITY;
 
 -- Policies for creator_tips
+DROP POLICY IF EXISTS "Creators can view their tips" ON creator_tips;
 CREATE POLICY "Creators can view their tips"
   ON creator_tips FOR SELECT
   USING (
@@ -159,10 +172,12 @@ CREATE POLICY "Creators can view their tips"
     )
   );
 
+DROP POLICY IF EXISTS "Tippers can view their own tips" ON creator_tips;
 CREATE POLICY "Tippers can view their own tips"
   ON creator_tips FOR SELECT
   USING (auth.uid() = tipper_id);
 
+DROP POLICY IF EXISTS "Service role can manage all tips" ON creator_tips;
 CREATE POLICY "Service role can manage all tips"
   ON creator_tips FOR ALL
   USING ((auth.jwt() ->> 'role'::text) = 'service_role'::text);
@@ -170,7 +185,7 @@ CREATE POLICY "Service role can manage all tips"
 -- Marketplace Campaigns Tables
 
 -- Marketplace campaigns
-CREATE TABLE marketplace_campaigns (
+CREATE TABLE IF NOT EXISTS marketplace_campaigns (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   brand_id UUID REFERENCES brands(id) NOT NULL,
   creator_id UUID REFERENCES creator_accounts(id),
@@ -192,10 +207,12 @@ CREATE TABLE marketplace_campaigns (
 ALTER TABLE marketplace_campaigns ENABLE ROW LEVEL SECURITY;
 
 -- Policies for marketplace_campaigns
+DROP POLICY IF EXISTS "Anyone can view public campaigns" ON marketplace_campaigns;
 CREATE POLICY "Anyone can view public campaigns"
   ON marketplace_campaigns FOR SELECT
   USING (visibility = 'public' OR auth.uid() IS NOT NULL);
 
+DROP POLICY IF EXISTS "Brands can create campaigns" ON marketplace_campaigns;
 CREATE POLICY "Brands can create campaigns"
   ON marketplace_campaigns FOR INSERT
   WITH CHECK (
@@ -204,6 +221,7 @@ CREATE POLICY "Brands can create campaigns"
     )
   );
 
+DROP POLICY IF EXISTS "Brands can update their campaigns" ON marketplace_campaigns;
 CREATE POLICY "Brands can update their campaigns"
   ON marketplace_campaigns FOR UPDATE
   USING (
@@ -212,6 +230,7 @@ CREATE POLICY "Brands can update their campaigns"
     )
   );
 
+DROP POLICY IF EXISTS "Brands can delete their campaigns" ON marketplace_campaigns;
 CREATE POLICY "Brands can delete their campaigns"
   ON marketplace_campaigns FOR DELETE
   USING (
@@ -221,7 +240,7 @@ CREATE POLICY "Brands can delete their campaigns"
   );
 
 -- Applications from creators
-CREATE TABLE marketplace_applications (
+CREATE TABLE IF NOT EXISTS marketplace_applications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   campaign_id UUID REFERENCES marketplace_campaigns(id) ON DELETE CASCADE NOT NULL,
   creator_id UUID REFERENCES creator_accounts(id) NOT NULL,
@@ -238,6 +257,7 @@ CREATE TABLE marketplace_applications (
 ALTER TABLE marketplace_applications ENABLE ROW LEVEL SECURITY;
 
 -- Policies for marketplace_applications
+DROP POLICY IF EXISTS "Creators can view their own applications" ON marketplace_applications;
 CREATE POLICY "Creators can view their own applications"
   ON marketplace_applications FOR SELECT
   USING (
@@ -246,6 +266,7 @@ CREATE POLICY "Creators can view their own applications"
     )
   );
 
+DROP POLICY IF EXISTS "Brands can view applications to their campaigns" ON marketplace_applications;
 CREATE POLICY "Brands can view applications to their campaigns"
   ON marketplace_applications FOR SELECT
   USING (
@@ -256,6 +277,7 @@ CREATE POLICY "Brands can view applications to their campaigns"
     )
   );
 
+DROP POLICY IF EXISTS "Creators can insert their own applications" ON marketplace_applications;
 CREATE POLICY "Creators can insert their own applications"
   ON marketplace_applications FOR INSERT
   WITH CHECK (
@@ -264,6 +286,7 @@ CREATE POLICY "Creators can insert their own applications"
     )
   );
 
+DROP POLICY IF EXISTS "Creators can update their own applications" ON marketplace_applications;
 CREATE POLICY "Creators can update their own applications"
   ON marketplace_applications FOR UPDATE
   USING (
@@ -272,6 +295,7 @@ CREATE POLICY "Creators can update their own applications"
     )
   );
 
+DROP POLICY IF EXISTS "Brands can update applications to their campaigns" ON marketplace_applications;
 CREATE POLICY "Brands can update applications to their campaigns"
   ON marketplace_applications FOR UPDATE
   USING (
@@ -283,7 +307,7 @@ CREATE POLICY "Brands can update applications to their campaigns"
   );
 
 -- Deliverables submitted by creators
-CREATE TABLE marketplace_deliverables (
+CREATE TABLE IF NOT EXISTS marketplace_deliverables (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   campaign_id UUID REFERENCES marketplace_campaigns(id) NOT NULL,
   creator_id UUID REFERENCES creator_accounts(id) NOT NULL,
@@ -300,6 +324,7 @@ CREATE TABLE marketplace_deliverables (
 ALTER TABLE marketplace_deliverables ENABLE ROW LEVEL SECURITY;
 
 -- Policies for marketplace_deliverables
+DROP POLICY IF EXISTS "Creators can view their own deliverables" ON marketplace_deliverables;
 CREATE POLICY "Creators can view their own deliverables"
   ON marketplace_deliverables FOR SELECT
   USING (
@@ -308,6 +333,7 @@ CREATE POLICY "Creators can view their own deliverables"
     )
   );
 
+DROP POLICY IF EXISTS "Brands can view deliverables for their campaigns" ON marketplace_deliverables;
 CREATE POLICY "Brands can view deliverables for their campaigns"
   ON marketplace_deliverables FOR SELECT
   USING (
@@ -318,6 +344,7 @@ CREATE POLICY "Brands can view deliverables for their campaigns"
     )
   );
 
+DROP POLICY IF EXISTS "Creators can insert their own deliverables" ON marketplace_deliverables;
 CREATE POLICY "Creators can insert their own deliverables"
   ON marketplace_deliverables FOR INSERT
   WITH CHECK (
@@ -326,6 +353,7 @@ CREATE POLICY "Creators can insert their own deliverables"
     )
   );
 
+DROP POLICY IF EXISTS "Creators can update their own deliverables" ON marketplace_deliverables;
 CREATE POLICY "Creators can update their own deliverables"
   ON marketplace_deliverables FOR UPDATE
   USING (
@@ -334,6 +362,7 @@ CREATE POLICY "Creators can update their own deliverables"
     )
   );
 
+DROP POLICY IF EXISTS "Brands can update deliverables for their campaigns" ON marketplace_deliverables;
 CREATE POLICY "Brands can update deliverables for their campaigns"
   ON marketplace_deliverables FOR UPDATE
   USING (
@@ -345,7 +374,7 @@ CREATE POLICY "Brands can update deliverables for their campaigns"
   );
 
 -- Payments for marketplace campaigns
-CREATE TABLE marketplace_payments (
+CREATE TABLE IF NOT EXISTS marketplace_payments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   campaign_id UUID REFERENCES marketplace_campaigns(id) NOT NULL,
   brand_id UUID REFERENCES brands(id) NOT NULL,
@@ -364,6 +393,7 @@ CREATE TABLE marketplace_payments (
 ALTER TABLE marketplace_payments ENABLE ROW LEVEL SECURITY;
 
 -- Policies for marketplace_payments
+DROP POLICY IF EXISTS "Creators can view their payments" ON marketplace_payments;
 CREATE POLICY "Creators can view their payments"
   ON marketplace_payments FOR SELECT
   USING (
@@ -372,6 +402,7 @@ CREATE POLICY "Creators can view their payments"
     )
   );
 
+DROP POLICY IF EXISTS "Brands can view their payments" ON marketplace_payments;
 CREATE POLICY "Brands can view their payments"
   ON marketplace_payments FOR SELECT
   USING (
@@ -380,21 +411,25 @@ CREATE POLICY "Brands can view their payments"
     )
   );
 
+DROP POLICY IF EXISTS "Service role can manage all payments" ON marketplace_payments;
 CREATE POLICY "Service role can manage all payments"
   ON marketplace_payments FOR ALL
   USING ((auth.jwt() ->> 'role'::text) = 'service_role'::text);
 
 -- Add updated_at trigger for tables
+DROP TRIGGER IF EXISTS update_creator_accounts_updated_at ON creator_accounts;
 CREATE TRIGGER update_creator_accounts_updated_at
   BEFORE UPDATE ON creator_accounts
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_creator_subscriptions_updated_at ON creator_subscriptions;
 CREATE TRIGGER update_creator_subscriptions_updated_at
   BEFORE UPDATE ON creator_subscriptions
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_marketplace_campaigns_updated_at ON marketplace_campaigns;
 CREATE TRIGGER update_marketplace_campaigns_updated_at
   BEFORE UPDATE ON marketplace_campaigns
   FOR EACH ROW

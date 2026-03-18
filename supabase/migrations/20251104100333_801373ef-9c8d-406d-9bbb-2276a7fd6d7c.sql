@@ -1,5 +1,5 @@
 -- Create support_tickets table
-CREATE TABLE public.support_tickets (
+CREATE TABLE IF NOT EXISTS public.support_tickets (
   id uuid NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   name text NOT NULL,
@@ -15,7 +15,7 @@ CREATE TABLE public.support_tickets (
 );
 
 -- Create feature_suggestions table
-CREATE TABLE public.feature_suggestions (
+CREATE TABLE IF NOT EXISTS public.feature_suggestions (
   id uuid NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   name text NOT NULL,
@@ -36,54 +36,64 @@ ALTER TABLE public.support_tickets ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.feature_suggestions ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for support_tickets
+DROP POLICY IF EXISTS "Users can insert their own tickets" ON public.support_tickets;
 CREATE POLICY "Users can insert their own tickets"
   ON public.support_tickets
   FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can view their own tickets" ON public.support_tickets;
 CREATE POLICY "Users can view their own tickets"
   ON public.support_tickets
   FOR SELECT
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Admins can view all tickets" ON public.support_tickets;
 CREATE POLICY "Admins can view all tickets"
   ON public.support_tickets
   FOR SELECT
   USING (public.has_role(auth.uid(), 'admin'::user_role));
 
+DROP POLICY IF EXISTS "Admins can update all tickets" ON public.support_tickets;
 CREATE POLICY "Admins can update all tickets"
   ON public.support_tickets
   FOR UPDATE
   USING (public.has_role(auth.uid(), 'admin'::user_role));
 
 -- RLS Policies for feature_suggestions
+DROP POLICY IF EXISTS "Users can insert their own suggestions" ON public.feature_suggestions;
 CREATE POLICY "Users can insert their own suggestions"
   ON public.feature_suggestions
   FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can view their own suggestions" ON public.feature_suggestions;
 CREATE POLICY "Users can view their own suggestions"
   ON public.feature_suggestions
   FOR SELECT
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Admins can view all suggestions" ON public.feature_suggestions;
 CREATE POLICY "Admins can view all suggestions"
   ON public.feature_suggestions
   FOR SELECT
   USING (public.has_role(auth.uid(), 'admin'::user_role));
 
+DROP POLICY IF EXISTS "Admins can update all suggestions" ON public.feature_suggestions;
 CREATE POLICY "Admins can update all suggestions"
   ON public.feature_suggestions
   FOR UPDATE
   USING (public.has_role(auth.uid(), 'admin'::user_role));
 
 -- Create trigger for updated_at on support_tickets
+DROP TRIGGER IF EXISTS update_support_tickets_updated_at ON public.support_tickets;
 CREATE TRIGGER update_support_tickets_updated_at
   BEFORE UPDATE ON public.support_tickets
   FOR EACH ROW
   EXECUTE FUNCTION public.handle_updated_at();
 
 -- Create trigger for updated_at on feature_suggestions
+DROP TRIGGER IF EXISTS update_feature_suggestions_updated_at ON public.feature_suggestions;
 CREATE TRIGGER update_feature_suggestions_updated_at
   BEFORE UPDATE ON public.feature_suggestions
   FOR EACH ROW

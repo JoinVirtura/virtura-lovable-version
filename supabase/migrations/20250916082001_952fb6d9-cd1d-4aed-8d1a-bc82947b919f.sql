@@ -14,28 +14,32 @@ CREATE TABLE IF NOT EXISTS public.error_logs (
 ALTER TABLE public.error_logs ENABLE ROW LEVEL SECURITY;
 
 -- RLS policies for error_logs
-CREATE POLICY "Users can view their own error logs" 
-ON public.error_logs 
-FOR SELECT 
+DROP POLICY IF EXISTS "Users can view their own error logs" ON public.error_logs;
+CREATE POLICY "Users can view their own error logs"
+ON public.error_logs
+FOR SELECT
 USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can insert their own error logs" 
-ON public.error_logs 
-FOR INSERT 
+DROP POLICY IF EXISTS "Users can insert their own error logs" ON public.error_logs;
+CREATE POLICY "Users can insert their own error logs"
+ON public.error_logs
+FOR INSERT
 WITH CHECK (auth.uid() = user_id);
 
 -- Admins can view all error logs (will be implemented with user roles)
-CREATE POLICY "Service role can manage all error logs" 
-ON public.error_logs 
-FOR ALL 
+DROP POLICY IF EXISTS "Service role can manage all error logs" ON public.error_logs;
+CREATE POLICY "Service role can manage all error logs"
+ON public.error_logs
+FOR ALL
 USING (auth.jwt() ->> 'role' = 'service_role');
 
 -- Index for better performance
-CREATE INDEX idx_error_logs_user_id ON public.error_logs(user_id);
-CREATE INDEX idx_error_logs_created_at ON public.error_logs(created_at);
-CREATE INDEX idx_error_logs_error_type ON public.error_logs(error_type);
+CREATE INDEX IF NOT EXISTS idx_error_logs_user_id ON public.error_logs(user_id);
+CREATE INDEX IF NOT EXISTS idx_error_logs_created_at ON public.error_logs(created_at);
+CREATE INDEX IF NOT EXISTS idx_error_logs_error_type ON public.error_logs(error_type);
 
 -- Update trigger for updated_at
+DROP TRIGGER IF EXISTS update_error_logs_updated_at ON public.error_logs;
 CREATE TRIGGER update_error_logs_updated_at
     BEFORE UPDATE ON public.error_logs
     FOR EACH ROW

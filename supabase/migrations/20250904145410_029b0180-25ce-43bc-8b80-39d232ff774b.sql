@@ -12,5 +12,6 @@ DROP POLICY IF EXISTS "Allow authenticated users to update avatars" ON storage.o
 DROP POLICY IF EXISTS "Allow authenticated users to delete avatars" ON storage.objects;
 
 -- Create simple public policies for testing
+DROP POLICY IF EXISTS "Public Avatar Access" ON storage.objects;
 CREATE POLICY "Public Avatar Access" ON storage.objects
 FOR ALL USING (bucket_id = 'avatars');

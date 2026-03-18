@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS gpu_workers (
   worker_id TEXT UNIQUE NOT NULL,
   gpu_type TEXT NOT NULL, -- 'L40S', '4090', 'A100', 'H100'
   vram_total INTEGER NOT NULL,
-  vram_available INTEGER NOT NULL, 
+  vram_available INTEGER NOT NULL,
   status TEXT DEFAULT 'idle' CHECK (status IN ('idle', 'busy', 'error', 'maintenance')),
   current_job_id UUID REFERENCES jobs(id),
   last_heartbeat TIMESTAMP WITH TIME ZONE DEFAULT now(),
@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS avatar_loras (
 ALTER TABLE avatar_loras ENABLE ROW LEVEL SECURITY;
 
 -- Create LoRA policies
+DROP POLICY IF EXISTS "Users can manage their own LoRAs" ON avatar_loras;
 CREATE POLICY "Users can manage their own LoRAs" ON avatar_loras
   FOR ALL USING (auth.uid() = user_id);
 
@@ -64,9 +65,11 @@ CREATE TABLE IF NOT EXISTS style_templates (
 ALTER TABLE style_templates ENABLE ROW LEVEL SECURITY;
 
 -- Create style template policies
+DROP POLICY IF EXISTS "Users can manage their own templates" ON style_templates;
 CREATE POLICY "Users can manage their own templates" ON style_templates
   FOR ALL USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can view public templates" ON style_templates;
 CREATE POLICY "Users can view public templates" ON style_templates
   FOR SELECT USING (is_public = true);
 
@@ -88,22 +91,25 @@ CREATE TABLE IF NOT EXISTS render_analytics (
 ALTER TABLE render_analytics ENABLE ROW LEVEL SECURITY;
 
 -- Create analytics policies
+DROP POLICY IF EXISTS "Users can view analytics for their jobs" ON render_analytics;
 CREATE POLICY "Users can view analytics for their jobs" ON render_analytics
   FOR SELECT USING (
     EXISTS (
-      SELECT 1 FROM jobs 
-      WHERE jobs.id = render_analytics.job_id 
+      SELECT 1 FROM jobs
+      WHERE jobs.id = render_analytics.job_id
       AND jobs.user_id = auth.uid()
     )
   );
 
 -- Service role can manage all analytics
+DROP POLICY IF EXISTS "Service role can manage all analytics" ON render_analytics;
 CREATE POLICY "Service role can manage all analytics" ON render_analytics
   FOR ALL USING (
     (auth.jwt() ->> 'role'::text) = 'service_role'::text
   );
 
 -- Service role can manage GPU workers
+DROP POLICY IF EXISTS "Service role can manage GPU workers" ON gpu_workers;
 CREATE POLICY "Service role can manage GPU workers" ON gpu_workers
   FOR ALL USING (
     (auth.jwt() ->> 'role'::text) = 'service_role'::text
@@ -115,7 +121,7 @@ RETURNS VOID
 LANGUAGE SQL
 SECURITY DEFINER
 AS $$
-  UPDATE gpu_workers 
+  UPDATE gpu_workers
   SET last_heartbeat = now(), updated_at = now()
   WHERE worker_id = worker_id_param;
 $$;
@@ -127,20 +133,20 @@ LANGUAGE SQL
 SECURITY DEFINER
 AS $$
   WITH available_worker AS (
-    SELECT worker_id 
-    FROM gpu_workers 
-    WHERE status = 'idle' 
+    SELECT worker_id
+    FROM gpu_workers
+    WHERE status = 'idle'
       AND vram_available >= required_vram
       AND last_heartbeat > now() - INTERVAL '5 minutes'
     ORDER BY vram_available DESC
     LIMIT 1
   )
-  UPDATE jobs 
+  UPDATE jobs
   SET worker_id = (SELECT worker_id FROM available_worker),
-      status = CASE 
-        WHEN (SELECT worker_id FROM available_worker) IS NOT NULL 
-        THEN 'processing' 
-        ELSE 'queued' 
+      status = CASE
+        WHEN (SELECT worker_id FROM available_worker) IS NOT NULL
+        THEN 'processing'
+        ELSE 'queued'
       END,
       updated_at = now()
   WHERE id = job_id_param

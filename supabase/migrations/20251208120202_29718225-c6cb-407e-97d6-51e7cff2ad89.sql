@@ -1,5 +1,5 @@
 -- Create marketplace_messages table for real-time chat between brands and creators
-CREATE TABLE public.marketplace_messages (
+CREATE TABLE IF NOT EXISTS public.marketplace_messages (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   campaign_id UUID NOT NULL REFERENCES marketplace_campaigns(id) ON DELETE CASCADE,
   sender_id UUID NOT NULL,
@@ -12,11 +12,12 @@ CREATE TABLE public.marketplace_messages (
 ALTER TABLE public.marketplace_messages ENABLE ROW LEVEL SECURITY;
 
 -- Create index for faster queries
-CREATE INDEX idx_marketplace_messages_campaign_id ON public.marketplace_messages(campaign_id);
-CREATE INDEX idx_marketplace_messages_created_at ON public.marketplace_messages(created_at);
+CREATE INDEX IF NOT EXISTS idx_marketplace_messages_campaign_id ON public.marketplace_messages(campaign_id);
+CREATE INDEX IF NOT EXISTS idx_marketplace_messages_created_at ON public.marketplace_messages(created_at);
 
 -- RLS Policies: Only campaign participants can view/send messages
 -- Users can view messages if they are the brand owner or the assigned creator
+DROP POLICY IF EXISTS "Users can view messages for their campaigns" ON public.marketplace_messages;
 CREATE POLICY "Users can view messages for their campaigns"
 ON public.marketplace_messages
 FOR SELECT
@@ -31,6 +32,7 @@ USING (
 );
 
 -- Users can send messages if they are the brand owner or the assigned creator
+DROP POLICY IF EXISTS "Users can send messages for their campaigns" ON public.marketplace_messages;
 CREATE POLICY "Users can send messages for their campaigns"
 ON public.marketplace_messages
 FOR INSERT
@@ -46,6 +48,7 @@ WITH CHECK (
 );
 
 -- Users can mark messages as read
+DROP POLICY IF EXISTS "Users can update message read status" ON public.marketplace_messages;
 CREATE POLICY "Users can update message read status"
 ON public.marketplace_messages
 FOR UPDATE

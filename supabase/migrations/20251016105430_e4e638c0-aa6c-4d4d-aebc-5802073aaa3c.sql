@@ -38,10 +38,7 @@ AS $$
   )
 $$;
 
--- Assign admin role to your account (sirjahibentley@gmail.com)
-INSERT INTO public.user_roles (user_id, role)
-VALUES ('357de30c-916f-4f54-bc2e-b32a7f7a01f0', 'admin')
-ON CONFLICT (user_id, role) DO NOTHING;
+-- Assign admin role (skipped - original user does not exist in new project)
 
 -- Create a helper function to check if current user is admin
 CREATE OR REPLACE FUNCTION public.is_admin()

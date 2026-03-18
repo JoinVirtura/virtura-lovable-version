@@ -50,44 +50,54 @@ ALTER TABLE trial_checklist_progress ENABLE ROW LEVEL SECURITY;
 ALTER TABLE trial_extensions ENABLE ROW LEVEL SECURITY;
 
 -- Users can view their own data
+DROP POLICY IF EXISTS "Users can view own trial conversions" ON trial_conversions;
 CREATE POLICY "Users can view own trial conversions" ON trial_conversions
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can view own feature usage" ON trial_feature_usage;
 CREATE POLICY "Users can view own feature usage" ON trial_feature_usage
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can manage own checklist" ON trial_checklist_progress;
 CREATE POLICY "Users can manage own checklist" ON trial_checklist_progress
   FOR ALL USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can view own extensions" ON trial_extensions;
 CREATE POLICY "Users can view own extensions" ON trial_extensions
   FOR SELECT USING (auth.uid() = user_id);
 
 -- Service role can manage all
+DROP POLICY IF EXISTS "Service role can manage conversions" ON trial_conversions;
 CREATE POLICY "Service role can manage conversions" ON trial_conversions
   FOR ALL USING ((auth.jwt() ->> 'role'::text) = 'service_role'::text);
 
+DROP POLICY IF EXISTS "Service role can manage feature usage" ON trial_feature_usage;
 CREATE POLICY "Service role can manage feature usage" ON trial_feature_usage
   FOR ALL USING ((auth.jwt() ->> 'role'::text) = 'service_role'::text);
 
+DROP POLICY IF EXISTS "Service role can manage extensions" ON trial_extensions;
 CREATE POLICY "Service role can manage extensions" ON trial_extensions
   FOR ALL USING ((auth.jwt() ->> 'role'::text) = 'service_role'::text);
 
 -- Admins can view all data
+DROP POLICY IF EXISTS "Admins can view all conversions" ON trial_conversions;
 CREATE POLICY "Admins can view all conversions" ON trial_conversions
   FOR SELECT USING (has_role(auth.uid(), 'admin'::user_role));
 
+DROP POLICY IF EXISTS "Admins can view all feature usage" ON trial_feature_usage;
 CREATE POLICY "Admins can view all feature usage" ON trial_feature_usage
   FOR SELECT USING (has_role(auth.uid(), 'admin'::user_role));
 
+DROP POLICY IF EXISTS "Admins can manage extensions" ON trial_extensions;
 CREATE POLICY "Admins can manage extensions" ON trial_extensions
   FOR ALL USING (has_role(auth.uid(), 'admin'::user_role));
 
 -- Create view for trial analytics
 CREATE OR REPLACE VIEW trial_analytics_summary AS
-SELECT 
+SELECT
   COUNT(DISTINCT s.user_id) as total_trials,
   COUNT(DISTINCT CASE WHEN s.status = 'active' AND s.plan_name IS NOT NULL THEN s.user_id END) as converted_trials,
-  ROUND(COUNT(DISTINCT CASE WHEN s.status = 'active' AND s.plan_name IS NOT NULL THEN s.user_id END)::numeric / 
+  ROUND(COUNT(DISTINCT CASE WHEN s.status = 'active' AND s.plan_name IS NOT NULL THEN s.user_id END)::numeric /
     NULLIF(COUNT(DISTINCT s.user_id), 0) * 100, 2) as conversion_rate,
   AVG(CASE WHEN tc.time_to_convert_hours IS NOT NULL THEN tc.time_to_convert_hours END) as avg_time_to_convert_hours,
   COUNT(DISTINCT CASE WHEN s.trial_start >= NOW() - INTERVAL '7 days' THEN s.user_id END) as trials_last_7_days,
@@ -97,6 +107,7 @@ LEFT JOIN trial_conversions tc ON s.user_id = tc.user_id
 WHERE s.trial_used = true OR s.status = 'trialing';
 
 -- Create updated_at trigger for checklist
+DROP TRIGGER IF EXISTS update_trial_checklist_updated_at ON trial_checklist_progress;
 CREATE TRIGGER update_trial_checklist_updated_at
   BEFORE UPDATE ON trial_checklist_progress
   FOR EACH ROW
