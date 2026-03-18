@@ -17,7 +17,8 @@
       "Bash(ls /Users/cesarvega/Movies/CapCut/VIRTURA/virtura-ai-canvas/supabase/migrations/*.sql)",
       "Bash(pkill -f vite)",
       "Bash(git rm:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
