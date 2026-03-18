@@ -18,7 +18,9 @@
       "Bash(pkill -f vite)",
       "Bash(git rm:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(xargs ls:*)",
+      "Bash(grep -l \"export const\\\\|export function\\\\|export interface\" /Users/cesarvega/Movies/CapCut/VIRTURA/virtura-ai-canvas/src/services/*.ts)"
     ]
   }
 }
