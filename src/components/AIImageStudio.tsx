@@ -49,11 +49,26 @@ interface PreviewCard {
   safetyPassed: boolean;
   isSelected?: boolean;
   isFavorited?: boolean;
+  startedAt?: number; // epoch ms when generation started
+  generationTime?: number; // ms elapsed when done
   metadata?: {
     contentType: string;
     style: string;
     resolution: string;
   };
+}
+
+function LiveTimer({ startedAt }: { startedAt: number }) {
+  const [elapsed, setElapsed] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => setElapsed(Date.now() - startedAt), 100);
+    return () => clearInterval(interval);
+  }, [startedAt]);
+  return (
+    <div className="mt-2 text-yellow-400 text-sm font-mono">
+      ⏱ {(elapsed / 1000).toFixed(1)}s
+    </div>
+  );
 }
 
 interface AIImageStudioProps {
@@ -197,12 +212,13 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
     
     // Create placeholder cards based on actual count (1 for edit, user-selected for new)
     const newCardIds = Array.from({ length: actualImageCount }, (_, i) => `card-${Date.now()}-${i}`);
-    const placeholderCards: PreviewCard[] = newCardIds.map((id, index) => ({
+    const placeholderCards: PreviewCard[] = newCardIds.map((id) => ({
       id,
       imageUrl: "",
       prompt: prompt,
       isGenerating: true,
       safetyPassed: true,
+      startedAt: Date.now(),
     }));
 
     setPreviewCards(placeholderCards);
@@ -222,41 +238,30 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
         referenceImage
       };
 
-      let results;
-      
-      if (isEditMode) {
-        // Edit mode: Generate single image
-        const result = await ImageGenerationService.generateImage(params);
-        results = [result];
-      } else {
-        // New generation: Generate variants using user-selected imageCount
-        results = await ImageGenerationService.generateVariants(prompt, params, imageCount);
-      }
-      
-      // Update cards with results
-      setPreviewCards(prev => 
-        prev.map((card, index) => {
-          if (newCardIds.includes(card.id)) {
-            const cardIndex = newCardIds.indexOf(card.id);
-            const result = results[cardIndex];
-            
-            if (result && result.success && result.image) {
-              return {
-                ...card,
-                imageUrl: result.image,
-                isGenerating: false,
-                metadata: result.metadata
-              };
-            } else {
-              return {
-                ...card,
-                imageUrl: "/placeholder.svg",
-                isGenerating: false,
-                prompt: `Failed: ${result?.error || 'Unknown error'}`
-              };
-            }
+      // Generate each image independently so cards update as they finish with individual timings
+      await Promise.allSettled(
+        placeholderCards.map(async ({ id: cardId, startedAt }) => {
+          try {
+            const result = await ImageGenerationService.generateImage(params);
+            const elapsed = Date.now() - (startedAt ?? Date.now());
+            setPreviewCards(prev =>
+              prev.map(card =>
+                card.id === cardId
+                  ? result.success && result.image
+                    ? { ...card, imageUrl: result.image, isGenerating: false, generationTime: elapsed, metadata: result.metadata }
+                    : { ...card, imageUrl: "/placeholder.svg", isGenerating: false, prompt: `Failed: ${result.error || 'Unknown error'}` }
+                  : card
+              )
+            );
+          } catch (err) {
+            setPreviewCards(prev =>
+              prev.map(card =>
+                card.id === cardId
+                  ? { ...card, imageUrl: "/placeholder.svg", isGenerating: false }
+                  : card
+              )
+            );
           }
-          return card;
         })
       );
 
@@ -1102,7 +1107,8 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                           <div className="w-full h-full bg-muted flex items-center justify-center">
                             <div className="text-center">
                               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2" />
-                              <p className="text-sm text-muted-foreground">Generating...</p>
+                              <p className="text-sm text-muted-foreground">Creating magic...</p>
+                              {card.startedAt && <LiveTimer startedAt={card.startedAt} />}
                             </div>
                           </div>
                         ) : (
@@ -1111,8 +1117,8 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                               src={card.imageUrl}
                               alt={card.prompt}
                               className={`w-full h-full object-cover rounded-2xl cursor-pointer ${
-                                selectedImageForRefinement === card.id 
-                                  ? 'ring-4 ring-secondary shadow-[0_0_40px_rgba(236,72,153,0.6)]' 
+                                selectedImageForRefinement === card.id
+                                  ? 'ring-4 ring-secondary shadow-[0_0_40px_rgba(236,72,153,0.6)]'
                                   : ''
                               }`}
                               onClick={() => {
@@ -1120,6 +1126,11 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                                 setSelectedImageForRefinement(card.id);
                               }}
                             />
+                            {card.generationTime && (
+                              <div className="absolute top-2 right-2 bg-black/70 text-yellow-400 text-xs font-mono px-2 py-0.5 rounded-full border border-yellow-400/40 pointer-events-none">
+                                ⏱ {(card.generationTime / 1000).toFixed(1)}s
+                              </div>
+                            )}
                             <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                               <TooltipProvider>
                                 <Tooltip>

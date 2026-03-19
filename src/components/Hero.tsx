@@ -74,6 +74,19 @@ const styleData = [
   { name: "Botanical Vintage", username: "plantlore", id: "botanical", image: styleBotanical },
 ];
 
+function HeroLiveTimer({ startedAt }: { startedAt: number }) {
+  const [elapsed, setElapsed] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => setElapsed(Date.now() - startedAt), 100);
+    return () => clearInterval(interval);
+  }, [startedAt]);
+  return (
+    <div className="mt-3 text-yellow-400 text-sm font-mono">
+      ⏱ {(elapsed / 1000).toFixed(1)}s
+    </div>
+  );
+}
+
 export const Hero = () => {
   const [inputValue, setInputValue] = useState("");
   const [selectedStyle, setSelectedStyle] = useState("Style");
@@ -301,12 +314,14 @@ export const Hero = () => {
     setIsGenerating(true);
     
     // Create placeholder cards
-    const newCardIds = Array.from({ length: 3 }, (_, i) => `card-${Date.now()}-${i}`);
+    const now = Date.now();
+    const newCardIds = Array.from({ length: 3 }, (_, i) => `card-${now}-${i}`);
     const placeholderCards = newCardIds.map(id => ({
       id,
       imageUrl: "",
       prompt: inputValue,
       isGenerating: true,
+      startedAt: Date.now(),
     }));
 
     setGeneratedImages(prev => [...placeholderCards, ...prev]);
@@ -337,33 +352,30 @@ export const Hero = () => {
         referenceImage: refImage
       };
 
-      const results = await ImageGenerationService.generateVariants(inputValue, params, 3);
-      
-      // Update cards with results, keep all 3 slots
-      setGeneratedImages(prev => 
-        prev.map(card => {
-          if (newCardIds.includes(card.id)) {
-            const cardIndex = newCardIds.indexOf(card.id);
-            const result = results[cardIndex];
-            
-            if (result?.success && result.image) {
-              return {
-                ...card,
-                imageUrl: result.image,
-                isGenerating: false,
-                metadata: result.metadata
-              };
-            } else {
-              // Mark as failed but keep the slot
-              return {
-                ...card,
-                isGenerating: false,
-                failed: true,
-                error: result?.error || 'Generation failed'
-              };
-            }
+      // Generate each image independently so cards update as they finish
+      await Promise.allSettled(
+        placeholderCards.map(async ({ id: cardId, startedAt }) => {
+          try {
+            const result = await ImageGenerationService.generateImage(params);
+            const elapsed = Date.now() - startedAt;
+            setGeneratedImages(prev =>
+              prev.map(card =>
+                card.id === cardId
+                  ? result.success && result.image
+                    ? { ...card, imageUrl: result.image, isGenerating: false, generationTime: elapsed, metadata: result.metadata }
+                    : { ...card, isGenerating: false, failed: true, error: result.error || 'Generation failed' }
+                  : card
+              )
+            );
+          } catch (err) {
+            setGeneratedImages(prev =>
+              prev.map(card =>
+                card.id === cardId
+                  ? { ...card, isGenerating: false, failed: true, error: 'Generation failed' }
+                  : card
+              )
+            );
           }
-          return card;
         })
       );
 
@@ -574,6 +586,7 @@ export const Hero = () => {
                       </div>
                       <p className="text-white mt-6 text-center font-medium">Creating magic...</p>
                       <p className="text-white/60 text-sm mt-2">This may take a moment</p>
+                      {(card as any).startedAt && <HeroLiveTimer startedAt={(card as any).startedAt} />}
                     </div>
                   ) : (card as any).failed ? (
                     <div className="aspect-square bg-gradient-to-br from-red-500/10 to-orange-500/10 flex flex-col items-center justify-center p-8 rounded-2xl">
@@ -599,6 +612,11 @@ export const Hero = () => {
                         alt={card.prompt}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-2xl"
                       />
+                      {(card as any).generationTime && (
+                        <div className="absolute top-2 right-2 bg-black/70 text-yellow-400 text-xs font-mono px-2 py-0.5 rounded-full border border-yellow-400/40 pointer-events-none">
+                          ⏱ {((card as any).generationTime / 1000).toFixed(1)}s
+                        </div>
+                      )}
                       
                       {/* Overlaid metadata */}
                       <div className="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black/90 via-black/70 to-transparent">

@@ -643,45 +643,41 @@ export class ImageGenerationService {
   }
 
   static async generateThreeVariants(
-    basePrompt: string, 
+    basePrompt: string,
     params: ImageGenerationParams,
     onProgress?: (variantIndex: number, progress: number, stage: string) => void
   ): Promise<GeneratedImage[]> {
-    const results: GeneratedImage[] = [];
-    
-    // Parse the prompt to extract different elements
     const { parsedElements, focusedPrompts } = this.parseComplexPrompt(basePrompt);
-    
-    for (let i = 0; i < 3; i++) {
+
+    const promises = Array.from({ length: 3 }, (_, i) => async () => {
       try {
         onProgress?.(i, 10, 'Starting generation...');
-        
-        // Use focused prompts to avoid grid generation
         const focusedPrompt = focusedPrompts[i] || parsedElements.baseDescription;
-        
         onProgress?.(i, 50, 'Generating image...');
-        
         const result = await this.generateImage({
           ...params,
           prompt: focusedPrompt,
           enhance: true,
           quality: 'ultra'
         });
-        
         onProgress?.(i, 100, 'Complete!');
-        results.push(result);
-        
+        return result;
       } catch (error) {
         console.error(`Error generating variant ${i + 1}:`, error);
-        results.push({
+        onProgress?.(i, 100, 'Failed');
+        return {
           success: false,
           error: `Variant ${i + 1} failed: ${error instanceof Error ? error.message : 'Unknown error'}`
-        });
-        onProgress?.(i, 100, 'Failed');
+        };
       }
-    }
-    
-    return results;
+    });
+
+    const settled = await Promise.allSettled(promises.map(fn => fn()));
+    return settled.map((result, i) =>
+      result.status === 'fulfilled'
+        ? result.value
+        : { success: false, error: `Variant ${i + 1} failed: ${result.reason?.message || 'Unknown error'}` }
+    );
   }
 
   private static parseComplexPrompt(prompt: string): { parsedElements: any; focusedPrompts: string[] } {

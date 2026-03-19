@@ -9,7 +9,11 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const GEMINI_MODEL = 'gemini-3.1-flash-image-preview';
+const GEMINI_MODELS = [
+  'gemini-2.0-flash-preview-image-generation',
+  'gemini-2.0-flash-exp-image-generation',
+  'gemini-2.0-flash-exp',
+];
 const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
 
 /**
@@ -31,25 +35,29 @@ async function urlToBase64(url: string): Promise<string> {
   if (!response.ok) throw new Error(`Failed to fetch image: ${response.status}`);
   const buffer = await response.arrayBuffer();
   const bytes = new Uint8Array(buffer);
-  const binary = bytes.reduce((acc, byte) => acc + String.fromCharCode(byte), '');
-  const base64 = btoa(binary);
   const contentType = response.headers.get('content-type') || 'image/jpeg';
+  // Process in chunks to avoid call stack overflow on large images
+  const chunkSize = 8192;
+  let binary = '';
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
+  }
+  const base64 = btoa(binary);
   return `data:${contentType};base64,${base64}`;
 }
 
 /**
  * Call the Gemini API with retry logic (Gemini can return text instead of image)
  */
-async function callGemini(apiKey: string, parts: object[]): Promise<string> {
-  const url = `${GEMINI_API_BASE}/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
+async function callGemini(apiKey: string, parts: object[]): Promise<{ base64: string; model: string }> {
   const payload = {
     contents: [{ parts }],
     generationConfig: { responseModalities: ["IMAGE"] },
   };
 
-  const MAX_RETRIES = 1;
-  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
-    console.log(`🚀 Gemini attempt ${attempt}/${MAX_RETRIES}...`);
+  for (const model of GEMINI_MODELS) {
+    const url = `${GEMINI_API_BASE}/${model}:generateContent?key=${apiKey}`;
+    console.log(`🚀 Trying model: ${model}`);
 
     const response = await fetch(url, {
       method: 'POST',
@@ -59,40 +67,33 @@ async function callGemini(apiKey: string, parts: object[]): Promise<string> {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`❌ Gemini API error (attempt ${attempt}):`, errorText);
-      if (attempt === MAX_RETRIES) throw new Error(`Gemini API error: ${response.status} - ${errorText}`);
-      await new Promise(r => setTimeout(r, 2000));
+      console.warn(`⚠️ Model ${model} failed (${response.status}): ${errorText.substring(0, 200)}`);
+      // Short delay before trying next model
+      await new Promise(r => setTimeout(r, 1000));
       continue;
     }
 
     const data = await response.json();
     const candidates = data.candidates?.[0];
 
-    // Log finish reason if not STOP
     const finishReason = candidates?.finishReason;
     if (finishReason && finishReason !== 'STOP') {
-      console.warn(`⚠️ Gemini finish reason: ${finishReason}`);
+      console.warn(`⚠️ ${model} finish reason: ${finishReason}`);
     }
 
-    // Log text part if returned (model refused or explained)
     const textPart = candidates?.content?.parts?.find((p: any) => p.text);
     if (textPart?.text) {
-      console.warn(`⚠️ Gemini returned text: "${textPart.text.substring(0, 200)}"`);
+      console.warn(`⚠️ ${model} returned text: "${textPart.text.substring(0, 200)}"`);
     }
 
-    // Extract image
     const imagePart = candidates?.content?.parts?.find((p: any) => p.inlineData);
     if (imagePart?.inlineData?.data) {
-      console.log(`✅ Gemini image received on attempt ${attempt}`);
-      return imagePart.inlineData.data; // base64 string
+      console.log(`✅ Image received from model: ${model}`);
+      return { base64: imagePart.inlineData.data, model };
     }
 
-    console.warn(`⚠️ No image in response (attempt ${attempt}/${MAX_RETRIES})`);
-    if (attempt === MAX_RETRIES) {
-      console.error('📄 Full Gemini response:', JSON.stringify(data, null, 2));
-      throw new Error('Gemini returned no image after all retries');
-    }
-    await new Promise(r => setTimeout(r, 2000));
+    console.warn(`⚠️ No image in response from ${model}, trying next...`);
+    await new Promise(r => setTimeout(r, 1000));
   }
 
   throw new Error('Gemini: unexpected exit from retry loop');
@@ -232,7 +233,7 @@ serve(async (req) => {
     }
 
     // Call Gemini
-    const base64Image = await callGemini(GEMINI_API_KEY, parts);
+    const { base64: base64Image, model: usedModel } = await callGemini(GEMINI_API_KEY, parts);
     const processingTime = `${Math.round((Date.now() - startTime) / 1000)}s`;
     console.log(`⏱️ Processing time: ${processingTime}`);
 
@@ -268,7 +269,7 @@ serve(async (req) => {
           style: style || 'photorealistic',
           resolution: 'auto',
           processingTime,
-          model: GEMINI_MODEL,
+          model: usedModel,
           quality,
           usedReferenceImage: !!referenceImage,
           costUsd: estimatedCost,
