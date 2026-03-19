@@ -315,7 +315,7 @@ export const Hero = () => {
     
     // Create placeholder cards
     const now = Date.now();
-    const newCardIds = Array.from({ length: 3 }, (_, i) => `card-${now}-${i}`);
+    const newCardIds = Array.from({ length: 1 }, (_, i) => `card-${now}-${i}`);
     const placeholderCards = newCardIds.map(id => ({
       id,
       imageUrl: "",
@@ -352,32 +352,30 @@ export const Hero = () => {
         referenceImage: refImage
       };
 
-      // Generate each image independently so cards update as they finish
-      await Promise.allSettled(
-        placeholderCards.map(async ({ id: cardId, startedAt }) => {
-          try {
-            const result = await ImageGenerationService.generateImage(params);
-            const elapsed = Date.now() - startedAt;
-            setGeneratedImages(prev =>
-              prev.map(card =>
-                card.id === cardId
-                  ? result.success && result.image
-                    ? { ...card, imageUrl: result.image, isGenerating: false, generationTime: elapsed, metadata: result.metadata }
-                    : { ...card, isGenerating: false, failed: true, error: result.error || 'Generation failed' }
-                  : card
-              )
-            );
-          } catch (err) {
-            setGeneratedImages(prev =>
-              prev.map(card =>
-                card.id === cardId
-                  ? { ...card, isGenerating: false, failed: true, error: 'Generation failed' }
-                  : card
-              )
-            );
-          }
-        })
-      );
+      // Generate one at a time to avoid overloading the API
+      for (const { id: cardId, startedAt } of placeholderCards) {
+        try {
+          const result = await ImageGenerationService.generateImage(params);
+          const elapsed = Date.now() - startedAt;
+          setGeneratedImages(prev =>
+            prev.map(card =>
+              card.id === cardId
+                ? result.success && result.image
+                  ? { ...card, imageUrl: result.image, isGenerating: false, generationTime: elapsed, metadata: result.metadata }
+                  : { ...card, isGenerating: false, failed: true, error: result.error || 'Generation failed' }
+                : card
+            )
+          );
+        } catch (err) {
+          setGeneratedImages(prev =>
+            prev.map(card =>
+              card.id === cardId
+                ? { ...card, isGenerating: false, failed: true, error: 'Generation failed' }
+                : card
+            )
+          );
+        }
+      }
 
       toast.success("Images generated successfully!");
       setInputValue(""); // Clear input after generation
@@ -572,7 +570,7 @@ export const Hero = () => {
         {/* Output Display Section - ABOVE input */}
         {generatedImages.length > 0 && (
           <div className="w-full max-w-[1800px] mb-2 animate-fade-in px-2 sm:px-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+            <div className={`grid gap-4 sm:gap-6 lg:gap-8 ${generatedImages.length === 1 ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}>
               {generatedImages.map((card) => (
             <Card 
               key={card.id} 

@@ -136,8 +136,6 @@ serve(async (req) => {
       );
     }
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-
     const body = await req.json();
     const {
       prompt,
@@ -237,30 +235,14 @@ serve(async (req) => {
     const processingTime = `${Math.round((Date.now() - startTime) / 1000)}s`;
     console.log(`⏱️ Processing time: ${processingTime}`);
 
-    // Upload to Supabase Storage
-    const imageBytes = Uint8Array.from(atob(base64Image), c => c.charCodeAt(0));
-    const fileName = `gemini-${contentType}-${Date.now()}.png`;
-    console.log('📤 Uploading to Supabase Storage:', fileName);
-
-    const { error: uploadError } = await supabase.storage
-      .from('avatars')
-      .upload(fileName, imageBytes, { contentType: 'image/png', upsert: false });
-
-    if (uploadError) {
-      console.error('❌ Upload error:', uploadError);
-      throw uploadError;
-    }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('avatars')
-      .getPublicUrl(fileName);
-
-    console.log('✅ Image uploaded successfully:', publicUrl);
+    // Return base64 data URL directly — avoids memory spike from decode+upload
+    const imageDataUrl = `data:image/png;base64,${base64Image}`;
+    console.log('✅ Image ready, returning as data URL');
 
     return new Response(
       JSON.stringify({
         success: true,
-        image: publicUrl,
+        image: imageDataUrl,
         prompt: finalPrompt,
         tokensCharged: requiredTokens,
         remainingBalance: tokenResult.remainingBalance,

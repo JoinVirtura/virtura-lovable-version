@@ -238,32 +238,30 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
         referenceImage
       };
 
-      // Generate each image independently so cards update as they finish with individual timings
-      await Promise.allSettled(
-        placeholderCards.map(async ({ id: cardId, startedAt }) => {
-          try {
-            const result = await ImageGenerationService.generateImage(params);
-            const elapsed = Date.now() - (startedAt ?? Date.now());
-            setPreviewCards(prev =>
-              prev.map(card =>
-                card.id === cardId
-                  ? result.success && result.image
-                    ? { ...card, imageUrl: result.image, isGenerating: false, generationTime: elapsed, metadata: result.metadata }
-                    : { ...card, imageUrl: "/placeholder.svg", isGenerating: false, prompt: `Failed: ${result.error || 'Unknown error'}` }
-                  : card
-              )
-            );
-          } catch (err) {
-            setPreviewCards(prev =>
-              prev.map(card =>
-                card.id === cardId
-                  ? { ...card, imageUrl: "/placeholder.svg", isGenerating: false }
-                  : card
-              )
-            );
-          }
-        })
-      );
+      // Generate one at a time to avoid overloading the API
+      for (const { id: cardId, startedAt } of placeholderCards) {
+        try {
+          const result = await ImageGenerationService.generateImage(params);
+          const elapsed = Date.now() - (startedAt ?? Date.now());
+          setPreviewCards(prev =>
+            prev.map(card =>
+              card.id === cardId
+                ? result.success && result.image
+                  ? { ...card, imageUrl: result.image, isGenerating: false, generationTime: elapsed, metadata: result.metadata }
+                  : { ...card, imageUrl: "/placeholder.svg", isGenerating: false, prompt: `Failed: ${result.error || 'Unknown error'}` }
+                : card
+            )
+          );
+        } catch (err) {
+          setPreviewCards(prev =>
+            prev.map(card =>
+              card.id === cardId
+                ? { ...card, imageUrl: "/placeholder.svg", isGenerating: false }
+                : card
+            )
+          );
+        }
+      }
 
       toast.success(isEditMode ? "Image edited successfully!" : "Images generated successfully!");
       setShowInputCard(false); // Hide input card after successful generation
