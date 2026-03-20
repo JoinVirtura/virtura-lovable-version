@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sparkles, Mic, Send, Crown, Lock, Zap, Camera, Shuffle, Star, X, Circle, Search, Target, Image, Palette, RectangleHorizontal, Diamond, Upload, ChevronDown, Download, Heart, Share2, Shield, Settings, Wand2, Save, RefreshCw, AlertCircle, Loader2, Check } from "lucide-react";
+import { Sparkles, Mic, Send, Crown, Lock, Zap, Camera, Shuffle, Star, X, Circle, Search, Target, Image, Palette, RectangleHorizontal, Diamond, Upload, ChevronDown, Download, Heart, Share2, Shield, Settings, Wand2, Save, RefreshCw, AlertCircle, Loader2, Check, Globe } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ImageGenerationService, type ImageGenerationParams } from "@/services/imageGenerationService";
@@ -110,7 +110,7 @@ export const Hero = () => {
   }>>([]);
   const [referenceImage, setReferenceImage] = useState<string | null>(null);
   const [savingImageId, setSavingImageId] = useState<string | null>(null);
-  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const [lightboxCard, setLightboxCard] = useState<{ imageUrl: string; id: string; prompt: string; metadata?: any } | null>(null);
   
   // Handle file upload for Image Style
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -629,7 +629,7 @@ export const Hero = () => {
                         src={card.imageUrl}
                         alt={card.prompt}
                         className="w-full h-auto block rounded-2xl cursor-zoom-in group-hover:brightness-90 transition-all duration-300"
-                        onClick={() => setLightboxImage(card.imageUrl)}
+                        onClick={() => setLightboxCard({ imageUrl: card.imageUrl, id: card.id, prompt: card.prompt, metadata: card.metadata })}
                       />
                       {(card as any).generationTime && (
                         <div className="absolute top-2 right-2 bg-black/70 text-yellow-400 text-xs font-mono px-2 py-0.5 rounded-full border border-yellow-400/40 pointer-events-none">
@@ -1129,25 +1129,25 @@ export const Hero = () => {
       </div>
 
       {/* Lightbox */}
-      {lightboxImage && (
+      {lightboxCard && (
         <div
           className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/95"
-          onClick={() => setLightboxImage(null)}
+          onClick={() => setLightboxCard(null)}
         >
           {/* Image - tap to dismiss */}
           <img
-            src={lightboxImage}
+            src={lightboxCard.imageUrl}
             alt="Full size preview"
-            className="max-w-[95vw] max-h-[80vh] object-contain rounded-xl shadow-2xl cursor-pointer"
+            className="max-w-[95vw] max-h-[75vh] object-contain rounded-xl shadow-2xl cursor-pointer"
           />
 
           {/* Action buttons */}
-          <div className="flex items-center gap-4 mt-6" onClick={(e) => e.stopPropagation()}>
+          <div className="flex items-center gap-3 mt-6 flex-wrap justify-center px-4" onClick={(e) => e.stopPropagation()}>
             <button
               className="flex items-center gap-2 px-5 py-3 rounded-full bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition-colors min-h-[44px]"
               onClick={async () => {
                 try {
-                  const response = await fetch(lightboxImage);
+                  const response = await fetch(lightboxCard.imageUrl);
                   const blob = await response.blob();
                   const url = window.URL.createObjectURL(blob);
                   const link = document.createElement('a');
@@ -1172,12 +1172,12 @@ export const Hero = () => {
               onClick={async () => {
                 try {
                   if (navigator.share) {
-                    const response = await fetch(lightboxImage);
+                    const response = await fetch(lightboxCard.imageUrl);
                     const blob = await response.blob();
                     const file = new File([blob], `virtura-${Date.now()}.png`, { type: 'image/png' });
                     await navigator.share({ files: [file], title: 'Virtura AI Image' });
                   } else {
-                    await navigator.clipboard.writeText(lightboxImage);
+                    await navigator.clipboard.writeText(lightboxCard.imageUrl);
                     toast.success("Image URL copied to clipboard!");
                   }
                 } catch (err: any) {
@@ -1192,8 +1192,54 @@ export const Hero = () => {
             </button>
 
             <button
+              className="flex items-center gap-2 px-5 py-3 rounded-full bg-primary/80 hover:bg-primary text-white text-sm font-medium transition-colors min-h-[44px]"
+              onClick={async () => {
+                try {
+                  const { data: { user } } = await supabase.auth.getUser();
+                  if (!user) {
+                    toast.error("Please sign in to post publicly");
+                    return;
+                  }
+
+                  // Check if already saved, if not save first
+                  const card = generatedImages.find(c => c.id === lightboxCard.id);
+                  let imageUrl = (card as any)?.savedUrl || lightboxCard.imageUrl;
+
+                  // If it's still base64, upload first
+                  if (imageUrl.startsWith('data:image/')) {
+                    const savedUrl = await uploadAndSaveImage({
+                      id: lightboxCard.id,
+                      imageUrl,
+                      prompt: lightboxCard.prompt,
+                      metadata: lightboxCard.metadata,
+                    });
+                    if (savedUrl) imageUrl = savedUrl;
+                  }
+
+                  // Update the avatar_library entry to add 'showcase' tag
+                  const { error } = await supabase
+                    .from('avatar_library')
+                    .update({ tags: ['ai-generated', 'showcase', 'public'] })
+                    .eq('user_id', user.id)
+                    .eq('image_url', imageUrl);
+
+                  if (error) throw error;
+
+                  toast.success("Image posted to the public gallery!");
+                  setLightboxCard(null);
+                } catch (err: any) {
+                  console.error('Post to gallery error:', err);
+                  toast.error(err.message || "Failed to post publicly");
+                }
+              }}
+            >
+              <Globe className="h-4 w-4" />
+              Post
+            </button>
+
+            <button
               className="flex items-center gap-2 px-5 py-3 rounded-full bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition-colors min-h-[44px]"
-              onClick={() => setLightboxImage(null)}
+              onClick={() => setLightboxCard(null)}
             >
               <X className="h-4 w-4" />
               Close
