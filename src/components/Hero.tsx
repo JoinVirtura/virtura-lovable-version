@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sparkles, Mic, Send, Crown, Lock, Zap, Camera, Shuffle, Star, X, Circle, Search, Target, Image, Palette, RectangleHorizontal, Diamond, Upload, ChevronDown, Download, Heart, Share2, Shield, Settings, Wand2, Save, RefreshCw, AlertCircle, Loader2, Check, Globe } from "lucide-react";
+import { Sparkles, Mic, Send, Crown, Lock, Zap, Camera, Shuffle, Star, X, Circle, Search, Target, Image, Palette, RectangleHorizontal, Diamond, Upload, ChevronDown, Download, Heart, Share2, Shield, Settings, Wand2, Save, RefreshCw, AlertCircle, Loader2, Check, Globe, Ratio } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ImageGenerationService, type ImageGenerationParams } from "@/services/imageGenerationService";
@@ -90,7 +90,7 @@ function HeroLiveTimer({ startedAt }: { startedAt: number }) {
 export const Hero = () => {
   const [inputValue, setInputValue] = useState("");
   const [selectedStyle, setSelectedStyle] = useState("Style");
-  const [selectedAspect, setSelectedAspect] = useState("2:3");
+  const [selectedAspect, setSelectedAspect] = useState("9:16");
   const [showStyleOptions, setShowStyleOptions] = useState(false);
   const [showAspectOptions, setShowAspectOptions] = useState(false);
   const [showStyleModal, setShowStyleModal] = useState(false);
@@ -339,13 +339,29 @@ export const Hero = () => {
         first50Chars: refImage?.substring(0, 50) || 'EMPTY'
       });
 
+      const resolutionMap: Record<string, string> = {
+        '1:1': '1024x1024',
+        '4:3': '1024x768',
+        '3:2': '1024x682',
+        '16:9': '1920x1080',
+        '2.35:1': '1920x817',
+        '4:5': '1024x1280',
+        '2:3': '1024x1536',
+        '9:16': '1080x1920',
+      };
+
+      // Include aspect ratio in prompt since Gemini doesn't have a native aspect ratio param
+      const aspectPrompt = selectedAspect !== '9:16'
+        ? `Generate this image in ${selectedAspect} aspect ratio (${resolutionMap[selectedAspect] || '1024x1024'} resolution). `
+        : '';
+
       const params: ImageGenerationParams = {
-        prompt: inputValue,
+        prompt: aspectPrompt + inputValue,
         negativePrompt: "blurry, low quality, distorted",
         contentType: "auto",
         style: selectedImageStyle?.name || selectedStyle === "Style" ? "photorealistic" : selectedStyle,
-        aspectRatio: "9:16" as any,
-        resolution: "1080x1920",
+        aspectRatio: selectedAspect as any,
+        resolution: resolutionMap[selectedAspect] || '1080x1920',
         quality: "8k",
         adherence: 9.5,
         steps: 50,
@@ -597,7 +613,10 @@ export const Hero = () => {
               className="group overflow-hidden hover:shadow-[0_0_30px_rgba(139,92,246,0.4)] transition-all duration-300 p-0 border-0 bg-transparent"
             >
                   {card.isGenerating ? (
-                    <div className="aspect-[9/16] bg-gradient-to-br from-violet-600/20 to-fuchsia-600/20 flex flex-col items-center justify-center rounded-2xl">
+                    <div
+                      className="bg-gradient-to-br from-violet-600/20 to-fuchsia-600/20 flex flex-col items-center justify-center rounded-2xl"
+                      style={{ aspectRatio: selectedAspect.replace(':', '/') }}
+                    >
                       <div className="relative">
                         <Loader2 className="h-12 w-12 animate-spin text-primary" />
                         <Sparkles className="absolute top-0 left-0 h-12 w-12 animate-pulse text-primary/50" />
@@ -737,6 +756,41 @@ export const Hero = () => {
                   }}
                 />
                 
+                {/* Aspect Ratio Picker - Inline */}
+                {showAspectOptions && (
+                  <div className="flex items-center justify-center gap-1.5 mb-2 flex-wrap" data-aspect-container>
+                    {[
+                      { ratio: '1:1', w: 14, h: 14 },
+                      { ratio: '4:3', w: 16, h: 12 },
+                      { ratio: '16:9', w: 18, h: 10 },
+                      { ratio: '9:16', w: 10, h: 18 },
+                      { ratio: '2:3', w: 12, h: 18 },
+                      { ratio: '4:5', w: 12, h: 15 },
+                      { ratio: '3:2', w: 18, h: 12 },
+                    ].map(({ ratio, w, h }) => (
+                      <button
+                        key={ratio}
+                        type="button"
+                        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium transition-all ${
+                          selectedAspect === ratio
+                            ? 'bg-primary/30 text-white border border-primary'
+                            : 'bg-white/5 text-white/70 border border-white/10 hover:bg-white/10 hover:text-white'
+                        }`}
+                        onClick={() => {
+                          setSelectedAspect(ratio);
+                          setShowAspectOptions(false);
+                        }}
+                      >
+                        <div
+                          className={`border rounded-[2px] ${selectedAspect === ratio ? 'border-primary' : 'border-white/40'}`}
+                          style={{ width: `${w}px`, height: `${h}px` }}
+                        />
+                        {ratio}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
                 {/* Action Buttons - Centered Below */}
                 <div className="flex items-center justify-center gap-3">
                   {/* Image Upload Button */}
@@ -783,13 +837,24 @@ export const Hero = () => {
                     }}
                   />
                   
+                  {/* Aspect Ratio Button */}
+                  <button
+                    type="button"
+                    onClick={() => setShowAspectOptions(!showAspectOptions)}
+                    className="min-w-[44px] min-h-[44px] h-11 px-3 rounded-full bg-black/40 backdrop-blur-md border border-primary/30 hover:bg-primary/20 hover:border-primary/50 transition-all flex items-center justify-center gap-1.5"
+                    data-aspect-container
+                  >
+                    <Ratio className="h-4 w-4 text-white" />
+                    <span className="text-xs text-white font-medium">{selectedAspect}</span>
+                  </button>
+
                   {/* Microphone Button */}
                   <button
                     type="button"
                     onClick={handleVoiceInput}
                     className={`min-w-[44px] min-h-[44px] w-11 h-11 rounded-full backdrop-blur-md border transition-all flex items-center justify-center ${
-                      isRecording 
-                        ? 'bg-red-500 border-red-400 animate-pulse' 
+                      isRecording
+                        ? 'bg-red-500 border-red-400 animate-pulse'
                         : 'bg-black/40 border-primary/30 hover:bg-primary/20 hover:border-primary/50'
                     }`}
                   >
