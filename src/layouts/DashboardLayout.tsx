@@ -31,9 +31,14 @@ export function DashboardLayout({
         {/* Fixed Mobile Header */}
         <header className="fixed top-0 left-0 right-0 z-50 md:hidden bg-black/90 backdrop-blur-xl border-b border-violet-500/20">
           <div className="flex items-center justify-between px-4 h-14">
-            <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Virtura AI
-            </h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                Virtura AI
+              </h1>
+              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                v1.0
+              </span>
+            </div>
             <SidebarTrigger className="h-10 w-10 min-h-[44px] min-w-[44px] text-violet-400 hover:text-violet-300 hover:bg-violet-500/20 rounded-lg" />
           </div>
         </header>
