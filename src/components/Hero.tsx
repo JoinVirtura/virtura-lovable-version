@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sparkles, Mic, Send, Crown, Lock, Zap, Camera, Shuffle, Star, X, Circle, Search, Target, Image, Palette, RectangleHorizontal, Diamond, Upload, ChevronDown, Download, Heart, Share2, Shield, Settings, Wand2, Save, RefreshCw, AlertCircle, Loader2 } from "lucide-react";
+import { Sparkles, Mic, Send, Crown, Lock, Zap, Camera, Shuffle, Star, X, Circle, Search, Target, Image, Palette, RectangleHorizontal, Diamond, Upload, ChevronDown, Download, Heart, Share2, Shield, Settings, Wand2, Save, RefreshCw, AlertCircle, Loader2, Check, Globe, Ratio } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ImageGenerationService, type ImageGenerationParams } from "@/services/imageGenerationService";
@@ -74,10 +74,23 @@ const styleData = [
   { name: "Botanical Vintage", username: "plantlore", id: "botanical", image: styleBotanical },
 ];
 
+function HeroLiveTimer({ startedAt }: { startedAt: number }) {
+  const [elapsed, setElapsed] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => setElapsed(Date.now() - startedAt), 100);
+    return () => clearInterval(interval);
+  }, [startedAt]);
+  return (
+    <div className="mt-3 text-yellow-400 text-sm font-mono">
+      ⏱ {(elapsed / 1000).toFixed(1)}s
+    </div>
+  );
+}
+
 export const Hero = () => {
   const [inputValue, setInputValue] = useState("");
   const [selectedStyle, setSelectedStyle] = useState("Style");
-  const [selectedAspect, setSelectedAspect] = useState("2:3");
+  const [selectedAspect, setSelectedAspect] = useState("9:16");
   const [showStyleOptions, setShowStyleOptions] = useState(false);
   const [showAspectOptions, setShowAspectOptions] = useState(false);
   const [showStyleModal, setShowStyleModal] = useState(false);
@@ -97,6 +110,7 @@ export const Hero = () => {
   }>>([]);
   const [referenceImage, setReferenceImage] = useState<string | null>(null);
   const [savingImageId, setSavingImageId] = useState<string | null>(null);
+  const [lightboxCard, setLightboxCard] = useState<{ imageUrl: string; id: string; prompt: string; metadata?: any } | null>(null);
   
   // Handle file upload for Image Style
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -301,12 +315,14 @@ export const Hero = () => {
     setIsGenerating(true);
     
     // Create placeholder cards
-    const newCardIds = Array.from({ length: 3 }, (_, i) => `card-${Date.now()}-${i}`);
+    const now = Date.now();
+    const newCardIds = Array.from({ length: 1 }, (_, i) => `card-${now}-${i}`);
     const placeholderCards = newCardIds.map(id => ({
       id,
       imageUrl: "",
       prompt: inputValue,
       isGenerating: true,
+      startedAt: Date.now(),
     }));
 
     setGeneratedImages(prev => [...placeholderCards, ...prev]);
@@ -323,13 +339,29 @@ export const Hero = () => {
         first50Chars: refImage?.substring(0, 50) || 'EMPTY'
       });
 
+      const resolutionMap: Record<string, string> = {
+        '1:1': '1024x1024',
+        '4:3': '1024x768',
+        '3:2': '1024x682',
+        '16:9': '1920x1080',
+        '2.35:1': '1920x817',
+        '4:5': '1024x1280',
+        '2:3': '1024x1536',
+        '9:16': '1080x1920',
+      };
+
+      // Include aspect ratio in prompt since Gemini doesn't have a native aspect ratio param
+      const aspectPrompt = selectedAspect !== '9:16'
+        ? `Generate this image in ${selectedAspect} aspect ratio (${resolutionMap[selectedAspect] || '1024x1024'} resolution). `
+        : '';
+
       const params: ImageGenerationParams = {
-        prompt: inputValue,
+        prompt: aspectPrompt + inputValue,
         negativePrompt: "blurry, low quality, distorted",
         contentType: "auto",
         style: selectedImageStyle?.name || selectedStyle === "Style" ? "photorealistic" : selectedStyle,
-        aspectRatio: "9:16" as any,
-        resolution: "1080x1920",
+        aspectRatio: selectedAspect as any,
+        resolution: resolutionMap[selectedAspect] || '1080x1920',
         quality: "8k",
         adherence: 9.5,
         steps: 50,
@@ -337,35 +369,40 @@ export const Hero = () => {
         referenceImage: refImage
       };
 
-      const results = await ImageGenerationService.generateVariants(inputValue, params, 3);
-      
-      // Update cards with results, keep all 3 slots
-      setGeneratedImages(prev => 
-        prev.map(card => {
-          if (newCardIds.includes(card.id)) {
-            const cardIndex = newCardIds.indexOf(card.id);
-            const result = results[cardIndex];
-            
-            if (result?.success && result.image) {
-              return {
-                ...card,
-                imageUrl: result.image,
-                isGenerating: false,
-                metadata: result.metadata
-              };
-            } else {
-              // Mark as failed but keep the slot
-              return {
-                ...card,
-                isGenerating: false,
-                failed: true,
-                error: result?.error || 'Generation failed'
-              };
-            }
+      // Generate one at a time to avoid overloading the API
+      for (const { id: cardId, startedAt } of placeholderCards) {
+        try {
+          const result = await ImageGenerationService.generateImage(params);
+          const elapsed = Date.now() - startedAt;
+          if (result.success && result.image) {
+            setGeneratedImages(prev =>
+              prev.map(card =>
+                card.id === cardId
+                  ? { ...card, imageUrl: result.image, isGenerating: false, generationTime: elapsed, metadata: result.metadata }
+                  : card
+              )
+            );
+            // Auto-save to library from browser (no edge function → no WORKER_LIMIT)
+            autoSaveImage({ id: cardId, imageUrl: result.image, prompt: inputValue, metadata: result.metadata });
+          } else {
+            setGeneratedImages(prev =>
+              prev.map(card =>
+                card.id === cardId
+                  ? { ...card, isGenerating: false, failed: true, error: result.error || 'Generation failed' }
+                  : card
+              )
+            );
           }
-          return card;
-        })
-      );
+        } catch (err) {
+          setGeneratedImages(prev =>
+            prev.map(card =>
+              card.id === cardId
+                ? { ...card, isGenerating: false, failed: true, error: 'Generation failed' }
+                : card
+            )
+          );
+        }
+      }
 
       toast.success("Images generated successfully!");
       setInputValue(""); // Clear input after generation
@@ -382,6 +419,70 @@ export const Hero = () => {
     }
   };
 
+  const uploadAndSaveImage = async (card: {
+    id: string;
+    imageUrl: string;
+    prompt: string;
+    metadata?: any;
+  }, silent = false): Promise<string | null> => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return null;
+
+    let finalImageUrl = card.imageUrl;
+
+    if (card.imageUrl.startsWith('data:image/')) {
+      const base64Data = card.imageUrl.split(',')[1];
+      const byteCharacters = atob(base64Data);
+      const byteArray = new Uint8Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteArray[i] = byteCharacters.charCodeAt(i);
+      }
+      const blob = new Blob([byteArray], { type: 'image/png' });
+      const fileName = `generated-image-${Date.now()}-${card.id}.png`;
+      const filePath = `images/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('virtura-media')
+        .upload(filePath, blob, { contentType: 'image/png', cacheControl: '3600', upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage.from('virtura-media').getPublicUrl(filePath);
+      finalImageUrl = publicUrl;
+    }
+
+    const { error } = await supabase.from('avatar_library').insert({
+      user_id: user.id,
+      image_url: finalImageUrl,
+      video_url: null,
+      thumbnail_url: finalImageUrl,
+      audio_url: null,
+      is_video: false,
+      prompt: card.prompt,
+      title: `AI Generated Image ${new Date().toLocaleDateString()}`,
+      tags: ['ai-generated', 'auto-saved'],
+      duration: 0,
+    });
+
+    if (error) throw error;
+
+    window.dispatchEvent(new Event('library-updated'));
+    return finalImageUrl;
+  };
+
+  const autoSaveImage = async (card: { id: string; imageUrl: string; prompt: string; metadata?: any }) => {
+    try {
+      const savedUrl = await uploadAndSaveImage(card, true);
+      if (savedUrl) {
+        setGeneratedImages(prev =>
+          prev.map(c => c.id === card.id ? { ...c, isSaved: true, savedUrl } : c)
+        );
+      }
+    } catch (err) {
+      console.error('Auto-save failed:', err);
+    }
+  };
+
   const handleSaveToLibrary = async (card: {
     id: string;
     imageUrl: string;
@@ -389,71 +490,16 @@ export const Hero = () => {
     metadata?: any;
   }) => {
     setSavingImageId(card.id);
-    
     try {
-      // Check authentication
       const { data: { user } } = await supabase.auth.getUser();
-      
       if (!user) {
         toast.error("Please sign in to save images to your library");
-        setSavingImageId(null);
         return;
       }
-
-      let finalImageUrl = card.imageUrl;
-
-      // Handle base64 images - upload to Supabase Storage
-      if (card.imageUrl.startsWith('data:image/')) {
-        const base64Data = card.imageUrl.split(',')[1];
-        const byteCharacters = atob(base64Data);
-        const byteNumbers = new Array(byteCharacters.length);
-        for (let i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-        }
-        const byteArray = new Uint8Array(byteNumbers);
-        const blob = new Blob([byteArray], { type: 'image/png' });
-        
-        const fileName = `generated-image-${Date.now()}-${card.id}.png`;
-        const filePath = `images/${fileName}`;
-        
-        const { error: uploadError } = await supabase.storage
-          .from('virtura-media')
-          .upload(filePath, blob, {
-            contentType: 'image/png',
-            cacheControl: '3600',
-            upsert: true
-          });
-          
-        if (uploadError) throw uploadError;
-        
-        const { data: { publicUrl } } = supabase.storage
-          .from('virtura-media')
-          .getPublicUrl(filePath);
-          
-        finalImageUrl = publicUrl;
-      }
-
-      // Insert into avatar_library
-      const { error } = await supabase
-        .from('avatar_library')
-        .insert({
-          user_id: user.id,
-          image_url: finalImageUrl,
-          video_url: null,
-          thumbnail_url: finalImageUrl,
-          audio_url: null,
-          is_video: false,
-          prompt: card.prompt,
-          title: `AI Generated Image ${new Date().toLocaleDateString()}`,
-          tags: ['ai-generated', 'home-page', selectedStyle !== 'Style' ? selectedStyle : 'photorealistic'],
-          duration: 0
-        });
-
-      if (error) throw error;
-
-      // Dispatch event to refresh library page if open
-      window.dispatchEvent(new Event('library-updated'));
-      
+      await uploadAndSaveImage(card);
+      setGeneratedImages(prev =>
+        prev.map(c => c.id === card.id ? { ...c, isSaved: true } : c)
+      );
       toast.success("Image saved to your library!");
     } catch (error: any) {
       console.error('Save to library error:', error);
@@ -560,20 +606,24 @@ export const Hero = () => {
         {/* Output Display Section - ABOVE input */}
         {generatedImages.length > 0 && (
           <div className="w-full max-w-[1800px] mb-2 animate-fade-in px-2 sm:px-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+            <div className={`grid gap-4 sm:gap-6 lg:gap-8 ${generatedImages.length === 1 ? 'grid-cols-1 max-w-2xl mx-auto' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}>
               {generatedImages.map((card) => (
             <Card 
               key={card.id} 
               className="group overflow-hidden hover:shadow-[0_0_30px_rgba(139,92,246,0.4)] transition-all duration-300 p-0 border-0 bg-transparent"
             >
                   {card.isGenerating ? (
-                    <div className="aspect-square bg-gradient-to-br from-violet-600/20 to-fuchsia-600/20 flex flex-col items-center justify-center rounded-2xl">
+                    <div
+                      className="bg-gradient-to-br from-violet-600/20 to-fuchsia-600/20 flex flex-col items-center justify-center rounded-2xl"
+                      style={{ aspectRatio: selectedAspect.replace(':', '/') }}
+                    >
                       <div className="relative">
                         <Loader2 className="h-12 w-12 animate-spin text-primary" />
                         <Sparkles className="absolute top-0 left-0 h-12 w-12 animate-pulse text-primary/50" />
                       </div>
                       <p className="text-white mt-6 text-center font-medium">Creating magic...</p>
                       <p className="text-white/60 text-sm mt-2">This may take a moment</p>
+                      {(card as any).startedAt && <HeroLiveTimer startedAt={(card as any).startedAt} />}
                     </div>
                   ) : (card as any).failed ? (
                     <div className="aspect-square bg-gradient-to-br from-red-500/10 to-orange-500/10 flex flex-col items-center justify-center p-8 rounded-2xl">
@@ -593,13 +643,19 @@ export const Hero = () => {
                       </Button>
                     </div>
                   ) : (
-                    <div className="aspect-square relative overflow-hidden w-full">
+                    <div className="relative w-full rounded-2xl overflow-hidden bg-black/40">
                       <img
                         src={card.imageUrl}
                         alt={card.prompt}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-2xl"
+                        className="w-full h-auto block rounded-2xl cursor-zoom-in group-hover:brightness-90 transition-all duration-300"
+                        onClick={() => setLightboxCard({ imageUrl: card.imageUrl, id: card.id, prompt: card.prompt, metadata: card.metadata })}
                       />
-                      
+                      {(card as any).generationTime && (
+                        <div className="absolute top-2 right-2 bg-black/70 text-yellow-400 text-xs font-mono px-2 py-0.5 rounded-full border border-yellow-400/40 pointer-events-none">
+                          ⏱ {((card as any).generationTime / 1000).toFixed(1)}s
+                        </div>
+                      )}
+
                       {/* Overlaid metadata */}
                       <div className="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black/90 via-black/70 to-transparent">
                         <div className="flex items-center justify-between">
@@ -646,12 +702,14 @@ export const Hero = () => {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-7 px-2 text-xs hover:bg-white/10 bg-transparent"
-                              onClick={() => handleSaveToLibrary(card)}
-                              disabled={savingImageId === card.id}
+                              className={`h-7 px-2 text-xs hover:bg-white/10 bg-transparent ${(card as any).isSaved ? 'text-green-400' : ''}`}
+                              onClick={() => !(card as any).isSaved && handleSaveToLibrary(card)}
+                              disabled={savingImageId === card.id || (card as any).isSaved}
                             >
                               {savingImageId === card.id ? (
                                 <Loader2 className="h-3 w-3 animate-spin" />
+                              ) : (card as any).isSaved ? (
+                                <Check className="h-3 w-3" />
                               ) : (
                                 <Save className="h-3 w-3" />
                               )}
@@ -698,28 +756,59 @@ export const Hero = () => {
                   }}
                 />
                 
+                {/* Aspect Ratio Picker - Inline */}
+                {showAspectOptions && (
+                  <div className="flex items-center justify-center gap-1.5 mb-2 flex-wrap" data-aspect-container>
+                    {[
+                      { ratio: '1:1', w: 14, h: 14 },
+                      { ratio: '4:3', w: 16, h: 12 },
+                      { ratio: '16:9', w: 18, h: 10 },
+                      { ratio: '9:16', w: 10, h: 18 },
+                      { ratio: '2:3', w: 12, h: 18 },
+                      { ratio: '4:5', w: 12, h: 15 },
+                      { ratio: '3:2', w: 18, h: 12 },
+                    ].map(({ ratio, w, h }) => (
+                      <button
+                        key={ratio}
+                        type="button"
+                        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium transition-all ${
+                          selectedAspect === ratio
+                            ? 'bg-primary/30 text-white border border-primary'
+                            : 'bg-white/5 text-white/70 border border-white/10 hover:bg-white/10 hover:text-white'
+                        }`}
+                        onClick={() => {
+                          setSelectedAspect(ratio);
+                          setShowAspectOptions(false);
+                        }}
+                      >
+                        <div
+                          className={`border rounded-[2px] ${selectedAspect === ratio ? 'border-primary' : 'border-white/40'}`}
+                          style={{ width: `${w}px`, height: `${h}px` }}
+                        />
+                        {ratio}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
                 {/* Action Buttons - Centered Below */}
                 <div className="flex items-center justify-center gap-3">
                   {/* Image Upload Button */}
                   {referenceImage ? (
-                    <div className="relative flex-shrink-0">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 border-primary/50 hover:border-primary transition-all">
-                        <img 
-                          src={referenceImage} 
-                          alt="Uploaded reference" 
-                          className="w-full h-full object-cover"
-                        />
+                    <button
+                      type="button"
+                      onClick={() => handleCompleteReset()}
+                      className="relative flex-shrink-0 min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-black/40 backdrop-blur-md border border-primary/30 hover:bg-red-500/30 hover:border-red-400/50 transition-all flex items-center justify-center overflow-hidden group"
+                    >
+                      <img
+                        src={referenceImage}
+                        alt="Uploaded reference"
+                        className="absolute inset-0 w-full h-full object-cover rounded-full"
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-colors rounded-full flex items-center justify-center">
+                        <X className="h-4 w-4 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleCompleteReset();
-                        }}
-                        className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center transition-colors shadow-lg"
-                      >
-                        <X className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-white" />
-                      </button>
-                    </div>
+                    </button>
                   ) : (
                     <button
                       type="button"
@@ -748,13 +837,24 @@ export const Hero = () => {
                     }}
                   />
                   
+                  {/* Aspect Ratio Button */}
+                  <button
+                    type="button"
+                    onClick={() => setShowAspectOptions(!showAspectOptions)}
+                    className="min-w-[44px] min-h-[44px] h-11 px-3 rounded-full bg-black/40 backdrop-blur-md border border-primary/30 hover:bg-primary/20 hover:border-primary/50 transition-all flex items-center justify-center gap-1.5"
+                    data-aspect-container
+                  >
+                    <Ratio className="h-4 w-4 text-white" />
+                    <span className="text-xs text-white font-medium">{selectedAspect}</span>
+                  </button>
+
                   {/* Microphone Button */}
                   <button
                     type="button"
                     onClick={handleVoiceInput}
                     className={`min-w-[44px] min-h-[44px] w-11 h-11 rounded-full backdrop-blur-md border transition-all flex items-center justify-center ${
-                      isRecording 
-                        ? 'bg-red-500 border-red-400 animate-pulse' 
+                      isRecording
+                        ? 'bg-red-500 border-red-400 animate-pulse'
                         : 'bg-black/40 border-primary/30 hover:bg-primary/20 hover:border-primary/50'
                     }`}
                   >
@@ -1092,6 +1192,126 @@ export const Hero = () => {
             </div>
           )}
       </div>
+
+      {/* Lightbox */}
+      {lightboxCard && (
+        <div
+          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/95"
+          onClick={() => setLightboxCard(null)}
+        >
+          {/* Image - tap to dismiss */}
+          <img
+            src={lightboxCard.imageUrl}
+            alt="Full size preview"
+            className="max-w-[95vw] max-h-[75vh] object-contain rounded-xl shadow-2xl cursor-pointer"
+          />
+
+          {/* Action buttons */}
+          <div className="flex items-center gap-3 mt-6 flex-wrap justify-center px-4" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="flex items-center gap-2 px-5 py-3 rounded-full bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition-colors min-h-[44px]"
+              onClick={async () => {
+                try {
+                  const response = await fetch(lightboxCard.imageUrl);
+                  const blob = await response.blob();
+                  const url = window.URL.createObjectURL(blob);
+                  const link = document.createElement('a');
+                  link.href = url;
+                  link.download = `virtura-${Date.now()}.png`;
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                  window.URL.revokeObjectURL(url);
+                  toast.success("Image downloaded!");
+                } catch {
+                  toast.error("Failed to download");
+                }
+              }}
+            >
+              <Download className="h-4 w-4" />
+              Save
+            </button>
+
+            <button
+              className="flex items-center gap-2 px-5 py-3 rounded-full bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition-colors min-h-[44px]"
+              onClick={async () => {
+                try {
+                  if (navigator.share) {
+                    const response = await fetch(lightboxCard.imageUrl);
+                    const blob = await response.blob();
+                    const file = new File([blob], `virtura-${Date.now()}.png`, { type: 'image/png' });
+                    await navigator.share({ files: [file], title: 'Virtura AI Image' });
+                  } else {
+                    await navigator.clipboard.writeText(lightboxCard.imageUrl);
+                    toast.success("Image URL copied to clipboard!");
+                  }
+                } catch (err: any) {
+                  if (err?.name !== 'AbortError') {
+                    toast.error("Failed to share");
+                  }
+                }
+              }}
+            >
+              <Share2 className="h-4 w-4" />
+              Share
+            </button>
+
+            <button
+              className="flex items-center gap-2 px-5 py-3 rounded-full bg-primary/80 hover:bg-primary text-white text-sm font-medium transition-colors min-h-[44px]"
+              onClick={async () => {
+                try {
+                  const { data: { user } } = await supabase.auth.getUser();
+                  if (!user) {
+                    toast.error("Please sign in to post publicly");
+                    return;
+                  }
+
+                  // Check if already saved, if not save first
+                  const card = generatedImages.find(c => c.id === lightboxCard.id);
+                  let imageUrl = (card as any)?.savedUrl || lightboxCard.imageUrl;
+
+                  // If it's still base64, upload first
+                  if (imageUrl.startsWith('data:image/')) {
+                    const savedUrl = await uploadAndSaveImage({
+                      id: lightboxCard.id,
+                      imageUrl,
+                      prompt: lightboxCard.prompt,
+                      metadata: lightboxCard.metadata,
+                    });
+                    if (savedUrl) imageUrl = savedUrl;
+                  }
+
+                  // Update the avatar_library entry to add 'showcase' tag
+                  const { error } = await supabase
+                    .from('avatar_library')
+                    .update({ tags: ['ai-generated', 'showcase', 'public'] })
+                    .eq('user_id', user.id)
+                    .eq('image_url', imageUrl);
+
+                  if (error) throw error;
+
+                  toast.success("Image posted to the public gallery!");
+                  setLightboxCard(null);
+                } catch (err: any) {
+                  console.error('Post to gallery error:', err);
+                  toast.error(err.message || "Failed to post publicly");
+                }
+              }}
+            >
+              <Globe className="h-4 w-4" />
+              Post
+            </button>
+
+            <button
+              className="flex items-center gap-2 px-5 py-3 rounded-full bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition-colors min-h-[44px]"
+              onClick={() => setLightboxCard(null)}
+            >
+              <X className="h-4 w-4" />
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </section>
   );
 };
