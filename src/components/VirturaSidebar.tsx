@@ -21,6 +21,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Home,
   Video,
+  Film,
   Settings,
   LogOut,
   Command,
@@ -98,6 +99,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
     { id: "overview", label: "Home", icon: Home },
     { id: "talking-avatar", label: "Photo Editor", icon: Image },
     { id: "video-pro", label: "Video Editor", icon: Video },
+    { id: "video-gen", label: "Video Gen", icon: Film },
     { id: "studio", label: "Copilot", icon: Command },
     { id: "library", label: "Library", icon: Library },
     { id: "social-feed", label: "Feed", icon: Home },

@@ -33,6 +33,7 @@ interface RealtimePreviewProps {
   onSaveToLibrary?: (customTitle?: string) => Promise<void>;
   onDownload?: () => void;
   onDownloadStyle?: () => void;
+  onSendToVideoGen?: () => void;
   isSaved?: boolean;
 }
 
@@ -50,6 +51,7 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
   onSaveToLibrary,
   onDownload,
   onDownloadStyle,
+  onSendToVideoGen,
   isSaved = false
 }) => {
   const [previewMode, setPreviewMode] = useState('desktop');
@@ -381,6 +383,19 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                           <Upload className="h-4 w-4 mr-2" />
                           Change Image
                         </Button>
+
+                        {onSendToVideoGen && (
+                          <Button
+                            onClick={() => {
+                              onSendToVideoGen();
+                              setIsHovering(false);
+                            }}
+                            className="w-full h-10 bg-violet-600/80 hover:bg-violet-700/90 text-white border-0"
+                          >
+                            <Film className="h-4 w-4 mr-2" />
+                            Generate Video
+                          </Button>
+                        )}
                       </div>
                     </div>
                   )}
@@ -411,24 +426,37 @@ export const RealtimePreview: React.FC<RealtimePreviewProps> = ({
                     className="w-full h-full object-cover"
                   />
                   
-                  {/* Centered Hover Upload Button */}
+                  {/* Centered Hover Buttons */}
                   {showUploadOverlay && (
-                    <div 
-                      className="absolute inset-0 bg-black/0 hover:bg-black/40 transition-all duration-300 flex items-center justify-center opacity-0 hover:opacity-100 cursor-pointer group/upload"
-                      onClick={() => {
-                        // Reset avatar and style state - parent handles step navigation
-                        if (onResetAvatar) {
-                          onResetAvatar();
-                        }
-                      }}
+                    <div
+                      className="absolute inset-0 bg-black/0 hover:bg-black/50 transition-all duration-300 flex items-center justify-center opacity-0 hover:opacity-100 group/upload"
                     >
-                      <Button
-                        size="lg"
-                        className="bg-white/10 backdrop-blur-md border-2 border-white/30 hover:bg-white/20 hover:border-white/50 transition-all"
-                      >
-                        <Upload className="h-5 w-5 mr-2" />
-                        Change Image
-                      </Button>
+                      <div className="flex flex-col gap-3">
+                        {onSendToVideoGen && (
+                          <Button
+                            size="lg"
+                            className="bg-violet-600/80 backdrop-blur-md border-2 border-violet-400/40 hover:bg-violet-700/90 hover:border-violet-400/60 transition-all text-white"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onSendToVideoGen();
+                            }}
+                          >
+                            <Film className="h-5 w-5 mr-2" />
+                            Generate Video
+                          </Button>
+                        )}
+                        <Button
+                          size="lg"
+                          className="bg-white/10 backdrop-blur-md border-2 border-white/30 hover:bg-white/20 hover:border-white/50 transition-all"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (onResetAvatar) onResetAvatar();
+                          }}
+                        >
+                          <Upload className="h-5 w-5 mr-2" />
+                          Change Image
+                        </Button>
+                      </div>
                     </div>
                   )}
                   

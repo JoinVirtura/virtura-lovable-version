@@ -39,7 +39,11 @@ const VIDEO_PRO_STEPS = [
   { id: 'video', title: 'Video', icon: Film, color: 'bg-orange-500' }
 ];
 
-export default function VideoProPage() {
+interface VideoProPageProps {
+  onViewChange?: (view: string) => void;
+}
+
+export default function VideoProPage({ onViewChange }: VideoProPageProps = {}) {
   const [currentStep, setCurrentStep] = useState('upload');
   const [isProcessing, setIsProcessing] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -192,7 +196,7 @@ export default function VideoProPage() {
 
       {/* Main Studio Interface */}
       <div className="w-full px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-6 mb-6 sm:mb-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
+        <div className="max-w-3xl mx-auto space-y-6">
           {/* Global file input - always available */}
           <input
             ref={fileInputRef}
@@ -209,102 +213,97 @@ export default function VideoProPage() {
             }}
           />
 
-          {/* Main Studio Panel */}
-          <div className="lg:col-span-8 relative">
-            <Card className="border-0 shadow-[0_8px_32px_rgba(0,0,0,0.3)] bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl rounded-2xl overflow-visible">
-              <CardContent className="p-3 sm:p-6">
-                <Tabs value={currentStep} onValueChange={setCurrentStep}>
-                  <TabsContent value="upload" className="mt-0" key={`upload-${currentStep}-${project.avatar?.status || 'empty'}-${project.voice?.status || 'empty'}`}>
-                    <ErrorBoundary>
-                      <VideoUploadStudio
-                        project={project}
-                        onUpdate={updateProject}
-                        isProcessing={isProcessing}
-                        onStepChange={handleStepChange}
-                      />
-                    </ErrorBoundary>
-                  </TabsContent>
+          {/* Centered Preview */}
+          <div className="glass-card border border-violet-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] rounded-xl overflow-hidden">
+            <RealtimePreview
+              project={project}
+              isProcessing={isProcessing}
+              onStepChange={handleStepChange}
+              onResetAvatar={handleResetAvatar}
+              onDownload={downloadVideo}
+              onSaveToLibrary={async (customTitle?: string) => {
+                if (customTitle) {
+                  updateProject({ name: customTitle });
+                  await new Promise(resolve => setTimeout(resolve, 100));
+                }
+                await saveToLibrary();
+                setIsVideoSaved(true);
+              }}
+              onSendToVideoGen={() => {
+                const imageUrl = project.avatar?.processedUrl || project.avatar?.originalUrl;
+                if (imageUrl) {
+                  sessionStorage.setItem('veoSourceImage', JSON.stringify({
+                    imageUrl,
+                    title: project.name || 'From Video Editor',
+                  }));
+                  if (onViewChange) {
+                    onViewChange('video-gen');
+                  }
+                  toast.success('Image sent to Video Gen');
+                }
+              }}
+              isSaved={isVideoSaved}
+            />
+          </div>
 
-                  <TabsContent value="voice" className="mt-0">
-                    <ErrorBoundary>
-                      <PremiumVoiceEngine
-                        project={project}
-                        onUpdate={updateProject}
-                        onGenerate={generateVoice}
-                        isProcessing={isProcessing}
-                        onStepChange={handleStepChange}
-                      />
-                    </ErrorBoundary>
-                  </TabsContent>
+          {/* Compact Studio Panel Below Preview */}
+          <Card className="border-0 shadow-[0_8px_32px_rgba(0,0,0,0.3)] bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl rounded-2xl overflow-visible">
+            <CardContent className="p-3 sm:p-6">
+              <Tabs value={currentStep} onValueChange={setCurrentStep}>
+                <TabsContent value="upload" className="mt-0" key={`upload-${currentStep}-${project.avatar?.status || 'empty'}-${project.voice?.status || 'empty'}`}>
+                  <ErrorBoundary>
+                    <VideoUploadStudio
+                      project={project}
+                      onUpdate={updateProject}
+                      isProcessing={isProcessing}
+                      onStepChange={handleStepChange}
+                    />
+                  </ErrorBoundary>
+                </TabsContent>
 
-                  <TabsContent value="video" className="mt-0">
-                    <ErrorBoundary>
-                      <RealVideoEngine
-                        project={project}
-                        onUpdate={updateProject}
-                        onGenerate={generateVideo}
-                        isProcessing={isProcessing}
-                        onDownload={downloadVideo}
-                        onSaveToLibrary={saveToLibrary}
-                      />
-                    </ErrorBoundary>
-                  </TabsContent>
-                </Tabs>
+                <TabsContent value="voice" className="mt-0">
+                  <ErrorBoundary>
+                    <PremiumVoiceEngine
+                      project={project}
+                      onUpdate={updateProject}
+                      onGenerate={generateVoice}
+                      isProcessing={isProcessing}
+                      onStepChange={handleStepChange}
+                    />
+                  </ErrorBoundary>
+                </TabsContent>
+
+                <TabsContent value="video" className="mt-0">
+                  <ErrorBoundary>
+                    <RealVideoEngine
+                      project={project}
+                      onUpdate={updateProject}
+                      onGenerate={generateVideo}
+                      isProcessing={isProcessing}
+                      onDownload={downloadVideo}
+                      onSaveToLibrary={saveToLibrary}
+                    />
+                  </ErrorBoundary>
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+
+          {/* Processing Status */}
+          {isProcessing && (
+            <Card className="glass-card border border-violet-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] rounded-xl">
+              <CardContent className="p-4 flex items-center gap-4">
+                <Loader2 className="h-5 w-5 animate-spin text-primary shrink-0" />
+                <div className="flex-1">
+                  <div className="flex justify-between text-xs mb-1">
+                    <span className="text-muted-foreground">Creating Video</span>
+                    <span className="font-medium">{projectProgress}%</span>
+                  </div>
+                  <Progress value={projectProgress} className="h-1.5" />
+                </div>
               </CardContent>
             </Card>
-          </div>
-
-          {/* Sidebar - Preview & Controls */}
-          <div className="lg:col-span-4 space-y-4 sm:space-y-6 mb-6">
-            {/* Real-time Preview */}
-            <div className="glass-card border border-violet-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] rounded-xl overflow-hidden">
-              <RealtimePreview 
-                project={project}
-                isProcessing={isProcessing}
-                onStepChange={handleStepChange}
-                onResetAvatar={handleResetAvatar}
-                onDownload={downloadVideo}
-                onSaveToLibrary={async (customTitle?: string) => {
-                  if (customTitle) {
-                    updateProject({ name: customTitle });
-                    // Wait a tick for state to update
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                  }
-                  await saveToLibrary();
-                  setIsVideoSaved(true);
-                }}
-                isSaved={isVideoSaved}
-              />
-            </div>
-            {/* Processing Status */}
-            {isProcessing && (
-              <Card className="glass-card border border-violet-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] rounded-xl">
-                <CardContent className="p-4 space-y-3">
-                  <div className="flex items-center gap-2 text-sm">
-                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                    <span className="font-medium">Processing</span>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-xs">
-                      <span className="text-muted-foreground">Creating Video</span>
-                      <span className="font-medium">{projectProgress}%</span>
-                    </div>
-                    <Progress value={projectProgress} className="h-2" />
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-xs">
-                      <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
-                      <span className="text-muted-foreground">Ultra-HD Processing</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs">
-                      <div className="h-2 w-2 bg-blue-500 rounded-full animate-pulse"></div>
-                      <span className="text-muted-foreground">Neural Enhancement</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
+          )}
         </div>
       </div>
     </div>

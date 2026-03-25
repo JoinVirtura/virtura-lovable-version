@@ -41,7 +41,11 @@ const STUDIO_STEPS = [
   { id: 'style', title: 'Style', icon: Palette, color: 'bg-purple-500' }
 ];
 
-export default function StudioPage() {
+interface StudioPageProps {
+  onViewChange?: (view: string) => void;
+}
+
+export default function StudioPage({ onViewChange }: StudioPageProps = {}) {
   const [currentStep, setCurrentStep] = useState('avatar');
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingPhase, setProcessingPhase] = useState<string>('');
@@ -128,138 +132,112 @@ export default function StudioPage() {
 
       {/* Main Studio Interface */}
       <div className="w-full px-4 sm:px-6 py-4 sm:py-6 mb-6 sm:mb-8">
-        <div className="grid lg:grid-cols-12 gap-6">
-          {/* Main Studio Panel */}
-          <div className="lg:col-span-8">
-            <Card className="border-0 shadow-[0_8px_32px_rgba(0,0,0,0.3)] bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl rounded-2xl overflow-hidden">
-              <CardContent className="p-0">
-                <Tabs value={currentStep} onValueChange={setCurrentStep}>
-                  <TabsContent value="avatar" className="p-6 space-y-6">
-                    <ErrorBoundary fallbackTitle="Avatar Generation Error" fallbackMessage="There was an issue with the avatar generation component.">
-                      <AvatarGenerationStudio
-                        project={project}
-                        onUpdate={updateProject}
-                        onGenerate={generateAvatar}
-                        isProcessing={isProcessing}
-                        onStepComplete={() => {
-                          setCurrentStep('style');
-                        }}
-                      />
-                    </ErrorBoundary>
-                  </TabsContent>
+        <div className="max-w-3xl mx-auto space-y-6">
+          {/* Centered Preview */}
+          <div className="glass-card border border-violet-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] rounded-xl overflow-hidden">
+            <RealtimePreview
+              key={currentStep}
+              project={project}
+              isProcessing={isProcessing}
+              onStepChange={handleStepChange}
+              onResetAvatar={() => {
+                updateProject({
+                  avatar: undefined,
+                  style: undefined
+                });
+                setCurrentStep('avatar');
+              }}
+              onDownloadStyle={async () => {
+                const styledUrl = project.style?.resultUrl;
+                if (!styledUrl) {
+                  toast.error("No styled avatar available to download");
+                  return;
+                }
 
-                  <TabsContent value="style" className="p-6 space-y-6">
-                    <ErrorBoundary fallbackTitle="Style Transfer Error" fallbackMessage="There was an issue with the style transfer component.">
-                      <StyleTransferStudio
-                        project={project}
-                        onUpdate={updateProject}
-                        isProcessing={isProcessing}
-                        currentStep={currentStep}
-                        onStepChange={handleStepChange}
-                      />
-                    </ErrorBoundary>
-                  </TabsContent>
-                </Tabs>
+                try {
+                  const response = await fetch(styledUrl);
+                  if (!response.ok) throw new Error('Failed to fetch styled avatar');
+
+                  const blob = await response.blob();
+                  const blobUrl = URL.createObjectURL(blob);
+                  const link = document.createElement('a');
+                  link.href = blobUrl;
+                  link.download = `styled-avatar-${Date.now()}.png`;
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+
+                  setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+                  toast.success("Styled avatar downloaded successfully!");
+                } catch (error: any) {
+                  console.error('Download failed:', error);
+                  toast.error(error.message || "Failed to download styled avatar");
+                }
+              }}
+              onSendToVideoGen={() => {
+                const imageUrl = project.style?.resultUrl || project.avatar?.processedUrl || project.avatar?.originalUrl;
+                if (imageUrl) {
+                  sessionStorage.setItem('veoSourceImage', JSON.stringify({
+                    imageUrl,
+                    title: project.name || 'From Photo Editor',
+                  }));
+                  if (onViewChange) {
+                    onViewChange('video-gen');
+                  }
+                  toast.success('Image sent to Video Gen');
+                }
+              }}
+            />
+          </div>
+
+          {/* Compact Upload / Style Section Below Preview */}
+          <Card className="border-0 shadow-[0_8px_32px_rgba(0,0,0,0.3)] bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl rounded-2xl overflow-hidden">
+            <CardContent className="p-0">
+              <Tabs value={currentStep} onValueChange={setCurrentStep}>
+                <TabsContent value="avatar" className="p-4 sm:p-6">
+                  <ErrorBoundary fallbackTitle="Avatar Generation Error" fallbackMessage="There was an issue with the avatar generation component.">
+                    <AvatarGenerationStudio
+                      project={project}
+                      onUpdate={updateProject}
+                      onGenerate={generateAvatar}
+                      isProcessing={isProcessing}
+                      onStepComplete={() => {
+                        setCurrentStep('style');
+                      }}
+                    />
+                  </ErrorBoundary>
+                </TabsContent>
+
+                <TabsContent value="style" className="p-4 sm:p-6">
+                  <ErrorBoundary fallbackTitle="Style Transfer Error" fallbackMessage="There was an issue with the style transfer component.">
+                    <StyleTransferStudio
+                      project={project}
+                      onUpdate={updateProject}
+                      isProcessing={isProcessing}
+                      currentStep={currentStep}
+                      onStepChange={handleStepChange}
+                    />
+                  </ErrorBoundary>
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+
+          {/* Processing Status */}
+          {isProcessing && (
+            <Card className="glass-card border border-violet-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] rounded-xl">
+              <CardContent className="p-4 flex items-center gap-4">
+                <Loader2 className="h-5 w-5 animate-spin text-primary shrink-0" />
+                <div className="flex-1">
+                  <div className="flex justify-between text-xs mb-1">
+                    <span className="text-muted-foreground">{processingPhase || 'Processing...'}</span>
+                    <span className="font-medium">{projectProgress}%</span>
+                  </div>
+                  <Progress value={projectProgress} className="h-1.5" />
+                </div>
               </CardContent>
             </Card>
-          </div>
-
-          {/* Sidebar - Preview & Controls */}
-          <div className="lg:col-span-4 space-y-6">
-            {/* Real-time Preview */}
-            <div className="glass-card border border-violet-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] rounded-xl overflow-hidden">
-              <RealtimePreview 
-                key={currentStep}
-                project={project}
-                isProcessing={isProcessing}
-                onStepChange={handleStepChange}
-                onResetAvatar={() => {
-                  updateProject({
-                    avatar: undefined,
-                    style: undefined
-                  });
-                  setCurrentStep('avatar');
-                }}
-                onDownloadStyle={async () => {
-                  const styledUrl = project.style?.resultUrl;
-                  if (!styledUrl) {
-                    toast.error("No styled avatar available to download");
-                    return;
-                  }
-
-                  console.log('📥 Starting styled avatar download:', styledUrl);
-
-                  try {
-                    const response = await fetch(styledUrl);
-                    if (!response.ok) throw new Error('Failed to fetch styled avatar');
-
-                    const blob = await response.blob();
-                    console.log('✅ Avatar blob created:', blob.size, 'bytes');
-
-                    const blobUrl = URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = blobUrl;
-                    link.download = `styled-avatar-${Date.now()}.png`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-
-                    setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
-
-                    toast.success("Styled avatar downloaded successfully!");
-                    console.log('✅ Styled avatar download complete');
-                  } catch (error: any) {
-                    console.error('❌ Download failed:', error);
-                    toast.error(error.message || "Failed to download styled avatar");
-                  }
-                }}
-              />
-            </div>
-
-            {/* Processing Status */}
-            {isProcessing && (
-              <Card className="glass-card border border-violet-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] rounded-xl">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                    Processing
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-xs">
-                      <span className="text-muted-foreground">{processingPhase}</span>
-                      <span className="font-medium">{projectProgress}%</span>
-                    </div>
-                    <Progress value={projectProgress} className="h-2" />
-                  </div>
-                  
-                  {/* Enhanced processing indicators */}
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-xs">
-                      <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
-                      <span className="text-muted-foreground">Ultra-HD Processing</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs">
-                      <div className="h-2 w-2 bg-blue-500 rounded-full animate-pulse"></div>
-                      <span className="text-muted-foreground">Neural Enhancement</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs">
-                      <div className="h-2 w-2 bg-purple-500 rounded-full animate-pulse"></div>
-                      <span className="text-muted-foreground">Cinematic Effects</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Quick Actions - Disabled for now */}
-            {/* <Card className="glass-card border border-violet-500/20 rounded-xl">
-              <CardContent className="p-4">
-                <p className="text-sm text-muted-foreground text-center">Quick actions coming soon...</p>
-              </CardContent>
-            </Card> */}
-          </div>
+          )}
         </div>
       </div>
     </div>

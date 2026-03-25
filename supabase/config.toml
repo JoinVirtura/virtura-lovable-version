@@ -1,5 +1,8 @@
 project_id = "ocvlldhfkidppvfslzwl"
 
+[functions.generate-video-veo]
+verify_jwt = false
+
 [functions.generate-image-gemini]
 verify_jwt = false
 
