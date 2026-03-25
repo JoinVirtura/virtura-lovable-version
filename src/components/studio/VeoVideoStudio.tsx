@@ -434,6 +434,7 @@ export function VeoVideoStudio() {
                         <SelectItem key={m.id} value={m.id}>
                           <div className="flex items-center gap-2">
                             <span>{m.label}</span>
+                            {m.audio && <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-500/20 text-green-400">🔊 Audio</span>}
                             <span className="text-xs text-muted-foreground">{m.speed}</span>
                           </div>
                         </SelectItem>
@@ -499,9 +500,13 @@ export function VeoVideoStudio() {
                 <Badge variant="outline" className="text-violet-300 border-violet-500/30 text-xs">
                   {selectedModel.label}: {selectedModel.description}
                 </Badge>
-                {selectedModel.audio && (
+                {selectedModel.audio ? (
                   <Badge variant="outline" className="text-green-300 border-green-500/30 text-xs">
                     🔊 Native Audio
+                  </Badge>
+                ) : (
+                  <Badge variant="outline" className="text-white/30 border-white/10 text-xs">
+                    🔇 No Audio
                   </Badge>
                 )}
                 <Badge variant="outline" className="text-white/40 border-white/10 text-xs">
