@@ -172,122 +172,83 @@ export const VideoUploadStudio: React.FC<VideoUploadStudioProps> = ({
         }}
       />
       
-      {/* Upload Area */}
+      {/* Upload Area - Compact */}
       {!imagePreview ? (
-        <Card 
-          className={`h-96 relative cursor-pointer transition-all duration-300 border-2 ${
-            isDragOver 
-              ? 'border-violet-400 bg-violet-500/10 scale-[1.02] shadow-[0_0_25px_rgba(212,110,255,0.25)]' 
-              : 'border-dashed border-violet-500/40 hover:border-violet-400 hover:shadow-[0_0_25px_rgba(212,110,255,0.25)]'
+        <div
+          className={`py-6 flex items-center justify-center transition-all duration-300 border rounded-lg cursor-pointer ${
+            isDragOver
+              ? 'border-violet-400 bg-violet-500/10'
+              : 'border-dashed border-violet-500/30 hover:border-violet-400/60'
           }`}
           onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
           onDragLeave={(e) => { e.preventDefault(); setIsDragOver(false); }}
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
         >
-          <CardContent className="h-full flex items-center justify-center">
-            <div className="text-center space-y-4">
-              <div className={`mx-auto w-20 h-20 rounded-full flex items-center justify-center border-2 border-dashed transition-all ${
-                isDragOver ? 'border-violet-400 bg-violet-500/10 scale-110' : 'border-violet-500/40'
-              }`}>
-                <Upload className={`h-10 w-10 transition-all ${
-                  isDragOver ? 'text-violet-400 scale-110' : 'text-violet-500'
-                }`} />
-              </div>
-              
-              <div className="space-y-2">
-                <h3 className="text-xl font-semibold text-white">
-                  {isDragOver ? 'Drop your image here' : 'Upload Image'}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  Drag and drop or click to browse
-                </p>
-              </div>
-
-              <div className="flex items-center justify-center gap-6 text-xs text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                  PNG, JPG, WebP
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                  Max 10MB
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-2 h-2 rounded-full bg-purple-500"></div>
-                  4K Support
-                </div>
-              </div>
-
-              <div className="flex gap-3 justify-center">
-                <Button 
-                  variant="outline" 
-                  className="mt-4 bg-violet-500/10 border-violet-500/30 hover:bg-violet-500/20 hover:border-violet-400"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    fileInputRef.current?.click();
-                  }}
-                >
-                  <Upload className="h-4 w-4 mr-2" />
-                  File
-                </Button>
-                
-                <Button 
-                  variant="outline" 
-                  className="mt-4 bg-violet-500/10 border-violet-500/30 hover:bg-violet-500/20 hover:border-violet-400"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowLibrary(true);
-                  }}
-                >
-                  <Library className="h-4 w-4 mr-2" />
-                  Library
-                </Button>
+          <div className="flex flex-col sm:flex-row items-center gap-4 px-6 w-full">
+            <div className="shrink-0">
+              <div className="w-12 h-12 rounded-full border-2 border-dashed border-primary/30 flex items-center justify-center bg-primary/5">
+                <Upload className="h-5 w-5 text-primary" />
               </div>
             </div>
-          </CardContent>
-        </Card>
+
+            <div className="flex-1 text-center sm:text-left min-w-0">
+              <p className="text-sm font-medium text-white">
+                {isDragOver ? 'Drop your image here' : 'Upload avatar image'}
+              </p>
+              <p className="text-xs text-gray-500">PNG, JPG, WebP · Max 10MB · 4K</p>
+            </div>
+
+            <div className="flex gap-2 shrink-0">
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-violet-500/10 border-violet-500/30 hover:bg-violet-500/20 hover:border-violet-400 text-xs"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileInputRef.current?.click();
+                }}
+              >
+                <Upload className="h-3.5 w-3.5 mr-1.5" />
+                File
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-violet-500/10 border-violet-500/30 hover:bg-violet-500/20 hover:border-violet-400 text-xs"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowLibrary(true);
+                }}
+              >
+                <Library className="h-3.5 w-3.5 mr-1.5" />
+                Library
+              </Button>
+            </div>
+          </div>
+        </div>
       ) : !onStepChange ? (
-        <Card className="border-green-500/30 bg-green-500/5 backdrop-blur-sm">
-          <CardContent className="p-4">
-            <div className="flex items-start gap-4">
-              {/* Small Thumbnail */}
-              <div className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 ring-2 ring-green-500/30">
-                <img
-                  src={imagePreview}
-                  alt="Uploaded"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-
-              {/* Status Info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-2">
-                  <Badge variant="success" className="text-[10px] px-2 py-0">
-                    Ready
-                  </Badge>
-                  <span className="text-[10px] text-muted-foreground">Upload Complete</span>
-                </div>
-                <p className="text-xs text-white font-medium mb-1">Image Uploaded Successfully</p>
-                <p className="text-[10px] text-muted-foreground/80 mb-3">
-                  Preview available in Live Preview panel →
-                </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    handleClearImage();
-                    fileInputRef.current?.click();
-                  }}
-                  className="h-7 text-[11px] border-violet-500/30 hover:bg-violet-500/10"
-                >
-                  <Upload className="h-3 w-3 mr-1.5" />
-                  Change Image
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="flex items-center gap-4 px-6 py-4 border rounded-lg border-green-500/20 bg-green-500/5">
+          <div className="relative w-16 h-16 rounded-lg overflow-hidden border border-green-500/30 shrink-0">
+            <img src={imagePreview} alt="Uploaded" className="w-full h-full object-cover" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-white">Avatar ready</p>
+            <p className="text-xs text-gray-400">Preview available above</p>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              handleClearImage();
+              fileInputRef.current?.click();
+            }}
+            className="text-xs text-gray-400 hover:text-white shrink-0"
+          >
+            Change
+          </Button>
+        </div>
       ) : null}
 
       {/* Enhancement Settings */}

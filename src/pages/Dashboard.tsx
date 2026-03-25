@@ -15,6 +15,7 @@ import { MotionBackground } from "@/components/MotionBackground";
 import UpgradePage from "./UpgradePage";
 import StudioPage from "./StudioPage";
 import VideoProPage from "./VideoProPage";
+import { VeoVideoStudio } from "@/components/studio/VeoVideoStudio";
 import { BrandManagerView } from "@/components/BrandManagerView";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -164,6 +165,16 @@ export default function Dashboard() {
       navigate(location.pathname, { replace: true, state: {} });
     }
   }, [location.state]);
+
+  // Listen for navigate-view custom events (from child pages like VideoProPage)
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const view = (e as CustomEvent).detail;
+      if (view) setActiveView(view);
+    };
+    window.addEventListener('navigate-view', handler);
+    return () => window.removeEventListener('navigate-view', handler);
+  }, []);
   
   // Import admin dashboard immediately to avoid loading delay
   const [AdminDashboardComponent, setAdminDashboardComponent] = useState<any>(null);
@@ -1082,13 +1093,19 @@ export default function Dashboard() {
       case "talking-avatar":
         return (
           <div className="h-screen overflow-y-auto pt-14 md:pt-12">
-            <StudioPage />
+            <StudioPage onViewChange={setActiveView} />
           </div>
         );
       case "video-pro":
         return (
           <div className="h-screen overflow-y-auto pt-14 md:pt-12">
-            <VideoProPage />
+            <VideoProPage onViewChange={setActiveView} />
+          </div>
+        );
+      case "video-gen":
+        return (
+          <div className="h-screen overflow-y-auto pt-14 md:pt-12">
+            <VeoVideoStudio />
           </div>
         );
       case "create":
@@ -2061,7 +2078,7 @@ export default function Dashboard() {
                   Virtura AI
                 </h1>
                 <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
-                  v1.0.1
+                  v1.0.2
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -2083,15 +2100,15 @@ export default function Dashboard() {
           />
         
         <div className="flex-1 flex flex-col relative z-10 overflow-x-hidden">
-          {/* Trial Banner */}
-          {trialStatus && (
+          {/* Trial Banner - hidden for now */}
+          {/* {trialStatus && (
             <div className="p-4 md:p-6 pt-16 md:pt-6">
-              <TrialBanner 
-                trialEnd={trialStatus.trial_end} 
+              <TrialBanner
+                trialEnd={trialStatus.trial_end}
                 onUpgrade={() => setActiveView('upgrade')}
               />
             </div>
-          )}
+          )} */}
           
           {/* Add padding top on mobile to account for fixed header */}
           <main className={`flex-1 w-full ${activeView === 'admin-dashboard' || activeView === 'talking-avatar' ? 'pt-16 md:pt-6 px-0' : 'p-4 md:p-6 pt-16 md:pt-6'}`}>

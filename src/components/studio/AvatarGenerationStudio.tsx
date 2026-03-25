@@ -129,11 +129,11 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
   }, [onUpdate, onStepComplete, toast]);
 
   return (
-    <div 
-      className={`h-96 flex items-center justify-center transition-all duration-300 border-2 rounded-lg cursor-pointer ${
-        isDragOver 
-          ? 'border-violet-400 bg-violet-500/10 scale-[1.02] shadow-[0_0_25px_rgba(212,110,255,0.25)]' 
-          : 'border-dashed border-violet-500/40 hover:border-violet-400 hover:shadow-[0_0_25px_rgba(212,110,255,0.25)]'
+    <div
+      className={`py-6 flex items-center justify-center transition-all duration-300 border rounded-lg cursor-pointer ${
+        isDragOver
+          ? 'border-violet-400 bg-violet-500/10'
+          : 'border-dashed border-violet-500/30 hover:border-violet-400/60'
       }`}
       onDrop={handleDrop}
       onDragOver={(e) => {
@@ -143,25 +143,25 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
       onDragLeave={() => setIsDragOver(false)}
     >
       {uploadProgress === 100 && uploadedImage ? (
-        // Success State
-        <div className="w-full max-w-md space-y-6 text-center">
-          <div className="relative aspect-square rounded-2xl overflow-hidden border-2 border-green-500/30 shadow-[0_0_20px_rgba(34,197,94,0.2)]">
-            <img 
-              src={uploadedImage} 
-              alt="Uploaded avatar" 
+        // Success State - Compact
+        <div className="flex items-center gap-4 px-6 w-full">
+          <div className="relative w-16 h-16 rounded-lg overflow-hidden border border-green-500/30 shrink-0">
+            <img
+              src={uploadedImage}
+              alt="Uploaded avatar"
               className="w-full h-full object-cover"
             />
-            <div className="absolute top-4 right-4 bg-green-500/90 backdrop-blur-sm rounded-full p-2.5">
-              <Check className="h-5 w-5 text-white" />
+            <div className="absolute top-1 right-1 bg-green-500/90 rounded-full p-0.5">
+              <Check className="h-3 w-3 text-white" />
             </div>
           </div>
-          
-          <div className="space-y-3">
-            <h3 className="text-xl font-semibold text-white flex items-center justify-center gap-2">
-              <Check className="h-5 w-5 text-green-400" />
-              Avatar Uploaded Successfully
-            </h3>
-            <p className="text-sm text-gray-400">Proceeding to style transfer...</p>
+
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-white flex items-center gap-1.5">
+              <Check className="h-3.5 w-3.5 text-green-400 shrink-0" />
+              Avatar ready
+            </p>
+            <p className="text-xs text-gray-400">Proceeding to style transfer...</p>
           </div>
 
           <Button
@@ -169,82 +169,60 @@ export const AvatarGenerationStudio: React.FC<AvatarGenerationStudioProps> = ({
               setUploadProgress(0);
               setUploadedImage(null);
             }}
-            variant="outline"
-            size="lg"
-            className="w-full"
+            variant="ghost"
+            size="sm"
+            className="text-xs text-gray-400 hover:text-white shrink-0"
           >
-            Upload Different Image
+            Change
           </Button>
         </div>
       ) : (
-        // Upload State
-        <div className="w-full max-w-md space-y-4 text-center px-6">
-          {/* Dashed Circle Upload Icon */}
-          <div className="flex justify-center">
-            <div className="relative">
-              <div className="w-20 h-20 rounded-full border-2 border-dashed border-primary/40 flex items-center justify-center bg-primary/5">
-                <Upload className="h-10 w-10 text-primary" />
+        // Upload State - Compact
+        <div className="flex flex-col sm:flex-row items-center gap-4 px-6 w-full">
+          <div className="relative shrink-0">
+            <div className="w-12 h-12 rounded-full border-2 border-dashed border-primary/30 flex items-center justify-center bg-primary/5">
+              <Upload className="h-5 w-5 text-primary" />
+            </div>
+            {uploadProgress > 0 && uploadProgress < 100 && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <CircularProgress value={uploadProgress} size={48} className="text-primary" />
               </div>
-              {uploadProgress > 0 && uploadProgress < 100 && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <CircularProgress value={uploadProgress} size={80} className="text-primary" />
-                </div>
-              )}
-            </div>
+            )}
           </div>
 
-          {/* Heading */}
-          <div className="space-y-1">
-            <h2 className="text-xl font-bold text-white">Upload Image</h2>
-            <p className="text-sm text-gray-400">
-              {isDragOver ? 'Drop your image here' : 'Drag and drop or click to browse'}
+          <div className="flex-1 text-center sm:text-left min-w-0">
+            <p className="text-sm font-medium text-white">
+              {isDragOver ? 'Drop your image here' : 'Upload avatar image'}
             </p>
+            <p className="text-xs text-gray-500">PNG, JPG, WebP · Max 10MB · 4K</p>
           </div>
 
-          {/* Info Badges */}
-          <div className="flex items-center justify-center gap-6 text-xs text-gray-400">
-            <div className="flex items-center gap-1">
-              <div className="w-2 h-2 rounded-full bg-green-400" />
-              <span>PNG, JPG, WebP</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-2 h-2 rounded-full bg-blue-400" />
-              <span>Max 10MB</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-2 h-2 rounded-full bg-purple-400" />
-              <span>4K Support</span>
-            </div>
-          </div>
-
-          {/* Choose File Buttons */}
-          <div className="flex gap-3 justify-center">
+          <div className="flex gap-2 shrink-0">
             <Button
               onClick={() => fileInputRef.current?.click()}
               variant="outline"
-              className="mt-2 bg-violet-500/10 border-violet-500/30 hover:bg-violet-500/20 hover:border-violet-400"
+              size="sm"
+              className="bg-violet-500/10 border-violet-500/30 hover:bg-violet-500/20 hover:border-violet-400 text-xs"
               disabled={uploadProgress > 0 && uploadProgress < 100}
             >
-              <Upload className="h-4 w-4 mr-2" />
+              <Upload className="h-3.5 w-3.5 mr-1.5" />
               File
             </Button>
-            
+
             <Button
               onClick={() => setIsLibraryOpen(true)}
               variant="outline"
-              className="mt-2 bg-violet-500/10 border-violet-500/30 hover:bg-violet-500/20 hover:border-violet-400"
+              size="sm"
+              className="bg-violet-500/10 border-violet-500/30 hover:bg-violet-500/20 hover:border-violet-400 text-xs"
               disabled={uploadProgress > 0 && uploadProgress < 100}
             >
-              <Library className="h-4 w-4 mr-2" />
+              <Library className="h-3.5 w-3.5 mr-1.5" />
               Library
             </Button>
           </div>
 
-          {/* Upload Progress */}
           {uploadProgress > 0 && uploadProgress < 100 && (
-            <div className="space-y-2 pt-2">
-              <p className="text-sm font-medium text-white">Uploading... {uploadProgress}%</p>
-            </div>
+            <p className="text-xs font-medium text-white shrink-0">Uploading... {uploadProgress}%</p>
           )}
 
           <input
