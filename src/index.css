@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+/* PWA safe area: push main content below status bar in standalone mode (mobile only) */
+@media (display-mode: standalone) {
+  .pwa-safe-top {
+    padding-top: calc(4rem + env(safe-area-inset-top, 0px)) !important;
+  }
+}
+@media (max-width: 767px) {
+  @supports (padding-top: env(safe-area-inset-top)) {
+    .pwa-safe-top {
+      padding-top: calc(4rem + env(safe-area-inset-top, 0px)) !important;
+    }
+  }
+}
+
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
 */

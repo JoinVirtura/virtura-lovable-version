@@ -2071,7 +2071,7 @@ export default function Dashboard() {
           {activeView !== 'admin-dashboard' && <MotionBackground />}
           
           {/* Fixed Mobile Header */}
-          <header className="fixed top-0 left-0 right-0 z-50 md:hidden bg-black/90 backdrop-blur-xl border-b border-violet-500/20">
+          <header className="fixed top-0 left-0 right-0 z-50 md:hidden bg-black/90 backdrop-blur-xl border-b border-violet-500/20" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
             <div className="flex items-center justify-between px-4 h-14">
               <div className="flex items-center gap-2">
                 <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
@@ -2111,7 +2111,7 @@ export default function Dashboard() {
           )} */}
           
           {/* Add padding top on mobile to account for fixed header */}
-          <main className={`flex-1 w-full ${activeView === 'admin-dashboard' || activeView === 'talking-avatar' ? 'pt-16 md:pt-6 px-0' : 'p-4 md:p-6 pt-16 md:pt-6'}`}>
+          <main className={`flex-1 w-full pwa-safe-top ${activeView === 'admin-dashboard' || activeView === 'talking-avatar' ? 'pt-16 md:pt-6 px-0' : 'p-4 md:p-6 pt-16 md:pt-6'}`}>
             {renderContent()}
           </main>
         </div>
