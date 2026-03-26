@@ -310,24 +310,15 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
   const removeReferenceImage = () => {
     // Clear reference image
     setReferenceImage(null);
-    
+
     // Clear file input
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
-    
-    // Clear prompt (return to blank state)
-    setPrompt("");
-    
-    // Clear any generated previews
-    setPreviewCards([]);
-    
-    // Clear selected variant
-    setSelectedVariant(null);
-    
+
     // Mark edit image as removed
     setEditImageRemoved(true);
-    
+
     // Show success message
     toast.success("Reference image removed. Ready for new generation!");
   };
@@ -704,13 +695,18 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                       {/* Image Upload/Reference Button */}
                       {referenceImage ? (
                         <div className="relative">
-                          <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-primary/50 hover:border-primary transition-all">
-                            <img 
-                              src={referenceImage} 
-                              alt="Reference" 
+                          <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            className="w-10 h-10 rounded-full overflow-hidden border-2 border-primary/50 hover:border-primary transition-all cursor-pointer"
+                            title="Click to change reference image"
+                          >
+                            <img
+                              src={referenceImage}
+                              alt="Reference"
                               className="w-full h-full object-cover"
                             />
-                          </div>
+                          </button>
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
