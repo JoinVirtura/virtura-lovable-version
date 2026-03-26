@@ -128,7 +128,7 @@ export function LandingHero({ id }: LandingHeroProps) {
                 size="lg"
               >
                 <Sparkles className="w-4 h-4 mr-2" />
-                Start Something Great
+                Join Virtura Now
               </Button>
               <p className="text-sm text-muted-foreground">
                 No credit card required • 7-day free trial • SFW only • Cancel anytime
