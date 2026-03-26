@@ -121,7 +121,7 @@ export function LandingHero({ id }: LandingHeroProps) {
 
           {/* Default CTA (when no images) */}
           {images.length === 0 && !isGenerating && (
-            <div className="text-center animate-fade-in space-y-4" style={{ animationDelay: "0.4s" }}>
+            <div className="text-center animate-fade-in space-y-2 mt-2" style={{ animationDelay: "0.4s" }}>
               <Button
                 onClick={() => window.dispatchEvent(new Event('open-mobile-menu'))}
                 className="md:hidden bg-gradient-to-r from-primary to-secondary hover:shadow-[0_0_30px_rgba(139,92,246,0.4)] transition-all"
