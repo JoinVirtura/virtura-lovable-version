@@ -325,15 +325,9 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
             <Settings className="w-5 h-5 shrink-0" />
             {(isMobile || !isCollapsed) && <span className="font-medium">Settings</span>}
           </SidebarMenuButton>
-          {/* Version label below Settings */}
-          <div className="flex justify-center mt-1">
-            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
-              v1.0.3
-            </span>
-          </div>
         </div>
 
-        <div className={!isMobile && isCollapsed ? "px-1 pb-3" : "px-3 pb-3"}>
+        <div className={!isMobile && isCollapsed ? "px-1 pb-2" : "px-3 pb-2"}>
           <SidebarMenuButton
             onClick={handleLogout}
             className={`w-full min-h-[44px] ${!isMobile && isCollapsed ? "" : "gap-3 px-3"} text-destructive hover:bg-destructive/10 h-auto py-2`}
@@ -341,6 +335,13 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
             <LogOut className="w-5 h-5 shrink-0" />
             {(isMobile || !isCollapsed) && <span className="font-medium">Logout</span>}
           </SidebarMenuButton>
+        </div>
+
+        {/* Version label below Logout */}
+        <div className={!isMobile && isCollapsed ? "px-2 pb-3" : "px-6 pb-3"}>
+          <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+            v1.0.3
+          </span>
         </div>
       </SidebarFooter>
     </Sidebar>
