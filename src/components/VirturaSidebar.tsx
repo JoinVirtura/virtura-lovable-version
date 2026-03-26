@@ -325,6 +325,12 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
             <Settings className="w-5 h-5 shrink-0" />
             {(isMobile || !isCollapsed) && <span className="font-medium">Settings</span>}
           </SidebarMenuButton>
+          {/* Version label below Settings */}
+          <div className="flex justify-center mt-1">
+            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+              v1.0.3
+            </span>
+          </div>
         </div>
 
         <div className={!isMobile && isCollapsed ? "px-1 pb-3" : "px-3 pb-3"}>
@@ -335,13 +341,6 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
             <LogOut className="w-5 h-5 shrink-0" />
             {(isMobile || !isCollapsed) && <span className="font-medium">Logout</span>}
           </SidebarMenuButton>
-        </div>
-
-        {/* Version label */}
-        <div className={`flex justify-center pb-3 ${!isMobile && isCollapsed ? "px-1" : "px-3"}`}>
-          <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
-            v1.0.3
-          </span>
         </div>
       </SidebarFooter>
     </Sidebar>
