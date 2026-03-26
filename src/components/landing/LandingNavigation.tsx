@@ -1,10 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
 export function LandingNavigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Listen for external requests to open the mobile menu
+  useEffect(() => {
+    const handler = () => setMobileMenuOpen(true);
+    window.addEventListener('open-mobile-menu', handler);
+    return () => window.removeEventListener('open-mobile-menu', handler);
+  }, []);
   const navigate = useNavigate();
 
   const scrollToSection = (id: string) => {

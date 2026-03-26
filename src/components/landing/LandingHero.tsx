@@ -121,7 +121,15 @@ export function LandingHero({ id }: LandingHeroProps) {
 
           {/* Default CTA (when no images) */}
           {images.length === 0 && !isGenerating && (
-            <div className="text-center animate-fade-in" style={{ animationDelay: "0.4s" }}>
+            <div className="text-center animate-fade-in space-y-4" style={{ animationDelay: "0.4s" }}>
+              <Button
+                onClick={() => window.dispatchEvent(new Event('open-mobile-menu'))}
+                className="md:hidden bg-gradient-to-r from-primary to-secondary hover:shadow-[0_0_30px_rgba(139,92,246,0.4)] transition-all"
+                size="lg"
+              >
+                <Sparkles className="w-4 h-4 mr-2" />
+                Start Something Great
+              </Button>
               <p className="text-sm text-muted-foreground">
                 No credit card required • 7-day free trial • SFW only • Cancel anytime
               </p>
