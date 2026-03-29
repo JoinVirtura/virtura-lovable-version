@@ -20,13 +20,13 @@ export function AboutSection({ id }: AboutSectionProps) {
           
           <div className="space-y-4 sm:space-y-6 text-sm sm:text-base md:text-lg text-muted-foreground leading-relaxed text-left">
             <p>
-              Virtura is a next-generation AI content platform designed to empower creators, brands, and consumers with studio-quality digital production tools. Our mission is simple: make high-quality content creation accessible, scalable, and limitless — without traditional production barriers.
+              Virtura is a next-generation AI content platform designed to empower creators, brands, and consumers with studio-quality digital production tools. Our mission is simple: make high-quality content creation accessible, scalable, and limitless, without traditional production barriers.
             </p>
             <p>
               We believe digital identity is evolving, and Virtura exists to help people, brands, and creators express themselves in new, powerful, and inspiring ways.
             </p>
             <p>
-              Built with advanced AI technology, privacy-first principles, and a commitment to SFW content, Virtura represents the future of creativity — where anyone can bring their ideas to life in seconds.
+              Built with advanced AI technology and privacy-first principles, Virtura represents the future of creativity, where anyone can bring their ideas to life in seconds.
             </p>
           </div>
 
@@ -49,8 +49,8 @@ export function AboutSection({ id }: AboutSectionProps) {
               <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-primary flex items-center justify-center mb-3 sm:mb-4">
                 <Globe className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
               </div>
-              <h3 className="font-semibold mb-2 text-sm sm:text-base">SFW Only</h3>
-              <p className="text-xs sm:text-sm text-muted-foreground">Safe, professional content always</p>
+              <h3 className="font-semibold mb-2 text-sm sm:text-base">Creator-Focused</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground">Built for creators, brands, and everyone</p>
             </div>
           </div>
         </div>

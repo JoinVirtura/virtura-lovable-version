@@ -93,35 +93,35 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
   }, [user]);
 
   // All items now use onViewChange - no path/navigate
-  // Items 0-6: Admin, Home, Photo Editor, Video Editor, Copilot, Library, Feed
+  // Items 0-6: Admin, Photo Generator, Photo Editor, Video Editor, Copilot, Library, Feed
   const mainItems = [
-    ...(isAdmin ? [{ id: "admin-dashboard", label: "Admin", icon: Shield }] : []),
-    { id: "overview", label: "Home", icon: Home },
-    { id: "talking-avatar", label: "Photo Editor", icon: Image },
-    { id: "video-pro", label: "Video Editor", icon: Video },
-    { id: "video-gen", label: "Video Gen", icon: Film },
-    { id: "studio", label: "Copilot", icon: Command },
-    { id: "library", label: "Library", icon: Library },
-    { id: "social-feed", label: "Feed", icon: Home },
+    ...(isAdmin ? [{ id: "admin-dashboard", label: "Admin", icon: Shield, comingSoon: true }] : []),
+    { id: "overview", label: "Photo Generator", icon: Home, comingSoon: false },
+    { id: "talking-avatar", label: "Photo Editor", icon: Image, comingSoon: true },
+    { id: "video-pro", label: "Video Editor", icon: Video, comingSoon: true },
+    { id: "video-gen", label: "Video Gen", icon: Film, comingSoon: true },
+    { id: "studio", label: "Copilot", icon: Command, comingSoon: true },
+    { id: "library", label: "Library", icon: Library, comingSoon: false },
+    { id: "social-feed", label: "Feed", icon: Home, comingSoon: true },
   ];
 
   // Items 7-8: Brand Manager, Marketplace
   const businessItems = [
-    { id: "brands", label: "Brand Manager", icon: Building2 },
-    { id: "marketplace", label: "Marketplace", icon: Briefcase },
+    { id: "brands", label: "Brand Manager", icon: Building2, comingSoon: true },
+    { id: "marketplace", label: "Marketplace", icon: Briefcase, comingSoon: true },
   ];
 
   // Items 9-11: Creator Dashboard, Posting Calendar, Verification
   const creatorItems = [
-    { id: "creator-dashboard", label: "Creator Dashboard", icon: DollarSign },
-    { id: "scheduled-posts", label: "Posting Calendar", icon: Calendar },
-    { id: "verification", label: "Verification", icon: BadgeCheck },
+    { id: "creator-dashboard", label: "Creator Dashboard", icon: DollarSign, comingSoon: true },
+    { id: "scheduled-posts", label: "Posting Calendar", icon: Calendar, comingSoon: false },
+    { id: "verification", label: "Verification", icon: BadgeCheck, comingSoon: true },
   ];
 
   // Items 12-13: Tutorials, Support
   const supportItems = [
-    { id: "guide", label: "Tutorials", icon: BookOpen },
-    { id: "support", label: "Support", icon: LifeBuoy },
+    { id: "guide", label: "Tutorials", icon: BookOpen, comingSoon: false },
+    { id: "support", label: "Support", icon: LifeBuoy, comingSoon: false },
   ];
 
   // Items 14-16: User Profile, Settings, Logout (in footer)
@@ -182,7 +182,14 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                     }`}
                   >
                     <item.icon className="w-5 h-5 shrink-0" />
-                    {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
+                    {(isMobile || !isCollapsed) && (
+                      <span className="font-medium flex items-center gap-2">
+                        {item.label}
+                        {item.comingSoon && (
+                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-400/30 whitespace-nowrap">Soon</span>
+                        )}
+                      </span>
+                    )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -211,7 +218,14 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                     }`}
                   >
                     <item.icon className="w-5 h-5 shrink-0" />
-                    {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
+                    {(isMobile || !isCollapsed) && (
+                      <span className="font-medium flex items-center gap-2">
+                        {item.label}
+                        {item.comingSoon && (
+                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-400/30 whitespace-nowrap">Soon</span>
+                        )}
+                      </span>
+                    )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -240,7 +254,14 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                     }`}
                   >
                     <item.icon className="w-5 h-5 shrink-0" />
-                    {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
+                    {(isMobile || !isCollapsed) && (
+                      <span className="font-medium flex items-center gap-2">
+                        {item.label}
+                        {item.comingSoon && (
+                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-400/30 whitespace-nowrap">Soon</span>
+                        )}
+                      </span>
+                    )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -269,7 +290,14 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                     }`}
                   >
                     <item.icon className="w-5 h-5 shrink-0" />
-                    {(isMobile || !isCollapsed) && <span className="font-medium">{item.label}</span>}
+                    {(isMobile || !isCollapsed) && (
+                      <span className="font-medium flex items-center gap-2">
+                        {item.label}
+                        {item.comingSoon && (
+                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-400/30 whitespace-nowrap">Soon</span>
+                        )}
+                      </span>
+                    )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -340,7 +368,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
         {/* Version label below Logout */}
         <div className={!isMobile && isCollapsed ? "px-2 pb-3" : "px-6 pb-3"}>
           <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
-            v1.0.3
+            v1.0.4
           </span>
         </div>
       </SidebarFooter>

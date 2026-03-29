@@ -25,7 +25,7 @@ export function WhatYouCanCreateSection({ id }: WhatYouCanCreateSectionProps) {
     {
       icon: User,
       title: "Digital Avatars & Personas",
-      description: "One identity or many — build versions of yourself for different purposes and styles.",
+      description: "One identity or many, build versions of yourself for different purposes and styles.",
     },
     {
       icon: ShoppingBag,
@@ -48,7 +48,7 @@ export function WhatYouCanCreateSection({ id }: WhatYouCanCreateSectionProps) {
             What You Can <span className="bg-gradient-text bg-clip-text text-transparent">Create</span>
           </h2>
           <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-2">
-            Transform your ideas into visually stunning, high-quality AI content — instantly.
+            Transform your ideas into visually stunning, high-quality AI content, instantly.
           </p>
         </div>
 
@@ -64,8 +64,8 @@ export function WhatYouCanCreateSection({ id }: WhatYouCanCreateSectionProps) {
                 <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-primary flex items-center justify-center mb-4 sm:mb-6 group-hover:shadow-violet-glow transition-all">
                   <creation.icon className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3">{creation.title}</h3>
-                <p className="text-sm sm:text-base text-muted-foreground">{creation.description}</p>
+                <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 break-words">{creation.title}</h3>
+                <p className="text-sm sm:text-base text-muted-foreground break-words">{creation.description}</p>
               </CardContent>
             </Card>
           ))}

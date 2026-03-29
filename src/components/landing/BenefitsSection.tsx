@@ -15,7 +15,7 @@ export function BenefitsSection({ id }: BenefitsSectionProps) {
     {
       icon: Zap,
       title: "Content Scaling at Speed",
-      description: "Generate a month's worth of content in minutes — no shoots, no scheduling, no limitations.",
+      description: "Generate a month's worth of content in minutes, no shoots, no scheduling, no limitations.",
     },
     {
       icon: Layers,
@@ -24,13 +24,13 @@ export function BenefitsSection({ id }: BenefitsSectionProps) {
     },
     {
       icon: Shield,
-      title: "Privacy-Driven & SFW Only",
-      description: "Your likeness, assets, and content remain private and secure. No NSFW. No exceptions.",
+      title: "Privacy-Driven",
+      description: "Your likeness, assets, and content remain private and secure.",
     },
     {
       icon: Users,
       title: "Creators, Consumers & Brands Welcome",
-      description: "Virtura is built for everyone — from creators growing their audience to fans browsing profiles to brands building campaigns.",
+      description: "Virtura is built for everyone, from creators growing their audience to fans browsing profiles to brands building campaigns.",
     },
     {
       icon: Infinity,
@@ -67,8 +67,8 @@ export function BenefitsSection({ id }: BenefitsSectionProps) {
                 <div className="w-14 h-14 rounded-xl bg-gradient-primary flex items-center justify-center mb-6 group-hover:shadow-violet-glow transition-all">
                   <benefit.icon className="w-7 h-7 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold mb-3">{benefit.title}</h3>
-                <p className="text-muted-foreground">{benefit.description}</p>
+                <h3 className="text-xl font-semibold mb-3 break-words">{benefit.title}</h3>
+                <p className="text-muted-foreground break-words">{benefit.description}</p>
               </CardContent>
             </Card>
           ))}

@@ -9,14 +9,14 @@ interface TestimonialsSectionProps {
 export function TestimonialsSection({ id }: TestimonialsSectionProps) {
   const testimonials = [
     {
-      content: "We didn't replace photographers entirely, but Virtura eliminated 80% of our repeat shoots. For pitch decks, ads, and social content, it's become our first stop. Clients actually think we increased our production budget — we didn't.",
+      content: "We didn't replace photographers entirely, but Virtura eliminated 80% of our repeat shoots. For pitch decks, ads, and social content, it's become our first stop. Clients actually think we increased our production budget, we didn't.",
       rating: 5,
       avatar: "CA",
       name: "Creative Agency Founder",
       role: "New York",
     },
     {
-      content: "Consistency was our biggest problem. Our product photos never matched across campaigns. Virtura fixed that overnight. Same lighting, same look, same brand feel — without reshoots.",
+      content: "Consistency was our biggest problem. Our product photos never matched across campaigns. Virtura fixed that overnight. Same lighting, same look, same brand feel, without reshoots.",
       rating: 5,
       avatar: "EB",
       name: "Ecommerce Marketing Manager",
@@ -37,14 +37,14 @@ export function TestimonialsSection({ id }: TestimonialsSectionProps) {
       role: "USA",
     },
     {
-      content: "I used to schedule shoots every 2–3 months. Now I generate on-brand visuals whenever I need them — listings, Instagram, press features. It's saved me time, money, and coordination headaches.",
+      content: "I used to schedule shoots every 2-3 months. Now I generate on-brand visuals whenever I need them, listings, Instagram, press features. It's saved me time, money, and coordination headaches.",
       rating: 5,
       avatar: "RB",
       name: "Real Estate Broker",
       role: "",
     },
     {
-      content: "Virtura didn't replace creativity — it removed friction. Our designers still direct the vision, but execution is faster and more scalable. That's the real win.",
+      content: "Virtura didn't replace creativity, it removed friction. Our designers still direct the vision, but execution is faster and more scalable. That's the real win.",
       rating: 5,
       avatar: "AC",
       name: "Head of Content",

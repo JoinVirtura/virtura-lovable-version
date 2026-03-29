@@ -21,8 +21,7 @@ export function PricingSection({ id }: PricingSectionProps) {
         "AI photos, avatars, and concepts",
         "1080p exports",
         "Essential styles & presets",
-        "SFW content only",
-        "Basic support",
+"Basic support",
       ],
       cta: "Start Free Trial",
       popular: false,
@@ -128,12 +127,6 @@ export function PricingSection({ id }: PricingSectionProps) {
           ))}
         </div>
 
-        {/* Money-back Guarantee */}
-        <div className="text-center mt-12">
-          <p className="text-muted-foreground">
-            <span className="text-primary font-semibold">30-day money-back guarantee</span> • No questions asked
-          </p>
-        </div>
       </div>
     </section>
   );

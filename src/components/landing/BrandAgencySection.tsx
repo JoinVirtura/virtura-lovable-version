@@ -50,7 +50,7 @@ export function BrandAgencySection({ id }: BrandAgencySectionProps) {
             <span className="text-xs sm:text-sm text-primary font-medium">For Agencies & Brands</span>
           </div>
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 px-2">
-            Produce Premium Creative Work — <span className="bg-gradient-text bg-clip-text text-transparent">Faster & Cheaper</span>
+            Produce Premium Creative Work, <span className="bg-gradient-text bg-clip-text text-transparent">Faster & Cheaper</span>
           </h2>
           <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
             Without traditional limitations.

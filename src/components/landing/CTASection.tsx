@@ -24,17 +24,17 @@ export function CTASection({ id }: CTASectionProps) {
           <h2 className="text-5xl md:text-6xl font-bold mb-6">
             Ready to Transform Your <span className="bg-gradient-text bg-clip-text text-transparent">Content Creation</span>?
           </h2>
-          
+
           <p className="text-2xl text-muted-foreground mb-8">
             Join thousands of creators using AI to bring their visions to life
           </p>
 
-          <Button 
+          <Button
             size="lg"
             onClick={() => navigate("/auth")}
             className="bg-gradient-primary hover:shadow-violet-glow transition-all text-xl px-12 py-8 h-auto group"
           >
-            Start Your Free Trial
+            Join Now
             <ArrowRight className="ml-2 w-6 h-6 group-hover:translate-x-1 transition-transform" />
           </Button>
 

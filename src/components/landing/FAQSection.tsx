@@ -13,11 +13,7 @@ export function FAQSection({ id }: FAQSectionProps) {
   const faqs = [
     {
       question: "Do I own the content I generate?",
-      answer: "Yes. You have full rights to all SFW content you create inside Virtura.",
-    },
-    {
-      question: "Does Virtura support NSFW content?",
-      answer: "No. Virtura is strictly SFW and follows strong compliance guidelines.",
+      answer: "Yes. You have full rights to all content you create inside Virtura.",
     },
     {
       question: "Can I create multiple avatars or identities?",
@@ -37,7 +33,7 @@ export function FAQSection({ id }: FAQSectionProps) {
     },
     {
       question: "Is Virtura for creators or brands?",
-      answer: "Both — Virtura is built for creators, consumers, businesses, and agencies.",
+      answer: "Both, Virtura is built for creators, consumers, businesses, and agencies.",
     },
   ];
 
@@ -54,7 +50,7 @@ export function FAQSection({ id }: FAQSectionProps) {
             ❓ Frequently Asked <span className="bg-gradient-text bg-clip-text text-transparent">Questions</span>
           </h2>
           <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-            SFW, clean, and accurate answers
+            Clear and accurate answers
           </p>
         </div>
 

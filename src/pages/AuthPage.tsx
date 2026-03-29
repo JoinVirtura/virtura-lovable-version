@@ -332,7 +332,7 @@ export default function AuthPage() {
               </CardTitle>
             </div>
             <CardDescription>
-              Create professional talking avatar videos with AI
+              Your AI-powered content creation studio
             </CardDescription>
           </CardHeader>
         <CardContent>

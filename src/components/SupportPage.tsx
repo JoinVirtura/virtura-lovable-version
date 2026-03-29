@@ -13,10 +13,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
-import { 
-  Loader2, 
-  LifeBuoy, 
-  Lightbulb, 
+import {
+  Loader2,
+  LifeBuoy,
+  Lightbulb,
   CheckCircle2,
   Headphones,
   BookOpen,
@@ -27,7 +27,8 @@ import {
   ExternalLink,
   Video,
   Users,
-  Shield
+  Shield,
+  ImageIcon
 } from "lucide-react";
 
 const ticketSchema = z.object({
@@ -80,6 +81,13 @@ const quickActions = [
     title: "Track Ticket",
     description: "Check your ticket status",
     color: "from-orange-500 to-amber-500",
+    action: "scroll-to-tickets"
+  },
+  {
+    icon: ImageIcon,
+    title: "Content Review",
+    description: "Report image/video issues for credit",
+    color: "from-rose-500 to-red-500",
     action: "scroll-to-tickets"
   },
   {
@@ -380,7 +388,7 @@ export function SupportPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"
+          className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4"
         >
           {quickActions.map((action, index) => {
             const handleClick = () => {
@@ -550,8 +558,10 @@ export function SupportPage() {
                       <SelectContent>
                         <SelectItem value="bug">Bug Report</SelectItem>
                         <SelectItem value="technical">Technical Issue</SelectItem>
+                        <SelectItem value="content_experience">Content Experience (Image/Video Quality)</SelectItem>
                         <SelectItem value="account">Account Issue</SelectItem>
                         <SelectItem value="billing">Billing Question</SelectItem>
+                        <SelectItem value="credit_request">Credit Request (Poor Generation)</SelectItem>
                         <SelectItem value="other">Other</SelectItem>
                       </SelectContent>
                     </Select>
