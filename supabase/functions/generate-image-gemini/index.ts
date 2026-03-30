@@ -10,9 +10,9 @@ const corsHeaders = {
 };
 
 const GEMINI_MODELS = [
-  'gemini-2.0-flash-preview-image-generation',
-  'gemini-2.0-flash-exp-image-generation',
-  'gemini-2.0-flash-exp',
+  'gemini-2.5-flash-image',
+  'gemini-3.1-flash-image-preview',
+  'gemini-3-pro-image-preview',
 ];
 const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
 
@@ -179,7 +179,7 @@ serve(async (req) => {
       userId: user.id,
       resourceType: 'image_generation',
       apiProvider: 'gemini',
-      modelUsed: GEMINI_MODEL,
+      modelUsed: GEMINI_MODELS[0],
       tokensToDeduct: requiredTokens,
       costUsd: estimatedCost,
       metadata: { contentType, quality, aspectRatio, prompt: prompt.substring(0, 100) },

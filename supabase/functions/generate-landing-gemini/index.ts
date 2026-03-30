@@ -146,7 +146,7 @@ async function generateWithGemini(apiKey: string, model: string, parts: object[]
   const url = `${API_BASE}/${model}:generateContent?key=${apiKey}`;
   const payload = {
     contents: [{ parts }],
-    generationConfig: { responseModalities: ["TEXT", "IMAGE"] },
+    generationConfig: { responseModalities: ["IMAGE"] },
   };
 
   console.log(`[Landing] Trying Gemini model: ${model}...`);
@@ -222,7 +222,7 @@ serve(async (req) => {
 
         // 2. Try Gemini image models
         const parts = [{ text: finalPrompt }];
-        const models = ['gemini-3.1-flash-image-preview', 'gemini-2.0-flash-exp-image-generation', 'gemini-2.0-flash-exp'];
+        const models = ['gemini-2.5-flash-image', 'gemini-3.1-flash-image-preview', 'gemini-3-pro-image-preview'];
         for (const model of models) {
           const result = await generateWithGemini(GEMINI_API_KEY, model, parts);
           if (result.image) { base64Image = result.image; break; }
@@ -248,7 +248,7 @@ serve(async (req) => {
         { text: finalPrompt },
         { inlineData: { data: rawBase64, mimeType } },
       ];
-      for (const model of ['gemini-3.1-flash-image-preview', 'gemini-2.0-flash-exp-image-generation', 'gemini-2.0-flash-exp']) {
+      for (const model of ['gemini-2.5-flash-image', 'gemini-3.1-flash-image-preview', 'gemini-3-pro-image-preview']) {
         const result = await generateWithGemini(GEMINI_API_KEY, model, parts);
         if (result.image) { base64Image = result.image; break; }
         errors.push(result.error);
