@@ -381,12 +381,12 @@ export function VeoVideoStudio() {
                   />
                   <Button
                     variant="outline"
-                    className="flex-1 border-violet-500/30 hover:bg-violet-500/10 text-white/80"
+                    className="flex-1 min-w-0 border-violet-500/30 hover:bg-violet-500/10 text-white/80"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isGenerating}
                   >
-                    <Upload className="h-4 w-4 mr-2" />
-                    {sourceImage ? sourceImageName || "Image selected" : "Upload Image"}
+                    <Upload className="h-4 w-4 mr-2 shrink-0" />
+                    <span className="truncate">{sourceImage ? sourceImageName || "Image selected" : "Upload Image"}</span>
                   </Button>
                   <Button
                     variant="outline"

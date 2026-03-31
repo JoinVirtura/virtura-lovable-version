@@ -1,6 +1,5 @@
 import { LandingNavigation } from "@/components/landing/LandingNavigation";
 import { LandingHero } from "@/components/landing/LandingHero";
-import { WhatYouCanCreateSection } from "@/components/landing/WhatYouCanCreateSection";
 import { BenefitsSection } from "@/components/landing/BenefitsSection";
 import { CTASection } from "@/components/landing/CTASection";
 import { PricingSection } from "@/components/landing/PricingSection";
@@ -16,7 +15,6 @@ export default function Landing() {
 
       <main>
         <LandingHero id="hero" />
-        <WhatYouCanCreateSection id="create" />
         <BenefitsSection id="services" />
         <CTASection id="join" />
         <PricingSection id="pricing" />

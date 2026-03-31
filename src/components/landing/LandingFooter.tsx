@@ -54,7 +54,7 @@ export function LandingFooter() {
 
         {/* Bottom Bar */}
         <div className="border-t border-border pt-6 sm:pt-8 text-center text-xs sm:text-sm text-muted-foreground">
-          <p>© 2025 Virtura AI. All rights reserved.</p>
+          <p>© 2026 Virtura AI. All rights reserved.</p>
         </div>
       </div>
     </footer>

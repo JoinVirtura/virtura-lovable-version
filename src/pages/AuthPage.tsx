@@ -332,7 +332,7 @@ export default function AuthPage() {
               </CardTitle>
             </div>
             <CardDescription>
-              Your AI-powered content creation studio
+              Where Identity Evolves
             </CardDescription>
           </CardHeader>
         <CardContent>

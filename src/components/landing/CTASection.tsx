@@ -39,7 +39,7 @@ export function CTASection({ id }: CTASectionProps) {
           </Button>
 
           <p className="text-sm text-muted-foreground mt-6">
-            No credit card required • 7-day free trial • Cancel anytime
+            No credit card required • Cancel anytime
           </p>
         </div>
       </div>

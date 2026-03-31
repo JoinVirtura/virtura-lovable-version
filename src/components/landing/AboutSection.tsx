@@ -1,4 +1,4 @@
-import { Shield, Sparkles, Globe } from "lucide-react";
+import { Shield, Sparkles, Zap } from "lucide-react";
 
 interface AboutSectionProps {
   id?: string;
@@ -47,10 +47,10 @@ export function AboutSection({ id }: AboutSectionProps) {
             </div>
             <div className="flex flex-col items-center">
               <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-primary flex items-center justify-center mb-3 sm:mb-4">
-                <Globe className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+                <Zap className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
               </div>
-              <h3 className="font-semibold mb-2 text-sm sm:text-base">Creator-Focused</h3>
-              <p className="text-xs sm:text-sm text-muted-foreground">Built for creators, brands, and everyone</p>
+              <h3 className="font-semibold mb-2 text-sm sm:text-base">Instant Creation</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground">From idea to stunning content in seconds</p>
             </div>
           </div>
         </div>

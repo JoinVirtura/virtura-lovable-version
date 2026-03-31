@@ -93,13 +93,13 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
   }, [user]);
 
   // All items now use onViewChange - no path/navigate
-  // Items 0-6: Admin, Photo Generator, Photo Editor, Video Editor, Copilot, Library, Feed
+  // Items: Admin, Photo Generator, Photo Editor, Video Editor, Video Gen, Copilot, Library, Feed
   const mainItems = [
     ...(isAdmin ? [{ id: "admin-dashboard", label: "Admin", icon: Shield, comingSoon: true }] : []),
     { id: "overview", label: "Photo Generator", icon: Home, comingSoon: false },
+    { id: "video-gen", label: "Video Generator", icon: Film, comingSoon: false },
     { id: "talking-avatar", label: "Photo Editor", icon: Image, comingSoon: true },
     { id: "video-pro", label: "Video Editor", icon: Video, comingSoon: true },
-    { id: "video-gen", label: "Video Gen", icon: Film, comingSoon: true },
     { id: "studio", label: "Copilot", icon: Command, comingSoon: true },
     { id: "library", label: "Library", icon: Library, comingSoon: false },
     { id: "social-feed", label: "Feed", icon: Home, comingSoon: true },
@@ -186,7 +186,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                       <span className="font-medium flex items-center gap-2">
                         {item.label}
                         {item.comingSoon && (
-                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-400/30 whitespace-nowrap">Soon</span>
+                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-400/30 whitespace-nowrap">Coming Soon</span>
                         )}
                       </span>
                     )}
@@ -222,7 +222,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                       <span className="font-medium flex items-center gap-2">
                         {item.label}
                         {item.comingSoon && (
-                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-400/30 whitespace-nowrap">Soon</span>
+                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-400/30 whitespace-nowrap">Coming Soon</span>
                         )}
                       </span>
                     )}
@@ -258,7 +258,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                       <span className="font-medium flex items-center gap-2">
                         {item.label}
                         {item.comingSoon && (
-                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-400/30 whitespace-nowrap">Soon</span>
+                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-400/30 whitespace-nowrap">Coming Soon</span>
                         )}
                       </span>
                     )}
@@ -294,7 +294,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                       <span className="font-medium flex items-center gap-2">
                         {item.label}
                         {item.comingSoon && (
-                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-400/30 whitespace-nowrap">Soon</span>
+                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-400/30 whitespace-nowrap">Coming Soon</span>
                         )}
                       </span>
                     )}
@@ -368,7 +368,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
         {/* Version label below Logout */}
         <div className={!isMobile && isCollapsed ? "px-2 pb-3" : "px-6 pb-3"}>
           <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
-            v1.0.4
+            v1.0.5
           </span>
         </div>
       </SidebarFooter>

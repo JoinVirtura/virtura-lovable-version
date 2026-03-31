@@ -123,7 +123,7 @@ export function LandingHero({ id }: LandingHeroProps) {
           {images.length === 0 && !isGenerating && (
             <div className="text-center animate-fade-in space-y-2 mt-2" style={{ animationDelay: "0.4s" }}>
               <p className="text-sm text-muted-foreground">
-                No credit card required • 7-day free trial • Cancel anytime
+                No credit card required • Cancel anytime
               </p>
               <Button
                 onClick={() => window.dispatchEvent(new Event('open-mobile-menu'))}
