@@ -68,7 +68,10 @@ export async function generateVeoVideo(
       }
     );
 
-    if (startError) throw new Error(startError.message);
+    if (startError) {
+      console.error("❌ Edge function error:", startError);
+      throw new Error(startData?.error || startError.message || "Failed to start video generation");
+    }
     if (!startData?.success) throw new Error(startData?.error || "Failed to start generation");
 
     const operationName = startData.operationName;
@@ -151,13 +154,37 @@ export async function saveVeoVideoToLibrary(params: {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error("Not authenticated");
 
+    // If thumbnailUrl is a data URL, upload it to storage first
+    let thumbnailUrl = params.thumbnailUrl;
+    if (thumbnailUrl && thumbnailUrl.startsWith("data:")) {
+      const response = await fetch(thumbnailUrl);
+      const blob = await response.blob();
+      const ext = blob.type.includes("png") ? "png" : "jpg";
+      const fileName = `veo-thumb-${Date.now()}.${ext}`;
+      const { error: uploadError } = await supabase.storage
+        .from("virtura-media")
+        .upload(`thumbnails/${fileName}`, blob, {
+          contentType: blob.type || "image/jpeg",
+          upsert: true,
+        });
+      if (uploadError) {
+        console.warn("⚠️ Thumbnail upload failed, using video URL as fallback:", uploadError.message);
+        thumbnailUrl = undefined;
+      } else {
+        const { data: urlData } = supabase.storage
+          .from("virtura-media")
+          .getPublicUrl(`thumbnails/${fileName}`);
+        thumbnailUrl = urlData.publicUrl;
+      }
+    }
+
     const { error } = await supabase.from("avatar_library").insert({
       user_id: user.id,
       title: params.title,
       prompt: params.prompt,
       video_url: params.videoUrl,
-      thumbnail_url: params.thumbnailUrl || params.videoUrl,
-      image_url: params.thumbnailUrl || params.videoUrl,
+      thumbnail_url: thumbnailUrl || params.videoUrl,
+      image_url: thumbnailUrl || params.videoUrl,
       is_video: true,
       duration: params.duration,
       tags: ["veo", params.model, params.aspectRatio],

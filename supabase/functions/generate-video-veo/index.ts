@@ -56,9 +56,12 @@ serve(async (req) => {
         prompt = "Animate with natural motion",
         imageBase64,
         imageUrl,
-        durationSeconds = 5,
+        durationSeconds: rawDuration = 5,
         aspectRatio = "16:9",
       } = body;
+
+      // Clamp duration to API-allowed range (4-8 inclusive)
+      const durationSeconds = Math.max(4, Math.min(8, rawDuration));
 
       console.log("🎬 Starting Veo video generation:", {
         model,
@@ -106,32 +109,48 @@ serve(async (req) => {
         },
       };
 
-      const url = `${VEO_API_BASE}/${model}:predictLongRunning?key=${GEMINI_API_KEY}`;
-      console.log("📡 Calling Veo API:", url.replace(GEMINI_API_KEY, "***"));
-
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("❌ Veo API error:", response.status, errorText);
-        throw new Error(`Veo API error ${response.status}: ${errorText}`);
+      // Try requested model first, fall back to veo-2.0 if it fails
+      const modelsToTry = [model];
+      if (model !== "veo-2.0-generate-001") {
+        modelsToTry.push("veo-2.0-generate-001");
       }
 
-      const result = await response.json();
-      console.log("✅ Veo operation started:", result.name);
+      let lastError = "";
+      for (const tryModel of modelsToTry) {
+        const url = `${VEO_API_BASE}/${tryModel}:predictLongRunning?key=${GEMINI_API_KEY}`;
+        console.log("📡 Calling Veo API with model:", tryModel);
 
-      return new Response(
-        JSON.stringify({
-          success: true,
-          operationName: result.name,
-          model,
-        }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`❌ Veo API error with ${tryModel}:`, response.status, errorText);
+          lastError = `${tryModel} failed (${response.status}): ${errorText}`;
+          if (modelsToTry.indexOf(tryModel) < modelsToTry.length - 1) {
+            console.log(`⚠️ Falling back to next model...`);
+            continue;
+          }
+          throw new Error(lastError);
+        }
+
+        const result = await response.json();
+        console.log(`✅ Veo operation started with ${tryModel}:`, result.name);
+
+        return new Response(
+          JSON.stringify({
+            success: true,
+            operationName: result.name,
+            model: tryModel,
+          }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      throw new Error(lastError || "All models failed");
     }
 
     // ── ACTION: Poll operation status ───────────────────────────
