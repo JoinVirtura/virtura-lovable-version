@@ -107,20 +107,20 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
 
   // Items 7-8: Brand Manager, Marketplace
   const businessItems = [
-    { id: "brands", label: "Brand Manager", icon: Building2, comingSoon: true },
+    { id: "brands", label: "Brands", icon: Building2, comingSoon: true },
     { id: "marketplace", label: "Marketplace", icon: Briefcase, comingSoon: true },
   ];
 
   // Items 9-11: Creator Dashboard, Posting Calendar, Verification
   const creatorItems = [
-    { id: "creator-dashboard", label: "Creator Dashboard", icon: DollarSign, comingSoon: true },
+    { id: "creator-dashboard", label: "Creator Hub", icon: DollarSign, comingSoon: true },
     { id: "scheduled-posts", label: "Posting Calendar", icon: Calendar, comingSoon: false },
     { id: "verification", label: "Verification", icon: BadgeCheck, comingSoon: true },
   ];
 
   // Items 12-13: Tutorials, Support
   const supportItems = [
-    { id: "guide", label: "Tutorials", icon: BookOpen, comingSoon: false },
+    // { id: "guide", label: "Tutorials", icon: BookOpen, comingSoon: false },
     { id: "support", label: "Support", icon: LifeBuoy, comingSoon: false },
   ];
 
@@ -183,10 +183,10 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                   >
                     <item.icon className="w-5 h-5 shrink-0" />
                     {(isMobile || !isCollapsed) && (
-                      <span className="font-medium flex items-center gap-2">
-                        {item.label}
+                      <span className="font-medium flex items-center gap-1.5 min-w-0 overflow-hidden">
+                        <span className="truncate">{item.label}</span>
                         {item.comingSoon && (
-                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-400/30 whitespace-nowrap">Coming Soon</span>
+                          <span className="text-[8px] px-1 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-400/30 whitespace-nowrap shrink-0 leading-none">Coming Soon</span>
                         )}
                       </span>
                     )}
@@ -219,10 +219,10 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                   >
                     <item.icon className="w-5 h-5 shrink-0" />
                     {(isMobile || !isCollapsed) && (
-                      <span className="font-medium flex items-center gap-2">
-                        {item.label}
+                      <span className="font-medium flex items-center gap-1.5 min-w-0 overflow-hidden">
+                        <span className="truncate">{item.label}</span>
                         {item.comingSoon && (
-                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-400/30 whitespace-nowrap">Coming Soon</span>
+                          <span className="text-[8px] px-1 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-400/30 whitespace-nowrap shrink-0 leading-none">Coming Soon</span>
                         )}
                       </span>
                     )}
@@ -255,10 +255,10 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                   >
                     <item.icon className="w-5 h-5 shrink-0" />
                     {(isMobile || !isCollapsed) && (
-                      <span className="font-medium flex items-center gap-2">
-                        {item.label}
+                      <span className="font-medium flex items-center gap-1.5 min-w-0 overflow-hidden">
+                        <span className="truncate">{item.label}</span>
                         {item.comingSoon && (
-                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-400/30 whitespace-nowrap">Coming Soon</span>
+                          <span className="text-[8px] px-1 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-400/30 whitespace-nowrap shrink-0 leading-none">Coming Soon</span>
                         )}
                       </span>
                     )}
@@ -291,10 +291,10 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
                   >
                     <item.icon className="w-5 h-5 shrink-0" />
                     {(isMobile || !isCollapsed) && (
-                      <span className="font-medium flex items-center gap-2">
-                        {item.label}
+                      <span className="font-medium flex items-center gap-1.5 min-w-0 overflow-hidden">
+                        <span className="truncate">{item.label}</span>
                         {item.comingSoon && (
-                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-400/30 whitespace-nowrap">Coming Soon</span>
+                          <span className="text-[8px] px-1 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-400/30 whitespace-nowrap shrink-0 leading-none">Coming Soon</span>
                         )}
                       </span>
                     )}

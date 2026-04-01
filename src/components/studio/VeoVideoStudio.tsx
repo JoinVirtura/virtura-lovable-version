@@ -78,7 +78,8 @@ export function VeoVideoStudio() {
 
   // Generation params
   const [prompt, setPrompt] = useState("");
-  const [model, setModel] = useState("veo-2.0-generate-001");
+  const [withAudio, setWithAudio] = useState(false);
+  const model = withAudio ? "veo-3.0-generate-001" : "veo-2.0-generate-001";
   const [duration, setDuration] = useState(5);
   const [aspectRatio, setAspectRatio] = useState("16:9");
 
@@ -183,7 +184,7 @@ export function VeoVideoStudio() {
       const saveResult = await saveVeoVideoToLibrary({
         videoUrl: result.videoUrl,
         thumbnailUrl: sourceImage || undefined,
-        title: `Veo Video ${new Date().toLocaleDateString()}`,
+        title: `Virtura Video ${new Date().toLocaleDateString()}`,
         prompt: prompt.trim() || "Image-to-video generation",
         duration,
         model,
@@ -208,7 +209,7 @@ export function VeoVideoStudio() {
       const blobUrl = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = blobUrl;
-      link.download = `veo-video-${Date.now()}.mp4`;
+      link.download = `virtura-video-${Date.now()}.mp4`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -225,7 +226,7 @@ export function VeoVideoStudio() {
     const result = await saveVeoVideoToLibrary({
       videoUrl,
       thumbnailUrl: sourceImage || undefined,
-      title: `Veo Video ${new Date().toLocaleDateString()}`,
+      title: `Virtura Video ${new Date().toLocaleDateString()}`,
       prompt: prompt.trim() || "Image-to-video generation",
       duration,
       model,
@@ -350,7 +351,7 @@ export function VeoVideoStudio() {
             {/* Video metadata */}
             {videoUrl && videoSize && (
               <div className="px-4 py-2 border-t border-white/5 flex items-center gap-4 text-xs text-white/50">
-                <span>{selectedModel.label}</span>
+                <span>Virtura Video</span>
                 <span>{duration}s</span>
                 <span>{aspectRatio}</span>
                 <span>{videoSize}</span>
@@ -418,31 +419,8 @@ export function VeoVideoStudio() {
                 />
               </div>
 
-              {/* Model / Duration / Aspect Ratio */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {/* Model */}
-                <div className="space-y-2">
-                  <Label className="text-white/80 text-sm font-medium flex items-center gap-1">
-                    <Sparkles className="h-3.5 w-3.5" /> Model
-                  </Label>
-                  <Select value={model} onValueChange={setModel} disabled={isGenerating}>
-                    <SelectTrigger className="bg-white/5 border-white/10 text-white">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {VEO_MODELS.map((m) => (
-                        <SelectItem key={m.id} value={m.id}>
-                          <div className="flex items-center gap-2">
-                            <span>{m.label}</span>
-                            {m.audio && <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-500/20 text-green-400">🔊 Audio</span>}
-                            <span className="text-xs text-muted-foreground">{m.speed}</span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
+              {/* Duration / Aspect Ratio / Audio */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Duration */}
                 <div className="space-y-2">
                   <Label className="text-white/80 text-sm font-medium flex items-center gap-1">
@@ -495,22 +473,34 @@ export function VeoVideoStudio() {
                 </div>
               </div>
 
-              {/* Model info badge */}
-              <div className="flex items-center gap-2 flex-wrap">
-                <Badge variant="outline" className="text-violet-300 border-violet-500/30 text-xs">
-                  {selectedModel.label}: {selectedModel.description}
-                </Badge>
-                {selectedModel.audio ? (
-                  <Badge variant="outline" className="text-green-300 border-green-500/30 text-xs">
-                    🔊 Native Audio
-                  </Badge>
-                ) : (
-                  <Badge variant="outline" className="text-white/30 border-white/10 text-xs">
-                    🔇 No Audio
-                  </Badge>
+              {/* Audio toggle */}
+              <label className="flex items-center gap-3 cursor-pointer select-none group">
+                <div className="relative">
+                  <input
+                    type="checkbox"
+                    checked={withAudio}
+                    onChange={(e) => setWithAudio(e.target.checked)}
+                    disabled={isGenerating}
+                    className="sr-only peer"
+                  />
+                  <div className="w-10 h-5 rounded-full bg-white/10 peer-checked:bg-violet-600 transition-colors" />
+                  <div className="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5" />
+                </div>
+                <span className="text-sm text-white/70 group-hover:text-white/90 transition-colors">
+                  {withAudio ? "🔊 Generate with Audio" : "🔇 No Audio"}
+                </span>
+                {withAudio && (
+                  <span className="text-[10px] text-white/40">~2min</span>
                 )}
-                <Badge variant="outline" className="text-white/40 border-white/10 text-xs">
-                  {selectedModel.speed}
+                {!withAudio && (
+                  <span className="text-[10px] text-white/40">~30s</span>
+                )}
+              </label>
+
+              {/* Model badge */}
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="text-violet-300 border-violet-500/30 text-xs">
+                  <Sparkles className="h-3 w-3 mr-1" /> Virtura Video Engine
                 </Badge>
               </div>
 

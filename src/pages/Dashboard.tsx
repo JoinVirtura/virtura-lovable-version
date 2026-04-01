@@ -53,6 +53,7 @@ import MarketplacePage from "./MarketplacePage";
 import ScheduledPostsPage from "./ScheduledPostsPage";
 import VerificationPage from "./VerificationPage";
 import UserProfile from "./UserProfile";
+import { ComingSoonPage } from "@/components/ComingSoonPage";
 import { TrialBanner } from "@/components/TrialBanner";
 import { TrialOnboarding } from "@/components/TrialOnboarding";
 import { TokenBalanceHeader } from "@/components/TokenBalanceHeader";
@@ -1084,7 +1085,21 @@ export default function Dashboard() {
     setShareModalOpen(false);
   };
 
+  const comingSoonFeatures = new Set([
+    "talking-avatar", "video-pro", "studio", "social-feed",
+    "brands", "marketplace", "creator-dashboard", "verification", "admin-dashboard"
+  ]);
+
   const renderContent = () => {
+    if (comingSoonFeatures.has(activeView)) {
+      return (
+        <ComingSoonPage
+          featureId={activeView}
+          onBackToDashboard={() => setActiveView("overview")}
+        />
+      );
+    }
+
     switch (activeView) {
       case "overview":
         return <OverviewPage onViewChange={setActiveView} />;
