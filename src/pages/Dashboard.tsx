@@ -1087,7 +1087,7 @@ export default function Dashboard() {
 
   const comingSoonFeatures = new Set([
     "talking-avatar", "video-pro", "studio", "social-feed",
-    "brands", "marketplace", "creator-dashboard", "verification", "admin-dashboard"
+    "brands", "marketplace", "creator-dashboard", "scheduled-posts", "verification", "admin-dashboard"
   ]);
 
   const renderContent = () => {

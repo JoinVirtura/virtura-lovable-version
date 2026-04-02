@@ -63,20 +63,6 @@ interface SupportTicket {
 
 const quickActions = [
   {
-    icon: BookOpen,
-    title: "Knowledge Base",
-    description: "Browse FAQs and tutorials",
-    color: "from-blue-500 to-cyan-500",
-    link: "tutorial"
-  },
-  {
-    icon: MessageCircle,
-    title: "Live Chat",
-    description: "Chat with our team",
-    color: "from-green-500 to-emerald-500",
-    badge: "Coming Soon"
-  },
-  {
     icon: Clock,
     title: "Track Ticket",
     description: "Check your ticket status",
@@ -90,13 +76,6 @@ const quickActions = [
     color: "from-rose-500 to-red-500",
     action: "scroll-to-tickets"
   },
-  {
-    icon: Mail,
-    title: "Email Us",
-    description: "support@virturaai.com",
-    color: "from-purple-500 to-pink-500",
-    link: "mailto:support@virturaai.com"
-  }
 ];
 
 const resources = [

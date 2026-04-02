@@ -295,7 +295,9 @@ export function VeoVideoStudio() {
             </div>
 
             {/* Video / Image Preview */}
-            <div className="relative bg-black aspect-video flex items-center justify-center">
+            <div className={`relative bg-black flex items-center justify-center mx-auto ${
+              aspectRatio === "9:16" ? "aspect-[9/16] max-h-[70vh]" : "aspect-video w-full"
+            }`}>
               {videoUrl ? (
                 <video
                   src={videoUrl}
@@ -473,8 +475,8 @@ export function VeoVideoStudio() {
                 </div>
               </div>
 
-              {/* Audio toggle */}
-              <label className="flex items-center gap-3 cursor-pointer select-none group">
+              {/* Audio toggle - hidden for now, no audio video support yet */}
+              {/* <label className="flex items-center gap-3 cursor-pointer select-none group">
                 <div className="relative">
                   <input
                     type="checkbox"
@@ -495,7 +497,7 @@ export function VeoVideoStudio() {
                 {!withAudio && (
                   <span className="text-[10px] text-white/40">~30s</span>
                 )}
-              </label>
+              </label> */}
 
               {/* Model badge */}
               <div className="flex items-center gap-2">

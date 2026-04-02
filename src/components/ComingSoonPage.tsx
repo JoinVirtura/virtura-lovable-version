@@ -28,6 +28,7 @@ import {
   Film,
   Brain,
   Shield,
+  Calendar,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -105,6 +106,17 @@ const featureMap: Record<string, FeatureInfo> = {
       "Creator storefronts & analytics",
     ],
     progress: 40,
+  },
+  "scheduled-posts": {
+    title: "Posting Calendar",
+    description: "Plan, schedule, and automate your content across all platforms from one place.",
+    icon: Calendar,
+    bullets: [
+      "Visual calendar with drag-and-drop scheduling",
+      "Auto-publish to multiple platforms at once",
+      "AI-powered best-time-to-post suggestions",
+    ],
+    progress: 60,
   },
   "creator-dashboard": {
     title: "Creator Dashboard",
