@@ -49,10 +49,13 @@ async function urlToBase64(url: string): Promise<string> {
 /**
  * Call the Gemini API with retry logic (Gemini can return text instead of image)
  */
-async function callGemini(apiKey: string, parts: object[]): Promise<{ base64: string; model: string }> {
+async function callGemini(apiKey: string, parts: object[], aspectRatio = '1:1'): Promise<{ base64: string; model: string }> {
   const payload = {
     contents: [{ parts }],
-    generationConfig: { responseModalities: ["IMAGE"] },
+    generationConfig: {
+      responseModalities: ["IMAGE"],
+      ...(aspectRatio !== '1:1' && { aspectRatio }),
+    },
   };
 
   for (const model of GEMINI_MODELS) {
@@ -231,7 +234,7 @@ serve(async (req) => {
     }
 
     // Call Gemini
-    const { base64: base64Image, model: usedModel } = await callGemini(GEMINI_API_KEY, parts);
+    const { base64: base64Image, model: usedModel } = await callGemini(GEMINI_API_KEY, parts, aspectRatio);
     const processingTime = `${Math.round((Date.now() - startTime) / 1000)}s`;
     console.log(`⏱️ Processing time: ${processingTime}`);
 
