@@ -158,20 +158,28 @@ export function VeoVideoStudio() {
     const isDataUrl = sourceImage?.startsWith("data:");
     const isRemoteUrl = sourceImage && !isDataUrl;
 
-    const result = await generateVeoVideo(
-      {
-        model,
-        prompt: prompt.trim() || "Animate with natural, cinematic motion",
-        imageBase64: isDataUrl ? sourceImage : undefined,
-        imageUrl: isRemoteUrl ? sourceImage : undefined,
-        durationSeconds: duration,
-        aspectRatio,
-      },
-      (stage, percent) => {
-        setProgressStage(stage);
-        setProgressPercent(percent);
-      }
-    );
+    const genParams = {
+      model,
+      prompt: prompt.trim() || "Animate with natural, cinematic motion",
+      imageBase64: isDataUrl ? sourceImage : undefined,
+      imageUrl: isRemoteUrl ? sourceImage : undefined,
+      durationSeconds: duration,
+      aspectRatio,
+    };
+    const onProgress = (stage: string, percent: number) => {
+      setProgressStage(stage);
+      setProgressPercent(percent);
+    };
+
+    let result = await generateVeoVideo(genParams, onProgress);
+
+    // Auto-retry once if no samples were generated (transient API issue)
+    if (!result.success && result.error?.includes("No video samples")) {
+      console.log("⚠️ Retrying video generation...");
+      setProgressStage("Retrying generation...");
+      setProgressPercent(5);
+      result = await generateVeoVideo(genParams, onProgress);
+    }
 
     setIsGenerating(false);
 

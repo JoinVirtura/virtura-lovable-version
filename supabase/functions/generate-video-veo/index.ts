@@ -195,7 +195,11 @@ serve(async (req) => {
       // Extract video URI
       const samples = videoResponse?.generatedSamples;
       if (!samples || samples.length === 0) {
-        throw new Error("No video samples generated");
+        console.error("❌ No samples in response. Full videoResponse:", JSON.stringify(videoResponse));
+        console.error("❌ Full result:", JSON.stringify(result));
+        throw new Error(
+          "No video samples generated. This can happen when the image or prompt is too complex. Please try a different image or simpler prompt."
+        );
       }
 
       const videoUri = samples[0].video?.uri;
