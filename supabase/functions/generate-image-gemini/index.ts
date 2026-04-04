@@ -54,7 +54,9 @@ async function callGemini(apiKey: string, parts: object[], aspectRatio = '1:1'):
     contents: [{ parts }],
     generationConfig: {
       responseModalities: ["IMAGE"],
-      ...(aspectRatio !== '1:1' && { aspectRatio }),
+      imageConfig: {
+        aspectRatio,
+      },
     },
   };
 
@@ -209,6 +211,8 @@ serve(async (req) => {
     } else {
       finalPrompt = prompt;
     }
+
+    console.log(`📐 Aspect ratio: ${aspectRatio}`);
 
     const startTime = Date.now();
 

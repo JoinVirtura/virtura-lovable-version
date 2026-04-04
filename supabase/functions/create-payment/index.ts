@@ -43,8 +43,18 @@ serve(async (req) => {
       }
     }
 
+    // Find or create Stripe customer (required for Accounts V2 test mode)
+    const existingCustomers = await stripe.customers.list({ email: customerEmail, limit: 1 });
+    let customerId: string;
+    if (existingCustomers.data.length > 0) {
+      customerId = existingCustomers.data[0].id;
+    } else {
+      const newCustomer = await stripe.customers.create({ email: customerEmail, metadata: { user_id: userId || "unknown" } });
+      customerId = newCustomer.id;
+    }
+
     // Price map: token count -> cents (100 tokens = $15.00 = 1500 cents, etc.)
-    const priceMap: Record<number, number> = { 
+    const priceMap: Record<number, number> = {
       100: 1500,    // $15.00
       500: 7500,    // $75.00
       1000: 15000,  // $150.00
@@ -55,7 +65,7 @@ serve(async (req) => {
     const origin = req.headers.get("origin") || "http://localhost:5173";
 
     const session = await stripe.checkout.sessions.create({
-      customer_email: customerEmail,
+      customer: customerId,
       client_reference_id: userId, // Store user ID for webhook
       line_items: [
         {

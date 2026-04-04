@@ -41,15 +41,27 @@ serve(async (req) => {
     }
 
     const customerEmail = data.user.email;
+    console.log("Authenticated user:", customerEmail);
 
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { apiVersion: "2023-10-16" });
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY") || "";
+    const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
+
+    // Find or create Stripe customer (required for Accounts V2 test mode)
+    const existingCustomers = await stripe.customers.list({ email: customerEmail, limit: 1 });
+    let customerId: string;
+    if (existingCustomers.data.length > 0) {
+      customerId = existingCustomers.data[0].id;
+    } else {
+      const newCustomer = await stripe.customers.create({ email: customerEmail, metadata: { user_id: data.user.id } });
+      customerId = newCustomer.id;
+    }
 
     const priceMap: Record<string, number> = { starter: 2900, pro: 12900, enterprise: 34900 };
 
     const origin = req.headers.get("origin") || "http://localhost:5173";
 
     const session = await stripe.checkout.sessions.create({
-      customer_email: customerEmail,
+      customer: customerId,
       metadata: { plan, user_id: data.user.id },
       line_items: [
         {
@@ -70,6 +82,7 @@ serve(async (req) => {
     return new Response(JSON.stringify({ url: session.url }), { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
+    console.error("create-checkout error:", message);
     return new Response(JSON.stringify({ error: message }), { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 });
   }
 });

@@ -54,13 +54,13 @@ export default function Upgrade() {
 
     setLoading(true);
     try {
-      // Track trial conversion
+      // Track trial conversion (non-blocking)
       if (trialInfo) {
         const trialStart = new Date(trialInfo.trialEnd);
         trialStart.setDate(trialStart.getDate() - 7);
         const timeToConvert = Math.round((Date.now() - trialStart.getTime()) / (1000 * 60 * 60));
 
-        await supabase.from("trial_conversions").insert({
+        supabase.from("trial_conversions").insert({
           user_id: user.id,
           trial_start: trialStart.toISOString(),
           trial_end: trialInfo.trialEnd,
@@ -68,6 +68,8 @@ export default function Upgrade() {
           conversion_plan: plan,
           discount_code: discountCode || null,
           time_to_convert_hours: timeToConvert,
+        }).then(({ error }) => {
+          if (error) console.warn("Trial conversion tracking failed:", error.message);
         });
       }
 

@@ -350,18 +350,13 @@ export const Hero = () => {
         '9:16': '1080x1920',
       };
 
-      // Include aspect ratio in prompt since Gemini doesn't have a native aspect ratio param
-      const aspectPrompt = selectedAspect !== '9:16'
-        ? `Generate this image in ${selectedAspect} aspect ratio (${resolutionMap[selectedAspect] || '1024x1024'} resolution). `
-        : '';
-
       const params: ImageGenerationParams = {
-        prompt: aspectPrompt + inputValue,
+        prompt: inputValue,
         negativePrompt: "blurry, low quality, distorted",
         contentType: "auto",
         style: selectedImageStyle?.name || selectedStyle === "Style" ? "photorealistic" : selectedStyle,
         aspectRatio: selectedAspect as any,
-        resolution: resolutionMap[selectedAspect] || '1080x1920',
+        resolution: (resolutionMap[selectedAspect] || '1080x1920') as any,
         quality: "8k",
         adherence: 9.5,
         steps: 50,
