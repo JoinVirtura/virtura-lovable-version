@@ -158,6 +158,36 @@ export function useLibraryFolders() {
     }
   };
 
+  const moveMultipleToFolder = async (assetIds: string[], folderId: string | null) => {
+    try {
+      const { error } = await supabase
+        .from('avatar_library')
+        .update({ folder_id: folderId })
+        .in('id', assetIds);
+
+      if (error) throw error;
+
+      const folderName = folderId
+        ? folders.find(f => f.id === folderId)?.name || 'folder'
+        : 'Uncategorized';
+
+      toast({
+        title: 'Items Moved',
+        description: `${assetIds.length} items moved to "${folderName}".`
+      });
+
+      return true;
+    } catch (error) {
+      console.error('Error moving items:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to move items. Please try again.',
+        variant: 'destructive'
+      });
+      return false;
+    }
+  };
+
   return {
     folders,
     loading,
@@ -165,6 +195,7 @@ export function useLibraryFolders() {
     renameFolder,
     deleteFolder,
     moveToFolder,
+    moveMultipleToFolder,
     refetch: fetchFolders
   };
 }

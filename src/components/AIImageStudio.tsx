@@ -35,7 +35,8 @@ import {
   Square,
   BookOpen,
   X,
-  ArrowLeft
+  ArrowLeft,
+  Film
 } from "lucide-react";
 import { ImageGenerationService, type ImageGenerationParams } from "@/services/imageGenerationService";
 import { PromptLibrary } from "./PromptLibrary";
@@ -79,9 +80,10 @@ interface AIImageStudioProps {
     dbId?: string;
   } | null;
   onBackToLibrary?: () => void;
+  onSendToVideoGen?: (imageUrl: string, title?: string) => void;
 }
 
-export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps = {}) => {
+export const AIImageStudio = ({ editImage, onBackToLibrary, onSendToVideoGen }: AIImageStudioProps = {}) => {
   const [prompt, setPrompt] = useState("");
   const [negativePrompt, setNegativePrompt] = useState("blurry, low quality, distorted, unrealistic, text, watermark, signature");
   const [contentType, setContentType] = useState<string>("auto");
@@ -368,6 +370,25 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
     } finally {
       setSavingToLibrary(null);
     }
+  };
+
+  const handleSendToVideo = (cardId: string) => {
+    const card = previewCards.find(c => c.id === cardId);
+    if (!card?.imageUrl || card.imageUrl === "/placeholder.svg") {
+      toast.error("Image not available");
+      return;
+    }
+    if (onSendToVideoGen) {
+      onSendToVideoGen(card.imageUrl, card.prompt);
+    } else {
+      // Fallback: store in sessionStorage and navigate
+      sessionStorage.setItem('veoSourceImage', JSON.stringify({
+        imageUrl: card.imageUrl,
+        title: card.prompt || 'Generated Image',
+      }));
+      window.location.href = '/dashboard?view=video-gen';
+    }
+    toast.success("Image sent to Video Generator!");
   };
 
   const handleShareVariant = (cardId: string) => {
@@ -1079,6 +1100,20 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                                 <TooltipContent>Use as New Base</TooltipContent>
                               </Tooltip>
                             </TooltipProvider>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    size="icon"
+                                    className="h-9 w-9 rounded-full bg-gradient-to-r from-violet-600 to-purple-600 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
+                                    onClick={() => handleSendToVideo(previewCards[0].id)}
+                                  >
+                                    <Film className="h-4 w-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Create Video</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                           </div>
                         </>
                       )}
@@ -1184,11 +1219,29 @@ export const AIImageStudio = ({ editImage, onBackToLibrary }: AIImageStudioProps
                                   <TooltipContent>Save to Library</TooltipContent>
                                 </Tooltip>
                               </TooltipProvider>
+
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon"
+                      className="h-9 w-9 rounded-full bg-gradient-to-r from-violet-600 to-purple-600 border-2 border-violet-400/30 hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSendToVideo(card.id);
+                      }}
+                    >
+                      <Film className="h-4 w-4" />
+                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>Create Video</TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
                             </div>
                           </>
                         )}
                       </div>
-                      
+
                       <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent rounded-b-2xl">
                         <div className="flex items-center justify-between">
                           <div className="flex gap-1">

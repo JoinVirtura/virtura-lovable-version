@@ -1128,12 +1128,16 @@ export default function Dashboard() {
       case "studio":
         return (
           <StudioBackground>
-            <AIImageStudio 
-              editImage={selectedEditImage} 
-              onBackToLibrary={() => { 
-                setSelectedEditImage(null); 
-                setActiveView('library'); 
-              }} 
+            <AIImageStudio
+              editImage={selectedEditImage}
+              onBackToLibrary={() => {
+                setSelectedEditImage(null);
+                setActiveView('library');
+              }}
+              onSendToVideoGen={(imageUrl, title) => {
+                sessionStorage.setItem('veoSourceImage', JSON.stringify({ imageUrl, title: title || 'Generated Image' }));
+                setActiveView('video-gen');
+              }}
             />
           </StudioBackground>
         );
@@ -1612,7 +1616,10 @@ export default function Dashboard() {
       case "brands":
         return <BrandManagerView />;
       case "library":
-        return <DashboardLibraryView onEdit={handleEdit} />;
+        return <DashboardLibraryView onEdit={handleEdit} onSendToVideoGen={(imageUrl, title) => {
+          sessionStorage.setItem('veoSourceImage', JSON.stringify({ imageUrl, title: title || 'Library Image' }));
+          setActiveView('video-gen');
+        }} />;
       case "guide":
         return (
           <div className="space-y-6 sm:space-y-8 min-h-screen">

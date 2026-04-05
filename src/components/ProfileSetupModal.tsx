@@ -44,13 +44,13 @@ export function ProfileSetupModal({ open, onComplete }: ProfileSetupModalProps) 
 
       const { error } = await supabase
         .from("profiles")
-        .update({
+        .upsert({
+          id: user.id,
           display_name: displayName.trim(),
           bio: bio.trim() || null,
           account_type: accountType || null,
           updated_at: new Date().toISOString(),
-        })
-        .eq("id", user.id);
+        });
 
       if (error) {
         console.error("Profile update error:", error);
@@ -110,8 +110,7 @@ export function ProfileSetupModal({ open, onComplete }: ProfileSetupModalProps) 
               <SelectContent>
                 <SelectItem value="creator">Creator</SelectItem>
                 <SelectItem value="brand">Brand</SelectItem>
-                <SelectItem value="individual">Individual</SelectItem>
-                <SelectItem value="agency">Agency</SelectItem>
+                <SelectItem value="user">Individual</SelectItem>
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">

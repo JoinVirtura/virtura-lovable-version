@@ -11,9 +11,9 @@ import { MoveToFolderDialog } from "@/components/library/MoveToFolderDialog";
 import { useLibraryFolders } from "@/hooks/useLibraryFolders";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  Search, 
-  Download, 
+import {
+  Search,
+  Download,
   Trash2,
   Grid3X3,
   List,
@@ -25,7 +25,11 @@ import {
   Play,
   Loader2,
   FolderInput,
-  X
+  X,
+  CheckSquare,
+  Square,
+  CheckCheck,
+  Film
 } from "lucide-react";
 
 interface DashboardLibraryViewProps {
@@ -33,9 +37,10 @@ interface DashboardLibraryViewProps {
   isModal?: boolean;
   hideVideoCategory?: boolean;
   onEdit?: (asset: any) => void;
+  onSendToVideoGen?: (imageUrl: string, title?: string) => void;
 }
 
-export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVideoCategory = false, onEdit }: DashboardLibraryViewProps) {
+export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVideoCategory = false, onEdit, onSendToVideoGen }: DashboardLibraryViewProps) {
   const { toast } = useToast();
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
@@ -47,12 +52,15 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
   const [deletingAssetId, setDeletingAssetId] = useState<string | null>(null);
   const [selectedAvatarIds, setSelectedAvatarIds] = useState<Set<number>>(new Set());
   const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
-  
+  const [multiSelectMode, setMultiSelectMode] = useState(false);
+  const [bulkMoveFolderOpen, setBulkMoveFolderOpen] = useState(false);
+  const [bulkDeleting, setBulkDeleting] = useState(false);
+
   // Folder state
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
   const [createFolderOpen, setCreateFolderOpen] = useState(false);
   const [moveToFolderDialog, setMoveToFolderDialog] = useState<{ open: boolean; asset: any } | null>(null);
-  const { folders, createFolder, moveToFolder } = useLibraryFolders();
+  const { folders, createFolder, moveToFolder, moveMultipleToFolder } = useLibraryFolders();
 
   // Helper to format video duration
   const formatDuration = (seconds: number) => {
@@ -158,7 +166,7 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
       matchesCategory = true;
     } else if (selectedCategory === "Favorites") {
       matchesCategory = asset.isFavorite;
-    } else if (selectedCategory === "Characters") {
+    } else if (selectedCategory === "Images") {
       matchesCategory = !asset.video_url && asset.type !== "video";
     } else if (selectedCategory === "Videos") {
       matchesCategory = asset.video_url || asset.type === "video";
@@ -168,11 +176,7 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
   });
 
   const handleAvatarSelect = (asset: any) => {
-    if (onSelectAvatar) {
-      // Use video_url for videos, image_url for images (snake_case from DB)
-      const urlToPass = asset.is_video && asset.video_url ? asset.video_url : asset.imageUrl;
-      onSelectAvatar(urlToPass, asset);
-    } else {
+    if (multiSelectMode) {
       setSelectedAvatarIds(prev => {
         const newSet = new Set(prev);
         if (newSet.has(asset.id)) {
@@ -182,7 +186,67 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
         }
         return newSet;
       });
+      return;
     }
+    if (onSelectAvatar) {
+      const urlToPass = asset.is_video && asset.video_url ? asset.video_url : asset.imageUrl;
+      onSelectAvatar(urlToPass, asset);
+    }
+  };
+
+  const handleSelectAll = () => {
+    if (selectedAvatarIds.size === filteredAssets.length) {
+      setSelectedAvatarIds(new Set());
+    } else {
+      setSelectedAvatarIds(new Set(filteredAssets.map(a => a.id)));
+    }
+  };
+
+  const handleBulkMoveToFolder = async (folderId: string | null) => {
+    const ids = Array.from(selectedAvatarIds).map(id => {
+      const asset = libraryAssets.find(a => a.id === id);
+      return asset?.dbId;
+    }).filter(Boolean);
+    if (ids.length === 0) return;
+    const success = await moveMultipleToFolder(ids, folderId);
+    if (success) {
+      setSelectedAvatarIds(new Set());
+      setMultiSelectMode(false);
+      setBulkMoveFolderOpen(false);
+      fetchSavedAvatars();
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    setBulkDeleting(true);
+    try {
+      const ids = Array.from(selectedAvatarIds).map(id => {
+        const asset = libraryAssets.find(a => a.id === id);
+        return asset?.dbId;
+      }).filter(Boolean);
+
+      const { error } = await supabase
+        .from('avatar_library')
+        .delete()
+        .in('id', ids);
+
+      if (error) throw error;
+
+      toast({ title: "Deleted", description: `${ids.length} items deleted.` });
+      setSelectedAvatarIds(new Set());
+      setMultiSelectMode(false);
+      fetchSavedAvatars();
+    } catch (error) {
+      console.error('Bulk delete error:', error);
+      toast({ title: "Error", description: "Failed to delete items.", variant: "destructive" });
+    } finally {
+      setBulkDeleting(false);
+    }
+  };
+
+  const exitMultiSelect = () => {
+    setMultiSelectMode(false);
+    setSelectedAvatarIds(new Set());
   };
 
   const handleFavorite = async (asset: any) => {
@@ -341,7 +405,7 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                   itemCount={filteredAssets.length}
                 />
                 <div className="w-px h-6 bg-border" />
-                {["Characters", "Videos", "Favorites"].filter(cat => !(hideVideoCategory && cat === "Videos")).map((category) => (
+                {["Images", "Videos", "Favorites"].filter(cat => !(hideVideoCategory && cat === "Videos")).map((category) => (
                   <Button
                     key={category}
                     variant={selectedCategory === category ? "default" : "outline"}
@@ -355,25 +419,98 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                 ))}
               </div>
               
-              <div className="flex border-2 border-violet-500/50 rounded-xl overflow-hidden bg-muted/20 shrink-0">
+              <div className="flex items-center gap-2 shrink-0">
                 <Button
-                  variant={viewMode === "grid" ? "default" : "ghost"}
+                  variant={multiSelectMode ? "default" : "outline"}
                   size="sm"
-                  onClick={() => setViewMode("grid")}
-                  className="rounded-none border-0 px-3 h-9"
+                  onClick={() => multiSelectMode ? exitMultiSelect() : setMultiSelectMode(true)}
+                  className="h-9 px-3 text-sm font-medium"
                 >
-                  <Grid3X3 className="w-4 h-4" />
+                  <CheckSquare className="w-4 h-4 mr-1" />
+                  Select
                 </Button>
-                <Button
-                  variant={viewMode === "list" ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setViewMode("list")}
-                  className="rounded-none border-0 px-3 h-9"
-                >
-                  <List className="w-4 h-4" />
-                </Button>
+                <div className="flex border-2 border-violet-500/50 rounded-xl overflow-hidden bg-muted/20">
+                  <Button
+                    variant={viewMode === "grid" ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setViewMode("grid")}
+                    className="rounded-none border-0 px-3 h-9"
+                  >
+                    <Grid3X3 className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant={viewMode === "list" ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setViewMode("list")}
+                    className="rounded-none border-0 px-3 h-9"
+                  >
+                    <List className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
             </div>
+
+            {/* Bulk Action Bar */}
+            {multiSelectMode && (
+              <div className="flex items-center justify-between gap-3 mb-6 p-3 bg-primary/10 border border-primary/30 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={handleSelectAll}
+                    className="h-8"
+                  >
+                    <CheckCheck className="w-4 h-4 mr-1" />
+                    {selectedAvatarIds.size === filteredAssets.length ? 'Deselect All' : 'Select All'}
+                  </Button>
+                  <span className="text-sm text-muted-foreground">
+                    {selectedAvatarIds.size} selected
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setBulkMoveFolderOpen(true)}
+                    disabled={selectedAvatarIds.size === 0}
+                    className="h-8"
+                  >
+                    <FolderInput className="w-4 h-4 mr-1" />
+                    Move to Folder
+                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={selectedAvatarIds.size === 0 || bulkDeleting}
+                        className="h-8 text-red-400 border-red-500/50 hover:bg-red-500/10"
+                      >
+                        {bulkDeleting ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Trash2 className="w-4 h-4 mr-1" />}
+                        Delete
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete {selectedAvatarIds.size} items?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will permanently delete the selected items. This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleBulkDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                          Delete {selectedAvatarIds.size} Items
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                  <Button size="sm" variant="ghost" onClick={exitMultiSelect} className="h-8">
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
 
             <div className="space-y-6">
               {libraryLoading ? (
@@ -425,6 +562,16 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                       onClick={() => handleAvatarSelect(asset)}
                     >
                       <div className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10">
+                        {/* Multi-select checkbox */}
+                        {multiSelectMode && (
+                          <div className="absolute top-3 left-3 z-30">
+                            {selectedAvatarIds.has(asset.id) ? (
+                              <CheckSquare className="w-6 h-6 text-primary drop-shadow-lg" />
+                            ) : (
+                              <Square className="w-6 h-6 text-white/70 drop-shadow-lg" />
+                            )}
+                          </div>
+                        )}
                         {/* Show video when clicked for video assets */}
                         {asset.is_video && asset.video_url && playingVideoId === asset.id ? (
                           <div className="relative w-full h-full">
@@ -555,8 +702,8 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                         </div>
 
                         <div className="flex items-center gap-2 mt-4 pt-4">
-                          <Button 
-                            size="sm" 
+                          <Button
+                            size="sm"
                             variant="outline"
                             className="h-8 px-3 hover:bg-violet-500/10 hover:border-violet-500/50 transition-all 2xl:w-8 2xl:p-0"
                             onClick={(e) => {
@@ -572,8 +719,8 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                             <Edit className="w-3 h-3 mr-1 2xl:w-4 2xl:h-4 2xl:mr-0" />
                             <span className="2xl:hidden">Edit</span>
                           </Button>
-                          <Button 
-                            size="sm" 
+                          <Button
+                            size="sm"
                             variant="outline"
                             className="h-8 px-3 hover:bg-purple-500/10 hover:border-purple-500/50 transition-all 2xl:w-8 2xl:p-0"
                             onClick={(e) => {
@@ -585,6 +732,25 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                             <Download className="w-3 h-3 mr-1 2xl:w-4 2xl:h-4 2xl:mr-0" />
                             <span className="2xl:hidden">{asset.is_video ? 'Video' : 'Download'}</span>
                           </Button>
+                          {!asset.is_video && (
+                            <Button
+                              size="sm"
+                              className="h-8 px-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white border-0 2xl:w-8 2xl:p-0"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (onSendToVideoGen) {
+                                  onSendToVideoGen(asset.imageUrl, asset.title);
+                                } else {
+                                  sessionStorage.setItem('veoSourceImage', JSON.stringify({ imageUrl: asset.imageUrl, title: asset.title }));
+                                  window.location.href = '/dashboard?view=video-gen';
+                                }
+                              }}
+                              title="Generate Video"
+                            >
+                              <Film className="w-3 h-3 mr-1 2xl:w-4 2xl:h-4 2xl:mr-0" />
+                              <span className="2xl:hidden">Video</span>
+                            </Button>
+                          )}
                         </div>
                       </div>
                     </Card>
@@ -712,6 +878,19 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
           return success;
         }}
         assetTitle={moveToFolderDialog?.asset?.title || ""}
+      />
+
+      {/* Bulk Move to Folder Dialog */}
+      <MoveToFolderDialog
+        open={bulkMoveFolderOpen}
+        onOpenChange={setBulkMoveFolderOpen}
+        folders={folders}
+        currentFolderId={null}
+        onMoveToFolder={async (folderId) => {
+          await handleBulkMoveToFolder(folderId);
+          return true;
+        }}
+        assetTitle={`${selectedAvatarIds.size} selected items`}
       />
     </div>
   );
