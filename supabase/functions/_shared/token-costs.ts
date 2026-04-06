@@ -16,6 +16,14 @@ export const TOKEN_COSTS = {
     // Google Gemini
     'gemini-image-gen': 1,        // $0.003 - text-to-image
     'gemini-image-edit': 2,       // $0.005 - image editing with reference
+    // fal.ai models
+    'fal-flux-schnell': 1,        // $0.003
+    'fal-flux-dev': 3,            // $0.025
+    'fal-flux-kontext': 4,        // $0.04
+    'fal-recraft-v4': 4,          // $0.04
+    'fal-nano-banana-2': 4,       // $0.04
+    'fal-qwen-image': 2,          // $0.02
+    'fal-seedream-v4': 3,         // $0.03
     'default': 1,                 // Default for basic operations
   },
   
@@ -44,6 +52,14 @@ export const TOKEN_COSTS = {
     'sadtalker': 5,               // $0.05
     'liveportrait': 6,            // $0.06
     'stable-video': 2,            // $0.024
+    // fal.ai video models
+    'fal-kling-v3-pro': 8,        // $0.112/sec × 5s ≈ $0.56
+    'fal-kling-v2.5-turbo': 5,    // $0.07/sec × 5s ≈ $0.35
+    'fal-wan-2.7': 3,             // $0.05/sec × 5s ≈ $0.25
+    'fal-kling-v3-pro-t2v': 8,    // $0.112/sec × 5s
+    'fal-wan-2.7-t2v': 3,         // $0.05/sec × 5s
+    'fal-seedance-2': 7,          // $0.10/sec × 5s ≈ $0.50
+    'fal-pixverse-v6': 5,         // $0.07/sec × 5s ≈ $0.35
     'default': 5,
   },
   

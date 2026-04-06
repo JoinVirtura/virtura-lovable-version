@@ -32,7 +32,24 @@ import {
   Check,
 } from "lucide-react";
 import { generateVeoVideo, saveVeoVideoToLibrary } from "@/services/veoVideoService";
+import { generateFalVideo, FAL_VIDEO_MODELS } from "@/services/falService";
 import { DashboardLibraryView } from "@/components/DashboardLibraryView";
+
+const IS_DEV = import.meta.env.DEV;
+
+// All video providers for dev model selector
+const ALL_VIDEO_PROVIDERS = [
+  { id: "veo", label: "Veo (Default)", group: "Production" },
+  ...FAL_VIDEO_MODELS.map((m) => ({
+    id: `fal:${m.id}`,
+    label: `fal.ai ${m.label}`,
+    description: m.description,
+    speed: m.speed,
+    cost: m.cost,
+    minDuration: m.minDuration,
+    maxDuration: m.maxDuration,
+  })),
+] as const;
 
 const VEO_MODELS = [
   {
@@ -87,6 +104,9 @@ export function VeoVideoStudio() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [progressStage, setProgressStage] = useState("");
   const [progressPercent, setProgressPercent] = useState(0);
+
+  // Dev model selector
+  const [devVideoProvider, setDevVideoProvider] = useState("veo");
 
   // Result state
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
@@ -158,27 +178,48 @@ export function VeoVideoStudio() {
     const isDataUrl = sourceImage?.startsWith("data:");
     const isRemoteUrl = sourceImage && !isDataUrl;
 
-    const genParams = {
-      model,
-      prompt: prompt.trim() || "Animate with natural, cinematic motion",
-      imageBase64: isDataUrl ? sourceImage : undefined,
-      imageUrl: isRemoteUrl ? sourceImage : undefined,
-      durationSeconds: duration,
-      aspectRatio,
-    };
     const onProgress = (stage: string, percent: number) => {
       setProgressStage(stage);
       setProgressPercent(percent);
     };
 
-    let result = await generateVeoVideo(genParams, onProgress);
+    const isFalVideo = devVideoProvider.startsWith("fal:");
+    let result;
 
-    // Auto-retry once if no samples were generated (transient API issue)
-    if (!result.success && result.error?.includes("No video samples")) {
-      console.log("⚠️ Retrying video generation...");
-      setProgressStage("Retrying generation...");
-      setProgressPercent(5);
+    if (isFalVideo) {
+      // Route to fal.ai video generation
+      const falModelId = devVideoProvider.replace("fal:", "") as any;
+      result = await generateFalVideo(
+        {
+          prompt: prompt.trim() || "Animate with natural, cinematic motion",
+          model: falModelId,
+          imageBase64: isDataUrl ? sourceImage! : undefined,
+          imageUrl: isRemoteUrl ? sourceImage! : undefined,
+          durationSeconds: duration,
+          aspectRatio,
+        },
+        onProgress
+      );
+    } else {
+      // Default Veo generation
+      const genParams = {
+        model,
+        prompt: prompt.trim() || "Animate with natural, cinematic motion",
+        imageBase64: isDataUrl ? sourceImage : undefined,
+        imageUrl: isRemoteUrl ? sourceImage : undefined,
+        durationSeconds: duration,
+        aspectRatio,
+      };
+
       result = await generateVeoVideo(genParams, onProgress);
+
+      // Auto-retry once if no samples were generated (transient API issue)
+      if (!result.success && result.error?.includes("No video samples")) {
+        console.log("⚠️ Retrying video generation...");
+        setProgressStage("Retrying generation...");
+        setProgressPercent(5);
+        result = await generateVeoVideo(genParams, onProgress);
+      }
     }
 
     setIsGenerating(false);
@@ -206,7 +247,7 @@ export function VeoVideoStudio() {
     } else {
       toast.error(result.error || "Video generation failed");
     }
-  }, [sourceImage, prompt, model, duration, aspectRatio]);
+  }, [sourceImage, prompt, model, duration, aspectRatio, devVideoProvider]);
 
   // ── Download video ────────────────────────────────────────────
   const handleDownload = useCallback(async () => {
@@ -507,10 +548,40 @@ export function VeoVideoStudio() {
                 )}
               </label> */}
 
+              {/* DEV: Video Model Selector */}
+              {IS_DEV && (
+                <div className="space-y-2 pt-3 border-t border-yellow-500/30">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="text-yellow-400 border-yellow-500/40 text-[10px] px-1.5 py-0">DEV</Badge>
+                    <label className="text-sm font-medium text-yellow-300">Video Model</label>
+                  </div>
+                  <Select value={devVideoProvider} onValueChange={setDevVideoProvider}>
+                    <SelectTrigger className="bg-yellow-500/5 border border-yellow-500/30 hover:border-yellow-500/50 text-yellow-100">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ALL_VIDEO_PROVIDERS.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>
+                          <div className="flex items-center gap-2">
+                            <span>{p.label}</span>
+                            {"speed" in p && p.speed && (
+                              <span className="text-[10px] text-white/40">{p.speed}</span>
+                            )}
+                            {"cost" in p && p.cost && (
+                              <span className="text-[10px] text-yellow-400/60">{p.cost}tk</span>
+                            )}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
               {/* Model badge */}
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className="text-violet-300 border-violet-500/30 text-xs">
-                  <Sparkles className="h-3 w-3 mr-1" /> Virtura Video Engine
+                  <Sparkles className="h-3 w-3 mr-1" /> {devVideoProvider.startsWith("fal:") ? "fal.ai" : "Virtura"} Video Engine
                 </Badge>
               </div>
 

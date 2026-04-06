@@ -39,8 +39,17 @@ import {
   Film
 } from "lucide-react";
 import { ImageGenerationService, type ImageGenerationParams } from "@/services/imageGenerationService";
+import { generateFalImage, FAL_IMAGE_MODELS } from "@/services/falService";
 import { PromptLibrary } from "./PromptLibrary";
 import { supabase } from "@/integrations/supabase/client";
+
+const IS_DEV = import.meta.env.DEV;
+
+// All available providers for dev model selector
+const ALL_IMAGE_PROVIDERS = [
+  { id: "default", label: "Default (Gemini → Replicate → FLUX)", group: "Production" },
+  ...FAL_IMAGE_MODELS.map((m) => ({ id: `fal:${m.id}`, label: `fal.ai ${m.label}`, group: "fal.ai", description: m.description, speed: m.speed, cost: m.cost })),
+] as const;
 
 interface PreviewCard {
   id: string;
@@ -115,7 +124,8 @@ export const AIImageStudio = ({ editImage, onBackToLibrary, onSendToVideoGen }: 
   const [imageCount, setImageCount] = useState(3); // User-selectable 1-10
   const [originalImageForComparison, setOriginalImageForComparison] = useState<string | null>(null);
   const [isRefinementMode, setIsRefinementMode] = useState(false);
-  
+  const [devProvider, setDevProvider] = useState("default");
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const resultsTopRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -243,7 +253,16 @@ export const AIImageStudio = ({ editImage, onBackToLibrary, onSendToVideoGen }: 
       // Generate one at a time to avoid overloading the API
       for (const { id: cardId, startedAt } of placeholderCards) {
         try {
-          const result = await ImageGenerationService.generateImage(params);
+          // Route to fal.ai if a fal model is selected (dev mode)
+          const isFalModel = devProvider.startsWith("fal:");
+          const result = isFalModel
+            ? await generateFalImage({
+                prompt: params.prompt,
+                model: devProvider.replace("fal:", "") as any,
+                aspectRatio: params.aspectRatio,
+                referenceImage: params.referenceImage ?? undefined,
+              })
+            : await ImageGenerationService.generateImage(params);
           const elapsed = Date.now() - (startedAt ?? Date.now());
           setPreviewCards(prev =>
             prev.map(card =>
@@ -577,7 +596,15 @@ export const AIImageStudio = ({ editImage, onBackToLibrary, onSendToVideoGen }: 
       };
 
       // Generate only 1 image for refinement
-      const result = await ImageGenerationService.generateImage(params);
+      const isFalModel = devProvider.startsWith("fal:");
+      const result = isFalModel
+        ? await generateFalImage({
+            prompt: params.prompt,
+            model: devProvider.replace("fal:", "") as any,
+            aspectRatio: params.aspectRatio ?? undefined,
+            referenceImage: params.referenceImage ?? undefined,
+          })
+        : await ImageGenerationService.generateImage(params);
       
       if (result.success && result.image) {
         const newCard: PreviewCard = {
@@ -810,6 +837,36 @@ export const AIImageStudio = ({ editImage, onBackToLibrary, onSendToVideoGen }: 
                     >
                       <X className="h-4 w-4" />
                     </Button>
+                  </div>
+                )}
+
+                {/* DEV: Model Selector */}
+                {IS_DEV && (
+                  <div className="pt-4 border-t border-yellow-500/30 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="text-yellow-400 border-yellow-500/40 text-[10px] px-1.5 py-0">DEV</Badge>
+                      <label className="text-sm font-medium text-yellow-300">Model Provider</label>
+                    </div>
+                    <Select value={devProvider} onValueChange={setDevProvider}>
+                      <SelectTrigger className="bg-yellow-500/5 border-2 border-yellow-500/30 hover:border-yellow-500/50 text-yellow-100 transition-all duration-300">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-black/95 backdrop-blur-xl border-2 border-yellow-500/30 z-50">
+                        {ALL_IMAGE_PROVIDERS.map((p) => (
+                          <SelectItem key={p.id} value={p.id}>
+                            <div className="flex items-center gap-2">
+                              <span>{p.label}</span>
+                              {"speed" in p && p.speed && (
+                                <span className="text-[10px] text-white/40">{p.speed}</span>
+                              )}
+                              {"cost" in p && p.cost && (
+                                <span className="text-[10px] text-yellow-400/60">{p.cost}tk</span>
+                              )}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 )}
 

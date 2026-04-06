@@ -8,7 +8,10 @@ import { Sparkles, Mic, Send, Crown, Lock, Zap, Camera, Shuffle, Star, X, Circle
 import { useState, useMemo, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ImageGenerationService, type ImageGenerationParams } from "@/services/imageGenerationService";
+import { generateFalImage, FAL_IMAGE_MODELS } from "@/services/falService";
 import { toast } from "sonner";
+
+const IS_DEV = import.meta.env.DEV;
 
 // Import high-quality style images
 import styleLongExposure from '@/assets/style-long-exposure.jpg';
@@ -101,6 +104,7 @@ export const Hero = () => {
   const [uploadedGeneralImage, setUploadedGeneralImage] = useState<string | null>(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [devProvider, setDevProvider] = useState("default");
   const [generatedImages, setGeneratedImages] = useState<Array<{
     id: string;
     imageUrl: string;
@@ -367,7 +371,15 @@ export const Hero = () => {
       // Generate one at a time to avoid overloading the API
       for (const { id: cardId, startedAt } of placeholderCards) {
         try {
-          const result = await ImageGenerationService.generateImage(params);
+          const isFalModel = devProvider.startsWith("fal:");
+          const result = isFalModel
+            ? await generateFalImage({
+                prompt: params.prompt,
+                model: devProvider.replace("fal:", "") as any,
+                aspectRatio: params.aspectRatio,
+                referenceImage: params.referenceImage ?? undefined,
+              })
+            : await ImageGenerationService.generateImage(params);
           const elapsed = Date.now() - startedAt;
           if (result.success && result.image) {
             setGeneratedImages(prev =>
@@ -870,6 +882,25 @@ export const Hero = () => {
                     )}
                   </button>
                 </div>
+
+                {/* DEV: Model Selector */}
+                {IS_DEV && (
+                  <div className="flex items-center justify-center gap-2 pt-1">
+                    <span className="text-[10px] font-bold text-yellow-400 border border-yellow-500/40 rounded px-1 py-0.5 leading-none">DEV</span>
+                    <select
+                      value={devProvider}
+                      onChange={(e) => setDevProvider(e.target.value)}
+                      className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-xs text-yellow-200 px-2 py-1 outline-none hover:border-yellow-500/50 transition-colors"
+                    >
+                      <option value="default" className="bg-gray-900">Default (Gemini → Replicate)</option>
+                      {FAL_IMAGE_MODELS.map((m) => (
+                        <option key={m.id} value={`fal:${m.id}`} className="bg-gray-900">
+                          fal.ai {m.label} ({m.speed}, {m.cost}tk)
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
               </div>
             </div>
           </Card>

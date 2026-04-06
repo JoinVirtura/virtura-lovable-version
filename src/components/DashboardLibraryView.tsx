@@ -583,18 +583,38 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                               loop
                               playsInline
                             />
-                            {/* X button to close video */}
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="absolute top-2 right-2 h-8 w-8 p-0 bg-black/60 hover:bg-black/80 text-white rounded-full z-10"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setPlayingVideoId(null);
-                              }}
-                            >
-                              <X className="w-4 h-4" />
-                            </Button>
+                            {/* Video controls overlay */}
+                            <div className="absolute top-2 right-2 flex items-center gap-1.5 z-10">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-8 w-8 p-0 bg-black/60 hover:bg-red-500/80 text-red-400 hover:text-white rounded-full"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDelete(asset);
+                                }}
+                                disabled={deletingAssetId === asset.dbId}
+                                title="Delete video"
+                              >
+                                {deletingAssetId === asset.dbId ? (
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                  <Trash2 className="w-4 h-4" />
+                                )}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-8 w-8 p-0 bg-black/60 hover:bg-black/80 text-white rounded-full"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setPlayingVideoId(null);
+                                }}
+                                title="Close video"
+                              >
+                                <X className="w-4 h-4" />
+                              </Button>
+                            </div>
                           </div>
                         ) : (
                           <>
@@ -609,8 +629,8 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                             
                       {/* Play icon overlay - clickable for videos */}
                       {asset.is_video && (
-                        <div 
-                          className="absolute inset-0 flex items-center justify-center cursor-pointer z-20"
+                        <div
+                          className="absolute inset-0 flex items-center justify-center cursor-pointer z-[5]"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   if (asset.video_url) {
