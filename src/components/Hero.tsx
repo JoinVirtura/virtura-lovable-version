@@ -804,7 +804,11 @@ export const Hero = () => {
                   {referenceImage ? (
                     <button
                       type="button"
-                      onClick={() => handleCompleteReset()}
+                      onClick={() => {
+                        setReferenceImage(null);
+                        setUploadedImagePrompt(null);
+                        setUploadedImage(null);
+                      }}
                       className="relative flex-shrink-0 min-w-[44px] min-h-[44px] w-11 h-11 rounded-full bg-black/40 backdrop-blur-md border border-primary/30 hover:bg-red-500/30 hover:border-red-400/50 transition-all flex items-center justify-center overflow-hidden group"
                     >
                       <img

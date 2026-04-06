@@ -10,15 +10,18 @@ const corsHeaders = {
 
 /**
  * Map of supported fal.ai image models
+ * img2imgId: alternate endpoint when a reference image is provided
  */
-const FAL_IMAGE_MODELS: Record<string, { id: string; label: string; costUsd: number }> = {
+const FAL_IMAGE_MODELS: Record<string, { id: string; img2imgId?: string; label: string; costUsd: number }> = {
   "flux-schnell": {
     id: "fal-ai/flux/schnell",
+    img2imgId: "fal-ai/flux/schnell/image-to-image",
     label: "FLUX Schnell",
     costUsd: 0.003,
   },
   "flux-dev": {
     id: "fal-ai/flux/dev",
+    img2imgId: "fal-ai/flux/dev/image-to-image",
     label: "FLUX Dev",
     costUsd: 0.025,
   },
@@ -165,6 +168,22 @@ serve(async (req) => {
 
     const startTime = Date.now();
 
+    // Determine if we should use image-to-image endpoint
+    const hasReference = !!referenceImage;
+    const useImg2Img = hasReference && modelConfig.img2imgId;
+    const useKontext = hasReference && modelKey === "flux-kontext";
+    // For models without img2img support, auto-route to Kontext when reference is present
+    const fallbackToKontext = hasReference && !modelConfig.img2imgId && modelKey !== "flux-kontext";
+
+    let endpointId = modelConfig.id;
+    if (useImg2Img) {
+      endpointId = modelConfig.img2imgId!;
+      console.log(`🖼️ Reference image detected → using img2img endpoint: ${endpointId}`);
+    } else if (fallbackToKontext) {
+      endpointId = FAL_IMAGE_MODELS["flux-kontext"].id;
+      console.log(`🖼️ Reference image detected, model has no img2img → falling back to Kontext: ${endpointId}`);
+    }
+
     // Build fal.ai request input
     const falInput: Record<string, unknown> = {
       prompt,
@@ -172,27 +191,38 @@ serve(async (req) => {
       num_images: Math.min(numImages, 4),
     };
 
-    // FLUX Schnell uses num_inference_steps
+    // Model-specific params
     if (modelKey === "flux-schnell") {
       falInput.num_inference_steps = 4;
     } else if (modelKey === "flux-dev") {
       falInput.num_inference_steps = 28;
     }
 
-    // For Kontext (image editing), attach reference image
-    if (modelKey === "flux-kontext" && referenceImage) {
-      let imageUrl = referenceImage;
-      if (referenceImage.startsWith("data:")) {
-        // fal.ai accepts URLs, so we need to upload or pass the URL
-        // For data URLs, pass as image_url (fal handles base64 data URLs)
-        imageUrl = referenceImage;
+    // Attach reference image for img2img / Kontext
+    if (hasReference) {
+      // Convert data URL to a fetchable URL if needed
+      let refUrl = referenceImage;
+      if (referenceImage.startsWith('http://') || referenceImage.startsWith('https://')) {
+        refUrl = referenceImage;
+      } else if (referenceImage.startsWith('data:')) {
+        refUrl = referenceImage; // fal.ai can handle data URLs
       }
-      falInput.image_url = imageUrl;
+
+      if (useImg2Img) {
+        // FLUX img2img uses image_url + strength (0.0 = exact copy, 1.0 = ignore reference)
+        // Low strength = preserve face/identity, only change background/style
+        falInput.image_url = refUrl;
+        falInput.strength = 0.35; // Keep 65% of reference (face, hair, identity)
+        console.log(`🖼️ img2img: strength=0.35 (preserving identity)`);
+      } else if (useKontext || fallbackToKontext) {
+        // Kontext uses image_url for editing
+        falInput.image_url = refUrl;
+        console.log(`🖼️ Kontext: reference image attached`);
+      }
     }
 
-    // Call fal.ai using synchronous endpoint first, fall back to queue
-    // Sync endpoint: https://fal.run/<model_id>
-    const syncUrl = `https://fal.run/${modelConfig.id}`;
+    // Sync endpoint: https://fal.run/<endpoint_id>
+    const syncUrl = `https://fal.run/${endpointId}`;
     console.log(`🚀 Calling fal.ai (sync): ${syncUrl}`);
     console.log(`📦 Input:`, JSON.stringify(falInput).substring(0, 200));
 
