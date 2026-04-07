@@ -82,7 +82,7 @@ interface SettingsContentProps {
   billingHistory: any[];
   loadingHistory: boolean;
   startSubscription: (planId: string) => void;
-  buyTokens: (tokens: number, price: string) => void;
+  buyTokens: (packId: string, price: string) => void;
 }
 
 export const SettingsContent: React.FC<SettingsContentProps> = ({
@@ -134,34 +134,58 @@ export const SettingsContent: React.FC<SettingsContentProps> = ({
       id: "starter",
       name: "Starter",
       price: "$29/mo",
-      highlights: ["120 monthly generations", "AI photos, avatars, and concepts", "1080p exports", "Essential styles & presets", "SFW content only", "Basic support"],
+      highlights: [
+        "Up to 120 generations per month",
+        "4K high-quality images",
+        "Fast generation",
+        "Up to 5 video generations",
+        "Standard queue",
+        "Basic support",
+      ],
       popular: false,
-      description: "Perfect entry point for new creators"
+      description: "Perfect for getting started"
     },
     {
       id: "pro",
       name: "Pro",
       price: "$129/mo",
-      highlights: ["700 monthly generations", "Hyper-realistic quality & advanced styles", "4K exports", "Branded content tools", "Commercial license", "Priority support", "API access"],
+      highlights: [
+        "Up to 600 generations per month",
+        "4K ultra-quality images",
+        "Faster generation priority",
+        "Up to 25 video generations",
+        "Priority queue",
+        "Commercial license",
+        "API access",
+      ],
       popular: true,
-      description: "For serious creators & growing brands"
+      description: "For creators and growing brands"
     },
     {
-      id: "enterprise",
-      name: "Enterprise",
-      price: "$349/mo",
-      highlights: ["2,200 monthly generations", "Dedicated account manager", "White-label options", "Custom model training", "Team seats & collaboration", "8K exports", "Advanced analytics", "Priority API access"],
+      id: "scale",
+      name: "Scale",
+      price: "$179/mo",
+      highlights: [
+        "Up to 900 generations per month",
+        "4K premium outputs",
+        "Fastest generation speed",
+        "Up to 35 video generations",
+        "Priority and faster queue",
+        "Early access features",
+        "Advanced tools",
+      ],
       popular: false,
-      description: "For agencies, teams & large-scale operations"
+      description: "For power users and teams",
+      bestValue: true,
     },
   ];
 
-  const tokenPacks = [
-    { tokens: 100, price: "$15" },
-    { tokens: 500, price: "$75" },
-    { tokens: 1000, price: "$150" },
-    { tokens: 5000, price: "$750" },
-    { tokens: 10000, price: "$1,500" },
+  const boostPacks = [
+    { id: "starter-boost", name: "Starter Boost", price: "$19", amount: 19, generations: 30, videos: 3 },
+    { id: "creator-boost", name: "Creator Boost", price: "$39", amount: 39, generations: 70, videos: 7, popular: true },
+    { id: "power-boost", name: "Power Boost", price: "$79", amount: 79, generations: 150, videos: 15 },
+    { id: "ultra-boost", name: "Ultra Boost", price: "$149", amount: 149, generations: 290, videos: 29 },
+    { id: "elite-boost", name: "Elite Boost", price: "$249", amount: 249, generations: 490, videos: 49, priority: true },
   ];
 
   return (
@@ -683,9 +707,12 @@ export const SettingsContent: React.FC<SettingsContentProps> = ({
         
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {plans.map((plan) => (
-            <Card key={plan.id} className={`p-4 sm:p-6 relative h-full flex flex-col ${plan.popular ? "ring-2 ring-primary" : ""}`}>
+            <Card key={plan.id} className={`p-4 sm:p-6 relative h-full flex flex-col ${plan.popular ? "ring-2 ring-primary" : plan.bestValue ? "ring-2 ring-violet-500" : ""}`}>
               {plan.popular && (
                 <Badge className="absolute -top-2 sm:-top-3 left-4 sm:left-6 bg-gradient-primary text-xs sm:text-sm">Most Popular</Badge>
+              )}
+              {plan.bestValue && (
+                <Badge className="absolute -top-2 sm:-top-3 left-4 sm:left-6 bg-violet-600 text-xs sm:text-sm">Best Value</Badge>
               )}
               <div className="space-y-1.5 sm:space-y-2">
                 <h3 className="text-lg sm:text-xl font-display font-bold">{plan.name}</h3>
@@ -709,26 +736,33 @@ export const SettingsContent: React.FC<SettingsContentProps> = ({
 
         <Separator className="my-6 sm:my-8" />
 
-        {/* Token Top-ups */}
+        {/* Boost Packs */}
         <div className="space-y-4 sm:space-y-6">
           <div className="flex items-start sm:items-center gap-2 sm:gap-3">
             <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0 mt-0.5 sm:mt-0" />
             <div>
-              <h3 className="text-base sm:text-lg font-display font-bold">Need More Tokens?</h3>
-              <p className="text-xs sm:text-sm text-muted-foreground">À la carte pricing - Premium rate: $0.15 per token (vs $0.10 in subscriptions)</p>
+              <h3 className="text-base sm:text-lg font-display font-bold">Add-On Boost Packs</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground">One-time top-ups to extend your monthly limits</p>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
-            {tokenPacks.map((pack) => (
-              <Card key={pack.tokens} className="p-3 sm:p-4 h-full flex flex-col">
-                <h4 className="text-base sm:text-lg font-display font-bold">{pack.tokens}</h4>
-                <p className="text-xs sm:text-sm text-muted-foreground">tokens</p>
-                <p className="text-lg sm:text-xl font-display font-bold mt-1 sm:mt-2">{pack.price}</p>
-                <Button 
-                  variant="outline" 
-                  className="mt-3 sm:mt-4 w-full text-xs sm:text-sm" 
-                  onClick={() => buyTokens(pack.tokens, pack.price)}
+            {boostPacks.map((pack) => (
+              <Card key={pack.id} className={`p-3 sm:p-4 h-full flex flex-col relative ${pack.popular ? "ring-2 ring-primary" : ""}`}>
+                {pack.popular && (
+                  <Badge className="absolute -top-2 left-1/2 -translate-x-1/2 bg-gradient-primary text-[10px] px-2 py-0.5">Most Popular</Badge>
+                )}
+                <h4 className="text-sm sm:text-base font-display font-bold mt-1">{pack.name}</h4>
+                <p className="text-lg sm:text-xl font-display font-bold mt-1">{pack.price}</p>
+                <ul className="text-xs text-muted-foreground mt-2 space-y-1 flex-1">
+                  <li>• Up to {pack.generations} generations</li>
+                  <li>• Up to {pack.videos} video generations</li>
+                  {pack.priority && <li>• Priority processing</li>}
+                </ul>
+                <Button
+                  variant="outline"
+                  className="mt-3 sm:mt-4 w-full text-xs sm:text-sm"
+                  onClick={() => buyTokens(pack.id, pack.price)}
                 >
                   Buy
                 </Button>

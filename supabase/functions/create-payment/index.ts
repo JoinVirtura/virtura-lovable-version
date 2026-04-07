@@ -13,14 +13,22 @@ serve(async (req) => {
 
   try {
     const body = await req.json().catch(() => ({}));
-    const tokens = Number(body?.tokens) || 0;
-    
-    // Support all token pack sizes
-    const validPacks = [100, 500, 1000, 5000, 10000];
-    if (!validPacks.includes(tokens)) {
-      return new Response(JSON.stringify({ error: "Invalid token pack. Valid options: 100, 500, 1000, 5000, 10000" }), { 
-        headers: { ...corsHeaders, "Content-Type": "application/json" }, 
-        status: 400 
+    const packId = String(body?.packId || "");
+
+    // Boost pack catalog
+    const BOOST_PACKS: Record<string, { name: string; priceCents: number; generations: number; videos: number; priority: boolean }> = {
+      "starter-boost": { name: "Starter Boost", priceCents: 1900, generations: 30, videos: 3, priority: false },
+      "creator-boost": { name: "Creator Boost", priceCents: 3900, generations: 70, videos: 7, priority: false },
+      "power-boost":   { name: "Power Boost",   priceCents: 7900, generations: 150, videos: 15, priority: false },
+      "ultra-boost":   { name: "Ultra Boost",   priceCents: 14900, generations: 290, videos: 29, priority: false },
+      "elite-boost":   { name: "Elite Boost",   priceCents: 24900, generations: 490, videos: 49, priority: true },
+    };
+
+    const pack = BOOST_PACKS[packId];
+    if (!pack) {
+      return new Response(JSON.stringify({ error: "Invalid boost pack. Valid options: " + Object.keys(BOOST_PACKS).join(", ") }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 400
       });
     }
 
@@ -53,15 +61,6 @@ serve(async (req) => {
       customerId = newCustomer.id;
     }
 
-    // Price map: token count -> cents (100 tokens = $15.00 = 1500 cents, etc.)
-    const priceMap: Record<number, number> = {
-      100: 1500,    // $15.00
-      500: 7500,    // $75.00
-      1000: 15000,  // $150.00
-      5000: 75000,  // $750.00
-      10000: 150000 // $1,500.00
-    };
-
     const origin = req.headers.get("origin") || "http://localhost:5173";
 
     const session = await stripe.checkout.sessions.create({
@@ -71,20 +70,22 @@ serve(async (req) => {
         {
           price_data: {
             currency: "usd",
-            unit_amount: priceMap[tokens],
-            product_data: { 
-              name: `${tokens} Tokens Pack`,
-              description: `${tokens} tokens for Virtura platform`
+            unit_amount: pack.priceCents,
+            product_data: {
+              name: pack.name,
+              description: `${pack.generations} generations + ${pack.videos} video generations${pack.priority ? " (priority)" : ""}`
             },
           },
           quantity: 1,
         },
       ],
       mode: "payment",
-      success_url: `${origin}/payment-success?tokens=${tokens}`,
+      success_url: `${origin}/payment-success?pack=${packId}`,
       cancel_url: `${origin}/payment-canceled`,
       metadata: {
-        tokens: tokens.toString(),
+        pack_id: packId,
+        generations: String(pack.generations),
+        videos: String(pack.videos),
         user_id: userId || "unknown",
       },
     });

@@ -15,6 +15,7 @@ export interface ImageGenerationParams {
   variantType?: 'composition' | 'style' | 'lighting' | 'mood';
   provider?: 'huggingface' | 'replicate' | 'gemini';
   preserveIdentity?: boolean; // Explicit identity preservation flag
+  resolutionTier?: '1k' | '2k' | '4k'; // Gemini imageSize tier
 }
 
 export interface GeneratedImage {
@@ -148,6 +149,7 @@ export class ImageGenerationService {
             style: params.style || 'photorealistic',
             referenceImage: params.referenceImage,
             preserveIdentity: shouldPreserveIdentity,
+            resolution: params.resolutionTier || '1k',
           },
         });
 

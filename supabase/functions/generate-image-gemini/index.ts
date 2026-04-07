@@ -49,16 +49,22 @@ async function urlToBase64(url: string): Promise<string> {
 /**
  * Call the Gemini API with retry logic (Gemini can return text instead of image)
  */
-async function callGemini(apiKey: string, parts: object[], aspectRatio = '1:1'): Promise<{ base64: string; model: string }> {
+async function callGemini(apiKey: string, parts: object[], aspectRatio = '1:1', resolution = '1k'): Promise<{ base64: string; model: string }> {
+  // Gemini imageConfig supports imageSize: "1K" | "2K" | "4K"
+  const imageSizeMap: Record<string, string> = { '1k': '1K', '2k': '2K', '4k': '4K' };
+  const imageSize = imageSizeMap[resolution] || '1K';
+
   const payload = {
     contents: [{ parts }],
     generationConfig: {
       responseModalities: ["IMAGE"],
       imageConfig: {
         aspectRatio,
+        imageSize,
       },
     },
   };
+  console.log(`📐 Gemini imageConfig: aspectRatio=${aspectRatio}, imageSize=${imageSize}`);
 
   for (const model of GEMINI_MODELS) {
     const url = `${GEMINI_API_BASE}/${model}:generateContent?key=${apiKey}`;
@@ -149,6 +155,7 @@ serve(async (req) => {
       aspectRatio = '1:1',
       style,
       referenceImage,
+      resolution = '1k',
     } = body;
 
     console.log('📥 Gemini Image Generation Request:', {
@@ -238,7 +245,7 @@ serve(async (req) => {
     }
 
     // Call Gemini
-    const { base64: base64Image, model: usedModel } = await callGemini(GEMINI_API_KEY, parts, aspectRatio);
+    const { base64: base64Image, model: usedModel } = await callGemini(GEMINI_API_KEY, parts, aspectRatio, resolution);
     const processingTime = `${Math.round((Date.now() - startTime) / 1000)}s`;
     console.log(`⏱️ Processing time: ${processingTime}`);
 
@@ -256,7 +263,7 @@ serve(async (req) => {
         metadata: {
           contentType,
           style: style || 'photorealistic',
-          resolution: 'auto',
+          resolution,
           processingTime,
           model: usedModel,
           quality,

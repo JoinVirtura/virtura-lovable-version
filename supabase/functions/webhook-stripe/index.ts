@@ -1,9 +1,10 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+import Stripe from "https://esm.sh/stripe@14.21.0?target=deno";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, stripe-signature',
 };
 
 serve(async (req) => {
@@ -14,36 +15,31 @@ serve(async (req) => {
   try {
     const signature = req.headers.get('stripe-signature');
     const endpointSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET');
-    
-    if (!endpointSecret) {
-      console.error('Missing Stripe webhook secret');
+    const stripeKey = Deno.env.get('STRIPE_SECRET_KEY');
+
+    if (!endpointSecret || !stripeKey) {
+      console.error('Missing Stripe webhook secret or API key');
       return new Response('Webhook secret not configured', { status: 500 });
     }
 
+    if (!signature) {
+      console.error('Missing stripe-signature header');
+      return new Response('Missing signature', { status: 400 });
+    }
+
     const body = await req.text();
-    
-    // Verify webhook signature
-    const crypto = await import('node:crypto');
-    const elements = signature?.split(',') || [];
-    const signatureElements: Record<string, string> = {};
-    
-    for (const element of elements) {
-      const [key, value] = element.split('=');
-      signatureElements[key] = value;
+    const stripe = new Stripe(stripeKey, { apiVersion: '2023-10-16' });
+
+    // Use Stripe SDK to validate signature (handles secret rotation, multiple v1 sigs, tolerance)
+    let event: Stripe.Event;
+    try {
+      event = await stripe.webhooks.constructEventAsync(body, signature, endpointSecret);
+    } catch (err: any) {
+      console.error('Webhook signature verification failed:', err.message);
+      return new Response(`Webhook Error: ${err.message}`, { status: 400 });
     }
 
-    const timestamp = signatureElements.t;
-    const expectedSignature = crypto.createHmac('sha256', endpointSecret)
-      .update(timestamp + '.' + body)
-      .digest('hex');
-
-    if (expectedSignature !== signatureElements.v1) {
-      console.error('Invalid webhook signature');
-      return new Response('Invalid signature', { status: 400 });
-    }
-
-    const event = JSON.parse(body);
-    console.log('Stripe webhook event:', event.type);
+    console.log('Stripe webhook event:', event.type, '| id:', event.id);
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -157,53 +153,69 @@ async function handleCheckoutCompleted(supabase: any, session: any) {
       return;
     }
     
+    // Token conversion rates (internal accounting):
+    //   1 image generation = 1 token
+    //   1 video generation = 5 tokens
+    const VIDEO_TOKEN_COST = 5;
+
     // Handle platform subscription checkout - credit tokens based on plan
     if (metadata.plan && metadata.user_id) {
       console.log('Processing platform subscription:', session.id, 'Plan:', metadata.plan);
-      
-      // Token allocations per plan (synced with pricing: $29/$129/$349)
-      const planTokens: Record<string, number> = {
-        starter: 120,
-        pro: 700,
-        enterprise: 2200,
+
+      // Plan allocations: { generations, videos } per month
+      // Synced with pricing UI: Starter $29, Pro $129, Scale $179
+      const planAllocations: Record<string, { generations: number; videos: number }> = {
+        starter: { generations: 120, videos: 5 },
+        pro:     { generations: 600, videos: 25 },
+        scale:   { generations: 900, videos: 35 },
       };
-      
-      const tokensToCredit = planTokens[metadata.plan.toLowerCase()] || 120;
-      
+
+      const alloc = planAllocations[metadata.plan.toLowerCase()] || planAllocations.starter;
+      const tokensToCredit = alloc.generations + (alloc.videos * VIDEO_TOKEN_COST);
+
       const { error: tokenError } = await supabase.rpc('add_tokens', {
         p_user_id: metadata.user_id,
         p_amount: tokensToCredit,
         p_transaction_type: 'subscription',
         p_metadata: {
           plan: metadata.plan,
+          generations: alloc.generations,
+          videos: alloc.videos,
           stripe_session_id: session.id,
           amount_paid: session.amount_total / 100,
           period: 'monthly',
         },
       });
-      
+
       if (tokenError) {
         console.error('Failed to credit subscription tokens:', tokenError);
       } else {
-        console.log(`Credited ${tokensToCredit} tokens for ${metadata.plan} subscription to user ${metadata.user_id}`);
+        console.log(`Credited ${tokensToCredit} tokens (${alloc.generations} gens + ${alloc.videos} videos) for ${metadata.plan} subscription to user ${metadata.user_id}`);
       }
       return;
     }
-    
-    // Handle token pack purchase (existing logic)
+
+    // Handle boost pack purchase (one-time payment)
     const userId = session.client_reference_id || metadata.user_id;
-    const tokens = parseInt(metadata.tokens || '0');
-    
-    if (!userId || !tokens) {
-      console.log('No tokens to credit, skipping');
+    const packId = metadata.pack_id;
+    const generations = parseInt(metadata.generations || '0');
+    const videos = parseInt(metadata.videos || '0');
+
+    if (!userId || !packId || (generations === 0 && videos === 0)) {
+      console.log('No boost pack to credit, skipping. metadata:', metadata);
       return;
     }
 
-    const { data, error } = await supabase.rpc('add_tokens', {
+    const tokensToCredit = generations + (videos * VIDEO_TOKEN_COST);
+
+    const { error } = await supabase.rpc('add_tokens', {
       p_user_id: userId,
-      p_amount: tokens,
+      p_amount: tokensToCredit,
       p_transaction_type: 'purchase',
       p_metadata: {
+        pack_id: packId,
+        generations,
+        videos,
         stripe_session_id: session.id,
         amount_paid: session.amount_total / 100,
         currency: session.currency,
@@ -211,11 +223,11 @@ async function handleCheckoutCompleted(supabase: any, session: any) {
     });
 
     if (error) {
-      console.error('Failed to credit tokens:', error);
+      console.error('Failed to credit boost pack tokens:', error);
       throw error;
     }
 
-    console.log(`Successfully credited ${tokens} tokens to user ${userId}`);
+    console.log(`Credited ${tokensToCredit} tokens (${generations} gens + ${videos} videos) for boost pack "${packId}" to user ${userId}`);
   } catch (error) {
     console.error('Error handling checkout completion:', error);
     throw error;

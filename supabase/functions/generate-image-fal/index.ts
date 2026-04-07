@@ -67,6 +67,38 @@ function mapAspectRatio(aspectRatio: string): string {
 }
 
 /**
+ * Map aspect ratio + resolution tier to explicit width/height
+ * Returns null when using preset (1k tier with 1:1, 16:9, etc.)
+ */
+function mapResolution(aspectRatio: string, resolution: string): { width: number; height: number } | null {
+  const baseLong = resolution === "4k" ? 4096 : resolution === "2k" ? 2048 : 1024;
+  if (resolution === "1k") return null; // Use string preset for 1K tier
+
+  const ratios: Record<string, [number, number]> = {
+    "1:1": [1, 1],
+    "16:9": [16, 9],
+    "9:16": [9, 16],
+    "4:3": [4, 3],
+    "3:4": [3, 4],
+    "2:3": [2, 3],
+    "3:2": [3, 2],
+    "4:5": [4, 5],
+    "5:4": [5, 4],
+  };
+  const [rw, rh] = ratios[aspectRatio] || [1, 1];
+
+  let width: number, height: number;
+  if (rw >= rh) {
+    width = baseLong;
+    height = Math.round((baseLong * rh) / rw);
+  } else {
+    height = baseLong;
+    width = Math.round((baseLong * rw) / rh);
+  }
+  return { width, height };
+}
+
+/**
  * Convert URL to base64 data URL
  */
 async function urlToBase64(url: string): Promise<string> {
@@ -128,6 +160,7 @@ serve(async (req) => {
       aspectRatio = "1:1",
       referenceImage,
       numImages = 1,
+      resolution = "1k",
     } = body;
 
     if (!prompt || typeof prompt !== "string") {
@@ -185,11 +218,13 @@ serve(async (req) => {
     }
 
     // Build fal.ai request input
+    const explicitSize = mapResolution(aspectRatio, resolution);
     const falInput: Record<string, unknown> = {
       prompt,
-      image_size: mapAspectRatio(aspectRatio),
+      image_size: explicitSize ? { width: explicitSize.width, height: explicitSize.height } : mapAspectRatio(aspectRatio),
       num_images: Math.min(numImages, 4),
     };
+    console.log(`📐 Resolution tier: ${resolution}, size: ${JSON.stringify(falInput.image_size)}`);
 
     // Model-specific params
     if (modelKey === "flux-schnell") {

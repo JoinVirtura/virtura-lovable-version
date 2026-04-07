@@ -12,14 +12,16 @@ const plans = [
     price: "$29/mo",
     amount: 29,
     highlights: [
-      "120 monthly generations",
-      "AI photos, avatars & concepts",
-      "1080p exports",
-      "Essential styles & presets",
+      "Up to 120 generations per month",
+      "4K high-quality images",
+      "Fast generation",
+      "Up to 5 video generations",
+      "Standard queue",
       "Basic support",
     ],
     popular: false,
-    description: "Perfect entry point for new creators"
+    bestValue: false,
+    description: "Perfect for getting started"
   },
   {
     id: "pro",
@@ -27,40 +29,44 @@ const plans = [
     price: "$129/mo",
     amount: 129,
     highlights: [
-      "700 monthly generations",
-      "Hyper-realistic quality",
-      "4K exports",
-      "Branded content tools",
+      "Up to 600 generations per month",
+      "4K ultra-quality images",
+      "Faster generation priority",
+      "Up to 25 video generations",
+      "Priority queue",
       "Commercial license",
-      "Priority support & API access",
+      "API access",
     ],
     popular: true,
-    description: "For serious creators & growing brands"
+    bestValue: false,
+    description: "For creators and growing brands"
   },
   {
-    id: "enterprise",
-    name: "Enterprise",
-    price: "$349/mo",
-    amount: 349,
+    id: "scale",
+    name: "Scale",
+    price: "$179/mo",
+    amount: 179,
     highlights: [
-      "2,200 monthly generations",
-      "Dedicated account manager",
-      "White-label options",
-      "Custom model training",
-      "Team seats & 8K exports",
-      "Advanced analytics",
+      "Up to 900 generations per month",
+      "4K premium outputs",
+      "Fastest generation speed",
+      "Up to 35 video generations",
+      "Priority and faster queue",
+      "Early access features",
+      "Advanced tools",
     ],
     popular: false,
-    description: "For agencies, teams & large-scale operations"
+    bestValue: true,
+    description: "For power users and teams"
   },
 ] as const;
 
-const tokenPacks = [
-  { tokens: 100, price: "$15", amount: 15 },
-  { tokens: 500, price: "$75", amount: 75 },
-  { tokens: 1000, price: "$150", amount: 150 },
-  { tokens: 5000, price: "$750", amount: 750 },
-  { tokens: 10000, price: "$1,500", amount: 1500 },
+const boostPacks = [
+  { id: "starter-boost", name: "Starter Boost", price: "$19", amount: 19, generations: 30, videos: 3, popular: false, priority: false },
+  { id: "creator-boost", name: "Creator Boost", price: "$39", amount: 39, generations: 70, videos: 7, popular: true, priority: false },
+  { id: "power-boost", name: "Power Boost", price: "$79", amount: 79, generations: 150, videos: 15, popular: false, priority: false },
+  { id: "ultra-boost", name: "Ultra Boost", price: "$149", amount: 149, generations: 290, videos: 29, popular: false, priority: false },
+  { id: "elite-boost", name: "Elite Boost", price: "$249", amount: 249, generations: 490, videos: 49, popular: false, priority: true },
 ] as const;
 
 export default function UpgradePage() {
@@ -92,9 +98,9 @@ export default function UpgradePage() {
     window.open(data.url, "_blank");
   };
 
-  const buyTokens = async (tokens: number) => {
+  const buyBoostPack = async (packId: string) => {
     const { data, error } = await supabase.functions.invoke("create-payment", {
-      body: { tokens },
+      body: { packId },
     });
     if (error || !data?.url) {
       toast({ title: "Checkout failed", description: error?.message || "Please try again.", variant: "destructive" });
@@ -123,9 +129,12 @@ export default function UpgradePage() {
         <h2 id="pricing-plans" className="sr-only">Pricing Plans</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {plans.map((plan) => (
-            <Card key={plan.id} className={`p-6 relative h-full flex flex-col ${plan.popular ? "ring-2 ring-primary" : ""}`}>
+            <Card key={plan.id} className={`p-6 relative h-full flex flex-col ${plan.popular ? "ring-2 ring-primary" : plan.bestValue ? "ring-2 ring-violet-500" : ""}`}>
               {plan.popular && (
                 <Badge className="absolute -top-3 left-6 bg-gradient-primary">Most Popular</Badge>
+              )}
+              {plan.bestValue && (
+                <Badge className="absolute -top-3 left-6 bg-violet-600">Best Value</Badge>
               )}
               <div className="space-y-2">
                 <h3 className="text-xl font-display font-bold">{plan.name}</h3>
@@ -145,17 +154,24 @@ export default function UpgradePage() {
         </div>
       </section>
 
-      <section aria-labelledby="token-topups" className="mb-12">
-        <h2 id="token-topups" className="text-xl font-display font-bold mb-4">Need more tokens? À la carte pricing</h2>
-        <p className="text-sm text-muted-foreground mb-6">Premium rate: $0.15 per token (vs $0.10 in subscriptions)</p>
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          {tokenPacks.map((pack) => (
-            <Card key={pack.tokens} className="p-6 h-full flex flex-col">
-              <h3 className="text-lg font-display font-bold">{pack.tokens} tokens</h3>
+      <section aria-labelledby="boost-packs" className="mb-12">
+        <h2 id="boost-packs" className="text-xl font-display font-bold mb-2">Add-On Boost Packs</h2>
+        <p className="text-sm text-muted-foreground mb-6">One-time top-ups to extend your monthly limits</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+          {boostPacks.map((pack) => (
+            <Card key={pack.id} className={`p-6 h-full flex flex-col relative ${pack.popular ? "ring-2 ring-primary" : ""}`}>
+              {pack.popular && (
+                <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-primary">Most Popular</Badge>
+              )}
+              <h3 className="text-lg font-display font-bold">{pack.name}</h3>
               <p className="text-2xl font-display font-bold mt-1">{pack.price}</p>
-              <p className="text-sm text-muted-foreground mt-2 flex-1">One-off purchase</p>
-              <Button variant="outline" className="mt-4 w-full" onClick={() => buyTokens(pack.tokens)}>
-                Buy tokens
+              <ul className="text-sm text-muted-foreground mt-3 space-y-1 flex-1">
+                <li>• Up to {pack.generations} generations</li>
+                <li>• Up to {pack.videos} video generations</li>
+                {pack.priority && <li>• Priority processing</li>}
+              </ul>
+              <Button variant="outline" className="mt-4 w-full" onClick={() => buyBoostPack(pack.id)}>
+                Buy
               </Button>
             </Card>
           ))}

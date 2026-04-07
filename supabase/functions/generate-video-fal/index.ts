@@ -174,6 +174,10 @@ serve(async (req) => {
           success: true,
           requestId: submitData.request_id,
           modelId: modelConfig.id,
+          // fal.ai's status URL uses only the namespace prefix (e.g. fal-ai/kling-video),
+          // not the full app id — return the URLs from the submit response directly.
+          statusUrl: submitData.status_url,
+          responseUrl: submitData.response_url,
           tokensCharged: requiredTokens,
           remainingBalance: tokenResult.remainingBalance,
         }),
@@ -183,7 +187,7 @@ serve(async (req) => {
 
     // ── Action: poll ────────────────────────────────────────────
     if (action === "poll") {
-      const { requestId, modelId } = body;
+      const { requestId, modelId, statusUrl: clientStatusUrl, responseUrl: clientResponseUrl } = body;
       if (!requestId || !modelId) {
         return new Response(
           JSON.stringify({ error: "requestId and modelId are required" }),
@@ -191,16 +195,28 @@ serve(async (req) => {
         );
       }
 
-      const statusUrl = `https://queue.fal.run/${modelId}/requests/${requestId}/status`;
+      // fal.ai queue status URL uses only the namespace prefix (e.g. "fal-ai/kling-video"),
+      // not the full app id ("fal-ai/kling-video/v3/pro/image-to-video"). Prefer the URLs
+      // returned by the submit response; fall back to constructing from the first two segments.
+      const namespace = modelId.split("/").slice(0, 2).join("/");
+      const statusUrl = clientStatusUrl || `https://queue.fal.run/${namespace}/requests/${requestId}/status`;
+      const responseUrl = clientResponseUrl || `https://queue.fal.run/${namespace}/requests/${requestId}`;
+
       const statusResp = await fetch(statusUrl, {
         headers: { "Authorization": `Key ${FAL_KEY}` },
       });
+
+      if (!statusResp.ok) {
+        const errText = await statusResp.text();
+        console.error(`❌ fal.ai status poll failed (${statusResp.status}): ${errText.substring(0, 300)}`);
+        throw new Error(`fal.ai status failed (${statusResp.status}): ${errText.substring(0, 200)}`);
+      }
+
       const statusData = await statusResp.json();
 
       if (statusData.status === "COMPLETED") {
         // Fetch full result
-        const resultUrl = `https://queue.fal.run/${modelId}/requests/${requestId}`;
-        const resultResp = await fetch(resultUrl, {
+        const resultResp = await fetch(responseUrl, {
           headers: { "Authorization": `Key ${FAL_KEY}` },
         });
         const resultData = await resultResp.json();

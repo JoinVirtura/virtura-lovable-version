@@ -8,7 +8,7 @@ import { Sparkles, Mic, Send, Crown, Lock, Zap, Camera, Shuffle, Star, X, Circle
 import { useState, useMemo, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ImageGenerationService, type ImageGenerationParams } from "@/services/imageGenerationService";
-import { generateFalImage, FAL_IMAGE_MODELS } from "@/services/falService";
+import { generateFalImage, FAL_IMAGE_MODELS, FAL_RESOLUTIONS, type FalResolutionId } from "@/services/falService";
 import { toast } from "sonner";
 
 const IS_DEV = import.meta.env.DEV;
@@ -105,6 +105,7 @@ export const Hero = () => {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [devProvider, setDevProvider] = useState("default");
+  const [devResolution, setDevResolution] = useState<FalResolutionId>("1k");
   const [generatedImages, setGeneratedImages] = useState<Array<{
     id: string;
     imageUrl: string;
@@ -365,7 +366,8 @@ export const Hero = () => {
         adherence: 9.5,
         steps: 50,
         enhance: false,
-        referenceImage: refImage
+        referenceImage: refImage,
+        resolutionTier: devResolution,
       };
 
       // Generate one at a time to avoid overloading the API
@@ -378,6 +380,7 @@ export const Hero = () => {
                 model: devProvider.replace("fal:", "") as any,
                 aspectRatio: params.aspectRatio,
                 referenceImage: params.referenceImage ?? undefined,
+                resolution: devResolution,
               })
             : await ImageGenerationService.generateImage(params);
           const elapsed = Date.now() - startedAt;
@@ -887,9 +890,9 @@ export const Hero = () => {
                   </button>
                 </div>
 
-                {/* DEV: Model Selector */}
+                {/* DEV: Model + Resolution Selectors */}
                 {IS_DEV && (
-                  <div className="flex items-center justify-center gap-2 pt-1">
+                  <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
                     <span className="text-[10px] font-bold text-yellow-400 border border-yellow-500/40 rounded px-1 py-0.5 leading-none">DEV</span>
                     <select
                       value={devProvider}
@@ -900,6 +903,18 @@ export const Hero = () => {
                       {FAL_IMAGE_MODELS.map((m) => (
                         <option key={m.id} value={`fal:${m.id}`} className="bg-gray-900">
                           fal.ai {m.label} ({m.speed}, {m.cost}tk)
+                        </option>
+                      ))}
+                    </select>
+                    <select
+                      value={devResolution}
+                      onChange={(e) => setDevResolution(e.target.value as FalResolutionId)}
+                      title="Resolution tier"
+                      className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-xs text-yellow-200 px-2 py-1 outline-none hover:border-yellow-500/50 transition-colors"
+                    >
+                      {FAL_RESOLUTIONS.map((r) => (
+                        <option key={r.id} value={r.id} className="bg-gray-900">
+                          {r.label} — {r.description}
                         </option>
                       ))}
                     </select>

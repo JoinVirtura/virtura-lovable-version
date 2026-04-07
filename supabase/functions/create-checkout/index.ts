@@ -13,7 +13,7 @@ serve(async (req) => {
 
   try {
     const { plan } = await req.json();
-    if (!plan || !["starter", "pro", "enterprise"].includes(plan)) {
+    if (!plan || !["starter", "pro", "scale"].includes(plan)) {
       return new Response(JSON.stringify({ error: "Invalid plan" }), { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 });
     }
 
@@ -56,7 +56,7 @@ serve(async (req) => {
       customerId = newCustomer.id;
     }
 
-    const priceMap: Record<string, number> = { starter: 2900, pro: 12900, enterprise: 34900 };
+    const priceMap: Record<string, number> = { starter: 2900, pro: 12900, scale: 17900 };
 
     const origin = req.headers.get("origin") || "http://localhost:5173";
 

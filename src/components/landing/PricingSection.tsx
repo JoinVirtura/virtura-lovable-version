@@ -15,49 +15,52 @@ export function PricingSection({ id }: PricingSectionProps) {
     {
       name: "Starter",
       price: 29,
-      description: "Perfect entry point for new creators",
+      description: "Perfect for getting started",
       features: [
-        "120 monthly generations",
-        "AI photos, avatars, and concepts",
-        "1080p exports",
-        "Essential styles & presets",
-"Basic support",
+        "Up to 120 generations per month",
+        "4K high-quality images",
+        "Fast generation",
+        "Up to 5 video generations",
+        "Standard queue",
+        "Basic support",
       ],
       cta: "Start Free Trial",
       popular: false,
+      bestValue: false,
     },
     {
       name: "Pro",
       price: 129,
-      description: "For serious creators & growing brands",
+      description: "For creators and growing brands",
       features: [
-        "700 monthly generations",
-        "Hyper-realistic quality & advanced styles",
-        "4K exports",
-        "Branded content tools",
+        "Up to 600 generations per month",
+        "4K ultra-quality images",
+        "Faster generation priority",
+        "Up to 25 video generations",
+        "Priority queue",
         "Commercial license",
-        "Priority support",
         "API access",
       ],
       cta: "Start Free Trial",
       popular: true,
+      bestValue: false,
     },
     {
-      name: "Enterprise",
-      price: 349,
-      description: "For agencies, teams & large-scale operations",
+      name: "Scale",
+      price: 179,
+      description: "For power users and teams",
       features: [
-        "2,200 monthly generations",
-        "Dedicated account manager",
-        "White-label options",
-        "Custom model training",
-        "Team seats & collaboration",
-        "8K exports",
-        "Advanced analytics",
-        "Priority API access",
+        "Up to 900 generations per month",
+        "4K premium outputs",
+        "Fastest generation speed",
+        "Up to 35 video generations",
+        "Priority and faster queue",
+        "Early access features",
+        "Advanced tools",
       ],
-      cta: "Contact Sales",
+      cta: "Start Free Trial",
       popular: false,
+      bestValue: true,
     },
   ];
 
@@ -80,14 +83,21 @@ export function PricingSection({ id }: PricingSectionProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto items-stretch">
           {plans.map((plan, index) => (
-            <Card 
+            <Card
               key={index}
-              className={`relative flex flex-col h-full ${plan.popular ? 'border-primary shadow-violet-glow md:scale-105' : ''}`}
+              className={`relative flex flex-col h-full ${plan.popular ? 'border-primary shadow-violet-glow md:scale-105' : plan.bestValue ? 'border-violet-500 shadow-violet-glow' : ''}`}
             >
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                   <Badge className="bg-gradient-primary px-4 py-1 text-xs sm:text-sm">
                     Most Popular
+                  </Badge>
+                </div>
+              )}
+              {plan.bestValue && (
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                  <Badge className="bg-violet-600 px-4 py-1 text-xs sm:text-sm">
+                    Best Value
                   </Badge>
                 </div>
               )}
@@ -114,10 +124,10 @@ export function PricingSection({ id }: PricingSectionProps) {
                 </ul>
                 
                 <div className="pt-6 mt-auto">
-                  <Button 
-                    onClick={() => plan.cta === "Contact Sales" ? window.location.href = "mailto:sales@virtura.ai" : navigate("/auth")}
-                    className={plan.popular ? "bg-gradient-primary hover:shadow-violet-glow w-full" : "w-full"}
-                    variant={plan.popular ? "default" : "outline"}
+                  <Button
+                    onClick={() => navigate("/auth")}
+                    className={plan.popular || plan.bestValue ? "bg-gradient-primary hover:shadow-violet-glow w-full" : "w-full"}
+                    variant={plan.popular || plan.bestValue ? "default" : "outline"}
                   >
                     {plan.cta}
                   </Button>

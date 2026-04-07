@@ -25,6 +25,15 @@ export const FAL_VIDEO_MODELS = [
 export type FalImageModelId = typeof FAL_IMAGE_MODELS[number]["id"];
 export type FalVideoModelId = typeof FAL_VIDEO_MODELS[number]["id"];
 
+// ── Resolution Presets ──────────────────────────────────────────
+export const FAL_RESOLUTIONS = [
+  { id: "1k", label: "1K (1024px)", description: "Default, fastest", multiplier: 1 },
+  { id: "2k", label: "2K (2048px)", description: "High quality", multiplier: 2 },
+  { id: "4k", label: "4K (4096px)", description: "Ultra HD, slowest", multiplier: 4 },
+] as const;
+
+export type FalResolutionId = typeof FAL_RESOLUTIONS[number]["id"];
+
 // ── Image Generation ────────────────────────────────────────────
 export interface FalImageParams {
   prompt: string;
@@ -32,6 +41,7 @@ export interface FalImageParams {
   aspectRatio?: string;
   referenceImage?: string;
   numImages?: number;
+  resolution?: FalResolutionId;
 }
 
 export interface FalImageResult {
@@ -52,6 +62,7 @@ export async function generateFalImage(params: FalImageParams): Promise<FalImage
         aspectRatio: params.aspectRatio || "1:1",
         referenceImage: params.referenceImage,
         numImages: params.numImages || 1,
+        resolution: params.resolution || "1k",
       },
     });
 
@@ -132,7 +143,7 @@ export async function generateFalVideo(
     if (startError) throw new Error(startData?.error || startError.message);
     if (!startData?.success) throw new Error(startData?.error || "Failed to start generation");
 
-    const { requestId, modelId } = startData;
+    const { requestId, modelId, statusUrl, responseUrl } = startData;
     console.log(`🎬 fal.ai video started: requestId=${requestId}`);
     onProgress?.("Generation started, processing...", 15);
 
@@ -155,7 +166,7 @@ export async function generateFalVideo(
       const { data: pollData, error: pollError } = await supabase.functions.invoke(
         "generate-video-fal",
         {
-          body: { action: "poll", requestId, modelId },
+          body: { action: "poll", requestId, modelId, statusUrl, responseUrl },
         }
       );
 

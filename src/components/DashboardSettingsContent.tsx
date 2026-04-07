@@ -210,13 +210,13 @@ export const DashboardSettingsContent = () => {
   const startSubscription = async (planId: string) => {
     try {
       const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { planId }
+        body: { plan: planId }
       });
-      
+
       if (error) throw error;
-      
+
       if (data?.url) {
-        window.location.href = data.url;
+        window.open(data.url, '_blank');
       }
     } catch (error: any) {
       toast({
@@ -227,21 +227,21 @@ export const DashboardSettingsContent = () => {
     }
   };
 
-  const buyTokens = async (tokens: number, price: string) => {
+  const buyTokens = async (packId: string, _price: string) => {
     try {
       const { data, error } = await supabase.functions.invoke('create-payment', {
-        body: { tokens, price }
+        body: { packId }
       });
-      
+
       if (error) throw error;
-      
+
       if (data?.url) {
-        window.location.href = data.url;
+        window.open(data.url, '_blank');
       }
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error.message || "Failed to initiate token purchase",
+        description: error.message || "Failed to initiate purchase",
         variant: "destructive",
       });
     }
