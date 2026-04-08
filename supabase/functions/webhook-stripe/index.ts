@@ -153,24 +153,11 @@ async function handleCheckoutCompleted(supabase: any, session: any) {
       return;
     }
     
-    // Token conversion rates (internal accounting):
-    //   1 image generation = 1 token
-    //   1 video generation = 5 tokens
-    const VIDEO_TOKEN_COST = 5;
-
     // Handle platform subscription checkout - credit tokens based on plan
     if (metadata.plan && metadata.user_id) {
       console.log('Processing platform subscription:', session.id, 'Plan:', metadata.plan);
 
-      // Plan allocations: { generations, videos } per month
-      // Synced with pricing UI: Starter $29, Pro $129, Scale $179
-      const planAllocations: Record<string, { generations: number; videos: number }> = {
-        starter: { generations: 120, videos: 5 },
-        pro:     { generations: 600, videos: 25 },
-        scale:   { generations: 900, videos: 35 },
-      };
-
-      const alloc = planAllocations[metadata.plan.toLowerCase()] || planAllocations.starter;
+      const alloc = PLAN_ALLOCATIONS[metadata.plan.toLowerCase()] || PLAN_ALLOCATIONS.starter;
       const tokensToCredit = alloc.generations + (alloc.videos * VIDEO_TOKEN_COST);
 
       const { error: tokenError } = await supabase.rpc('add_tokens', {
@@ -234,26 +221,56 @@ async function handleCheckoutCompleted(supabase: any, session: any) {
   }
 }
 
+// Plan token allocations (in tokens, where 1 video = 5 tokens)
+const PLAN_ALLOCATIONS: Record<string, { generations: number; videos: number }> = {
+  starter: { generations: 120, videos: 5 },
+  pro:     { generations: 600, videos: 25 },
+  scale:   { generations: 900, videos: 35 },
+};
+const VIDEO_TOKEN_COST = 5;
+
+function planTotalTokens(plan: string): number {
+  const a = PLAN_ALLOCATIONS[plan];
+  if (!a) return 0;
+  return a.generations + a.videos * VIDEO_TOKEN_COST;
+}
+
 async function handleSubscriptionUpdate(supabase: any, subscription: any) {
   try {
-    console.log('Updating subscription:', subscription.id);
-    
-    // Find user by customer ID
-    const { data: existingUser, error: findError } = await supabase
-      .from('subscriptions')
-      .select('user_id')
-      .eq('stripe_customer_id', subscription.customer)
-      .single();
+    console.log('Updating subscription:', subscription.id, '| status:', subscription.status);
 
-    if (findError && findError.code !== 'PGRST116') {
-      throw findError;
+    const userId = subscription.metadata?.user_id;
+    const newPlan = subscription.metadata?.plan;
+
+    // Find user (prefer metadata user_id, fall back to stripe_customer_id lookup)
+    let resolvedUserId = userId;
+    let previousPlan: string | null = null;
+
+    if (!resolvedUserId) {
+      const { data: existingUser } = await supabase
+        .from('subscriptions')
+        .select('user_id, plan_name')
+        .eq('stripe_customer_id', subscription.customer)
+        .maybeSingle();
+      if (existingUser) {
+        resolvedUserId = existingUser.user_id;
+        previousPlan = existingUser.plan_name;
+      }
+    } else {
+      const { data: existing } = await supabase
+        .from('subscriptions')
+        .select('plan_name')
+        .eq('user_id', resolvedUserId)
+        .maybeSingle();
+      previousPlan = existing?.plan_name || null;
     }
 
     const subscriptionData = {
+      user_id: resolvedUserId,
       stripe_subscription_id: subscription.id,
       stripe_customer_id: subscription.customer,
       status: subscription.status,
-      plan_name: subscription.items.data[0]?.price?.nickname || 'pro',
+      plan_name: newPlan || subscription.items.data[0]?.price?.nickname || 'unknown',
       price_id: subscription.items.data[0]?.price?.id,
       current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
       current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
@@ -261,17 +278,60 @@ async function handleSubscriptionUpdate(supabase: any, subscription: any) {
       updated_at: new Date().toISOString(),
     };
 
-    if (existingUser) {
-      // Update existing subscription
+    if (resolvedUserId) {
+      // Upsert by user_id
       const { error } = await supabase
         .from('subscriptions')
-        .update(subscriptionData)
-        .eq('user_id', existingUser.user_id);
-
+        .upsert(subscriptionData, { onConflict: 'user_id' });
       if (error) throw error;
     } else {
-      // This shouldn't normally happen, but log it
-      console.warn('Subscription update without existing user record:', subscription.customer);
+      console.warn('Subscription update without user_id, skipping db update:', subscription.customer);
+      return;
+    }
+
+    // ── Prorated token credit on UPGRADE ────────────────────
+    // Only for active subs where plan actually changed and is an upgrade
+    const PLAN_TIER: Record<string, number> = { starter: 1, pro: 2, scale: 3 };
+
+    if (
+      newPlan &&
+      previousPlan &&
+      newPlan !== previousPlan &&
+      PLAN_TIER[newPlan] > (PLAN_TIER[previousPlan] || 0) &&
+      subscription.status === 'active'
+    ) {
+      const oldTokens = planTotalTokens(previousPlan);
+      const newTokens = planTotalTokens(newPlan);
+
+      // Prorate by remaining time in current period
+      const now = Math.floor(Date.now() / 1000);
+      const periodStart = subscription.current_period_start;
+      const periodEnd = subscription.current_period_end;
+      const totalDuration = periodEnd - periodStart;
+      const remaining = Math.max(0, periodEnd - now);
+      const prorationRatio = totalDuration > 0 ? remaining / totalDuration : 0;
+
+      const tokensToAdd = Math.round((newTokens - oldTokens) * prorationRatio);
+
+      if (tokensToAdd > 0) {
+        const { error: tokenError } = await supabase.rpc('add_tokens', {
+          p_user_id: resolvedUserId,
+          p_amount: tokensToAdd,
+          p_transaction_type: 'subscription',
+          p_metadata: {
+            event: 'plan_upgrade',
+            from_plan: previousPlan,
+            to_plan: newPlan,
+            proration_ratio: prorationRatio,
+            stripe_subscription_id: subscription.id,
+          },
+        });
+        if (tokenError) {
+          console.error('Failed to credit prorated upgrade tokens:', tokenError);
+        } else {
+          console.log(`✅ Credited ${tokensToAdd} prorated tokens for ${previousPlan} → ${newPlan} upgrade (ratio: ${prorationRatio.toFixed(2)})`);
+        }
+      }
     }
 
     console.log('Subscription updated successfully');

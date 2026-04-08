@@ -56,6 +56,33 @@ serve(async (req) => {
       customerId = newCustomer.id;
     }
 
+    // ── Duplicate prevention ─────────────────────────────────────
+    // Block creating a new subscription if customer already has an active or trialing one.
+    // The user must use update-subscription (upgrade/downgrade) or cancel first.
+    const activeSubs = await stripe.subscriptions.list({
+      customer: customerId,
+      status: "all",
+      limit: 100,
+    });
+
+    const blockingSub = activeSubs.data.find(s =>
+      ["active", "trialing", "past_due", "unpaid"].includes(s.status)
+    );
+
+    if (blockingSub) {
+      const currentPlan = blockingSub.metadata?.plan || "unknown";
+      console.log(`⚠️ Customer ${customerId} already has active subscription (${blockingSub.id}) on plan "${currentPlan}". Blocking duplicate.`);
+      return new Response(
+        JSON.stringify({
+          error: "ALREADY_SUBSCRIBED",
+          message: `You already have an active subscription on the ${currentPlan} plan. Use upgrade/downgrade or cancel first.`,
+          currentPlan,
+          subscriptionId: blockingSub.id,
+        }),
+        { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const priceMap: Record<string, number> = { starter: 2900, pro: 12900, scale: 17900 };
 
     const origin = req.headers.get("origin") || "http://localhost:5173";
@@ -63,6 +90,9 @@ serve(async (req) => {
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       metadata: { plan, user_id: data.user.id },
+      subscription_data: {
+        metadata: { plan, user_id: data.user.id },
+      },
       line_items: [
         {
           price_data: {
