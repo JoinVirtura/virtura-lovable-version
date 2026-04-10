@@ -56,6 +56,8 @@ serve(async (req) => {
       customerId = newCustomer.id;
     }
 
+    const priceMap: Record<string, number> = { starter: 2900, pro: 12900, scale: 17900 };
+
     // ── Duplicate prevention ─────────────────────────────────────
     // Block creating a new subscription if customer already has an active or trialing one.
     // The user must use update-subscription (upgrade/downgrade) or cancel first.
@@ -70,7 +72,13 @@ serve(async (req) => {
     );
 
     if (blockingSub) {
-      const currentPlan = blockingSub.metadata?.plan || "unknown";
+      let currentPlan = blockingSub.metadata?.plan || null;
+      if (!currentPlan) {
+        // Infer plan from price amount
+        const amount = blockingSub.items?.data?.[0]?.price?.unit_amount;
+        const match = Object.entries(priceMap).find(([, cents]) => cents === amount);
+        currentPlan = match ? match[0] : "unknown";
+      }
       console.log(`⚠️ Customer ${customerId} already has active subscription (${blockingSub.id}) on plan "${currentPlan}". Blocking duplicate.`);
       return new Response(
         JSON.stringify({
@@ -82,8 +90,6 @@ serve(async (req) => {
         { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
-
-    const priceMap: Record<string, number> = { starter: 2900, pro: 12900, scale: 17900 };
 
     const origin = req.headers.get("origin") || "http://localhost:5173";
 

@@ -72,6 +72,8 @@ const boostPacks = [
 export default function UpgradePage() {
   const { toast } = useToast();
   const [hasSubscription, setHasSubscription] = useState(false);
+  const [currentPlan, setCurrentPlan] = useState<string | null>(null);
+  const [changingPlan, setChangingPlan] = useState(false);
 
   useEffect(() => {
     document.title = "Upgrade Plan | Virtura";
@@ -81,18 +83,60 @@ export default function UpgradePage() {
   const checkSubscription = async () => {
     const { data } = await supabase
       .from('subscriptions')
-      .select('stripe_customer_id')
+      .select('stripe_customer_id, plan_name, status')
       .maybeSingle();
-    
-    setHasSubscription(!!data?.stripe_customer_id);
+
+    const isActive = !!data?.stripe_customer_id && ['active', 'trialing', 'past_due'].includes(data?.status || '');
+    setHasSubscription(isActive);
+    setCurrentPlan(isActive ? (data?.plan_name || null) : null);
+  };
+
+  const getEdgeFunctionError = async (error: any, data: any): Promise<string> => {
+    // supabase-js wraps non-2xx with generic message; extract real error from context
+    if (error?.context) {
+      try {
+        const body = await error.context.json();
+        return body?.message || body?.error || error.message;
+      } catch {
+        return error.message;
+      }
+    }
+    // Sometimes data contains the error when status is non-2xx
+    if (data?.message) return data.message;
+    if (data?.error) return data.error;
+    return error?.message || "Please try again.";
   };
 
   const startSubscription = async (planId: string) => {
+    if (hasSubscription) {
+      // Already subscribed — use update-subscription for upgrade/downgrade
+      setChangingPlan(true);
+      try {
+        const { data, error } = await supabase.functions.invoke("update-subscription", {
+          body: { newPlan: planId },
+        });
+        if (error || !data?.success) {
+          const msg = await getEdgeFunctionError(error, data);
+          toast({ title: "Plan change failed", description: msg, variant: "destructive" });
+          return;
+        }
+        toast({
+          title: data.action === "upgraded" ? "Plan Upgraded" : "Downgrade Scheduled",
+          description: data.message,
+        });
+        setCurrentPlan(planId);
+      } finally {
+        setChangingPlan(false);
+      }
+      return;
+    }
+
     const { data, error } = await supabase.functions.invoke("create-checkout", {
       body: { plan: planId },
     });
     if (error || !data?.url) {
-      toast({ title: "Subscription failed", description: error?.message || "Please sign in and try again.", variant: "destructive" });
+      const msg = await getEdgeFunctionError(error, data);
+      toast({ title: "Subscription failed", description: msg, variant: "destructive" });
       return;
     }
     window.open(data.url, "_blank");
@@ -103,7 +147,8 @@ export default function UpgradePage() {
       body: { packId },
     });
     if (error || !data?.url) {
-      toast({ title: "Checkout failed", description: error?.message || "Please try again.", variant: "destructive" });
+      const msg = await getEdgeFunctionError(error, data);
+      toast({ title: "Checkout failed", description: msg, variant: "destructive" });
       return;
     }
     window.open(data.url, "_blank");
@@ -146,8 +191,16 @@ export default function UpgradePage() {
                   <li key={h}>• {h}</li>
                 ))}
               </ul>
-              <Button className="mt-6 w-full bg-gradient-primary hover:bg-gradient-secondary text-white shadow-violet-glow" onClick={() => startSubscription(plan.id)}>
-                Choose {plan.name}
+              <Button
+                className="mt-6 w-full bg-gradient-primary hover:bg-gradient-secondary text-white shadow-violet-glow"
+                onClick={() => startSubscription(plan.id)}
+                disabled={currentPlan === plan.id || changingPlan}
+              >
+                {currentPlan === plan.id
+                  ? "Current Plan"
+                  : hasSubscription
+                    ? `Switch to ${plan.name}`
+                    : `Choose ${plan.name}`}
               </Button>
             </Card>
           ))}

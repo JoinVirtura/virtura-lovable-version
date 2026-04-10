@@ -724,11 +724,16 @@ export const SettingsContent: React.FC<SettingsContentProps> = ({
                   <li key={h}>• {h}</li>
                 ))}
               </ul>
-              <Button 
-                className="mt-4 sm:mt-6 w-full bg-gradient-primary hover:bg-gradient-secondary text-white shadow-violet-glow" 
+              <Button
+                className="mt-4 sm:mt-6 w-full bg-gradient-primary hover:bg-gradient-secondary text-white shadow-violet-glow"
                 onClick={() => startSubscription(plan.id)}
+                disabled={subscription?.plan_name === plan.id}
               >
-                Choose {plan.name}
+                {subscription?.plan_name === plan.id
+                  ? "Current Plan"
+                  : subscription?.status === 'active' && subscription?.plan_name !== 'free'
+                    ? `Switch to ${plan.name}`
+                    : `Choose ${plan.name}`}
               </Button>
             </Card>
           ))}

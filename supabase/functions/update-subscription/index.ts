@@ -92,7 +92,20 @@ serve(async (req) => {
       );
     }
 
-    const currentPlan = currentSub.metadata?.plan || "unknown";
+    // Determine current plan from metadata or by matching price amount
+    let currentPlan = currentSub.metadata?.plan || null;
+    if (!currentPlan || !PLAN_TIER[currentPlan]) {
+      const currentAmount = currentSub.items.data[0]?.price?.unit_amount;
+      // Reverse-lookup plan from price
+      const matchedPlan = Object.entries(PLAN_PRICE_CENTS).find(([, cents]) => cents === currentAmount);
+      if (matchedPlan) {
+        currentPlan = matchedPlan[0];
+        console.log(`📋 Inferred current plan "${currentPlan}" from price ${currentAmount}`);
+      } else {
+        currentPlan = "unknown";
+      }
+    }
+
     if (currentPlan === newPlan) {
       return new Response(
         JSON.stringify({ error: `Already subscribed to ${newPlan} plan` }),

@@ -207,13 +207,50 @@ export const DashboardSettingsContent = () => {
     }
   };
 
+  const getEdgeFunctionError = async (error: any, fallback: string): Promise<string> => {
+    if (error?.context) {
+      try {
+        const body = await error.context.json();
+        return body?.message || body?.error || error.message;
+      } catch {
+        return error.message;
+      }
+    }
+    return error?.message || fallback;
+  };
+
+  const hasActiveSub = ['active', 'trialing', 'past_due'].includes(subscription?.status || '') && subscription?.plan_name !== 'free';
+
   const startSubscription = async (planId: string) => {
     try {
+      if (hasActiveSub) {
+        // Already subscribed — upgrade/downgrade via update-subscription
+        const { data, error } = await supabase.functions.invoke('update-subscription', {
+          body: { newPlan: planId }
+        });
+
+        if (error || !data?.success) {
+          const msg = await getEdgeFunctionError(error, "Failed to change plan");
+          toast({ title: "Error", description: msg, variant: "destructive" });
+          return;
+        }
+
+        toast({
+          title: data.action === "upgraded" ? "Plan Upgraded" : "Downgrade Scheduled",
+          description: data.message,
+        });
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: { plan: planId }
       });
 
-      if (error) throw error;
+      if (error) {
+        const msg = await getEdgeFunctionError(error, "Failed to start subscription");
+        toast({ title: "Error", description: msg, variant: "destructive" });
+        return;
+      }
 
       if (data?.url) {
         window.open(data.url, '_blank');
@@ -233,7 +270,11 @@ export const DashboardSettingsContent = () => {
         body: { packId }
       });
 
-      if (error) throw error;
+      if (error) {
+        const msg = await getEdgeFunctionError(error, "Failed to initiate purchase");
+        toast({ title: "Error", description: msg, variant: "destructive" });
+        return;
+      }
 
       if (data?.url) {
         window.open(data.url, '_blank');
