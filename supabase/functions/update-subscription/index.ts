@@ -123,19 +123,36 @@ serve(async (req) => {
     const itemId = currentSub.items.data[0]?.id;
     if (!itemId) throw new Error("Could not find subscription item");
 
+    // Get or create an active product for the new plan
+    const currentProductId = currentSub.items.data[0].price.product as string;
+    let productId = currentProductId;
+    try {
+      const product = await stripe.products.retrieve(currentProductId);
+      if (!product.active) {
+        console.log(`⚠️ Product ${currentProductId} is inactive, creating new product`);
+        const newProduct = await stripe.products.create({ name: PLAN_NAMES[newPlan], active: true });
+        productId = newProduct.id;
+      }
+    } catch {
+      const newProduct = await stripe.products.create({ name: PLAN_NAMES[newPlan], active: true });
+      productId = newProduct.id;
+    }
+
     if (isUpgrade) {
       // ── UPGRADE: Apply immediately with proration ──────────────
-      // Stripe will charge the prorated difference automatically
+      const newPrice = await stripe.prices.create({
+        product: productId,
+        currency: "usd",
+        unit_amount: PLAN_PRICE_CENTS[newPlan],
+        recurring: { interval: "month" },
+        nickname: PLAN_NAMES[newPlan],
+      });
+
       const updated = await stripe.subscriptions.update(currentSub.id, {
         items: [
           {
             id: itemId,
-            price_data: {
-              currency: "usd",
-              product_data: { name: PLAN_NAMES[newPlan] },
-              unit_amount: PLAN_PRICE_CENTS[newPlan],
-              recurring: { interval: "month" },
-            },
+            price: newPrice.id,
           },
         ],
         proration_behavior: "create_prorations",
@@ -159,6 +176,19 @@ serve(async (req) => {
       // ── DOWNGRADE: Schedule for end of current period ─────────
       // Use a subscription schedule so the change takes effect at period end
       // without losing benefits in the current cycle.
+
+      // Create a new price on an active product for the downgraded plan
+      const newPrice = await stripe.prices.create({
+        product: productId,
+        currency: "usd",
+        unit_amount: PLAN_PRICE_CENTS[newPlan],
+        recurring: { interval: "month" },
+        nickname: PLAN_NAMES[newPlan],
+      });
+
+      // Use existing price ID for current phase
+      const currentPriceId = currentSub.items.data[0].price.id;
+
       const schedule = await stripe.subscriptionSchedules.create({
         from_subscription: currentSub.id,
       });
@@ -169,34 +199,14 @@ serve(async (req) => {
         phases: [
           {
             // Phase 1: current plan, until current period end
-            items: [
-              {
-                price_data: {
-                  currency: "usd",
-                  product: currentSub.items.data[0].price.product as string,
-                  unit_amount: currentSub.items.data[0].price.unit_amount!,
-                  recurring: { interval: "month" },
-                },
-                quantity: 1,
-              },
-            ],
+            items: [{ price: currentPriceId, quantity: 1 }],
             start_date: currentSub.current_period_start,
             end_date: currentSub.current_period_end,
             metadata: { plan: currentPlan, user_id: userId },
           },
           {
             // Phase 2: new (downgraded) plan, starts when current ends
-            items: [
-              {
-                price_data: {
-                  currency: "usd",
-                  product_data: { name: PLAN_NAMES[newPlan] },
-                  unit_amount: PLAN_PRICE_CENTS[newPlan],
-                  recurring: { interval: "month" },
-                },
-                quantity: 1,
-              },
-            ],
+            items: [{ price: newPrice.id, quantity: 1 }],
             iterations: 1,
             metadata: { plan: newPlan, user_id: userId },
           },

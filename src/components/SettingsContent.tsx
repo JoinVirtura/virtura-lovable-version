@@ -509,10 +509,17 @@ export const SettingsContent: React.FC<SettingsContentProps> = ({
           {usageLoading ? (
             <div className="h-24 bg-muted animate-pulse rounded-lg" />
           ) : (
-            <div className="flex items-center justify-between p-4 bg-gradient-card rounded-lg">
+            <div className={`flex items-center justify-between p-4 rounded-lg ${subscription?.status === 'active' && subscription?.plan_name !== 'free' ? 'bg-green-500/10 ring-1 ring-green-500/30' : 'bg-gradient-card'}`}>
               <div>
-                <h3 className="font-display font-bold capitalize">
-                  {subscription?.plan_name || 'Free'} Plan
+                <h3 className="text-lg font-display font-bold capitalize flex items-center gap-2">
+                  {subscription?.status === 'active' && subscription?.plan_name !== 'free' && (
+                    <Crown className="w-5 h-5 text-green-500" />
+                  )}
+                  {subscription?.plan_name && subscription.plan_name !== 'free' && subscription.plan_name !== 'unknown'
+                    ? `${subscription.plan_name} Plan`
+                    : subscription?.status === 'active'
+                      ? 'Active Plan'
+                      : 'Free Plan'}
                 </h3>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   {subscription?.status === 'active' && subscription?.current_period_end ? (
@@ -525,8 +532,8 @@ export const SettingsContent: React.FC<SettingsContentProps> = ({
                   )}
                 </div>
               </div>
-              <Badge className={subscription?.status === 'active' ? "bg-gradient-primary" : "bg-muted"}>
-                {subscription?.status === 'active' ? 'Active' : 'Inactive'}
+              <Badge className={subscription?.status === 'active' ? "bg-green-600 text-white text-sm px-3 py-1" : "bg-muted"}>
+                {subscription?.status === 'active' ? '✓ Active' : 'Inactive'}
               </Badge>
             </div>
           )}
@@ -703,40 +710,51 @@ export const SettingsContent: React.FC<SettingsContentProps> = ({
           <h2 className="text-lg sm:text-xl font-display font-bold">Upgrade Your Plan</h2>
         </div>
         
-        <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6">Choose a plan that fits your creative needs</p>
-        
+        <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6">
+          {subscription?.status === 'active' && subscription?.plan_name !== 'free'
+            ? `You're on the ${subscription.plan_name !== 'unknown' ? subscription.plan_name : ''} plan. Switch plans below or manage billing above.`
+            : 'Choose a plan that fits your creative needs'}
+        </p>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
-          {plans.map((plan) => (
-            <Card key={plan.id} className={`p-4 sm:p-6 relative h-full flex flex-col ${plan.popular ? "ring-2 ring-primary" : plan.bestValue ? "ring-2 ring-violet-500" : ""}`}>
-              {plan.popular && (
-                <Badge className="absolute -top-2 sm:-top-3 left-4 sm:left-6 bg-gradient-primary text-xs sm:text-sm">Most Popular</Badge>
-              )}
-              {plan.bestValue && (
-                <Badge className="absolute -top-2 sm:-top-3 left-4 sm:left-6 bg-violet-600 text-xs sm:text-sm">Best Value</Badge>
-              )}
-              <div className="space-y-1.5 sm:space-y-2">
-                <h3 className="text-lg sm:text-xl font-display font-bold">{plan.name}</h3>
-                <p className="text-xl sm:text-2xl font-display font-bold">{plan.price}</p>
-                <p className="text-xs sm:text-sm text-muted-foreground">{plan.description}</p>
-              </div>
-              <ul className="mt-3 sm:mt-4 space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-muted-foreground flex-1">
-                {plan.highlights.map((h) => (
-                  <li key={h}>• {h}</li>
-                ))}
-              </ul>
-              <Button
-                className="mt-4 sm:mt-6 w-full bg-gradient-primary hover:bg-gradient-secondary text-white shadow-violet-glow"
-                onClick={() => startSubscription(plan.id)}
-                disabled={subscription?.plan_name === plan.id}
-              >
-                {subscription?.plan_name === plan.id
-                  ? "Current Plan"
-                  : subscription?.status === 'active' && subscription?.plan_name !== 'free'
-                    ? `Switch to ${plan.name}`
-                    : `Choose ${plan.name}`}
-              </Button>
-            </Card>
-          ))}
+          {plans.map((plan) => {
+            const isCurrentPlan = subscription?.plan_name === plan.id;
+            const hasActiveSub = subscription?.status === 'active' && subscription?.plan_name !== 'free';
+            return (
+              <Card key={plan.id} className={`p-4 sm:p-6 relative h-full flex flex-col ${isCurrentPlan ? "ring-2 ring-green-500 bg-green-500/5" : plan.popular ? "ring-2 ring-primary" : plan.bestValue ? "ring-2 ring-violet-500" : ""}`}>
+                {isCurrentPlan && (
+                  <Badge className="absolute -top-2 sm:-top-3 left-4 sm:left-6 bg-green-600 text-white text-xs sm:text-sm">Your Current Plan</Badge>
+                )}
+                {!isCurrentPlan && plan.popular && (
+                  <Badge className="absolute -top-2 sm:-top-3 left-4 sm:left-6 bg-gradient-primary text-xs sm:text-sm">Most Popular</Badge>
+                )}
+                {!isCurrentPlan && plan.bestValue && (
+                  <Badge className="absolute -top-2 sm:-top-3 left-4 sm:left-6 bg-violet-600 text-xs sm:text-sm">Best Value</Badge>
+                )}
+                <div className="space-y-1.5 sm:space-y-2">
+                  <h3 className="text-lg sm:text-xl font-display font-bold">{plan.name}</h3>
+                  <p className="text-xl sm:text-2xl font-display font-bold">{plan.price}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">{plan.description}</p>
+                </div>
+                <ul className="mt-3 sm:mt-4 space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-muted-foreground flex-1">
+                  {plan.highlights.map((h) => (
+                    <li key={h}>• {h}</li>
+                  ))}
+                </ul>
+                <Button
+                  className={`mt-4 sm:mt-6 w-full ${isCurrentPlan ? "bg-green-600 hover:bg-green-700 cursor-default" : "bg-gradient-primary hover:bg-gradient-secondary shadow-violet-glow"} text-white`}
+                  onClick={() => !isCurrentPlan && startSubscription(plan.id)}
+                  disabled={isCurrentPlan}
+                >
+                  {isCurrentPlan
+                    ? "✓ Current Plan"
+                    : hasActiveSub
+                      ? `Switch to ${plan.name}`
+                      : `Choose ${plan.name}`}
+                </Button>
+              </Card>
+            );
+          })}
         </div>
 
         <Separator className="my-6 sm:my-8" />
