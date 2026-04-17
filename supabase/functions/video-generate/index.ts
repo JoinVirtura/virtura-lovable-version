@@ -1,5 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { decode as base64Decode } from "https://deno.land/std@0.168.0/encoding/base64.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { checkPlanAccess } from "../_shared/plan-gating.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,8 +14,43 @@ serve(async (req) => {
   }
 
   try {
+    // Plan gating: HeyGen is a premium model — restricted to Pro and Scale
+    const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: "Authentication required" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const authClient = createClient(supabaseUrl, anonKey);
+    const { data: userData } = await authClient.auth.getUser(authHeader.replace("Bearer ", ""));
+    if (!userData.user) {
+      return new Response(
+        JSON.stringify({ error: "Invalid authentication" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const access = await checkPlanAccess(userData.user.id, "heygen-talking-photo", supabaseUrl, serviceKey);
+    if (!access.hasAccess) {
+      return new Response(
+        JSON.stringify({
+          error: "PLAN_UPGRADE_REQUIRED",
+          message: access.reason || "Premium video generation requires a Pro or Scale plan.",
+          currentPlan: access.plan,
+          requiredPlan: access.requiredPlan,
+        }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const { avatarImage, engine, prompt, duration } = await req.json();
-    
+
     if (!avatarImage) {
       throw new Error('Avatar image is required');
     }

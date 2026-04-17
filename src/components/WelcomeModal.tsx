@@ -28,7 +28,7 @@ const STEPS = [
   {
     id: 1,
     title: "Welcome to Virtura! 🎉",
-    subtitle: "You've received 50 FREE tokens to get started",
+    subtitle: "You've received 30 FREE tokens to get started",
   },
   {
     id: 2,
@@ -68,9 +68,9 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
       // Animate token counter
       const interval = setInterval(() => {
         setTokenCount(prev => {
-          if (prev >= 50) {
+          if (prev >= 30) {
             clearInterval(interval);
-            return 50;
+            return 30;
           }
           return prev + 2;
         });
@@ -135,13 +135,13 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
                   </span>
                   <span className="text-2xl text-muted-foreground">tokens</span>
                 </div>
-                <p className="text-sm text-muted-foreground">($5 value - yours to keep!)</p>
+                <p className="text-sm text-muted-foreground">Yours to keep — start creating right away!</p>
               </div>
 
               <Card className="p-4 bg-muted/50 border-primary/20">
                 <p className="text-sm text-foreground">
-                  Create amazing AI avatars, images, and videos without spending a dime. 
-                  Your 50 free tokens are ready to use right now!
+                  Create amazing AI avatars, images, and videos without spending a dime.
+                  Your 30 free tokens are ready to use right now!
                 </p>
               </Card>
             </div>
@@ -161,8 +161,8 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
                       <Image className="w-5 h-5 text-primary" />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-foreground">Generate an Avatar</h4>
-                      <p className="text-sm text-muted-foreground">4-8 tokens per image</p>
+                      <h4 className="font-semibold text-foreground">Generate an Image</h4>
+                      <p className="text-sm text-muted-foreground">1-8 tokens per image</p>
                     </div>
                   </div>
 
@@ -172,7 +172,7 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
                     </div>
                     <div>
                       <h4 className="font-semibold text-foreground">Create a Video</h4>
-                      <p className="text-sm text-muted-foreground">20-25 tokens per video</p>
+                      <p className="text-sm text-muted-foreground">3-8 tokens per video</p>
                     </div>
                   </div>
 
@@ -189,7 +189,7 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
 
                 <div className="mt-6 p-3 rounded-lg bg-primary/10 border border-primary/20">
                   <p className="text-sm text-center text-foreground">
-                    <strong>Your 50 tokens = 6-10 avatars</strong> or <strong>2 videos</strong> or <strong>25 style transfers</strong>
+                    <strong>Your 30 tokens ≈ 6+ images</strong> or <strong>4-5 videos</strong> or <strong>15 style transfers</strong>
                   </p>
                 </div>
               </Card>
@@ -204,7 +204,7 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
               </p>
 
               <div className="grid gap-4">
-                <Card 
+                <Card
                   className="p-6 cursor-pointer hover:border-primary transition-all hover:shadow-neon"
                   onClick={() => handleNavigate('/individuals')}
                 >
@@ -219,13 +219,13 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
                       </p>
                       <Badge variant="secondary" className="text-xs">
                         <Coins className="w-3 h-3 mr-1" />
-                        4-8 tokens
+                        2-5 tokens
                       </Badge>
                     </div>
                   </div>
                 </Card>
 
-                <Card 
+                <Card
                   className="p-6 cursor-pointer hover:border-primary transition-all hover:shadow-neon"
                   onClick={() => handleNavigate('/ai-studio')}
                 >
@@ -246,7 +246,7 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
                   </div>
                 </Card>
 
-                <Card 
+                <Card
                   className="p-6 cursor-pointer hover:border-primary transition-all hover:shadow-neon"
                   onClick={() => handleNavigate('/studio')}
                 >
@@ -261,7 +261,7 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
                       </p>
                       <Badge variant="secondary" className="text-xs">
                         <Coins className="w-3 h-3 mr-1" />
-                        20-25 tokens
+                        3-8 tokens
                       </Badge>
                     </div>
                   </div>
@@ -279,32 +279,32 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
 
               <div className="grid grid-cols-3 gap-4">
                 <Card className="p-4 text-center bg-muted/50">
-                  <div className="text-2xl font-bold text-foreground">100</div>
-                  <div className="text-xs text-muted-foreground mb-2">tokens</div>
-                  <div className="text-lg font-semibold text-primary">$15</div>
+                  <div className="text-sm font-semibold text-foreground">Starter</div>
+                  <div className="text-xs text-muted-foreground mb-2">30 images + 3 videos</div>
+                  <div className="text-lg font-semibold text-primary">$19</div>
                 </Card>
 
                 <Card className="p-4 text-center bg-gradient-to-br from-primary/10 to-primary-blue/10 border-primary">
-                  <Badge className="mb-2 text-xs">Best Value</Badge>
-                  <div className="text-2xl font-bold text-foreground">1000</div>
-                  <div className="text-xs text-muted-foreground mb-2">tokens</div>
-                  <div className="text-lg font-semibold text-primary">$100</div>
+                  <Badge className="mb-2 text-xs">Most Popular</Badge>
+                  <div className="text-sm font-semibold text-foreground">Creator</div>
+                  <div className="text-xs text-muted-foreground mb-2">70 images + 7 videos</div>
+                  <div className="text-lg font-semibold text-primary">$39</div>
                 </Card>
 
                 <Card className="p-4 text-center bg-muted/50">
-                  <div className="text-2xl font-bold text-foreground">3000</div>
-                  <div className="text-xs text-muted-foreground mb-2">tokens</div>
-                  <div className="text-lg font-semibold text-primary">$250</div>
+                  <div className="text-sm font-semibold text-foreground">Power</div>
+                  <div className="text-xs text-muted-foreground mb-2">150 images + 15 videos</div>
+                  <div className="text-lg font-semibold text-primary">$79</div>
                 </Card>
               </div>
 
               <Card className="p-4 bg-gradient-to-br from-card to-muted/50">
                 <div className="flex items-center gap-2 mb-2">
                   <Trophy className="w-5 h-5 text-primary" />
-                  <h4 className="font-semibold text-foreground">Larger packs = better value</h4>
+                  <h4 className="font-semibold text-foreground">Need even more? We've got you.</h4>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Save up to 30% when you buy tokens in bulk. Tokens never expire, so stock up and save!
+                  Ultra ($149) and Elite ($249) packs available too. Or subscribe monthly for bigger savings — tokens never expire!
                 </p>
               </Card>
 
@@ -338,9 +338,9 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
                   <div className="flex items-start gap-3">
                     <Zap className="w-5 h-5 text-primary-blue flex-shrink-0 mt-0.5" />
                     <div>
-                      <h4 className="font-semibold mb-1 text-foreground">Admin users get unlimited access</h4>
+                      <h4 className="font-semibold mb-1 text-foreground">Automatic provider fallback</h4>
                       <p className="text-sm text-muted-foreground">
-                        Admins can create without using tokens. Perfect for testing!
+                        If one AI model is busy, we automatically try another — so your generations almost never fail.
                       </p>
                     </div>
                   </div>
@@ -375,7 +375,7 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
                 <CheckCircle className="w-12 h-12 text-primary mx-auto mb-3" />
                 <p className="text-lg font-semibold text-foreground">You're all set!</p>
                 <p className="text-sm text-muted-foreground">
-                  Start creating amazing content with your 50 free tokens
+                  Start creating amazing content with your 30 free tokens
                 </p>
               </div>
             </div>
