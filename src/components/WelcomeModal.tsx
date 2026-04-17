@@ -28,7 +28,7 @@ const STEPS = [
   {
     id: 1,
     title: "Welcome to Virtura! 🎉",
-    subtitle: "You've received 30 FREE tokens to get started",
+    subtitle: "You've received 20 FREE tokens to get started",
   },
   {
     id: 2,
@@ -68,9 +68,9 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
       // Animate token counter
       const interval = setInterval(() => {
         setTokenCount(prev => {
-          if (prev >= 30) {
+          if (prev >= 20) {
             clearInterval(interval);
-            return 30;
+            return 20;
           }
           return prev + 2;
         });
@@ -141,7 +141,7 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
               <Card className="p-4 bg-muted/50 border-primary/20">
                 <p className="text-sm text-foreground">
                   Create amazing AI avatars, images, and videos without spending a dime.
-                  Your 30 free tokens are ready to use right now!
+                  Your 20 free tokens are ready to use right now!
                 </p>
               </Card>
             </div>
@@ -189,7 +189,7 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
 
                 <div className="mt-6 p-3 rounded-lg bg-primary/10 border border-primary/20">
                   <p className="text-sm text-center text-foreground">
-                    <strong>Your 30 tokens ≈ 6+ images</strong> or <strong>4-5 videos</strong> or <strong>15 style transfers</strong>
+                    <strong>Your 20 tokens ≈ 4+ images</strong> or <strong>2-3 videos</strong> or <strong>10 style transfers</strong>
                   </p>
                 </div>
               </Card>
@@ -375,7 +375,7 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
                 <CheckCircle className="w-12 h-12 text-primary mx-auto mb-3" />
                 <p className="text-lg font-semibold text-foreground">You're all set!</p>
                 <p className="text-sm text-muted-foreground">
-                  Start creating amazing content with your 30 free tokens
+                  Start creating amazing content with your 20 free tokens
                 </p>
               </div>
             </div>
