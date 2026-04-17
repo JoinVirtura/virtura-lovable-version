@@ -1,5 +1,22 @@
 import { supabase } from "@/integrations/supabase/client";
 
+/**
+ * Extract a human-readable error message from a Supabase edge function error.
+ * The default `error.message` is just "Edge Function returned a non-2xx status code".
+ * The real message is in the response body accessible via error.context.
+ */
+async function extractEdgeError(error: any, fallback: string): Promise<string> {
+  if (error?.context) {
+    try {
+      const body = await error.context.json();
+      return body?.message || body?.error || error.message || fallback;
+    } catch {
+      return error.message || fallback;
+    }
+  }
+  return error?.message || fallback;
+}
+
 export interface VeoGenerationParams {
   model: string;
   prompt: string;
@@ -71,7 +88,8 @@ export async function generateVeoVideo(
 
     if (startError) {
       console.error("❌ Edge function error:", startError);
-      throw new Error(startData?.error || startError.message || "Failed to start video generation");
+      const msg = await extractEdgeError(startError, "Failed to start video generation");
+      throw new Error(msg);
     }
     if (!startData?.success) throw new Error(startData?.error || "Failed to start generation");
 
@@ -248,7 +266,10 @@ async function generateFalVideo(
       }
     );
 
-    if (startError) throw new Error(startData?.error || startError.message || "Failed to start fal video");
+    if (startError) {
+      const msg = await extractEdgeError(startError, "Failed to start fal video");
+      throw new Error(msg);
+    }
     if (!startData?.success) throw new Error(startData?.error || "Failed to start fal video");
 
     const { requestId, modelId, statusUrl, responseUrl } = startData;

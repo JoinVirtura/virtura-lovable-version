@@ -31,7 +31,7 @@ import {
   Wand2,
   Check,
 } from "lucide-react";
-import { generateVeoVideo, saveVeoVideoToLibrary } from "@/services/veoVideoService";
+import { generateVideoWithFallback, saveVeoVideoToLibrary } from "@/services/veoVideoService";
 import { generateFalVideo, FAL_VIDEO_MODELS } from "@/services/falService";
 import { DashboardLibraryView } from "@/components/DashboardLibraryView";
 
@@ -211,15 +211,8 @@ export function VeoVideoStudio() {
         aspectRatio,
       };
 
-      result = await generateVeoVideo(genParams, onProgress);
-
-      // Auto-retry once if no samples were generated (transient API issue)
-      if (!result.success && result.error?.includes("No video samples")) {
-        console.log("⚠️ Retrying video generation...");
-        setProgressStage("Retrying generation...");
-        setProgressPercent(5);
-        result = await generateVeoVideo(genParams, onProgress);
-      }
+      // Uses Veo → FAL fallback chain automatically
+      result = await generateVideoWithFallback(genParams, onProgress);
     }
 
     setIsGenerating(false);
