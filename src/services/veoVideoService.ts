@@ -14,6 +14,7 @@ export interface VeoGenerationResult {
   videoUrl?: string;
   videoSize?: string;
   error?: string;
+  provider?: 'veo' | 'fal';
 }
 
 type ProgressCallback = (stage: string, percent: number) => void;
@@ -198,4 +199,138 @@ export async function saveVeoVideoToLibrary(params: {
     console.error("❌ Save to library failed:", error);
     return { success: false, error: error.message };
   }
+}
+
+/**
+ * Generate a video via fal.ai. Used as fallback when Veo fails.
+ * Picks an image-to-video model when an image is provided, otherwise text-to-video.
+ */
+async function generateFalVideo(
+  params: VeoGenerationParams,
+  onProgress?: ProgressCallback
+): Promise<VeoGenerationResult> {
+  try {
+    onProgress?.("Trying backup video provider (fal.ai)...", 10);
+
+    // Upload base64 image if needed
+    let imageUrl = params.imageUrl;
+    if (params.imageBase64 && !imageUrl) {
+      const response = await fetch(params.imageBase64);
+      const blob = await response.blob();
+      const fileName = `fal-source-${Date.now()}.${blob.type.includes("png") ? "png" : "jpg"}`;
+      const { error: uploadError } = await supabase.storage
+        .from("virtura-media")
+        .upload(`fal-sources/${fileName}`, blob, {
+          contentType: blob.type || "image/jpeg",
+          upsert: true,
+        });
+      if (uploadError) throw new Error(`Image upload failed: ${uploadError.message}`);
+      const { data: urlData } = supabase.storage
+        .from("virtura-media")
+        .getPublicUrl(`fal-sources/${fileName}`);
+      imageUrl = urlData.publicUrl;
+    }
+
+    // Pick image-to-video or text-to-video
+    const falModel = imageUrl ? "kling-v3-pro" : "kling-v3-pro-t2v";
+
+    const { data: startData, error: startError } = await supabase.functions.invoke(
+      "generate-video-fal",
+      {
+        body: {
+          action: "generate",
+          model: falModel,
+          prompt: params.prompt,
+          imageUrl,
+          durationSeconds: params.durationSeconds,
+          aspectRatio: params.aspectRatio,
+        },
+      }
+    );
+
+    if (startError) throw new Error(startData?.error || startError.message || "Failed to start fal video");
+    if (!startData?.success) throw new Error(startData?.error || "Failed to start fal video");
+
+    const { requestId, modelId, statusUrl, responseUrl } = startData;
+    console.log("🎬 fal video started:", requestId);
+    onProgress?.("Backup provider processing...", 20);
+
+    const startTime = Date.now();
+    let pollCount = 0;
+
+    while (Date.now() - startTime < MAX_POLL_TIME) {
+      await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL));
+      pollCount++;
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      const progressPercent = Math.min(85, 20 + (elapsed / 180) * 65);
+      onProgress?.("Backup provider rendering...", Math.round(progressPercent));
+
+      const { data: pollData, error: pollError } = await supabase.functions.invoke(
+        "generate-video-fal",
+        {
+          body: {
+            action: "poll",
+            requestId,
+            modelId,
+            statusUrl,
+            responseUrl,
+          },
+        }
+      );
+
+      if (pollError) throw new Error(pollError.message);
+      if (!pollData?.success) throw new Error(pollData?.error || "Poll failed");
+
+      if (pollData.done) {
+        if (pollData.status === "failed") {
+          throw new Error(pollData.error || "Video generation failed");
+        }
+        if (pollData.status === "completed" && pollData.videoUrl) {
+          onProgress?.("Video ready!", 100);
+          return {
+            success: true,
+            videoUrl: pollData.videoUrl,
+            videoSize: pollData.videoSize,
+            provider: "fal",
+          };
+        }
+      }
+
+      console.log(`🔄 fal poll #${pollCount} - ${elapsed}s elapsed`);
+    }
+
+    throw new Error("fal video generation timed out");
+  } catch (error: any) {
+    console.error("❌ fal video generation failed:", error);
+    return {
+      success: false,
+      error: error.message || "Unknown error",
+      provider: "fal",
+    };
+  }
+}
+
+/**
+ * Generate video with automatic fallback chain: Veo → fal.ai.
+ * Use this instead of generateVeoVideo() to get automatic provider failover.
+ */
+export async function generateVideoWithFallback(
+  params: VeoGenerationParams,
+  onProgress?: ProgressCallback
+): Promise<VeoGenerationResult> {
+  console.log("🎬 Trying provider: Veo (Gemini)");
+  const veoResult = await generateVeoVideo(params, onProgress);
+  if (veoResult.success) {
+    return { ...veoResult, provider: "veo" };
+  }
+
+  console.warn("⚠️ Veo failed, falling back to fal.ai:", veoResult.error);
+  const falResult = await generateFalVideo(params, onProgress);
+  if (falResult.success) return falResult;
+
+  // Both failed — return the most informative error
+  return {
+    success: false,
+    error: `All video providers failed. Veo: ${veoResult.error}. Fal: ${falResult.error}`,
+  };
 }

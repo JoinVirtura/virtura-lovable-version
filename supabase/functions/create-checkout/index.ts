@@ -80,6 +80,38 @@ serve(async (req) => {
         currentPlan = match ? match[0] : "unknown";
       }
       console.log(`⚠️ Customer ${customerId} already has active subscription (${blockingSub.id}) on plan "${currentPlan}". Blocking duplicate.`);
+
+      // ── Auto-sync DB if out of date ───────────────────────────
+      // The webhook may have failed, so ensure the subscriptions table matches Stripe
+      const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+      const adminClient = createClient(supabaseUrl, serviceKey);
+      const { error: upsertError } = await adminClient
+        .from('subscriptions')
+        .upsert({
+          user_id: data.user.id,
+          stripe_subscription_id: blockingSub.id,
+          stripe_customer_id: String(blockingSub.customer),
+          status: blockingSub.status,
+          plan_name: currentPlan,
+          price_id: blockingSub.items.data[0]?.price?.id || null,
+          current_period_start: new Date(blockingSub.current_period_start * 1000).toISOString(),
+          current_period_end: new Date(blockingSub.current_period_end * 1000).toISOString(),
+        }, { onConflict: 'user_id' });
+
+      if (upsertError) {
+        console.error("Failed to sync subscription to DB:", upsertError.message);
+      } else {
+        console.log(`✅ Synced subscription to DB for user ${data.user.id}`);
+      }
+
+      // Also update Stripe metadata if missing
+      if (!blockingSub.metadata?.plan) {
+        await stripe.subscriptions.update(blockingSub.id, {
+          metadata: { plan: currentPlan, user_id: data.user.id },
+        });
+        console.log(`✅ Updated Stripe subscription metadata: plan=${currentPlan}`);
+      }
+
       return new Response(
         JSON.stringify({
           error: "ALREADY_SUBSCRIBED",

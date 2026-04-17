@@ -13,9 +13,10 @@ export interface ImageGenerationParams {
   enhance?: boolean;
   referenceImage?: string;
   variantType?: 'composition' | 'style' | 'lighting' | 'mood';
-  provider?: 'huggingface' | 'replicate' | 'gemini';
+  provider?: 'huggingface' | 'replicate' | 'gemini' | 'fal';
   preserveIdentity?: boolean; // Explicit identity preservation flag
   resolutionTier?: '1k' | '2k' | '4k'; // Gemini imageSize tier
+  disableFallback?: boolean; // Skip the fallback chain (for testing/debugging)
 }
 
 export interface GeneratedImage {
@@ -23,6 +24,7 @@ export interface GeneratedImage {
   image?: string;
   prompt?: string;
   error?: string;
+  provider?: 'gemini' | 'fal' | 'replicate' | 'huggingface' | 'openai';
   metadata?: {
     contentType: string;
     style: string;
@@ -30,6 +32,8 @@ export interface GeneratedImage {
     processingTime?: string;
   };
 }
+
+type ImageProvider = 'gemini' | 'fal' | 'replicate';
 
 export class ImageGenerationService {
   private static detectContentType(prompt: string): string {
@@ -120,54 +124,147 @@ export class ImageGenerationService {
     return modifier ? `${basePrompt}, ${modifier}` : basePrompt;
   }
 
-  static async generateImage(params: ImageGenerationParams): Promise<GeneratedImage> {
+  /**
+   * Try a single provider. Returns null on failure (so caller can fall through).
+   */
+  private static async tryProvider(
+    provider: ImageProvider,
+    params: ImageGenerationParams,
+    contentType: string
+  ): Promise<GeneratedImage | null> {
+    const quality = params.quality || 'ultra';
+    const mappedQuality = quality === 'ultra' ? '8K' : quality === 'balanced' ? '4K' : 'HD';
+    const shouldPreserveIdentity = params.preserveIdentity ?? (!!params.referenceImage);
+    const aspectRatio = params.aspectRatio || '1:1';
+
     try {
-      console.log('Generating single perfect image with params:', params);
-
-      const contentType = params.contentType === 'auto' || !params.contentType 
-        ? this.detectContentType(params.prompt) 
-        : params.contentType;
-
-      const provider = params.provider || 'gemini';
-      const quality = params.quality || 'ultra';
-
-      // Route to Gemini (default) or Replicate
-      if (provider === 'gemini' || provider === 'replicate') {
-        const isGemini = provider === 'gemini';
-        const functionName = isGemini ? 'generate-image-gemini' : 'generate-image-replicate';
-        console.log(`🎨 Using ${isGemini ? 'Gemini' : 'Replicate'} API for generation`);
-
-        const mappedQuality = quality === 'ultra' ? '8K' : quality === 'balanced' ? '4K' : 'HD';
-        const shouldPreserveIdentity = params.preserveIdentity ?? (!!params.referenceImage);
-
-        const resp = await supabase.functions.invoke(functionName, {
+      if (provider === 'gemini') {
+        const resp = await supabase.functions.invoke('generate-image-gemini', {
           body: {
             prompt: params.prompt,
             contentType,
             quality: mappedQuality,
-            aspectRatio: params.aspectRatio || '1:1',
+            aspectRatio,
             style: params.style || 'photorealistic',
             referenceImage: params.referenceImage,
             preserveIdentity: shouldPreserveIdentity,
             resolution: params.resolutionTier || '1k',
           },
         });
-
         if (!resp.error && resp.data?.success) {
-          console.log(`✅ ${isGemini ? 'Gemini' : 'Replicate'} generation successful`);
-          return resp.data as GeneratedImage;
+          return { ...resp.data, provider: 'gemini' } as GeneratedImage;
         }
-
-        console.warn(`⚠️ ${isGemini ? 'Gemini' : 'Replicate'} failed:`, resp.error?.message);
-
-        // For non-portrait content, throw instead of falling back
-        if (contentType !== 'portrait') {
-          throw new Error(`Image generation failed: ${resp.error?.message || 'Unknown error'}`);
-        }
-
-        console.log('🔄 Falling back to HuggingFace for portrait generation');
+        console.warn(`⚠️ Gemini failed:`, resp.error?.message || resp.data?.error);
+        return null;
       }
-      
+
+      if (provider === 'fal') {
+        // Pick a FAL model based on whether we have a reference image
+        const falModel = params.referenceImage ? 'flux-kontext' : 'nano-banana-2';
+        const resp = await supabase.functions.invoke('generate-image-fal', {
+          body: {
+            prompt: params.prompt,
+            model: falModel,
+            aspectRatio,
+            resolution: params.resolutionTier || '1k',
+            referenceImage: params.referenceImage,
+            numImages: 1,
+          },
+        });
+        if (!resp.error && resp.data?.success) {
+          // FAL returns an `images` array; normalize to single `image`
+          const imageUrl = resp.data.images?.[0] || resp.data.image;
+          if (imageUrl) {
+            return {
+              success: true,
+              image: imageUrl,
+              prompt: params.prompt,
+              provider: 'fal',
+              metadata: {
+                contentType,
+                style: params.style || 'photorealistic',
+                resolution: params.resolutionTier || '1k',
+              },
+            };
+          }
+        }
+        console.warn(`⚠️ FAL failed:`, resp.error?.message || resp.data?.error);
+        return null;
+      }
+
+      if (provider === 'replicate') {
+        const resp = await supabase.functions.invoke('generate-image-replicate', {
+          body: {
+            prompt: params.prompt,
+            contentType,
+            quality: mappedQuality,
+            aspectRatio,
+            style: params.style || 'photorealistic',
+            referenceImage: params.referenceImage,
+            preserveIdentity: shouldPreserveIdentity,
+            resolution: params.resolutionTier || '1k',
+          },
+        });
+        if (!resp.error && resp.data?.success) {
+          return { ...resp.data, provider: 'replicate' } as GeneratedImage;
+        }
+        console.warn(`⚠️ Replicate failed:`, resp.error?.message || resp.data?.error);
+        return null;
+      }
+    } catch (err) {
+      console.warn(`⚠️ ${provider} threw:`, err instanceof Error ? err.message : err);
+      return null;
+    }
+    return null;
+  }
+
+  /**
+   * Run providers in order until one succeeds. Returns the first success.
+   */
+  private static async runFallbackChain(
+    chain: ImageProvider[],
+    params: ImageGenerationParams,
+    contentType: string
+  ): Promise<GeneratedImage | null> {
+    for (const provider of chain) {
+      console.log(`🎨 Trying provider: ${provider}`);
+      const result = await this.tryProvider(provider, params, contentType);
+      if (result?.success) {
+        console.log(`✅ ${provider} succeeded`);
+        return result;
+      }
+      console.log(`↪️ ${provider} failed, trying next provider in chain`);
+    }
+    return null;
+  }
+
+  static async generateImage(params: ImageGenerationParams): Promise<GeneratedImage> {
+    try {
+      console.log('Generating single perfect image with params:', params);
+
+      const contentType = params.contentType === 'auto' || !params.contentType
+        ? this.detectContentType(params.prompt)
+        : params.contentType;
+
+      const quality = params.quality || 'ultra';
+
+      // Build fallback chain: requested provider first, then the rest as backup
+      const requestedProvider = (params.provider as ImageProvider) || 'gemini';
+      const allProviders: ImageProvider[] = ['gemini', 'fal', 'replicate'];
+      const chain: ImageProvider[] = params.disableFallback
+        ? [requestedProvider]
+        : [requestedProvider, ...allProviders.filter(p => p !== requestedProvider)];
+
+      const chainResult = await this.runFallbackChain(chain, params, contentType);
+      if (chainResult) return chainResult;
+
+      // For non-portrait, all primary providers failed — give up
+      if (contentType !== 'portrait') {
+        throw new Error('All image providers failed (Gemini, FAL, Replicate)');
+      }
+
+      console.log('🔄 All primary providers failed for portrait, trying HuggingFace/OpenAI fallback');
+
       // ONLY apply portrait optimization for portrait content type
       let optimizedPrompt = this.optimizeForSingleImage(params.prompt);
       

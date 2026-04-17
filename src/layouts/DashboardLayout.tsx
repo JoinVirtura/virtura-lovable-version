@@ -36,7 +36,7 @@ export function DashboardLayout({
                 Virtura AI
               </h1>
               <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
-                v1.1.0
+                v1.1.1
               </span>
             </div>
             <SidebarTrigger className="h-10 w-10 min-h-[44px] min-w-[44px] text-violet-400 hover:text-violet-300 hover:bg-violet-500/20 rounded-lg" />
