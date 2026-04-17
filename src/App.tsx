@@ -136,15 +136,15 @@ const AppRoutes = () => {
       <Route path="/account-type" element={<AccountTypeSelection />} />
       
       {/* Redirect old standalone routes to dashboard with view parameter */}
-      <Route path="/social" element={<Navigate to="/dashboard" replace state={{ view: "social-feed" }} />} />
-      <Route path="/creator-dashboard" element={<Navigate to="/dashboard" replace state={{ view: "creator-dashboard" }} />} />
-      <Route path="/marketplace" element={<Navigate to="/dashboard" replace state={{ view: "marketplace" }} />} />
-      <Route path="/scheduled-posts" element={<Navigate to="/dashboard" replace state={{ view: "scheduled-posts" }} />} />
-      <Route path="/verification" element={<Navigate to="/dashboard" replace state={{ view: "verification" }} />} />
-      <Route path="/settings" element={<Navigate to="/dashboard" replace state={{ view: "settings" }} />} />
-      <Route path="/profile/:userId" element={<Navigate to="/dashboard" replace state={{ view: "profile" }} />} />
-      <Route path="/saved" element={<Navigate to="/dashboard" replace state={{ view: "social-feed" }} />} />
-      <Route path="/analytics" element={<Navigate to="/dashboard" replace state={{ view: "creator-dashboard" }} />} />
+      <Route path="/social" element={<Navigate to="/dashboard?view=social-feed" replace />} />
+      <Route path="/creator-dashboard" element={<Navigate to="/dashboard?view=creator-dashboard" replace />} />
+      <Route path="/marketplace" element={<Navigate to="/dashboard?view=marketplace" replace />} />
+      <Route path="/scheduled-posts" element={<Navigate to="/dashboard?view=scheduled-posts" replace />} />
+      <Route path="/verification" element={<Navigate to="/dashboard?view=verification" replace />} />
+      <Route path="/settings" element={<Navigate to="/dashboard?view=settings" replace />} />
+      <Route path="/profile/:userId" element={<Navigate to="/dashboard?view=profile" replace />} />
+      <Route path="/saved" element={<Navigate to="/dashboard?view=social-feed" replace />} />
+      <Route path="/analytics" element={<Navigate to="/dashboard?view=creator-dashboard" replace />} />
       
       {/* Catch-all */}
       <Route path="*" element={<NotFound />} />

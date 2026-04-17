@@ -189,6 +189,19 @@ serve(async (req) => {
       // Use existing price ID for current phase
       const currentPriceId = currentSub.items.data[0].price.id;
 
+      // If subscription already has a schedule attached, release it first
+      if (currentSub.schedule) {
+        const existingScheduleId = typeof currentSub.schedule === "string"
+          ? currentSub.schedule
+          : currentSub.schedule.id;
+        try {
+          console.log(`📅 Subscription already attached to schedule ${existingScheduleId}, releasing it first`);
+          await stripe.subscriptionSchedules.release(existingScheduleId);
+        } catch (releaseErr) {
+          console.warn(`⚠️ Could not release existing schedule:`, releaseErr instanceof Error ? releaseErr.message : releaseErr);
+        }
+      }
+
       const schedule = await stripe.subscriptionSchedules.create({
         from_subscription: currentSub.id,
       });
@@ -230,10 +243,21 @@ serve(async (req) => {
       );
     }
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error("update-subscription error:", message);
+    const rawMessage = error instanceof Error ? error.message : String(error);
+    console.error("update-subscription error:", rawMessage);
+
+    // Translate common Stripe errors into friendly messages
+    let friendly = "Something went wrong. Please try again in a moment.";
+    if (rawMessage.includes("already attached to a schedule")) {
+      friendly = "You already have a pending plan change. It will take effect at the end of your current billing cycle.";
+    } else if (rawMessage.includes("inactive") && rawMessage.includes("product")) {
+      friendly = "We're updating our pricing. Please refresh the page and try again.";
+    } else if (rawMessage.includes("No active subscription")) {
+      friendly = "We couldn't find your subscription. Please refresh and try again.";
+    }
+
     return new Response(
-      JSON.stringify({ error: message }),
+      JSON.stringify({ error: rawMessage, message: friendly }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

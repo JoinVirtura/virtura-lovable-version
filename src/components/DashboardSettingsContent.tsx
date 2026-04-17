@@ -230,13 +230,13 @@ export const DashboardSettingsContent = () => {
         });
 
         if (error || !data?.success) {
-          const msg = await getEdgeFunctionError(error, "Failed to change plan");
-          toast({ title: "Error", description: msg, variant: "destructive" });
+          const msg = await getEdgeFunctionError(error, "We couldn't change your plan right now. Please try again in a moment.");
+          toast({ title: "Heads up", description: msg, variant: "destructive" });
           return;
         }
 
         toast({
-          title: data.action === "upgraded" ? "Plan Upgraded" : "Downgrade Scheduled",
+          title: data.action === "upgraded" ? "🎉 Plan Upgraded" : "✓ Downgrade Scheduled",
           description: data.message,
         });
         return;
@@ -247,8 +247,8 @@ export const DashboardSettingsContent = () => {
       });
 
       if (error) {
-        const msg = await getEdgeFunctionError(error, "Failed to start subscription");
-        toast({ title: "Error", description: msg, variant: "destructive" });
+        const msg = await getEdgeFunctionError(error, "We couldn't start your subscription. Please try again in a moment.");
+        toast({ title: "Heads up", description: msg, variant: "destructive" });
         return;
       }
 
@@ -257,8 +257,8 @@ export const DashboardSettingsContent = () => {
       }
     } catch (error: any) {
       toast({
-        title: "Error",
-        description: error.message || "Failed to start subscription",
+        title: "Heads up",
+        description: error.message || "We couldn't start your subscription. Please try again.",
         variant: "destructive",
       });
     }
@@ -271,8 +271,8 @@ export const DashboardSettingsContent = () => {
       });
 
       if (error) {
-        const msg = await getEdgeFunctionError(error, "Failed to initiate purchase");
-        toast({ title: "Error", description: msg, variant: "destructive" });
+        const msg = await getEdgeFunctionError(error, "We couldn't open checkout. Please try again in a moment.");
+        toast({ title: "Heads up", description: msg, variant: "destructive" });
         return;
       }
 
@@ -281,8 +281,8 @@ export const DashboardSettingsContent = () => {
       }
     } catch (error: any) {
       toast({
-        title: "Error",
-        description: error.message || "Failed to initiate purchase",
+        title: "Heads up",
+        description: error.message || "We couldn't open checkout. Please try again.",
         variant: "destructive",
       });
     }

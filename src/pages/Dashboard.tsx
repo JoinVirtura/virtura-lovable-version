@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { VirturaSidebar } from "@/components/VirturaSidebar";
 import { OverviewPage } from "@/components/OverviewPage";
@@ -143,26 +143,48 @@ export default function Dashboard() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
-  
-  // Read initial view from location state (from redirects)
-  const initialView = (location.state as { view?: string })?.view || "overview";
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Read initial view from URL params (?view=settings) or location state (legacy)
+  const urlView = searchParams.get("view");
+  const initialView = urlView || (location.state as { view?: string })?.view || "overview";
   const [activeView, setActiveView] = useState(initialView);
-  
+
   const { isOnboardingComplete, loading: onboardingLoading } = useOnboarding();
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [showProfileSetup, setShowProfileSetup] = useState(false);
   const [profileCheckDone, setProfileCheckDone] = useState(false);
   const [trialStatus, setTrialStatus] = useState<any>(null);
-  
+
   // Subscription tier access control
   const subscriptionAccess = useSubscriptionTier();
-  
-  // Update activeView when navigating from other routes
+
+  // Sync activeView with URL params (so reload preserves the view)
+  useEffect(() => {
+    const paramView = searchParams.get("view");
+    if (paramView && paramView !== activeView) {
+      setActiveView(paramView);
+    }
+  }, [searchParams]);
+
+  // When activeView changes, push to URL so reload restores it
+  useEffect(() => {
+    const currentParam = searchParams.get("view");
+    if (activeView === "overview") {
+      // Default view — keep URL clean (no ?view=overview)
+      if (currentParam) {
+        setSearchParams({}, { replace: true });
+      }
+    } else if (currentParam !== activeView) {
+      setSearchParams({ view: activeView }, { replace: true });
+    }
+  }, [activeView]);
+
+  // Legacy: also support location.state for backward compat
   useEffect(() => {
     const stateView = (location.state as { view?: string })?.view;
     if (stateView && stateView !== activeView) {
       setActiveView(stateView);
-      // Clear the state to prevent re-triggering
       navigate(location.pathname, { replace: true, state: {} });
     }
   }, [location.state]);

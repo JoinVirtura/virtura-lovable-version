@@ -117,11 +117,11 @@ export default function UpgradePage() {
         });
         if (error || !data?.success) {
           const msg = await getEdgeFunctionError(error, data);
-          toast({ title: "Plan change failed", description: msg, variant: "destructive" });
+          toast({ title: "Heads up", description: msg, variant: "destructive" });
           return;
         }
         toast({
-          title: data.action === "upgraded" ? "Plan Upgraded" : "Downgrade Scheduled",
+          title: data.action === "upgraded" ? "🎉 Plan Upgraded" : "✓ Downgrade Scheduled",
           description: data.message,
         });
         setCurrentPlan(planId);
@@ -136,7 +136,7 @@ export default function UpgradePage() {
     });
     if (error || !data?.url) {
       const msg = await getEdgeFunctionError(error, data);
-      toast({ title: "Subscription failed", description: msg, variant: "destructive" });
+      toast({ title: "Heads up", description: msg, variant: "destructive" });
       return;
     }
     window.open(data.url, "_blank");
