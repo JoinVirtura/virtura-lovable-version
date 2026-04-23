@@ -2122,7 +2122,7 @@ export default function Dashboard() {
                   Virtura AI
                 </h1>
                 <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
-                  v1.1.4
+                  v1.1.5
                 </span>
               </div>
               <div className="flex items-center gap-2">
