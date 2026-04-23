@@ -219,7 +219,26 @@ serve(async (req) => {
       finalPrompt = prompt;
     }
 
-    console.log(`📐 Aspect ratio: ${aspectRatio}`);
+    // Reinforce aspect ratio in the prompt text — Gemini often ignores
+    // imageConfig.aspectRatio, so we restate it as a compositional directive.
+    const aspectHints: Record<string, string> = {
+      '9:16': 'vertical 9:16 portrait composition, tall frame (taller than wide), full-height framing',
+      '16:9': 'horizontal 16:9 landscape composition, wide frame (wider than tall), cinematic framing',
+      '3:4': 'vertical 3:4 portrait composition, taller than wide',
+      '4:3': 'horizontal 4:3 landscape composition, wider than tall',
+      '2:3': 'vertical 2:3 portrait composition, taller than wide',
+      '3:2': 'horizontal 3:2 landscape composition, wider than tall',
+      '4:5': 'vertical 4:5 portrait composition, slightly taller than wide',
+      '5:4': 'horizontal 5:4 landscape composition, slightly wider than tall',
+      '21:9': 'ultra-wide 21:9 cinematic composition',
+      '2.35:1': 'ultra-wide cinematic composition, anamorphic framing',
+    };
+    const aspectHint = aspectHints[aspectRatio];
+    if (aspectHint) {
+      finalPrompt = `${finalPrompt}, ${aspectHint}`;
+    }
+
+    console.log(`📐 Aspect ratio: ${aspectRatio}${aspectHint ? ' (reinforced in prompt)' : ''}`);
 
     const startTime = Date.now();
 
