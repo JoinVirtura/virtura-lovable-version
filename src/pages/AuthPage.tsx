@@ -109,8 +109,8 @@ export default function AuthPage() {
     setLoading(true);
 
     try {
-      const redirectUrl = `${window.location.origin}/dashboard`;
-      
+      const redirectUrl = `${window.location.origin}/auth/callback`;
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -157,7 +157,7 @@ export default function AuthPage() {
           // Silently ignore tracking errors
         }
 
-        toast.success("Welcome! Check your email for the confirmation link. You've received 50 free tokens! 🎉", {
+        toast.success("Welcome! Check your email for the confirmation link. You've received 25 free tokens! 🎉", {
           duration: 5000,
         });
       } else {

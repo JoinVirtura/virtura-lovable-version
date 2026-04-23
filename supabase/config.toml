@@ -1,5 +1,48 @@
 project_id = "ocvlldhfkidppvfslzwl"
 
+# -----------------------------------------------------------------------------
+# Auth email templates
+# -----------------------------------------------------------------------------
+# These templates are used for local dev (`supabase start`) and for CI. The
+# *hosted* project reads its templates from the Supabase dashboard — after
+# editing any file under supabase/templates/, paste the HTML into:
+#   Authentication → Email Templates → {Confirm signup | Magic Link | Change
+#   Email Address | Reset Password | Invite user}
+#
+# Also configure in the dashboard for the confirmation link to work:
+#   Authentication → URL Configuration → Site URL         = https://virtura.app
+#   Authentication → URL Configuration → Redirect URLs    = https://virtura.app/auth/callback
+# -----------------------------------------------------------------------------
+
+[auth]
+site_url = "http://localhost:5173"
+additional_redirect_urls = ["https://virtura.app/auth/callback", "http://localhost:5173/auth/callback"]
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = true
+
+[auth.email.template.confirmation]
+subject = "Welcome to Virtura — activate your account"
+content_path = "./supabase/templates/confirmation.html"
+
+[auth.email.template.recovery]
+subject = "Reset your Virtura password"
+content_path = "./supabase/templates/recovery.html"
+
+[auth.email.template.magic_link]
+subject = "Your Virtura sign-in link"
+content_path = "./supabase/templates/magic-link.html"
+
+[auth.email.template.email_change]
+subject = "Confirm your new Virtura email"
+content_path = "./supabase/templates/email-change.html"
+
+[auth.email.template.invite]
+subject = "You're invited to Virtura"
+content_path = "./supabase/templates/invite.html"
+
 [functions.generate-video-veo]
 verify_jwt = false
 

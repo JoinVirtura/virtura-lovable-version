@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./hooks/useAuth";
 import AuthPage from "./pages/AuthPage";
+import AuthCallback from "./pages/AuthCallback";
 import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
 import DashboardPage from "./pages/DashboardPage";
@@ -78,7 +79,8 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/auth" element={!user ? <AuthPage /> : <Navigate to="/dashboard" replace />} />
-      
+      <Route path="/auth/callback" element={<AuthCallback />} />
+
       {/* Public Routes */}
       <Route path="/explore" element={<ExplorePage />} />
       
