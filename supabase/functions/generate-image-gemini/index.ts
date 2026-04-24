@@ -54,17 +54,17 @@ async function callGemini(apiKey: string, parts: object[], aspectRatio = '1:1', 
   const imageSizeMap: Record<string, string> = { '1k': '1K', '2k': '2K', '4k': '4K' };
   const imageSize = imageSizeMap[resolution] || '1K';
 
+  // Use the pre-refactor format (aspectRatio at top level of generationConfig).
+  // The imageConfig wrapper was introduced on Apr 4 and broke non-1:1 output —
+  // Gemini 2.5 Flash Image accepts aspectRatio directly on generationConfig.
   const payload = {
     contents: [{ parts }],
     generationConfig: {
       responseModalities: ["IMAGE"],
-      imageConfig: {
-        aspectRatio,
-        imageSize,
-      },
+      ...(aspectRatio !== '1:1' && { aspectRatio }),
     },
   };
-  console.log(`📐 Gemini imageConfig: aspectRatio=${aspectRatio}, imageSize=${imageSize}`);
+  console.log(`📐 Gemini generationConfig: aspectRatio=${aspectRatio}, imageSize=${imageSize} (imageSize currently not sent)`);
 
   for (const model of GEMINI_MODELS) {
     const url = `${GEMINI_API_BASE}/${model}:generateContent?key=${apiKey}`;
