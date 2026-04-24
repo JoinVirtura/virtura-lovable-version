@@ -50,25 +50,33 @@ async function urlToBase64(url: string): Promise<string> {
  * Call the Gemini API with retry logic (Gemini can return text instead of image)
  */
 async function callGemini(apiKey: string, parts: object[], aspectRatio = '1:1', resolution = '1k'): Promise<{ base64: string; model: string }> {
-  // Gemini imageConfig supports imageSize: "1K" | "2K" | "4K"
+  // Gemini imageConfig supports imageSize: "1K" | "2K" | "4K" (Gemini 3 only)
   const imageSizeMap: Record<string, string> = { '1k': '1K', '2k': '2K', '4k': '4K' };
   const imageSize = imageSizeMap[resolution] || '1K';
 
-  // Use the pre-refactor format (aspectRatio at top level of generationConfig).
-  // The imageConfig wrapper was introduced on Apr 4 and broke non-1:1 output —
-  // Gemini 2.5 Flash Image accepts aspectRatio directly on generationConfig.
-  const payload = {
-    contents: [{ parts }],
-    generationConfig: {
-      responseModalities: ["IMAGE"],
-      ...(aspectRatio !== '1:1' && { aspectRatio }),
-    },
-  };
-  console.log(`📐 Gemini generationConfig: aspectRatio=${aspectRatio}, imageSize=${imageSize} (imageSize currently not sent)`);
+  // Correct REST API shape per ai.google.dev/gemini-api/docs/image-generation:
+  //   generationConfig.imageConfig.aspectRatio  (NOT at top level of generationConfig)
+  // For Gemini 2.5 Flash Image, imageSize is not supported — sending it alongside
+  // aspectRatio can cause the whole imageConfig to be ignored, which is why earlier
+  // attempts that bundled both fields appeared to "break" non-1:1 output.
+  // Build per-model payloads: only Gemini 3 gets imageSize.
+  console.log(`📐 Gemini imageConfig: aspectRatio=${aspectRatio} (imageSize=${imageSize} for Gemini 3 only)`);
 
   for (const model of GEMINI_MODELS) {
+    const isGemini3 = model.startsWith('gemini-3');
+    const imageConfig: Record<string, string> = { aspectRatio };
+    if (isGemini3) imageConfig.imageSize = imageSize;
+
+    const payload = {
+      contents: [{ parts }],
+      generationConfig: {
+        responseModalities: ["IMAGE"],
+        imageConfig,
+      },
+    };
+
     const url = `${GEMINI_API_BASE}/${model}:generateContent?key=${apiKey}`;
-    console.log(`🚀 Trying model: ${model}`);
+    console.log(`🚀 Trying model: ${model} (imageConfig: ${JSON.stringify(imageConfig)})`);
 
     const response = await fetch(url, {
       method: 'POST',
