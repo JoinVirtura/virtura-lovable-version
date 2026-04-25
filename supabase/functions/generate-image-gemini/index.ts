@@ -49,6 +49,24 @@ async function urlToBase64(url: string): Promise<string> {
 /**
  * Call the Gemini API with retry logic (Gemini can return text instead of image)
  */
+/**
+ * Decode width/height from a base64-encoded PNG header.
+ * PNG layout: 8-byte signature + IHDR chunk where width is at bytes 16-19, height at 20-23.
+ * Returns null if the data isn't a recognizable PNG.
+ */
+function pngDimensions(base64: string): { width: number; height: number } | null {
+  try {
+    const binary = atob(base64.substring(0, 64));
+    if (binary.charCodeAt(0) !== 0x89 || binary.charCodeAt(1) !== 0x50) return null;
+    const read32 = (offset: number) =>
+      (binary.charCodeAt(offset) << 24) |
+      (binary.charCodeAt(offset + 1) << 16) |
+      (binary.charCodeAt(offset + 2) << 8) |
+      binary.charCodeAt(offset + 3);
+    return { width: read32(16), height: read32(20) };
+  } catch { return null; }
+}
+
 async function callGemini(apiKey: string, parts: object[], aspectRatio = '1:1', resolution = '1k'): Promise<{ base64: string; model: string }> {
   // Gemini imageConfig supports imageSize: "1K" | "2K" | "4K" (Gemini 3 only)
   const imageSizeMap: Record<string, string> = { '1k': '1K', '2k': '2K', '4k': '4K' };
@@ -67,10 +85,12 @@ async function callGemini(apiKey: string, parts: object[], aspectRatio = '1:1', 
     const imageConfig: Record<string, string> = { aspectRatio };
     if (isGemini3) imageConfig.imageSize = imageSize;
 
+    // responseModalities: ["TEXT", "IMAGE"] per Google's own production docs example.
+    // Reports suggest ["IMAGE"]-only can cause imageConfig to be silently dropped.
     const payload = {
-      contents: [{ parts }],
+      contents: [{ role: "user", parts }],
       generationConfig: {
-        responseModalities: ["IMAGE"],
+        responseModalities: ["TEXT", "IMAGE"],
         imageConfig,
       },
     };
@@ -107,7 +127,14 @@ async function callGemini(apiKey: string, parts: object[], aspectRatio = '1:1', 
 
     const imagePart = candidates?.content?.parts?.find((p: any) => p.inlineData);
     if (imagePart?.inlineData?.data) {
-      console.log(`✅ Image received from model: ${model}`);
+      const dims = pngDimensions(imagePart.inlineData.data);
+      const dimsStr = dims ? `${dims.width}x${dims.height}` : 'unknown';
+      const ratioMatch = dims
+        ? (dims.width === dims.height ? '1:1'
+          : dims.width > dims.height ? `~${(dims.width / dims.height).toFixed(2)}:1 (landscape)`
+          : `~1:${(dims.height / dims.width).toFixed(2)} (portrait)`)
+        : '';
+      console.log(`✅ Image received from ${model}: ${dimsStr} ${ratioMatch} (requested ${aspectRatio})`);
       return { base64: imagePart.inlineData.data, model };
     }
 
