@@ -489,11 +489,11 @@ export default function SettingsPage() {
                   <Label className="text-sm sm:text-base">Email Notifications</Label>
                   <p className="text-xs sm:text-sm text-muted-foreground">Receive updates about your generations</p>
                 </div>
-                <Switch className="self-start sm:self-auto" />
+                <Switch defaultChecked className="self-start sm:self-auto" />
               </div>
-              
+
               <Separator />
-              
+
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
                 <div className="flex-1">
                   <Label className="text-sm sm:text-base">Generation Complete</Label>
@@ -501,13 +501,13 @@ export default function SettingsPage() {
                 </div>
                 <Switch defaultChecked className="self-start sm:self-auto" />
               </div>
-              
+
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
                 <div className="flex-1">
                   <Label className="text-sm sm:text-base">Weekly Reports</Label>
                   <p className="text-xs sm:text-sm text-muted-foreground">Summary of your activity and usage</p>
                 </div>
-                <Switch className="self-start sm:self-auto" />
+                <Switch defaultChecked className="self-start sm:self-auto" />
               </div>
               
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">

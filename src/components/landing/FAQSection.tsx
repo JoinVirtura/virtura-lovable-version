@@ -24,10 +24,6 @@ export function FAQSection({ id }: FAQSectionProps) {
       answer: "Absolutely. Your images and outputs are encrypted and used only for your account.",
     },
     {
-      question: "Can I publish content directly to Virtura?",
-      answer: "Yes. Creators can publish to their profile for fans and consumers to explore.",
-    },
-    {
       question: "Can I upgrade or downgrade anytime?",
       answer: "Yes. Change your subscription whenever needed.",
     },
