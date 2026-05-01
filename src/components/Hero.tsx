@@ -105,7 +105,7 @@ export const Hero = () => {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [devProvider, setDevProvider] = useState("default");
-  const [devResolution, setDevResolution] = useState<FalResolutionId>("1k");
+  const [devResolution, setDevResolution] = useState<FalResolutionId>("4k");
   const [generatedImages, setGeneratedImages] = useState<Array<{
     id: string;
     imageUrl: string;
@@ -681,11 +681,22 @@ export const Hero = () => {
                       <div className="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black/90 via-black/70 to-transparent">
                         <div className="flex items-center justify-between">
                           <div className="flex flex-wrap gap-1">
-                            {card.metadata?.resolution && (
-                              <Badge variant="secondary" className="text-[10px] px-1.5 py-0.5 bg-transparent border-0">
-                                {card.metadata.resolution}
-                              </Badge>
-                            )}
+                            {(() => {
+                              // Derive resolution tier from ACTUAL pixel dimensions if known,
+                              // else fall back to the requested tier. Avoids the misleading
+                              // "1k" label when seedream's portrait preset returns 1152×2048.
+                              const w = card.metadata?.width;
+                              const h = card.metadata?.height;
+                              const longest = w && h ? Math.max(w, h) : null;
+                              const tier = longest
+                                ? (longest >= 3000 ? '4k' : longest >= 1500 ? '2k' : '1k')
+                                : card.metadata?.resolution;
+                              return tier ? (
+                                <Badge variant="secondary" className="text-[10px] px-1.5 py-0.5 bg-transparent border-0">
+                                  {tier}
+                                </Badge>
+                              ) : null;
+                            })()}
                             {card.metadata?.provider && (
                               <Badge variant="secondary" className="text-[10px] px-1.5 py-0.5 bg-transparent border-0">
                                 {card.metadata.provider}

@@ -152,7 +152,7 @@ export class ImageGenerationService {
             style: params.style || 'photorealistic',
             referenceImage: params.referenceImage,
             preserveIdentity: shouldPreserveIdentity,
-            resolution: params.resolutionTier || '1k',
+            resolution: params.resolutionTier || '4k',
           },
         });
         if (!resp.error && resp.data?.success) {
@@ -173,7 +173,7 @@ export class ImageGenerationService {
             prompt: params.prompt,
             model: falModel,
             aspectRatio,
-            resolution: params.resolutionTier || '1k',
+            resolution: params.resolutionTier || '4k',
             referenceImage: params.referenceImage,
             numImages: 1,
           },
@@ -190,7 +190,7 @@ export class ImageGenerationService {
               metadata: {
                 contentType,
                 style: params.style || 'photorealistic',
-                resolution: params.resolutionTier || '1k',
+                resolution: params.resolutionTier || '4k',
                 width: resp.data.metadata?.width ?? null,
                 height: resp.data.metadata?.height ?? null,
                 requestedAspectRatio: resp.data.metadata?.requestedAspectRatio ?? aspectRatio,
@@ -213,7 +213,7 @@ export class ImageGenerationService {
             style: params.style || 'photorealistic',
             referenceImage: params.referenceImage,
             preserveIdentity: shouldPreserveIdentity,
-            resolution: params.resolutionTier || '1k',
+            resolution: params.resolutionTier || '4k',
           },
         });
         if (!resp.error && resp.data?.success) {
