@@ -46,7 +46,7 @@ const FAL_IMAGE_MODELS: Record<string, { id: string; img2imgId?: string; label: 
     costUsd: 0.02,
   },
   "seedream-v4": {
-    id: "fal-ai/seedream-v4",
+    id: "fal-ai/bytedance/seedream/v4/text-to-image",
     label: "Seedream V4",
     costUsd: 0.03,
   },
