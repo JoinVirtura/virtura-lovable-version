@@ -67,7 +67,7 @@ function pngDimensions(base64: string): { width: number; height: number } | null
   } catch { return null; }
 }
 
-async function callGemini(apiKey: string, parts: object[], aspectRatio = '1:1', resolution = '1k'): Promise<{ base64: string; model: string }> {
+async function callGemini(apiKey: string, parts: object[], aspectRatio = '1:1', resolution = '1k'): Promise<{ base64: string; model: string; width: number | null; height: number | null }> {
   // Gemini imageConfig supports imageSize: "1K" | "2K" | "4K" (Gemini 3 only)
   const imageSizeMap: Record<string, string> = { '1k': '1K', '2k': '2K', '4k': '4K' };
   const imageSize = imageSizeMap[resolution] || '1K';
@@ -135,7 +135,7 @@ async function callGemini(apiKey: string, parts: object[], aspectRatio = '1:1', 
           : `~1:${(dims.height / dims.width).toFixed(2)} (portrait)`)
         : '';
       console.log(`✅ Image received from ${model}: ${dimsStr} ${ratioMatch} (requested ${aspectRatio})`);
-      return { base64: imagePart.inlineData.data, model };
+      return { base64: imagePart.inlineData.data, model, width: dims?.width ?? null, height: dims?.height ?? null };
     }
 
     console.warn(`⚠️ No image in response from ${model}, trying next...`);
@@ -299,7 +299,7 @@ serve(async (req) => {
     }
 
     // Call Gemini
-    const { base64: base64Image, model: usedModel } = await callGemini(GEMINI_API_KEY, parts, aspectRatio, resolution);
+    const { base64: base64Image, model: usedModel, width, height } = await callGemini(GEMINI_API_KEY, parts, aspectRatio, resolution);
     const processingTime = `${Math.round((Date.now() - startTime) / 1000)}s`;
     console.log(`⏱️ Processing time: ${processingTime}`);
 
@@ -323,6 +323,9 @@ serve(async (req) => {
           quality,
           usedReferenceImage: !!referenceImage,
           costUsd: estimatedCost,
+          width,
+          height,
+          requestedAspectRatio: aspectRatio,
         },
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }

@@ -289,7 +289,9 @@ serve(async (req) => {
 
     // Return image URL(s) - fal.ai returns CDN URLs
     const imageUrl = images[0].url;
-    console.log(`✅ Image ready: ${imageUrl}`);
+    const width = images[0].width ?? null;
+    const height = images[0].height ?? null;
+    console.log(`✅ Image ready: ${imageUrl} (${width}x${height}, requested ${aspectRatio})`);
 
     return new Response(
       JSON.stringify({
@@ -306,6 +308,9 @@ serve(async (req) => {
           aspectRatio,
           costUsd: modelConfig.costUsd,
           provider: "fal",
+          width,
+          height,
+          requestedAspectRatio: aspectRatio,
         },
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }

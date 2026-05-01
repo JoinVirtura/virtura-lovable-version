@@ -30,6 +30,10 @@ export interface GeneratedImage {
     style: string;
     resolution: string;
     processingTime?: string;
+    width?: number | null;
+    height?: number | null;
+    requestedAspectRatio?: string;
+    model?: string;
   };
 }
 
@@ -184,6 +188,10 @@ export class ImageGenerationService {
                 contentType,
                 style: params.style || 'photorealistic',
                 resolution: params.resolutionTier || '1k',
+                width: resp.data.metadata?.width ?? null,
+                height: resp.data.metadata?.height ?? null,
+                requestedAspectRatio: resp.data.metadata?.requestedAspectRatio ?? aspectRatio,
+                model: resp.data.metadata?.model,
               },
             };
           }
@@ -248,9 +256,13 @@ export class ImageGenerationService {
 
       const quality = params.quality || 'ultra';
 
-      // Build fallback chain: requested provider first, then the rest as backup
-      const requestedProvider = (params.provider as ImageProvider) || 'gemini';
-      const allProviders: ImageProvider[] = ['gemini', 'fal', 'replicate'];
+      // Build fallback chain: requested provider first, then the rest as backup.
+      // Default primary is FAL because Gemini's REST API currently ignores
+      // imageConfig.aspectRatio (regression confirmed against the version that
+      // worked in early April — same payload, different output). FAL accepts an
+      // explicit { width, height } that is enforced server-side.
+      const requestedProvider = (params.provider as ImageProvider) || 'fal';
+      const allProviders: ImageProvider[] = ['fal', 'gemini', 'replicate'];
       const chain: ImageProvider[] = params.disableFallback
         ? [requestedProvider]
         : [requestedProvider, ...allProviders.filter(p => p !== requestedProvider)];

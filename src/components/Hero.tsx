@@ -680,6 +680,27 @@ export const Hero = () => {
                                 {card.metadata.provider}
                               </Badge>
                             )}
+                            {card.metadata?.width && card.metadata?.height && (() => {
+                              const w = card.metadata.width;
+                              const h = card.metadata.height;
+                              const requested = card.metadata.requestedAspectRatio;
+                              const matches = !requested || (() => {
+                                const [rw, rh] = requested.split(':').map(Number);
+                                if (!rw || !rh) return true;
+                                const expected = rw / rh;
+                                const actual = w / h;
+                                return Math.abs(expected - actual) / expected < 0.05;
+                              })();
+                              return (
+                                <Badge
+                                  variant="secondary"
+                                  className={`text-[10px] px-1.5 py-0.5 bg-transparent border-0 ${matches ? 'text-white/80' : 'text-red-400'}`}
+                                  title={requested ? `Requested ${requested}` : undefined}
+                                >
+                                  {w}×{h}{!matches && ' ⚠'}
+                                </Badge>
+                              );
+                            })()}
                           </div>
                           
                           <div className="flex gap-1">
