@@ -163,8 +163,11 @@ export class ImageGenerationService {
       }
 
       if (provider === 'fal') {
-        // Pick a FAL model based on whether we have a reference image
-        const falModel = params.referenceImage ? 'flux-kontext' : 'nano-banana-2';
+        // Pick a FAL model based on whether we have a reference image.
+        // Default text-to-image: seedream-v4 (non-Google, reliably honors image_size).
+        // We avoid nano-banana-2 here because it's Imagen-based and shares the
+        // same aspect-ratio bug as direct Gemini (returns landscape regardless).
+        const falModel = params.referenceImage ? 'flux-kontext' : 'seedream-v4';
         const resp = await supabase.functions.invoke('generate-image-fal', {
           body: {
             prompt: params.prompt,

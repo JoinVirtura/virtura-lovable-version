@@ -328,6 +328,7 @@ export const Hero = () => {
       prompt: inputValue,
       isGenerating: true,
       startedAt: Date.now(),
+      metadata: { requestedAspectRatio: selectedAspect },
     }));
 
     setGeneratedImages(prev => [...placeholderCards, ...prev]);
@@ -388,7 +389,7 @@ export const Hero = () => {
             setGeneratedImages(prev =>
               prev.map(card =>
                 card.id === cardId
-                  ? { ...card, imageUrl: result.image, isGenerating: false, generationTime: elapsed, metadata: result.metadata }
+                  ? { ...card, imageUrl: result.image, isGenerating: false, generationTime: elapsed, metadata: { ...card.metadata, ...result.metadata } }
                   : card
               )
             );
@@ -659,6 +660,16 @@ export const Hero = () => {
                         alt={card.prompt}
                         className="w-full h-auto block rounded-2xl cursor-zoom-in group-hover:brightness-90 transition-all duration-300"
                         onClick={() => setLightboxCard({ imageUrl: card.imageUrl, id: card.id, prompt: card.prompt, metadata: card.metadata })}
+                        onLoad={(e) => {
+                          const el = e.currentTarget;
+                          if (el.naturalWidth && el.naturalHeight) {
+                            setGeneratedImages(prev => prev.map(c =>
+                              c.id === card.id
+                                ? { ...c, metadata: { ...c.metadata, width: el.naturalWidth, height: el.naturalHeight } }
+                                : c
+                            ));
+                          }
+                        }}
                       />
                       {(card as any).generationTime && (
                         <div className="absolute top-2 right-2 bg-black/70 text-yellow-400 text-xs font-mono px-2 py-0.5 rounded-full border border-yellow-400/40 pointer-events-none">
