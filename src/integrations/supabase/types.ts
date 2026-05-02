@@ -3334,12 +3334,17 @@ export type Database = {
         Row: {
           attachment_url: string | null
           created_at: string
+          credited_amount: number
+          credited_at: string | null
           description: string
           email: string
           id: string
+          image_url: string | null
           issue_type: string
           name: string
           priority: string
+          prompt: string | null
+          provider: string | null
           status: string
           subject: string
           updated_at: string
@@ -3348,12 +3353,17 @@ export type Database = {
         Insert: {
           attachment_url?: string | null
           created_at?: string
+          credited_amount?: number
+          credited_at?: string | null
           description: string
           email: string
           id?: string
+          image_url?: string | null
           issue_type: string
           name: string
           priority: string
+          prompt?: string | null
+          provider?: string | null
           status?: string
           subject: string
           updated_at?: string
@@ -3362,18 +3372,61 @@ export type Database = {
         Update: {
           attachment_url?: string | null
           created_at?: string
+          credited_amount?: number
+          credited_at?: string | null
           description?: string
           email?: string
           id?: string
+          image_url?: string | null
           issue_type?: string
           name?: string
           priority?: string
+          prompt?: string | null
+          provider?: string | null
           status?: string
           subject?: string
           updated_at?: string
           user_id?: string
         }
         Relationships: []
+      }
+      support_ticket_messages: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          credited_amount: number | null
+          id: string
+          is_admin: boolean
+          ticket_id: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          credited_amount?: number | null
+          id?: string
+          is_admin?: boolean
+          ticket_id: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          credited_amount?: number | null
+          id?: string
+          is_admin?: boolean
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_ticket_messages_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       talking_avatars: {
         Row: {

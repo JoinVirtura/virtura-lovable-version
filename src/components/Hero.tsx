@@ -4,11 +4,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sparkles, Mic, Send, Crown, Lock, Zap, Camera, Shuffle, Star, X, Circle, Search, Target, Image, Palette, RectangleHorizontal, Diamond, Upload, ChevronDown, Download, Heart, Share2, Shield, Settings, Wand2, Save, RefreshCw, AlertCircle, Loader2, Check, Globe, Ratio } from "lucide-react";
+import { Sparkles, Mic, Send, Crown, Lock, Zap, Camera, Shuffle, Star, X, Circle, Search, Target, Image, Palette, RectangleHorizontal, Diamond, Upload, ChevronDown, Download, Heart, Share2, Shield, Settings, Wand2, Save, RefreshCw, AlertCircle, Loader2, Check, Globe, Ratio, Flag } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ImageGenerationService, type ImageGenerationParams } from "@/services/imageGenerationService";
 import { generateFalImage, FAL_IMAGE_MODELS, FAL_RESOLUTIONS, type FalResolutionId } from "@/services/falService";
+import { ReportIssueDialog } from "@/components/support/ReportIssueDialog";
 import { toast } from "sonner";
 
 const IS_DEV = import.meta.env.DEV;
@@ -116,6 +117,7 @@ export const Hero = () => {
   const [referenceImage, setReferenceImage] = useState<string | null>(null);
   const [savingImageId, setSavingImageId] = useState<string | null>(null);
   const [lightboxCard, setLightboxCard] = useState<{ imageUrl: string; id: string; prompt: string; metadata?: any } | null>(null);
+  const [reportCard, setReportCard] = useState<{ imageUrl: string; prompt: string; provider?: string } | null>(null);
   
   // Handle file upload for Image Style
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -729,6 +731,22 @@ export const Hero = () => {
                             <Button
                               variant="ghost"
                               size="sm"
+                              className="h-7 w-7 p-0 hover:bg-rose-500/20 bg-transparent text-white/70 hover:text-rose-300"
+                              title="Report issue with this image"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setReportCard({
+                                  imageUrl: card.imageUrl,
+                                  prompt: card.prompt,
+                                  provider: card.metadata?.provider,
+                                });
+                              }}
+                            >
+                              <Flag className="w-3.5 h-3.5" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
                               className="h-7 px-2 text-xs hover:bg-white/10 bg-transparent"
                               onClick={async () => {
                                 try {
@@ -1280,6 +1298,15 @@ export const Hero = () => {
             </div>
           )}
       </div>
+
+      {/* Report-issue dialog */}
+      <ReportIssueDialog
+        open={!!reportCard}
+        onOpenChange={(open) => { if (!open) setReportCard(null); }}
+        imageUrl={reportCard?.imageUrl || ""}
+        prompt={reportCard?.prompt || ""}
+        provider={reportCard?.provider}
+      />
 
       {/* Lightbox */}
       {lightboxCard && (

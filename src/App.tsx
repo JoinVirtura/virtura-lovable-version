@@ -115,6 +115,8 @@ const AppRoutes = () => {
       <Route path="/settings/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
       
       {/* Admin Routes */}
+      <Route path="/admin" element={<ProtectedRoute><UnifiedAdminDashboard /></ProtectedRoute>} />
+      <Route path="/admin/dashboard" element={<ProtectedRoute><UnifiedAdminDashboard /></ProtectedRoute>} />
       <Route path="/admin/costs" element={<ProtectedRoute><AdminCostDashboardPage /></ProtectedRoute>} />
       <Route path="/admin/trial-analytics" element={<ProtectedRoute><TrialAnalytics /></ProtectedRoute>} />
       <Route path="/admin/trial-experiments" element={<ProtectedRoute><TrialExperiments /></ProtectedRoute>} />

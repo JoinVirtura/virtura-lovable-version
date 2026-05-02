@@ -6,15 +6,19 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  Loader2, 
-  LifeBuoy, 
-  Lightbulb, 
+import {
+  Loader2,
+  LifeBuoy,
+  Lightbulb,
   RefreshCw,
   Mail,
   Clock,
-  AlertCircle
+  AlertCircle,
+  ChevronDown,
+  ChevronUp,
+  Coins,
 } from "lucide-react";
+import { TicketThread } from "@/components/support/TicketThread";
 
 interface SupportTicket {
   id: string;
@@ -26,6 +30,11 @@ interface SupportTicket {
   subject: string;
   description: string;
   status: string;
+  image_url?: string | null;
+  prompt?: string | null;
+  provider?: string | null;
+  credited_amount?: number;
+  credited_at?: string | null;
   created_at: string;
 }
 
@@ -52,6 +61,7 @@ export function AdminSupportReview() {
   const [loadingSuggestions, setLoadingSuggestions] = useState(true);
   const [ticketFilter, setTicketFilter] = useState<string>("all");
   const [suggestionFilter, setSuggestionFilter] = useState<string>("all");
+  const [expandedTicketId, setExpandedTicketId] = useState<string | null>(null);
 
   const fetchTickets = async () => {
     setLoadingTickets(true);
@@ -245,52 +255,79 @@ export function AdminSupportReview() {
             </div>
           ) : (
             <div className="space-y-3">
-              {tickets.map((ticket) => (
-                <Card key={ticket.id} className="p-4 bg-white/5 border-white/10">
-                  <div className="flex flex-col lg:flex-row lg:items-start gap-4">
-                    <div className="flex-1 space-y-2">
-                      <div className="flex items-start justify-between gap-2">
-                        <h3 className="font-semibold text-foreground">{ticket.subject}</h3>
-                        <div className="flex items-center gap-2 flex-shrink-0">
-                          {getStatusBadge(ticket.status)}
-                          {getPriorityBadge(ticket.priority)}
+              {tickets.map((ticket) => {
+                const expanded = expandedTicketId === ticket.id;
+                return (
+                  <Card key={ticket.id} className="p-4 bg-white/5 border-white/10">
+                    <div className="flex flex-col lg:flex-row lg:items-start gap-4">
+                      <div className="flex-1 space-y-2 min-w-0">
+                        <div className="flex items-start justify-between gap-2">
+                          <h3 className="font-semibold text-foreground">{ticket.subject}</h3>
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            {getStatusBadge(ticket.status)}
+                            {getPriorityBadge(ticket.priority)}
+                            {ticket.credited_amount ? (
+                              <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30">
+                                <Coins className="w-3 h-3 mr-1" />
+                                {ticket.credited_amount} credited
+                              </Badge>
+                            ) : null}
+                          </div>
+                        </div>
+                        <p className="text-sm text-muted-foreground line-clamp-2">{ticket.description}</p>
+                        <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+                          <span className="flex items-center gap-1">
+                            <Mail className="w-3 h-3" />
+                            {ticket.email}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <AlertCircle className="w-3 h-3" />
+                            {ticket.issue_type}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            {new Date(ticket.created_at).toLocaleDateString()}
+                          </span>
+                          {ticket.image_url && !ticket.image_url.startsWith("data:") && (
+                            <span className="text-violet-300">📎 image attached</span>
+                          )}
                         </div>
                       </div>
-                      <p className="text-sm text-muted-foreground line-clamp-2">{ticket.description}</p>
-                      <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <Mail className="w-3 h-3" />
-                          {ticket.email}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <AlertCircle className="w-3 h-3" />
-                          {ticket.issue_type}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          {new Date(ticket.created_at).toLocaleDateString()}
-                        </span>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <Select
+                          value={ticket.status || "pending"}
+                          onValueChange={(value) => updateTicketStatus(ticket.id, value)}
+                        >
+                          <SelectTrigger className="w-32 h-8 text-xs bg-white/5 border-white/10">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="pending">Pending</SelectItem>
+                            <SelectItem value="in_progress">In Progress</SelectItem>
+                            <SelectItem value="resolved">Resolved</SelectItem>
+                            <SelectItem value="closed">Closed</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8"
+                          onClick={() => setExpandedTicketId(expanded ? null : ticket.id)}
+                        >
+                          {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                          <span className="ml-1 text-xs">{expanded ? "Hide" : "Open"}</span>
+                        </Button>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      <Select
-                        value={ticket.status || "pending"}
-                        onValueChange={(value) => updateTicketStatus(ticket.id, value)}
-                      >
-                        <SelectTrigger className="w-32 h-8 text-xs bg-white/5 border-white/10">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="pending">Pending</SelectItem>
-                          <SelectItem value="in_progress">In Progress</SelectItem>
-                          <SelectItem value="resolved">Resolved</SelectItem>
-                          <SelectItem value="closed">Closed</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                </Card>
-              ))}
+
+                    {expanded && (
+                      <div className="mt-4 pt-4 border-t border-white/10">
+                        <TicketThread ticket={ticket} isAdminView onChange={fetchTickets} />
+                      </div>
+                    )}
+                  </Card>
+                );
+              })}
             </div>
           )}
         </TabsContent>

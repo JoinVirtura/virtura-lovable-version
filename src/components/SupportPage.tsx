@@ -28,8 +28,11 @@ import {
   Video,
   Users,
   Shield,
-  ImageIcon
+  ImageIcon,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
+import { TicketThread } from "@/components/support/TicketThread";
 
 const ticketSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -55,9 +58,19 @@ type SuggestionFormData = z.infer<typeof suggestionSchema>;
 
 interface SupportTicket {
   id: string;
+  user_id: string;
+  name: string;
+  email: string;
+  issue_type: string;
   subject: string;
+  description: string;
   status: string;
   priority: string;
+  image_url?: string | null;
+  prompt?: string | null;
+  provider?: string | null;
+  credited_amount?: number;
+  credited_at?: string | null;
   created_at: string;
 }
 
@@ -115,6 +128,7 @@ export function SupportPage() {
   const [suggestionSuccess, setSuggestionSuccess] = useState(false);
   const [recentTickets, setRecentTickets] = useState<SupportTicket[]>([]);
   const [loadingTickets, setLoadingTickets] = useState(true);
+  const [expandedTicketId, setExpandedTicketId] = useState<string | null>(null);
 
   const ticketForm = useForm<TicketFormData>({
     resolver: zodResolver(ticketSchema),
@@ -152,7 +166,7 @@ export function SupportPage() {
       try {
         const { data, error } = await supabase
           .from("support_tickets")
-          .select("id, subject, status, priority, created_at")
+          .select("*")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false })
           .limit(5);
@@ -449,25 +463,47 @@ export function SupportPage() {
                 </div>
               ) : (
                 <div className="space-y-2">
-                  {recentTickets.map((ticket) => (
-                    <div
-                      key={ticket.id}
-                      className="flex items-center justify-between p-3 sm:p-4 bg-white/5 rounded-xl border border-white/5 hover:border-white/10 transition-colors"
-                    >
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-foreground truncate">{ticket.subject}</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {new Date(ticket.created_at).toLocaleDateString()} • 
-                          <span className={`ml-1 ${getPriorityColor(ticket.priority)}`}>
-                            {ticket.priority} priority
-                          </span>
-                        </p>
+                  {recentTickets.map((ticket) => {
+                    const expanded = expandedTicketId === ticket.id;
+                    return (
+                      <div
+                        key={ticket.id}
+                        className="bg-white/5 rounded-xl border border-white/5 hover:border-white/10 transition-colors"
+                      >
+                        <button
+                          type="button"
+                          className="w-full flex items-center justify-between p-3 sm:p-4 text-left"
+                          onClick={() => setExpandedTicketId(expanded ? null : ticket.id)}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-foreground truncate">{ticket.subject}</p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {new Date(ticket.created_at).toLocaleDateString()} •
+                              <span className={`ml-1 ${getPriorityColor(ticket.priority)}`}>
+                                {ticket.priority} priority
+                              </span>
+                              {ticket.credited_amount ? (
+                                <span className="ml-2 text-emerald-400">+{ticket.credited_amount} credited</span>
+                              ) : null}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className={`px-3 py-1 text-xs font-medium rounded-full border ${getStatusColor(ticket.status)}`}>
+                              {ticket.status?.replace("_", " ") || "Pending"}
+                            </span>
+                            {expanded ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+                          </div>
+                        </button>
+                        {expanded && (
+                          <div className="px-3 sm:px-4 pb-4 border-t border-white/5">
+                            <div className="pt-4">
+                              <TicketThread ticket={ticket} onChange={() => setTicketSuccess((s) => !s)} />
+                            </div>
+                          </div>
+                        )}
                       </div>
-                      <span className={`px-3 py-1 text-xs font-medium rounded-full border ${getStatusColor(ticket.status)}`}>
-                        {ticket.status?.replace("_", " ") || "Pending"}
-                      </span>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </Card>
