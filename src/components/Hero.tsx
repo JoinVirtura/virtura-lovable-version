@@ -11,6 +11,14 @@ import { ImageGenerationService, type ImageGenerationParams } from "@/services/i
 import { generateFalImage, FAL_IMAGE_MODELS, FAL_RESOLUTIONS, type FalResolutionId } from "@/services/falService";
 import { ReportIssueDialog } from "@/components/support/ReportIssueDialog";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+import {
+  getAnonDeviceId,
+  getAnonGenerationCount,
+  incrementAnonGenerationCount,
+  hasAnonTrialRemaining,
+  ANON_TRIAL_LIMIT,
+} from "@/lib/anonTrial";
 
 const IS_DEV = import.meta.env.DEV;
 
@@ -92,6 +100,7 @@ function HeroLiveTimer({ startedAt }: { startedAt: number }) {
 }
 
 export const Hero = () => {
+  const navigate = useNavigate();
   const [inputValue, setInputValue] = useState("");
   const [selectedStyle, setSelectedStyle] = useState("Style");
   const [selectedAspect, setSelectedAspect] = useState("9:16");
@@ -319,6 +328,20 @@ export const Hero = () => {
       return;
     }
 
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+    const isAnon = !authUser;
+    if (isAnon && !hasAnonTrialRemaining()) {
+      const deviceId = getAnonDeviceId();
+      console.log("🚪 Anon trial exhausted for device", deviceId, "count:", getAnonGenerationCount());
+      toast.info(
+        ANON_TRIAL_LIMIT === 1
+          ? "You've used your free preview — sign up to keep creating."
+          : `You've used your ${ANON_TRIAL_LIMIT} free previews — sign up to keep creating.`
+      );
+      navigate("/auth");
+      return;
+    }
+
     setIsGenerating(true);
     
     // Create placeholder cards
@@ -395,6 +418,10 @@ export const Hero = () => {
                   : card
               )
             );
+            if (isAnon) {
+              const newCount = incrementAnonGenerationCount();
+              console.log("🆔 Anon generation success, device", getAnonDeviceId(), "count now:", newCount);
+            }
             // Auto-save to library from browser (no edge function → no WORKER_LIMIT)
             autoSaveImage({ id: cardId, imageUrl: result.image, prompt: inputValue, metadata: result.metadata });
           } else {
