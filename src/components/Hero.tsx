@@ -323,6 +323,7 @@ export const Hero = () => {
   };
 
   const handleGenerate = async () => {
+    if (isGenerating) return;
     if (!inputValue.trim()) {
       toast.error("Please enter a prompt");
       return;
