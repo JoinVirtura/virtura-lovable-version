@@ -357,7 +357,7 @@ export const Hero = () => {
       metadata: { requestedAspectRatio: selectedAspect },
     }));
 
-    setGeneratedImages(prev => [...placeholderCards, ...prev]);
+    setGeneratedImages(placeholderCards);
 
     try {
       // 🔍 DEBUG: Check reference image state before generating

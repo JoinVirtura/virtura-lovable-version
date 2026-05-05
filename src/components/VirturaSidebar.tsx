@@ -368,7 +368,7 @@ export function VirturaSidebar({ activeView, onViewChange, onClearEditState }: V
         {/* Version label below Logout */}
         <div className={!isMobile && isCollapsed ? "px-2 pb-3" : "px-6 pb-3"}>
           <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
-            v1.1.13
+            v1.1.14
           </span>
         </div>
       </SidebarFooter>
