@@ -25,7 +25,6 @@ import {
   ThumbsUp,
   Mail,
   ExternalLink,
-  Video,
   Users,
   Shield,
   ImageIcon,
@@ -97,18 +96,6 @@ const resources = [
     title: "Skool Community",
     description: "Join our creator community",
     link: "https://www.skool.com/virtura"
-  },
-  {
-    icon: BookOpen,
-    title: "Documentation",
-    description: "Detailed guides & API docs",
-    link: "/tutorial"
-  },
-  {
-    icon: Video,
-    title: "Video Tutorials",
-    description: "Step-by-step walkthroughs",
-    link: "/tutorial"
   },
   {
     icon: Mail,
@@ -816,7 +803,7 @@ export function SupportPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               {resources.map((resource, index) => (
                 <motion.a
                   key={resource.title}

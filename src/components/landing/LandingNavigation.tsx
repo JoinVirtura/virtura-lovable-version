@@ -105,7 +105,7 @@ export function LandingNavigation() {
                 Start Free Trial
               </Button>
               <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 self-start">
-                v1.1.11
+                v1.1.12
               </span>
             </div>
           </div>
