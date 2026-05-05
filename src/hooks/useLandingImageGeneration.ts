@@ -34,60 +34,44 @@ export function useLandingImageGeneration(): UseLandingImageGenerationReturn {
     try {
       console.log('[Landing] Generation started:', prompt, params?.referenceImage ? 'with reference image' : '');
 
-      // Generate 3 variants using Replicate (same quality as dashboard)
+      // Generate 1 preview image — anonymous trial gives one free try
       const variants: GeneratedImage[] = [];
-      
-      for (let i = 0; i < 3; i++) {
-        setProgress(((i + 1) / 3) * 100);
-        
-        try {
-          const { supabase } = await import("@/integrations/supabase/client");
-          const { data, error } = await supabase.functions.invoke('generate-landing-gemini', {
-            body: { 
-              prompt,
-              referenceImage: params?.referenceImage 
-            }
-          });
 
-          if (error) {
-            console.error(`[Landing] Variant ${i + 1} error:`, error);
-            
-            // Handle rate limiting
-            if (error.message?.includes('Rate limit')) {
-              toast.error("Rate limit reached. Sign up for unlimited generations!");
-              break; // Stop trying more variants
-            }
-            
+      try {
+        setProgress(50);
+        const { supabase } = await import("@/integrations/supabase/client");
+        const { data, error } = await supabase.functions.invoke('generate-landing-gemini', {
+          body: {
+            prompt,
+            referenceImage: params?.referenceImage
+          }
+        });
+
+        if (error) {
+          console.error('[Landing] Generation error:', error);
+          if (error.message?.includes('Rate limit')) {
+            toast.error("Rate limit reached. Sign up for unlimited generations!");
+          } else {
             throw error;
           }
-
-          if (data?.success && data?.image) {
-            variants.push({
-              success: true,
-              image: data.image,
-              prompt: data.prompt || prompt,
-              metadata: {
-                contentType: 'landing',
-                style: 'photorealistic',
-                resolution: '1024x1024',
-                processingTime: 'fast'
-              }
-            });
-          }
-        } catch (variantError: any) {
-          console.error(`[Landing] Variant ${i + 1} failed:`, variantError);
-          
-          // Show user-friendly error for rate limits
-          if (variantError?.message?.includes('Rate limit') || variantError?.status === 429) {
-            toast.error("Free tier limit reached. Sign up for unlimited access!");
-            break;
-          }
-          
-          // Continue with other variants for other errors
+        } else if (data?.success && data?.image) {
+          variants.push({
+            success: true,
+            image: data.image,
+            prompt: data.prompt || prompt,
+            metadata: {
+              contentType: 'landing',
+              style: 'photorealistic',
+              resolution: '1024x1024',
+              processingTime: 'fast'
+            }
+          });
         }
-
-        // Small delay between requests
-        if (i < 2) await new Promise(resolve => setTimeout(resolve, 800));
+      } catch (variantError: any) {
+        console.error('[Landing] Generation failed:', variantError);
+        if (variantError?.message?.includes('Rate limit') || variantError?.status === 429) {
+          toast.error("Free tier limit reached. Sign up for unlimited access!");
+        }
       }
 
       setImages(variants.filter(v => v.success));

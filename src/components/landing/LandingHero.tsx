@@ -105,7 +105,7 @@ export function LandingHero({ id }: LandingHeroProps) {
                 </Button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="max-w-2xl mx-auto">
                 {images.map((img, index) => (
                   <WatermarkedImageCard
                     key={index}

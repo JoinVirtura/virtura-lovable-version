@@ -3,10 +3,10 @@ import { Card } from "@/components/ui/card";
 
 export function ImageGenerationSkeleton() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
-      {[1, 2, 3].map((index) => (
-        <Card 
-          key={index} 
+    <div className="max-w-2xl mx-auto animate-fade-in">
+      {[1].map((index) => (
+        <Card
+          key={index}
           className="relative overflow-hidden group hover:shadow-xl transition-all duration-300"
           style={{ animationDelay: `${index * 0.1}s` }}
         >
