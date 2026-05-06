@@ -32,6 +32,7 @@ import {
   Check,
 } from "lucide-react";
 import { generateVideoWithFallback, saveVeoVideoToLibrary } from "@/services/veoVideoService";
+import { trackUsage } from "@/lib/trackUsage";
 import { generateFalVideo, FAL_VIDEO_MODELS } from "@/services/falService";
 import { DashboardLibraryView } from "@/components/DashboardLibraryView";
 
@@ -221,6 +222,7 @@ export function VeoVideoStudio() {
       setVideoUrl(result.videoUrl);
       setVideoSize(result.videoSize || "");
       toast.success("Video generated successfully!");
+      trackUsage("video_generation");
 
       // Auto-save to library
       const saveResult = await saveVeoVideoToLibrary({

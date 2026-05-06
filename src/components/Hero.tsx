@@ -19,6 +19,7 @@ import {
   hasAnonTrialRemaining,
   ANON_TRIAL_LIMIT,
 } from "@/lib/anonTrial";
+import { trackUsage } from "@/lib/trackUsage";
 
 const IS_DEV = import.meta.env.DEV;
 
@@ -422,6 +423,8 @@ export const Hero = () => {
             if (isAnon) {
               const newCount = incrementAnonGenerationCount();
               console.log("🆔 Anon generation success, device", getAnonDeviceId(), "count now:", newCount);
+            } else {
+              trackUsage("image_generation");
             }
             // Auto-save to library from browser (no edge function → no WORKER_LIMIT)
             autoSaveImage({ id: cardId, imageUrl: result.image, prompt: inputValue, metadata: result.metadata });
