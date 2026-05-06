@@ -318,22 +318,6 @@ export function VeoVideoStudio() {
                 <Film className="h-5 w-5 text-violet-400" />
                 <h2 className="text-lg font-semibold text-white">Video Generator</h2>
               </div>
-              {videoUrl && (
-                <div className="flex items-center gap-2">
-                  <Button size="sm" variant="ghost" onClick={handleDownload} className="text-white/70 hover:text-white">
-                    <Download className="h-4 w-4 mr-1" /> Download
-                  </Button>
-                  {!isSaved ? (
-                    <Button size="sm" variant="ghost" onClick={handleSaveToLibrary} className="text-white/70 hover:text-white">
-                      <Save className="h-4 w-4 mr-1" /> Save
-                    </Button>
-                  ) : (
-                    <Badge variant="secondary" className="bg-green-500/20 text-green-400">
-                      <Check className="h-3 w-3 mr-1" /> Saved
-                    </Badge>
-                  )}
-                </div>
-              )}
             </div>
 
             {/* Video / Image Preview */}
@@ -392,14 +376,30 @@ export function VeoVideoStudio() {
               )}
             </div>
 
-            {/* Video metadata */}
-            {videoUrl && videoSize && (
-              <div className="px-4 py-2 border-t border-white/5 flex items-center gap-4 text-xs text-white/50">
-                <span>Virtura Video</span>
-                <span>{duration}s</span>
-                <span>{aspectRatio}</span>
-                <span>{videoSize}</span>
-                {isSaved && <Badge variant="outline" className="text-green-400 border-green-400/30 text-[10px] py-0">In Library</Badge>}
+            {/* Video metadata + actions */}
+            {videoUrl && (
+              <div className="px-4 py-3 border-t border-white/5 flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-3 text-xs text-white/50 flex-wrap">
+                  <span>Virtura Video</span>
+                  <span>{duration}s</span>
+                  <span>{aspectRatio}</span>
+                  {videoSize && <span>{videoSize}</span>}
+                  {isSaved && <Badge variant="outline" className="text-green-400 border-green-400/30 text-[10px] py-0">In Library</Badge>}
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button size="sm" variant="ghost" onClick={handleDownload} className="text-white/70 hover:text-white h-8">
+                    <Download className="h-4 w-4 mr-1" /> Download
+                  </Button>
+                  {!isSaved ? (
+                    <Button size="sm" variant="ghost" onClick={handleSaveToLibrary} className="text-white/70 hover:text-white h-8">
+                      <Save className="h-4 w-4 mr-1" /> Save
+                    </Button>
+                  ) : (
+                    <Badge variant="secondary" className="bg-green-500/20 text-green-400 h-8 flex items-center">
+                      <Check className="h-3 w-3 mr-1" /> Saved
+                    </Badge>
+                  )}
+                </div>
               </div>
             )}
           </div>
