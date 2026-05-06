@@ -109,26 +109,33 @@ export default function UpgradePage() {
 
   const startSubscription = async (planId: string) => {
     if (hasSubscription) {
-      // Already subscribed — use update-subscription for upgrade/downgrade
+      // Already subscribed (per local DB) — try upgrade/downgrade
       setChangingPlan(true);
       try {
         const { data, error } = await supabase.functions.invoke("update-subscription", {
           body: { newPlan: planId },
         });
-        if (error || !data?.success) {
-          const msg = await getEdgeFunctionError(error, data);
+        if (!error && data?.success) {
+          toast({
+            title: data.action === "upgraded" ? "🎉 Plan Upgraded" : "✓ Downgrade Scheduled",
+            description: data.message,
+          });
+          setCurrentPlan(planId);
+          return;
+        }
+        // Fall through to create-checkout if Stripe disagrees with our DB
+        // (stale subscription row pointing at a customer/sub that no longer exists in Stripe).
+        // create-checkout will self-heal the DB if a real active sub does exist (returns 409).
+        const msg = await getEdgeFunctionError(error, data);
+        const stale = /No Stripe customer found|No active subscription found/i.test(msg);
+        if (!stale) {
           toast({ title: "Heads up", description: msg, variant: "destructive" });
           return;
         }
-        toast({
-          title: data.action === "upgraded" ? "🎉 Plan Upgraded" : "✓ Downgrade Scheduled",
-          description: data.message,
-        });
-        setCurrentPlan(planId);
+        console.warn("[Upgrade] Stale subscription row detected, falling through to create-checkout:", msg);
       } finally {
         setChangingPlan(false);
       }
-      return;
     }
 
     const { data, error } = await supabase.functions.invoke("create-checkout", {
