@@ -309,7 +309,7 @@ export function VeoVideoStudio() {
         ))}
       </div>
 
-      <div className="w-full px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-6 mb-6 sm:mb-8">
+      <div className="w-full px-3 sm:px-4 md:px-6 pt-6 sm:pt-8 md:pt-10 pb-3 sm:pb-4 md:pb-6 mb-6 sm:mb-8">
         <div className="max-w-3xl mx-auto space-y-6">
           {/* ── Preview Area ──────────────────────────────────── */}
           <div className="glass-card border border-violet-500/20 shadow-[0_8px_32px_rgba(0,0,0,0.3)] rounded-xl overflow-hidden">
