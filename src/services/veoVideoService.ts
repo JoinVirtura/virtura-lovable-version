@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { trackStorageUsage } from "@/lib/trackUsage";
 
 /**
  * Extract a human-readable error message from a Supabase edge function error.
@@ -64,6 +65,7 @@ export async function generateVeoVideo(
           upsert: true,
         });
       if (uploadError) throw new Error(`Image upload failed: ${uploadError.message}`);
+      trackStorageUsage(blob.size);
       const { data: urlData } = supabase.storage
         .from("virtura-media")
         .getPublicUrl(`veo-sources/${fileName}`);
@@ -190,6 +192,7 @@ export async function saveVeoVideoToLibrary(params: {
         console.warn("⚠️ Thumbnail upload failed, using video URL as fallback:", uploadError.message);
         thumbnailUrl = undefined;
       } else {
+        trackStorageUsage(blob.size);
         const { data: urlData } = supabase.storage
           .from("virtura-media")
           .getPublicUrl(`thumbnails/${fileName}`);
@@ -243,6 +246,7 @@ async function generateFalVideo(
           upsert: true,
         });
       if (uploadError) throw new Error(`Image upload failed: ${uploadError.message}`);
+      trackStorageUsage(blob.size);
       const { data: urlData } = supabase.storage
         .from("virtura-media")
         .getPublicUrl(`fal-sources/${fileName}`);

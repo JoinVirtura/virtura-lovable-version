@@ -19,7 +19,7 @@ import {
   hasAnonTrialRemaining,
   ANON_TRIAL_LIMIT,
 } from "@/lib/anonTrial";
-import { trackUsage } from "@/lib/trackUsage";
+import { trackUsage, trackStorageUsage } from "@/lib/trackUsage";
 
 const IS_DEV = import.meta.env.DEV;
 
@@ -490,6 +490,7 @@ export const Hero = () => {
         .upload(filePath, blob, { contentType: 'image/png', cacheControl: '3600', upsert: true });
 
       if (uploadError) throw uploadError;
+      trackStorageUsage(blob.size);
 
       const { data: { publicUrl } } = supabase.storage.from('virtura-media').getPublicUrl(filePath);
       finalImageUrl = publicUrl;

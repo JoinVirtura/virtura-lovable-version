@@ -63,13 +63,21 @@ export function useUsageTracking() {
 
       setSubscription(subData || { plan_name: 'free', status: 'inactive' });
 
-      // Get today's usage
+      // Daily-resetting counters for generation, lifetime cumulative for storage.
       const today = new Date().toISOString().split('T')[0];
-      const { data: usageData } = await supabase
-        .from('usage_tracking')
-        .select('resource_type, amount')
-        .eq('user_id', user.id)
-        .gte('created_at', today);
+      const [{ data: dailyData }, { data: storageData }] = await Promise.all([
+        supabase
+          .from('usage_tracking')
+          .select('resource_type, amount')
+          .eq('user_id', user.id)
+          .neq('resource_type', 'storage')
+          .gte('created_at', today),
+        supabase
+          .from('usage_tracking')
+          .select('amount')
+          .eq('user_id', user.id)
+          .eq('resource_type', 'storage'),
+      ]);
 
       // Calculate usage by resource type
       const usageSummary: UsageData = {
@@ -79,12 +87,15 @@ export function useUsageTracking() {
         storage: { used: 0, limit: PLAN_LIMITS.free.storage }
       };
 
-      usageData?.forEach(item => {
+      dailyData?.forEach(item => {
         if (item.resource_type in usageSummary) {
           const resourceType = item.resource_type as keyof UsageData;
           usageSummary[resourceType].used += item.amount;
         }
       });
+
+      const storageMb = (storageData ?? []).reduce((sum, row) => sum + (row.amount || 0), 0);
+      usageSummary.storage.used = Math.round(storageMb * 100) / 100;
 
       // Apply plan limits
       const planName = subData?.plan_name || 'free';

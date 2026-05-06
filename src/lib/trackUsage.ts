@@ -28,3 +28,15 @@ export async function trackUsage(resource: TrackedResource, amount = 1): Promise
     console.warn(`[trackUsage] ${resource} threw:`, err);
   }
 }
+
+/**
+ * Track storage usage for a blob/file uploaded to Supabase Storage.
+ * Converts bytes to MB (4 decimals) so the Billing & Usage panel can sum
+ * lifetime totals against the per-plan MB quota.
+ */
+export async function trackStorageUsage(bytes: number): Promise<void> {
+  if (!Number.isFinite(bytes) || bytes <= 0) return;
+  const mb = Math.round((bytes / (1024 * 1024)) * 10000) / 10000;
+  if (mb <= 0) return;
+  await trackUsage("storage", mb);
+}

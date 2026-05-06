@@ -51,9 +51,11 @@ serve(async (req) => {
       );
     }
 
-    if (typeof amount !== 'number' || amount < 1 || amount > 1000) {
+    // Allow fractional amounts so storage can be tracked in MB (e.g. 0.42).
+    // Cap is high enough for individual file sizes in MB (single video ~50 MB).
+    if (typeof amount !== 'number' || amount <= 0 || amount > 100000) {
       return new Response(
-        JSON.stringify({ error: 'Amount must be a number between 1 and 1000' }),
+        JSON.stringify({ error: 'Amount must be a number between 0 (exclusive) and 100000' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
