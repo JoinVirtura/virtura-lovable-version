@@ -170,7 +170,7 @@ export const TalkingAvatarStudio: React.FC<TalkingAvatarStudioProps> = ({ onView
             AI <span className="bg-gradient-to-r from-violet-400 to-blue-500 bg-clip-text text-transparent">Video</span> Studio
           </h1>
           <p className="text-muted-foreground text-lg">
-            Create professional talking avatar videos with AI
+            Bring your photos to life with realistic lip-sync and motion.
           </p>
         </div>
         

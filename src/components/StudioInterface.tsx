@@ -249,7 +249,7 @@ export default function StudioInterface() {
               <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent">
                 AI Studio Pro
               </h1>
-              <p className="text-muted-foreground">Create professional talking avatar videos</p>
+              <p className="text-muted-foreground">Direct your AI cast — script, voice, and animation in one place.</p>
             </div>
           </div>
         </div>

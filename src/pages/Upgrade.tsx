@@ -243,9 +243,6 @@ export default function Upgrade() {
         </div>
 
         <div className="mt-12 text-center">
-          <p className="text-sm text-muted-foreground mb-4">
-            All plans include a 30-day money-back guarantee
-          </p>
           <Button variant="ghost" onClick={() => navigate("/dashboard")}>
             Continue with Free Plan
           </Button>
