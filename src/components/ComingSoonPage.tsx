@@ -48,7 +48,7 @@ const featureMap: Record<string, FeatureInfo> = {
     bullets: [
       "AI-powered retouching & enhancement",
       "Smart background removal & replacement",
-      "One-click style transfer & filters",
+      "Filters & creative presets",
     ],
     progress: 65,
   },

@@ -28,7 +28,7 @@ const STEPS = [
   {
     id: 1,
     title: "Welcome to Virtura! 🎉",
-    subtitle: "You've received 20 FREE tokens to get started",
+    subtitle: "You've received 25 FREE tokens to get started",
   },
   {
     id: 2,
@@ -68,9 +68,9 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
       // Animate token counter
       const interval = setInterval(() => {
         setTokenCount(prev => {
-          if (prev >= 20) {
+          if (prev >= 25) {
             clearInterval(interval);
-            return 20;
+            return 25;
           }
           return prev + 2;
         });
@@ -176,20 +176,11 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-4 p-3 rounded-lg bg-background/50">
-                    <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center flex-shrink-0">
-                      <Wand2 className="w-5 h-5 text-secondary" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-foreground">Style Transfer</h4>
-                      <p className="text-sm text-muted-foreground">2-4 tokens per transform</p>
-                    </div>
-                  </div>
                 </div>
 
                 <div className="mt-6 p-3 rounded-lg bg-primary/10 border border-primary/20">
                   <p className="text-sm text-center text-foreground">
-                    <strong>Your 25 tokens ≈ 5+ images</strong> or <strong>2-3 videos</strong> or <strong>12 style transfers</strong>
+                    <strong>Your 25 tokens ≈ 5+ images</strong> or <strong>2-3 videos</strong>
                   </p>
                 </div>
               </Card>
