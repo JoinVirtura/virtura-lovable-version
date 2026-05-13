@@ -28,7 +28,7 @@ const PLAN_LIMITS = {
     video_generation: 25,
     storage: 1000, // MB
   },
-  enterprise: {
+  scale: {
     image_generation: 1000,
     voice_generation: 1000,
     video_generation: 250,

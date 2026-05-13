@@ -167,12 +167,12 @@ export default function UnifiedAdminDashboard() {
         .from("profiles")
         .select("*", { count: "exact", head: true });
 
-      // Calculate actual revenue from subscriptions and token purchases
-      // Subscription prices: starter=$29, pro=$129, enterprise=$349
+      // Calculate actual revenue from subscriptions and token purchases.
+      // Source of truth lives in supabase/functions/create-checkout/index.ts.
       const planPrices: Record<string, number> = {
         starter: 29,
         pro: 129,
-        enterprise: 349,
+        scale: 179,
       };
 
       const { data: subscriptionData } = await supabase

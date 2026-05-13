@@ -37,7 +37,7 @@ const PLAN_LIMITS = {
     video_generation: 25,
     storage: 1000, // MB
   },
-  enterprise: {
+  scale: {
     voice_generation: 1000,
     video_generation: 250,
     storage: 10000, // MB
@@ -45,11 +45,11 @@ const PLAN_LIMITS = {
 };
 
 const PREMIUM_FEATURES = {
-  premium_voices: ['pro', 'enterprise'],
-  hd_video: ['pro', 'enterprise'],
-  voice_generation: ['free', 'pro', 'enterprise'],
-  video_generation: ['free', 'pro', 'enterprise'],
-  storage: ['free', 'pro', 'enterprise']
+  premium_voices: ['pro', 'scale'],
+  hd_video: ['pro', 'scale'],
+  voice_generation: ['free', 'pro', 'scale'],
+  video_generation: ['free', 'pro', 'scale'],
+  storage: ['free', 'pro', 'scale']
 };
 
 function FeatureGate({ feature, children, fallback }: FeatureGateProps) {
@@ -182,7 +182,7 @@ function FeatureGate({ feature, children, fallback }: FeatureGateProps) {
           <CardTitle className="text-violet-200">Upgrade Required</CardTitle>
         </div>
         <CardDescription className="text-violet-300">
-          This feature requires a Pro or Enterprise plan
+          This feature requires a Pro or Scale plan
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
