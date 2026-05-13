@@ -140,7 +140,7 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
 
               <Card className="p-4 bg-muted/50 border-primary/20">
                 <p className="text-sm text-foreground">
-                  Create amazing AI avatars, images, and videos without spending a dime.
+                  Create amazing AI images and videos without spending a dime.
                   Your 25 free tokens are ready to use right now!
                 </p>
               </Card>
@@ -197,27 +197,6 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
               <div className="grid gap-4">
                 <Card
                   className="p-6 cursor-pointer hover:border-primary transition-all hover:shadow-neon"
-                  onClick={() => handleNavigate('/individuals')}
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-primary-blue flex items-center justify-center flex-shrink-0">
-                      <Image className="w-6 h-6 text-primary-foreground" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold mb-1 text-foreground">Generate an Avatar</h3>
-                      <p className="text-sm text-muted-foreground mb-2">
-                        Create professional AI avatars from text descriptions
-                      </p>
-                      <Badge variant="secondary" className="text-xs">
-                        <Coins className="w-3 h-3 mr-1" />
-                        2-5 tokens
-                      </Badge>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card
-                  className="p-6 cursor-pointer hover:border-primary transition-all hover:shadow-neon"
                   onClick={() => handleNavigate('/ai-studio')}
                 >
                   <div className="flex items-start gap-4">
@@ -248,7 +227,7 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
                     <div className="flex-1">
                       <h3 className="font-semibold mb-1 text-foreground">Make a Video</h3>
                       <p className="text-sm text-muted-foreground mb-2">
-                        Bring your avatars to life with AI video
+                        Bring your photos to life with motion
                       </p>
                       <Badge variant="secondary" className="text-xs">
                         <Coins className="w-3 h-3 mr-1" />
