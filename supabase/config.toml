@@ -9,14 +9,17 @@ project_id = "ocvlldhfkidppvfslzwl"
 #   Authentication → Email Templates → {Confirm signup | Magic Link | Change
 #   Email Address | Reset Password | Invite user}
 #
-# Also configure in the dashboard for the confirmation link to work:
-#   Authentication → URL Configuration → Site URL         = https://virtura.app
-#   Authentication → URL Configuration → Redirect URLs    = https://virtura.app/auth/callback
+# Run `npx supabase config push` after editing this file to apply the
+# changes to the hosted project (including site_url and redirect allowlist).
 # -----------------------------------------------------------------------------
 
 [auth]
-site_url = "http://localhost:5173"
-additional_redirect_urls = ["https://virtura.app/auth/callback", "http://localhost:5173/auth/callback"]
+site_url = "https://virturaai.com"
+additional_redirect_urls = [
+  "https://virturaai.com/auth/callback",
+  "http://localhost:8080/auth/callback",
+  "http://localhost:5173/auth/callback",
+]
 
 [auth.email]
 enable_signup = true

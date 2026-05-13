@@ -141,7 +141,7 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
               <Card className="p-4 bg-muted/50 border-primary/20">
                 <p className="text-sm text-foreground">
                   Create amazing AI avatars, images, and videos without spending a dime.
-                  Your 20 free tokens are ready to use right now!
+                  Your 25 free tokens are ready to use right now!
                 </p>
               </Card>
             </div>
@@ -189,7 +189,7 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
 
                 <div className="mt-6 p-3 rounded-lg bg-primary/10 border border-primary/20">
                   <p className="text-sm text-center text-foreground">
-                    <strong>Your 20 tokens ≈ 4+ images</strong> or <strong>2-3 videos</strong> or <strong>10 style transfers</strong>
+                    <strong>Your 25 tokens ≈ 5+ images</strong> or <strong>2-3 videos</strong> or <strong>12 style transfers</strong>
                   </p>
                 </div>
               </Card>
@@ -375,7 +375,7 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
                 <CheckCircle className="w-12 h-12 text-primary mx-auto mb-3" />
                 <p className="text-lg font-semibold text-foreground">You're all set!</p>
                 <p className="text-sm text-muted-foreground">
-                  Start creating amazing content with your 20 free tokens
+                  Start creating amazing content with your 25 free tokens
                 </p>
               </div>
             </div>
