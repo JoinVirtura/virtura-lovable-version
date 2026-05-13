@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 
-export type SubscriptionTier = 'free' | 'starter' | 'pro' | 'enterprise' | 'admin';
+export type SubscriptionTier = 'free' | 'starter' | 'pro' | 'scale' | 'admin';
 
 interface SubscriptionAccess {
   tier: SubscriptionTier;
@@ -67,11 +67,11 @@ export function useSubscriptionTier(): SubscriptionAccess {
         
         if (planName) {
           const plan = planName.toLowerCase();
-          if (plan.includes('enterprise')) {
-            setTier('enterprise');
+          if (plan.includes('scale')) {
+            setTier('scale');
           } else if (plan.includes('pro')) {
             setTier('pro');
-          } else if (plan.includes('starter') || plan.includes('individual')) {
+          } else if (plan.includes('starter')) {
             setTier('starter');
           } else {
             setTier('free');
@@ -126,10 +126,10 @@ export function useSubscriptionTier(): SubscriptionAccess {
         canAccessAdvancedAnalytics: false,
         canAccess4KExports: true,
         canAccess8KExports: false,
-        generationLimit: 700,
+        generationLimit: 600,
         planName: 'Pro',
       },
-      enterprise: {
+      scale: {
         canAccessBrandTools: true,
         canAccessCommercialLicense: true,
         canAccessAPIAccess: true,
@@ -138,8 +138,8 @@ export function useSubscriptionTier(): SubscriptionAccess {
         canAccessAdvancedAnalytics: true,
         canAccess4KExports: true,
         canAccess8KExports: true,
-        generationLimit: 2200,
-        planName: 'Enterprise',
+        generationLimit: 900,
+        planName: 'Scale',
       },
       admin: {
         canAccessBrandTools: true,

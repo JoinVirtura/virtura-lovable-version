@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 
-export type SubscriptionPlan = 'free' | 'individual' | 'pro' | 'enterprise';
+export type SubscriptionPlan = 'free' | 'starter' | 'pro' | 'scale';
 
 export interface FeatureGateConfig {
   feature: string;
@@ -35,17 +35,17 @@ export async function checkFeatureAccess(feature: string): Promise<{
     
     // Admins have unlimited access
     if (isAdmin) {
-      return { hasAccess: true, plan: 'enterprise', isAdmin: true };
+      return { hasAccess: true, plan: 'scale', isAdmin: true };
     }
 
     // Feature gating rules
     const featureRules: Record<string, SubscriptionPlan[]> = {
-      'heygen-video': ['pro', 'enterprise'],
-      'premium-avatars': ['individual', 'pro', 'enterprise'],
-      'priority-processing': ['pro', 'enterprise'],
-      'commercial-license': ['pro', 'enterprise'],
-      'team-collaboration': ['enterprise'],
-      'white-label': ['enterprise'],
+      'heygen-video': ['pro', 'scale'],
+      'premium-avatars': ['starter', 'pro', 'scale'],
+      'priority-processing': ['pro', 'scale'],
+      'commercial-license': ['pro', 'scale'],
+      'team-collaboration': ['scale'],
+      'white-label': ['scale'],
     };
 
     // Get user subscription including trial data
@@ -86,9 +86,9 @@ export async function checkFeatureAccess(feature: string): Promise<{
 export function getPlanDisplayName(plan: SubscriptionPlan): string {
   const names: Record<SubscriptionPlan, string> = {
     free: 'Free',
-    individual: 'Individual',
+    starter: 'Starter',
     pro: 'Pro',
-    enterprise: 'Enterprise',
+    scale: 'Scale',
   };
   return names[plan] || 'Free';
 }
@@ -99,11 +99,11 @@ export function getPlanDisplayName(plan: SubscriptionPlan): string {
 export function getRequiredPlan(feature: string): SubscriptionPlan {
   const featureRules: Record<string, SubscriptionPlan> = {
     'heygen-video': 'pro',
-    'premium-avatars': 'individual',
+    'premium-avatars': 'starter',
     'priority-processing': 'pro',
     'commercial-license': 'pro',
-    'team-collaboration': 'enterprise',
-    'white-label': 'enterprise',
+    'team-collaboration': 'scale',
+    'white-label': 'scale',
   };
   return featureRules[feature] || 'free';
 }
