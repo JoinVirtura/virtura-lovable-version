@@ -97,8 +97,8 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
       const formattedAssets = data?.map((item) => ({
         id: item.id,
         dbId: item.id,
-        type: item.is_video ? "video" : "Avatar",
-        title: item.title || `Generated ${item.is_video ? 'Video' : 'Avatar'} ${new Date(item.created_at).toLocaleDateString()}`,
+        type: item.is_video ? "video" : "Image",
+        title: item.title || `Generated ${item.is_video ? 'Video' : 'Image'} ${new Date(item.created_at).toLocaleDateString()}`,
         date: new Date(item.created_at).toLocaleDateString('en-US', { 
           year: 'numeric', 
           month: 'short', 
@@ -119,7 +119,7 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
         quality: Math.floor(Math.random() * 10 + 90),
         generationTime: `${(Math.random() * 2 + 1.5).toFixed(1)}s`,
         fileSize: `${(Math.random() * 1.5 + 1.5).toFixed(1)} MB`,
-        category: item.is_video ? "Videos" : "Avatars",
+        category: item.is_video ? "Videos" : "Images",
         folder_id: item.folder_id
       })) || [];
 
@@ -291,14 +291,14 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
       await fetchSavedAvatars();
       
       toast({
-        title: "Avatar Deleted",
+        title: "Item Deleted",
         description: `"${asset.title}" has been removed from your library.`
       });
     } catch (error) {
-      console.error('Error deleting avatar:', error);
+      console.error('Error deleting item:', error);
       toast({
         title: "Delete Failed",
-        description: "Unable to delete the avatar. Please try again.",
+        description: "Unable to delete the item. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -366,7 +366,7 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
       
       toast({
         title: "Title Updated",
-        description: `Avatar renamed to "${newTitle}"`
+        description: `Renamed to "${newTitle}"`
       });
     } catch (error) {
       console.error('Error updating title:', error);
@@ -535,9 +535,9 @@ export function DashboardLibraryView({ onSelectAvatar, isModal = false, hideVide
                     <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto">
                       <Sparkles className="w-10 h-10 text-muted-foreground" />
                     </div>
-                    <h3 className="text-xl font-semibold">No avatars saved yet</h3>
+                    <h3 className="text-xl font-semibold">No items saved yet</h3>
                     <p className="text-muted-foreground max-w-md mx-auto">
-                      Generate some avatars and save your favorites to see them here.
+                      Generate some images or videos and save your favorites to see them here.
                     </p>
                   </div>
                 </div>

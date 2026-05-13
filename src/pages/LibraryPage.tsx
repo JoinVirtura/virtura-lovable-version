@@ -13,7 +13,7 @@ export default function LibraryPage() {
   const handleSelectAvatar = (avatarUrl: string, metadata: any) => {
     sessionStorage.setItem('selectedAvatar', JSON.stringify({ avatarUrl, metadata }));
     navigate('/video-pro');
-    toast.success('Avatar selected! Opening Studio Pro...');
+    toast.success('Image selected! Opening Studio Pro...');
   };
 
   return (
@@ -47,7 +47,7 @@ export default function LibraryPage() {
                   onClick={() => navigate('/ai-image-studio')}
                 >
                   <Sparkles className="h-4 w-4 mr-2" />
-                  Generate New Avatar
+                  Generate New Image
                 </Button>
                 <Button
                   variant="outline"

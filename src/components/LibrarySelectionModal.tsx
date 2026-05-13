@@ -219,7 +219,7 @@ export function LibrarySelectionModal({
               size="sm"
               onClick={() => setFilterCategory('avatars')}
             >
-              Avatars
+              Images
             </Button>
             <Button
               variant={filterCategory === 'videos' ? 'default' : 'outline'}

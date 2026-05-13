@@ -276,7 +276,7 @@ export default function Dashboard() {
         quality: Math.floor(Math.random() * 10 + 90), // 90-99%
         generationTime: `${(Math.random() * 2 + 1.5).toFixed(1)}s`,
         fileSize: `${(Math.random() * 1.5 + 1.5).toFixed(1)} MB`,
-        category: "Avatars"
+        category: "Images"
       })) || [];
 
       setLibraryAssets(formattedAssets);
@@ -2122,7 +2122,7 @@ export default function Dashboard() {
                   Virtura AI
                 </h1>
                 <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
-                  v1.1.26
+                  v1.1.27
                 </span>
               </div>
               <div className="flex items-center gap-2">

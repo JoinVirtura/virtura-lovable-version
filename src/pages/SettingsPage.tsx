@@ -497,7 +497,7 @@ export default function SettingsPage() {
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
                 <div className="flex-1">
                   <Label className="text-sm sm:text-base">Generation Complete</Label>
-                  <p className="text-xs sm:text-sm text-muted-foreground">Get notified when avatars finish generating</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Get notified when your generations finish</p>
                 </div>
                 <Switch defaultChecked className="self-start sm:self-auto" />
               </div>
@@ -549,7 +549,7 @@ export default function SettingsPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <Label>Default Content Visibility</Label>
-                    <p className="text-sm text-muted-foreground">Set default visibility for new avatars and videos</p>
+                    <p className="text-sm text-muted-foreground">Set default visibility for new images and videos</p>
                   </div>
                   <select
                     value={contentVisibility}
